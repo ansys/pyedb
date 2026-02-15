@@ -60,7 +60,7 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
 
@@ -847,7 +847,7 @@ class TestClass(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-# #@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+#@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
         "name": "terminal1",
@@ -1078,7 +1078,7 @@ class TestClassTerminals(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassSetups(BaseTestClass):
     terminal1 = {
         "name": "terminal1",
@@ -1445,7 +1445,7 @@ class TestClassBoundaries(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassPadstacks(BaseTestClass):
     def test_09_padstack_definition(self):
         solder_ball_parameters = {
@@ -1666,7 +1666,7 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.max_delta = 0.02
 
 
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
     # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1820,7 +1820,7 @@ class TestModeler(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
 
@@ -1837,7 +1837,7 @@ class TestComponent(BaseTestClass):
         _assert_final_ic_die_properties(component)
 
 
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
 

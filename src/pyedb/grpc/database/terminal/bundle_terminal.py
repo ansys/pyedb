@@ -176,15 +176,15 @@ class BundleTerminal(Terminal):
         str
             Terminal name.
         """
-        return self.core.term_to_ground.name
+        return self.core.term_to_ground.name.lower()
 
     @term_to_ground.setter
     def term_to_ground(self, value):
-        if value.upper() == "NO_GROUND":
+        if value.upper() == "no_ground":
             self.core.term_to_ground = CoreSourceTermToGroundType.NO_GROUND
-        elif value.upper() == "NEGATIVE":
+        elif value.upper() == "negative":
             self.core.term_to_ground = CoreSourceTermToGroundType.NEGATIVE
-        elif value.upper() == "POSITIVE":
+        elif value.upper() == "positive":
             self.core.term_to_ground = CoreSourceTermToGroundType.POSITIVE
 
     @property

@@ -550,7 +550,7 @@ class Terminal(ConnObj):
     def terminal_to_ground(self, value):
         map_val = SourceTermMapper.get_grpc(value)
 
-        self.core.term_to_ground = getattr(self.core.term_to_ground, map_val)
+        self.core.term_to_ground = getattr(self.core.term_to_ground, map_val.upper())
 
     @property
     def reference_terminal(self):

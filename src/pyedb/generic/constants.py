@@ -793,7 +793,10 @@ class CommonMapper:
 
     @classmethod
     def get_grpc(cls, value):
-        return cls.get(value, as_grpc=True)
+        try:
+            return cls.GRPC(value).value
+        except ValueError:
+            return cls.get(value, as_grpc=True)
 
     @classmethod
     def get_dotnet(cls, value):
@@ -857,7 +860,7 @@ class BoundaryTypeMapper(CommonMapper):
 
 class SourceTermMapper(CommonMapper):
     class GRPC(Enum):
-        (NO_GROUND, NEGATIVE, POSITIVE) = ("NO_GROUND", "NEGATIVE", "POSITIVE")
+        (NO_GROUND, NEGATIVE, POSITIVE) = ("no_ground", "negative", "positive")
 
     class DOTNET(Enum):
         (NO_GROUND, NEGATIVE, POSITIVE) = ("kNoGround", "kNegative", "kPositive")

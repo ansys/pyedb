@@ -30,7 +30,9 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper
+from pyedb.generic.constants import (
+    FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper
+)
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
@@ -941,7 +943,7 @@ class Configuration:
                     boundary_type=i.boundary_type,
                     amplitude=i.source_amplitude,
                     phase=i.source_phase,
-                    terminal_to_ground=i.terminal_to_ground,
+                    terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
@@ -954,7 +956,7 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     amplitude=i.source_amplitude,
                     phase=i.source_phase,
-                    terminal_to_ground=i.terminal_to_ground,
+                    terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                 )
             elif i.terminal_type in ["PointTerminal", "point"]:
                 manager.add_point_terminal(
