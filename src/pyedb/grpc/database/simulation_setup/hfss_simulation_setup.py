@@ -335,6 +335,7 @@ class HfssSimulationSetup(SimulationSetup):
         bfs.max_delta = max_delta_s
         bfs.max_num_passes = max_num_passes
         self.core.settings.general.broadband_adaptive_solution = bfs
+        return True
 
     def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
         """Add adaptive frequency data to simulation setup.
