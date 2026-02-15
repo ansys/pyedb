@@ -730,8 +730,8 @@ CSS4_COLORS = {
 
 from enum import Enum
 
-class CommonMapper:
 
+class CommonMapper:
     @classmethod
     def get(cls, value, *, as_grpc: bool = True):
         """
@@ -806,27 +806,52 @@ class CommonMapper:
 class TerminalTypeMapper(CommonMapper):
     class GRPC(Enum):
         (INVALID, EDGE, POINT, TERM_INST, PADSTACK_INST, BUNDLE, PIN_GROUP) = (
-            "invalid", "edge", "point", "terminal_inst", "padstack_inst", "bundle", "pin_group"
+            "invalid",
+            "edge",
+            "point",
+            "terminal_inst",
+            "padstack_inst",
+            "bundle",
+            "pin_group",
         )
 
     class DOTNET(Enum):
         (INVALID, EDGE, POINT, TERM_INST, PADSTACK_INST, BUNDLE, PIN_GROUP) = (
-            "InvalidTerminal", "EdgeTerminal", "PointTerminal",
-            "TerminalInstanceTerminal", "PadstackInstanceTerminal",
-            "BundleTerminal", "PinGroupTerminal"
+            "InvalidTerminal",
+            "EdgeTerminal",
+            "PointTerminal",
+            "TerminalInstanceTerminal",
+            "PadstackInstanceTerminal",
+            "BundleTerminal",
+            "PinGroupTerminal",
         )
+
 
 class BoundaryTypeMapper(CommonMapper):
     class GRPC(Enum):
-        (PORT, PEC, RLC, CURRENT_SOURCE, VOLTAGE_SOURCE, NEXXIM_GROUND, NEXXIM_PORT, DC_TERMINAL,VOLTAGE_PROBE ) = (
-            "port", "pec", "rlc", "current_source", "voltage_source", "nexxim_ground", "nexxim_port", "dc_terminal", "voltage_probe"
+        (PORT, PEC, RLC, CURRENT_SOURCE, VOLTAGE_SOURCE, NEXXIM_GROUND, NEXXIM_PORT, DC_TERMINAL, VOLTAGE_PROBE) = (
+            "port",
+            "pec",
+            "rlc",
+            "current_source",
+            "voltage_source",
+            "nexxim_ground",
+            "nexxim_port",
+            "dc_terminal",
+            "voltage_probe",
         )
 
     class DOTNET(Enum):
-        (PORT, PEC, RLC, CURRENT_SOURCE, VOLTAGE_SOURCE, NEXXIM_GROUND, NEXXIM_PORT, DC_TERMINAL,VOLTAGE_PROBE ) = (
-            "PortBoundary", "PecBoundary", "RlcBoundary",
-            "kCurrentSource", "kVoltageSource",
-            "kNexximGround", "kNexximPort", "kDcTerminal", "kVoltageProbe"
+        (PORT, PEC, RLC, CURRENT_SOURCE, VOLTAGE_SOURCE, NEXXIM_GROUND, NEXXIM_PORT, DC_TERMINAL, VOLTAGE_PROBE) = (
+            "PortBoundary",
+            "PecBoundary",
+            "RlcBoundary",
+            "kCurrentSource",
+            "kVoltageSource",
+            "kNexximGround",
+            "kNexximPort",
+            "kDcTerminal",
+            "kVoltageProbe",
         )
 
 
@@ -843,7 +868,12 @@ class FAdaptTypeMapper(CommonMapper):
         (SINGLE, MULTI_FREQUENCIES, BROADBAND, NUM_ADAPT_TYPE) = ("single", "multi_freq", "broadband", "num_adapt_type")
 
     class DOTNET(Enum):
-        (SINGLE, MULTI_FREQUENCIES, BROADBAND, NUM_ADAPT_TYPE) = ("kSingle", "kMultiFrequencies", "kBroadband", "kNumAdaptTypes")
+        (SINGLE, MULTI_FREQUENCIES, BROADBAND, NUM_ADAPT_TYPE) = (
+            "kSingle",
+            "kMultiFrequencies",
+            "kBroadband",
+            "kNumAdaptTypes",
+        )
 
 
 class MeshOperationTypeMapper(CommonMapper):

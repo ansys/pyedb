@@ -140,16 +140,18 @@ class CfgHFSSSetup(CfgSetupAC):
         "single", description="Adaptation type, e.g., broadband, single, multi_frequencies."
     )
     single_frequency_adaptive_solution: Optional[CfgSingleFrequencyAdaptiveSolution] = Field(
-        default_factory=CfgSingleFrequencyAdaptiveSolution)
+        default_factory=CfgSingleFrequencyAdaptiveSolution
+    )
     broadband_adaptive_solution: Optional[CfgBroadbandAdaptiveSolution] = Field(
-        default_factory=CfgBroadbandAdaptiveSolution)
+        default_factory=CfgBroadbandAdaptiveSolution
+    )
     multi_frequency_adaptive_solution: Optional[CfgMultiFrequencyAdaptiveSolution] = Field(
-        default_factory=CfgMultiFrequencyAdaptiveSolution)
+        default_factory=CfgMultiFrequencyAdaptiveSolution
+    )
     # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
 
     auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
-    mesh_operations: list[CfgLengthMeshOperation] | None = Field(default_factory=list,
-                                                                 description="List of mesh operations.")
+    mesh_operations: list[CfgLengthMeshOperation] | None = list()
 
     def add_length_mesh_operation(self, mesh_op: CfgLengthMeshOperation):
         self.mesh_operations.append(mesh_op)

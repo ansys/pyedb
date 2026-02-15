@@ -29,7 +29,7 @@ import sys
 import numpy as np
 from scipy.spatial import KDTree
 
-from pyedb.generic.constants import  SWEEPDRAFT, scale_units
+from pyedb.generic.constants import SWEEPDRAFT, scale_units
 
 
 class GeometryOperators(object):
@@ -127,8 +127,6 @@ class GeometryOperators(object):
                 value = variable_manager["temp_var"].value / sunit
                 del variable_manager["temp_var"]
                 return value
-
-
 
     @staticmethod
     def draft_type_str(val):  # pragma: no cover
