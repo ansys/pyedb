@@ -30,9 +30,7 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.generic.constants import (
-    FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper
-)
+from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
