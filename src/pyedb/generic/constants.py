@@ -767,7 +767,7 @@ class CommonMapper:
                         name = member.name
                         result = cls.GRPC[name]
                         return result.value
-                    if value in cls.GRPC:
+                    if value in [e.value for e in cls.GRPC]:
                         return value
             else:
                 # Try to parse as GRPC value
@@ -781,7 +781,7 @@ class CommonMapper:
                         name = member.name
                         result = cls.DOTNET[name]
                         return result.value
-                    if value in cls.DOTNET:
+                    if value in [e.value for e in cls.DOTNET]:
                         return value
 
         raise ValueError(
