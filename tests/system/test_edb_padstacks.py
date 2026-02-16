@@ -317,7 +317,7 @@ class TestClass(BaseTestClass):
     def test_vias_metal_volume(self):
         """Metal volume of the via hole instance."""
         edbapp = self.edb_examples.get_si_verse()
-        vias = [via for via in list(edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
+        vias = [via for via in edbapp.padstacks.instances if not via.start_layer == via.stop_layer]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
@@ -430,7 +430,7 @@ class TestClass(BaseTestClass):
             layer.name = new_name
         for layer_name in list(edbapp.stackup.layers.keys()):
             print(f"New layer name is {layer_name}")
-        for padstack_inst in list(edbapp.padstacks.instances.values()):
+        for padstack_inst in edbapp.padstacks.instances:
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
         edbapp.close_edb()
 
@@ -544,10 +544,9 @@ class TestClass(BaseTestClass):
             start_layer="layer1",
             stop_layer="layer2",
         )
-
-        assert edbapp.padstacks.instances[merged_via[0]].net_name == "NET_1"
-        assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
-        assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
+        assert merged_via[0].net_name == "NET_1"
+        assert merged_via[0].start_layer == "layer1"
+        assert merged_via[0].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
@@ -576,7 +575,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.load_edb(source_path)
 
         inst = edbapp.padstacks.instances
-        all_vias = {id_: i.position for id_, i in inst.items()}
+        all_vias = {i.id: i.position for i in inst}
         clusters = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
         kept_2mm, grid_2mm = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=2e-3, cell_size_y=2e-3)

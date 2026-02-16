@@ -105,7 +105,7 @@ class Padstacks(object):
         elif name in self.definitions:
             return self.definitions.get(name, None)
         else:
-            return next((i for i in list(self.instances.values()) if i.name == name or i.aedt_name == name), None)
+            return next((i for i in self.instances if i.name == name or i.aedt_name == name), None)
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
@@ -234,9 +234,9 @@ class Padstacks(object):
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
         if not self._instances_by_net:
-            for edb_padstack_instance in list(self.instances.values()):
-                if edb_padstack_instance.net_name:
-                    self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
+            for instance in self.instances:
+                if instance.net_name:
+                    self._instances_by_net.setdefault(instance.net_name, []).append(instance)
         return self._instances_by_net
 
     @property
@@ -257,7 +257,7 @@ class Padstacks(object):
         ...     print(f"Instance named {name}")
         """
         if not self._instances_by_name:
-            for _, edb_padstack_instance in self.instances.items():
+            for edb_padstack_instance in self.instances:
                 if edb_padstack_instance.aedt_name:
                     self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
         return self._instances_by_name
@@ -326,7 +326,7 @@ class Padstacks(object):
         ...     print(f"Via {via_id} on net {via.net_name}")
         """
         pnames = list(self.pins.keys())
-        vias = {i: j for i, j in self.instances.items() if i not in pnames}
+        vias = {i.id: i for i in self.instances if i not in pnames}
         return vias
 
     @property
@@ -1579,13 +1579,13 @@ class Padstacks(object):
             instance = instances_by_id.get(pid)
             return [instance] if instance is not None else []
         elif name:
-            instances = [inst for inst in list(self.instances.values()) if inst.aedt_name == name]
+            instances = [inst for inst in self.instances if inst.aedt_name == name]
             if instances:
                 return instances
             else:
                 return []
         else:
-            instances = list(instances_by_id.values())
+            instances = instances_by_id
             if definition_name:
                 definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
                 instances = [inst for inst in instances if inst.padstack_def.name in definition_name]
@@ -1686,11 +1686,11 @@ class Padstacks(object):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
         if nets:
-            instances = [inst for inst in list(self.instances.values()) if inst.net_name in nets]
+            instances = [inst for inst in self.instances if inst.net_name in nets]
         else:
-            instances = list(self.instances.values())
+            instances = self.instances
         for inst in instances:
-            padstack_instances_index.insert(inst.edb_uid, inst.position)
+            padstack_instances_index.insert(inst.id, inst.position)
         return padstack_instances_index
 
     def get_padstack_instances_id_intersecting_polygon(
@@ -1863,7 +1863,7 @@ class Padstacks(object):
         net_filter: Optional[Union[str, List[str]]] = None,
         start_layer: Optional[str] = None,
         stop_layer: Optional[str] = None,
-    ) -> List[str]:
+    ) -> List[PadstackInstance]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
@@ -1890,20 +1890,21 @@ class Padstacks(object):
                 "Please install it using 'pip install pyedb[geometry]' or 'pip install scipy'."
             )
 
-        merged_via_ids = []
+        merged_vias = []
         if not contour_boxes:
             raise Exception("No contour box provided, you need to pass a nested list as argument.")
         instances_index = {}
-        for id, inst in self.instances.items():
+        instances_dict = {inst.id: inst for inst in self.instances}
+        for id, inst in instances_dict.items():
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=[tuple(pt) for pt in contour_box], padstack_instances_index=instances_index
             )
             if net_filter:
-                instances = [id for id in instances if not self.instances[id].net.name in net_filter]
-            net = self.instances[instances[0]].net.name
-            instances_pts = np.array([self.instances[inst].position for inst in instances])
+                instances = [id for id in instances if not instances_dict[id].net.name in net_filter]
+            net = instances_dict[instances[0]].net.name
+            instances_pts = np.array([instances_dict[inst].position for inst in instances])
             convex_hull_contour = ConvexHull(instances_pts)
             contour_points = list(instances_pts[convex_hull_contour.vertices])
             layer = list(self._pedb.stackup.layers.values())[0].name
@@ -1929,9 +1930,9 @@ class Padstacks(object):
                 fromlayer=start_layer,
                 tolayer=stop_layer,
             )
-            merged_via_ids.append(merged_instance.edb_uid)
-            [self.instances[inst].delete() for inst in instances]
-        return merged_via_ids
+            merged_vias.append(merged_instance)
+            [instances_dict[inst].delete() for inst in instances]
+        return merged_vias
 
     def reduce_via_in_bounding_box(
         self, bounding_box: List[float], x_samples: int, y_samples: int, nets: Optional[Union[str, List[str]]] = None
@@ -1964,7 +1965,8 @@ class Padstacks(object):
                 return False
             else:
                 # extract ids and positions
-                vias = {item: self.instances[item].position for item in padstacks_inbox}
+                instance_by_id = {inst.id: inst for inst in self.instances}
+                vias = {item: instance_by_id[item].position for item in padstacks_inbox}
                 ids, positions = zip(*vias.items())
                 pt_x, pt_y = zip(*positions)
 
@@ -1982,10 +1984,9 @@ class Padstacks(object):
                     for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
                 }
 
-                all_instances = self.instances
                 for item in padstacks_inbox:
                     if item not in to_keep:
-                        all_instances[item].delete()
+                        instance_by_id[item].delete()
                 return True
 
     @staticmethod
@@ -2089,7 +2090,7 @@ class Padstacks(object):
         """
         to_keep = set()
 
-        all_instances = self.instances
+        all_instances = {inst.id: inst for inst in self.instances}
         positions = np.array([all_instances[_id].position for _id in padstacks])
 
         x_coords, y_coords = positions[:, 0], positions[:, 1]

@@ -237,7 +237,7 @@ def physical_merge(
     elapsed = stop - start
     hosting_edb.logger.info(f"Merging primitives from merged EDB completed in {elapsed} seconds.")
 
-    padstack_instances = list(merged_edb.padstacks.instances.values())
+    padstack_instances = merged_edb.padstacks.instances
     hosting_edb.logger.info(
         f"Merging padstack instances from merged EDB. Total padstack instances to merge: {len(padstack_instances)}."
     )

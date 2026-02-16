@@ -3005,15 +3005,16 @@ class Edb(EdbInit):
             signal_nets = list(self.nets.signal.keys())
 
         used_padstack_defs = []
+        padstack_instances_dict = {inst.id: inst for inst in self.padstacks.instances}
         padstack_instances_index = rtree.index.Index()
-        for padstack_inst in list(self.padstacks.instances.values()):
-            if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
-                padstack_inst.delete()
+        for id, inst in padstack_instances_dict.items():
+            if not reference_layer in [inst.start_layer, inst.stop_layer]:
+                inst.delete()
             else:
-                if padstack_inst.net.name in signal_nets:
-                    padstack_instances_index.insert(padstack_inst.edb_uid, padstack_inst.position)
-                    if not padstack_inst.padstack_def.name in used_padstack_defs:
-                        used_padstack_defs.append(padstack_inst.padstack_def.name)
+                if inst.net.name in signal_nets:
+                    padstack_instances_index.insert(inst.edb_uid, inst.position)
+                    if not inst.padstack_def.name in used_padstack_defs:
+                        used_padstack_defs.append(inst.padstack_def.name)
 
         polys = [
             poly
@@ -3031,7 +3032,7 @@ class Edb(EdbInit):
                 void_bbox = void.bbox
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
-                    void_padstacks.append((void, [self.padstacks.instances[edb_uid] for edb_uid in included_instances]))
+                    void_padstacks.append((void, [padstack_instances_dict[edb_uid] for edb_uid in included_instances]))
 
         if not void_padstacks:
             self.logger.error(
