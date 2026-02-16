@@ -23,7 +23,6 @@
 import struct
 
 import numpy as np
-import skrf as rf
 
 
 class ComponentLib:
@@ -112,6 +111,14 @@ class ComponentPart:
             return 0.0
 
     def _extract_impedance(self):
+        try:
+            import skrf as rf
+        except ImportError:
+            raise ImportError(
+                "scikit-rf library is required for component libraries. "
+                "Please install it using 'pip install pyedb[analysis]' or 'pip install scikit-rf'."
+            )
+
         with open(self._sbin_file, mode="rb") as file:
             file_content = file.read()
             file.seek(self._index)

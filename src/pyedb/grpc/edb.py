@@ -84,7 +84,6 @@ from ansys.edb.core.hierarchy.layout_component import (
 import ansys.edb.core.layout.cell
 from ansys.edb.core.layout.cell import DesignMode as CoreDesignMode
 from ansys.edb.core.utility.value import Value as CoreValue
-import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
@@ -105,7 +104,6 @@ from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
-from pyedb.grpc.database.nets import NetClasses, Nets
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
@@ -140,10 +138,12 @@ from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
-from pyedb.workflow import Workflow
 from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.nets import NetClasses, Nets
 
 
 class Edb(EdbInit):
@@ -1170,7 +1170,7 @@ class Edb(EdbInit):
         return self._hfss
 
     @property
-    def nets(self) -> Nets:
+    def nets(self) -> "Nets":
         """Net management interface.
 
         Returns
@@ -1178,12 +1178,14 @@ class Edb(EdbInit):
         :class:`Nets <pyedb.grpc.database.nets.Nets>`
             Net manipulation tools.
         """
+        from pyedb.grpc.database.nets import Nets
+
         if not self._nets and self.active_db:
             self._nets = Nets(self)
         return self._nets
 
     @property
-    def net_classes(self) -> Optional[NetClasses]:
+    def net_classes(self) -> Optional["NetClasses"]:
         """Net class management.
 
         Returns
@@ -1191,6 +1193,8 @@ class Edb(EdbInit):
         :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
             Net classes objects.
         """
+        from pyedb.grpc.database.nets import NetClasses
+
         if self.active_db:
             return NetClasses(self)
         return None
@@ -2958,6 +2962,14 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if not temp_directory:
             self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
             return False
@@ -3096,6 +3108,8 @@ class Edb(EdbInit):
         :class:`Workflow <pyedb.workflow.Workflow>`
             Workflow automation tools.
         """
+        from pyedb.workflow import Workflow
+
         return Workflow(self)
 
     def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
@@ -3235,6 +3249,8 @@ class Edb(EdbInit):
         high-level helper objects and stores them on the Edb instance so that
         subsequent property accesses return ready-to-use interfaces.
         """
+        from pyedb.grpc.database.nets import Nets
+
         # Core manager objects
         self._components = Components(self)
         layer_collection = self.active_cell.layout.layer_collection

@@ -157,7 +157,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing system tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -226,7 +226,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing system tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -295,7 +295,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing system tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -364,7 +364,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing system tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -438,7 +438,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv/bin/activate
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing system tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -512,7 +512,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv/bin/activate
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing system tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -586,7 +586,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv/bin/activate
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing unit tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -660,7 +660,7 @@ jobs:
       - name: "Install Python library and tests dependencies"
         run: |
           . .venv/bin/activate
-          python -m pip install .[tests]
+          python -m pip install .[all,tests]
 
       - name: "Executing unit tests"
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -743,7 +743,7 @@ jobs:
       - name: Install PyEDB
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install .
+          python -m pip install .[all]
 
       - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
@@ -847,7 +847,7 @@ jobs:
         env:
           ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
-          python -m pip install .
+          python -m pip install .[all]
 
       - name: Run PyAEDT general and layout tests
         uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2

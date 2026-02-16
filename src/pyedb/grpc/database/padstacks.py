@@ -26,7 +26,7 @@ This module contains the `EdbPadstacks` class.
 
 from collections import defaultdict
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
@@ -40,7 +40,6 @@ from ansys.edb.core.definition.padstack_def_data import (
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 import numpy as np
-import rtree
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
@@ -48,6 +47,10 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
+
+if TYPE_CHECKING:
+    import rtree
+
 
 GEOMETRY_MAP = {
     0: CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
@@ -1662,7 +1665,7 @@ class Padstacks(object):
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
 
-    def get_padstack_instances_rtree_index(self, nets: Optional[Union[str, List[str]]] = None) -> rtree.index.Index:
+    def get_padstack_instances_rtree_index(self, nets: Optional[Union[str, List[str]]] = None) -> "rtree.index.Index":
         """Returns padstack instances Rtree index.
 
         Parameters
@@ -1676,6 +1679,14 @@ class Padstacks(object):
         Rtree index object.
 
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if isinstance(nets, str):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
@@ -1727,7 +1738,7 @@ class Padstacks(object):
         self,
         bounding_box: List[float],
         nets: Optional[Union[str, List[str]]] = None,
-        padstack_instances_index: Optional[rtree.index.Index] = None,
+        padstack_instances_index: Optional["rtree.index.Index"] = None,
     ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
         Parameters
@@ -1876,8 +1887,13 @@ class Padstacks(object):
         List[str], list of created pad-stack instances ID.
 
         """
-
-        from scipy.spatial import ConvexHull
+        try:
+            from scipy.spatial import ConvexHull
+        except ImportError:
+            raise ImportError(
+                "Scipy library is required for convex hull calculations. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install scipy'."
+            )
 
         merged_via_ids = []
         if not contour_boxes:
