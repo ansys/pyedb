@@ -31,8 +31,8 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestDatabaseUtilities(BaseTestClass):
-    def test_value(self, edb_examples):
-        edbapp = edb_examples.create_empty_edb()
+    def test_value(self):
+        edbapp = self.edb_examples.create_empty_edb()
         if conftest.config["use_grpc"]:
             edb_value = edbapp.core.utility.value.Value
 
