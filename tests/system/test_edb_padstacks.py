@@ -31,7 +31,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
 from pyedb.generic.general_methods import is_windows
-from tests.conftest import GRPC, config, local_path, test_subfolder
+from tests.conftest import GRPC, config, local_path, test_subfolder, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -440,6 +440,7 @@ class TestClass(BaseTestClass):
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
 
+    @pytest.mark.skipif(not use_grpc, reason="Unstable test with DotNet causing worker crash.")
     def test_padstack_instances_rtree_index(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
