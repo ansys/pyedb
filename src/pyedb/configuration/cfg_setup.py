@@ -153,7 +153,8 @@ class CfgHFSSSetup(CfgSetupAC):
     multi_frequency_adaptive_solution: Optional[CfgMultiFrequencyAdaptiveSolution] = Field(
         default_factory=CfgMultiFrequencyAdaptiveSolution
     )
-    # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for single/multi_frequencies adaptation.")
+    # adapt_frequencies: list[CfgAdaptFrequency] = Field(default_factory=list, description="List of frequencies for
+    # single/multi_frequencies adaptation.")
 
     auto_mesh_operation: CfgAutoMeshOperation | None = CfgAutoMeshOperation()
     mesh_operations: list[CfgLengthMeshOperation] | None = list()
