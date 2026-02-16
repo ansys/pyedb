@@ -26,6 +26,7 @@ import warnings
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.primitives_data import cast
+from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
 
 
 class Terminal(Connectable):
@@ -33,7 +34,7 @@ class Terminal(Connectable):
         super().__init__(pedb, edb_object)
         self._reference_object = None
 
-        self._boundary_type_mapping = {
+        self.__boundary_type_mapping = {
             "InvalidBoundary": self._pedb.core.Cell.Terminal.BoundaryType.InvalidBoundary,
             "PortBoundary": self._pedb.core.Cell.Terminal.BoundaryType.PortBoundary,
             "PecBoundary": self._pedb.core.Cell.Terminal.BoundaryType.PecBoundary,
@@ -46,7 +47,7 @@ class Terminal(Connectable):
             "kVoltageProbe": self._pedb.core.Cell.Terminal.BoundaryType.kVoltageProbe,
         }
 
-        self._terminal_type_mapping = {
+        self.__terminal_type_mapping = {
             "InvalidTerminal": self._pedb.core.Cell.Terminal.TerminalType.InvalidTerminal,
             "EdgeTerminal": self._pedb.core.Cell.Terminal.TerminalType.EdgeTerminal,
             "PointTerminal": self._pedb.core.Cell.Terminal.TerminalType.PointTerminal,
@@ -56,7 +57,7 @@ class Terminal(Connectable):
             "PinGroupTerminal": self._pedb.core.Cell.Terminal.TerminalType.PinGroupTerminal,
         }
 
-        self._source_term_to_ground_mapping = {
+        self.__source_term_to_ground_mapping = {
             "kNoGround": self._pedb.core.Cell.Terminal.SourceTermToGround.kNoGround,
             "kNegative": self._pedb.core.Cell.Terminal.SourceTermToGround.kNegative,
             "kPositive": self._pedb.core.Cell.Terminal.SourceTermToGround.kPositive,
@@ -151,11 +152,13 @@ class Terminal(Connectable):
         -------
         int
         """
-        return self._edb_object.GetTerminalType().ToString()
+        return TerminalTypeMapper.get_dotnet(self._edb_object.GetTerminalType().ToString())
 
     @terminal_type.setter
     def terminal_type(self, value):
-        self._edb_object.GetTerminalType(self._terminal_type_mapping[value])
+        value = TerminalTypeMapper.get_dotnet(value)
+        if isinstance(value, str):
+            self._edb_object.GetTerminalType(self.__terminal_type_mapping[value])
 
     @property
     def boundary_type(self):
@@ -167,11 +170,13 @@ class Terminal(Connectable):
             InvalidBoundary, PortBoundary, PecBoundary, RlcBoundary, kCurrentSource, kVoltageSource, kNexximGround,
             kNexximPort, kDcTerminal, kVoltageProbe
         """
-        return self._edb_object.GetBoundaryType().ToString()
+        return BoundaryTypeMapper.get_dotnet(self._edb_object.GetBoundaryType().ToString())
 
     @boundary_type.setter
     def boundary_type(self, value):
-        self._edb_object.SetBoundaryType(self._boundary_type_mapping[value])
+        value = BoundaryTypeMapper.get_dotnet(value)
+        if isinstance(value, str):
+            self._edb_object.SetBoundaryType(self.__boundary_type_mapping[value])
 
     @property
     def is_port(self):
@@ -481,9 +486,11 @@ class Terminal(Connectable):
 
     @property
     def terminal_to_ground(self):
-        return self._edb_object.GetTerminalToGround().ToString()
+        return SourceTermMapper.get_dotnet(self._edb_object.GetTerminalToGround().ToString())
 
     @terminal_to_ground.setter
     def terminal_to_ground(self, value):
-        obj = self._source_term_to_ground_mapping[value]
-        self._edb_object.SetTerminalToGround(obj)
+        term_map = SourceTermMapper.get_dotnet(value)
+        if isinstance(term_map, str):
+            obj = self.__source_term_to_ground_mapping[term_map]
+            self._edb_object.SetTerminalToGround(obj)

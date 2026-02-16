@@ -56,3 +56,10 @@ class CfgVariables(BaseModel):
 
     def add_variable(self, name, value, description=""):
         self.variables.append(CfgVar(name=name, value=value, description=description))
+
+
+class CfgBaseModel(BaseModel):
+    model_config = {
+        "populate_by_name": True,
+        "extra": "forbid",
+    }

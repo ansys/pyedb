@@ -297,9 +297,9 @@ class Component:
         """
 
         if isinstance(self.component_property.model, CoreSPICEModel):
-            return SpiceModel(edb_object=self.component_property.model.msg)
+            return SpiceModel(edb_object=self.component_property.model)
         elif isinstance(self.component_property.model, CoreSParameterModel):
-            return SparamModel(edb_object=self.component_property.model.msg)
+            return SparamModel(edb_object=self.component_property.model)
         else:
             return self.component_property.model
 

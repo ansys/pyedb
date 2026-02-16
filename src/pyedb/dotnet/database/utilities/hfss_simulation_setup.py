@@ -43,15 +43,18 @@ from pyedb.generic.general_methods import generate_unique_name
 class HfssSimulationSetup(SimulationSetup):
     """Manages EDB methods for HFSS simulation setup."""
 
-    def __init__(self, pedb, edb_object=None, name: str = None):
+    def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         self._simulation_setup_builder = self._pedb._edb.Utility.HFSSSimulationSetup
-        if edb_object is None:
-            self._name = name
 
-            sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kHFSS", name=name)
-            self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
-            self._update_setup()
+    @classmethod
+    def create(cls, pedb, name):
+        obj = cls(pedb, edb_object=None)
+        obj._name = name
+        sim_setup_info = SimSetupInfo(pedb, sim_setup=obj, setup_type="kHFSS", name=name)
+        obj._edb_object = obj._simulation_setup_builder(sim_setup_info._edb_object)
+        obj._update_setup()
+        return obj
 
     @property
     def solver_slider_type(self):
@@ -328,7 +331,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
         self.adaptive_settings.adapt_type = "kSingle"
-        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        self.adaptive_settings.clean_adaptive_frequency_data_list()
         return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
 
     def set_solution_multi_frequencies(self, frequencies=("5Ghz", "10Ghz"), max_num_passes=10, max_delta_s="0.02"):
@@ -349,7 +352,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
         self.adaptive_settings.adapt_type = "kMultiFrequencies"
-        self.adaptive_settings.adaptive_settings.AdaptiveFrequencyDataList.Clear()
+        self.adaptive_settings.clean_adaptive_frequency_data_list()
         if not self.adaptive_settings.add_multi_frequency_adaptive_setup(frequencies, max_num_passes, max_delta_s):
             return False
         return True

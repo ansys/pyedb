@@ -574,6 +574,24 @@ class Stackup:
         }
 
     @property
+    def all_layers(self):
+        """Retrieve all the dictionary layers.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.layer.Layer`]
+            Dictionary of all layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> all_layers = edb.stackup.all_layers
+        """
+        merged_dict = {**self.layers, **self.non_stackup_layers}
+        return merged_dict
+
+    @property
     def thickness(self) -> float:
         """Retrieve the stackup thickness.
 

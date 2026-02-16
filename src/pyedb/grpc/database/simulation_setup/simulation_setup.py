@@ -40,7 +40,18 @@ _mapping_simulation_types = {
 }
 
 
-class SimulationSetup:
+class SimulationSetupDeprecated:
+    @property
+    def type(self):
+        self._pedb.logger.warning("The 'type' property is deprecated. Please use 'setup_type' instead.")
+        return self.setup_type
+
+    @property
+    def sweeps(self):
+        return {i.name: i for i in self.sweep_data}
+
+
+class SimulationSetup(SimulationSetupDeprecated):
     def __init__(self, pedb, core: "CoreSimulationSetup"):
         """PyEDB Simulation Setup base class."""
         self.core = core

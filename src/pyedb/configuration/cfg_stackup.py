@@ -58,12 +58,12 @@ class MaterialProperties(BaseModel):
 
 
 class CfgMaterial(MaterialProperties):
-    name: str
+    name: Optional[str] = None
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
 
 class RoughnessSideModel(BaseModel):
-    model: str
+    model: Optional[str] = None
     nodule_radius: Optional[str] = None  # e.g., '0.1um'
     surface_ratio: Optional[str] = None  # e.g., '1'
     roughness: Optional[str] = None  # e.g., '2um' for non-huray

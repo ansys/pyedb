@@ -78,6 +78,7 @@ from pyedb.dotnet.database.net_class import (
     EdbNetClasses,
 )
 from pyedb.dotnet.database.padstack import EdbPadstacks
+from pyedb.dotnet.database.simulation_setups import SimulationSetups
 from pyedb.dotnet.database.siwave import EdbSiwave
 from pyedb.dotnet.database.source_excitations import SourceExcitation
 from pyedb.dotnet.database.stackup import Stackup
@@ -3862,7 +3863,7 @@ class Edb:
             return False
         elif not name:
             name = generate_unique_name("setup")
-        setup = HfssSimulationSetup(self, name=name)
+        setup = HfssSimulationSetup.create(self, name=name)
         setup.set_solution_single_frequency("1Ghz")
         return setup
 
@@ -4220,7 +4221,7 @@ class Edb:
 
         if ref_terminal:
             ref_terminal.boundary_type = "PortBoundary"
-            terminal.ref_terminal = ref_terminal
+            terminal.reference_terminal = ref_terminal
         if name:
             terminal.name = name
 
@@ -4262,7 +4263,7 @@ class Edb:
         ref_term = Terminal(self, ref_terminal._edb_object)
         ref_term.boundary_type = "kVoltageProbe"
 
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return self.probes[term.name]
 
     def create_voltage_source(self, terminal, ref_terminal):
@@ -4291,7 +4292,7 @@ class Edb:
         ref_term = Terminal(self, ref_terminal._edb_object)
         ref_term.boundary_type = "kVoltageSource"
 
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return self.sources[term.name]
 
     def create_current_source(self, terminal, ref_terminal):
@@ -4320,7 +4321,7 @@ class Edb:
         ref_term = Terminal(self, ref_terminal._edb_object)
         ref_term.boundary_type = "kCurrentSource"
 
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return self.sources[term.name]
 
     def get_point_terminal(self, name, net_name, location, layer):
@@ -4888,3 +4889,8 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             ) from e
+
+    @property
+    def simulation_setups(self) -> SimulationSetups:
+        """Get all simulation setups object."""
+        return SimulationSetups(self)

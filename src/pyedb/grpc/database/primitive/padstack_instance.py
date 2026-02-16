@@ -765,7 +765,7 @@ class PadstackInstance:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
             self._position = [Value(out2[0]), Value(out2[1])]
         else:
-            self._position = [Value(pt) for pt in position[:2]]
+            self._position = [Value(pt).value for pt in position[:2]]
         return self._position
 
     @position.setter

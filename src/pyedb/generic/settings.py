@@ -74,9 +74,23 @@ class Settings(object):
         self.logger = None
         self.log_file = None
         self._aedt_version = None
-
+        self.__is_grpc = False
         self.__get_version_information()
         self.__init_logger()
+
+    @property
+    def is_grpc(self):
+        """Whether Edb is launched using grpc or not.
+
+        Returns
+        -------
+        bool
+        """
+        return self.__is_grpc
+
+    @is_grpc.setter
+    def is_grpc(self, value):
+        self.__is_grpc = value
 
     @property
     def edb_environment_variables(self):
