@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.pingroup import PinGroup
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.terminal.pin_group_terminal import (
     PinGroupTerminal as CorePinGroupTerminal,
@@ -65,7 +66,7 @@ class PinGroupTerminal(Terminal):
         self.core.net = value
 
     @property
-    def pin_group(self) -> any:
+    def pin_group(self) -> PinGroup:
         """Pingroup.
 
         Returns
@@ -91,7 +92,7 @@ class PinGroupTerminal(Terminal):
         return self.core.is_reference_terminal
 
     @classmethod
-    def create(cls, layout, name, pin_group, net=None, is_ref=False):
+    def create(cls, layout, name, pin_group, net=None, is_ref=False) -> PinGroupTerminal:
         """Create a pin group terminal.
         Parameters
         ----------
