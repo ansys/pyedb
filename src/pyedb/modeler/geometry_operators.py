@@ -27,9 +27,8 @@ import re
 import sys
 
 import numpy as np
-from scipy.spatial import KDTree
 
-from pyedb.generic.constants import AXIS, PLANE, SWEEPDRAFT, scale_units
+from pyedb.generic.constants import SWEEPDRAFT, scale_units
 
 
 class GeometryOperators(object):
@@ -127,73 +126,6 @@ class GeometryOperators(object):
                 value = variable_manager["temp_var"].value / sunit
                 del variable_manager["temp_var"]
                 return value
-
-    @staticmethod
-    def cs_plane_to_axis_str(val):  # pragma: no cover
-        """Retrieve a string for a coordinate system plane.
-
-        Parameters
-        ----------
-        val : int
-            ``PLANE`` enum vélo.
-
-        Returns
-        -------
-        str
-           String for the coordinate system plane.
-
-        """
-        if val == PLANE.XY or val == "XY":
-            return "Z"
-        elif val == PLANE.YZ or val == "YZ":
-            return "X"
-        else:
-            return "Y"
-
-    @staticmethod
-    def cs_plane_to_plane_str(val):  # pragma: no cover
-        """Retrieve a string for a coordinate system plane.
-
-        Parameters
-        ----------
-        val :
-
-
-        Returns
-        -------
-        str
-           String for the coordinate system plane.
-
-        """
-        if val == PLANE.XY or val == "XY":
-            return "XY"
-        elif val == PLANE.YZ or val == "YZ":
-            return "YZ"
-        else:
-            return "ZX"
-
-    @staticmethod
-    def cs_axis_str(val):  # pragma: no cover
-        """Retrieve a string for a coordinate system axis.
-
-        Parameters
-        ----------
-        val : int
-            ``AXIS`` enum value.
-
-
-        Returns
-        -------
-        str
-            String for the coordinate system axis.
-
-        """
-        if val == AXIS.X or val == "X":
-            return "X"
-        elif val == AXIS.Y or val == "Y":
-            return "Y"
-        else:
-            return "Z"
 
     @staticmethod
     def draft_type_str(val):  # pragma: no cover
@@ -2246,6 +2178,14 @@ class GeometryOperators(object):
         >>> smallest_distance_between_polygons(polygon1, polygon2)
         1.4142135623730951
         """
+        try:
+            from scipy.spatial import KDTree
+        except ImportError:
+            raise ImportError(
+                "Scipy library is required for KDTree functionality. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install scipy'."
+            )
+
         # Convert lists of points to numpy arrays
         points1 = np.array(polygon1)
         points2 = np.array(polygon2)

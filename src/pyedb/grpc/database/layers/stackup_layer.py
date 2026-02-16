@@ -367,6 +367,21 @@ class StackupLayer:
         self.core.thickness = Value(value)
 
     @property
+    def etch_factor_enabled(self) -> bool:
+        """Layer etching factor enable flag.
+
+        Returns
+        -------
+        bool
+            Etching factor flag.
+        """
+        return self.core.etch_factor_enabled
+
+    @etch_factor_enabled.setter
+    def etch_factor_enabled(self, value):
+        self.core.etch_factor_enabled = value
+
+    @property
     def etch_factor(self) -> float:
         """Layer etching factor.
 

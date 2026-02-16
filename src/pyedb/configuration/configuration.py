@@ -30,6 +30,8 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
+from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper
+from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
 
@@ -189,7 +191,7 @@ class Configuration:
 
     @execution_timer("Applying setups")
     def apply_setups(self):
-        cfg_setups = self.cfg_data.setups
+        cfg_setups = self.cfg_data.setups.setups
         for setup in cfg_setups:
             if setup.type == "siwave_dc":
                 edb_setup = self._pedb.create_siwave_dc_setup(
@@ -200,8 +202,46 @@ class Configuration:
                 edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
-                    edb_setup = self._pedb.create_hfss_setup(setup.name)
-                    edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
+                    edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
+                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(
+                        setup.adapt_type, as_grpc=settings.is_grpc
+                    )
+                    if not settings.is_grpc:
+                        edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
+                        if setup.adapt_type == "single":
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.single_frequency_adaptive_solution.adaptive_frequency,
+                                setup.single_frequency_adaptive_solution.max_passes,
+                                setup.single_frequency_adaptive_solution.max_delta,
+                            )
+                        elif setup.adapt_type == "broadband":
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.broadband_adaptive_solution.low_frequency,
+                                setup.broadband_adaptive_solution.max_passes,
+                                setup.broadband_adaptive_solution.max_delta,
+                            )
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.broadband_adaptive_solution.high_frequency,
+                                setup.broadband_adaptive_solution.max_passes,
+                                setup.broadband_adaptive_solution.max_delta,
+                            )
+                        else:
+                            raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
+
+                    else:
+                        if setup.adapt_type == "single":
+                            s_f_adapt = edb_setup.settings.general.single_frequency_adaptive_solution
+                            s_f_adapt.adaptive_frequency = setup.single_frequency_adaptive_solution.adaptive_frequency
+                            s_f_adapt.max_passes = setup.single_frequency_adaptive_solution.max_passes
+                            s_f_adapt.max_delta = setup.single_frequency_adaptive_solution.max_delta
+                        elif setup.adapt_type == "broadband":
+                            b_f_adapt = edb_setup.settings.general.broadband_adaptive_solution
+                            b_f_adapt.low_frequency = setup.broadband_adaptive_solution.low_frequency
+                            b_f_adapt.high_frequency = setup.broadband_adaptive_solution.high_frequency
+                            b_f_adapt.max_delta = setup.broadband_adaptive_solution.max_delta
+                            b_f_adapt.max_passes = setup.broadband_adaptive_solution.max_passes
+                        else:
+                            raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
                     if setup.auto_mesh_operation.enabled:
                         args = dict(setup.auto_mesh_operation)
@@ -209,15 +249,18 @@ class Configuration:
                         edb_setup.auto_mesh_operation(**args)
 
                     for mp in setup.mesh_operations:
-                        edb_setup.add_length_mesh_operation(
-                            name=mp.name,
-                            max_elements=mp.max_elements,
-                            max_length=mp.max_length,
-                            restrict_length=mp.restrict_length,
-                            refine_inside=mp.refine_inside,
-                            # mesh_region=mp.get(mesh_region),
-                            net_layer_list=mp.nets_layers_list,
-                        )
+                        if mp.mesh_operation_type == "length":
+                            edb_setup.add_length_mesh_operation(
+                                name=mp.name,
+                                max_elements=mp.max_elements,
+                                max_length=mp.max_length,
+                                restrict_length=mp.restrict_length,
+                                refine_inside=mp.refine_inside,
+                                # mesh_region=mp.get(mesh_region),
+                                net_layer_list=mp.nets_layers_list,
+                            )
+                        else:
+                            raise ValueError(f"Mesh operation type {mp.mesh_operation_type} is not supported.")
                 elif setup.type == "siwave_ac":  # siwave ac
                     edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
                     if setup.si_slider_position is not None:
@@ -253,39 +296,69 @@ class Configuration:
                         sweep.hfss_solver_region_sweep_name = sw.hfss_solver_region_sweep_name
 
     def get_setups(self):
-        self.cfg_data.setups = []
+        self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
             if setup.type == "siwave_dc":
-                self.cfg_data.add_siwave_dc_setup(
+                self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
                     dc_slider_position=setup.dc_settings.dc_slider_position,
                     dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
-                    adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
+                    cfg_ac_setup = self.cfg_data.setups.add_hfss_setup(name=setup.name)
+                    adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
+                    cfg_ac_setup.adapt_type = adapt_type
+                    if not settings.is_grpc:
+                        if adapt_type == "single":
+                            i = setup.adaptive_settings.adaptive_frequency_data_list[0]
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = i.adaptive_frequency
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_passes = i.max_passes
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_delta = i.max_delta
+                        elif adapt_type == "broadband":
+                            lf = setup.adaptive_settings.adaptive_frequency_data_list[2]
+                            cfg_ac_setup.broadband_adaptive_solution.low_frequency = lf.adaptive_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes = lf.max_passes
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta = lf.max_delta
+                            hf = setup.adaptive_settings.adaptive_frequency_data_list[3]
+                            cfg_ac_setup.broadband_adaptive_solution.high_frequency = hf.adaptive_frequency
+                        else:
+                            self._pedb.logger.warning(
+                                "Unsupported adapt type found in setup, skipping adaptive settings."
+                            )
+                    else:
+                        if setup.adaptive_settings.adapt_type == "single":
+                            s_f_adapt = setup.settings.general.single_frequency_adaptive_solution
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = (
+                                s_f_adapt.adaptive_frequency
+                            )
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_passes = s_f_adapt.max_passes
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_delta = s_f_adapt.max_delta
+                        elif setup.adaptive_settings.adapt_type == "broadband":
+                            b_f_adapt = setup.settings.general.broadband_adaptive_solution
+                            cfg_ac_setup.broadband_adaptive_solution.low_frequency = b_f_adapt.low_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.high_frequency = b_f_adapt.high_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta = b_f_adapt.max_delta
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes = b_f_adapt.max_passes
 
-                    cfg_ac_setup = self.cfg_data.add_hfss_setup(
-                        name=setup.name,
-                        f_adapt=adaptive_frequency_data_list.adaptive_frequency,
-                        max_num_passes=adaptive_frequency_data_list.max_passes,
-                        max_mag_delta_s=adaptive_frequency_data_list.max_delta,
-                    )
+                    mops = setup.mesh_operations if settings.is_grpc else list(setup.mesh_operations.values())
+                    for mop in mops:
+                        if mop.mesh_operation_type == MeshOperationTypeMapper.get("length", as_grpc=settings.is_grpc):
+                            cfg_ac_setup.add_length_mesh_operation(
+                                cfg_ac_setup.CfgLengthMeshOperation(
+                                    name=mop.name,
+                                    max_elements=mop.max_elements,
+                                    max_length=mop.max_length,
+                                    restrict_length=mop.restrict_length,
+                                    refine_inside=mop.refine_inside,
+                                    nets_layers_list=mop.nets_layers_list,
+                                )
+                            )
+                        else:
+                            raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
-                    for name, mop in setup.mesh_operations.items():
-                        cfg_ac_setup.add_mesh_operation(
-                            **{
-                                "name": name,
-                                "type": mop.type,
-                                "max_elements": mop.max_elements,
-                                "max_length": mop.max_length,
-                                "restrict_length": mop.restrict_length,
-                                "refine_inside": mop.refine_inside,
-                                "nets_layers_list": mop.nets_layers_list,
-                            }
-                        )
                 elif setup.type == "siwave_ac":  # siwave ac
-                    cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
+                    cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
                         si_slider_position=setup.si_slider_position,
@@ -508,13 +581,7 @@ class Configuration:
                     mat.set_thermal_modifier(**i.to_dict())
 
     def get_materials(self):
-        """Retrieve materials from the current design.
-
-        Parameters
-        ----------
-        append: bool, optional
-            If `True`, append materials to the current material list.
-        """
+        """Retrieve materials from the current design."""
 
         self.cfg_data.stackup.materials = []
         for name, mat in self._pedb.materials.materials.items():
@@ -677,10 +744,6 @@ class Configuration:
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
 
-        Parameters
-        ----------
-        stackup
-
         Returns
         -------
 
@@ -702,7 +765,7 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             self.get_setups()
-            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups]
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
         if kwargs.get("terminals", False):
             self.get_terminals()
             data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
@@ -878,7 +941,7 @@ class Configuration:
                     boundary_type=i.boundary_type,
                     amplitude=i.source_amplitude,
                     phase=i.source_phase,
-                    terminal_to_ground=i.terminal_to_ground,
+                    terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
@@ -891,7 +954,7 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     amplitude=i.source_amplitude,
                     phase=i.source_phase,
-                    terminal_to_ground=i.terminal_to_ground,
+                    terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                 )
             elif i.terminal_type in ["PointTerminal", "point"]:
                 manager.add_point_terminal(

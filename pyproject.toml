@@ -25,27 +25,44 @@ classifiers = [
 ]
 
 dependencies = [
+    # .NET interface dependencies
     "cffi>=1.16.0,<2.1; platform_system=='Linux'",
     "pywin32>=303;platform_system=='Windows'",
     "ansys-pythonnet>=3.1.0rc4",
     "dotnetcore2==3.1.23;platform_system=='Linux'",
+    # Core dependencies
     "numpy>=1.20.0,<3",
-    "pandas>=1.1.0,<2.4",
     "pydantic>=2.6.4,<2.13",
-    "Rtree>=1.2.0",
     "toml==0.10.2",
-    "shapely",
-    "scikit-rf",
     "ansys-edb-core>=0.2.0,<0.2.7",
     "psutil",
     "defusedxml>=0.7,<8.0",
-    "matplotlib>=3.5.0,<3.11",
-    "ezdxf>=1.4.2",
-    "scipy>=1.13,<2.0",
     "xmltodict"
 ]
 
 [project.optional-dependencies]
+geometry = [
+    "shapely",
+    "ezdxf>=1.4.2",
+    "Rtree>=1.2.0",
+    "scipy>=1.13,<2.0",
+]
+graphics = [
+    "matplotlib>=3.5.0,<3.11",
+]
+analysis = [
+    "pandas>=1.1.0,<2.4",
+    "scikit-rf",
+]
+all = [
+    "shapely",
+    "ezdxf>=1.4.2",
+    "Rtree>=1.2.0",
+    "scipy>=1.13,<2.0",
+    "matplotlib>=3.5.0,<3.11",
+    "pandas>=1.1.0,<2.4",
+    "scikit-rf",
+]
 tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
@@ -54,15 +71,20 @@ tests = [
 ]
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
+    "ezdxf>=1.4.2",
     "imageio>=2.30.0,<2.38",
     "jupyterlab>=4.0.0,<4.6",
     "jupytext>=1.16.0,<1.19",
+    "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert<7.18",
     "numpydoc==1.10.0",
+    "pandas>=1.1.0,<2.4",
     "pypandoc>=1.10.0,<1.17",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
+    "Rtree>=1.2.0",
+    "shapely",
     "Sphinx>=7.1.0,<9.1",
     "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",

@@ -22,7 +22,13 @@
 
 from typing import List
 
-from ezdxf import readfile
+try:
+    from ezdxf import readfile
+except ImportError:
+    raise ImportError(
+        "ezdxf library is required for DXF import functionality. "
+        "Please install it using 'pip install pyedb[dxf]' or 'pip install ezdxf'."
+    )
 
 from pyedb import Edb
 from pyedb.grpc.database.primitive.primitive import Primitive

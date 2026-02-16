@@ -2239,7 +2239,7 @@ class Components(object):
                 if not pin.net.is_null:
                     if pin.net.name:
                         pingroup.net = pin.net
-                        return group_name, PinGroup(self._pedb, pingroup)
+                        return group_name, pingroup
         return False
 
     def create_pin_group_on_net(

@@ -50,9 +50,7 @@ from ansys.edb.core.layer.layer_collection import (
 from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
 from defusedxml.ElementTree import parse as defused_parse
-import matplotlib.colors as colors
 import numpy as np
-import pandas as pd
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
@@ -574,6 +572,24 @@ class Stackup:
             layer.name: Layer(core=layer)
             for layer in self._pedb.stackup.core.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
         }
+
+    @property
+    def all_layers(self):
+        """Retrieve all the dictionary layers.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.layer.Layer`]
+            Dictionary of all layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> all_layers = edb.stackup.all_layers
+        """
+        merged_dict = {**self.layers, **self.non_stackup_layers}
+        return merged_dict
 
     @property
     def thickness(self) -> float:
@@ -1219,6 +1235,14 @@ class Stackup:
         return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
 
     def _export_layer_stackup_to_csv_xlsx(self, fpath: Optional[str] = None, file_format: Optional[str] = None) -> bool:
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError(
+                "Pandas library is required for workflow. "
+                "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+            )
+
         data = {
             "Type": [],
             "Material": [],
@@ -2145,6 +2169,14 @@ class Stackup:
         bool
             ``True`` when successful.
         """
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError(
+                "Pandas library is required for workflow. "
+                "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+            )
+
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.layers.keys():  # pragma: no cover
@@ -2413,6 +2445,14 @@ class Stackup:
         bool
             ``True`` when successful.
         """
+        try:
+            import matplotlib.colors as colors
+        except ImportError:
+            raise ImportError(
+                "Matplotlib library is required for plotting. "
+                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+            )
+
         tree = defused_parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")

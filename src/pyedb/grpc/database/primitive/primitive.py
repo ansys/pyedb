@@ -922,9 +922,21 @@ class Primitive:
         (ax, fig)
             Matplotlib ax and figures.
         """
-        import matplotlib.pyplot as plt
-        from shapely.geometry import Polygon
-        from shapely.plotting import plot_polygon
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "Matplotlib library is required for plotting. "
+                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+            )
+        try:
+            from shapely.geometry import Polygon
+            from shapely.plotting import plot_polygon
+        except ImportError:
+            raise ImportError(
+                "Shapely library is required for plotting. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
+            )
 
         dpi = 100.0
         figsize = (2000 / dpi, 1000 / dpi)
