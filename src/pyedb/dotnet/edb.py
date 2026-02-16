@@ -4499,9 +4499,7 @@ class Edb:
                         padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
             else:
                 used_padsatck_defs = list(
-                    set(
-                        [padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())]
-                    )
+                    set([padstack_inst.padstack_definition for padstack_inst in self.padstacks.instances])
                 )
                 padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
@@ -4589,7 +4587,7 @@ class Edb:
             var_y = "via_offset_y"
             if var_y not in self.variables:
                 self.add_design_variable(var_y, 0.0)
-            for via in self.padstacks.instances.values():
+            for via in self.padstacks.instances:
                 if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
                     via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
 
@@ -4705,7 +4703,7 @@ class Edb:
 
         used_padstack_defs = []
         padstack_instances_index = rtree.index.Index()
-        for padstack_inst in list(self.padstacks.instances.values()):
+        for padstack_inst in self.padstacks.instances:
             if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
                 padstack_inst.delete()
             else:
@@ -4733,8 +4731,9 @@ class Edb:
                     void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
+                instances_dict = {inst.id: inst for inst in self.padstacks.instances}
                 if included_instances:
-                    void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
+                    void_padstacks.append((void, [instances_dict[edb_id] for edb_id in included_instances]))
 
         if not void_padstacks:
             raise RuntimeWarning(

@@ -561,7 +561,7 @@ class TestClass(BaseTestClass):
 
         # all nets two clusters with 21 vias each
         inst = edbapp.padstacks.instances
-        all_vias = {id_: i.position for id_, i in inst.items()}
+        all_vias = {i.id: i.position for i in inst}
         clusters2 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
         assert len(clusters1) == 1

@@ -1599,10 +1599,10 @@ class TestClassPadstacks(BaseTestClass):
             "Inner6(GND2)": "Inner6",
             "16_Bottom": "16_Bottom",
         }
-        vias_before = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
+        vias_before = {i: [i.start_layer, i.stop_layer] for i in edbapp.padstacks.instances}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
-        vias_after = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
+        vias_after = {i: [i.start_layer, i.stop_layer] for i in edbapp.padstacks.instances}
         for i, j in vias_after.items():
             assert j[0] == renamed_layers[vias_before[i][0]]
             assert j[1] == renamed_layers[vias_before[i][1]]

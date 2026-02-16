@@ -868,9 +868,8 @@ class DotNetCutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self._edb.padstacks.instances
-            for i in _pins_to_preserve:
-                p = insts[i].position
+            for inst in _pins_to_preserve:
+                p = inst.position
                 pos_1 = [i - 1e-12 for i in p]
                 pos_2 = [i + 1e-12 for i in p]
                 plane = self._edb.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
@@ -1016,7 +1015,7 @@ class DotNetCutout:
             for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
-                        _pins_to_preserve.append(pin.id)
+                        _pins_to_preserve.append(pin)
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):

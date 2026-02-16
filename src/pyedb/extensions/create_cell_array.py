@@ -160,7 +160,7 @@ def __create_array_from_unit_cell_impl(
     # ---------- Collect everything we have to replicate ----------
     primitives = [p for p in edb.modeler.primitives if adapter.is_primitive_to_copy(p)]
     paths = list(edb.modeler.paths)
-    vias = list(edb.padstacks.vias.values())
+    vias = edb.padstacks.vias
     components = list(edb.components.instances.values())
     pingroups = edb.layout.pin_groups
     if edb.grpc:

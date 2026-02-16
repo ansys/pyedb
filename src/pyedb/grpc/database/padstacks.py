@@ -213,7 +213,7 @@ class Padstacks(object):
         return self.__definitions
 
     @property
-    def instances(self) -> Dict[int, PadstackInstance]:
+    def instances(self) -> List[int, PadstackInstance]:
         """All padstack instances (vias and pins) in the layout.
 
         Returns
