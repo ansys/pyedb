@@ -107,13 +107,11 @@ class Padstacks(object):
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         self.__definitions: Dict[str, Any] = {}
-        self._instances = None
         self._instances_by_name = {}
         self._instances_by_net = {}
 
     def clear_instances_cache(self):
         """Clear the cached padstack instances."""
-        self._instances = None
         self._instances_by_name = {}
         self._instances_by_net = {}
 
@@ -228,9 +226,7 @@ class Padstacks(object):
         >>> for inst_id, instance in all_instances.items():
         ...     print(f"Instance {inst_id}: {instance.name}")
         """
-        if self._instances is None:
-            self._instances = self._pedb.layout.padstack_instances
-        return self._instances
+        return self._pedb.layout.padstack_instances
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
