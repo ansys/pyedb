@@ -98,10 +98,6 @@ class Modeler(object):
         """Initialize Modeler instance."""
         self._pedb = p_edb
         # Core cache
-        self._primitives: dict[str, Primitive] = {}
-
-        # Lazy indexes
-        self.primitives  # type: ignore  # Force initial load
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
@@ -114,7 +110,6 @@ class Modeler(object):
 
     def clear_cache(self):
         """Force reload of all primitives and reset indexes."""
-        self._primitives = {p.edb_uid: p for p in self._pedb.layout.primitives}
         self._primitives_by_name = None
         self._primitives_by_net = None
         self._primitives_by_layer = None
@@ -122,9 +117,7 @@ class Modeler(object):
 
     @property
     def primitives(self) -> list[Primitive]:
-        if not self._primitives:
-            self.clear_cache()
-        return list(self._primitives.values())
+        return self._pedb.layout.primitives
 
     @property
     def primitives_by_name(self):
@@ -1085,27 +1078,28 @@ class Modeler(object):
             for net, polys in poly_by_nets.items():
                 if net in net_names_list or not net_names_list:
                     for p in polys:
-                        list_polygon_data.append(p.polygon_data)
+                        list_polygon_data.append(p.core.polygon_data)
                         delete_list.append(p)
-                        all_voids.extend(p.voids)
+                        all_voids.extend([v for v in p.voids])
             united = CorePolygonData.unite(list_polygon_data)
             for item in united:
+                _added_voids = []
                 for void in all_voids:
-                    if item.intersection_type(void.polygon_data) == 2:
-                        item.add_hole(void.polygon_data)
-                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
+                    if item.intersection_type(void.core.polygon_data).value == 2:
+                        _added_voids.append(void)
+                self.create_polygon(item, layer_name=lay, voids=_added_voids, net_name=net)
             for void in all_voids:
                 for poly in poly_by_nets[net]:  # pragma no cover
-                    if void.polygon_data.intersection_type(poly.polygon_data) >= 2:
+                    if void.core.polygon_data.intersection_type(poly.core.polygon_data).value >= 2:
                         try:
                             id = delete_list.index(poly)
                         except ValueError:
                             id = -1
                         if id >= 0:
                             delete_list.pop(id)
-            for poly in list(set(delete_list)):
+            self.clear_cache()
+            for poly in delete_list:
                 poly.delete()
-
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
             for pad in self._pedb.padstacks.definitions:

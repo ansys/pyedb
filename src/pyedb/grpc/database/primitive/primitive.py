@@ -821,7 +821,7 @@ class Primitive:
 
     @property
     def edb_uid(self):
-        return self.core.edb_uid
+        return self.core.edb_uid  # grpc has introduced id and edb_uid while dotnet got only edb_uid equivalent.
 
     @property
     def primitive_type(self):
@@ -905,43 +905,6 @@ class Primitive:
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 
-    def scale(self, factor, center=None) -> bool:
-        """Scales the polygon relative to a center point by a factor.
-
-        Parameters
-        ----------
-        factor : float
-            Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
-
-        Returns
-        -------
-        bool
-           ``True`` when successful, ``False`` when failed.
-        """
-        if not isinstance(factor, str):
-            factor = float(factor)
-            from ansys.edb.core.geometry.polygon_data import (
-                PolygonData as GrpcPolygonData,
-            )
-
-            polygon_data = GrpcPolygonData(points=self.core.cast().polygon_data.points)
-            if not center:
-                center = polygon_data.bounding_circle()[0]
-                if center:
-                    polygon_data.scale(factor, center)
-                    self.core.cast().polygon_data = polygon_data
-                    return True
-                else:
-                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
-            elif isinstance(center, list) and len(center) == 2:
-                center = CorePointData(center)
-                polygon_data.scale(factor, center)
-                self.core.cast().polygon_data = polygon_data
-                return True
-        return False
-
     def plot(self, plot_net=False, show=True, save_plot=None):
         """Plot the current polygon on matplotlib.
 
@@ -992,3 +955,7 @@ class Primitive:
         elif show:
             plt.show()
         return ax, fig
+
+    def delete(self):
+        """Delete the primitive."""
+        self.core.delete()

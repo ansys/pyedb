@@ -155,10 +155,6 @@ class Polygon(Primitive):
         new_polygon = cls(layout._pedb, edb_object)
         return new_polygon
 
-    def delete(self):
-        """Delete polygon from layout."""
-        self.core.delete()
-
     def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
 

@@ -154,10 +154,6 @@ class Rectangle(Primitive):
         new_rect = cls(layout._pedb, edb_object)
         return new_rect
 
-    def delete(self):
-        """Delete the rectangle primitive from the layout."""
-        self.core.delete()
-
     def get_parameters(self):
         """Get coordinates parameters.
 

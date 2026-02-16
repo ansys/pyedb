@@ -173,10 +173,6 @@ class Path(Primitive):
         new_path = cls(layout._pedb, _path)
         return new_path
 
-    def delete(self):
-        """Delete the path object."""
-        self.core.delete()
-
     def add_point(self, x, y, incremental=True) -> bool:
         """Add a point at the end of the path.
 
@@ -283,7 +279,7 @@ class Path(Primitive):
         #         self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         #     )
         # else:
-        return self._pedb.hfss.create_edge_port_vertical(
+        return self._pedb.source_excitation.create_edge_port_vertical(
             self.edb_uid,
             pos,
             name,
