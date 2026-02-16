@@ -71,15 +71,20 @@ tests = [
 ]
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
+    "ezdxf>=1.4.2",
     "imageio>=2.30.0,<2.38",
     "jupyterlab>=4.0.0,<4.6",
     "jupytext>=1.16.0,<1.19",
+    "matplotlib>=3.5.0,<3.11",
     "nbsphinx>=0.9.0,<0.10",
     "nbconvert<7.18",
     "numpydoc==1.10.0",
+    "pandas>=1.1.0,<2.4",
     "pypandoc>=1.10.0,<1.17",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
+    "Rtree>=1.2.0",
+    "shapely",
     "Sphinx>=7.1.0,<9.1",
     "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
