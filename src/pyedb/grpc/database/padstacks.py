@@ -303,9 +303,9 @@ class Padstacks(object):
         ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
         """
         pins = {}
-        for instancename, instance in self.instances.items():
+        for instance in self.instances:
             if instance.is_pin and instance.component:
-                pins[instancename] = instance
+                pins[instance.name] = instance
         return pins
 
     @property
