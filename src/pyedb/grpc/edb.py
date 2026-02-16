@@ -3007,13 +3007,13 @@ class Edb(EdbInit):
         used_padstack_defs = []
         padstack_instances_dict = {inst.id: inst for inst in self.padstacks.instances}
         padstack_instances_index = rtree.index.Index()
-        for id, inst in padstack_instances_dict.items():
-            if not reference_layer in [inst.start_layer, inst.stop_layer]:
+        for _, inst in padstack_instances_dict.items():
+            if reference_layer not in [inst.start_layer, inst.stop_layer]:
                 inst.delete()
             else:
                 if inst.net.name in signal_nets:
                     padstack_instances_index.insert(inst.edb_uid, inst.position)
-                    if not inst.padstack_def.name in used_padstack_defs:
+                    if inst.padstack_def.name not in used_padstack_defs:
                         used_padstack_defs.append(inst.padstack_def.name)
 
         polys = [
