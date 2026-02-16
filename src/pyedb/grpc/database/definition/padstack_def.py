@@ -301,11 +301,7 @@ class PadstackDef:
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of PadstackInstance objects.
         """
-        return [
-            i
-            for i in list(self._pedb.padstacks.instances.values())
-            if not i.is_null and i.padstack_def.name == self.core.name
-        ]
+        return [i for i in self._pedb.padstacks.instances if not i.is_null and i.padstack_def.name == self.core.name]
 
     @property
     def name(self):
