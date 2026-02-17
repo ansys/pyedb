@@ -2011,7 +2011,7 @@ class SimulationConfiguration(object):
     >>> sim_setup.cutout_subdesign_type = CutoutSubdesignType.Conformal
 
     Define the type of cutout used for computing the clippingextent polygon. CutoutSubdesignType.Conformal
-    CutoutSubdesignType.BBox are surpported.
+    CutoutSubdesignType.BBox are supported.
 
     >>> sim_setup.cutout_subdesign_expansion = "4mm"
 
