@@ -63,13 +63,7 @@ class Circle(Primitive):
             radius=Value(radius),
         )
         new_circle = cls(layout._pedb, edb_object)
-        layout._pedb.modeler._add_primitive(new_circle)
         return new_circle
-
-    def delete(self):
-        """Delete the circle from the layout."""
-        self._pedb.modeler._remove_primitive(self)
-        self.core.delete()
 
     def get_parameters(self) -> tuple[float, float, float]:
         """Returns parameters.

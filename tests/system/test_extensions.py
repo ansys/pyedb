@@ -599,8 +599,6 @@ class TestClass(BaseTestClass):
         app = ViaDesignBackend(cfg)
 
     def test_arbitrary_wave_ports(self):
-        # TODO check later when sever instances is improved.
-
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")

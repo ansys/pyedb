@@ -134,7 +134,7 @@ class EdbExamples:
         target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS-HSD_V1.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc)
         else:
             return target_file
 
@@ -142,7 +142,7 @@ class EdbExamples:
         target_file = self.copy_test_files_into_local_folder("wirebond_projects/test_wb_jedec4.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc)
         else:
             return target_file
 
