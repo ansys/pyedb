@@ -499,7 +499,7 @@ class EDBPadstack(object):
     @property
     def instances(self):
         """Definitions Instances."""
-        return [inst for inst in self._ppadstack.instances.values() if inst.padstack_definition == self.name]
+        return [inst for inst in self._ppadstack.instances if inst.padstack_definition == self.name]
 
     @property
     def name(self):
@@ -799,9 +799,7 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return {
-            via_id: via for via_id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name
-        }
+        return [via for via in self._ppadstack.instances if via.padstack_definition == self.name]
 
     @property
     def hole_range(self):
@@ -857,7 +855,7 @@ class EDBPadstack(object):
         layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
         i = 0
-        for via in self.padstack_instances.values():
+        for via in self.padstack_instances:
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
                 pos = via.position
                 started = False
@@ -1056,7 +1054,7 @@ class EDBPadstack(object):
             if self.via_stop_layer == stop:
                 break
         i = 0
-        for via in self.padstack_instances.values():
+        for via in self.padstack_instances:
             for inst in new_instances:
                 instance = inst.edb_padstack
                 from_layer = [
@@ -1417,9 +1415,27 @@ class EDBPadstackInstance(Connectable):
     def get_hole_overrides(self):
         return self._edb_object.GetHoleOverrideValue()
 
+    def set_hole_overrides(self, is_hole_override, hole_override):
+        """Set the hole overrides of Padstack Instance.
+
+        Parameters
+        ----------
+        is_hole_override : bool
+            If padstack instance is hole override.
+        hole_override : :class:`Value <ansys.edb.utility.Value>`
+            Hole override diameter of this padstack instance.
+        """
+        if isinstance(hole_override, (int, str, float)):
+            hole_override = self._pedb.edb_value(hole_override)
+        self.core.SetHoleOverride(is_hole_override, hole_override)
+
     @property
     def solderball_layer(self):
-        return self.core.GetSolderBallLayer()
+        return self.core.GetSolderBallLayer().GetName()
+
+    @solderball_layer.setter
+    def solderball_layer(self, solderball_layer):
+        self.core.SetSolderBallLayer(solderball_layer)
 
     def get_terminal(self, name=None, create_new_terminal=False):
         """Get PadstackInstanceTerminal object.

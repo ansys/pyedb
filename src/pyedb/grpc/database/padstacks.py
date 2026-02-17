@@ -105,7 +105,7 @@ class Padstacks(object):
         elif name in self.definitions:
             return self.definitions.get(name, None)
         else:
-            return next((i for i in self.instances.values() if i.name == name or i.aedt_name == name), None)
+            return next((i for i in self.instances if i.name == name or i.aedt_name == name), None)
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
@@ -234,7 +234,7 @@ class Padstacks(object):
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
         if not self._instances_by_net:
-            for instance in self.instances.values():
+            for instance in self.instances:
                 if instance.net_name:
                     self._instances_by_net.setdefault(instance.net_name, []).append(instance)
         return self._instances_by_net
@@ -257,7 +257,7 @@ class Padstacks(object):
         ...     print(f"Instance named {name}")
         """
         if not self._instances_by_name:
-            for edb_padstack_instance in self.instances.values():
+            for edb_padstack_instance in self.instances:
                 if edb_padstack_instance.aedt_name:
                     self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
         return self._instances_by_name
@@ -303,18 +303,18 @@ class Padstacks(object):
         ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
         """
         pins = {}
-        for instance in self.instances.values():
+        for instance in self.instances:
             if instance.is_pin and instance.component:
                 pins[instance.name] = instance
         return pins
 
     @property
-    def vias(self) -> Dict[int, PadstackInstance]:
+    def vias(self) -> List[ PadstackInstance]:
         """All via instances not belonging to components.
 
         Returns
         -------
-        dict[int, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             Dictionary of via instances with database IDs as keys.
 
         Examples
@@ -326,7 +326,7 @@ class Padstacks(object):
         ...     print(f"Via {via_id} on net {via.net_name}")
         """
         pnames = list(self.pins.keys())
-        vias = {i_id: i for i_id, i in self.instances.items() if i not in pnames}
+        vias = [i for  i in self.instances if i not in pnames]
         return vias
 
     @property
@@ -682,7 +682,7 @@ class Padstacks(object):
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
 
-        for p_id, p in self.instances.items():
+        for p in self.instances:
             if p.net_name in net_names:
                 if not p.core.delete():  # pragma: no cover
                     return False
@@ -1580,7 +1580,7 @@ class Padstacks(object):
             instance = instances_dict.get(pid, None)
             return [instance] if instance is not None else []
         elif name:
-            instances = [inst for inst in self.instances.values() if inst.aedt_name == name]
+            instances = [inst for inst in self.instances if inst.aedt_name == name]
             if instances:
                 return instances
             else:
@@ -1686,7 +1686,7 @@ class Padstacks(object):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
         if nets:
-            instances = [inst for inst in self.instances.values() if inst.net_name in nets]
+            instances = [inst for inst in self.instances if inst.net_name in nets]
         else:
             instances = self.instances.values()
         for inst in instances:

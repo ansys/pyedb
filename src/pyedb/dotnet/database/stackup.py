@@ -1267,7 +1267,7 @@ class Stackup(LayerCollection):
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
-                comp_prop = val.component_property
+                comp_prop = val.component_property.core
                 port_property = comp_prop.GetPortProperty().Clone()
                 port_property.SetReferenceSizeAuto(False)
                 port_property.SetReferenceSize(self._edb_value(0.0), self._edb_value(0.0))

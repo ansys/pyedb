@@ -38,6 +38,43 @@ class SourceExcitation:
         primitive = Primitive(self._pedb, primitive)
         point =[point.X.ToString(), point.Y.ToString()]
         return res, primitive, point
+    
+    def _create_edge_terminal(self, prim_id, point_on_edge, terminal_name=None, is_ref=False):
+        """Create an edge terminal.
+
+        Parameters
+        ----------
+        prim_id : int
+            Primitive ID.
+        point_on_edge : list
+            Coordinate of the point to define the edge terminal.
+            The point must be on the target edge but not on the two
+            ends of the edge.
+        terminal_name : str, optional
+            Name of the terminal. The default is ``None``, in which case the
+            default name is assigned.
+        is_ref : bool, optional
+            Whether it is a reference terminal. The default is ``False``.
+
+        Returns
+        -------
+        Edb.Cell.Terminal.EdgeTerminal
+        """
+        if not terminal_name:
+            terminal_name = generate_unique_name("Terminal_")
+        if isinstance(point_on_edge, (list, tuple)):
+            point_on_edge = self._pedb._edb.Geometry.PointData(
+                self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
+            )
+        if hasattr(prim_id, "GetId"):
+            prim = prim_id
+        else:
+            prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
+        pos_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, point_on_edge)
+        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb._edb.Cell.Terminal.Edge)
+        return self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(
+            prim.GetLayout(), prim.GetNet(), terminal_name, pos_edge, isRef=is_ref
+        )
 
     def create_padstack_instance_terminal(self, name="", padstack_instance_id=None, padstack_instance_name=None):
         pds = self._pedb.layout.find_padstack_instances(
@@ -236,18 +273,18 @@ class SourceExcitation:
         if not isinstance(terminal_point, list):
             self._logger.error("Terminal point must be a list of float with providing the point location in meter")
             return False
-        terminal_point = self._pedb.pedb_class.database.geometry.point_data.PointData(
-                self._pedb.value(terminal_point[0]), self._pedb.value(terminal_point[1])
-            )
+        terminal_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb,
+                terminal_point[0], terminal_point[1])._edb_object
+            
         if reference_point and isinstance(reference_point, list):
-            reference_point = self._pedb.pedb_class.database.geometry.point_data.PointData(
-                self._pedb.value(reference_point[0]), self._pedb.value(reference_point[1])
-            )
+            reference_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb,
+                reference_point[0], reference_point[1]
+            )._edb_object   
         if not port_name:
             port_name = generate_unique_name("Port_")
-        edge = self._edb.Cell.Terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
-        edges = convert_py_list_to_net_list(edge, self._edb.Cell.Terminal.Edge)
-        edge_term = self._edb.Cell.Terminal.EdgeTerminal.Create(
+        edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
+        edges = convert_py_list_to_net_list(edge, self._pedb._edb.Cell.Terminal.Edge)
+        edge_term = self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(
             polygon._edb_object.GetLayout(), polygon._edb_object.GetNet(), port_name, edges, isRef=False
         )
         if force_circuit_port:
@@ -259,9 +296,9 @@ class SourceExcitation:
             edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
         edge_term.SetName(port_name)
         if reference_polygon and reference_point:
-            ref_edge = self._edb.Cell.Terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
-            ref_edges = convert_py_list_to_net_list(ref_edge, self._edb.Cell.Terminal.Edge)
-            ref_edge_term = self._edb.Cell.Terminal.EdgeTerminal.Create(
+            ref_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
+            ref_edges = convert_py_list_to_net_list(ref_edge, self._pedb._edb.Cell.Terminal.Edge)
+            ref_edge_term = self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(
                 reference_polygon._edb_object.GetLayout(),
                 reference_polygon._edb_object.GetNet(),
                 port_name + "_ref",
@@ -500,15 +537,15 @@ class SourceExcitation:
         """
         if not isinstance(nets, list):
             if isinstance(nets, str):
-                nets = [self._edb.Cell.net.find_by_name(self._active_layout, nets)]
-            elif isinstance(nets, self._edb.Cell.net.net):
+                nets = [self._pedb._edb.Cell.net.find_by_name(self._active_layout, nets)]
+            elif isinstance(nets, self._pedb._edb.Cell.net.net):
                 nets = [nets]
         else:
             temp_nets = []
             for nn in nets:
                 if isinstance(nn, str):
-                    temp_nets.append(self._edb.Cell.net.find_by_name(self._active_layout, nn))
-                elif isinstance(nn, self._edb.Cell.net.net):
+                    temp_nets.append(self._pedb._edb.Cell.net.find_by_name(self._active_layout, nn))
+                elif isinstance(nn, self._pedb._edb.Cell.net.net):
                     temp_nets.append(nn)
             nets = temp_nets
         port_created = False
@@ -519,7 +556,7 @@ class SourceExcitation:
                     reference_layer = self._pedb.stackup.signal_layers[reference_layer]._edb_layer
                 except:
                     raise Exception("Failed to get the layer {}".format(reference_layer))
-            if not isinstance(reference_layer, self._edb.Cell.ILayerReadOnly):
+            if not isinstance(reference_layer, self._pedb._edb.Cell.ILayerReadOnly):
                 return False
             layout = nets[0].GetLayout()
             layout_bbox = self._pedb.get_conformal_polygon_from_netlist(self._pedb.nets.netlist)
@@ -628,7 +665,7 @@ class SourceExcitation:
                 net_polygons = [
                     pp
                     for pp in net.primitives
-                    if pp._edb_object.GetPrimitiveType() == self._edb.Cell.Primitive.PrimitiveType.Polygon
+                    if pp._edb_object.GetPrimitiveType() == self._pedb._edb.Cell.Primitive.PrimitiveType.Polygon
                 ]
                 for poly in net_polygons:
                     mid_points = [[arc.mid_point.X.ToDouble(), arc.mid_point.Y.ToDouble()] for arc in poly.arcs]

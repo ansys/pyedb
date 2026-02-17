@@ -69,7 +69,7 @@ class EdbPadstacks(object):
         elif name in self.definitions:
             return self.definitions[name]
         else:
-            for i in self.instances.values():
+            for i in self.instances:
                 if i.name == name or i.aedt_name == name:
                     return i
         return None
@@ -225,7 +225,7 @@ class EdbPadstacks(object):
         # edb_padstack_inst_list = self._pedb.layout.padstack_instances
         # if len(self._instances) == len(edb_padstack_inst_list):
         #     return self._instances
-        self._instances = {i.id: i for i in self._pedb.layout.padstack_instances}
+        self._instances = [i for i in self._pedb.layout.padstack_instances]
         return self._instances
 
     @property
@@ -239,7 +239,7 @@ class EdbPadstacks(object):
 
         """
         padstack_instances = {}
-        for edb_padstack_instance in self.instances.values():
+        for edb_padstack_instance in self.instances:
             if edb_padstack_instance.aedt_name:
                 padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
         return padstack_instances
@@ -269,7 +269,7 @@ class EdbPadstacks(object):
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
         pins = {}
-        for instance in self.instances.values():
+        for instance in self.instances:
             if instance.is_pin and instance.component:
                 pins[instance.name] = instance
         return pins
@@ -290,7 +290,7 @@ class EdbPadstacks(object):
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
         pnames = list(self.pins.keys())
-        vias = {via_id: inst for via_id, inst in self.instances.items() if via_id not in pnames}
+        vias = [inst for via_id, inst in self.instances if via_id not in pnames]
         return vias
 
     @property
@@ -646,7 +646,7 @@ class EdbPadstacks(object):
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
 
-        for p_id, p in self.instances.items():
+        for  p in self.instances:
             if p.net_name in net_names:
                 if not p.delete():  # pragma: no cover
                     return False
@@ -1634,17 +1634,17 @@ class EdbPadstacks(object):
             instances = instances_by_id
             if definition_name:
                 definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
-                instances = [inst for inst in instances.values() if inst.padstack_definition in definition_name]
+                instances = [inst for inst in instances if inst.padstack_definition in definition_name]
             if net_name:
                 net_name = net_name if isinstance(net_name, list) else [net_name]
-                instances = [inst for inst in instances.values() if inst.net_name in net_name]
+                instances = [inst for inst in instances if inst.net_name in net_name]
             if component_reference_designator:
                 refdes = (
                     component_reference_designator
                     if isinstance(component_reference_designator, list)
                     else [component_reference_designator]
                 )
-                instances = [inst for inst in instances.values() if inst.component]
+                instances = [inst for inst in instances if inst.component]
                 instances = [inst for inst in instances if inst.component.refdes in refdes]
                 if component_pin:
                     component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
@@ -1750,11 +1750,11 @@ class EdbPadstacks(object):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
         if nets:
-            instances = {inst_id: inst for inst_id, inst in self.instances.items() if inst.net_name in nets}
+            instances = {inst.id: inst for inst_id, inst in self.instances if inst.net_name in nets}
         else:
             instances = self.instances
-        for inst_id, inst in instances.items():
-            padstack_instances_index.insert(inst_id, inst.position)
+        for inst in instances:
+            padstack_instances_index.insert(inst.id, inst.position)
         return padstack_instances_index
 
     def get_padstack_instances_id_intersecting_polygon(self, points, nets=None, padstack_instances_index=None):
@@ -1848,7 +1848,7 @@ class EdbPadstacks(object):
             raise Exception("No contour box provided, you need to pass a nested list as argument.")
 
         instances_index = {}
-        for inst in self.instances.values():
+        for inst in self.instances:
             instances_index[inst.id] = inst.position
         for contour_box in contour_boxes:
             all_instances = self.instances
@@ -1860,18 +1860,18 @@ class EdbPadstacks(object):
             else:
                 if net_filter:
                     # instances = [id for id in instances if not self.instances[id].net_name in net_filter]
-                    instances = [id for id in instances if all_instances[id].net_name not in net_filter]
+                    instances = [id.id for id in instances if id.net_name not in net_filter]
                 # filter instances by start and stop layer
                 if start_layer:
                     if start_layer not in self._pedb.stackup.layers.keys():
                         raise Exception(f"{start_layer} not exist")
                     else:
-                        instances = [id for id in instances if all_instances[id].start_layer == start_layer]
+                        instances = [id.id for id in instances if id.start_layer == start_layer]
                 if stop_layer:
                     if stop_layer not in self._pedb.stackup.layers.keys():
                         raise Exception(f"{stop_layer} not exist")
                     else:
-                        instances = [id for id in instances if all_instances[id].stop_layer == stop_layer]
+                        instances = [id.id for id in instances if id.stop_layer == stop_layer]
                 if not instances:
                     raise Exception(
                         f"No padstack instances found inside {contour_box} between {start_layer} and {stop_layer}"
@@ -1965,7 +1965,7 @@ class EdbPadstacks(object):
             List[int], list of created padstack instances id.
 
         """
-        _def = list(set([inst.padstack_definition for inst in self.instances.values() if inst.net_name == net_name]))
+        _def = list(set([inst.padstack_definition for inst in self.instances if inst.net_name == net_name]))
         if not _def:
             self._logger.error(f"No padstack definition found for net {net_name}")
             return False

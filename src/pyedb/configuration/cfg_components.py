@@ -57,7 +57,7 @@ class CfgComponent(CfgBase):
             self.spice_model["terminal_pairs"] = c_p.model.pin_pairs
 
     def _set_ic_die_properties_to_edb(self):
-        cp = self.pyedb_obj.component_property
+        cp = self.pyedb_obj.component_property.core
         ic_die_prop = cp.GetDieProperty().Clone()
         die_type = self.ic_die_properties.get("type")
         ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
@@ -75,7 +75,7 @@ class CfgComponent(CfgBase):
         self.pyedb_obj.component_property = cp
 
     def _set_port_properties_to_edb(self):
-        cp = self.pyedb_obj.component_property
+        cp = self.pyedb_obj.component_property.core
         port_prop = cp.GetPortProperty().Clone()
         height = self.port_properties.get("reference_height")
         if height:
@@ -90,7 +90,7 @@ class CfgComponent(CfgBase):
         self.pyedb_obj.component_property = cp
 
     def _set_model_properties_to_edb(self):
-        c_p = self.pyedb_obj.component_property
+        c_p = self.pyedb_obj.component_property.core
         if self.netlist_model:
             m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
             m.SetNetlist(self.netlist_model["netlist"])
@@ -155,7 +155,7 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
-        cp = self.pyedb_obj.component_property
+        cp = self.pyedb_obj.component_property.core
         solder_ball_prop = cp.GetSolderBallProperty().Clone()
         shape = self.solder_ball_properties.get("shape")
         if shape:

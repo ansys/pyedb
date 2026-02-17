@@ -989,7 +989,7 @@ class PadstackDef:
         return data
 
     def set_pad_parameters(self, param):
-        pdef_data = self._padstack_def_data
+        pdef_data = self.core.data
 
         pad_type_list = [
             CorePadType.REGULAR_PAD,
@@ -1081,22 +1081,26 @@ class PadstackDef:
 
     def set_hole_parameters(self, params):
         original_params = self.get_hole_parameters()
-        pdef_data = self._padstack_def_data
+        pdef_data = self.core.data
 
         temp_param = []
         shape = params["shape"]
-        if shape == "no_geometry":
+        if not shape.startswith("padgeomtype_"):
+            shape = "padgeomtype_" + shape
+        if shape == "padgeomtype_no_geometry":
             return  # .net api doesn't tell how to set no_geometry shape.
         for i in self.PAD_SHAPE_PARAMETERS[shape]:
-            temp_param.append(params[i])
+            temp_param.append(Value(params[i]))
             pedb_shape = shape
 
         pdef_data.set_hole_parameters(
-            pedb_shape,
-            temp_param,
             Value(params.get("offset_x", original_params.get("offset_x", 0))),
             Value(params.get("offset_y", original_params.get("offset_y", 0))),
-            Value("rotation", original_params.get("rotation", 0))),
+            Value(params.get("rotation", original_params.get("rotation", 0))),
+            self.PAD_SHAPE_KEYS[shape],
+            temp_param,
+
+        )
 
         self.core.data = pdef_data
 
@@ -1146,6 +1150,16 @@ class PadstackDef:
         "padgeomtype_round45": ["inner", "channel_width", "isolation_gap"],
         "padgeomtype_round90": ["inner", "channel_width", "isolation_gap"],
         "padgeomtype_no_geometry": [],
+    }
+    PAD_SHAPE_KEYS = {
+        "padgeomtype_circle": CorePadGeometryType.PADGEOMTYPE_CIRCLE,
+        "padgeomtype_square":  CorePadGeometryType.PADGEOMTYPE_SQUARE,
+        "padgeomtype_rectangle":  CorePadGeometryType.PADGEOMTYPE_RECTANGLE,
+        "padgeomtype_oval":  CorePadGeometryType.PADGEOMTYPE_OVAL,
+        "padgeomtype_bullet": CorePadGeometryType.PADGEOMTYPE_BULLET,
+        "padgeomtype_round45":  CorePadGeometryType.PADGEOMTYPE_ROUND45,
+        "padgeomtype_round90":  CorePadGeometryType.PADGEOMTYPE_ROUND90,
+        "padgeomtype_no_geometry":  CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
     }
     SOLDER_SHAPE_TYPE = {
         "no_solder_ball": SolderballShape.NO_SOLDERBALL,

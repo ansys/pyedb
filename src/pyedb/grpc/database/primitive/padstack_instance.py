@@ -149,8 +149,22 @@ class PadstackInstance:
         )
         return cls(layout._pedb, inst)
 
+    @property
+    def solderball_layer(self):
+        return self.core.solderball_layer
+
+    @solderball_layer.setter
+    def solderball_layer(self, solderball_layer):
+        self.core.solderball_layer = solderball_layer
+
+
     def get_hole_overrides(self):
         return self.core.get_hole_overrides()
+
+    def set_hole_overrides(self, enabled, diameter):
+        if isinstance(diameter, (float, int)):
+            diameter = Value(diameter)
+        self.core.set_hole_overrides(enabled, Value(diameter))
 
     @property
     def backdrill_parameters(self):
@@ -176,8 +190,13 @@ class PadstackInstance:
     @backdrill_parameters.setter
     def backdrill_parameters(self, params):
         from_bottom = params.get("from_bottom")
-        self.set_back_drill_by_depth(from_bottom.get("stub_length"), from_bottom.get("diameter"), from_bottom=from_bottom)
-
+        if from_bottom:
+            self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
+                                     from_bottom=True)
+        from_bottom = params.get("from_top")
+        if from_bottom:
+            self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
+                                     from_bottom=False)
 
     @property
     def is_pin(self):

@@ -4526,7 +4526,7 @@ class Edb:
                         padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
             else:
                 used_padsatck_defs = list(
-                    set([padstack_inst.padstack_definition for padstack_inst in self.padstacks.instances.values()])
+                    set([padstack_inst.padstack_definition for padstack_inst in self.padstacks.instances])
                 )
                 padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
@@ -4614,7 +4614,7 @@ class Edb:
             var_y = "via_offset_y"
             if var_y not in self.variables:
                 self.add_design_variable(var_y, 0.0)
-            for via in self.padstacks.instances.values():
+            for via in self.padstacks.instances:
                 if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
                     via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
 

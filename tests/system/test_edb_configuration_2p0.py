@@ -25,6 +25,7 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.generic.settings import settings
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
@@ -1420,9 +1421,9 @@ class TestClassBoundaries(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+#@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassPadstacks(BaseTestClass):
-    def test_09_padstack_definition(self):
+    def test_09_padstack_definition(self, is_grpc=None):
         solder_ball_parameters = {
             "shape": "spheroid",
             "diameter": "0.4mm",
@@ -1478,11 +1479,15 @@ class TestClassPadstacks(BaseTestClass):
         pdef = [i for i in data_from_layout["padstacks"]["definitions"] if i["name"] == "v35h15"][0]
 
         pad_params = pdef["pad_parameters"]
-        assert pad_params["regular_pad"][0]["diameter"] == "0.5mm"
-        assert pad_params["regular_pad"][0]["offset_x"] == "0.1mm"
-        assert pad_params["anti_pad"][0]["diameter"] == "1mm"
-        assert pad_params["thermal_pad"][0]["inner"] == "1mm"
-        assert pad_params["thermal_pad"][0]["channel_width"] == "0.2mm"
+        key_regular = "REGULAR_PAD" if settings.is_grpc else "regular_pad"
+        key_anti = "ANTI_PAD" if settings.is_grpc else "anti_pad"
+        key_thermal = "THERMAL_PAD" if settings.is_grpc else "thermal_pad"
+
+        assert pad_params[key_regular][0]["diameter"] == "0.5mm"
+        assert pad_params[key_regular][0]["offset_x"] == "0.1mm"
+        assert pad_params[key_anti][0]["diameter"] == "1mm"
+        assert pad_params[key_thermal][0]["inner"] == "1mm"
+        assert pad_params[key_thermal][0]["channel_width"] == "0.2mm"
 
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] == "circle"
@@ -1598,10 +1603,10 @@ class TestClassPadstacks(BaseTestClass):
             "Inner6(GND2)": "Inner6",
             "16_Bottom": "16_Bottom",
         }
-        vias_before = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
+        vias_before = {j.id: [j.start_layer, j.stop_layer] for  j in edbapp.padstacks.instances}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
-        vias_after = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
+        vias_after = {j.id: [j.start_layer, j.stop_layer] for  j in edbapp.padstacks.instances}
         for i, j in vias_after.items():
             assert j[0] == renamed_layers[vias_before[i][0]]
             assert j[1] == renamed_layers[vias_before[i][1]]
@@ -1782,7 +1787,7 @@ class TestModeler(BaseTestClass):
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
-        assert edbapp.components["U1"].component_property.GetSolderBallProperty().Clone().GetMaterialName() == "air"
+        assert edbapp.components["U1"].component_property.core.GetSolderBallProperty().Clone().GetMaterialName() == "air"
         edbapp.close(terminate_rpc_session=False)
 
     # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")

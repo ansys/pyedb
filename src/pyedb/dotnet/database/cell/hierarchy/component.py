@@ -165,7 +165,7 @@ class EDBComponent(Group):
 
     @property  # pragma: no cover
     def _pin_pairs(self):
-        edb_comp_prop = self.component_property
+        edb_comp_prop = self.component_property.core
         edb_model = self._edb_model
         return [
             PinPair(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
@@ -189,7 +189,7 @@ class EDBComponent(Group):
         if not isinstance(value, PinPairModel):
             self._pedb.logger.error("Invalid input. Set model failed.")
 
-        comp_prop = self.component_property
+        comp_prop = self.component_property.core
         comp_prop.SetModel(value._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -205,7 +205,7 @@ class EDBComponent(Group):
     @package_def.setter
     def package_def(self, value):
         package_def = self._pedb.definitions.package[value]
-        comp_prop = self.component_property
+        comp_prop = self.component_property.core
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -220,9 +220,9 @@ class EDBComponent(Group):
 
     @ic_die_properties.setter
     def ic_die_properties(self, value):
-        component_property = self.component_property
-        component_property.core.SetDieProperties(value)
-        self.component_property = component_property
+        component_property = self.component_property.core
+        component_property.SetDieProperties(value)
+        self.edbcomponent.SetComponentProperty(component_property)
 
     def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
@@ -275,13 +275,13 @@ class EDBComponent(Group):
     def enabled(self):
         """Get or Set the component to active mode."""
         if self.type.lower() in ["resistor", "capacitor", "inductor"]:
-            return self.component_property.IsEnabled()
+            return self.component_property.core.IsEnabled()
         else:
             return
 
     @enabled.setter
     def enabled(self, value):
-        cmp_prop = self.component_property.Clone()
+        cmp_prop = self.component_property.core.Clone()
         cmp_prop.SetEnabled(value)
         self.edbcomponent.SetComponentProperty(cmp_prop)
 
@@ -320,11 +320,11 @@ class EDBComponent(Group):
     def solder_ball_height(self, value):
         if "GetSolderBallProperty" in dir(self.component_property.core):
             sball_height = round(self._pedb.edb_value(value).ToDouble(), 9)
-            cmp_property = self.component_property
+            cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
             cmp_property.SetSolderBallProperty(solder_ball_prop)
-            self.component_property = cmp_property
+            self.edbcomponent.SetComponentProperty(cmp_property)
 
     @property
     def solder_ball_shape(self):
@@ -356,12 +356,12 @@ class EDBComponent(Group):
             elif value == 2:
                 shape = self._edb.Definition.SolderballShape.Spheroid
         if shape:
-            cmp_property = self.component_property
+            cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetShape(shape)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
-            self.component_property = cmp_property
-
+            self.edbcomponent.SetComponentProperty(cmp_property)
+        
     @property
     def solder_ball_diameter(self):
         """Solder ball diameter."""
@@ -388,7 +388,7 @@ class EDBComponent(Group):
             diameter = self._get_edb_value(value)
             mid_diameter = self._get_edb_value(value)
         if diameter and mid_diameter:
-            cmp_property = self.component_property
+            cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetDiameter(diameter, mid_diameter)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
@@ -442,7 +442,7 @@ class EDBComponent(Group):
             ``True`` if current object is enabled, ``False`` otherwise.
         """
         if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            return self.component_property.IsEnabled()
+            return self.component_property.core.IsEnabled()
         else:  # pragma: no cover
             return True
 
@@ -450,8 +450,8 @@ class EDBComponent(Group):
     def is_enabled(self, enabled):
         """Enables the current object."""
         if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            component_property = self.component_property
-            component_property.core.SetEnabled(enabled)
+            component_property = self.component_property.core
+            component_property.SetEnabled(enabled)
             self.edbcomponent.SetComponentProperty(component_property)
 
     @property
@@ -648,7 +648,7 @@ class EDBComponent(Group):
                     pin_pair_rlc.IsParallel = value
                     pin_pair_model = self._edb_model
                     pin_pair_model.SetPinPairRlc(pin_pair, pin_pair_rlc)
-                    comp_prop = self.component_property
+                    comp_prop = self.component_property.core
                     comp_prop.SetModel(pin_pair_model)
                     self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -902,9 +902,9 @@ class EDBComponent(Group):
         return self._pedb.edb_value(value)
 
     def _set_model(self, model):  # pragma: no cover
-        comp_prop = self.component_property
-        comp_prop.core.SetModel(model)
-        if not self.edbcomponent.SetComponentProperty(comp_prop.core):
+        comp_prop = self.component_property.core
+        comp_prop.SetModel(model)
+        if not self.edbcomponent.SetComponentProperty(comp_prop):
             logging.error("Fail to assign model on {}.".format(self.refdes))
             return False
         return True

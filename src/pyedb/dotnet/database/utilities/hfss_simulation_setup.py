@@ -453,7 +453,7 @@ class HfssSimulationSetup(SimulationSetup):
             layers = list(set([trace.layer.name for trace in traces]))
             for layer in layers:
                 net_layer_dict[net].append(layer)
-            for inst in [inst for inst in self._pedb.padstacks.instances.values() if inst.net_name == net]:
+            for inst in [inst for inst in self._pedb.padstacks.instances if inst.net_name == net]:
                 inst.side_number = signal_via_side_number
         self.add_length_mesh_operation(
             net_layer_list=net_layer_dict,

@@ -63,12 +63,12 @@ def set_padstack_instance(inst, inst_obj):
     if inst.backdrill_parameters:
         inst_obj.backdrill_parameters = inst.backdrill_parameters.model_dump(exclude_none=True)
     if inst.solder_ball_layer:
-        inst_obj._edb_object.SetSolderBallLayer(inst_obj._pedb.stackup[inst.solder_ball_layer]._edb_object)
+        inst_obj.solderball_layer = inst_obj._pedb.stackup[inst.solder_ball_layer].core
 
-    hole_override_enabled, hole_override_diam = inst_obj._edb_object.GetHoleOverrideValue()
+    hole_override_enabled, hole_override_diam = inst_obj.get_hole_overrides()
     hole_override_enabled = inst.hole_override_enabled if inst.hole_override_enabled else hole_override_enabled
     hole_override_diam = inst.hole_override_diameter if inst.hole_override_diameter else hole_override_diam
-    inst_obj._edb_object.SetHoleOverride(hole_override_enabled, inst_obj._pedb.edb_value(hole_override_diam))
+    inst_obj.set_hole_overrides(hole_override_enabled, hole_override_diam)
 
 
 class Configuration:
@@ -717,7 +717,7 @@ class Configuration:
             rotation = obj.rotation
             hole_override_enabled, hole_override_diameter = obj.get_hole_overrides()
             try:
-                solderball_layer = obj.core.solderball_layer
+                solderball_layer = obj.solderball_layer
             except Exception:
                 solderball_layer = None
             padstacks.add_padstack_instance(

@@ -1279,11 +1279,11 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
     @property
     def solderball_layer(self):
         """:class:`Layer <ansys.edb.layer.Layer>`: SolderBall Layer of Padstack Instance."""
-        return self.prim_obj.GetSolderBallLayer()
+        return self.prim_obj.GetSolderBallLayer().GetName()
 
     @solderball_layer.setter
     def solderball_layer(self, solderball_layer):
-        self.prim_obj.SetSolderBallLayer(solderball_layer).GetName()
+        self.prim_obj.SetSolderBallLayer(solderball_layer)
 
     @property
     def layer_map(self):
@@ -1324,6 +1324,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         hole_override : :class:`Value <ansys.edb.utility.Value>`
             Hole override diameter of this padstack instance.
         """
+        if isinstance(hole_override, float):
+            hole_override = self._app._edb.value(hole_override)
         self.prim_obj.SetHoleOverrides(is_hole_override, hole_override)
 
     @property
