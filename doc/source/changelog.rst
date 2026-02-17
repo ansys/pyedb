@@ -9,6 +9,64 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.70.0 <https://github.com/ansys/pyedb/releases/tag/v0.70.0>`_ - February 17, 2026
+===================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Physical merge
+          - `#1830 <https://github.com/ansys/pyedb/pull/1830>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Unittest
+          - `#1826 <https://github.com/ansys/pyedb/pull/1826>`_
+
+        * - Syntax issues
+          - `#1837 <https://github.com/ansys/pyedb/pull/1837>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.69.0
+          - `#1825 <https://github.com/ansys/pyedb/pull/1825>`_
+
+        * - Bump release 0.70.dev0
+          - `#1827 <https://github.com/ansys/pyedb/pull/1827>`_
+
+        * - Clean up root level files
+          - `#1836 <https://github.com/ansys/pyedb/pull/1836>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Lazy import and dependency rework
+          - `#1828 <https://github.com/ansys/pyedb/pull/1828>`_
+
+        * - Constants alignment between grpc dotnet
+          - `#1829 <https://github.com/ansys/pyedb/pull/1829>`_
+
+
 `0.69.0 <https://github.com/ansys/pyedb/releases/tag/v0.69.0>`_ - February 11, 2026
 ===================================================================================
 
