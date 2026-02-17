@@ -1083,9 +1083,36 @@ class Edb:
         """
         return Stackup(self, self.layout.layer_collection)
 
+
     @property
-    def source_excitation(self):
-        return self._source_excitation
+    def source_excitation(self) -> SourceExcitation:
+        """Source excitation management.
+
+        .. deprecated:: 0.70
+           Use: func:`excitation_manager` property instead.
+        Returns
+        -------
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
+            Source and port creation tools.
+        """
+        warnings.warn("Use property excitation_manager instead.", DeprecationWarning)
+
+        if self.active_db:
+            return self._source_excitation
+        return None
+
+    @property
+    def excitation_manager(self):
+        """Source excitation manager.
+
+        Returns
+        -------
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
+            Source and port creation tools.
+        """
+        if self.active_db:
+            return self._source_excitation
+        return None
 
     @property
     def materials(self):

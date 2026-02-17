@@ -50,7 +50,14 @@ class BundleTerminal(Terminal):
 
     @classmethod
     def create(cls, pedb, name, terminals):
-        terminal_list = [pedb.terminals[i]._edb_object for i in terminals]
+        if isinstance(terminals[0], str):
+            terminal_list = [pedb.terminals[i]._edb_object for i in terminals]
+        else:
+            try:
+                terminal_list = [pedb.terminals[i.name]._edb_object for i in terminals]
+            except KeyError:
+                terminal_list = terminals[::]
+
         edb_list = convert_py_list_to_net_list(terminal_list, pedb._edb.Cell.Terminal.Terminal)
         _edb_boundle_terminal = pedb._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
         if _edb_boundle_terminal.IsNull():  # pragma no cover

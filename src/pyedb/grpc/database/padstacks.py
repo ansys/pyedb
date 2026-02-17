@@ -773,7 +773,7 @@ class Padstacks(object):
             "`pyedb.grpc.core.excitations.create_coax_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.source_excitation.create_coax_port(
+        self._pedb.excitation_manager.create_coax_port(
             self, padstackinstance, use_dot_separator=use_dot_separator, name=name
         )
 

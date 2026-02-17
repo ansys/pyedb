@@ -285,7 +285,7 @@ class TestClass(BaseTestClass):
         port_location = [-65e-3, -13e-3]
         ref_location = [-63e-3, -13e-3]
         if edb.grpc:
-            assert edb.source_excitation.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly,
                 reference_polygon=ref_poly,
                 terminal_point=port_location,
@@ -304,7 +304,7 @@ class TestClass(BaseTestClass):
         port_location = [-65e-3, -10e-3]
         ref_location = [-65e-3, -10e-3]
         if edb.grpc:
-            assert edb.source_excitation.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly,
                 reference_polygon=ref_poly,
                 terminal_point=port_location,
@@ -321,7 +321,7 @@ class TestClass(BaseTestClass):
         port_poly = [poly for poly in poly_list if poly.id == 25][0]
         port_location = [-65e-3, -7e-3]
         if edb.grpc:
-            assert edb.source_excitation.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
             )
         else:
@@ -419,7 +419,7 @@ class TestClass(BaseTestClass):
         edb = self.edb_examples.load_edb(target_path)
         if edb.grpc:
             prim_1_id = [i.edb_uid for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
-            assert edb.source_excitation.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+            assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         else:
             # This method is also available at same location in grpc but is deprecated.
             prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
@@ -427,7 +427,7 @@ class TestClass(BaseTestClass):
 
         prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]
         if edb.grpc:
-            assert edb.source_excitation.create_edge_port_horizontal(
+            assert edb.excitation_manager.create_edge_port_horizontal(
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
             )
         else:
@@ -436,7 +436,7 @@ class TestClass(BaseTestClass):
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
             )
         if edb.grpc:
-            assert edb.source_excitation.get_ports_number() == 2
+            assert edb.excitation_manager.get_ports_number() == 2
         else:
             assert edb.hfss.get_ports_number() == 2
         port_ver = edb.ports["port_ver"]
@@ -467,7 +467,7 @@ class TestClass(BaseTestClass):
         paths_ids = [i.id for i in traces]
         pts = [i.center_line[0] for i in traces]
         if edb.grpc:
-            wave_port = edb.source_excitation.create_bundle_wave_port(paths_ids, pts)
+            wave_port = edb.excitation_manager.create_bundle_wave_port(paths_ids, pts)
         else:
             wave_port = edb.hfss.create_bundle_wave_port(paths_ids, pts)
         wave_port.horizontal_extent_factor = 10
@@ -485,7 +485,7 @@ class TestClass(BaseTestClass):
         # wave_port.do_renormalize = False
         assert not wave_port.do_renormalize
         if edb.grpc:
-            assert edb.source_excitation.create_differential_wave_port(
+            assert edb.excitation_manager.create_differential_wave_port(
                 traces[1].id,
                 trace_paths[0][0],
                 traces[2].id,
@@ -512,7 +512,7 @@ class TestClass(BaseTestClass):
         traces_id = [i.id for i in traces]
         paths = [i[1] for i in trace_paths]
         if edb.grpc:
-            df_port = edb.source_excitation.create_bundle_wave_port(traces_id, paths)
+            df_port = edb.excitation_manager.create_bundle_wave_port(traces_id, paths)
         else:
             df_port = edb.hfss.create_bundle_wave_port(traces_id, paths)
         assert df_port.name
@@ -549,7 +549,7 @@ class TestClass(BaseTestClass):
             traces.append(t)
 
         if config["use_grpc"]:
-            assert edb.source_excitation.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
+            assert edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
         else:
             assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
@@ -563,7 +563,7 @@ class TestClass(BaseTestClass):
 
         paths = [i[1] for i in trace_paths]
         if config["use_grpc"]:
-            p = edb.source_excitation.create_bundle_wave_port(traces, paths, port_name="port2")
+            p = edb.excitation_manager.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
             p = edb.hfss.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6

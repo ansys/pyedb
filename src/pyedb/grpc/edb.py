@@ -72,6 +72,9 @@ import time
 import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+from pyedb.grpc.database.design_options import EdbDesignOptions
+from pyedb.grpc.database.variables import Variable
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 import warnings
@@ -474,26 +477,26 @@ class Edb(EdbInit):
         return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
-    def design_variables(self) -> Dict[str, float]:
+    def design_variables(self) -> Dict[str, Variable]:
         """All design variables in active cell.
 
         Returns
         -------
-        dict[str, float]
+        dict[str, Variable]
             Variable names and values.
         """
-        return {i: Value(self.active_cell.get_variable_value(i)) for i in self.active_cell.get_all_variable_names()}
+        return {i: Variable(self.active_cell,i) for i in self.active_cell.get_all_variable_names()}
 
     @property
-    def project_variables(self) -> Dict[str, float]:
+    def project_variables(self) -> Dict[str, Variable]:
         """All project variables in database.
 
         Returns
         -------
-        dict[str, float]
+        dict[str, Variable]
             Variable names and values.
         """
-        return {i: Value(self.active_db.get_variable_value(i)) for i in self.active_db.get_all_variable_names()}
+        return {i: Variable(self.active_db, i) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
@@ -1092,6 +1095,10 @@ class Edb(EdbInit):
         return self._components
 
     @property
+    def design_options(self):
+        return EdbDesignOptions(self.active_cell)
+
+    @property
     def stackup(self) -> Stackup:
         """Stackup management interface.
 
@@ -1107,7 +1114,23 @@ class Edb(EdbInit):
     @property
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
+        .. deprecated:: 0.70
+           Use: func:`excitation_manager` property instead.
+        Returns
+        -------
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
+            Source and port creation tools.
+        """
+        warnings.warn("Use property excitation_manager instead.", DeprecationWarning)
 
+        if self.active_db:
+            return self._source_excitation
+        return None
+    
+    @property
+    def excitation_manager(self):
+        """Source excitation manager.
+        
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -2492,7 +2515,7 @@ class Edb(EdbInit):
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
                 defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
-                edb_terminals_info = edb.source_excitation.create_vertical_circuit_port_on_clipped_traces(
+                edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,
                     user_defined_extent=zone_info[1],
@@ -2591,56 +2614,56 @@ class Edb(EdbInit):
 
         """
 
-        warnings.warn("Use create_port from edb.source_excitation.create_port", DeprecationWarning)
-        return self.source_excitation.create_port(terminal, ref_terminal, is_circuit_port, name)
+        warnings.warn("Use create_port from edb.excitation_manager.create_port", DeprecationWarning)
+        return self.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port, name)
 
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
         ..deprecated:: 0.50.0
-           Use :func:`create_voltage_probe` has been moved to edb.source_excitation.create_voltage_probe.
+           Use :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
 
         """
         warnings.warn("Use create_voltage_probe located in edb.source_excitation instead", DeprecationWarning)
-        return self.source_excitation.create_voltage_probe(terminal, ref_terminal)
+        return self.excitation_manager.create_voltage_probe(terminal, ref_terminal)
 
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
         ..deprecated:: 0.50.0
-           Use: func:`create_voltage_source` has been moved to edb.source_excitation.create_voltage_source.
+           Use: func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
 
         """
         warnings.warn(
-            "use create_voltage_source located in edb.source_excitation.create_voltage_source instead",
+            "use create_voltage_source located in edb.excitation_manager.create_voltage_source instead",
             DeprecationWarning,
         )
-        return self.source_excitation.create_voltage_source(terminal, ref_terminal)
+        return self.excitation_manager.create_voltage_source(terminal, ref_terminal)
 
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
         ..deprecated:: 0.50.0
-           Use :func:`create_current_source` has been moved to edb.source_excitation.create_current_source.
+           Use :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
 
         """
         warnings.warn(
-            "use create_current_source located in edb.source_excitation.create_current_source instead",
+            "use create_current_source located in edb.excitation_manager.create_current_source instead",
             DeprecationWarning,
         )
-        return self.source_excitation.create_current_source(terminal, ref_terminal)
+        return self.excitation_manager.create_current_source(terminal, ref_terminal)
 
     def get_point_terminal(self, name, net_name, location, layer):
         """Place terminal between two points.
 
         ..deprecated:: 0.50.0
-           Use: func:`get_point_terminal` has been moved to edb.source_excitation.get_point_terminal.
+           Use: func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
         """
 
         warnings.warn(
-            "use get_point_terminal located in edb.source_excitation.get_point_terminal instead", DeprecationWarning
+            "use get_point_terminal located in edb.excitation_manager.get_point_terminal instead", DeprecationWarning
         )
-        return self.source_excitation.get_point_terminal(name, net_name, location, layer)
+        return self.excitation_manager.get_point_terminal(name, net_name, location, layer)
 
     def auto_parametrize_design(
         self,

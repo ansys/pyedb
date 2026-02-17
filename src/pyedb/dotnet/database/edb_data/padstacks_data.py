@@ -1406,11 +1406,19 @@ class EDBPadstackInstance(Connectable):
     def __init__(self, edb_padstackinstance, _pedb):
         super().__init__(_pedb, edb_padstackinstance)
         self._edb_padstackinstance = self._edb_object
+        self.core = self._edb_object
         self._bounding_box = []
         self._side_number = None
         self._object_instance = None
         self._position = []
         self._pdef = None
+
+    def get_hole_overrides(self):
+        return self._edb_object.GetHoleOverrideValue()
+
+    @property
+    def solderball_layer(self):
+        return self.core.GetSolderBallLayer()
 
     def get_terminal(self, name=None, create_new_terminal=False):
         """Get PadstackInstanceTerminal object.
@@ -1769,10 +1777,13 @@ class EDBPadstackInstance(Connectable):
     @property
     def backdrill_parameters(self):
         data = {}
+        value_0 = self._pedb.edb_value(0)
+        value_00 = self._pedb.edb_value(0.0)
+        value_signal = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer),
-            self._pedb.edb_value(0),
-            self._pedb.edb_value(0.0),
+            value_signal,
+            value_0,
+            value_00,
             True,
         )
         if flag:
@@ -1783,9 +1794,9 @@ class EDBPadstackInstance(Connectable):
                     "stub_length": offset.ToString(),
                 }
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer),
-            self._pedb.edb_value(0),
-            self._pedb.edb_value(0.0),
+            value_signal,
+            value_0,
+            value_00,
             False,
         )
         if flag:

@@ -90,6 +90,11 @@ class Component:
         self._package_def = None
 
     @property
+    def pin_pairs(self) -> list[tuple]:
+        """Pinpairs of the model."""
+        return self.model.pin_pairs()
+
+    @property
     def group_type(self):
         return str(self.core.type).split(".")[-1].lower()
 
@@ -591,6 +596,24 @@ class Component:
             self.core.component_property = cmp_property
 
     @property
+    def solder_ball_material(self) -> str:
+        """Solderball material name."""
+        return self.component_property.solder_ball_property.material_name
+
+    @solder_ball_diameter.setter
+    def solder_ball_diameter(self, value):
+        self.component_property.solder_ball_property.material_name = value
+
+    @property
+    def uses_solderball(self) -> bool:
+        """Whether if solderball is enabled or not."""
+        return self.component_property.solder_ball_property.uses_solderball
+
+    @uses_solderball.setter
+    def uses_solderball(self, value):
+        self.component_property.solder_ball_property.uses_solderball = value
+
+    @property
     def solder_ball_placement(self):
         """Solder ball placement if available.."""
         if not self.component_property.solder_ball_property.is_null:
@@ -732,6 +755,101 @@ class Component:
         comp_prop = self.core.component_property
         comp_prop.model = model
         self.core.component_property = comp_prop
+
+    @property
+    def res_enabled(self) -> bool:
+        """Resistance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if resistor is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].r_enabled
+        return False
+
+    @res_enabled.setter
+    def res_enabled(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.r_enabled = value
+            rlc.r = Value(self.res_value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+
+    @property
+    def cap_enabled(self) -> bool:
+        """Capacitance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if capacitance is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].c_enabled
+        return False
+
+    @cap_enabled.setter
+    def cap_enabled(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.c_enabled = value
+            rlc.c = Value(self.cap_value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+
+    @property
+    def ind_enabled(self) -> bool:
+        """Inductance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if inductance is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].l_enabled
+        return False
+
+    @ind_enabled.setter
+    def ind_enabled(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.l_enabled = value
+            rlc.l = Value(self.ind_value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+    @res_value.setter
+    def res_value(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.r_enabled = True
+            rlc.r = Value(value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+
 
     @property
     def cap_value(self) -> float:

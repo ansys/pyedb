@@ -221,7 +221,7 @@ class ExtendedNets:
                 elif cmp.type == "capacitor":
                     if val_value[2] is None:
                         continue
-                    elif not val_value[2] > capacitor_above:
+                    elif not float(val_value[2]) > capacitor_above:
                         continue
                 else:
                     continue

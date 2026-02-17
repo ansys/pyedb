@@ -30,7 +30,7 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
-from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper
+from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper, TerminalTypeMapper
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
@@ -561,9 +561,9 @@ class Configuration:
         """Retrieve variables from database."""
         self.cfg_data.variables.variables = []
         for name, obj in self._pedb.design_variables.items():
-            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+            self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
         for name, obj in self._pedb.project_variables.items():
-            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+            self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
 
     def apply_materials(self):
         """Apply material settings to the current design"""
@@ -713,19 +713,24 @@ class Configuration:
             )
 
         for obj in self._pedb.layout.padstack_instances:
-            _, position, rotation = obj._edb_object.GetPositionAndRotationValue()
-            hole_override_enabled, hole_override_diameter = obj._edb_object.GetHoleOverrideValue()
+            position = obj.position
+            rotation = obj.rotation
+            hole_override_enabled, hole_override_diameter = obj.get_hole_overrides()
+            try:
+                solderball_layer = obj.core.solderball_layer
+            except Exception:
+                solderball_layer = None
             padstacks.add_padstack_instance(
                 name=obj.aedt_name,
                 is_pin=obj.is_pin,
                 definition=obj.padstack_definition,
                 backdrill_parameters=obj.backdrill_parameters,
-                position=[position.X.ToString(), position.Y.ToString()],
-                rotation=rotation.ToString(),
+                position=[str(position[0]), str(position[1])],
+                rotation=str(rotation),
                 eid=obj.id,
                 hole_override_enabled=hole_override_enabled,
-                hole_override_diameter=hole_override_diameter.ToString(),
-                solder_ball_layer=obj._edb_object.GetSolderBallLayer().GetName(),
+                hole_override_diameter=str(hole_override_diameter),
+                solder_ball_layer=solderball_layer,
                 layer_range=[obj.start_layer, obj.stop_layer],
             )
 
@@ -869,19 +874,19 @@ class Configuration:
         edge_terminals = {}
         for cfg_terminal in self.cfg_data.terminals.terminals:
             if cfg_terminal.terminal_type == "padstack_instance":
-                terminal = self._pedb.source_excitation.create_padstack_instance_terminal(
+                terminal = self._pedb.excitation_manager.create_padstack_instance_terminal(
                     name=cfg_terminal.name,
                     padstack_instance_id=cfg_terminal.padstack_instance_id,
                     padstack_instance_name=cfg_terminal.padstack_instance,
                 )
 
             elif cfg_terminal.terminal_type == "pin_group":
-                terminal = self._pedb.source_excitation.create_pin_group_terminal(
+                terminal = self._pedb.excitation_manager.create_pin_group_terminal(
                     name=cfg_terminal.name,
                     pin_group=cfg_terminal.pin_group,
                 )
             elif cfg_terminal.terminal_type == "point":
-                terminal = self._pedb.source_excitation.create_point_terminal(
+                terminal = self._pedb.excitation_manager.create_point_terminal(
                     name=cfg_terminal.name,
                     net=cfg_terminal.net,
                     x=cfg_terminal.x,
@@ -889,7 +894,7 @@ class Configuration:
                     layer=cfg_terminal.layer,
                 )
             elif cfg_terminal.terminal_type == "edge":
-                terminal = self._pedb.source_excitation.create_edge_terminal(
+                terminal = self._pedb.excitation_manager.create_edge_terminal(
                     primitive_name=cfg_terminal.primitive,
                     x=cfg_terminal.point_on_edge_x,
                     y=cfg_terminal.point_on_edge_y,
@@ -924,14 +929,14 @@ class Configuration:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
 
         for i in bungle_terminals:
-            self._pedb.source_excitation.create_bundle_terminal(terminals=i.terminals, name=i.name)
+            self._pedb.excitation_manager.create_bundle_terminal(terminals=i.terminals, name=i.name)
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
-            if i.terminal_type in ["PadstackInstanceTerminal", "padstack_inst"]:
+            if i.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal",as_grpc=settings.is_grpc):
                 manager.add_padstack_instance_terminal(
                     padstack_instance=i.padstack_instance.aedt_name,
                     padstack_instance_id=i.padstack_instance.id,
@@ -945,7 +950,7 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
-            elif i.terminal_type in ["PinGroupTerminal", "pin_group"]:
+            elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal",as_grpc=settings.is_grpc):
                 manager.add_pin_group_terminal(
                     pin_group=i.pin_group.name,
                     name=i.name,
@@ -956,7 +961,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                 )
-            elif i.terminal_type in ["PointTerminal", "point"]:
+            elif i.terminal_type == TerminalTypeMapper.get("PointTerminal",as_grpc=settings.is_grpc):
                 manager.add_point_terminal(
                     x=i.location[0],
                     y=i.location[1],

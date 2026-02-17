@@ -777,10 +777,10 @@ class Components(object):
         """
         warnings.warn(
             "`create_source_on_component` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_source_on_component` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_source_on_component(self, sources=sources)
+        return self._pedb.excitation_manager.create_source_on_component(self, sources=sources)
 
     def create_port_on_pins(
         self,
@@ -824,7 +824,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations.create_port_on_pins` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_port_on_pins(
+        return self._pedb.excitation_manager.create_port_on_pins(
             refdes,
             pins,
             reference_pins,
@@ -885,7 +885,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations.create_port_on_component` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_port_on_component(
+        return self._pedb.excitation_manager.create_port_on_component(
             component,
             net_list,
             port_type=port_type,
@@ -918,10 +918,10 @@ class Components(object):
         """
         warnings.warn(
             "`_create_terminal` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations._create_terminal` instead.",
+            "`pyedb.grpc.core.excitation_manager._create_terminal` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations._create_terminal(pin, term_name=term_name)
+        self._pedb.excitation_manager._create_terminal(pin, term_name=term_name)
 
     def _get_closest_pin_from(self, pin, ref_pinlist):
         """Get closest pin from a list of pins.
@@ -977,7 +977,7 @@ class Components(object):
             "`pyedb.grpc.core.excitations._create_pin_group_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation._create_pin_group_terminal(
+        return self._pedb.excitation_manager._create_pin_group_terminal(
             pingroup=pingroup, term_name=term_name, term_type=term_type, isref=isref
         )
 
@@ -2300,7 +2300,7 @@ class Components(object):
             self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
             return False
         component.is_enabled = False
-        return self._pedb.source_excitation.add_port_on_rlc_component(
+        return self._pedb.excitation_manager.add_port_on_rlc_component(
             component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
         )
 
@@ -2334,9 +2334,9 @@ class Components(object):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> edb.source_excitation.add_port_on_rlc_component("R1")
+        >>> edb.excitation_manager.add_port_on_rlc_component("R1")
         """
-        return self._pedb.source_excitation.add_port_on_rlc_component(
+        return self._pedb.excitation_manager.add_port_on_rlc_component(
             component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
         )
 
@@ -2374,7 +2374,7 @@ class Components(object):
             self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
             return False
         component.enabled = False
-        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
+        return self._pedb.excitation_manager.add_rlc_boundary(component.refdes, False)
 
     def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
         """Add RLC gap boundary on component and replace it with a circuit port.
@@ -2401,4 +2401,4 @@ class Components(object):
             "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
+        return self._pedb.excitation_manager.add_rlc_boundary(self, component=component, circuit_type=circuit_type)

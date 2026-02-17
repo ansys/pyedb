@@ -187,10 +187,10 @@ class Hfss:
         """
         warnings.warn(
             "`_create_edge_terminal` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations._create_edge_terminal` instead.",
+            "`pyedb.grpc.core.excitation_manager._create_edge_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations._create_edge_terminal(
+        return self._pedb.excitation_manager._create_edge_terminal(
             prim_id=prim_id, point_on_edge=point_on_edge, terminal_name=terminal_name, is_ref=is_ref
         )
 
@@ -239,10 +239,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_circuit_port_on_pin` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_circuit_port_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
+        return self._pedb.excitation_manager.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create voltage source between two pins (deprecated).
@@ -270,10 +270,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_voltage_source_on_pin` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_voltage_source_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_voltage_source_on_pin(
+        return self._pedb.excitation_manager.create_voltage_source_on_pin(
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
@@ -303,10 +303,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_current_source_on_pin` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_current_source_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_current_source_on_pin(
+        return self._pedb.excitation_manager.create_current_source_on_pin(
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
@@ -334,10 +334,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_resistor_on_pin` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_resistor_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
+        return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
     def create_circuit_port_on_net(
         self,
@@ -378,7 +378,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_circuit_port_on_net(
+        return self._pedb.excitation_manager.create_circuit_port_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -429,7 +429,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_voltage_source_on_net(
+        return self._pedb.excitation_manager.create_voltage_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -478,10 +478,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_current_source_on_net` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_current_source_on_net` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_current_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_current_source_on_net(
+        return self._pedb.excitation_manager.create_current_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -516,7 +516,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_coax_port_on_component` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_coax_port_on_component(
+        return self._pedb.excitation_manager.create_coax_port_on_component(
             ref_des_list, net_list, delete_existing_terminal
         )
 
@@ -565,7 +565,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_differential_wave_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_differential_wave_port(
+        return self._pedb.excitation_manager.create_differential_wave_port(
             positive_primitive_id,
             positive_points_on_edge,
             negative_primitive_id,
@@ -615,7 +615,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_bundle_wave_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_bundle_wave_port(
+        return self._pedb.excitation_manager.create_bundle_wave_port(
             primitives_id, points_on_edge, port_name, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         )
 
@@ -639,10 +639,32 @@ class Hfss:
         """
         warnings.warn(
             "`create_hfss_ports_on_padstack` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_hfss_ports_on_padstack` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_hfss_ports_on_padstack` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_hfss_ports_on_padstack(pinpos, portname)
+        return self._pedb.excitation_manager.create_hfss_ports_on_padstack(pinpos, portname)
+
+    def get_edge_from_port(self, port):
+        _, primitive, point = port._edb_object.GetEdges()[0].GetParameters()
+
+        primitive = Primitive(self._pedb, primitive)
+        point = PointData(self._pedb, point)
+
+    def create_edge_port(self, location, primitive_name, name, impedance=50, is_wave_port=True,
+                         horizontal_extent_factor=1, vertical_extent_factor=1, pec_launch_width=0.0001):
+        warnings.warn(
+            "`create_edge_port` is deprecated and is now located here "
+            "`pyedb.grpc.core.excitations.create_edge_port` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitation_manager.create_edge_port(location=location,
+                                                       primitive_name=primitive_name,
+                                                       name=name, impedance=impedance,
+                                                       is_wave_port=is_wave_port,
+                                                       horizontal_extent_factor=horizontal_extent_factor  ,
+                                                       vertical_extent_factor=vertical_extent_factor,
+                                                       pec_launch_width=pec_launch_width)
+
 
     def create_edge_port_on_polygon(
         self,
@@ -686,10 +708,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_edge_port_on_polygon` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_edge_port_on_polygon` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_edge_port_on_polygon` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_edge_port_on_polygon(
+        return self._pedb.excitation_manager.create_edge_port_on_polygon(
             polygon,
             reference_polygon,
             terminal_point,
@@ -742,7 +764,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_wave_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_wave_port(
+        return self._pedb.excitation_manager.create_wave_port(
             prim_id,
             point_on_edge,
             port_name,
@@ -800,7 +822,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_edge_port_vertical` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_edge_port_vertical(
+        return self._pedb.excitation_manager.create_edge_port_vertical(
             prim_id,
             point_on_edge,
             port_name,
@@ -851,10 +873,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_edge_port_horizontal` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_edge_port_horizontal` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_edge_port_horizontal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_edge_port_horizontal(
+        return self._pedb.excitation_manager.create_edge_port_horizontal(
             prim_id, point_on_edge, ref_prim_id, point_on_ref_edge, port_name, impedance, layer_alignment
         )
 
@@ -884,10 +906,10 @@ class Hfss:
         """
         warnings.warn(
             "`create_lumped_port_on_net` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_lumped_port_on_net` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_lumped_port_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitations.create_lumped_port_on_net(
+        return self._pedb.excitation_manager.create_lumped_port_on_net(
             nets, reference_layer, return_points_only, digit_resolution, at_bounding_box
         )
 
@@ -916,7 +938,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_vertical_circuit_port_on_clipped_traces` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_vertical_circuit_port_on_clipped_traces(
+        return self._pedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
             nets, reference_net, user_defined_extent
         )
 
@@ -1160,10 +1182,10 @@ class Hfss:
         """
         warnings.warn(
             "`get_ports_number` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitation.get_ports_number` instead.",
+            "`pyedb.grpc.core.excitation_manager.get_ports_number` instead.",
             DeprecationWarning,
         )
-        self._pedb.excitations.get_ports_number()
+        self._pedb.excitation_manager.get_ports_number()
 
     def layout_defeaturing(self, simulation_setup=None):
         """Defeature layout polygons (deprecated).
@@ -1220,7 +1242,7 @@ class Hfss:
             "`pyedb.grpc.core.excitations.create_rlc_boundary_on_pins` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_rlc_boundary_on_pins(
+        return self._pedb.excitation_manager.create_rlc_boundary_on_pins(
             positive_pin, negative_pin, rvalue, lvalue, cvalue
         )
 

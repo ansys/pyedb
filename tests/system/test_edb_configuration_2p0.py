@@ -60,7 +60,6 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["solder_ball_properties"]["diameter"] == "244um"
 
 
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_13b_stackup_materials(self):

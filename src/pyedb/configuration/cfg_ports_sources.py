@@ -154,17 +154,15 @@ class CfgPorts:
         return port.pin_group
 
     def _get_edge_port_from_edb(self, p, port_type):
-        _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
+        _, primitive, point = self._pedb.excitation_manager.get_edge_from_port(p)
 
-        primitive = Primitive(self._pedb, primitive)
-        point = PointData(self._pedb, point)
 
         cfg_port = CfgEdgePort(
             self._pedb,
             name=p.name,
             type=port_type,
             primitive_name=primitive.aedt_name,
-            point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
+            point_on_edge=[point[0], point[1]],
             horizontal_extent_factor=p.horizontal_extent_factor,
             vertical_extent_factor=p.vertical_extent_factor,
             pec_launch_width=p.pec_launch_width,
@@ -197,11 +195,11 @@ class CfgPorts:
 
         for _, p in ports.items():
             if not p.reference_terminal:
-                if p.terminal_type in ["PadstackInstanceTerminal", "padstack_inst", "padstack_instance"]:
+                if p.terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal",as_grpc=settings.is_grpc):
                     port_type = "coax"
-                elif p.terminal_type == "PinGroupTerminal":
+                elif p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal",as_grpc=settings.is_grpc):
                     port_type = "circuit"
-                elif p.terminal_type == "EdgeTerminal":
+                elif p.terminal_type == TerminalTypeMapper.get("EdgeTerminal",as_grpc=settings.is_grpc):
                     port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
                 else:
                     raise ValueError("Unknown terminal type")
@@ -699,28 +697,12 @@ class CfgProbe(CfgCircuitElement):
 
 class CfgEdgePort:
     def set_parameters_to_edb(self):
-        point_on_edge = PointData.create_from_xy(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
-        primitive = self._pedb.layout.primitives_by_aedt_name[self.primitive_name]
-        pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge._edb_object)
-        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
-        edge_term = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
-            primitive._edb_object.GetLayout(),
-            primitive._edb_object.GetNet(),
-            self.name,
-            pos_edge,
-            isRef=False,
-        )
-        edge_term.SetImpedance(self._pedb.edb_value(50))
-        wave_port = WavePort(self._pedb, edge_term)
-        wave_port.horizontal_extent_factor = self.horizontal_extent_factor
-        wave_port.vertical_extent_factor = self.vertical_extent_factor
-        wave_port.pec_launch_width = self.pec_launch_width
-        if self.type == "wave_port":
-            wave_port.hfss_type = "Wave"
-        else:
-            wave_port.hfss_type = "Gap"
-        wave_port.do_renormalize = True
-        return wave_port
+        return self._pedb.hfss.create_edge_port(self.point_on_edge, self.primitive_name, self.name, 50,
+                                                True if self.type == "wave_port" else False,
+                                                self.horizontal_extent_factor, self.vertical_extent_factor,
+                                                self.pec_launch_width)
+
+
 
     def export_properties(self):
         return {
@@ -775,11 +757,4 @@ class CfgDiffWavePort:
     def set_parameters_to_edb(self):
         pos_term = self.positive_port.set_parameters_to_edb()
         neg_term = self.negative_port.set_parameters_to_edb()
-        edb_list = convert_py_list_to_net_list(
-            [pos_term._edb_object, neg_term._edb_object], self._pedb.core.Cell.Terminal.Terminal
-        )
-        _edb_boundle_terminal = self._pedb.core.Cell.Terminal.BundleTerminal.Create(edb_list)
-        _edb_boundle_terminal.SetName(self.name)
-        pos, neg = list(_edb_boundle_terminal.GetTerminals())
-        pos.SetName(self.name + ":T1")
-        neg.SetName(self.name + ":T2")
+        return self._pedb.excitation_manager.create_bundle_terminal([pos_term, neg_term], self.name)

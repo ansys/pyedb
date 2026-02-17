@@ -19,27 +19,42 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
-from pyedb.dotnet.database.cell.hierarchy.model import Model
 
-
-class SPICEModel(Model):
-    """Manages SPICE model class."""
-
-    def __init__(self, pedb, edb_object=None):
-        super().__init__(pedb, edb_object)
+class EdbDesignOptions:
+    def __init__(self, active_cell):
+        self._active_cell = active_cell
 
     @property
-    def model_name(self):
-        """SPICE model name."""
-        return self._edb_object.GetModelName()
+    def suppress_pads(self):
+        """Whether to suppress non-functional pads.
+
+        Returns
+        -------
+        bool
+            ``True`` if suppress non-functional pads is on, ``False`` otherwise.
+
+        """
+        return self._active_cell.suppress_pads
+
+    @suppress_pads.setter
+    def suppress_pads(self, value):
+        self._active_cell.suppress_pads = value
+
 
     @property
-    def spice_file_path(self):
-        """SPICE file path."""
-        return self._edb_object.GetSPICEFilePath()
+    def anti_pads_always_on(self):
+        """Whether to always turn on antipad.
 
-    @property
-    def sub_circuit(self):
-        """SPICE sub-ciruit."""
-        return self._edb_object.GetSubCkt()
+        Returns
+        -------
+        bool
+            ``True`` if antipad is always on, ``False`` otherwise.
+
+        """
+        return self._active_cell.anti_pads_always_on
+
+    @anti_pads_always_on.setter
+    def anti_pads_always_on(self, value):
+        self._active_cell.anti_pads_always_on(value)

@@ -1190,6 +1190,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
                 layer_map,
             ),
         )
+    def get_hole_overrides(self):
+        return self.prim_obj.GetHoleOverrides()
 
     @property
     def padstack_def(self):
@@ -1281,7 +1283,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
 
     @solderball_layer.setter
     def solderball_layer(self, solderball_layer):
-        self.prim_obj.SetSolderBallLayer(solderball_layer)
+        self.prim_obj.SetSolderBallLayer(solderball_layer).GetName()
 
     @property
     def layer_map(self):

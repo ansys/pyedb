@@ -26,33 +26,35 @@ from pyedb.dotnet.database.general import pascal_to_snake, snake_to_pascal
 
 class CfgComponent(CfgBase):
     def retrieve_model_properties_from_edb(self):
-        c_p = self.pyedb_obj.component_property
-        model = c_p.GetModel().Clone()
+        c_p = self.pyedb_obj
 
-        if model.GetModelType().ToString() == "NetlistModel":
-            self.netlist_model["netlist"] = model.GetNetlist()
-        elif model.GetModelType().ToString() == "PinPairModel":
+        if "NetlistModel" in c_p.model_type:
+            self.netlist_model["netlist"] = c_p.netlist_model
+        elif "PinPairModel" in c_p.model_type:
             temp = {}
-            for i in model.PinPairs:
-                temp["first_pin"] = i.FirstPin
-                temp["second_pin"] = i.SecondPin
-                rlc = model.GetPinPairRlc(i)
-                temp["is_parallel"] = rlc.IsParallel
-                temp["resistance"] = rlc.R.ToString()
-                temp["resistance_enabled"] = rlc.REnabled
-                temp["inductance"] = rlc.L.ToString()
-                temp["inductance_enabled"] = rlc.LEnabled
-                temp["capacitance"] = rlc.C.ToString()
-                temp["capacitance_enabled"] = rlc.CEnabled
-                self.pin_pair_model.append(temp)
-        elif model.GetModelType().ToString() == "SParameterModel":
-            self.s_parameter_model["reference_net"] = model.GetReferenceNet()
-            self.s_parameter_model["model_name"] = model.GetComponentModelName()
-        elif model.GetModelType().ToString() == "SPICEModel":
-            self.spice_model["model_name"] = model.GetModelName()
-            self.spice_model["model_path"] = model.GetModelPath()
-            self.spice_model["sub_circuit"] = model.GetSubCkt()
-            self.spice_model["terminal_pairs"] = [[i, j] for i, j in dict(model.GetTerminalPinPairs()).items()]
+
+            pin_pairs = [i for i in c_p.pin_pairs[0]] if c_p.pin_pairs else []
+            if not pin_pairs:
+                return
+            temp["first_pin"] = pin_pairs[0]
+            temp["second_pin"] =  pin_pairs[1]
+
+            temp["is_parallel"] = c_p.is_parallel_rlc
+            temp["resistance"] = str(c_p.res_value)
+            temp["resistance_enabled"] = c_p.res_enabled
+            temp["inductance"] = str(c_p.ind_value)
+            temp["inductance_enabled"] = c_p.ind_enabled
+            temp["capacitance"] = str(c_p.cap_value)
+            temp["capacitance_enabled"] = c_p.cap_enabled
+            self.pin_pair_model.append(temp)
+        elif "SParameterModel" in c_p.model_type:
+            self.s_parameter_model["reference_net"] = c_p.model.reference_net
+            self.s_parameter_model["model_name"] = c_p.model.component_model_name
+        elif "SPICEModel" in c_p.model_type:
+            self.spice_model["model_name"] = c_p.model.model_name
+            self.spice_model["model_path"] = c_p.model.spice_file_path
+            self.spice_model["sub_circuit"] = c_p.model.sub_circuit
+            self.spice_model["terminal_pairs"] = c_p.model.pin_pairs
 
     def _set_ic_die_properties_to_edb(self):
         cp = self.pyedb_obj.component_property
@@ -177,33 +179,28 @@ class CfgComponent(CfgBase):
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()
-        cp = self.pyedb_obj.component_property
+        cp = self.pyedb_obj
 
-        ic_die_prop = cp.GetDieProperty().Clone()
-        die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
-        temp["type"] = die_type
-        if not die_type == "no_die":
-            temp["orientation"] = pascal_to_snake(ic_die_prop.GetOrientation().ToString())
-            if die_type == "wire_bond":
-                temp["height"] = ic_die_prop.GetHeightValue().ToString()
+        #ic_die_prop = cp.GetDieProperty().Clone()
+        #die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
+        temp["type"] = cp.ic_die_properties.die_type
+        if not temp["type"] == "no_die":
+            temp["orientation"] = cp.ic_die_properties.die_orientation
+            if temp["type"] == "wire_bond":
+                temp["height"] = str(cp.ic_die_properties.height)
         self.ic_die_properties = temp
 
     def _retrieve_solder_ball_properties_from_edb(self):
         temp = dict()
-        cp = self.pyedb_obj.component_property
-        solder_ball_prop = cp.GetSolderBallProperty().Clone()
-        _, diam, mid_diam = solder_ball_prop.GetDiameterValue()
-        height = solder_ball_prop.GetHeightValue().ToString()
-        shape = solder_ball_prop.GetShape().ToString()
-        material = solder_ball_prop.GetMaterialName()
-        uses_solder_ball = solder_ball_prop.UsesSolderball()
+        cp = self.pyedb_obj
+        uses_solder_ball = cp.uses_solderball
 
         temp["uses_solder_ball"] = uses_solder_ball
-        temp["shape"] = pascal_to_snake(shape)
-        temp["diameter"] = diam.ToString()
-        temp["mid_diameter"] = mid_diam.ToString()
-        temp["height"] = height
-        temp["material"] = material
+        temp["shape"] = cp.solder_ball_shape
+        temp["diameter"] = str(cp.solder_ball_diameter[0])
+        temp["mid_diameter"] = str(cp.solder_ball_diameter[1])
+        temp["height"] = str(cp.solder_ball_height)
+        temp["material"] = cp.solder_ball_material
         self.solder_ball_properties = temp
 
     def _retrieve_port_properties_from_edb(self):
@@ -213,14 +210,14 @@ class CfgComponent(CfgBase):
         if c_type not in ["ic", "io", "other"]:
             return
         else:
-            port_prop = cp.GetPortProperty().Clone()
-            reference_height = port_prop.GetReferenceHeightValue().ToString()
-            reference_size_auto = port_prop.GetReferenceSizeAuto()
-            _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
-            temp["reference_height"] = reference_height
-            temp["reference_size_auto"] = reference_size_auto
-            temp["reference_size_x"] = str(reference_size_x)
-            temp["reference_size_y"] = str(reference_size_y)
+            #port_prop = cp.GetPortProperty().Clone()
+            #reference_height = port_prop.GetReferenceHeightValue().ToString()
+            #reference_size_auto = port_prop.GetReferenceSizeAuto()
+            #_, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
+            temp["reference_height"] = str(cp.port_property.reference_height)
+            temp["reference_size_auto"] = cp.port_property.reference_size_auto
+            temp["reference_size_x"] = str(cp.port_property.get_reference_size()[0])
+            temp["reference_size_y"] = str(cp.port_property.get_reference_size()[1])
             self.port_properties = temp
 
     def set_parameters_to_edb(self):

@@ -126,58 +126,6 @@ class WavePort(EdgeTerminal):
         super().__init__(pedb, edb_terminal)
 
     @property
-    def horizontal_extent_factor(self) -> float:
-        """Horizontal extent factor.
-
-        Returns
-        -------
-        float
-            Extent value.
-        """
-        return self._hfss_port_property["Horizontal Extent Factor"]
-
-    @horizontal_extent_factor.setter
-    def horizontal_extent_factor(self, value):
-        p = self._hfss_port_property
-        p["Horizontal Extent Factor"] = value
-        self._hfss_port_property = p
-
-    @property
-    def vertical_extent_factor(self) -> float:
-        """Vertical extent factor.
-
-        Returns
-        -------
-        float
-            Vertical extent value.
-
-        """
-        return self._hfss_port_property["Vertical Extent Factor"]
-
-    @vertical_extent_factor.setter
-    def vertical_extent_factor(self, value):
-        p = self._hfss_port_property
-        p["Vertical Extent Factor"] = value
-        self._hfss_port_property = p
-
-    @property
-    def pec_launch_width(self) -> float:
-        """Launch width for the printed electronic component (PEC).
-
-        Returns
-        -------
-        float
-            Pec launch width value.
-        """
-        return self._hfss_port_property["PEC Launch Width"]
-
-    @pec_launch_width.setter
-    def pec_launch_width(self, value):
-        p = self._hfss_port_property
-        p["PEC Launch Width"] = value
-        self._hfss_port_property = p
-
-    @property
     def deembed(self) -> bool:
         """Whether deembed is active.
 

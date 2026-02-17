@@ -149,6 +149,36 @@ class PadstackInstance:
         )
         return cls(layout._pedb, inst)
 
+    def get_hole_overrides(self):
+        return self.core.get_hole_overrides()
+
+    @property
+    def backdrill_parameters(self):
+        data = {}
+        drill_to_layer, offset, diameter = self.get_back_drill_by_layer(True)
+
+        if drill_to_layer:
+            data["from_bottom"] = {
+                "drill_to_layer": drill_to_layer,
+                "diameter": str(diameter),
+                "stub_length": str(offset),
+            }
+        drill_to_layer, offset, diameter = self.get_back_drill_by_layer(False)
+
+        if drill_to_layer:
+            data["from_top"] = {
+                "drill_to_layer": drill_to_layer,
+                "diameter": str(diameter),
+                "stub_length": str(offset),
+            }
+        return data
+
+    @backdrill_parameters.setter
+    def backdrill_parameters(self, params):
+        from_bottom = params.get("from_bottom")
+        self.set_back_drill_by_depth(from_bottom.get("stub_length"), from_bottom.get("diameter"), from_bottom=from_bottom)
+
+
     @property
     def is_pin(self):
         """Property added for backward compatibility with earlier versions of pyEDB."""
@@ -763,7 +793,7 @@ class PadstackInstance:
         position = self.core.get_position_and_rotation()
         if self.component:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
-            self._position = [Value(out2[0]), Value(out2[1])]
+            self._position = [out2.x.value, out2.y.value]
         else:
             self._position = [Value(pt).value for pt in position[:2]]
         return self._position
@@ -1156,14 +1186,17 @@ class PadstackInstance:
          tuple (layer, offset, diameter) (str, [float, float], float).
 
         """
-        back_drill = self.core.get_back_drill_by_layer(from_bottom)
-        layer = back_drill[0].name
-        offset = Value(back_drill[1])
-        diameter = Value(back_drill[2])
-        return layer, offset, diameter
+        try:
+            back_drill = self.core.get_back_drill_by_layer(from_bottom)
+            layer = back_drill[0].name
+            offset = Value(back_drill[1])
+            diameter = Value(back_drill[2])
+            return layer, offset, diameter
+        except Exception:
+            return False, False,False
 
     def get_back_drill_by_depth(self, from_bottom=True) -> tuple[float, float]:
-        """Get back drill by depth parameters
+        """Get back drill by depth parameters.
         Parameters
         ----------
         from_bottom : bool, optional
@@ -1173,10 +1206,13 @@ class PadstackInstance:
         ------
         tuple (drill_depth, drill_diameter) (float, float)
         """
-        back_drill = self.core.get_back_drill_by_depth(from_bottom)
-        drill_depth = Value(back_drill[0])
-        drill_diameter = Value(back_drill[1])
-        return drill_depth, drill_diameter
+        try:
+            back_drill = self.core.get_back_drill_by_depth(from_bottom)
+            drill_depth = Value(back_drill[0])
+            drill_diameter = Value(back_drill[1])
+            return drill_depth, drill_diameter
+        except Exception:
+            return False, False
 
     def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True):
         """Set back drill by depth.

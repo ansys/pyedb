@@ -198,10 +198,10 @@ def Edb(
         7. Port Creation
 
         # Create wave port between two pins
-    >>> wave_port = edb.source_excitation.create_port(positive_terminal=pin1, negative_terminal=pin2, port_type="Wave")
+    >>> wave_port = edb.excitation_manager.create_port(positive_terminal=pin1, negative_terminal=pin2, port_type="Wave")
 
         # Create lumped port
-    >>> lumped_port = edb.source_excitation.create_port(positive_terminal=via_terminal, port_type="Lumped")
+    >>> lumped_port = edb.excitation_manager.create_port(positive_terminal=via_terminal, port_type="Lumped")
 
         8. Component Management
 

@@ -50,7 +50,7 @@ class SparamModel:  # pragma: no cover
             The name of the S-parameter model.
 
         """
-        return self.core.name
+        return self.core.component_model
 
     @name.setter
     def name(self, value):
@@ -62,7 +62,31 @@ class SparamModel:  # pragma: no cover
             The new name for the S-parameter model.
 
         """
-        self.core.name = value
+        self.core.component_model = value
+
+    @property
+    def component_model_name(self):
+        """Get the name of the S-parameter model.
+
+        Returns
+        -------
+        str
+            The name of the S-parameter model.
+
+        """
+        return self.core.component_model
+
+    @component_model_name.setter
+    def component_model_name(self, value):
+        """Set the name of the S-parameter model.
+
+        Parameters
+        ----------
+        value : str
+            The new name for the S-parameter model.
+
+        """
+        self.core.component_model = value
 
     @property
     def reference_net(self):
