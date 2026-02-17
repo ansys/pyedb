@@ -303,7 +303,7 @@ class PadstackDef:
         """
         return [
             i
-            for i in list(self._pedb.padstacks.instances.values())
+            for i in self._pedb.padstacks.instances.values()
             if not i.is_null and i.padstack_def.name == self.core.name
         ]
 

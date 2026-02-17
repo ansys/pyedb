@@ -177,7 +177,6 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_1(self):
-        # Done
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False

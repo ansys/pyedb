@@ -27,6 +27,7 @@ from pathlib import Path
 
 import pytest
 
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -36,7 +37,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_hfss_log_parser(self):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
@@ -73,7 +73,6 @@ class TestClass(BaseTestClass):
         hfss_auto_config.create_projects()
         assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_drc_rules(self):
         from pyedb.workflows.drc.drc import Rules
 
@@ -129,7 +128,6 @@ class TestClass(BaseTestClass):
         assert os.path.isfile(output_file)
         edbapp.close()
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_siwave_log_parser(self):
         from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
 
@@ -145,3 +143,19 @@ class TestClass(BaseTestClass):
         # Test helper methods
         assert log_parser.is_completed()
         assert not log_parser.is_aborted()
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Only implemented in gRPC")
+    def test_physical_merge(self):
+        main_board = self.edb_examples.get_si_verse()
+        merged_package = self.edb_examples.get_package()
+        main_board.physical_merge(merged_edb=merged_package, vector=(0, 0.4e-3), prefix="test_")
+        assert len(main_board.stackup.layers) == 24  # nosec: B101
+        assert "test_TOP" in main_board.stackup.layers  # nosec: B101
+        assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424  # nosec: B101
+        component_on_merged_layer = [
+            comp for comp in list(main_board.components.instances.values()) if comp.placement_layer == "test_TOP"
+        ]
+        assert len(component_on_merged_layer) == 1  # nosec: B101
+        assert not component_on_merged_layer[0].is_null  # nosec: B101
+        assert component_on_merged_layer[0].type == "other"  # nosec: B101
+        main_board.close()

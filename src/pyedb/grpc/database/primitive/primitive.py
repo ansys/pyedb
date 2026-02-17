@@ -382,7 +382,7 @@ class Primitive:
         if self.type == "path":
             polygon = self._pedb.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
             self.core.delete()
-            self._pedb.modeler._reload_all()
+            self._pedb.modeler.clear_cache()
             return polygon
         else:
             return False
@@ -512,10 +512,11 @@ class Primitive:
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
         """
-        if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = [Value(pt) for pt in vector]
-            self.core.cast().polygon_data = self.polygon_data.move(_vector)
-            return True
+        if hasattr(self, "polygon_data"):
+            if vector and isinstance(vector, list) and len(vector) == 2:
+                _vector = [Value(pt) for pt in vector]
+                self.core.cast().polygon_data = self.core.cast().polygon_data.move(_vector)
+                return True
         return False
 
     def scale(self, factor, center=None) -> bool:
@@ -541,7 +542,7 @@ class Primitive:
                 center = CorePointData([Value(center[0]), Value(center[1])])
             else:
                 self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
-            self.cast().polygon_data = self.polygon_data.scale(factor, center)
+            self.core.cast().polygon_data = self.polygon_data.scale(factor, center)
             return True
         return False
 
@@ -592,7 +593,7 @@ class Primitive:
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.core.delete()
-        self._pedb.modeler._reload_all()
+        self._pedb.modeler.clear_cache()
         return new_polys
 
     def intersect(self, primitives) -> list[Any]:
@@ -820,7 +821,7 @@ class Primitive:
 
     @property
     def edb_uid(self):
-        return self.core.edb_uid
+        return self.core.edb_uid  # grpc has introduced id and edb_uid while dotnet got only edb_uid equivalent.
 
     @property
     def primitive_type(self):
@@ -904,43 +905,6 @@ class Primitive:
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 
-    def scale(self, factor, center=None) -> bool:
-        """Scales the polygon relative to a center point by a factor.
-
-        Parameters
-        ----------
-        factor : float
-            Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
-
-        Returns
-        -------
-        bool
-           ``True`` when successful, ``False`` when failed.
-        """
-        if not isinstance(factor, str):
-            factor = float(factor)
-            from ansys.edb.core.geometry.polygon_data import (
-                PolygonData as GrpcPolygonData,
-            )
-
-            polygon_data = GrpcPolygonData(points=self.core.cast().polygon_data.points)
-            if not center:
-                center = polygon_data.bounding_circle()[0]
-                if center:
-                    polygon_data.scale(factor, center)
-                    self.core.cast().polygon_data = polygon_data
-                    return True
-                else:
-                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
-            elif isinstance(center, list) and len(center) == 2:
-                center = CorePointData(center)
-                polygon_data.scale(factor, center)
-                self.core.cast().polygon_data = polygon_data
-                return True
-        return False
-
     def plot(self, plot_net=False, show=True, save_plot=None):
         """Plot the current polygon on matplotlib.
 
@@ -1003,3 +967,7 @@ class Primitive:
         elif show:
             plt.show()
         return ax, fig
+
+    def delete(self):
+        """Delete the primitive."""
+        self.core.delete()

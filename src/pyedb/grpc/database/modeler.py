@@ -98,10 +98,6 @@ class Modeler(object):
         """Initialize Modeler instance."""
         self._pedb = p_edb
         # Core cache
-        self._primitives: dict[str, Primitive] = {}
-
-        # Lazy indexes
-        self.primitives  # type: ignore  # Force initial load
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
@@ -112,98 +108,16 @@ class Modeler(object):
     # Cache management
     # ============================================================
 
-    def _reload_all(self):
+    def clear_cache(self):
         """Force reload of all primitives and reset indexes."""
-        self._primitives = {p.edb_uid: p for p in self._pedb.layout.primitives}
         self._primitives_by_name = None
         self._primitives_by_net = None
         self._primitives_by_layer = None
         self._primitives_by_layer_and_net = None
 
-    def _add_primitive(self, prim: Any):
-        """Add primitive wrapper to caches."""
-        try:
-            self._primitives[prim.id] = prim
-            if self._primitives_by_name is not None:
-                self._primitives_by_name[prim.aedt_name] = prim
-            if self._primitives_by_net is not None and hasattr(prim, "net"):
-                self._primitives_by_net.setdefault(prim.net, []).append(prim)
-            if hasattr(prim, "layer"):
-                if self._primitives_by_layer is not None and prim.layer_name:
-                    self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
-        except:
-            self._reload_all()
-
-    def _remove_primitive(self, prim: Primitive):
-        """Remove primitive wrapper from all caches efficiently and safely."""
-        uid = prim.edb_uid
-
-        # 1. Remove from primary cache
-        self._primitives.pop(uid, None)
-
-        # 2. Remove from name cache if initialized
-        if self._primitives_by_name is not None:
-            self._primitives_by_name.pop(prim.aedt_name, None)
-
-        # 3. Remove from net cache if initialized
-        if self._primitives_by_net is not None and hasattr(prim, "net") and not prim.net.is_null:
-            net_name = prim.net.name
-            net_prims = self._primitives_by_net.get(net_name)
-            if net_prims:
-                try:
-                    net_prims.remove(prim)
-                except ValueError:
-                    pass  # Not found, skip
-                if not net_prims:
-                    self._primitives_by_net.pop(net_name, None)
-
-        # 4. Remove from layer cache if initialized
-        if self._primitives_by_layer is not None and hasattr(prim, "layer") and prim.layer_name:
-            layer_name = prim.layer.name
-            layer_prims = self._primitives_by_layer.get(layer_name)
-            if layer_prims:
-                try:
-                    layer_prims.remove(prim)
-                except ValueError:
-                    pass
-                if not layer_prims:
-                    self._primitives_by_layer.pop(layer_name, None)
-
-        # 5. Remove from layer+net cache if initialized
-        if self._primitives_by_layer_and_net is not None:
-            if hasattr(prim, "layer") and hasattr(prim, "net") and not prim.net.is_null:
-                layer_name = prim.layer.name
-                net_name = prim.net.name
-                layer_dict = self._primitives_by_layer_and_net.get(layer_name)
-                if layer_dict:
-                    net_list = layer_dict.get(net_name)
-                    if net_list:
-                        try:
-                            net_list.remove(prim)
-                        except ValueError:
-                            pass
-                        if not net_list:
-                            layer_dict.pop(net_name, None)
-                        if not layer_dict:
-                            self._primitives_by_layer_and_net.pop(layer_name, None)
-
-    def delete_batch_primitives(self, prim_list: List[Primitive]) -> None:
-        """Delete a batch of primitives and update caches.
-
-        Parameters
-        ----------
-        prim_list : list
-            List of primitive objects to delete.
-        """
-        for prim in prim_list:
-            prim.core.delete()
-        self._reload_all()
-
     @property
     def primitives(self) -> list[Primitive]:
-        if not self._primitives:
-            self._reload_all()
-        return list(self._primitives.values())
+        return self._pedb.layout.primitives
 
     @property
     def primitives_by_name(self):
@@ -752,7 +666,6 @@ class Modeler(object):
             end_cap_style=end_cap_style,
             corner_style=corner_style,
         )
-        self._add_primitive(primitive)  # update cache
         return primitive
 
     def create_polygon(
@@ -761,7 +674,7 @@ class Modeler(object):
         layer_name: str,
         voids: Optional[List[Any]] = [],
         net_name: str = "",
-    ) -> Optional[Primitive]:
+    ) -> Union[Optional[Primitive], bool]:
         """Create polygon primitive.
 
         Parameters
@@ -811,7 +724,6 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
-        self._add_primitive(polygon)
         return polygon
 
     def create_rectangle(
@@ -900,7 +812,6 @@ class Modeler(object):
                 rotation=Value(rotation),
             )
         if not rect.is_null:
-            self._add_primitive(rect)
             return rect
         return False
 
@@ -938,7 +849,6 @@ class Modeler(object):
             radius=Value(radius),
         )
         if not circle.is_null:
-            self._add_primitive(circle)
             return circle
         return False
 
@@ -1168,34 +1078,35 @@ class Modeler(object):
             for net, polys in poly_by_nets.items():
                 if net in net_names_list or not net_names_list:
                     for p in polys:
-                        list_polygon_data.append(p.polygon_data)
+                        list_polygon_data.append(p.core.polygon_data)
                         delete_list.append(p)
-                        all_voids.extend(p.voids)
+                        all_voids.extend([v for v in p.voids])
             united = CorePolygonData.unite(list_polygon_data)
             for item in united:
+                _added_voids = []
                 for void in all_voids:
-                    if item.intersection_type(void.polygon_data) == 2:
-                        item.add_hole(void.polygon_data)
-                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
+                    if item.intersection_type(void.core.polygon_data).value == 2:
+                        _added_voids.append(void)
+                self.create_polygon(item, layer_name=lay, voids=_added_voids, net_name=net)
             for void in all_voids:
                 for poly in poly_by_nets[net]:  # pragma no cover
-                    if void.polygon_data.intersection_type(poly.polygon_data) >= 2:
+                    if void.core.polygon_data.intersection_type(poly.core.polygon_data).value >= 2:
                         try:
                             id = delete_list.index(poly)
                         except ValueError:
                             id = -1
                         if id >= 0:
                             delete_list.pop(id)
-            for poly in list(set(delete_list)):
+            self.clear_cache()
+            for poly in delete_list:
                 poly.delete()
-
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
             for pad in self._pedb.padstacks.definitions:
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
                 if len(p1.get_layer_names()) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
-        self._reload_all()
+        self.clear_cache()
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
@@ -1370,7 +1281,6 @@ class Modeler(object):
             end_cell_inst=end_cell_inst,
             start_cell_inst=start_cell_inst,
         )
-        self._add_primitive(bw)
         return bw
 
     def create_pin_group(

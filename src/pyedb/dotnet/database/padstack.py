@@ -65,15 +65,14 @@ class EdbPadstacks(object):
 
         """
         if isinstance(name, int) and name in self.instances:
-            return self.instances(name)
+            return self.instances
         elif name in self.definitions:
             return self.definitions[name]
         else:
-            for i in list(self.instances.values()):
+            for i in self.instances.values():
                 if i.name == name or i.aedt_name == name:
                     return i
-        self._pedb.logger.error("Component or definition not found.")
-        return
+        return None
 
     def __init__(self, p_edb):
         self._pedb = p_edb
@@ -223,10 +222,10 @@ class EdbPadstacks(object):
             List of padstack instances.
 
         """
-        edb_padstack_inst_list = self._pedb.layout.padstack_instances
-        if len(self._instances) == len(edb_padstack_inst_list):
-            return self._instances
-        self._instances = {i.id: i for i in edb_padstack_inst_list}
+        # edb_padstack_inst_list = self._pedb.layout.padstack_instances
+        # if len(self._instances) == len(edb_padstack_inst_list):
+        #     return self._instances
+        self._instances = {i.id: i for i in self._pedb.layout.padstack_instances}
         return self._instances
 
     @property
@@ -240,7 +239,7 @@ class EdbPadstacks(object):
 
         """
         padstack_instances = {}
-        for _, edb_padstack_instance in self.instances.items():
+        for edb_padstack_instance in self.instances.values():
             if edb_padstack_instance.aedt_name:
                 padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
         return padstack_instances
@@ -270,9 +269,9 @@ class EdbPadstacks(object):
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
         pins = {}
-        for instancename, instance in self.instances.items():
+        for instance in self.instances.values():
             if instance.is_pin and instance.component:
-                pins[instancename] = instance
+                pins[instance.name] = instance
         return pins
 
     @property
@@ -281,7 +280,7 @@ class EdbPadstacks(object):
 
         Returns
         -------
-        dic[str, :class:`dotnet.database.edb_data.definitions.EDBPadstackInstance`]
+        list[:class:`dotnet.database.edb_data.definitions.EDBPadstackInstance`]
             Dictionary of EDBPadstackInstance Components.
 
 
@@ -291,7 +290,7 @@ class EdbPadstacks(object):
         >>> pin_net_name = edbapp.pins[424968329].netname
         """
         pnames = list(self.pins.keys())
-        vias = {i: j for i, j in self.instances.items() if i not in pnames}
+        vias = {via_id: inst for via_id, inst in self.instances.items() if via_id not in pnames}
         return vias
 
     @property
@@ -1632,20 +1631,20 @@ class EdbPadstacks(object):
         elif name:
             return self.instances_by_name[name]
         else:
-            instances = list(instances_by_id.values())
+            instances = instances_by_id
             if definition_name:
                 definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
-                instances = [inst for inst in instances if inst.padstack_definition in definition_name]
+                instances = [inst for inst in instances.values() if inst.padstack_definition in definition_name]
             if net_name:
                 net_name = net_name if isinstance(net_name, list) else [net_name]
-                instances = [inst for inst in instances if inst.net_name in net_name]
+                instances = [inst for inst in instances.values() if inst.net_name in net_name]
             if component_reference_designator:
                 refdes = (
                     component_reference_designator
                     if isinstance(component_reference_designator, list)
                     else [component_reference_designator]
                 )
-                instances = [inst for inst in instances if inst.component]
+                instances = [inst for inst in instances.values() if inst.component]
                 instances = [inst for inst in instances if inst.component.refdes in refdes]
                 if component_pin:
                     component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
@@ -1751,11 +1750,11 @@ class EdbPadstacks(object):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
         if nets:
-            instances = [inst for inst in list(self.instances.values()) if inst.net_name in nets]
+            instances = {inst_id: inst for inst_id, inst in self.instances.items() if inst.net_name in nets}
         else:
-            instances = list(self.instances.values())
-        for inst in instances:
-            padstack_instances_index.insert(inst.id, inst.position)
+            instances = self.instances
+        for inst_id, inst in instances.items():
+            padstack_instances_index.insert(inst_id, inst.position)
         return padstack_instances_index
 
     def get_padstack_instances_id_intersecting_polygon(self, points, nets=None, padstack_instances_index=None):
@@ -1849,8 +1848,8 @@ class EdbPadstacks(object):
             raise Exception("No contour box provided, you need to pass a nested list as argument.")
 
         instances_index = {}
-        for id, inst in self.instances.items():
-            instances_index[id] = inst.position
+        for inst in self.instances.values():
+            instances_index[inst.id] = inst.position
         for contour_box in contour_boxes:
             all_instances = self.instances
             instances = self.get_padstack_instances_id_intersecting_polygon(
@@ -1883,7 +1882,7 @@ class EdbPadstacks(object):
                 if not stop_layer:
                     stop_layer = list(self._pedb.stackup.layers.values())[-1].name
 
-                net = self.instances[instances[0]].net_name
+                net = all_instances[instances[0]].net_name
                 x_values = []
                 y_values = []
                 for inst in instances:
@@ -1905,7 +1904,7 @@ class EdbPadstacks(object):
                     polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
                     polygon_data = polygon.polygon_data
                     polygon.delete()
-                    new_padstack_def = generate_unique_name(self.instances[instances[0]].definition.name)
+                    new_padstack_def = generate_unique_name(all_instances[instances[0]].definition.name)
                     if not self.create(
                         padstackname=new_padstack_def,
                         pad_shape="Polygon",
@@ -1921,7 +1920,7 @@ class EdbPadstacks(object):
                     merged_instance.start_layer = start_layer
                     merged_instance.stop_layer = stop_layer
 
-                    merged_via_ids.append(merged_instance.id)
+                    merged_via_ids.append(merged_instance)
                     _ = [all_instances[id].delete() for id in instances]
         return merged_via_ids
 
@@ -1966,9 +1965,7 @@ class EdbPadstacks(object):
             List[int], list of created padstack instances id.
 
         """
-        _def = list(
-            set([inst.padstack_definition for inst in list(self.instances.values()) if inst.net_name == net_name])
-        )
+        _def = list(set([inst.padstack_definition for inst in self.instances.values() if inst.net_name == net_name]))
         if not _def:
             self._logger.error(f"No padstack definition found for net {net_name}")
             return False
@@ -2052,7 +2049,8 @@ class EdbPadstacks(object):
                 return False
             else:
                 # extract ids and positions
-                vias = {item: self.instances[item].position for item in padstacks_inbox}
+                all_instances = self.instances
+                vias = {item: all_instances[item].position for item in padstacks_inbox}
                 ids, positions = zip(*vias.items())
                 pt_x, pt_y = zip(*positions)
 
@@ -2069,8 +2067,6 @@ class EdbPadstacks(object):
                     ids[np.argmin(np.square(_x - pt_x) + np.square(_y - pt_y))]
                     for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
                 }
-
-                all_instances = self.instances
                 for item in padstacks_inbox:
                     if item not in to_keep:
                         all_instances[item].delete()

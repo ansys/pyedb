@@ -103,7 +103,6 @@ class SourceExcitationInternal:
         for term in list(self._pedb.terminals.values()):
             if term.name == term_name:
                 return term
-        self._pedb.padstacks.clear_instances_cache()
         return PadstackInstanceTerminal.create(
             layout=self._pedb.layout, name=term_name, padstack_instance=pin, layer=from_layer, net=pin.net, is_ref=False
         )
@@ -1252,8 +1251,6 @@ class SourceExcitation(SourceExcitationInternal):
         else:
             self._pedb.logger.error("No valid source type specified.")
             return False
-        # clear cache to reflect new terminal in the padstack instances
-        self._pedb.padstacks.clear_instances_cache()
         return pos_terminal.name
 
     def create_voltage_source_on_pin(

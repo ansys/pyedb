@@ -31,7 +31,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
 from pyedb.generic.general_methods import is_windows
-from tests.conftest import GRPC, config, local_path, test_subfolder
+from tests.conftest import GRPC, config, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -63,7 +63,6 @@ class TestClass(BaseTestClass):
 
     def test_create_with_packstack_name(self):
         """Create a padstack"""
-        # Create myVia
         edbapp = self.edb_examples.get_si_verse()
         edbapp.padstacks.create(padstackname="myVia")
         assert "myVia" in list(edbapp.padstacks.definitions.keys())
@@ -317,7 +316,7 @@ class TestClass(BaseTestClass):
     def test_vias_metal_volume(self):
         """Metal volume of the via hole instance."""
         edbapp = self.edb_examples.get_si_verse()
-        vias = [via for via in list(edbapp.padstacks.instances.values()) if not via.start_layer == via.stop_layer]
+        vias = [via for via in edbapp.padstacks.instances.values() if not via.start_layer == via.stop_layer]
         assert vias[0].metal_volume
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
@@ -422,7 +421,7 @@ class TestClass(BaseTestClass):
     def test_update_padstacks_after_layer_name_changed(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
-        signal_layer_list = [layer for layer in list(edbapp.stackup.layers.values()) if layer.type == "signal"]
+        signal_layer_list = [layer for layer in edbapp.stackup.layers.values() if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):
             new_name = f"new_signal_name_{n_layer}"
@@ -430,7 +429,7 @@ class TestClass(BaseTestClass):
             layer.name = new_name
         for layer_name in list(edbapp.stackup.layers.keys()):
             print(f"New layer name is {layer_name}")
-        for padstack_inst in list(edbapp.padstacks.instances.values()):
+        for padstack_inst in edbapp.padstacks.instances.values():
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
         edbapp.close_edb()
 
@@ -440,6 +439,7 @@ class TestClass(BaseTestClass):
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
 
+    @pytest.mark.skipif(not use_grpc, reason="Unstable test with DotNet causing worker crash.")
     def test_padstack_instances_rtree_index(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -543,10 +543,9 @@ class TestClass(BaseTestClass):
             start_layer="layer1",
             stop_layer="layer2",
         )
-
-        assert edbapp.padstacks.instances[merged_via[0]].net_name == "NET_1"
-        assert edbapp.padstacks.instances[merged_via[0]].start_layer == "layer1"
-        assert edbapp.padstacks.instances[merged_via[0]].stop_layer == "layer2"
+        assert merged_via[0].net_name == "NET_1"
+        assert merged_via[0].start_layer == "layer1"
+        assert merged_via[0].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
@@ -560,8 +559,8 @@ class TestClass(BaseTestClass):
         clusters1 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
         # all nets two clusters with 21 vias each
-        inst = edbapp.padstacks.instances
-        all_vias = {id_: i.position for id_, i in inst.items()}
+        inst = edbapp.padstacks.instances.values()
+        all_vias = {i.id: i.position for i in inst}
         clusters2 = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
         assert len(clusters1) == 1
@@ -575,7 +574,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.load_edb(source_path)
 
         inst = edbapp.padstacks.instances
-        all_vias = {id_: i.position for id_, i in inst.items()}
+        all_vias = {i.id: i.position for i in inst.values()}
         clusters = edbapp.padstacks.dbscan(all_vias, max_distance=2e-3, min_samples=3)
 
         kept_2mm, grid_2mm = edbapp.padstacks.reduce_via_by_density(clusters[0], cell_size_x=2e-3, cell_size_y=2e-3)

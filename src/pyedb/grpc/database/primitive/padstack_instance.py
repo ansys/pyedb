@@ -282,10 +282,6 @@ class PadstackInstance:
 
     def delete(self):
         """Delete the padstack instance."""
-        try:
-            self._pedb.padstacks._instances.pop(self.core.edb_uid, None)
-        except Exception:
-            self._pedb.padstacks.clear_instances_cache()
         self.core.delete()
 
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
