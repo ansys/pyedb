@@ -210,12 +210,12 @@ class Layout:
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self) -> List[PadstackInstance]:
+    def padstack_instances(self) -> dict[int, PadstackInstance]:
         """Get all padstack instances in a list."""
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         pad_stack_inst = self.core.padstack_instances
-        self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in pad_stack_inst]
+        self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
         return self.__padstack_instances
 
     @property
@@ -292,35 +292,34 @@ class Layout:
         List
             A list of padstack instances matching the specified criteria.
         """
-        padstacks = self.padstack_instances
+        padstack_instances = self._pedb.padstacks.instances
         instances_found = []
         if instance_id is not None:
             instance_ids = instance_id if isinstance(instance_id, list) else [instance_id]
-            for i in padstacks:
+            for pid, i in padstack_instances.items():
                 if i.id in instance_ids:
                     instances_found.append(i)
-
         if aedt_name is not None:
             name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
-            [instances_found.append(i) for i in padstacks if i.aedt_name in name]
+            [instances_found.append(i) for i in padstack_instances.values() if i.aedt_name in name]
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
-            for inst in padstacks:
+            for pid, inst in padstack_instances.items():
                 if inst.component:
                     if inst.component.name in value:
                         instances_found.append(inst)
 
         if net_name is not None:
             value = net_name if isinstance(net_name, list) else [net_name]
-            for inst in padstacks:
+            for inst in padstack_instances.values():
                 if inst.net:
                     if inst.net.name in value:
                         instances_found.append(inst)
 
         if component_pin_name is not None:
             value = component_pin_name if isinstance(component_name, list) else [component_pin_name]
-            for inst in padstacks:
+            for inst in padstack_instances.values():
                 if inst.component:
                     if hasattr(inst, "name"):
                         if inst.name in value:

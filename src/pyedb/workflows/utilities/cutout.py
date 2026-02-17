@@ -552,8 +552,8 @@ class GrpcCutout:
 
         # padstacks
         pins_to_delete, reference_pinsts = [], []
-        for p in all_padstack_instances:
-            if p.id in pins_to_preserve:
+        for pid, p in all_padstack_instances.items():
+            if pid in pins_to_preserve:
                 continue
             if p.net_name not in full_list:
                 pins_to_delete.append(p)

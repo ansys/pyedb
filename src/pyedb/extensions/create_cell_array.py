@@ -196,7 +196,7 @@ def __create_array_from_unit_cell_impl(
         for path in paths:
             adapter.duplicate_path(path, dx, dy, i, j)
         # Stand-alone vias
-        for via in (v for v in vias if not v.component):
+        for via in (v for v in vias.values() if not v.component):
             adapter.duplicate_standalone_via(via, dx, dy, i, j)
         cell_count += 1
         edb.logger.info(f"Replicated cell {cell_count} of {total_number} ({(cell_count / total_number) * 100:.1f}%)")

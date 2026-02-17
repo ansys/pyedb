@@ -3005,7 +3005,7 @@ class Edb(EdbInit):
             signal_nets = list(self.nets.signal.keys())
 
         used_padstack_defs = []
-        padstack_instances_dict = {inst.id: inst for inst in self.padstacks.instances}
+        padstack_instances_dict = self.padstacks.instances
         padstack_instances_index = rtree.index.Index()
         for _, inst in padstack_instances_dict.items():
             if reference_layer not in [inst.start_layer, inst.stop_layer]:

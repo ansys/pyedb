@@ -248,7 +248,7 @@ def physical_merge(
     if show_progress:
         # print initial progress (0/total)
         print_progress(0, total_padstacks, start, prefix_desc="Merging padstacks")
-    for padstack_inst in padstack_instances:
+    for padstack_inst in padstack_instances.values():
         padstack_count += 1
         # update terminal progress every 50 items or on last item
         if padstack_count % 50 == 0 or padstack_count == total_padstacks:
