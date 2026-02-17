@@ -180,11 +180,11 @@ class BundleTerminal(Terminal):
 
     @term_to_ground.setter
     def term_to_ground(self, value):
-        if value.upper() == "no_ground":
+        if value.lower() == "no_ground":
             self.core.term_to_ground = CoreSourceTermToGroundType.NO_GROUND
-        elif value.upper() == "negative":
+        elif value.lower() == "negative":
             self.core.term_to_ground = CoreSourceTermToGroundType.NEGATIVE
-        elif value.upper() == "positive":
+        elif value.lower() == "positive":
             self.core.term_to_ground = CoreSourceTermToGroundType.POSITIVE
 
     @property
