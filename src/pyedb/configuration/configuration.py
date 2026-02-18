@@ -712,7 +712,7 @@ class Configuration:
                 solder_ball_parameters=obj.get_solder_parameters(),
             )
 
-        for obj in self._pedb.layout.padstack_instances:
+        for obj in self._pedb.layout.padstack_instances.values():
             position = obj.position
             rotation = obj.rotation
             hole_override_enabled, hole_override_diameter = obj.get_hole_overrides()
@@ -742,8 +742,9 @@ class Configuration:
             pdef_obj = self._pedb.padstacks.definitions[pdef.name]
             set_padstack_definition(pdef, pdef_obj)
 
+        insts_by_name = self._pedb.padstacks.instances_by_name
         for inst in padstacks.instances:
-            inst_obj = self._pedb.padstacks.instances_by_name[inst.name]
+            inst_obj = insts_by_name[inst.name]
             set_padstack_instance(inst, inst_obj)
 
     def get_data_from_db(self, **kwargs):

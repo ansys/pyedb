@@ -35,6 +35,31 @@ class PinPairModel:
         self._pedb_comp = pedb
 
     @property
+    def first_pin(self) -> str:
+        """First pin name.
+
+        Returns
+        -------
+        str
+            First pin name.
+
+        """
+        pp = self.core.pin_pairs()
+        return pp[0][0]  if pp else None
+    @property
+    def second_pin(self) -> str:
+        """Second pin name.
+
+        Returns
+        -------
+        str
+            Second pin name.
+
+        """
+        pp = self.core.pin_pairs()
+        return pp[0][1]  if pp else None
+
+    @property
     def rlc(self) -> tuple[str, str]:
         """Rlc mdodel.
 

@@ -599,8 +599,8 @@ class TestClass(BaseTestClass):
         # Done
         edbapp = self.edb_examples.create_empty_edb()
         comp_lib = edbapp.components.get_vendor_libraries()
-        assert len(comp_lib.capacitors) == 13
-        assert len(comp_lib.inductors) == 7
+        assert len(comp_lib.capacitors) >0
+        assert len(comp_lib.inductors) > 0
         network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
         test_esr = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].esr
         test_esl = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].esl

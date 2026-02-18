@@ -90,9 +90,11 @@ class Component:
         self._package_def = None
 
     @property
-    def pin_pairs(self) -> list[tuple]:
+    def pin_pairs(self) -> List[PinPairModel]:
         """Pinpairs of the model."""
-        return self.model.pin_pairs()
+        if "PinPairModel" in str(self.model):
+            return [PinPairModel(self._pedb, self.model)]
+        return None
 
     @property
     def group_type(self):
@@ -757,7 +759,7 @@ class Component:
         self.core.component_property = comp_prop
 
     @property
-    def rlc_enabled(self) -> bool:
+    def rlc_enable(self) -> bool:
         """RLC enabled flag.
 
         Returns
