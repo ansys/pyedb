@@ -4730,7 +4730,7 @@ class Edb:
 
         used_padstack_defs = []
         padstack_instances_index = rtree.index.Index()
-        for padstack_inst in self.padstacks.instances.values():
+        for padstack_inst in self.padstacks.instances:
             if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
                 padstack_inst.delete()
             else:
