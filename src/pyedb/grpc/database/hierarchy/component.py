@@ -757,6 +757,19 @@ class Component:
         self.core.component_property = comp_prop
 
     @property
+    def rlc_enabled(self) -> bool:
+        """RLC enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if RLC is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return [self._rlc[0].r_enabled, self._rlc[0].l_enabled, self._rlc[0].c_enabled]
+        return [False, False, False]
+    
+    @property
     def res_enabled(self) -> bool:
         """Resistance enabled flag.
 

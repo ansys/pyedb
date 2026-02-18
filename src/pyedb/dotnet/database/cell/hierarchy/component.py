@@ -59,7 +59,7 @@ class ICDieProperties:
     @property
     def die_type(self):
         if str(self._edb_object.GetType()) == "NoDie":
-            return "none"
+            return "no_die"
         elif str(self._edb_object.GetType()) == "FlipChip":
             return "flip_chip"
         return "none"
@@ -173,6 +173,13 @@ class EDBComponent(Group):
         ]
 
     @property
+    def pin_pairs(self):
+        """Pin pair model if assigned."""
+        if self.model_type == "RLC":
+            return self._pin_pairs
+        return []
+    
+    @property
     def model(self):
         """Component model."""
         edb_object = self.component_property.core.GetModel().Clone()
@@ -221,8 +228,9 @@ class EDBComponent(Group):
     @ic_die_properties.setter
     def ic_die_properties(self, value):
         component_property = self.component_property.core
-        component_property.SetDieProperties(value)
-        self.edbcomponent.SetComponentProperty(component_property)
+        component_property.SetDieProperty(value)
+        self.component_property = component_property
+        self._ic_die_properties = None
 
     def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
@@ -536,16 +544,8 @@ class EDBComponent(Group):
         str
             Resistance value or ``None`` if not an RLC type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
-        if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.R.ToDouble()
+        if self._pin_pairs:
+            return self._pin_pairs[0].resistance
         return None
 
     @res_value.setter
@@ -557,6 +557,28 @@ class EDBComponent(Group):
                 self.rlc_values = [value, self.rlc_values[1], self.rlc_values[2]]
 
     @property
+    def rlc_enable(self):
+        if self._pin_pairs:
+            return self._pin_pairs[0].rlc_enable
+
+    @rlc_enable.setter
+    def rlc_enable(self, value):
+        if self._pin_pairs:
+            self._pin_pairs[0].rlc_enable = value
+
+    @property
+    def first_pin(self):
+        if self._pin_pairs:
+            return self._pin_pairs[0].first_pin
+        return None
+    
+    @property
+    def second_pin(self):
+        if self._pin_pairs:
+            return self._pin_pairs[0].second_pin
+        return None
+
+    @property
     def cap_value(self):
         """Capacitance Value.
 
@@ -565,16 +587,8 @@ class EDBComponent(Group):
         str
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
-        if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.C.ToDouble()
+        if self._pin_pairs:
+            return self._pin_pairs[0].capacitance
         return None
 
     @cap_value.setter
@@ -594,16 +608,8 @@ class EDBComponent(Group):
         str
             Inductance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
-        if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.L.ToDouble()
+        if self._pin_pairs:
+            return self._pin_pairs[0].inductance
         return None
 
     @ind_value.setter

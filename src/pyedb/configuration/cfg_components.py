@@ -30,22 +30,22 @@ class CfgComponent(CfgBase):
 
         if "NetlistModel" in c_p.model_type:
             self.netlist_model["netlist"] = c_p.netlist_model
-        elif "PinPairModel" in c_p.model_type:
+        elif "PinPairModel" in c_p.model_type or "RLC" in c_p.model_type:
             temp = {}
 
-            pin_pairs = [i for i in c_p.pin_pairs[0]] if c_p.pin_pairs else []
+            pin_pairs = c_p.pin_pairs[::]
             if not pin_pairs:
                 return
-            temp["first_pin"] = pin_pairs[0]
-            temp["second_pin"] =  pin_pairs[1]
+            temp["first_pin"] = pin_pairs[0].first_pin
+            temp["second_pin"] =  pin_pairs[0].second_pin
 
             temp["is_parallel"] = c_p.is_parallel_rlc
             temp["resistance"] = str(c_p.res_value)
-            temp["resistance_enabled"] = c_p.res_enabled
+            temp["resistance_enabled"] = c_p.rlc_enable[0]
             temp["inductance"] = str(c_p.ind_value)
-            temp["inductance_enabled"] = c_p.ind_enabled
+            temp["inductance_enabled"] = c_p.rlc_enable[1]
             temp["capacitance"] = str(c_p.cap_value)
-            temp["capacitance_enabled"] = c_p.cap_enabled
+            temp["capacitance_enabled"] = c_p.rlc_enable[2]
             self.pin_pair_model.append(temp)
         elif "SParameterModel" in c_p.model_type:
             self.s_parameter_model["reference_net"] = c_p.model.reference_net
@@ -71,8 +71,8 @@ class CfgComponent(CfgBase):
                 height = self.ic_die_properties.get("height")
                 if height:
                     ic_die_prop.SetHeight(self._pedb.edb_value(height))
-        cp.SetDieProperty(ic_die_prop)
-        self.pyedb_obj.component_property = cp
+        self.pyedb_obj.ic_die_properties = ic_die_prop
+
 
     def _set_port_properties_to_edb(self):
         cp = self.pyedb_obj.component_property.core
@@ -87,7 +87,7 @@ class CfgComponent(CfgBase):
         reference_size_y = self.port_properties.get("reference_size_y", 0)
         port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
         cp.SetPortProperty(port_prop)
-        self.pyedb_obj.component_property = cp
+        self.component_property = cp
 
     def _set_model_properties_to_edb(self):
         c_p = self.pyedb_obj.component_property.core
@@ -95,7 +95,7 @@ class CfgComponent(CfgBase):
             m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
             m.SetNetlist(self.netlist_model["netlist"])
             c_p.SetModel(m)
-            self.component_property = c_p
+            self.pyedb_obj.component_property = c_p
         elif self.pin_pair_model:
             m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
             for i in self.pin_pair_model:
@@ -145,7 +145,7 @@ class CfgComponent(CfgBase):
             m.SetComponentModelName(self.s_parameter_model["model_name"])
             m.SetReferenceNet(self.s_parameter_model["reference_net"])
             c_p.SetModel(m)
-            self.component_property = c_p
+            self.pyedb_obj.component_property = c_p
         elif self.spice_model:
             self.pyedb_obj.assign_spice_model(
                 self.spice_model["model_path"],
@@ -175,7 +175,7 @@ class CfgComponent(CfgBase):
         solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
         solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
         cp.SetSolderBallProperty(solder_ball_prop)
-        self.pyedb_obj.component_property = cp
+        self.component_property = cp
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()

@@ -998,6 +998,10 @@ class Stackup(LayerCollection):
             # FIXME: Update the API to avoid providing following information to our users
             del data["pedb"]
             del data["edb_object"]
+            if "ore" in data:
+                del data["ore"]
+            if "core" in data:
+                del data["core"]
             layers_out[k] = data
             if v.material in self._pedb.materials.materials:
                 layer_material = self._pedb.materials.materials[v.material]

@@ -294,19 +294,18 @@ class PadstackDef:
         return cls(edb, padstack_def)
 
     @property
-    def instances(self) -> dict[int,any]:
+    def instances(self) -> list[any]:
         """Definitions Instances.
 
         Returns
         -------
-        Dict[int, :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             Dict of PadstackInstance objects.
         """
-        return {
-            i:i.id
-            for i in list(self._pedb.padstacks.instances.values())
-            if not i.is_null and i.padstack_def.name == self.core.name
-        }
+        return [j
+            for j in list(self._pedb.padstacks.instances.values())
+            if not j.is_null and j.padstack_def.name == self.core.name
+        ]
 
     @property
     def name(self):

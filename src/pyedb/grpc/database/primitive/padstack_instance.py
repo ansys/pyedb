@@ -191,11 +191,27 @@ class PadstackInstance:
     def backdrill_parameters(self, params):
         from_bottom = params.get("from_bottom")
         if from_bottom:
-            self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
+            if from_bottom.get("drill_to_layer"):
+                self.set_back_drill_by_layer(
+                    drill_to_layer=from_bottom.get("drill_to_layer"),
+                    offset=Value(from_bottom.get("stub_length", 0)),
+                    diameter=Value(from_bottom.get("diameter", 0)),
+                    from_bottom=True,
+                )
+            else:
+                self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
                                      from_bottom=True)
         from_bottom = params.get("from_top")
         if from_bottom:
-            self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
+            if from_bottom.get("drill_to_layer"):
+                self.set_back_drill_by_layer(
+                    drill_to_layer=from_bottom.get("drill_to_layer"),
+                    offset=Value(from_bottom.get("stub_length", 0)),
+                    diameter=Value(from_bottom.get("diameter", 0)),
+                    from_bottom=False,
+                )
+            else:
+                self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
                                      from_bottom=False)
 
     @property

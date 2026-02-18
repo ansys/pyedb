@@ -58,7 +58,7 @@ def _assert_initial_ic_die_properties(component: dict):
 def _assert_final_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["type"] == "flip_chip"
     assert component["ic_die_properties"]["orientation"] == "chip_down"
-    assert component["solder_ball_properties"]["diameter"] == "244um"
+    assert float(component["solder_ball_properties"]["diameter"]) == 0.000244
 
 
 @pytest.mark.usefixtures("close_rpc_session")
@@ -1603,10 +1603,10 @@ class TestClassPadstacks(BaseTestClass):
             "Inner6(GND2)": "Inner6",
             "16_Bottom": "16_Bottom",
         }
-        vias_before = {j.id: [j.start_layer, j.stop_layer] for  j in edbapp.padstacks.instances}
+        vias_before = {i: [j.start_layer, j.stop_layer] for  i, j in edbapp.padstacks.instances.items()}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
-        vias_after = {j.id: [j.start_layer, j.stop_layer] for  j in edbapp.padstacks.instances}
+        vias_after = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
         for i, j in vias_after.items():
             assert j[0] == renamed_layers[vias_before[i][0]]
             assert j[1] == renamed_layers[vias_before[i][1]]
@@ -1883,14 +1883,14 @@ class TestOperations(BaseTestClass):
                 "enabled": False,
                 "pin_pair_model": [
                     {
-                        "first_pin": "2",
-                        "second_pin": "1",
+                        "first_pin": "1",
+                        "second_pin": "2",
                         "is_parallel": False,
-                        "resistance": "10ohm",
+                        "resistance": "10.0",
                         "resistance_enabled": True,
-                        "inductance": "1nH",
+                        "inductance": "1e-09",
                         "inductance_enabled": False,
-                        "capacitance": "10nF",
+                        "capacitance": "1e-08",
                         "capacitance_enabled": True,
                     }
                 ],

@@ -517,9 +517,9 @@ class Edb:
         """
         all_vars = dict()
         for i, j in self.project_variables.items():
-            all_vars[i] = j.value
+            all_vars[i] = j
         for i, j in self.design_variables.items():
-            all_vars[i] = j.value
+            all_vars[i] = j
         return all_vars
 
     @property

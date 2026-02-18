@@ -33,6 +33,15 @@ class PinPair(object):  # pragma: no cover
         return self._pedb_comp._get_edb_value(value)  # pragma: no cover
 
     @property
+    def first_pin(self):
+        return self._edb_pin_pair.FirstPin
+
+    @property
+    def second_pin(self):
+        return self._edb_pin_pair.SecondPin
+    
+
+    @property
     def is_parallel(self):
         return self._pin_pair_rlc.IsParallel  # pragma: no cover
 
