@@ -1,0 +1,1227 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>The pyedb.generic.constants library &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../_static/documentation_options.js?v=b7a98516"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/generic/constants/index';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.69';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.69.0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/generic/constants/index.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.69/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.69/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="current reference internal" href="#"> <span class="nf nf-fa-file"></span> constants</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l2"><a class="reference internal" href="INFINITE_SPHERE_TYPE.html"> <span class="nf nf-cod-symbol_interface"></span> INFINITE_SPHERE_TYPE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FILLET.html"> <span class="nf nf-cod-symbol_class"></span> FILLET</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AXIS.html"> <span class="nf nf-cod-symbol_class"></span> AXIS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="PLANE.html"> <span class="nf nf-cod-symbol_class"></span> PLANE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GRAVITY.html"> <span class="nf nf-cod-symbol_class"></span> GRAVITY</a></li>
+<li class="toctree-l2"><a class="reference internal" href="VIEW.html"> <span class="nf nf-cod-symbol_class"></span> VIEW</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GLOBALCS.html"> <span class="nf nf-cod-symbol_class"></span> GLOBALCS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MATRIXOPERATIONSQ3D.html"> <span class="nf nf-cod-symbol_class"></span> MATRIXOPERATIONSQ3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="MATRIXOPERATIONSQ2D.html"> <span class="nf nf-cod-symbol_class"></span> MATRIXOPERATIONSQ2D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CATEGORIESQ3D.html"> <span class="nf nf-cod-symbol_class"></span> CATEGORIESQ3D</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CSMODE.html"> <span class="nf nf-cod-symbol_class"></span> CSMODE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SEGMENTTYPE.html"> <span class="nf nf-cod-symbol_class"></span> SEGMENTTYPE</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CROSSSECTION.html"> <span class="nf nf-cod-symbol_class"></span> CROSSSECTION</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SWEEPDRAFT.html"> <span class="nf nf-cod-symbol_class"></span> SWEEPDRAFT</a></li>
+<li class="toctree-l2"><a class="reference internal" href="FlipChipOrientation.html"> <span class="nf nf-cod-symbol_class"></span> FlipChipOrientation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SolverType.html"> <span class="nf nf-cod-symbol_class"></span> SolverType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="CutoutSubdesignType.html"> <span class="nf nf-cod-symbol_class"></span> CutoutSubdesignType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="RadiationBoxType.html"> <span class="nf nf-cod-symbol_class"></span> RadiationBoxType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SweepType.html"> <span class="nf nf-cod-symbol_class"></span> SweepType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="BasisOrder.html"> <span class="nf nf-cod-symbol_class"></span> BasisOrder</a></li>
+<li class="toctree-l2"><a class="reference internal" href="NodeType.html"> <span class="nf nf-cod-symbol_class"></span> NodeType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SourceType.html"> <span class="nf nf-cod-symbol_class"></span> SourceType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SOLUTIONS.html"> <span class="nf nf-cod-symbol_class"></span> SOLUTIONS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SETUPS.html"> <span class="nf nf-cod-symbol_class"></span> SETUPS</a></li>
+<li class="toctree-l2"><a class="reference internal" href="LineStyle.html"> <span class="nf nf-cod-symbol_class"></span> LineStyle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="TraceType.html"> <span class="nf nf-cod-symbol_class"></span> TraceType</a></li>
+<li class="toctree-l2"><a class="reference internal" href="SymbolStyle.html"> <span class="nf nf-cod-symbol_class"></span> SymbolStyle</a></li>
+</ul>
+</details></li>
+<li class="toctree-l1"><a class="reference internal" href="../control_file/index.html"> <span class="nf nf-fa-file"></span> control_file</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_handlers/index.html"> <span class="nf nf-fa-file"></span> data_handlers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../design_types/index.html"> <span class="nf nf-fa-file"></span> design_types</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../filesystem/index.html"> <span class="nf nf-fa-file"></span> filesystem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../general_methods/index.html"> <span class="nf nf-fa-file"></span> general_methods</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../grpc_warnings/index.html"> <span class="nf nf-fa-file"></span> grpc_warnings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../plot/index.html"> <span class="nf nf-fa-file"></span> plot</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../process/index.html"> <span class="nf nf-fa-file"></span> process</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../settings/index.html"> <span class="nf nf-fa-file"></span> settings</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">The <code class="docutils literal notranslate"><span class="pre">pyedb.generic.constants</span></code> library</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="module-pyedb.generic.constants">
+<span id="the-pyedb-generic-constants-library"></span><h1>The <code class="docutils literal notranslate"><span class="pre">pyedb.generic.constants</span></code> library<a class="headerlink" href="#module-pyedb.generic.constants" title="Link to this heading">#</a></h1>
+<section id="summary">
+<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Interfaces</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="INFINITE_SPHERE_TYPE.html#pyedb.generic.constants.INFINITE_SPHERE_TYPE" title="pyedb.generic.constants.INFINITE_SPHERE_TYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INFINITE_SPHERE_TYPE</span></code></a></p></td>
+<td><p>INFINITE_SPHERE_TYPE Enumerator class.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Classes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="FILLET.html#pyedb.generic.constants.FILLET" title="pyedb.generic.constants.FILLET"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FILLET</span></code></a></p></td>
+<td><p>FilletType Enumerator class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="AXIS.html#pyedb.generic.constants.AXIS" title="pyedb.generic.constants.AXIS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AXIS</span></code></a></p></td>
+<td><p>CoordinateSystemAxis Enumerator class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="PLANE.html#pyedb.generic.constants.PLANE" title="pyedb.generic.constants.PLANE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PLANE</span></code></a></p></td>
+<td><p>CoordinateSystemPlane Enumerator class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="GRAVITY.html#pyedb.generic.constants.GRAVITY" title="pyedb.generic.constants.GRAVITY"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GRAVITY</span></code></a></p></td>
+<td><p>GravityDirection Enumerator class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="VIEW.html#pyedb.generic.constants.VIEW" title="pyedb.generic.constants.VIEW"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VIEW</span></code></a></p></td>
+<td><p>View Enumerator class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="GLOBALCS.html#pyedb.generic.constants.GLOBALCS" title="pyedb.generic.constants.GLOBALCS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">GLOBALCS</span></code></a></p></td>
+<td><p>GlobalCS Enumerator class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="MATRIXOPERATIONSQ3D.html#pyedb.generic.constants.MATRIXOPERATIONSQ3D" title="pyedb.generic.constants.MATRIXOPERATIONSQ3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MATRIXOPERATIONSQ3D</span></code></a></p></td>
+<td><p>Matrix Reduction types.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="MATRIXOPERATIONSQ2D.html#pyedb.generic.constants.MATRIXOPERATIONSQ2D" title="pyedb.generic.constants.MATRIXOPERATIONSQ2D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MATRIXOPERATIONSQ2D</span></code></a></p></td>
+<td><p>Matrix Reduction types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="CATEGORIESQ3D.html#pyedb.generic.constants.CATEGORIESQ3D" title="pyedb.generic.constants.CATEGORIESQ3D"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CATEGORIESQ3D</span></code></a></p></td>
+<td><p>Plot Categories for Q2d and Q3d.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="CSMODE.html#pyedb.generic.constants.CSMODE" title="pyedb.generic.constants.CSMODE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CSMODE</span></code></a></p></td>
+<td><p>COORDINATE SYSTEM MODE Enumerator class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SEGMENTTYPE.html#pyedb.generic.constants.SEGMENTTYPE" title="pyedb.generic.constants.SEGMENTTYPE"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SEGMENTTYPE</span></code></a></p></td>
+<td><p>CROSSSECTION Enumerator class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="CROSSSECTION.html#pyedb.generic.constants.CROSSSECTION" title="pyedb.generic.constants.CROSSSECTION"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CROSSSECTION</span></code></a></p></td>
+<td><p>CROSSSECTION Enumerator class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SWEEPDRAFT.html#pyedb.generic.constants.SWEEPDRAFT" title="pyedb.generic.constants.SWEEPDRAFT"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SWEEPDRAFT</span></code></a></p></td>
+<td><p>SweepDraftType Enumerator class.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="FlipChipOrientation.html#pyedb.generic.constants.FlipChipOrientation" title="pyedb.generic.constants.FlipChipOrientation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">FlipChipOrientation</span></code></a></p></td>
+<td><p>Chip orientation enumerator class.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SolverType.html#pyedb.generic.constants.SolverType" title="pyedb.generic.constants.SolverType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SolverType</span></code></a></p></td>
+<td><p>Provides solver type classes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="CutoutSubdesignType.html#pyedb.generic.constants.CutoutSubdesignType" title="pyedb.generic.constants.CutoutSubdesignType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CutoutSubdesignType</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="RadiationBoxType.html#pyedb.generic.constants.RadiationBoxType" title="pyedb.generic.constants.RadiationBoxType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RadiationBoxType</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SweepType.html#pyedb.generic.constants.SweepType" title="pyedb.generic.constants.SweepType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SweepType</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="BasisOrder.html#pyedb.generic.constants.BasisOrder" title="pyedb.generic.constants.BasisOrder"><code class="xref py py-obj docutils literal notranslate"><span class="pre">BasisOrder</span></code></a></p></td>
+<td><p>Enumeration-class for HFSS basis order settings.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="NodeType.html#pyedb.generic.constants.NodeType" title="pyedb.generic.constants.NodeType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">NodeType</span></code></a></p></td>
+<td><p>Type of node for source creation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SourceType.html#pyedb.generic.constants.SourceType" title="pyedb.generic.constants.SourceType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceType</span></code></a></p></td>
+<td><p>Type of excitation enumerator.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SOLUTIONS.html#pyedb.generic.constants.SOLUTIONS" title="pyedb.generic.constants.SOLUTIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SOLUTIONS</span></code></a></p></td>
+<td><p>Provides the names of default solution types.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="SETUPS.html#pyedb.generic.constants.SETUPS" title="pyedb.generic.constants.SETUPS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SETUPS</span></code></a></p></td>
+<td><p>Provides constants for the default setup types.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="LineStyle.html#pyedb.generic.constants.LineStyle" title="pyedb.generic.constants.LineStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">LineStyle</span></code></a></p></td>
+<td><p>Provides trace line style constants.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="TraceType.html#pyedb.generic.constants.TraceType" title="pyedb.generic.constants.TraceType"><code class="xref py py-obj docutils literal notranslate"><span class="pre">TraceType</span></code></a></p></td>
+<td><p>Provides trace type constants.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="SymbolStyle.html#pyedb.generic.constants.SymbolStyle" title="pyedb.generic.constants.SymbolStyle"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SymbolStyle</span></code></a></p></td>
+<td><p>Provides symbol style constants.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Functions</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.db20" title="constants.db20"><code class="xref py py-obj docutils literal notranslate"><span class="pre">db20</span></code></a></p></td>
+<td><p>Convert db20 to decimal and vice versa.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.db10" title="constants.db10"><code class="xref py py-obj docutils literal notranslate"><span class="pre">db10</span></code></a></p></td>
+<td><p>Convert db10 to decimal and vice versa.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.dbw" title="constants.dbw"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dbw</span></code></a></p></td>
+<td><p>Convert W to decimal and vice versa.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.dbm" title="constants.dbm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">dbm</span></code></a></p></td>
+<td><p>Convert W to decimal and vice versa.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.fah2kel" title="constants.fah2kel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">fah2kel</span></code></a></p></td>
+<td><p>Convert a temperature from Fahrenheit to Kelvin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.cel2kel" title="constants.cel2kel"><code class="xref py py-obj docutils literal notranslate"><span class="pre">cel2kel</span></code></a></p></td>
+<td><p>Convert a temperature from Celsius to Kelvin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.unit_system" title="constants.unit_system"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_system</span></code></a></p></td>
+<td><p>Retrieve the name of the unit system associated with a unit string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.unit_converter" title="constants.unit_converter"><code class="xref py py-obj docutils literal notranslate"><span class="pre">unit_converter</span></code></a></p></td>
+<td><p>Convert unit in specified unit system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.scale_units" title="constants.scale_units"><code class="xref py py-obj docutils literal notranslate"><span class="pre">scale_units</span></code></a></p></td>
+<td><p>Find the scale_to_unit into main system unit.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.validate_enum_class_value" title="constants.validate_enum_class_value"><code class="xref py py-obj docutils literal notranslate"><span class="pre">validate_enum_class_value</span></code></a></p></td>
+<td><p>Check whether the value for the class <code class="docutils literal notranslate"><span class="pre">enumeration-class</span></code> is valid.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-3">
+Attributes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.SpeedOfLight" title="constants.SpeedOfLight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SpeedOfLight</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-4">
+Constants</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.RAD2DEG" title="constants.RAD2DEG"><code class="xref py py-obj docutils literal notranslate"><span class="pre">RAD2DEG</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.DEG2RAD" title="constants.DEG2RAD"><code class="xref py py-obj docutils literal notranslate"><span class="pre">DEG2RAD</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.HOUR2SEC" title="constants.HOUR2SEC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">HOUR2SEC</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.MIN2SEC" title="constants.MIN2SEC"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MIN2SEC</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.SEC2MIN" title="constants.SEC2MIN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SEC2MIN</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.SEC2HOUR" title="constants.SEC2HOUR"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SEC2HOUR</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.INV2PI" title="constants.INV2PI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">INV2PI</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.V2PI" title="constants.V2PI"><code class="xref py py-obj docutils literal notranslate"><span class="pre">V2PI</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.METER2IN" title="constants.METER2IN"><code class="xref py py-obj docutils literal notranslate"><span class="pre">METER2IN</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.METER2MILES" title="constants.METER2MILES"><code class="xref py py-obj docutils literal notranslate"><span class="pre">METER2MILES</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.MILS2METER" title="constants.MILS2METER"><code class="xref py py-obj docutils literal notranslate"><span class="pre">MILS2METER</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.AEDT_UNITS" title="constants.AEDT_UNITS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">AEDT_UNITS</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.SI_UNITS" title="constants.SI_UNITS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SI_UNITS</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#constants.UNIT_SYSTEM_OPERATIONS" title="constants.UNIT_SYSTEM_OPERATIONS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">UNIT_SYSTEM_OPERATIONS</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#constants.CSS4_COLORS" title="constants.CSS4_COLORS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">CSS4_COLORS</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
+<div class="toctree-wrapper compound">
+</div>
+</section>
+<section id="module-detail">
+<h2>Module detail<a class="headerlink" href="#module-detail" title="Link to this heading">#</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.db20">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">db20</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.db20" title="Link to this definition">#</a></dt>
+<dd><p>Convert db20 to decimal and vice versa.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.db10">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">db10</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.db10" title="Link to this definition">#</a></dt>
+<dd><p>Convert db10 to decimal and vice versa.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.dbw">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">dbw</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.dbw" title="Link to this definition">#</a></dt>
+<dd><p>Convert W to decimal and vice versa.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.dbm">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">dbm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.dbm" title="Link to this definition">#</a></dt>
+<dd><p>Convert W to decimal and vice versa.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.fah2kel">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">fah2kel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.fah2kel" title="Link to this definition">#</a></dt>
+<dd><p>Convert a temperature from Fahrenheit to Kelvin.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>val</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Temperature value in Fahrenheit.</p>
+</dd>
+<dt><strong>inverse</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Temperature value converted to Kelvin.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.cel2kel">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">cel2kel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">val</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inverse</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.cel2kel" title="Link to this definition">#</a></dt>
+<dd><p>Convert a temperature from Celsius to Kelvin.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>val</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Temperature value in Celsius.</p>
+</dd>
+<dt><strong>inverse</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Temperature value converted to Kelvin.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.unit_system">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">unit_system</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.unit_system" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the name of the unit system associated with a unit string.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>units</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Units for retrieving the associated unit system name.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Key from the <code class="docutils literal notranslate"><span class="pre">AEDT_units</span></code> when successful. For example, <code class="docutils literal notranslate"><span class="pre">&quot;AngularSpeed&quot;</span></code>.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">False</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">when</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">units</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">specified</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">are</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">not</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">defined</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">in</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">AEDT</span></code> units.</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.unit_converter">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">unit_converter</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">unit_system</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Length'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'meter'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.unit_converter" title="Link to this definition">#</a></dt>
+<dd><p>Convert unit in specified unit system.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>values</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Values to convert.</p>
+</dd>
+<dt><strong>unit_system</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Unit system. Default is <cite>“Length”</cite>.</p>
+</dd>
+<dt><strong>input_units</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Input units. Default is <cite>“meter”</cite>.</p>
+</dd>
+<dt><strong>output_units</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Output units. Default is <cite>“mm”</cite>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>Converted value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.scale_units">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">scale_units</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scale_to_unit</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.scale_units" title="Link to this definition">#</a></dt>
+<dd><p>Find the scale_to_unit into main system unit.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>scale_to_unit</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Unit to Scale.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Return the scaling factor if any.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="constants.validate_enum_class_value">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">validate_enum_class_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#constants.validate_enum_class_value" title="Link to this definition">#</a></dt>
+<dd><p>Check whether the value for the class <code class="docutils literal notranslate"><span class="pre">enumeration-class</span></code> is valid.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>cls</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">class</span></code></span></dt><dd><p>Enumeration-style class with integer members in range(0, N) where cls.Invalid equals N-1.</p>
+</dd>
+<dt><strong>value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Value to check.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when the value is valid for the <code class="docutils literal notranslate"><span class="pre">enumeration-class</span></code>, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.RAD2DEG">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">RAD2DEG</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">57.29577951308232</span></em><a class="headerlink" href="#constants.RAD2DEG" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.DEG2RAD">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">DEG2RAD</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.017453292519943295</span></em><a class="headerlink" href="#constants.DEG2RAD" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.HOUR2SEC">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">HOUR2SEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">3600.0</span></em><a class="headerlink" href="#constants.HOUR2SEC" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.MIN2SEC">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">MIN2SEC</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">60.0</span></em><a class="headerlink" href="#constants.MIN2SEC" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.SEC2MIN">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">SEC2MIN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.016666666666666666</span></em><a class="headerlink" href="#constants.SEC2MIN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.SEC2HOUR">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">SEC2HOUR</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0002777777777777778</span></em><a class="headerlink" href="#constants.SEC2HOUR" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.INV2PI">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">INV2PI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.15915494309189535</span></em><a class="headerlink" href="#constants.INV2PI" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.V2PI">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">V2PI</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">6.283185307179586</span></em><a class="headerlink" href="#constants.V2PI" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.METER2IN">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">METER2IN</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0254</span></em><a class="headerlink" href="#constants.METER2IN" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.METER2MILES">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">METER2MILES</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1609.344051499</span></em><a class="headerlink" href="#constants.METER2MILES" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.MILS2METER">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">MILS2METER</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">39370.078740157</span></em><a class="headerlink" href="#constants.MILS2METER" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.AEDT_UNITS">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">AEDT_UNITS</span></span><a class="headerlink" href="#constants.AEDT_UNITS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.SI_UNITS">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">SI_UNITS</span></span><a class="headerlink" href="#constants.SI_UNITS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.UNIT_SYSTEM_OPERATIONS">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">UNIT_SYSTEM_OPERATIONS</span></span><a class="headerlink" href="#constants.UNIT_SYSTEM_OPERATIONS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.CSS4_COLORS">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">CSS4_COLORS</span></span><a class="headerlink" href="#constants.CSS4_COLORS" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py data">
+<dt class="sig sig-object py" id="constants.SpeedOfLight">
+<span class="sig-prename descclassname"><span class="pre">constants.</span></span><span class="sig-name descname"><span class="pre">SpeedOfLight</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">299792458.0</span></em><a class="headerlink" href="#constants.SpeedOfLight" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a><ul class="nav section-nav flex-column">
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#module-detail">Module detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.db20"><code class="docutils literal notranslate"><span class="pre">db20()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.db10"><code class="docutils literal notranslate"><span class="pre">db10()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.dbw"><code class="docutils literal notranslate"><span class="pre">dbw()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.dbm"><code class="docutils literal notranslate"><span class="pre">dbm()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.fah2kel"><code class="docutils literal notranslate"><span class="pre">fah2kel()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.cel2kel"><code class="docutils literal notranslate"><span class="pre">cel2kel()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.unit_system"><code class="docutils literal notranslate"><span class="pre">unit_system()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.unit_converter"><code class="docutils literal notranslate"><span class="pre">unit_converter()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.scale_units"><code class="docutils literal notranslate"><span class="pre">scale_units()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.validate_enum_class_value"><code class="docutils literal notranslate"><span class="pre">validate_enum_class_value()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.RAD2DEG"><code class="docutils literal notranslate"><span class="pre">RAD2DEG</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.DEG2RAD"><code class="docutils literal notranslate"><span class="pre">DEG2RAD</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.HOUR2SEC"><code class="docutils literal notranslate"><span class="pre">HOUR2SEC</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.MIN2SEC"><code class="docutils literal notranslate"><span class="pre">MIN2SEC</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.SEC2MIN"><code class="docutils literal notranslate"><span class="pre">SEC2MIN</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.SEC2HOUR"><code class="docutils literal notranslate"><span class="pre">SEC2HOUR</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.INV2PI"><code class="docutils literal notranslate"><span class="pre">INV2PI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.V2PI"><code class="docutils literal notranslate"><span class="pre">V2PI</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.METER2IN"><code class="docutils literal notranslate"><span class="pre">METER2IN</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.METER2MILES"><code class="docutils literal notranslate"><span class="pre">METER2MILES</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.MILS2METER"><code class="docutils literal notranslate"><span class="pre">MILS2METER</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.AEDT_UNITS"><code class="docutils literal notranslate"><span class="pre">AEDT_UNITS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.SI_UNITS"><code class="docutils literal notranslate"><span class="pre">SI_UNITS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.UNIT_SYSTEM_OPERATIONS"><code class="docutils literal notranslate"><span class="pre">UNIT_SYSTEM_OPERATIONS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.CSS4_COLORS"><code class="docutils literal notranslate"><span class="pre">CSS4_COLORS</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#constants.SpeedOfLight"><code class="docutils literal notranslate"><span class="pre">SpeedOfLight</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/db20.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../_sources/autoapi/pyedb/generic/constants/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

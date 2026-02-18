@@ -1,0 +1,34 @@
+﻿DifferentialPairs
+=================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoclass:: DifferentialPairs
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DifferentialPairs.auto_identify
+      
+      
+      DifferentialPairs.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DifferentialPairs.items
+   
+   

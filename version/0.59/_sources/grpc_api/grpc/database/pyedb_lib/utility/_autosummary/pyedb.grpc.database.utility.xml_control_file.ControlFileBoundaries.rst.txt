@@ -1,0 +1,27 @@
+﻿ControlFileBoundaries
+=====================
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. autoclass:: ControlFileBoundaries
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFileBoundaries.add_extent
+      
+      
+      ControlFileBoundaries.add_port
+      
+   
+   
+
+   
+   
+   

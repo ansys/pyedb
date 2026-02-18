@@ -1,0 +1,131 @@
+
+
+
+
+
+
+:class:`HFSSSettingsOptions`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions(_pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSSettingsOptions`
+
+
+   
+   PyEDB-core HFSS settings options class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSSettingsOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~order_basis`
+            - Order basis name.
+          * - :py:attr:`~solver_type`
+            - :class:`.SolverType`: HFSS solver type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_settings_options import HFSSSettingsOptions
+
+Property detail
+---------------
+
+.. py:property:: order_basis
+   :type: str
+
+
+   
+   Order basis name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Order basis name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver_type
+
+   
+   :class:`.SolverType`: HFSS solver type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

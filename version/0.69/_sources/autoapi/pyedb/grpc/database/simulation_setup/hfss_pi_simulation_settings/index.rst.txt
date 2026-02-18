@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``hfss_pi_simulation_settings.py`` module
+=============================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_pi_simulation_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_pi_simulation_settings.HFSSPISimulationSettings`
+            - PyEDB HFSS PI simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HFSSPISimulationSettings</autoapi/pyedb/grpc/database/simulation_setup/hfss_pi_simulation_settings/HFSSPISimulationSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

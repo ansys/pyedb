@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`LineStyle`
+==================
+
+
+.. py:class:: pyedb.generic.constants.LineStyle
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides trace line style constants.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import LineStyle
+
+
+
+
+

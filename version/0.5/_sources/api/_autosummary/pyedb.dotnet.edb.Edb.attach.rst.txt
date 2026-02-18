@@ -1,0 +1,6 @@
+attach
+======
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.attach

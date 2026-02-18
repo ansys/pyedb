@@ -1,0 +1,1671 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EdbSiwave &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=b7a98516"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/siwave/EdbSiwave';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.69';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.69.0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/siwave/EdbSiwave.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.69/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.69/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Variables/index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> siwave</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#"> <span class="nf nf-cod-symbol_class"></span> EdbSiwave</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">EdbSiwave</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="edbsiwave">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">EdbSiwave</span></code><a class="headerlink" href="#edbsiwave" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.siwave.EdbSiwave">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.siwave.</span></span><span class="sig-name descname"><span class="pre">EdbSiwave</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_edb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.siwave.EdbSiwave" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages EDB methods related to Siwave Setup accessible from <cite>Edb.siwave</cite> property.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>edb_class</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.edb.Edb</span></code></span></dt><dd><p>Inherited parent object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="n">edbversion</span><span class="o">=</span><span class="s2">&quot;2021.2&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb_siwave</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">siwave</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_circuit_port_on_pin" title="EdbSiwave.create_circuit_port_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_circuit_port_on_pin</span></code></a></p></td>
+<td><p>Create a circuit port on a pin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_port_between_pin_and_layer" title="EdbSiwave.create_port_between_pin_and_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_port_between_pin_and_layer</span></code></a></p></td>
+<td><p>Create circuit port between pin and a reference layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_voltage_source_on_pin" title="EdbSiwave.create_voltage_source_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_voltage_source_on_pin</span></code></a></p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_current_source_on_pin" title="EdbSiwave.create_current_source_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_current_source_on_pin</span></code></a></p></td>
+<td><p>Create a current source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_resistor_on_pin" title="EdbSiwave.create_resistor_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_resistor_on_pin</span></code></a></p></td>
+<td><p>Create a Resistor boundary between two given pins..</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_circuit_port_on_net" title="EdbSiwave.create_circuit_port_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_circuit_port_on_net</span></code></a></p></td>
+<td><p>Create a circuit port on a NET.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_voltage_source_on_net" title="EdbSiwave.create_voltage_source_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_voltage_source_on_net</span></code></a></p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_current_source_on_net" title="EdbSiwave.create_current_source_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_current_source_on_net</span></code></a></p></td>
+<td><p>Create a current source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_dc_terminal" title="EdbSiwave.create_dc_terminal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_dc_terminal</span></code></a></p></td>
+<td><p>Create a dc terminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_exec_file" title="EdbSiwave.create_exec_file"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_exec_file</span></code></a></p></td>
+<td><p>Create an executable file.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.add_siwave_syz_analysis" title="EdbSiwave.add_siwave_syz_analysis"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_siwave_syz_analysis</span></code></a></p></td>
+<td><p>Add a SIwave AC analysis to EDB.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.add_siwave_dc_analysis" title="EdbSiwave.add_siwave_dc_analysis"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_siwave_dc_analysis</span></code></a></p></td>
+<td><p>Add a Siwave DC analysis in EDB.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_pin_group_terminal" title="EdbSiwave.create_pin_group_terminal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_pin_group_terminal</span></code></a></p></td>
+<td><p>Create a pin group terminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.configure_siw_analysis_setup" title="EdbSiwave.configure_siw_analysis_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_siw_analysis_setup</span></code></a></p></td>
+<td><p>Configure Siwave analysis setup.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_rlc_component" title="EdbSiwave.create_rlc_component"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_rlc_component</span></code></a></p></td>
+<td><p>Create physical Rlc component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_pin_group" title="EdbSiwave.create_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_pin_group</span></code></a></p></td>
+<td><p>Create pin group on the component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_pin_group_on_net" title="EdbSiwave.create_pin_group_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_pin_group_on_net</span></code></a></p></td>
+<td><p>Create pin group on component by net name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_current_source_on_pin_group" title="EdbSiwave.create_current_source_on_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_current_source_on_pin_group</span></code></a></p></td>
+<td><p>Create current source between two pin groups.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_voltage_source_on_pin_group" title="EdbSiwave.create_voltage_source_on_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_voltage_source_on_pin_group</span></code></a></p></td>
+<td><p>Create voltage source between two pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_voltage_probe_on_pin_group" title="EdbSiwave.create_voltage_probe_on_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_voltage_probe_on_pin_group</span></code></a></p></td>
+<td><p>Create voltage probe between two pin groups.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_circuit_port_on_pin_group" title="EdbSiwave.create_circuit_port_on_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_circuit_port_on_pin_group</span></code></a></p></td>
+<td><p>Create a port between two pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.place_voltage_probe" title="EdbSiwave.place_voltage_probe"><code class="xref py py-attr docutils literal notranslate"><span class="pre">place_voltage_probe</span></code></a></p></td>
+<td><p>Place a voltage probe between two points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.create_vrm_module" title="EdbSiwave.create_vrm_module"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_vrm_module</span></code></a></p></td>
+<td><p>Create a voltage regulator module.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.create_impedance_crosstalk_scan" title="EdbSiwave.create_impedance_crosstalk_scan"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_impedance_crosstalk_scan</span></code></a></p></td>
+<td><p>Create Siwave crosstalk scan object</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.add_cpa_analysis" title="EdbSiwave.add_cpa_analysis"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_cpa_analysis</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.excitations" title="EdbSiwave.excitations"><code class="xref py py-attr docutils literal notranslate"><span class="pre">excitations</span></code></a></p></td>
+<td><p>Get all excitations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.sources" title="EdbSiwave.sources"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code></a></p></td>
+<td><p>Get all sources.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.probes" title="EdbSiwave.probes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">probes</span></code></a></p></td>
+<td><p>Get all probes.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.voltage_regulator_modules" title="EdbSiwave.voltage_regulator_modules"><code class="xref py py-attr docutils literal notranslate"><span class="pre">voltage_regulator_modules</span></code></a></p></td>
+<td><p>Get all voltage regulator modules</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.pin_groups" title="EdbSiwave.pin_groups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pin_groups</span></code></a></p></td>
+<td><p>All Layout Pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbSiwave.icepak_use_minimal_comp_defaults" title="EdbSiwave.icepak_use_minimal_comp_defaults"><code class="xref py py-attr docutils literal notranslate"><span class="pre">icepak_use_minimal_comp_defaults</span></code></a></p></td>
+<td><p>Icepak default setting. If “True”, only resistor are active in Icepak simulation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbSiwave.icepak_component_file" title="EdbSiwave.icepak_component_file"><code class="xref py py-attr docutils literal notranslate"><span class="pre">icepak_component_file</span></code></a></p></td>
+<td><p>Icepak component file path.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.siwave</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdbSiwave</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.excitations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">excitations</span></span><a class="headerlink" href="#EdbSiwave.excitations" title="Link to this definition">#</a></dt>
+<dd><p>Get all excitations.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.sources">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">sources</span></span><a class="headerlink" href="#EdbSiwave.sources" title="Link to this definition">#</a></dt>
+<dd><p>Get all sources.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.probes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">probes</span></span><a class="headerlink" href="#EdbSiwave.probes" title="Link to this definition">#</a></dt>
+<dd><p>Get all probes.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.voltage_regulator_modules">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">voltage_regulator_modules</span></span><a class="headerlink" href="#EdbSiwave.voltage_regulator_modules" title="Link to this definition">#</a></dt>
+<dd><p>Get all voltage regulator modules</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.pin_groups">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">pin_groups</span></span><a class="headerlink" href="#EdbSiwave.pin_groups" title="Link to this definition">#</a></dt>
+<dd><p>All Layout Pin groups.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of all layout pin groups.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.icepak_use_minimal_comp_defaults">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">icepak_use_minimal_comp_defaults</span></span><a class="headerlink" href="#EdbSiwave.icepak_use_minimal_comp_defaults" title="Link to this definition">#</a></dt>
+<dd><p>Icepak default setting. If “True”, only resistor are active in Icepak simulation.
+The power dissipation of the resistors are calculated from DC results.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbSiwave.icepak_component_file">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">icepak_component_file</span></span><a class="headerlink" href="#EdbSiwave.icepak_component_file" title="Link to this definition">#</a></dt>
+<dd><p>Icepak component file path.</p>
+</dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_circuit_port_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_circuit_port_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_circuit_port_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a circuit port on a pin.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Edb Pin</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Edb Pin</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Port Impedance</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Port Name</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Port Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_circuit_port_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;port_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_port_between_pin_and_layer">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_port_between_pin_and_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pins_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_port_between_pin_and_layer" title="Link to this definition">#</a></dt>
+<dd><p>Create circuit port between pin and a reference layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Component name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>pins_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Pin name or list of pin names. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Layer name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>reference_net</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Reference net name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Port impedance. The default is <code class="docutils literal notranslate"><span class="pre">50.0</span></code> in ohms.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PadstackInstanceTerminal</span></code></dt><dd><p>Created terminal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_voltage_source_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_voltage_source_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_voltage_source_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a voltage source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Positive Pin.</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Negative Pin.</p>
+</dd>
+<dt><strong>voltage_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the voltage. The default is <code class="docutils literal notranslate"><span class="pre">3.3</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Source Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_voltage_source_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_current_source_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_current_source_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_current_source_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a current source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Positive pin.</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Negative pin.</p>
+</dd>
+<dt><strong>current_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the current. The default is <code class="docutils literal notranslate"><span class="pre">0.1</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Source Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_current_source_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_resistor_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_resistor_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistor_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_resistor_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a Resistor boundary between two given pins..</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Positive Pin.</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Negative Pin.</p>
+</dd>
+<dt><strong>rvalue</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Resistance value. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><strong>resistor_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the resistor. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the resistor.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_resistor_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;res_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_circuit_port_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_circuit_port_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_circuit_port_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create a circuit port on a NET.</p>
+<p>It groups all pins belonging to the specified net and then applies the port on PinGroups.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>negative_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative component. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the name of
+the positive net is assigned.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative net name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code> which will look for GND Nets.</p>
+</dd>
+<dt><strong>impedance_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Port impedance value. The default is <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>The name of the port.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_circuit_port_on_net</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;port_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_voltage_source_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_voltage_source_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_voltage_source_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create a voltage source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>negative_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative component. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the name of
+the positive net is assigned.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative net name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code> which will look for GND Nets.</p>
+</dd>
+<dt><strong>voltage_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the voltage. The default is <code class="docutils literal notranslate"><span class="pre">3.3</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>The name of the source.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_voltage_source_on_net</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_current_source_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_current_source_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_current_source_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create a current source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>negative_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative component. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the name of
+the positive net is assigned.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative net name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code> which will look for GND Nets.</p>
+</dd>
+<dt><strong>current_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the current. The default is <code class="docutils literal notranslate"><span class="pre">0.1</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>The name of the source.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_current_source_on_net</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_dc_terminal">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_dc_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_dc_terminal" title="Link to this definition">#</a></dt>
+<dd><p>Create a dc terminal.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>The name of the source.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">create_dc_terminal</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_exec_file">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_exec_file</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">add_dc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_ac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">add_syz</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">export_touchstone</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">touchstone_file_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_exec_file" title="Link to this definition">#</a></dt>
+<dd><p>Create an executable file.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>add_dc</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to add the DC option in the EXE file. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>add_ac</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to add the AC option in the EXE file. The default is
+<code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>add_syz</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to add the SYZ option in the EXE file</p>
+</dd>
+<dt><strong>export_touchstone</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Add the Touchstone file export option in the EXE file.
+The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>touchstone_file_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>File path for the Touchstone file. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.  When no path is
+specified and <code class="docutils literal notranslate"><span class="pre">export_touchstone=True</span></code>, the path for the project is
+used.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.add_siwave_syz_analysis">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">add_siwave_syz_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">accuracy_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">decade_count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sweeptype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_freq</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">discrete_sweep</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.add_siwave_syz_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Add a SIwave AC analysis to EDB.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Setup name.</p>
+</dd>
+<dt><strong>accuracy_level</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Level of accuracy of SI slider. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><strong>decade_count</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>The default is <code class="docutils literal notranslate"><span class="pre">10</span></code>. The value for this parameter is used for these sweep types:
+linear count and decade count.
+This parameter is alternative to <code class="docutils literal notranslate"><span class="pre">step_freq</span></code>, which is used for a linear scale sweep.</p>
+</dd>
+<dt><strong>sweeptype</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Type of the sweep. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>. Options are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">0</span></code>: linear count</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">1</span></code>: linear scale</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">2</span></code>: loc scale</p></li>
+</ul>
+</dd>
+<dt><strong>start_freq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Starting frequency. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><strong>stop_freq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Stopping frequency. The default is <code class="docutils literal notranslate"><span class="pre">1e9</span></code>.</p>
+</dd>
+<dt><strong>step_freq</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Frequency size of the step. The default is <code class="docutils literal notranslate"><span class="pre">1e6</span></code>.</p>
+</dd>
+<dt><strong>discrete_sweep</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether the sweep is discrete. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup</span></code></dt><dd><p>Setup object class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.add_siwave_dc_analysis">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">add_siwave_dc_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.add_siwave_dc_analysis" title="Link to this definition">#</a></dt>
+<dd><p>Add a Siwave DC analysis in EDB.</p>
+<p>If a setup is present, it is deleted and replaced with
+actual settings.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Source Reference to Ground settings works only from 2021.2</p>
+</div>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Setup name.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup</span></code></dt><dd><p>Setup object class.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;pathtoaedb&quot;</span><span class="p">,</span> <span class="n">edbversion</span><span class="o">=</span><span class="s2">&quot;2021.2&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">add_siwave_ac_analysis</span><span class="p">()</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">siwave</span><span class="o">.</span><span class="n">add_siwave_dc_analysis2</span><span class="p">(</span><span class="s2">&quot;my_setup&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_pin_group_terminal">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_pin_group_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_pin_group_terminal" title="Link to this definition">#</a></dt>
+<dd><p>Create a pin group terminal.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>source</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">VoltageSource</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">CircuitPort</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">CurrentSource</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">DCTerminal</span></code> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">ResistorSource</span></code></span></dt><dd><p>Name of the source.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.configure_siw_analysis_setup">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">configure_siw_analysis_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_existing_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.configure_siw_analysis_setup" title="Link to this definition">#</a></dt>
+<dd><p>Configure Siwave analysis setup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>simulation_setup</strong></dt><dd><p>Edb_DATA.SimulationConfiguration object.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_rlc_component">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_rlc_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">r_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">c_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_rlc_component" title="Link to this definition">#</a></dt>
+<dd><p>Create physical Rlc component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pins</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">Edb.Cell.Primitive.PadstackInstance</span></code>]</span></dt><dd><p>List of EDB pins.</p>
+</dd>
+<dt><strong>component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Component name.</p>
+</dd>
+<dt><strong>r_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Resistor value.</p>
+</dd>
+<dt><strong>c_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Capacitance value.</p>
+</dd>
+<dt><strong>l_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Inductor value.</p>
+</dd>
+<dt><strong>is_parallel</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Using parallel model when <code class="docutils literal notranslate"><span class="pre">True</span></code>, series when <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>class:<cite>pyedb.dotnet.database.components.Components</cite></dt><dd><p>Created EDB component.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_pin_group">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_pin_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_designator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pin_numbers</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_pin_group" title="Link to this definition">#</a></dt>
+<dd><p>Create pin group on the component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>reference_designator</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>References designator of the component.</p>
+</dd>
+<dt><strong>pin_numbers</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>List of pin names.</p>
+</dd>
+<dt><strong>group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the pin group.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PinGroup</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_pin_group_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_pin_group_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_designator</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">group_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_pin_group_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create pin group on component by net name.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>reference_designator</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>References designator of the component.</p>
+</dd>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the net.</p>
+</dd>
+<dt><strong>group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the pin group. The default value is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">PinGroup</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_current_source_on_pin_group">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_current_source_on_pin_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_current_source_on_pin_group" title="Link to this definition">#</a></dt>
+<dd><p>Create current source between two pin groups.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive pin group.</p>
+</dd>
+<dt><strong>neg_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the negative pin group.</p>
+</dd>
+<dt><strong>magnitude</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Magnitude of the source.</p>
+</dd>
+<dt><strong>phase</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Phase of the source</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_voltage_source_on_pin_group">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_voltage_source_on_pin_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">magnitude</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_voltage_source_on_pin_group" title="Link to this definition">#</a></dt>
+<dd><p>Create voltage source between two pin groups.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive pin group.</p>
+</dd>
+<dt><strong>neg_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the negative pin group.</p>
+</dd>
+<dt><strong>magnitude</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Magnitude of the source.</p>
+</dd>
+<dt><strong>phase</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Phase of the source</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_voltage_probe_on_pin_group">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_voltage_probe_on_pin_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">probe_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_voltage_probe_on_pin_group" title="Link to this definition">#</a></dt>
+<dd><p>Create voltage probe between two pin groups.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>probe_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the probe.</p>
+</dd>
+<dt><strong>pos_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive pin group.</p>
+</dd>
+<dt><strong>neg_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the negative pin group.</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Phase of the source.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_circuit_port_on_pin_group">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_circuit_port_on_pin_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin_group_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_circuit_port_on_pin_group" title="Link to this definition">#</a></dt>
+<dd><p>Create a port between two pin groups.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive pin group.</p>
+</dd>
+<dt><strong>neg_pin_group_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the negative pin group.</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Impedance of the port. Default is <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Port name.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.place_voltage_probe">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">place_voltage_probe</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_location</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_layer</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.place_voltage_probe" title="Link to this definition">#</a></dt>
+<dd><p>Place a voltage probe between two points.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier">str,</span></dt><dd><p>Name of the probe.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>positive_location</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Location of the positive terminal.</p>
+</dd>
+<dt><strong>positive_layer</strong><span class="classifier">str,</span></dt><dd><p>Layer of the positive terminal.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier">str,</span></dt><dd><p>Name of the negative net.</p>
+</dd>
+<dt><strong>negative_location</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Location of the negative terminal.</p>
+</dd>
+<dt><strong>negative_layer</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Layer of the negative terminal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_vrm_module">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_vrm_module</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_active</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'3V'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_sensor_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_sensor_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_regulation_current</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1A'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">load_regulation_percent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_vrm_module" title="Link to this definition">#</a></dt>
+<dd><p>Create a voltage regulator module.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the voltage regulator.</p>
+</dd>
+<dt><strong>is_active</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Set the voltage regulator active or not. Default value is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>voltage ; str, float</strong></dt><dd><p>Set the voltage value.</p>
+</dd>
+<dt><strong>positive_sensor_pin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">class</span></code> <a class="reference internal" href="../edb_data/padstacks_data/EDBPadstackInstance.html#pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance" title="pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance</span></code></a></span></dt><dd><p>defining the positive sensor pin.</p>
+</dd>
+<dt><strong>negative_sensor_pin</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">class</span></code> <a class="reference internal" href="../edb_data/padstacks_data/EDBPadstackInstance.html#pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance" title="pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance</span></code></a></span></dt><dd><p>defining the negative sensor pin.</p>
+</dd>
+<dt><strong>load_regulation_current</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>definition the load regulation current value.</p>
+</dd>
+<dt><strong>load_regulation_percent</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>definition the load regulation percent value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.create_impedance_crosstalk_scan">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">create_impedance_crosstalk_scan</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scan_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'impedance'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.create_impedance_crosstalk_scan" title="Link to this definition">#</a></dt>
+<dd><p>Create Siwave crosstalk scan object</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>scan_type</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Scan type to be analyzed. 3 options are available, <code class="docutils literal notranslate"><span class="pre">impedance</span></code> for frequency impedance scan,
+<code class="docutils literal notranslate"><span class="pre">frequency_xtalk</span></code> for frequency domain crosstalk and <code class="docutils literal notranslate"><span class="pre">time_xtalk</span></code> for time domain crosstalk.
+Default value is <code class="docutils literal notranslate"><span class="pre">frequency</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbSiwave.add_cpa_analysis">
+<span class="sig-prename descclassname"><span class="pre">EdbSiwave.</span></span><span class="sig-name descname"><span class="pre">add_cpa_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">siwave_cpa_setup_class</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbSiwave.add_cpa_analysis" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.siwave.EdbSiwave"><code class="docutils literal notranslate"><span class="pre">EdbSiwave</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.excitations"><code class="docutils literal notranslate"><span class="pre">excitations</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.sources"><code class="docutils literal notranslate"><span class="pre">sources</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.probes"><code class="docutils literal notranslate"><span class="pre">probes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.voltage_regulator_modules"><code class="docutils literal notranslate"><span class="pre">voltage_regulator_modules</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.pin_groups"><code class="docutils literal notranslate"><span class="pre">pin_groups</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.icepak_use_minimal_comp_defaults"><code class="docutils literal notranslate"><span class="pre">icepak_use_minimal_comp_defaults</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.icepak_component_file"><code class="docutils literal notranslate"><span class="pre">icepak_component_file</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_circuit_port_on_pin"><code class="docutils literal notranslate"><span class="pre">create_circuit_port_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_port_between_pin_and_layer"><code class="docutils literal notranslate"><span class="pre">create_port_between_pin_and_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_voltage_source_on_pin"><code class="docutils literal notranslate"><span class="pre">create_voltage_source_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_current_source_on_pin"><code class="docutils literal notranslate"><span class="pre">create_current_source_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_resistor_on_pin"><code class="docutils literal notranslate"><span class="pre">create_resistor_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_circuit_port_on_net"><code class="docutils literal notranslate"><span class="pre">create_circuit_port_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_voltage_source_on_net"><code class="docutils literal notranslate"><span class="pre">create_voltage_source_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_current_source_on_net"><code class="docutils literal notranslate"><span class="pre">create_current_source_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_dc_terminal"><code class="docutils literal notranslate"><span class="pre">create_dc_terminal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_exec_file"><code class="docutils literal notranslate"><span class="pre">create_exec_file()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.add_siwave_syz_analysis"><code class="docutils literal notranslate"><span class="pre">add_siwave_syz_analysis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.add_siwave_dc_analysis"><code class="docutils literal notranslate"><span class="pre">add_siwave_dc_analysis()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_pin_group_terminal"><code class="docutils literal notranslate"><span class="pre">create_pin_group_terminal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.configure_siw_analysis_setup"><code class="docutils literal notranslate"><span class="pre">configure_siw_analysis_setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_rlc_component"><code class="docutils literal notranslate"><span class="pre">create_rlc_component()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_pin_group"><code class="docutils literal notranslate"><span class="pre">create_pin_group()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_pin_group_on_net"><code class="docutils literal notranslate"><span class="pre">create_pin_group_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_current_source_on_pin_group"><code class="docutils literal notranslate"><span class="pre">create_current_source_on_pin_group()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_voltage_source_on_pin_group"><code class="docutils literal notranslate"><span class="pre">create_voltage_source_on_pin_group()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_voltage_probe_on_pin_group"><code class="docutils literal notranslate"><span class="pre">create_voltage_probe_on_pin_group()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_circuit_port_on_pin_group"><code class="docutils literal notranslate"><span class="pre">create_circuit_port_on_pin_group()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.place_voltage_probe"><code class="docutils literal notranslate"><span class="pre">place_voltage_probe()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_vrm_module"><code class="docutils literal notranslate"><span class="pre">create_vrm_module()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.create_impedance_crosstalk_scan"><code class="docutils literal notranslate"><span class="pre">create_impedance_crosstalk_scan()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbSiwave.add_cpa_analysis"><code class="docutils literal notranslate"><span class="pre">add_cpa_analysis()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/siwave/EdbSiwave.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/dotnet/database/siwave/EdbSiwave.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

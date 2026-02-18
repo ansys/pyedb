@@ -1,0 +1,6 @@
+hole\_diameter\_string
+======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.hole_diameter_string

@@ -1,0 +1,6 @@
+to\_dict
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.to_dict

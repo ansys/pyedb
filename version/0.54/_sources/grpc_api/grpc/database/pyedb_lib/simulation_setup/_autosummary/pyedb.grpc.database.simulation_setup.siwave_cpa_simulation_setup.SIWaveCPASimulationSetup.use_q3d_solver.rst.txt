@@ -1,0 +1,6 @@
+use\_q3d\_solver
+================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup
+
+.. autoproperty:: SIWaveCPASimulationSetup.use_q3d_solver

@@ -1,0 +1,231 @@
+
+
+
+
+
+
+:class:`ExtendedNet`
+====================
+
+
+.. py:class:: pyedb.grpc.database.net.extended_net.ExtendedNet(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.net.extended_net.ExtendedNet`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It Inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ExtendedNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~nets`
+            - Nets dictionary.
+          * - :py:attr:`~components`
+            - Dictionary of components.
+          * - :py:attr:`~rlc`
+            - Dictionary of RLC components.
+          * - :py:attr:`~serial_rlc`
+            - Dictionary of serial RLC components.
+          * - :py:attr:`~shunt_rlc`
+            - Dictionary of shunt RLC components.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.net.extended_net import ExtendedNet
+
+Property detail
+---------------
+
+.. py:property:: nets
+   :type: dict[str, pyedb.grpc.database.net.net.Net]
+
+
+   
+   Nets dictionary.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`Net <pyedb.grpc.database.net.net.Net>`]
+           Dict[net name, Net object].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+   :type: dict[str, any]
+
+
+   
+   Dictionary of components.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+           Dict[net name, Component object].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc
+   :type: dict[str, any]
+
+
+   
+   Dictionary of RLC components.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+           Dict[net name, Component object].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: serial_rlc
+   :type: dict[str, any]
+
+
+   
+   Dictionary of serial RLC components.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+           Dict[net name, Component object].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: shunt_rlc
+   :type: dict[str, any]
+
+
+   
+   Dictionary of shunt RLC components.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
+           Dict[net name, Component object].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

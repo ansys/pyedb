@@ -1,0 +1,6 @@
+use\_override\_shrink\_factor
+=============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_override_shrink_factor

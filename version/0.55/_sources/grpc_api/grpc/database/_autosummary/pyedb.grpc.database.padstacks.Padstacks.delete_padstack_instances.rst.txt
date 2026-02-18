@@ -1,0 +1,6 @@
+delete\_padstack\_instances
+===========================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.delete_padstack_instances

@@ -1,0 +1,82 @@
+
+
+
+
+
+
+:class:`CfgPackageDefinitions`
+==============================
+
+
+.. py:class:: pyedb.configuration.cfg_package_definition.CfgPackageDefinitions(pedb, data)
+
+
+.. py:currentmodule:: CfgPackageDefinitions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_parameter_from_edb`
+            - 
+          * - :py:attr:`~set_parameter_to_edb`
+            - 
+          * - :py:attr:`~apply`
+            - 
+          * - :py:attr:`~get_data_from_db`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~packages`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_package_definition import CfgPackageDefinitions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: packages
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_parameter_from_edb()
+
+.. py:method:: set_parameter_to_edb()
+
+.. py:method:: apply()
+
+.. py:method:: get_data_from_db()
+
+
+
+

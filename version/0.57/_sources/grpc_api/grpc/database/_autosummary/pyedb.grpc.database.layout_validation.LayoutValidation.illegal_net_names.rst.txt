@@ -1,0 +1,6 @@
+illegal\_net\_names
+===================
+
+.. currentmodule:: pyedb.grpc.database.layout_validation
+
+.. automethod:: LayoutValidation.illegal_net_names

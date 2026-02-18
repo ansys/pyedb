@@ -1,0 +1,106 @@
+
+
+
+
+
+
+:class:`EDBNetClassData`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData(core_app, raw_extended_net=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.dotnet.database.NetClassDotNet`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb.net_classes
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBNetClassData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~nets`
+            - Get nets belong to this net class.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.nets_data import EDBNetClassData
+
+Property detail
+---------------
+
+.. py:property:: nets
+
+   
+   Get nets belong to this net class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

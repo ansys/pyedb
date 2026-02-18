@@ -1,0 +1,241 @@
+﻿Edb
+===
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoclass:: Edb
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Edb.add_design_variable
+      
+      
+      Edb.add_project_variable
+      
+      
+      Edb.are_port_reference_terminals_connected
+      
+      
+      Edb.auto_parametrize_design
+      
+      
+      Edb.build_simulation_project
+      
+      
+      Edb.calculate_initial_extent
+      
+      
+      Edb.change_design_variable_value
+      
+      
+      Edb.close
+      
+      
+      Edb.close_edb
+      
+      
+      Edb.compare
+      
+      
+      Edb.copy_cells
+      
+      
+      Edb.copy_zones
+      
+      
+      Edb.create_current_source
+      
+      
+      Edb.create_edb
+      
+      
+      Edb.create_hfss_setup
+      
+      
+      Edb.create_hfsspi_setup
+      
+      
+      Edb.create_model_for_arbitrary_wave_ports
+      
+      
+      Edb.create_port
+      
+      
+      Edb.create_raptorx_setup
+      
+      
+      Edb.create_siwave_dc_setup
+      
+      
+      Edb.create_siwave_syz_setup
+      
+      
+      Edb.create_voltage_probe
+      
+      
+      Edb.create_voltage_source
+      
+      
+      Edb.cutout
+      
+      
+      Edb.cutout_multizone_layout
+      
+      
+      Edb.edb_exception
+      
+      
+      Edb.edb_value
+      
+      
+      Edb.execute
+      
+      
+      Edb.export_gds_comp_xml
+      
+      
+      Edb.export_hfss
+      
+      
+      Edb.export_maxwell
+      
+      
+      Edb.export_q3d
+      
+      
+      Edb.export_siwave_dc_results
+      
+      
+      Edb.export_to_ipc2581
+      
+      
+      Edb.get_all_variable_names
+      
+      
+      Edb.get_bounding_box
+      
+      
+      Edb.get_conformal_polygon_from_netlist
+      
+      
+      Edb.get_connected_objects
+      
+      
+      Edb.get_point_terminal
+      
+      
+      Edb.get_statistics
+      
+      
+      Edb.get_variable
+      
+      
+      Edb.get_variable_value
+      
+      
+      Edb.import_cadence_file
+      
+      
+      Edb.import_layout_file
+      
+      
+      Edb.new_simulation_configuration
+      
+      
+      Edb.number_with_units
+      
+      
+      Edb.open_edb
+      
+      
+      Edb.point_3d
+      
+      
+      Edb.point_data
+      
+      
+      Edb.save
+      
+      
+      Edb.save_as
+      
+      
+      Edb.save_edb
+      
+      
+      Edb.save_edb_as
+      
+      
+      Edb.solve_siwave
+      
+      
+      Edb.value
+      
+      
+      Edb.variable_exists
+      
+      
+      Edb.write_export3d_option_config_file
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Edb.active_cell
+      Edb.active_db
+      Edb.active_layout
+      Edb.ansys_em_path
+      Edb.base_path
+      Edb.cell_names
+      Edb.components
+      Edb.configuration
+      Edb.core
+      Edb.definitions
+      Edb.design_options
+      Edb.design_variables
+      Edb.differential_pairs
+      Edb.excitations
+      Edb.excitations_nets
+      Edb.extended_nets
+      Edb.grpc
+      Edb.hfss
+      Edb.hfss_setups
+      Edb.layout
+      Edb.layout_instance
+      Edb.layout_validation
+      Edb.logger
+      Edb.materials
+      Edb.modeler
+      Edb.net_classes
+      Edb.nets
+      Edb.padstacks
+      Edb.pedb_class
+      Edb.ports
+      Edb.probes
+      Edb.project_variables
+      Edb.setups
+      Edb.siwave
+      Edb.siwave_ac_setups
+      Edb.siwave_dc_setups
+      Edb.sources
+      Edb.stackup
+      Edb.terminals
+      Edb.variables
+      Edb.version
+      Edb.voltage_regulator_modules
+      Edb.workflow
+   
+   

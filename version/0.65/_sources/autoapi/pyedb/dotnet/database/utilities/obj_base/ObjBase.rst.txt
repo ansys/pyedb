@@ -1,0 +1,150 @@
+
+
+
+
+
+
+:class:`ObjBase`
+================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.obj_base.ObjBase(pedb, edb_object)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB functionalities for a base object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ObjBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_null`
+            - Flag indicating if this object is null.
+          * - :py:attr:`~type`
+            - Type of the edb object.
+          * - :py:attr:`~name`
+            - Name of the definition.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.obj_base import ObjBase
+
+Property detail
+---------------
+
+.. py:property:: is_null
+
+   
+   Flag indicating if this object is null.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+   
+   Type of the edb object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Name of the definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,180 @@
+
+
+
+
+
+
+:class:`HFSSPINetProcessingSettings`
+====================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_net_processing_settings.HFSSPINetProcessingSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPINetProcessingSettings)
+
+   
+   PyEDB HFSS PI net processing settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPINetProcessingSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_select_nets_for_simulation`
+            - Flag indicating whether to automatically select nets for simulation.
+          * - :py:attr:`~ignore_dummy_nets_for_selected_nets`
+            - Flag indicating whether to ignore dummy nets for selected nets.
+          * - :py:attr:`~include_nets`
+            - List of nets to include in the simulation.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_net_processing_settings import HFSSPINetProcessingSettings
+
+Property detail
+---------------
+
+.. py:property:: auto_select_nets_for_simulation
+   :type: bool
+
+
+   
+   Flag indicating whether to automatically select nets for simulation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if auto select nets for simulation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_dummy_nets_for_selected_nets
+   :type: bool
+
+
+   
+   Flag indicating whether to ignore dummy nets for selected nets.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if ignore dummy nets for selected nets is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_nets
+   :type: list[str]
+
+
+   
+   List of nets to include in the simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of net names to include.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

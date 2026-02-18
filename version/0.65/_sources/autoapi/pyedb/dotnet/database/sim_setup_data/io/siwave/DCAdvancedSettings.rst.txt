@@ -1,0 +1,635 @@
+
+
+
+
+
+
+:class:`DCAdvancedSettings`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.io.siwave.DCAdvancedSettings(parent)
+
+   Bases: :py:obj:`SettingsBase`
+
+
+   
+   Provide base settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DCAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_dc_slider`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_min_void_area_to_mesh`
+            - DC minimum area below which voids are ignored.
+          * - :py:attr:`~dc_min_plane_area_to_mesh`
+            - Minimum area below which geometry is ignored.
+          * - :py:attr:`~energy_error`
+            - Energy error.
+          * - :py:attr:`~max_init_mesh_edge_length`
+            - Initial mesh maximum edge length.
+          * - :py:attr:`~max_num_pass`
+            - Maximum number of passes.
+          * - :py:attr:`~max_num_passes`
+            - Maximum number of passes.
+          * - :py:attr:`~min_num_pass`
+            - Minimum number of passes.
+          * - :py:attr:`~min_num_passes`
+            - Minimum number of passes.
+          * - :py:attr:`~mesh_bondwires`
+            - Mesh bondwires.
+          * - :py:attr:`~mesh_vias`
+            - Mesh vias.
+          * - :py:attr:`~num_bondwire_sides`
+            - Number of bondwire sides.
+          * - :py:attr:`~num_bw_sides`
+            - Number of bondwire sides.
+          * - :py:attr:`~num_via_sides`
+            - Number of via sides.
+          * - :py:attr:`~percent_local_refinement`
+            - Percentage of local refinement.
+          * - :py:attr:`~perform_adaptive_refinement`
+            - Whether to perform adaptive mesh refinement.
+          * - :py:attr:`~refine_bondwires`
+            - Whether to refine mesh along bondwires.
+          * - :py:attr:`~refine_bws`
+            - Whether to refine mesh along bondwires.
+          * - :py:attr:`~refine_vias`
+            - Whether to refine mesh along vias.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~defaults`
+            - 
+          * - :py:attr:`~dc_defaults`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.io.siwave import DCAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: dc_min_void_area_to_mesh
+
+   
+   DC minimum area below which voids are ignored.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_min_plane_area_to_mesh
+
+   
+   Minimum area below which geometry is ignored.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: energy_error
+
+   
+   Energy error.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_init_mesh_edge_length
+
+   
+   Initial mesh maximum edge length.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_pass
+
+   
+   Maximum number of passes.
+
+   deprecated: Use `max_num_passes` instead.
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_passes
+
+   
+   Maximum number of passes.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_num_pass
+
+   
+   Minimum number of passes.
+
+   deprecated: Use `min_num_passes` instead.
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_num_passes
+
+   
+   Minimum number of passes.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_bondwires
+
+   
+   Mesh bondwires.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_vias
+
+   
+   Mesh vias.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_bondwire_sides
+
+   
+   Number of bondwire sides.
+
+   deprecated: Use `num_bw_sides` instead.
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_bw_sides
+
+   
+   Number of bondwire sides.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_sides
+
+   
+   Number of via sides.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_local_refinement
+
+   
+   Percentage of local refinement.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: perform_adaptive_refinement
+
+   
+   Whether to perform adaptive mesh refinement.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if adaptive refinement is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_bondwires
+
+   
+   Whether to refine mesh along bondwires.
+
+   deprecated: Use `refine_bws` instead.
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if refine bondwires is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_bws
+
+   
+   Whether to refine mesh along bondwires.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if refine bondwires is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_vias
+
+   
+   Whether to refine mesh along vias.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if via refinement is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: defaults
+
+.. py:attribute:: dc_defaults
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_dc_slider(value)
+
+
+
+

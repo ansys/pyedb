@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`SimulationSettings`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings.SimulationSettings(pedb, sim_setup, edb_object)
+
+   Bases: :py:obj:`BaseSimulationSettings`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.simulation_settings import SimulationSettings
+
+
+
+
+

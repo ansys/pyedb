@@ -1,0 +1,562 @@
+
+
+
+
+
+
+:class:`SIWaveDCSettings`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dc_settings.SIWaveDCSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveDCSettings)
+
+
+.. py:currentmodule:: SIWaveDCSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~compute_inductance`
+            - Compute inductance flag.
+          * - :py:attr:`~contact_radius`
+            - Contact radius value.
+          * - :py:attr:`~dc_slider_pos`
+            - DC slider position.
+          * - :py:attr:`~plot_jv`
+            - Plot JV flag.
+          * - :py:attr:`~use_dc_custom_settings`
+            - Use DC custom settings flag.
+          * - :py:attr:`~export_dc_thermal_data`
+            - Export DC thermal data flag.
+          * - :py:attr:`~import_thermal_data`
+            - Import thermal data flag.
+          * - :py:attr:`~dc_report_show_active_devices`
+            - DC report show active devices flag.
+          * - :py:attr:`~per_pin_use_pin_format`
+            - Per pin use pin format flag.
+          * - :py:attr:`~use_loop_res_for_per_pin`
+            - Use loop resistance for per pin flag.
+          * - :py:attr:`~dc_report_config_file`
+            - DC report configuration file.
+          * - :py:attr:`~full_dc_report_path`
+            - Full DC report path.
+          * - :py:attr:`~icepak_temp_file`
+            - Icepak temperature file.
+          * - :py:attr:`~per_pin_res_path`
+            - Per pin resistance path.
+          * - :py:attr:`~via_report_path`
+            - Via report path.
+          * - :py:attr:`~source_terms_to_ground`
+            - Source terms to ground mapping.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
+
+Property detail
+---------------
+
+.. py:property:: compute_inductance
+   :type: bool
+
+
+   
+   Compute inductance flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if compute inductance is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: contact_radius
+   :type: str
+
+
+   
+   Contact radius value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Contact radius.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_slider_pos
+   :type: int
+
+
+   
+   DC slider position.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           DC slider position.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: plot_jv
+   :type: bool
+
+
+   
+   Plot JV flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if plot JV is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_dc_custom_settings
+   :type: bool
+
+
+   
+   Use DC custom settings flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if DC custom settings are used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: export_dc_thermal_data
+   :type: bool
+
+
+   
+   Export DC thermal data flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if export DC thermal data is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: import_thermal_data
+   :type: bool
+
+
+   
+   Import thermal data flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if import thermal data is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_show_active_devices
+   :type: bool
+
+
+   
+   DC report show active devices flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if DC report show active devices is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_use_pin_format
+   :type: bool
+
+
+   
+   Per pin use pin format flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if per pin use pin format is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_loop_res_for_per_pin
+   :type: bool
+
+
+   
+   Use loop resistance for per pin flag.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if use loop resistance for per pin is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_config_file
+   :type: str
+
+
+   
+   DC report configuration file.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           DC report configuration file.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: full_dc_report_path
+   :type: str
+
+
+   
+   Full DC report path.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Full DC report path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_temp_file
+   :type: str
+
+
+   
+   Icepak temperature file.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Icepak temperature file.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_res_path
+   :type: bool
+
+
+   
+   Per pin resistance path.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if per pin resistance path is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_report_path
+   :type: str
+
+
+   
+   Via report path.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Via report path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_terms_to_ground
+   :type: dict[str, int]
+
+
+   
+   Source terms to ground mapping.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:int`]
+           Source terms to ground mapping.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

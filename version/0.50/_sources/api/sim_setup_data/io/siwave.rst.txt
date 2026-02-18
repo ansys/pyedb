@@ -1,0 +1,18 @@
+SIwave IO
+=========
+This class is the container of SIwave IO.
+
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autosummary::
+   :toctree: _autosummary
+   :nosignatures:
+
+
+   SettingsBase
+   AdvancedSettings
+   DCSettings
+   DCAdvancedSettings
+
+

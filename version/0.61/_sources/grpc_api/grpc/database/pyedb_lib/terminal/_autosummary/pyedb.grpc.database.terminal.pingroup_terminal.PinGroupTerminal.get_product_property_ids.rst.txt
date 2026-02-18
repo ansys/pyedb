@@ -1,0 +1,6 @@
+get\_product\_property\_ids
+===========================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. automethod:: PinGroupTerminal.get_product_property_ids

@@ -1,0 +1,6 @@
+term\_to\_ground
+================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: BundleWavePort.term_to_ground

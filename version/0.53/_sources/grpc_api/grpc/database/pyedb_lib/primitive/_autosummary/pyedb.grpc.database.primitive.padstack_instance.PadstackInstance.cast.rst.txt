@@ -1,0 +1,6 @@
+cast
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.cast

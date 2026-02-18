@@ -1,0 +1,109 @@
+﻿BundleTerminal
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoclass:: BundleTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      BundleTerminal.cast
+      
+      
+      BundleTerminal.create
+      
+      
+      BundleTerminal.create_3d_comp
+      
+      
+      BundleTerminal.create_hfss
+      
+      
+      BundleTerminal.create_stride
+      
+      
+      BundleTerminal.decouple
+      
+      
+      BundleTerminal.delete
+      
+      
+      BundleTerminal.find
+      
+      
+      BundleTerminal.find_by_id
+      
+      
+      BundleTerminal.get_product_property
+      
+      
+      BundleTerminal.get_product_property_ids
+      
+      
+      BundleTerminal.product_solver_names
+      
+      
+      BundleTerminal.product_solver_option
+      
+      
+      BundleTerminal.set_product_property
+      
+      
+      BundleTerminal.set_product_solver_option
+      
+      
+      BundleTerminal.ungroup
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BundleTerminal.boundary_type
+      BundleTerminal.bundle_terminal
+      BundleTerminal.component
+      BundleTerminal.edb_uid
+      BundleTerminal.group
+      BundleTerminal.hfss_pi_type
+      BundleTerminal.id
+      BundleTerminal.impedance
+      BundleTerminal.is_auto_port
+      BundleTerminal.is_circuit_port
+      BundleTerminal.is_interface_terminal
+      BundleTerminal.is_mcad
+      BundleTerminal.is_mcad_3d_comp
+      BundleTerminal.is_mcad_hfss
+      BundleTerminal.is_mcad_stride
+      BundleTerminal.is_null
+      BundleTerminal.is_reference_terminal
+      BundleTerminal.layout
+      BundleTerminal.layout_obj_type
+      BundleTerminal.model
+      BundleTerminal.msg
+      BundleTerminal.name
+      BundleTerminal.net
+      BundleTerminal.obj_type
+      BundleTerminal.port_post_processing_prop
+      BundleTerminal.reference_layer
+      BundleTerminal.reference_terminal
+      BundleTerminal.rlc_boundary_parameters
+      BundleTerminal.source_amplitude
+      BundleTerminal.source_phase
+      BundleTerminal.term_to_ground
+      BundleTerminal.terminals
+      BundleTerminal.type
+      BundleTerminal.use_reference_from_hierarchy
+   
+   

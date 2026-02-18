@@ -1,0 +1,68 @@
+
+
+
+
+
+
+:class:`CATEGORIESQ3D`
+======================
+
+.. toctree::
+   :hidden:
+
+    Q2D</autoapi/pyedb/generic/constants/CATEGORIESQ3D.Q2D>
+    Q3D</autoapi/pyedb/generic/constants/CATEGORIESQ3D.Q3D>
+
+
+.. py:class:: pyedb.generic.constants.CATEGORIESQ3D
+
+   Bases: :py:obj:`object`
+
+
+   
+   Plot Categories for Q2d and Q3d.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import CATEGORIESQ3D
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.CATEGORIESQ3D.Q2D
+    pyedb.generic.constants.CATEGORIESQ3D.Q3D
+
+
+
+

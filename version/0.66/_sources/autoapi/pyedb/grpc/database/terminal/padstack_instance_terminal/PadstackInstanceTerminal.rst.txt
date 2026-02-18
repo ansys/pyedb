@@ -1,0 +1,720 @@
+
+
+
+
+
+
+:class:`PadstackInstanceTerminal`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal(pedb, edb_object)
+
+   
+   Manages bundle terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PadstackInstanceTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a padstack instance terminal.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Terminal name.
+          * - :py:attr:`~is_null`
+            - Check if the terminal is null.
+          * - :py:attr:`~is_circuit_port`
+            - Check if the terminal is a circuit port.
+          * - :py:attr:`~is_reference_terminal`
+            - Check if the terminal is a reference terminal.
+          * - :py:attr:`~id`
+            - Terminal ID.
+          * - :py:attr:`~edb_uid`
+            - Terminal EDB UID.
+          * - :py:attr:`~net`
+            - Net.
+          * - :py:attr:`~position`
+            - Terminal position.
+          * - :py:attr:`~padstack_instance`
+            - 
+          * - :py:attr:`~component`
+            - 
+          * - :py:attr:`~location`
+            - Terminal position.
+          * - :py:attr:`~net_name`
+            - Net name.
+          * - :py:attr:`~magnitude`
+            - Source amplitude.
+          * - :py:attr:`~phase`
+            - Source phase.
+          * - :py:attr:`~source_amplitude`
+            - Source amplitude.
+          * - :py:attr:`~source_phase`
+            - Source phase.
+          * - :py:attr:`~impedance`
+            - Impdeance value.
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~is_port`
+            - 
+          * - :py:attr:`~ref_terminal`
+            - Return reference terminal.
+          * - :py:attr:`~terminal_type`
+            - 
+          * - :py:attr:`~reference_terminal`
+            - Return reference terminal.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Terminal name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Terminal name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the terminal is null.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the terminal is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_circuit_port
+   :type: bool
+
+
+   
+   Check if the terminal is a circuit port.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the terminal is a circuit port, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_reference_terminal
+   :type: bool
+
+
+   
+   Check if the terminal is a reference terminal.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the terminal is a reference terminal, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: id
+   :type: int
+
+
+   
+   Terminal ID.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Terminal ID.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: edb_uid
+   :type: int
+
+
+   
+   Terminal EDB UID.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Terminal EDB UID.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Net.
+
+
+
+   :Returns:
+
+       :class:`Net <pyedb.grpc.database.net.net.Net>`
+           Terminal net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: position
+   :type: tuple[float, float]
+
+
+   
+   Terminal position.
+
+
+
+   :Returns:
+
+       **Position [x,y]** : [:class:`python:float`, :class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instance
+   :type: pyedb.grpc.database.primitive.padstack_instance.PadstackInstance
+
+
+.. py:property:: component
+   :type: pyedb.grpc.database.hierarchy.component.Component
+
+
+.. py:property:: location
+   :type: tuple[float, float]
+
+
+   
+   Terminal position.
+
+
+
+   :Returns:
+
+       **Position [x,y]** : [:class:`python:float`, :class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_name
+   :type: str
+
+
+   
+   Net name.
+
+
+
+   :Returns:
+
+       **str** : :obj:`name` :obj:`of` :obj:`the` net.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: magnitude
+   :type: float
+
+
+   
+   Source amplitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`amplitude` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+   :type: float
+
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **float** : :obj:`phase` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_amplitude
+   :type: float
+
+
+   
+   Source amplitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`amplitude` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_phase
+   :type: float
+
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **float** : :obj:`phase` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+   :type: float
+
+
+   
+   Impdeance value.
+
+
+
+   :Returns:
+
+       **float** : :obj:`impedance` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: boundary_type
+   :type: str
+
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`Boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_port
+   :type: bool
+
+
+.. py:property:: ref_terminal
+
+   
+   Return reference terminal.
+
+   ..deprecated:: 0.43.0
+      Use: func:`reference_terminal` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+   :type: str
+
+
+.. py:property:: reference_terminal
+   :type: PadstackInstanceTerminal
+
+
+   
+   Return reference terminal.
+
+
+
+   :Returns:
+
+       :obj:`PadstackInstanceTerminal`
+           Reference terminal object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, name, padstack_instance, layer, is_ref=False, net=None) -> PadstackInstanceTerminal
+   :classmethod:
+
+
+   
+   Create a padstack instance terminal.
+   Parameters
+   ----------
+   layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
+       Layout object associated with the terminal.
+   name : str
+       Terminal name.
+   padstack_instance : PadstackInstance
+       Padstack instance object.
+   layer : str
+       Layer name.
+   is_ref : bool, optional
+       Whether the terminal is a reference terminal. Default is False.
+   Returns
+   -------
+   PadstackInstanceTerminal
+       Padstack instance terminal object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

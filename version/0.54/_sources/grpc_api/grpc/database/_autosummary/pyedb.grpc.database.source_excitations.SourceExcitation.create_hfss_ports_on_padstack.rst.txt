@@ -1,0 +1,6 @@
+create\_hfss\_ports\_on\_padstack
+=================================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_hfss_ports_on_padstack

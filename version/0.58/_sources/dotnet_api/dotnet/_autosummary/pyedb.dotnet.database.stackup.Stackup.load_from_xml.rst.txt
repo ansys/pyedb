@@ -1,0 +1,6 @@
+load\_from\_xml
+===============
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. automethod:: Stackup.load_from_xml

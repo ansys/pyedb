@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``raptor_x_simulation_setup_data.py`` module
+================================================
+
+.. py:module:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: raptor_x_simulation_setup_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+            - Manages EDB methods for RaptorX simulation setup.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXGeneralSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationAdvancedSettings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> RaptorXSimulationSetup</autoapi/pyedb/dotnet/database/edb_data/raptor_x_simulation_setup_data/RaptorXSimulationSetup>
+    <span class="nf nf-cod-symbol_class"></span> RaptorXSimulationSettings</autoapi/pyedb/dotnet/database/edb_data/raptor_x_simulation_setup_data/RaptorXSimulationSettings>
+    <span class="nf nf-cod-symbol_class"></span> RaptorXGeneralSettings</autoapi/pyedb/dotnet/database/edb_data/raptor_x_simulation_setup_data/RaptorXGeneralSettings>
+    <span class="nf nf-cod-symbol_class"></span> RaptorXSimulationAdvancedSettings</autoapi/pyedb/dotnet/database/edb_data/raptor_x_simulation_setup_data/RaptorXSimulationAdvancedSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

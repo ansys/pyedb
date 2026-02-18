@@ -1,0 +1,6 @@
+pos\_remote\_sense\_pin
+=======================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoproperty:: VoltageRegulator.pos_remote_sense_pin

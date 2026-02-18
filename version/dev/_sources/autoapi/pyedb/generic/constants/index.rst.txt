@@ -1,0 +1,655 @@
+
+
+
+
+
+
+The ``pyedb.generic.constants`` library
+=======================================
+
+.. py:module:: pyedb.generic.constants
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: constants
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.generic.constants.SWEEPDRAFT`
+            - SweepDraftType Enumerator class.
+
+
+          * - :py:obj:`~pyedb.generic.constants.FlipChipOrientation`
+            - Chip orientation enumerator class.
+
+
+          * - :py:obj:`~pyedb.generic.constants.SolverType`
+            - Provides solver type classes.
+
+
+          * - :py:obj:`~pyedb.generic.constants.CutoutSubdesignType`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.RadiationBoxType`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.SweepType`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.BasisOrder`
+            - Enumeration-class for HFSS basis order settings.
+
+
+          * - :py:obj:`~pyedb.generic.constants.NodeType`
+            - Type of node for source creation.
+
+
+          * - :py:obj:`~pyedb.generic.constants.SourceType`
+            - Type of excitation enumerator.
+
+
+          * - :py:obj:`~pyedb.generic.constants.CommonMapper`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.TerminalTypeMapper`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.BoundaryTypeMapper`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.SourceTermMapper`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.FAdaptTypeMapper`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic.constants.MeshOperationTypeMapper`
+            - 
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~db20`
+            - Convert db20 to decimal and vice versa.
+
+
+          * - :py:obj:`~db10`
+            - Convert db10 to decimal and vice versa.
+
+
+          * - :py:obj:`~dbw`
+            - Convert W to decimal and vice versa.
+
+
+          * - :py:obj:`~dbm`
+            - Convert W to decimal and vice versa.
+
+
+          * - :py:obj:`~fah2kel`
+            - Convert a temperature from Fahrenheit to Kelvin.
+
+
+          * - :py:obj:`~cel2kel`
+            - Convert a temperature from Celsius to Kelvin.
+
+
+          * - :py:obj:`~unit_system`
+            - Retrieve the name of the unit system associated with a unit string.
+
+
+          * - :py:obj:`~unit_converter`
+            - Convert unit in specified unit system.
+
+
+          * - :py:obj:`~scale_units`
+            - Find the scale_to_unit into main system unit.
+
+
+          * - :py:obj:`~validate_enum_class_value`
+            - Check whether the value for the class ``enumeration-class`` is valid.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~SpeedOfLight`
+            - 
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~RAD2DEG`
+            - 
+
+
+          * - :py:obj:`~DEG2RAD`
+            - 
+
+
+          * - :py:obj:`~HOUR2SEC`
+            - 
+
+
+          * - :py:obj:`~MIN2SEC`
+            - 
+
+
+          * - :py:obj:`~SEC2MIN`
+            - 
+
+
+          * - :py:obj:`~SEC2HOUR`
+            - 
+
+
+          * - :py:obj:`~INV2PI`
+            - 
+
+
+          * - :py:obj:`~V2PI`
+            - 
+
+
+          * - :py:obj:`~METER2IN`
+            - 
+
+
+          * - :py:obj:`~METER2MILES`
+            - 
+
+
+          * - :py:obj:`~MILS2METER`
+            - 
+
+
+          * - :py:obj:`~AEDT_UNITS`
+            - 
+
+
+          * - :py:obj:`~SI_UNITS`
+            - 
+
+
+          * - :py:obj:`~UNIT_SYSTEM_OPERATIONS`
+            - 
+
+
+          * - :py:obj:`~CSS4_COLORS`
+            - 
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SWEEPDRAFT</autoapi/pyedb/generic/constants/SWEEPDRAFT>
+    <span class="nf nf-cod-symbol_class"></span> FlipChipOrientation</autoapi/pyedb/generic/constants/FlipChipOrientation>
+    <span class="nf nf-cod-symbol_class"></span> SolverType</autoapi/pyedb/generic/constants/SolverType>
+    <span class="nf nf-cod-symbol_class"></span> CutoutSubdesignType</autoapi/pyedb/generic/constants/CutoutSubdesignType>
+    <span class="nf nf-cod-symbol_class"></span> RadiationBoxType</autoapi/pyedb/generic/constants/RadiationBoxType>
+    <span class="nf nf-cod-symbol_class"></span> SweepType</autoapi/pyedb/generic/constants/SweepType>
+    <span class="nf nf-cod-symbol_class"></span> BasisOrder</autoapi/pyedb/generic/constants/BasisOrder>
+    <span class="nf nf-cod-symbol_class"></span> NodeType</autoapi/pyedb/generic/constants/NodeType>
+    <span class="nf nf-cod-symbol_class"></span> SourceType</autoapi/pyedb/generic/constants/SourceType>
+    <span class="nf nf-cod-symbol_class"></span> CommonMapper</autoapi/pyedb/generic/constants/CommonMapper>
+    <span class="nf nf-cod-symbol_class"></span> TerminalTypeMapper</autoapi/pyedb/generic/constants/TerminalTypeMapper>
+    <span class="nf nf-cod-symbol_class"></span> BoundaryTypeMapper</autoapi/pyedb/generic/constants/BoundaryTypeMapper>
+    <span class="nf nf-cod-symbol_class"></span> SourceTermMapper</autoapi/pyedb/generic/constants/SourceTermMapper>
+    <span class="nf nf-cod-symbol_class"></span> FAdaptTypeMapper</autoapi/pyedb/generic/constants/FAdaptTypeMapper>
+    <span class="nf nf-cod-symbol_class"></span> MeshOperationTypeMapper</autoapi/pyedb/generic/constants/MeshOperationTypeMapper>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: db20(x, inverse=True)
+
+   
+   Convert db20 to decimal and vice versa.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: db10(x, inverse=True)
+
+   
+   Convert db10 to decimal and vice versa.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: dbw(x, inverse=True)
+
+   
+   Convert W to decimal and vice versa.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: dbm(x, inverse=True)
+
+   
+   Convert W to decimal and vice versa.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: fah2kel(val, inverse=True)
+
+   
+   Convert a temperature from Fahrenheit to Kelvin.
+
+
+   :Parameters:
+
+       **val** : :class:`python:float`
+           Temperature value in Fahrenheit.
+
+       **inverse** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           The default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Temperature value converted to Kelvin.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: cel2kel(val, inverse=True)
+
+   
+   Convert a temperature from Celsius to Kelvin.
+
+
+   :Parameters:
+
+       **val** : :class:`python:float`
+           Temperature value in Celsius.
+
+       **inverse** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           The default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Temperature value converted to Kelvin.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: unit_system(units)
+
+   
+   Retrieve the name of the unit system associated with a unit string.
+
+
+   :Parameters:
+
+       **units** : :class:`python:str`
+           Units for retrieving the associated unit system name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Key from the ``AEDT_units`` when successful. For example, ``"AngularSpeed"``.
+
+       ``False`` :obj:`when` :obj:`the` :obj:`units` :obj:`specified` :obj:`are` :obj:`not` :obj:`defined` :obj:`in` :obj:`AEDT` units.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: unit_converter(values, unit_system='Length', input_units='meter', output_units='mm')
+
+   
+   Convert unit in specified unit system.
+
+
+   :Parameters:
+
+       **values** : :class:`python:float`, :class:`python:list`
+           Values to convert.
+
+       **unit_system** : :class:`python:str`
+           Unit system. Default is `"Length"`.
+
+       **input_units** : :class:`python:str`
+           Input units. Default is `"meter"`.
+
+       **output_units** : :class:`python:str`
+           Output units. Default is `"mm"`.
+
+
+
+   :Returns:
+
+       :class:`python:float`, :class:`python:list`
+           Converted value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: scale_units(scale_to_unit)
+
+   
+   Find the scale_to_unit into main system unit.
+
+
+   :Parameters:
+
+       **scale_to_unit** : :class:`python:str`
+           Unit to Scale.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Return the scaling factor if any.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: validate_enum_class_value(cls, value)
+
+   
+   Check whether the value for the class ``enumeration-class`` is valid.
+
+
+   :Parameters:
+
+       **cls** : :obj:`class`
+           Enumeration-style class with integer members in range(0, N) where cls.Invalid equals N-1.
+
+       **value** : :class:`python:int`
+           Value to check.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when the value is valid for the ``enumeration-class``, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: RAD2DEG
+   :value: 57.29577951308232
+
+
+.. py:data:: DEG2RAD
+   :value: 0.017453292519943295
+
+
+.. py:data:: HOUR2SEC
+   :value: 3600.0
+
+
+.. py:data:: MIN2SEC
+   :value: 60.0
+
+
+.. py:data:: SEC2MIN
+   :value: 0.016666666666666666
+
+
+.. py:data:: SEC2HOUR
+   :value: 0.0002777777777777778
+
+
+.. py:data:: INV2PI
+   :value: 0.15915494309189535
+
+
+.. py:data:: V2PI
+   :value: 6.283185307179586
+
+
+.. py:data:: METER2IN
+   :value: 0.0254
+
+
+.. py:data:: METER2MILES
+   :value: 1609.344051499
+
+
+.. py:data:: MILS2METER
+   :value: 39370.078740157
+
+
+.. py:data:: AEDT_UNITS
+
+.. py:data:: SI_UNITS
+
+.. py:data:: UNIT_SYSTEM_OPERATIONS
+
+.. py:data:: CSS4_COLORS
+
+.. py:data:: SpeedOfLight
+   :value: 299792458.0
+
+
+
+

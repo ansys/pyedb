@@ -1,0 +1,6 @@
+merge\_via\_along\_lines
+========================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.merge_via_along_lines

@@ -1,0 +1,172 @@
+
+
+
+
+
+
+:class:`UtilityDotNet`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.UtilityDotNet(app)
+
+   
+   Utility Edb class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: UtilityDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~value`
+            - Edb Dotnet Api Utility.Value.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~utility`
+            - 
+          * - :py:attr:`~core`
+            - 
+          * - :py:attr:`~active_db`
+            - 
+          * - :py:attr:`~active_cell`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import UtilityDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: utility
+
+.. py:attribute:: core
+
+.. py:attribute:: active_db
+
+.. py:attribute:: active_cell
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(key)
+
+.. py:method:: value(value, var_server=None)
+
+   
+   Edb Dotnet Api Utility.Value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

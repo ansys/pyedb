@@ -1,0 +1,6 @@
+num\_vias
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoproperty:: LayoutStatistics.num_vias

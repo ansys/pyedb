@@ -1,0 +1,40 @@
+﻿Hfss
+====
+
+.. currentmodule:: pyedb.grpc.database.hfss
+
+.. autoclass:: Hfss
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Hfss.add_setup
+      
+      
+      Hfss.get_layout_bounding_box
+      
+      
+      Hfss.get_trace_width_for_traces_with_ports
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Hfss.excitations
+      Hfss.hfss_extent_info
+      Hfss.probes
+      Hfss.sources
+   
+   

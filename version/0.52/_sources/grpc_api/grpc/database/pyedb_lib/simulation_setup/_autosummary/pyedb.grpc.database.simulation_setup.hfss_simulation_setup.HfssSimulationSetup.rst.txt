@@ -1,0 +1,63 @@
+﻿HfssSimulationSetup
+===================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. autoclass:: HfssSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HfssSimulationSetup.add_adaptive_frequency_data
+      
+      
+      HfssSimulationSetup.add_length_mesh_operation
+      
+      
+      HfssSimulationSetup.add_skin_depth_mesh_operation
+      
+      
+      HfssSimulationSetup.add_sweep
+      
+      
+      HfssSimulationSetup.cast
+      
+      
+      HfssSimulationSetup.create
+      
+      
+      HfssSimulationSetup.set_solution_broadband
+      
+      
+      HfssSimulationSetup.set_solution_multi_frequencies
+      
+      
+      HfssSimulationSetup.set_solution_single_frequency
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HfssSimulationSetup.id
+      HfssSimulationSetup.is_null
+      HfssSimulationSetup.mesh_operations
+      HfssSimulationSetup.msg
+      HfssSimulationSetup.name
+      HfssSimulationSetup.position
+      HfssSimulationSetup.settings
+      HfssSimulationSetup.sweep_data
+      HfssSimulationSetup.type
+   
+   

@@ -1,0 +1,94 @@
+
+
+
+
+
+
+:class:`BlockParser`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.BlockParser(lines: List[str])
+
+   
+   Base class for a single block parser.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: BlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+   .. tab-item:: Abstract methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - 
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~lines`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import BlockParser
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: lines
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> Any
+   :abstractmethod:
+
+
+
+
+

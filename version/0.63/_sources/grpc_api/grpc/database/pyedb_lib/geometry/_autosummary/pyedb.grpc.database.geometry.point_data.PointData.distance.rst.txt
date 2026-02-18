@@ -1,0 +1,6 @@
+distance
+========
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_data
+
+.. automethod:: PointData.distance

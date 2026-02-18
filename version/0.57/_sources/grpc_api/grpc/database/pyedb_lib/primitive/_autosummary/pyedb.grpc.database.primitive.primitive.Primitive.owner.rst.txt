@@ -1,0 +1,6 @@
+owner
+=====
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.owner

@@ -1,0 +1,147 @@
+
+
+
+
+
+
+:class:`CfgData`
+================
+
+
+.. py:class:: pyedb.configuration.cfg_data.CfgData(pedb, **kwargs)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages configure data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~general`
+            - 
+          * - :py:attr:`~boundaries`
+            - 
+          * - :py:attr:`~nets`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~padstacks`
+            - 
+          * - :py:attr:`~pin_groups`
+            - 
+          * - :py:attr:`~terminals`
+            - 
+          * - :py:attr:`~ports`
+            - 
+          * - :py:attr:`~sources`
+            - 
+          * - :py:attr:`~setups`
+            - 
+          * - :py:attr:`~stackup`
+            - 
+          * - :py:attr:`~s_parameters`
+            - 
+          * - :py:attr:`~spice_models`
+            - 
+          * - :py:attr:`~package_definitions`
+            - 
+          * - :py:attr:`~operations`
+            - 
+          * - :py:attr:`~modeler`
+            - 
+          * - :py:attr:`~variables`
+            - 
+          * - :py:attr:`~probes`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_data import CfgData
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: general
+
+.. py:attribute:: boundaries
+
+.. py:attribute:: nets
+
+.. py:attribute:: components
+
+.. py:attribute:: padstacks
+
+.. py:attribute:: pin_groups
+
+.. py:attribute:: terminals
+
+.. py:attribute:: ports
+
+.. py:attribute:: sources
+
+.. py:attribute:: setups
+
+.. py:attribute:: stackup
+
+.. py:attribute:: s_parameters
+
+.. py:attribute:: spice_models
+
+.. py:attribute:: package_definitions
+
+.. py:attribute:: operations
+
+.. py:attribute:: modeler
+
+.. py:attribute:: variables
+
+.. py:attribute:: probes
+
+
+
+
+

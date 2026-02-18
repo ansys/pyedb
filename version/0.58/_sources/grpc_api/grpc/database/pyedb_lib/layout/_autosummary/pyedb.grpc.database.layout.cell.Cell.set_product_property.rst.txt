@@ -1,0 +1,6 @@
+set\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.set_product_property

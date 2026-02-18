@@ -1,0 +1,6 @@
+is\_read\_only
+==============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.is_read_only

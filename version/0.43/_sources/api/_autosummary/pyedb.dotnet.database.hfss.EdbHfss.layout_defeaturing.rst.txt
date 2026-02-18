@@ -1,0 +1,6 @@
+layout\_defeaturing
+===================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.layout_defeaturing

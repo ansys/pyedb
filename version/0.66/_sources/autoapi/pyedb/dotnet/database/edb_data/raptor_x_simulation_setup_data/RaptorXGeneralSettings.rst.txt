@@ -1,0 +1,98 @@
+
+
+
+
+
+
+:class:`RaptorXGeneralSettings`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXGeneralSettings(edb_setup_info, pedb)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: RaptorXGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~global_temperature`
+            - The simulation temperature. Units: C
+          * - :py:attr:`~max_frequency`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import RaptorXGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: global_temperature
+
+   
+   The simulation temperature. Units: C
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_frequency
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: logger
+
+
+
+
+

@@ -1,0 +1,111 @@
+﻿EdgeTerminal
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoclass:: EdgeTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EdgeTerminal.cast
+      
+      
+      EdgeTerminal.couple_ports
+      
+      
+      EdgeTerminal.create
+      
+      
+      EdgeTerminal.create_3d_comp
+      
+      
+      EdgeTerminal.create_hfss
+      
+      
+      EdgeTerminal.create_stride
+      
+      
+      EdgeTerminal.delete
+      
+      
+      EdgeTerminal.find
+      
+      
+      EdgeTerminal.find_by_id
+      
+      
+      EdgeTerminal.get_product_property
+      
+      
+      EdgeTerminal.get_product_property_ids
+      
+      
+      EdgeTerminal.product_solver_names
+      
+      
+      EdgeTerminal.product_solver_option
+      
+      
+      EdgeTerminal.set_product_property
+      
+      
+      EdgeTerminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      EdgeTerminal.boundary_type
+      EdgeTerminal.bundle_terminal
+      EdgeTerminal.component
+      EdgeTerminal.edb_uid
+      EdgeTerminal.edges
+      EdgeTerminal.group
+      EdgeTerminal.hfss_pi_type
+      EdgeTerminal.hfss_type
+      EdgeTerminal.id
+      EdgeTerminal.impedance
+      EdgeTerminal.is_auto_port
+      EdgeTerminal.is_circuit_port
+      EdgeTerminal.is_interface_terminal
+      EdgeTerminal.is_mcad
+      EdgeTerminal.is_mcad_3d_comp
+      EdgeTerminal.is_mcad_hfss
+      EdgeTerminal.is_mcad_stride
+      EdgeTerminal.is_null
+      EdgeTerminal.is_port
+      EdgeTerminal.is_reference_terminal
+      EdgeTerminal.is_wave_port
+      EdgeTerminal.layout
+      EdgeTerminal.layout_obj_type
+      EdgeTerminal.model
+      EdgeTerminal.msg
+      EdgeTerminal.name
+      EdgeTerminal.net
+      EdgeTerminal.obj_type
+      EdgeTerminal.port_post_processing_prop
+      EdgeTerminal.ref_terminal
+      EdgeTerminal.reference_layer
+      EdgeTerminal.reference_terminal
+      EdgeTerminal.rlc_boundary_parameters
+      EdgeTerminal.source_amplitude
+      EdgeTerminal.source_phase
+      EdgeTerminal.term_to_ground
+      EdgeTerminal.terminal_type
+      EdgeTerminal.type
+      EdgeTerminal.use_reference_from_hierarchy
+   
+   

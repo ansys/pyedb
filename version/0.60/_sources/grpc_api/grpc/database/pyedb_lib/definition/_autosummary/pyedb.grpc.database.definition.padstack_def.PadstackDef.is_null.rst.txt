@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.is_null

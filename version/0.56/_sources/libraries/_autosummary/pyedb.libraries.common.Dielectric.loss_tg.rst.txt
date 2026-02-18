@@ -1,0 +1,6 @@
+loss\_tg
+========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoproperty:: Dielectric.loss_tg

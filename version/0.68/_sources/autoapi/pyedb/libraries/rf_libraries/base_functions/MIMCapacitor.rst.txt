@@ -1,0 +1,211 @@
+
+
+
+
+
+
+:class:`MIMCapacitor`
+=====================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.MIMCapacitor(edb_cell: pyedb.Edb, area: Union[str, float] = 1e-07, gap: Union[str, float] = 1e-06, layer_top: str = 'M1', layer_bottom: str = 'M2', net: str = 'RF')
+
+   
+   Metal–Insulator–Metal parallel-plate capacitor.
+
+
+   :Parameters:
+
+       **area** : :class:`python:float`, :obj:`default` 0.1 :obj:`mm²`
+           Plate area [m²].
+
+       **gap** : :class:`python:float`, :obj:`default` 1 µm
+           Dielectric thickness between plates [m].
+
+       **er** : :class:`python:float`, :obj:`default` 7
+           Relative permittivity of the dielectric.
+
+       **layer_top** : :class:`python:str`, :obj:`default` "M1"
+           Top plate layer.
+
+       **layer_bottom** : :class:`python:str`, :obj:`default` "M2"
+           Bottom plate layer.
+
+       **net** : :class:`python:str`, :obj:`default` "RF"
+           Net name for both plates.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cap = MIMCapacitor(area=200e-12, gap=0.5e-6, er=4.1)
+   >>> edb = Edb("mim.aedb")
+   >>> cap._pedb = edb
+   >>> cap.create()
+   >>> f"{cap.capacitance_f * 1e12:.2f} pF"
+   '1.45 pF'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MIMCapacitor
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create the top plate, bottom plate and assign variables.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~capacitance_f`
+            - Analytical parallel-plate capacitance.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~area`
+            - 
+          * - :py:attr:`~gap`
+            - 
+          * - :py:attr:`~layer_top`
+            - 
+          * - :py:attr:`~layer_bottom`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import MIMCapacitor
+
+Property detail
+---------------
+
+.. py:property:: capacitance_f
+   :type: float
+
+
+   
+   Analytical parallel-plate capacitance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitance in Farads.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: area
+
+.. py:attribute:: gap
+
+.. py:attribute:: layer_top
+   :value: 'M1'
+
+
+.. py:attribute:: layer_bottom
+   :value: 'M2'
+
+
+.. py:attribute:: net
+   :value: 'RF'
+
+
+.. py:attribute:: substrate
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Create the top plate, bottom plate and assign variables.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True on success.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,136 @@
+
+
+
+
+
+
+:class:`Primitives`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.general.Primitives
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Primitives
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Rectangle`
+            - 
+          * - :py:attr:`~Circle`
+            - 
+          * - :py:attr:`~Polygon`
+            - 
+          * - :py:attr:`~Path`
+            - 
+          * - :py:attr:`~Bondwire`
+            - 
+          * - :py:attr:`~PrimitivePlugin`
+            - 
+          * - :py:attr:`~Text`
+            - 
+          * - :py:attr:`~Path3D`
+            - 
+          * - :py:attr:`~BoardBendDef`
+            - 
+          * - :py:attr:`~InValidType`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.general import Primitives
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Rectangle
+   :value: 0
+
+
+.. py:attribute:: Circle
+   :value: 1
+
+
+.. py:attribute:: Polygon
+   :value: 2
+
+
+.. py:attribute:: Path
+   :value: 3
+
+
+.. py:attribute:: Bondwire
+   :value: 4
+
+
+.. py:attribute:: PrimitivePlugin
+   :value: 5
+
+
+.. py:attribute:: Text
+   :value: 6
+
+
+.. py:attribute:: Path3D
+   :value: 7
+
+
+.. py:attribute:: BoardBendDef
+   :value: 8
+
+
+.. py:attribute:: InValidType
+   :value: 9
+
+
+
+
+
+

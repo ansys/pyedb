@@ -1,0 +1,6 @@
+board\_bend\_defs
+=================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.board_bend_defs

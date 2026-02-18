@@ -1,0 +1,212 @@
+
+
+
+
+
+
+:class:`SolverOptions`
+======================
+
+
+.. py:class:: pyedb.siwave_core.cpa.simulation_setup_data_model.SolverOptions(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Configuration options for the SI-Wave solver.
+
+   Attributes:
+       extraction_mode (str): Mode of extraction, defaults to "si"
+       custom_refinement (bool): Enable custom refinement settings, defaults to False
+       extraction_frequency (str): Frequency for extraction, defaults to "10Ghz"
+       compute_capacitance (bool): Enable capacitance computation, defaults to True
+       compute_dc_parameters (bool): Enable DC parameters computation, defaults to True
+       compute_ac_rl (bool): Enable AC RL computation, defaults to True
+       ground_power_ground_nets_for_si (bool): Ground power/ground nets for SI analysis, defaults to False
+       small_hole_diameter (str): Small hole diameter setting, defaults to "auto"
+       cg_max_passes (int): Maximum passes for CG computation, defaults to 10
+       cg_percent_error (float): Percentage error threshold for CG computation, defaults to 0.02
+       cg_percent_refinement_per_pass (float): Refinement percentage per pass for CG, defaults to 0.33
+       rl_max_passes (int): Maximum passes for RL computation, defaults to 10
+       rl_percent_error (float): Percentage error threshold for RL computation, defaults to 0.02
+       rl_percent_refinement_per_pass (float): Refinement percentage per pass for RL, defaults to 0.33
+       compute_dc_rl (bool): Enable DC RL computation, defaults to True
+       compute_dc_cg (bool): Enable DC CG computation, defaults to True
+       return_path_net_for_loop_parameters (bool): Include return path net for loop parameters, defaults to True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SolverOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extraction_mode`
+            - 
+          * - :py:attr:`~custom_refinement`
+            - 
+          * - :py:attr:`~extraction_frequency`
+            - 
+          * - :py:attr:`~compute_capacitance`
+            - 
+          * - :py:attr:`~compute_dc_parameters`
+            - 
+          * - :py:attr:`~compute_ac_rl`
+            - 
+          * - :py:attr:`~ground_power_ground_nets_for_si`
+            - 
+          * - :py:attr:`~small_hole_diameter`
+            - 
+          * - :py:attr:`~cg_max_passes`
+            - 
+          * - :py:attr:`~cg_percent_error`
+            - 
+          * - :py:attr:`~cg_percent_refinement_per_pass`
+            - 
+          * - :py:attr:`~rl_max_passes`
+            - 
+          * - :py:attr:`~rl_percent_error`
+            - 
+          * - :py:attr:`~rl_percent_refinement_per_pass`
+            - 
+          * - :py:attr:`~compute_dc_rl`
+            - 
+          * - :py:attr:`~compute_dc_cg`
+            - 
+          * - :py:attr:`~return_path_net_for_loop_parameters`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.siwave_core.cpa.simulation_setup_data_model import SolverOptions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: extraction_mode
+   :type:  str
+   :value: 'si'
+
+
+.. py:attribute:: custom_refinement
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: extraction_frequency
+   :type:  str
+   :value: '10Ghz'
+
+
+.. py:attribute:: compute_capacitance
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: compute_dc_parameters
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: compute_ac_rl
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: ground_power_ground_nets_for_si
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: small_hole_diameter
+   :type:  str
+   :value: 'auto'
+
+
+.. py:attribute:: cg_max_passes
+   :type:  int
+   :value: 10
+
+
+.. py:attribute:: cg_percent_error
+   :type:  float
+   :value: 0.02
+
+
+.. py:attribute:: cg_percent_refinement_per_pass
+   :type:  float
+   :value: 0.33
+
+
+.. py:attribute:: rl_max_passes
+   :type:  int
+   :value: 10
+
+
+.. py:attribute:: rl_percent_error
+   :type:  float
+   :value: 0.02
+
+
+.. py:attribute:: rl_percent_refinement_per_pass
+   :type:  float
+   :value: 0.33
+
+
+.. py:attribute:: compute_dc_rl
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: compute_dc_cg
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: return_path_net_for_loop_parameters
+   :type:  bool
+   :value: True
+
+
+
+
+
+

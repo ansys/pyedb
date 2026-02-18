@@ -1,0 +1,6 @@
+execute
+=======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.execute

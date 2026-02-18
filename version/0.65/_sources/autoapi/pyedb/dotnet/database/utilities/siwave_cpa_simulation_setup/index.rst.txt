@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``siwave_cpa_simulation_setup.py`` module
+=============================================
+
+.. py:module:: pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_cpa_simulation_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup.ChannelSetup`
+            - A class to manage the channel setup configuration for SIWave CPA simulations.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup.SolverOptions`
+            - A class to manage solver options for SIWave CPA simulations.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup.SIWaveCPASimulationSetup`
+            - Represents the setup configuration for SIwave CPA simulations.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ChannelSetup</autoapi/pyedb/dotnet/database/utilities/siwave_cpa_simulation_setup/ChannelSetup>
+    <span class="nf nf-cod-symbol_class"></span> SolverOptions</autoapi/pyedb/dotnet/database/utilities/siwave_cpa_simulation_setup/SolverOptions>
+    <span class="nf nf-cod-symbol_class"></span> SIWaveCPASimulationSetup</autoapi/pyedb/dotnet/database/utilities/siwave_cpa_simulation_setup/SIWaveCPASimulationSetup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

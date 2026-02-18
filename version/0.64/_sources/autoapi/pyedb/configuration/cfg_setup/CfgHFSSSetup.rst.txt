@@ -1,0 +1,131 @@
+
+
+
+
+
+
+:class:`CfgHFSSSetup`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgHFSSSetup(pedb, pyedb_obj, **kwargs)
+
+   Bases: :py:obj:`CfgSetup`
+
+
+   
+
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           ..
+
+       **type** : :class:`python:str`
+           Type of the setup. Optionals are ``"hfss"``, ``"siwave_ac"``, ``"siwave_dc"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgHFSSSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - 
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+          * - :py:attr:`~to_dict`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~f_adapt`
+            - 
+          * - :py:attr:`~max_num_passes`
+            - 
+          * - :py:attr:`~max_mag_delta_s`
+            - 
+          * - :py:attr:`~auto_mesh_operation`
+            - 
+          * - :py:attr:`~mesh_operations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgHFSSSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :value: 'hfss'
+
+
+.. py:attribute:: f_adapt
+
+.. py:attribute:: max_num_passes
+
+.. py:attribute:: max_mag_delta_s
+
+.. py:attribute:: auto_mesh_operation
+
+.. py:attribute:: mesh_operations
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+.. py:method:: retrieve_parameters_from_edb()
+
+.. py:method:: to_dict()
+
+
+
+

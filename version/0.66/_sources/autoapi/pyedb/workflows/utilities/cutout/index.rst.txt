@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``cutout.py`` module
+========================
+
+.. py:module:: pyedb.workflows.utilities.cutout
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cutout
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.cutout.Cutout`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.cutout.GrpcCutout`
+            - Create a clipped (cut-out) EDB cell from an existing layout.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.cutout.DotNetCutout`
+            - Create a clipped (cut-out) EDB cell from an existing layout.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Cutout</autoapi/pyedb/workflows/utilities/cutout/Cutout>
+    <span class="nf nf-cod-symbol_class"></span> GrpcCutout</autoapi/pyedb/workflows/utilities/cutout/GrpcCutout>
+    <span class="nf nf-cod-symbol_class"></span> DotNetCutout</autoapi/pyedb/workflows/utilities/cutout/DotNetCutout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

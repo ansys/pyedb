@@ -1,0 +1,34 @@
+﻿CfgCircuitElement
+=================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoclass:: CfgCircuitElement
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgCircuitElement.get_attributes
+      
+      
+      CfgCircuitElement.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgCircuitElement.protected_attributes
+   
+   

@@ -1,0 +1,6 @@
+add\_package\_def
+=================
+
+.. currentmodule:: pyedb.grpc.database.definitions
+
+.. automethod:: Definitions.add_package_def

@@ -1,0 +1,355 @@
+
+
+
+
+
+
+:class:`Definitions`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.definition.definitions.Definitions(pedb)
+
+
+.. py:currentmodule:: Definitions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_packages`
+            - Add a package definition.
+          * - :py:attr:`~add_package`
+            - Add a package definition.
+          * - :py:attr:`~create_jedec4_bondwire_def`
+            - Create a JEDEC 4 bondwire definition.
+          * - :py:attr:`~create_jedec5_bondwire_def`
+            - Create a JEDEC 5 bondwire definition.
+          * - :py:attr:`~create_apd_bondwire_def`
+            - Create an APD bondwire definition.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component`
+            - Component definitions.
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~package`
+            - Package definitions.
+          * - :py:attr:`~packages`
+            - Package definitions.
+          * - :py:attr:`~jedec4_bondwires`
+            - Wirebond definitions.
+          * - :py:attr:`~jedec5_bondwires`
+            - 
+          * - :py:attr:`~apd_bondwires`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.definitions import Definitions
+
+Property detail
+---------------
+
+.. py:property:: component
+
+   
+   Component definitions.
+
+   .. deprecated:: 0.66.0
+
+      Use :attr:`components` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+
+.. py:property:: package
+
+   
+   Package definitions.
+
+   .. deprecated:: 0.66.0
+
+      Use :attr:`packages` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: packages
+
+   
+   Package definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: jedec4_bondwires
+
+   
+   Wirebond definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: jedec5_bondwires
+
+.. py:property:: apd_bondwires
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_packages(name, component_part_name=None, boundary_points=None)
+
+   
+   Add a package definition.
+
+   .. deprecated:: 0.66.0
+
+      Use :meth:`add_package` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_package(name, component_part_name=None, boundary_points=None)
+
+   
+   Add a package definition.
+
+
+   :Parameters:
+
+       **name: str**
+           Name of the package definition.
+
+       **component_part_name** : :class:`python:str`, :obj:`optional`
+           Part name of the component.
+
+       **boundary_points** : :class:`python:list`, :obj:`optional`
+           Boundary points which define the shape of the package.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_jedec4_bondwire_def(name: str, top_to_die_distance: float = 3e-05)
+
+   
+   Create a JEDEC 4 bondwire definition.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the bondwire definition.
+
+       **top_to_die_distance** : :class:`python:float`, :obj:`optional`
+           Top to die distance in meters. The default is 30e-6.
+
+
+
+   :Returns:
+
+       :obj:`Jedec4BondwireDef`
+           The created JEDEC 4 bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_jedec5_bondwire_def(name: str, top_to_die_distance: float = 3e-05)
+
+   
+   Create a JEDEC 5 bondwire definition.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the bondwire definition.
+
+       **top_to_die_distance** : :class:`python:float`, :obj:`optional`
+           Top to die distance in meters. The default is 30e-6.
+
+
+
+   :Returns:
+
+       :obj:`Jedec5BondwireDef`
+           The created JEDEC 5 bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_apd_bondwire_def(name: str, top_to_die_distance: float = 3e-05)
+
+   
+   Create an APD bondwire definition.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the bondwire definition.
+
+       **top_to_die_distance** : :class:`python:float`, :obj:`optional`
+           Top to die distance in meters. The default is 30e-6.
+
+
+
+   :Returns:
+
+       :obj:`ApdBondwireDef`
+           The created APD bondwire definition.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

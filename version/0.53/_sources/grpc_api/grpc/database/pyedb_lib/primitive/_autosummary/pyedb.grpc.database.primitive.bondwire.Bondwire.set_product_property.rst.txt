@@ -1,0 +1,6 @@
+set\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.set_product_property

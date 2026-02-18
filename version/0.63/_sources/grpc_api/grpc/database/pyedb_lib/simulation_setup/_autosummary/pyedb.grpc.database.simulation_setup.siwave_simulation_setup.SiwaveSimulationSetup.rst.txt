@@ -1,0 +1,30 @@
+﻿SiwaveSimulationSetup
+=====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_simulation_setup
+
+.. autoclass:: SiwaveSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SiwaveSimulationSetup.add_sweep
+      
+      
+      SiwaveSimulationSetup.cast
+      
+      
+      SiwaveSimulationSetup.create
+      
+   
+   
+
+   
+   
+   

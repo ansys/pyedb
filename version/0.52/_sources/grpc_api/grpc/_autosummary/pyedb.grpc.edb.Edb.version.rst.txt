@@ -1,0 +1,6 @@
+version
+=======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.version

@@ -1,0 +1,6 @@
+is\_circuit\_port
+=================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.is_circuit_port

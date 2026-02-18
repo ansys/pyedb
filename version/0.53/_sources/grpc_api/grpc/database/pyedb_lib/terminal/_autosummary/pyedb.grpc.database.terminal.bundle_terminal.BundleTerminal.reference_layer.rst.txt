@@ -1,0 +1,6 @@
+reference\_layer
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.reference_layer

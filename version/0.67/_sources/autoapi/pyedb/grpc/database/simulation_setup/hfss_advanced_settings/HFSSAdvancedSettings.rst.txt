@@ -1,0 +1,106 @@
+
+
+
+
+
+
+:class:`HFSSAdvancedSettings`
+=============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings(pedb, core)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSAdvancedSettings`
+
+
+   
+   Represents advanced settings for HFSS simulations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~via_model_type`
+            - Via model.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_advanced_settings import HFSSAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: via_model_type
+   :type: str
+
+
+   
+   Via model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Model type name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

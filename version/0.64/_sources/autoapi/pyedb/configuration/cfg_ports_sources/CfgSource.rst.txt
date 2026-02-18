@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`CfgSource`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgSource(pedb, **kwargs)
+
+   Bases: :py:obj:`CfgCircuitElement`
+
+
+
+.. py:currentmodule:: CfgSource
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - Create sources.
+          * - :py:attr:`~export_properties`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CFG_SOURCE_TYPE`
+            - 
+          * - :py:attr:`~magnitude`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgSource
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CFG_SOURCE_TYPE
+
+.. py:attribute:: magnitude
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+   
+   Create sources.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_properties()
+
+
+
+

@@ -1,0 +1,6 @@
+create\_hfss\_setup
+===================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.create_hfss_setup

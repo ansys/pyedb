@@ -1,0 +1,90 @@
+
+
+
+
+
+
+The ``emc_rule_checker_settings.py`` module
+===========================================
+
+.. py:module:: pyedb.misc.siw_feature_config.emc_rule_checker_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: emc_rule_checker_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc_rule_checker_settings.EMCRuleCheckerSettings`
+            - Manages EMI scanner settings.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~kwargs_parser`
+            - 
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EMCRuleCheckerSettings</autoapi/pyedb/misc/siw_feature_config/emc_rule_checker_settings/EMCRuleCheckerSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: kwargs_parser(kwargs)
+
+
+

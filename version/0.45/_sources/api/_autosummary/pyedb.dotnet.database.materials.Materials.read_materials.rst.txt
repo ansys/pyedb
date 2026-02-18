@@ -1,0 +1,6 @@
+read\_materials
+===============
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.read_materials

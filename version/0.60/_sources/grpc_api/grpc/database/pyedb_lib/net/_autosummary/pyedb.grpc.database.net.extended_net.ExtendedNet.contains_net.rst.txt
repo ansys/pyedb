@@ -1,0 +1,6 @@
+contains\_net
+=============
+
+.. currentmodule:: pyedb.grpc.database.net.extended_net
+
+.. automethod:: ExtendedNet.contains_net

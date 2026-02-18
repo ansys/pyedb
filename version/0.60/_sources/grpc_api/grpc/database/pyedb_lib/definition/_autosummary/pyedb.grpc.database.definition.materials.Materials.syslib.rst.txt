@@ -1,0 +1,6 @@
+syslib
+======
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Materials.syslib

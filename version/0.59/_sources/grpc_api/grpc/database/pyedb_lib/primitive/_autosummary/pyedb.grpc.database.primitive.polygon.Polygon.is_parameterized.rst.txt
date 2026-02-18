@@ -1,0 +1,6 @@
+is\_parameterized
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.is_parameterized

@@ -1,0 +1,6 @@
+get\_dimensions
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.get_dimensions

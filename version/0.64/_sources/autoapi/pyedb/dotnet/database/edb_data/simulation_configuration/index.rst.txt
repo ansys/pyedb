@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``simulation_configuration.py`` module
+==========================================
+
+.. py:module:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: simulation_configuration
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationBatch`
+            - Contains all Cutout and Batch analysis settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationDc`
+            - Contains all DC analysis settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationAc`
+            - Contains all AC analysis settings.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfiguration`
+            - Provides an ASCII simulation configuration file parser.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SimulationConfigurationBatch</autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationBatch>
+    <span class="nf nf-cod-symbol_class"></span> SimulationConfigurationDc</autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationDc>
+    <span class="nf nf-cod-symbol_class"></span> SimulationConfigurationAc</autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfigurationAc>
+    <span class="nf nf-cod-symbol_class"></span> SimulationConfiguration</autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/SimulationConfiguration>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

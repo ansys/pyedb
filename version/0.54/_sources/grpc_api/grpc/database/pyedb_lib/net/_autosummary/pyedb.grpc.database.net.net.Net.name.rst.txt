@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.name

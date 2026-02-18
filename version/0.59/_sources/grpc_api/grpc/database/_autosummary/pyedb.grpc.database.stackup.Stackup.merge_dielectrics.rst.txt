@@ -1,0 +1,6 @@
+merge\_dielectrics
+==================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.merge_dielectrics

@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoproperty:: PinGroup.is_null

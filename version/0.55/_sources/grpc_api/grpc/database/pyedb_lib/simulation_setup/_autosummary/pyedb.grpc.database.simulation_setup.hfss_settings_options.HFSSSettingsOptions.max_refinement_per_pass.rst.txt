@@ -1,0 +1,6 @@
+max\_refinement\_per\_pass
+==========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.max_refinement_per_pass

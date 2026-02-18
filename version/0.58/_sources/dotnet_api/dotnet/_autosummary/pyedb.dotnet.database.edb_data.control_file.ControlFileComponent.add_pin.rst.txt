@@ -1,0 +1,6 @@
+add\_pin
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.control_file
+
+.. automethod:: ControlFileComponent.add_pin

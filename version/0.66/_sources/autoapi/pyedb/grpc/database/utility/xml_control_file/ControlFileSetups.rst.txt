@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`ControlFileSetups`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFileSetups
+
+   
+   Setup manager class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_setup`
+            - Add a new setup
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFileSetups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: setups
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_setup(name, frequency)
+
+   
+   Add a new setup
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Setup name.
+
+       **frequency** : :class:`python:str`
+           Setup Frequency.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileSetup`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

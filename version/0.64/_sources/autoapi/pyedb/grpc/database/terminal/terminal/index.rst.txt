@@ -1,0 +1,90 @@
+
+
+
+
+
+
+The ``terminal.py`` module
+==========================
+
+.. py:module:: pyedb.grpc.database.terminal.terminal
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: terminal
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.terminal.terminal.Terminal`
+            - Represents a terminal object.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~mapping_boundary_type`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Terminal</autoapi/pyedb/grpc/database/terminal/terminal/Terminal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: mapping_boundary_type
+
+
+

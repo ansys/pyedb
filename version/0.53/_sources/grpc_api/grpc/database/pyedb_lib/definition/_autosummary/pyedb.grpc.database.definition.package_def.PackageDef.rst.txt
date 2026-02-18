@@ -1,0 +1,66 @@
+﻿PackageDef
+==========
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoclass:: PackageDef
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PackageDef.create
+      
+      
+      PackageDef.delete
+      
+      
+      PackageDef.find_by_id
+      
+      
+      PackageDef.find_by_name
+      
+      
+      PackageDef.get_product_property
+      
+      
+      PackageDef.get_product_property_ids
+      
+      
+      PackageDef.set_heatsink
+      
+      
+      PackageDef.set_product_property
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PackageDef.definition_type
+      PackageDef.exterior_boundary
+      PackageDef.heat_sink
+      PackageDef.heatsink
+      PackageDef.height
+      PackageDef.id
+      PackageDef.is_null
+      PackageDef.maximum_power
+      PackageDef.msg
+      PackageDef.name
+      PackageDef.operating_power
+      PackageDef.therm_cond
+      PackageDef.thermal_conductivity
+      PackageDef.theta_jb
+      PackageDef.theta_jc
+   
+   

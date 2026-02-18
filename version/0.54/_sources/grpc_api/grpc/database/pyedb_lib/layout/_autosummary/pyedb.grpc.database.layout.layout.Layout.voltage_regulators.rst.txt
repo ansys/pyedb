@@ -1,0 +1,6 @@
+voltage\_regulators
+===================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.voltage_regulators

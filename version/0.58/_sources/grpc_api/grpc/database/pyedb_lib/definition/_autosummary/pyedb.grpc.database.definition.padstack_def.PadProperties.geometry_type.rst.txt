@@ -1,0 +1,6 @@
+geometry\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadProperties.geometry_type

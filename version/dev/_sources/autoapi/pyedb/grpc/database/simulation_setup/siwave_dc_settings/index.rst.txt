@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``siwave_dc_settings.py`` module
+====================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.siwave_dc_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_dc_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_dc_settings.SIWaveDCSettings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SIWaveDCSettings</autoapi/pyedb/grpc/database/simulation_setup/siwave_dc_settings/SIWaveDCSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

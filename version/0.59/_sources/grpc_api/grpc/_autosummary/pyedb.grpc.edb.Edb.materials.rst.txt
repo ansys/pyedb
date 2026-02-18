@@ -1,0 +1,6 @@
+materials
+=========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.materials

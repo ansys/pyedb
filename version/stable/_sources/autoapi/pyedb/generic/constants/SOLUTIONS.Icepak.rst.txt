@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`Icepak`
+===============
+
+
+.. py:class:: pyedb.generic.constants.SOLUTIONS.Icepak
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides Icepak solution types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants.SOLUTIONS import Icepak
+
+
+
+
+

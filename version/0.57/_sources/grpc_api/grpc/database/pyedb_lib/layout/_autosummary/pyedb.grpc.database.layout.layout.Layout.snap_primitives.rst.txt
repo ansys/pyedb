@@ -1,0 +1,6 @@
+snap\_primitives
+================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.snap_primitives

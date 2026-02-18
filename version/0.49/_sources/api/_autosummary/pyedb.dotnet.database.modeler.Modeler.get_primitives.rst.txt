@@ -1,0 +1,6 @@
+get\_primitives
+===============
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.get_primitives

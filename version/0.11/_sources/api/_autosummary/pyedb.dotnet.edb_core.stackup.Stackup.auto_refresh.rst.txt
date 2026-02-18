@@ -1,0 +1,6 @@
+auto\_refresh
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
+
+.. autoattribute:: Stackup.auto_refresh

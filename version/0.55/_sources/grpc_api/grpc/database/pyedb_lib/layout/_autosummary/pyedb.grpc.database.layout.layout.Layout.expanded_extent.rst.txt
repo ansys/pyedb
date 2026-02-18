@@ -1,0 +1,6 @@
+expanded\_extent
+================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.expanded_extent

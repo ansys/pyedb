@@ -1,0 +1,6 @@
+add\_material
+=============
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. automethod:: ControlFileStackup.add_material

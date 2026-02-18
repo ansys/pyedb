@@ -1,0 +1,6 @@
+add\_adaptive\_frequency\_data
+==============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.add_adaptive_frequency_data

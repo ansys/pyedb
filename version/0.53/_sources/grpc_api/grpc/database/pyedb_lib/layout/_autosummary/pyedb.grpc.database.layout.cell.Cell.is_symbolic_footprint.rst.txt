@@ -1,0 +1,6 @@
+is\_symbolic\_footprint
+=======================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.is_symbolic_footprint

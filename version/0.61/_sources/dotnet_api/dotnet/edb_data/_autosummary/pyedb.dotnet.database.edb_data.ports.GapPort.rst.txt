@@ -1,0 +1,48 @@
+﻿GapPort
+=======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoclass:: GapPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      GapPort.couple_ports
+      
+      
+      GapPort.delete
+      
+      
+      GapPort.get_connected_object_id_set
+      
+      
+      GapPort.get_connected_objects
+      
+      
+      GapPort.get_edge_terminal_reference_primitive
+      
+      
+      GapPort.get_pad_edge_terminal_reference_pin
+      
+      
+      GapPort.get_padstack_terminal_reference_pin
+      
+      
+      GapPort.get_pin_group_terminal_reference_pin
+      
+      
+      GapPort.get_point_terminal_reference_primitive
+      
+   
+   
+
+   
+   
+   

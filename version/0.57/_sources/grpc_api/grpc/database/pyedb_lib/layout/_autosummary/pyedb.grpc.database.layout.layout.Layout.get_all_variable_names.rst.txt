@@ -1,0 +1,6 @@
+get\_all\_variable\_names
+=========================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.get_all_variable_names

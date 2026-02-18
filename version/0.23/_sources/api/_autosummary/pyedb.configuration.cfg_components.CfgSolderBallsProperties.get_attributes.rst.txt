@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. automethod:: CfgSolderBallsProperties.get_attributes

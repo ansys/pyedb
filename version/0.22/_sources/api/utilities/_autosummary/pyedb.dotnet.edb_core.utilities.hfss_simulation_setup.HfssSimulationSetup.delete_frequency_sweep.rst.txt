@@ -1,0 +1,6 @@
+delete\_frequency\_sweep
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.delete_frequency_sweep

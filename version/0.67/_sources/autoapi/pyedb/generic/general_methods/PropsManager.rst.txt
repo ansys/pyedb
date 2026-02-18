@@ -1,0 +1,189 @@
+
+
+
+
+
+
+:class:`PropsManager`
+=====================
+
+
+.. py:class:: pyedb.generic.general_methods.PropsManager
+
+   Bases: :py:obj:`object`
+
+
+
+
+
+.. py:currentmodule:: PropsManager
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update`
+            - Update method.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~available_properties`
+            - Available properties.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get the `self.props` key value.
+          * - :py:attr:`~__setitem__`
+            - Set the `self.props` key value.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.general_methods import PropsManager
+
+Property detail
+---------------
+
+.. py:property:: available_properties
+
+   
+   Available properties.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(item)
+
+   
+   Get the `self.props` key value.
+
+
+   :Parameters:
+
+       **item** : :class:`python:str`
+           Key to search
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __setitem__(key, value)
+
+   
+   Set the `self.props` key value.
+
+
+   :Parameters:
+
+       **key** : :class:`python:str`
+           Key to apply.
+
+       **value** : :class:`python:int`, :class:`python:float`, :ref:`bool <python:bltin-boolean-values>`, :class:`python:str`, :class:`python:dict`
+           Value to apply.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update()
+
+   
+   Update method.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

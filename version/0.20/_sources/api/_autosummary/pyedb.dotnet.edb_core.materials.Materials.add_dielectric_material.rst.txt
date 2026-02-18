@@ -1,0 +1,6 @@
+add\_dielectric\_material
+=========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.materials
+
+.. automethod:: Materials.add_dielectric_material

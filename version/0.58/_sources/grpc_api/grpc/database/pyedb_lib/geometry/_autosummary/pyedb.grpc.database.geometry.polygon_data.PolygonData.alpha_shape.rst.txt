@@ -1,0 +1,6 @@
+alpha\_shape
+============
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.alpha_shape

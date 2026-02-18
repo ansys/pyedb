@@ -1,0 +1,6 @@
+create\_circle
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
+
+.. automethod:: Modeler.create_circle

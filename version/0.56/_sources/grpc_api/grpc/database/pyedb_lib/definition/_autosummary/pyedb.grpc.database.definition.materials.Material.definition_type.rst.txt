@@ -1,0 +1,6 @@
+definition\_type
+================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.definition_type

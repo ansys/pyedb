@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.msg

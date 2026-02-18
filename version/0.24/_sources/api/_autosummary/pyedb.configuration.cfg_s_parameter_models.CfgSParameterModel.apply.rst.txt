@@ -1,0 +1,6 @@
+apply
+=====
+
+.. currentmodule:: pyedb.configuration.cfg_s_parameter_models
+
+.. automethod:: CfgSParameterModel.apply

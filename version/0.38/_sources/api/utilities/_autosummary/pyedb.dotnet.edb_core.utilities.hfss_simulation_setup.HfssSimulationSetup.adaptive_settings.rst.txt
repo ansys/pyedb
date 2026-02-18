@@ -1,0 +1,6 @@
+adaptive\_settings
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.adaptive_settings

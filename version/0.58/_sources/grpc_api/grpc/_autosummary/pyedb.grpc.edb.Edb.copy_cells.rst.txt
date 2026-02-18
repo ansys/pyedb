@@ -1,0 +1,6 @@
+copy\_cells
+===========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.copy_cells

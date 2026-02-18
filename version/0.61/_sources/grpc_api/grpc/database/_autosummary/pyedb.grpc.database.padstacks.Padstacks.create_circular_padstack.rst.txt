@@ -1,0 +1,6 @@
+create\_circular\_padstack
+==========================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.create_circular_padstack

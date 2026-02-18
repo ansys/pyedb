@@ -1,0 +1,6 @@
+point\_data
+===========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.point_data

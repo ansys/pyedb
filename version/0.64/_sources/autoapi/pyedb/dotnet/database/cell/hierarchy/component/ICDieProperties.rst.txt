@@ -1,0 +1,63 @@
+
+
+
+
+
+
+:class:`ICDieProperties`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.component.ICDieProperties(pedb, edb_object)
+
+
+.. py:currentmodule:: ICDieProperties
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~die_orientation`
+            - 
+          * - :py:attr:`~die_type`
+            - 
+          * - :py:attr:`~height`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.component import ICDieProperties
+
+Property detail
+---------------
+
+.. py:property:: die_orientation
+
+.. py:property:: die_type
+
+.. py:property:: height
+
+
+
+
+
+

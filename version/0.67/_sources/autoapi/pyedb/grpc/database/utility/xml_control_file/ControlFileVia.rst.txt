@@ -1,0 +1,108 @@
+
+
+
+
+
+
+:class:`ControlFileVia`
+=======================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFileVia(name, properties)
+
+   Bases: :py:obj:`ControlFileLayer`
+
+
+
+.. py:currentmodule:: ControlFileVia
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_via_group`
+            - 
+          * - :py:attr:`~check_containment`
+            - 
+          * - :py:attr:`~method`
+            - 
+          * - :py:attr:`~persistent`
+            - 
+          * - :py:attr:`~tolerance`
+            - 
+          * - :py:attr:`~snap_via_groups`
+            - 
+          * - :py:attr:`~snap_method`
+            - 
+          * - :py:attr:`~remove_unconnected`
+            - 
+          * - :py:attr:`~snap_tolerance`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFileVia
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: create_via_group
+   :value: False
+
+
+.. py:attribute:: check_containment
+   :value: True
+
+
+.. py:attribute:: method
+   :value: 'proximity'
+
+
+.. py:attribute:: persistent
+   :value: False
+
+
+.. py:attribute:: tolerance
+   :value: '1um'
+
+
+.. py:attribute:: snap_via_groups
+   :value: False
+
+
+.. py:attribute:: snap_method
+   :value: 'areaFactor'
+
+
+.. py:attribute:: remove_unconnected
+   :value: True
+
+
+.. py:attribute:: snap_tolerance
+   :value: 3
+
+
+
+
+
+

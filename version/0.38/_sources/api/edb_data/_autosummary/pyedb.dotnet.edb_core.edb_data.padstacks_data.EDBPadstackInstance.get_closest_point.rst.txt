@@ -1,0 +1,6 @@
+get\_closest\_point
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.get_closest_point

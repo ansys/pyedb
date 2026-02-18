@@ -1,0 +1,36 @@
+﻿PinPairModel
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pin_pair_model
+
+.. autoclass:: PinPairModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PinPairModel.clone
+      
+      
+      PinPairModel.create
+      
+      
+      PinPairModel.delete_rlc
+      
+      
+      PinPairModel.pin_pairs
+      
+      
+      PinPairModel.set_rlc
+      
+   
+   
+
+   
+   
+   

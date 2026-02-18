@@ -1,0 +1,6 @@
+save\_netlist
+=============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_general_settings
+
+.. autoproperty:: RaptorXGeneralSettings.save_netlist

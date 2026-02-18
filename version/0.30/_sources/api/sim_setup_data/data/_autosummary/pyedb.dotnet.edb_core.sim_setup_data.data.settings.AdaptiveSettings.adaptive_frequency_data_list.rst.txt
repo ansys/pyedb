@@ -1,0 +1,6 @@
+adaptive\_frequency\_data\_list
+===============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: AdaptiveSettings.adaptive_frequency_data_list

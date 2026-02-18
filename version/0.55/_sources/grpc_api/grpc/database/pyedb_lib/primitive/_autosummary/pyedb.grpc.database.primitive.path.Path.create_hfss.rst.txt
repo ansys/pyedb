@@ -1,0 +1,6 @@
+create\_hfss
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.create_hfss

@@ -1,0 +1,6 @@
+hole\_properties
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.hole_properties

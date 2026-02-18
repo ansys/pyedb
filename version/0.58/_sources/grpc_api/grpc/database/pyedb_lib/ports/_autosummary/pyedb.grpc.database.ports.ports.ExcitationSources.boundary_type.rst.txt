@@ -1,0 +1,6 @@
+boundary\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.boundary_type

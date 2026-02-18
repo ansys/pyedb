@@ -1,0 +1,128 @@
+
+
+
+
+
+
+:class:`Trace`
+==============
+
+
+.. py:class:: pyedb.extensions.via_design_backend.Trace(p_via, name, net_name, layer, width, clearance, incremental_path: list[list], flip_dx, flip_dy, end_cap_style, port: Union[dict, None])
+
+
+.. py:currentmodule:: Trace
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~populate_config`
+            - 
+          * - :py:attr:`~get_port_cfg`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~p_via`
+            - 
+          * - :py:attr:`~variables`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~clearance`
+            - 
+          * - :py:attr:`~flip_dx`
+            - 
+          * - :py:attr:`~flip_dy`
+            - 
+          * - :py:attr:`~end_cap_style`
+            - 
+          * - :py:attr:`~port`
+            - 
+          * - :py:attr:`~incremental_path`
+            - 
+          * - :py:attr:`~path`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import Trace
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: p_via
+
+.. py:attribute:: variables
+   :value: []
+
+
+.. py:attribute:: name
+
+.. py:attribute:: net_name
+
+.. py:attribute:: layer
+
+.. py:attribute:: width
+   :value: 'Uninferable_width'
+
+
+.. py:attribute:: clearance
+   :value: 'Uninferable_clearance'
+
+
+.. py:attribute:: flip_dx
+
+.. py:attribute:: flip_dy
+
+.. py:attribute:: end_cap_style
+
+.. py:attribute:: port
+
+.. py:attribute:: incremental_path
+
+.. py:attribute:: path
+
+
+
+Method detail
+-------------
+
+.. py:method:: populate_config(cfg)
+
+.. py:method:: get_port_cfg()
+
+
+
+

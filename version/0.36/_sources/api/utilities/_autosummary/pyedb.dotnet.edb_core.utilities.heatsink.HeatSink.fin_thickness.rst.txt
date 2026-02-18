@@ -1,0 +1,6 @@
+fin\_thickness
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.heatsink
+
+.. autoproperty:: HeatSink.fin_thickness

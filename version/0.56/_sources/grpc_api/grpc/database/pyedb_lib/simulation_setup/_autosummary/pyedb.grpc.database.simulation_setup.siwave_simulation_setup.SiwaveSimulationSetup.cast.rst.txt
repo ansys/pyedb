@@ -1,0 +1,6 @@
+cast
+====
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_simulation_setup
+
+.. automethod:: SiwaveSimulationSetup.cast

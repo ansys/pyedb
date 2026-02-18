@@ -1,0 +1,188 @@
+
+
+
+
+
+
+:class:`EdbValue`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.edbvalue.EdbValue(edb_obj)
+
+   
+   Class defining Edb Value properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EdbValue
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~value`
+            - Variable Value Object.
+          * - :py:attr:`~name`
+            - Variable name.
+          * - :py:attr:`~tofloat`
+            - Returns the float number of the variable.
+          * - :py:attr:`~tostring`
+            - Returns the string of the variable.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
+
+Property detail
+---------------
+
+.. py:property:: value
+
+   
+   Variable Value Object.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Edb` :obj:`Object`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Variable name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: tofloat
+
+   
+   Returns the float number of the variable.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: tostring
+
+   
+   Returns the string of the variable.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

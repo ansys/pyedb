@@ -1,0 +1,177 @@
+
+
+
+
+
+
+:class:`ControlFileImportOptions`
+=================================
+
+
+.. py:class:: pyedb.generic.control_file.ControlFileImportOptions
+
+   
+   Manages import options for the control file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileImportOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_close`
+            - 
+          * - :py:attr:`~convert_closed_wide_lines_to_polys`
+            - 
+          * - :py:attr:`~round_to`
+            - 
+          * - :py:attr:`~defeature_tolerance`
+            - 
+          * - :py:attr:`~flatten`
+            - 
+          * - :py:attr:`~enable_default_component_values`
+            - 
+          * - :py:attr:`~import_dummy_nets`
+            - 
+          * - :py:attr:`~gdsii_convert_polygon_to_circles`
+            - 
+          * - :py:attr:`~import_cross_hatch_shapes_as_lines`
+            - 
+          * - :py:attr:`~max_antipad_radius`
+            - 
+          * - :py:attr:`~extracta_use_pin_names`
+            - 
+          * - :py:attr:`~min_bondwire_width`
+            - 
+          * - :py:attr:`~antipad_replace_radius`
+            - 
+          * - :py:attr:`~gdsii_scaling_factor`
+            - 
+          * - :py:attr:`~delete_empty_non_laminate_signal_layers`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.control_file import ControlFileImportOptions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: auto_close
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: convert_closed_wide_lines_to_polys
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: round_to
+   :type:  int
+   :value: 0
+
+
+.. py:attribute:: defeature_tolerance
+   :type:  float
+   :value: 0.0
+
+
+.. py:attribute:: flatten
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: enable_default_component_values
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: import_dummy_nets
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: gdsii_convert_polygon_to_circles
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: import_cross_hatch_shapes_as_lines
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: max_antipad_radius
+   :type:  float
+   :value: 0.0
+
+
+.. py:attribute:: extracta_use_pin_names
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: min_bondwire_width
+   :type:  float
+   :value: 0.0
+
+
+.. py:attribute:: antipad_replace_radius
+   :type:  float
+   :value: 0.0
+
+
+.. py:attribute:: gdsii_scaling_factor
+   :type:  float
+   :value: 0.0
+
+
+.. py:attribute:: delete_empty_non_laminate_signal_layers
+   :type:  bool
+   :value: False
+
+
+
+
+
+

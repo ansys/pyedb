@@ -1,0 +1,6 @@
+copy\_zones
+===========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.copy_zones

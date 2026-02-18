@@ -1,0 +1,6 @@
+setup\_type
+===========
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.siwave_simulation_setup
+
+.. autoproperty:: SiwaveDCSimulationSetup.setup_type

@@ -1,0 +1,220 @@
+
+
+
+
+
+
+:class:`DcrSettings`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.DcrSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for DCR settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DcrSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~conduction_max_passes`
+            - Conduction maximum number of passes.
+          * - :py:attr:`~conduction_min_converged_passes`
+            - Conduction minimum number of converged passes.
+          * - :py:attr:`~conduction_min_passes`
+            - Conduction minimum number of passes.
+          * - :py:attr:`~conduction_per_error`
+            - WConduction error percentage.
+          * - :py:attr:`~conduction_per_refine`
+            - Conduction refinement.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import DcrSettings
+
+Property detail
+---------------
+
+.. py:property:: conduction_max_passes
+
+   
+   Conduction maximum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_min_converged_passes
+
+   
+   Conduction minimum number of converged passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_min_passes
+
+   
+   Conduction minimum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_per_error
+
+   
+   WConduction error percentage.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conduction_per_refine
+
+   
+   Conduction refinement.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

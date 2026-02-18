@@ -1,0 +1,6 @@
+aedt\_name
+==========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.aedt_name

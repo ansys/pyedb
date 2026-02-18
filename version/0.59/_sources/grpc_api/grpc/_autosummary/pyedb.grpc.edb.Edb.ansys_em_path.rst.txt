@@ -1,0 +1,6 @@
+ansys\_em\_path
+===============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.ansys_em_path

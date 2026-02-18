@@ -1,0 +1,101 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_padstacks`` library
+=================================================
+
+.. py:module:: pyedb.configuration.cfg_padstacks
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_padstacks
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgBase`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgBackdrillParameters`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstackInstance`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstackDefinition`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstacks`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgBase</autoapi/pyedb/configuration/cfg_padstacks/CfgBase>
+    <span class="nf nf-cod-symbol_class"></span> CfgBackdrillParameters</autoapi/pyedb/configuration/cfg_padstacks/CfgBackdrillParameters>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackInstance</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstackInstance>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackDefinition</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstackDefinition>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstacks</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstacks>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

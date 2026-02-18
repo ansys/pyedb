@@ -1,0 +1,6 @@
+use\_shell\_elements
+====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.use_shell_elements

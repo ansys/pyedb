@@ -1,0 +1,6 @@
+add\_cpa\_analysis
+==================
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. automethod:: Siwave.add_cpa_analysis

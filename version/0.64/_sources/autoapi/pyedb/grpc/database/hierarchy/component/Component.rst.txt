@@ -1,0 +1,1653 @@
+
+
+
+
+
+
+:class:`Component`
+==================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.component.Component(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.hierarchy.component_group.ComponentGroup`
+
+
+   
+   Manages EDB functionalities for components.
+
+
+   :Parameters:
+
+       **parent** : :class:`pyedb.grpc.database.components.Components`
+           Components object.
+
+       **component** : :obj:`object`
+           Edb Component Object
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Component
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_package_def`
+            - Create a package definition and assign it to the component.
+          * - :py:attr:`~assign_spice_model`
+            - Assign Spice model to this component.
+          * - :py:attr:`~assign_s_param_model`
+            - Assign S-parameter to this component.
+          * - :py:attr:`~use_s_parameter_model`
+            - Use S-parameter model on the component.
+          * - :py:attr:`~assign_rlc_model`
+            - Assign RLC to this component.
+          * - :py:attr:`~create_clearance_on_component`
+            - Create a Clearance on Soldermask layer by drawing a rectangle.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~group_type`
+            - 
+          * - :py:attr:`~layout_instance`
+            - Layout instance object.
+          * - :py:attr:`~component_instance`
+            - Component instance.
+          * - :py:attr:`~is_enabled`
+            - Component enable.
+          * - :py:attr:`~ic_die_properties`
+            - IC Die property.
+          * - :py:attr:`~model`
+            - Component model.
+          * - :py:attr:`~package_def`
+            - Package definition.
+          * - :py:attr:`~is_mcad`
+            - MCad component.
+          * - :py:attr:`~is_mcad_3d_comp`
+            - Mcad 3D component.
+          * - :py:attr:`~is_mcad_hfss`
+            - MCad HFSS.
+          * - :py:attr:`~is_mcad_stride`
+            - MCar stride.
+          * - :py:attr:`~enabled`
+            - Component active mode.
+          * - :py:attr:`~spice_model`
+            - Assigned Spice model.
+          * - :py:attr:`~s_param_model`
+            - Assigned S-parameter model.
+          * - :py:attr:`~netlist_model`
+            - Assigned netlist model.
+          * - :py:attr:`~solder_ball_height`
+            - Solder ball height if available.
+          * - :py:attr:`~solder_ball_shape`
+            - Solder ball shape.
+          * - :py:attr:`~solder_ball_diameter`
+            - Solder ball diameter.
+          * - :py:attr:`~solder_ball_placement`
+            - Solder ball placement if available..
+          * - :py:attr:`~refdes`
+            - Reference Designator Name.
+          * - :py:attr:`~model_type`
+            - Retrieve assigned model type.
+          * - :py:attr:`~rlc_values`
+            - Get component rlc values.
+          * - :py:attr:`~value`
+            - Retrieve discrete component value.
+          * - :py:attr:`~res_value`
+            - Resistance value.
+          * - :py:attr:`~cap_value`
+            - Capacitance Value.
+          * - :py:attr:`~ind_value`
+            - Inductance Value.
+          * - :py:attr:`~is_parallel_rlc`
+            - Define if model is Parallel or Series.
+          * - :py:attr:`~center`
+            - Compute the component center.
+          * - :py:attr:`~location`
+            - Component center.
+          * - :py:attr:`~bounding_box`
+            - Component's bounding box.
+          * - :py:attr:`~rotation`
+            - Compute the component rotation in radian.
+          * - :py:attr:`~pinlist`
+            - Pins of the component.
+          * - :py:attr:`~nets`
+            - Nets of Component.
+          * - :py:attr:`~pins`
+            - Component pins.
+          * - :py:attr:`~type`
+            - Component type.
+          * - :py:attr:`~numpins`
+            - Number of Pins of Component.
+          * - :py:attr:`~partname`
+            - Component part name.
+          * - :py:attr:`~part_name`
+            - Component part name.
+          * - :py:attr:`~placement_layer`
+            - Placement layern name.
+          * - :py:attr:`~layer`
+            - Placement layern object.
+          * - :py:attr:`~is_top_mounted`
+            - Check if a component is mounted on top or bottom of the layout.
+          * - :py:attr:`~lower_elevation`
+            - Lower elevation of the placement layer.
+          * - :py:attr:`~upper_elevation`
+            - Upper elevation of the placement layer.
+          * - :py:attr:`~top_bottom_association`
+            - Top/bottom association of the placement layer.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.component import Component
+
+Property detail
+---------------
+
+.. py:property:: group_type
+
+.. py:property:: layout_instance
+
+   
+   Layout instance object.
+
+
+
+   :Returns:
+
+       :class:`LayoutInstance <ansys.edb.core.layout_instance.layout_instance.LayoutInstance>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component_instance
+
+   
+   Component instance.
+
+
+
+   :Returns:
+
+       :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_enabled
+   :type: bool
+
+
+   
+   Component enable.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ic_die_properties
+   :type: any
+
+
+   
+   IC Die property.
+
+
+
+   :Returns:
+
+       :class:`ICDieProperty <pyedb.grpc.database.hierarchy.component.ICDieProperty>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model
+   :type: Union[pyedb.grpc.database.hierarchy.s_parameter_model.SparamModel, pyedb.grpc.database.hierarchy.spice_model.SpiceModel]
+
+
+   
+   Component model.
+
+
+
+   :Returns:
+
+       :class:`Model <ansys.edb.core.hierarchy.model.Model>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: package_def
+
+   
+   Package definition.
+
+
+
+   :Returns:
+
+       :class:`PackageDef <ansys.edb.core.definition.package_def.PackageDef>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_mcad
+   :type: bool
+
+
+   
+   MCad component.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_mcad_3d_comp
+   :type: bool
+
+
+   
+   Mcad 3D component.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_mcad_hfss
+   :type: bool
+
+
+   
+   MCad HFSS.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_mcad_stride
+   :type: bool
+
+
+   
+   MCar stride.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Component active mode.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: spice_model
+   :type: pyedb.grpc.database.hierarchy.spice_model.SpiceModel
+
+
+   
+   Assigned Spice model.
+
+
+
+   :Returns:
+
+       :class:`SpiceModel <pyedb.grpc.database.hierarchy.spice_model.SpiceModel>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: s_param_model
+   :type: pyedb.grpc.database.hierarchy.s_parameter_model.SparamModel
+
+
+   
+   Assigned S-parameter model.
+
+
+
+   :Returns:
+
+       :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: netlist_model
+   :type: ansys.edb.core.hierarchy.netlist_model.NetlistModel
+
+
+   
+   Assigned netlist model.
+
+
+
+   :Returns:
+
+       :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_mode.NetlistModel>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solder_ball_height
+   :type: float
+
+
+   
+   Solder ball height if available.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Balls height value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solder_ball_shape
+   :type: str
+
+
+   
+   Solder ball shape.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Solder balls shapes, ``none``, ``cylinder`` or ``spheroid``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solder_ball_diameter
+   :type: Union[tuple[float, float], None]
+
+
+   
+   Solder ball diameter.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           diameter value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solder_ball_placement
+
+   
+   Solder ball placement if available..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refdes
+   :type: str
+
+
+   
+   Reference Designator Name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Reference Designator Name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+   :type: str
+
+
+   
+   Retrieve assigned model type.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Model type, ``RLC``, `` SParameterModel`` or ``SPICEModel``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc_values
+   :type: Union[List[list[float]], List[float]]
+
+
+   
+   Get component rlc values.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:list`\[:obj:`Rvalue`\(:class:`python:float`), :obj:`Lvalue`\(:class:`python:float`), :obj:`Cvalue`\(:class:`python:float`)]].
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: value
+   :type: float
+
+
+   
+   Retrieve discrete component value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Value. ``None`` if not an RLC Type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: res_value
+   :type: float
+
+
+   
+   Resistance value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resistance value or ``None`` if not an RLC type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cap_value
+   :type: float
+
+
+   
+   Capacitance Value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitance Value. ``None`` if not an RLC Type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ind_value
+
+   
+   Inductance Value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Inductance Value. ``None`` if not an RLC Type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_parallel_rlc
+   :type: bool
+
+
+   
+   Define if model is Parallel or Series.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           `True´ if parallel rlc model.
+           `False` series RLC.
+           `None` if not RLC Type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: center
+   :type: list[float, float]
+
+
+   
+   Compute the component center.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           [x value, y value].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+
+   
+   Component center.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`, :class:`python:float`]
+           [x, y].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bounding_box
+   :type: list[float]
+
+
+   
+   Component's bounding box.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`]
+           List of coordinates for the component's bounding box, with the list of
+           coordinates in this order: [X lower left corner, Y lower left corner,
+           X upper right corner, Y upper right corner].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rotation
+   :type: float
+
+
+   
+   Compute the component rotation in radian.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Rotation value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pinlist
+   :type: list[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   Pins of the component.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of Pins of Component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+
+   
+   Nets of Component.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           Component nets names.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pins
+   :type: dict[str, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   Component pins.
+
+
+
+   :Returns:
+
+       :obj:`Dic`\[str,:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+           Component dictionary pins.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Component type.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Type of the component. Options are ``"resistor"``, ``"inductor"``, ``"capacitor"``,
+           ``"ic"``, ``"io"`` and ``"other"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: numpins
+   :type: int
+
+
+   
+   Number of Pins of Component.
+
+   ..deprecated:: 0.51.0
+      Use: func:`num_pins` instead.
+   Returns
+   -------
+   int
+       Component pins number.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: partname
+   :type: str
+
+
+   
+   Component part name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Component part name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: part_name
+   :type: str
+
+
+   
+   Component part name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Component part name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: placement_layer
+   :type: str
+
+
+   
+   Placement layern name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Placement layer name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+   :type: pyedb.grpc.database.layers.stackup_layer.StackupLayer
+
+
+   
+   Placement layern object.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
+           Placement layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_top_mounted
+   :type: bool
+
+
+   
+   Check if a component is mounted on top or bottom of the layout.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` component is mounted on top, ``False`` on down.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: lower_elevation
+   :type: float
+
+
+   
+   Lower elevation of the placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Placement layer lower elevation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: upper_elevation
+   :type: float
+
+
+   
+   Upper elevation of the placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Placement layer upper elevation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_bottom_association
+   :type: int
+
+
+   
+   Top/bottom association of the placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Top/bottom association of the placement layer, where:
+           
+           * 0 - Top associated
+           * 1 - No association
+           * 2 - Bottom associated
+           * 4 - Number of top/bottom associations.
+           * -1 - Undefined
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create_package_def(name=None, component_part_name=None) -> bool
+
+   
+   Create a package definition and assign it to the component.
+
+
+   :Parameters:
+
+       **name: str, optional**
+           Name of the package definition
+
+       **component_part_name** : :class:`python:str`, :obj:`optional`
+           Part name of the component.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if succeeded, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_spice_model(file_path: str, name: Optional[str] = None, sub_circuit_name: Optional[str] = None, terminal_pairs: Optional[list] = None) -> pyedb.grpc.database.hierarchy.spice_model.SpiceModel
+
+   
+   Assign Spice model to this component.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of the Spice model.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the Spice model.
+
+   :Returns:
+
+       :class:`SpiceModel <pyedb.grpc.database.hierarchy.spice_model.SpiceModel>`
+           Spice model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_s_param_model(file_path, name=None, reference_net=None) -> ansys.edb.core.definition.component_model.NPortComponentModel
+
+   
+   Assign S-parameter to this component.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of the S-parameter model.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the S-parameter model.
+
+       **reference_net** : :class:`python:str`, :obj:`optional`
+           Reference net.
+
+   :Returns:
+
+       :class:`NPortComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`
+           ComponentModel.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: use_s_parameter_model(name, reference_net=None) -> bool
+
+   
+   Use S-parameter model on the component.
+
+
+   :Parameters:
+
+       **name: str**
+           Name of the S-parameter model.
+
+       **reference_net: str, optional**
+           Reference net of the model.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = Edb()
+   >>>comp_def = edbapp.definitions.components["CAPC3216X180X55ML20T25"]
+   >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
+   >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_rlc_model(res=None, ind=None, cap=None, is_parallel=False) -> pyedb.grpc.database.hierarchy.pin_pair_model.PinPairModel
+
+   
+   Assign RLC to this component.
+
+
+   :Parameters:
+
+       **res** : :class:`python:int`, :class:`python:float`
+           Resistance. Default is ``None``.
+
+       **ind** : :class:`python:int`, :class:`python:float`
+           Inductance. Default is ``None``.
+
+       **cap** : :class:`python:int`, :class:`python:float`
+           Capacitance. Default is ``None``.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a parallel or series RLC component. The default is ``False``.
+
+   :Returns:
+
+       :class:`Model <ansys.edb.core.hierarchy.model.Model>`
+           Component Model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_clearance_on_component(extra_soldermask_clearance=0.0001) -> bool
+
+   
+   Create a Clearance on Soldermask layer by drawing a rectangle.
+
+
+   :Parameters:
+
+       **extra_soldermask_clearance** : :class:`python:float`, :obj:`optional`
+           Extra Soldermask value in meter to be applied on component bounding box.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+load\_regulator\_current
+========================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoproperty:: VoltageRegulator.load_regulator_current

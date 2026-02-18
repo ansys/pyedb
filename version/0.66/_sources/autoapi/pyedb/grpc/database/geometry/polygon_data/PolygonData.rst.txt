@@ -1,0 +1,606 @@
+
+
+
+
+
+
+:class:`PolygonData`
+====================
+
+
+.. py:class:: pyedb.grpc.database.geometry.polygon_data.PolygonData(edb_object=None, create_from_points=None, create_from_circle=None, create_from_rectangle=None, create_from_bounding_box=None, **kwargs)
+
+   
+   Class managing Polygon Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: PolygonData
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_from_points`
+            - 
+          * - :py:attr:`~create_from_bounding_box`
+            - Create PolygonData from point list.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~bounding_circle`
+            - Get the bounding circle of the polygon.
+          * - :py:attr:`~is_inside`
+            - Check if polygon is inside.
+          * - :py:attr:`~has_self_intersections`
+            - Check if the polygon has self-intersections.
+          * - :py:attr:`~expand`
+            - Expand the polygon shape by an absolute value in all direction.
+          * - :py:attr:`~unite`
+            - Create union of polygons.
+          * - :py:attr:`~area`
+            - Get area of polygon.
+          * - :py:attr:`~intersection_type`
+            - Get intersection type of polygon.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~bounding_box`
+            - Bounding box.
+          * - :py:attr:`~arcs`
+            - Get the Primitive Arc Data.
+          * - :py:attr:`~is_closed`
+            - Check if polygon is closed.
+          * - :py:attr:`~sense`
+            - Get the polygon sense type.
+          * - :py:attr:`~holes`
+            - Get all holes in polygon.
+          * - :py:attr:`~points`
+            - Get all points in polygon.
+          * - :py:attr:`~points_raw`
+            - Get all points in polygon.
+          * - :py:attr:`~arc_data`
+            - Get all arc data in polygon.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.geometry.polygon_data import PolygonData
+
+Property detail
+---------------
+
+.. py:property:: bounding_box
+   :type: tuple[tuple[float, float], tuple[float, float]]
+
+
+   
+   Bounding box.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`python:tuple`\[:class:`python:float`, :class:`python:float`], :class:`python:tuple`\[:class:`python:float`, :class:`python:float`]]
+           Tuple of coordinates for the component's bounding box, with the list of
+           coordinates in this order: (X lower left corner, Y lower left corner),
+           (X upper right corner, Y upper right corner).
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arcs
+   :type: list[pyedb.grpc.database.geometry.arc_data.ArcData]
+
+
+   
+   Get the Primitive Arc Data.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`ArcData <pyedb.grpc.database.geometry.arc_data.ArcData>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_closed
+   :type: bool
+
+
+   
+   Check if polygon is closed.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sense
+   :type: any
+
+
+   
+   Get the polygon sense type.
+
+
+
+   :Returns:
+
+       :class: `PolygonSenseType <ansys.edb.core.geometry.polygon_data.PolygonSenseType>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: holes
+
+   
+   Get all holes in polygon.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points
+   :type: list[tuple[float, float]]
+
+
+   
+   Get all points in polygon.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:tuple`\[:class:`python:float`, :class:`python:float`]]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points_raw
+
+   
+   Get all points in polygon.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`PointData <pyedb.grpc.database.geometry.point_data.PointData>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_data
+
+   
+   Get all arc data in polygon.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`ArcData <pyedb.grpc.database.geometry.arc_data.ArcData>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: bounding_circle() -> tuple[tuple[float, float], float]
+
+   
+   Get the bounding circle of the polygon.
+
+
+
+   :Returns:
+
+       :obj:`Tuple`\[:obj:`Tuple`\[:class:`python:float`, :class:`python:float`], :class:`python:float`]
+           Center point (x, y) and radius of the bounding circle.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_inside(point: tuple[float, float]) -> bool
+
+   
+   Check if polygon is inside.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_points(points, closed=True)
+   :classmethod:
+
+
+.. py:method:: create_from_bounding_box(points) -> ansys.edb.core.geometry.polygon_data.PolygonData
+   :classmethod:
+
+
+   
+   Create PolygonData from point list.
+
+
+
+   :Returns:
+
+       :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: has_self_intersections(tolerance=1e-12) -> bool
+
+   
+   Check if the polygon has self-intersections.
+
+
+   :Parameters:
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the polygon has self-intersections, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: expand(offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool
+
+   
+   Expand the polygon shape by an absolute value in all direction.
+   Offset can be negative for negative expansion.
+
+
+   :Parameters:
+
+       **offset** : :class:`python:float`, :obj:`optional`
+           Offset value in meters.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters.
+
+       **round_corners** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to round corners or not.
+           If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+
+       **maximum_corner_extension** : :class:`python:float`, :obj:`optional`
+           The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: unite(polygons)
+
+   
+   Create union of polygons.
+
+
+   :Parameters:
+
+       **polygons** : :class:`python:list`\[:class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`]
+           List of PolygonData objects to unite with the current polygon.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: area()
+
+   
+   Get area of polygon.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: intersection_type(polygon_data)
+
+   
+   Get intersection type of polygon.
+
+
+
+   :Returns:
+
+       :class: `PolygonIntersectionType <ansys.edb.core.geometry.polygon_data.PolygonIntersectionType>`
+           ..
+
+       :obj:`Returned` :obj:`value` :obj:`can` :obj:`be` :obj:`one` :obj:`of` :obj:`the` following:
+           - 0 : No Intersection
+           - 1 : Current Polygon Inside Other
+           - 2: Other polygon Inside Current
+           - 3: Common intersection
+           - 4: undifined intersection
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

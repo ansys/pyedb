@@ -1,0 +1,6 @@
+data
+====
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.data

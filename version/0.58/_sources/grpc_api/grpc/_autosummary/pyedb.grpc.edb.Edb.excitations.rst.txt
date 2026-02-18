@@ -1,0 +1,6 @@
+excitations
+===========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.excitations

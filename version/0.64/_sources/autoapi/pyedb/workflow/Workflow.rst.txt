@@ -1,0 +1,84 @@
+
+
+
+
+
+
+:class:`Workflow`
+=================
+
+
+.. py:class:: pyedb.workflow.Workflow(pedb)
+
+
+.. py:currentmodule:: Workflow
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~export_bill_of_materials`
+            - Export bill of materials to a csv file.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflow import Workflow
+
+
+
+Method detail
+-------------
+
+.. py:method:: export_bill_of_materials(file_path: Union[str, pathlib.Path])
+
+   
+   Export bill of materials to a csv file.
+
+
+   :Parameters:
+
+       **file_path** : :obj:`Union`\[:class:`python:str`, :obj:`Path`]
+           Path to the csv file.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

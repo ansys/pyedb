@@ -1,0 +1,6 @@
+closest\_points
+===============
+
+.. currentmodule:: pyedb.grpc.database.geometry.arc_data
+
+.. automethod:: ArcData.closest_points

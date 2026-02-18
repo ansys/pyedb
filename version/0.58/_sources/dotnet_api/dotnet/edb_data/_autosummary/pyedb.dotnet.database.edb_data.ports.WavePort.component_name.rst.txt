@@ -1,0 +1,6 @@
+component\_name
+===============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.component_name

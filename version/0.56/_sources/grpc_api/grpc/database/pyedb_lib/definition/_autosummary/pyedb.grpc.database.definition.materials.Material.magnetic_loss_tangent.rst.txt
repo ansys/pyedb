@@ -1,0 +1,6 @@
+magnetic\_loss\_tangent
+=======================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.magnetic_loss_tangent

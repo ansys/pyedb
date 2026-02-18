@@ -1,0 +1,1317 @@
+
+
+
+
+
+
+:class:`EDBPadstackInstance`
+============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance(edb_padstackinstance, _pedb)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.primitive.primitive.Connectable`
+
+
+   
+   Manages EDB functionalities for a padstack.
+
+
+   :Parameters:
+
+       **edb_padstackinstance**
+           ..
+
+       **_pedb**
+           Inherited AEDT object.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_padstack_instance = edb.padstacks.instances[0]
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBPadstackInstance
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_terminal`
+            - Get PadstackInstanceTerminal object.
+          * - :py:attr:`~create_terminal`
+            - Create a padstack instance terminal
+          * - :py:attr:`~create_coax_port`
+            - Create a coax port.
+          * - :py:attr:`~create_port`
+            - Create a port on the padstack.
+          * - :py:attr:`~in_polygon`
+            - Check if padstack Instance is in given polygon data.
+          * - :py:attr:`~set_backdrill_top`
+            - Set backdrill from top.
+          * - :py:attr:`~get_back_drill_by_layer`
+            - 
+          * - :py:attr:`~set_back_drill_by_layer`
+            - Method added to bring compatibility with grpc.
+          * - :py:attr:`~set_backdrill_bottom`
+            - Set backdrill from bottom.
+          * - :py:attr:`~parametrize_position`
+            - Parametrize the instance position.
+          * - :py:attr:`~in_voids`
+            - Check if this padstack instance is in any void.
+          * - :py:attr:`~create_rectangle_in_pad`
+            - Create a rectangle inscribed inside a padstack instance pad.
+          * - :py:attr:`~get_reference_pins`
+            - Search for reference pins using given criteria.
+          * - :py:attr:`~split`
+            - Split padstack instance into multiple instances. The new instances only connect adjacent layers.
+          * - :py:attr:`~convert_hole_to_conical_shape`
+            - Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~side_number`
+            - Return the number of sides meshed of the padstack instance.
+          * - :py:attr:`~terminal`
+            - Terminal.
+          * - :py:attr:`~object_instance`
+            - Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object.
+          * - :py:attr:`~bounding_box`
+            - Get bounding box of the padstack instance.
+          * - :py:attr:`~pin`
+            - EDB padstack object.
+          * - :py:attr:`~padstack_definition`
+            - Padstack definition Name.
+          * - :py:attr:`~definition`
+            - Padstack definition.
+          * - :py:attr:`~backdrill_top`
+            - Backdrill layer from top.
+          * - :py:attr:`~backdrill_type`
+            - Adding grpc compatibility. DotNet is supporting only layer drill type with adding stub length.
+          * - :py:attr:`~backdrill_bottom`
+            - Backdrill layer from bottom.
+          * - :py:attr:`~backdrill_parameters`
+            - 
+          * - :py:attr:`~start_layer`
+            - Starting layer.
+          * - :py:attr:`~stop_layer`
+            - Stopping layer.
+          * - :py:attr:`~layer_range_names`
+            - List of all layers to which the padstack instance belongs.
+          * - :py:attr:`~is_pin`
+            - Determines whether this padstack instance is a layout pin.
+          * - :py:attr:`~position`
+            - Padstack instance position.
+          * - :py:attr:`~rotation`
+            - Padstack instance rotation.
+          * - :py:attr:`~metal_volume`
+            - Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
+          * - :py:attr:`~pin_number`
+            - Get pin number.
+          * - :py:attr:`~component_pin`
+            - Get component pin.
+          * - :py:attr:`~aedt_name`
+            - Retrieve the pin name that is shown in AEDT.
+          * - :py:attr:`~pingroups`
+            - Pin groups that the pin belongs to.
+          * - :py:attr:`~placement_layer`
+            - Placement layer.
+          * - :py:attr:`~lower_elevation`
+            - Lower elevation of the placement layer.
+          * - :py:attr:`~upper_elevation`
+            - Upper elevation of the placement layer.
+          * - :py:attr:`~top_bottom_association`
+            - Top/bottom association of the placement layer.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+
+Property detail
+---------------
+
+.. py:property:: side_number
+
+   
+   Return the number of sides meshed of the padstack instance.
+   Returns
+   -------
+   int
+       Number of sides meshed of the padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal
+
+   
+   Terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: object_instance
+
+   
+   Return Ansys.Ansoft.Edb.LayoutInstance.LayoutObjInstance object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bounding_box
+
+   
+   Get bounding box of the padstack instance.
+   Because this method is slow, the bounding box is stored in a variable and reused.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin
+
+   
+   EDB padstack object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_definition
+
+   
+   Padstack definition Name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the padstack definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: definition
+
+   
+   Padstack definition.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the padstack definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: backdrill_top
+
+   
+   Backdrill layer from top.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple of the layer name, drill diameter, and offset if it exists.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: backdrill_type
+
+   
+   Adding grpc compatibility. DotNet is supporting only layer drill type with adding stub length.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: backdrill_bottom
+
+   
+   Backdrill layer from bottom.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple of the layer name, drill diameter, and drill offset if it exists.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: backdrill_parameters
+
+.. py:property:: start_layer
+
+   
+   Starting layer.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the starting layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: stop_layer
+
+   
+   Stopping layer.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the stopping layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_range_names
+
+   
+   List of all layers to which the padstack instance belongs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_pin
+
+   
+   Determines whether this padstack instance is a layout pin.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if this padstack type is a layout pin, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: position
+
+   
+   Padstack instance position.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of ``[x, y]`` coordinates for the padstack instance position.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rotation
+
+   
+   Padstack instance rotation.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Rotatation value for the padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: metal_volume
+
+   
+   Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Metal volume of the via hole instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_number
+
+   
+   Get pin number.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component_pin
+
+   
+   Get component pin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: aedt_name
+
+   
+   Retrieve the pin name that is shown in AEDT.
+
+   .. note::
+      To obtain the EDB core pin name, use `pin.GetName()`.
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the pin in AEDT.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.padstacks.instances[111].get_aedt_pin_name()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pingroups
+
+   
+   Pin groups that the pin belongs to.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of pin groups that the pin belongs to.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: placement_layer
+
+   
+   Placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the placement layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: lower_elevation
+
+   
+   Lower elevation of the placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Lower elavation of the placement layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: upper_elevation
+
+   
+   Upper elevation of the placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Upper elevation of the placement layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_bottom_association
+
+   
+   Top/bottom association of the placement layer.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Top/bottom association of the placement layer.
+           
+           * 0 Top associated.
+           * 1 No association.
+           * 2 Bottom associated.
+           * 4 Number of top/bottom association type.
+           * -1 Undefined.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_terminal(name=None, create_new_terminal=False)
+
+   
+   Get PadstackInstanceTerminal object.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the terminal. Only applicable when create_new_terminal is True.
+
+       **create_new_terminal** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to create a new terminal.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.terminals`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_terminal(name=None)
+
+   
+   Create a padstack instance terminal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_coax_port(name=None, radial_extent_factor=0)
+
+   
+   Create a coax port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port(name=None, reference=None, is_circuit_port=False)
+
+   
+   Create a port on the padstack.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``, in which case a name is automatically assigned.
+
+       **reference** : class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`,             class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`,             class:`pyedb.dotnet.database.edb_data.sources.PinGroup`, optional
+           Negative terminal of the port.
+
+       **is_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a circuit port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: in_polygon(polygon_data, include_partial=True, simple_check=False)
+
+   
+   Check if padstack Instance is in given polygon data.
+
+
+   :Parameters:
+
+       **polygon_data** : :obj:`PolygonData` :obj:`Object`
+           ..
+
+       **include_partial** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include partial intersecting instances. The default is ``True``.
+
+       **simple_check** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to perform a single check based on the padstack center or check the padstack bounding box.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_backdrill_top(drill_depth, drill_diameter, offset=0.0)
+
+   
+   Set backdrill from top.
+
+
+   :Parameters:
+
+       **drill_depth** : :class:`python:str`
+           Name of the drill to layer.
+
+       **drill_diameter** : :class:`python:float`, :class:`python:str`
+           Diameter of backdrill size.
+
+       **offset** : :class:`python:float`, :class:`python:str`
+           Offset for the backdrill. The default is ``0.0``. If the value is other than the
+           default, the stub does not stop at the layer. In AEDT, this parameter is called
+           "Mfg stub length".
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if success, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_back_drill_by_layer()
+
+.. py:method:: set_back_drill_by_layer(drill_to_layer, diameter, offset, from_bottom=True)
+
+   
+   Method added to bring compatibility with grpc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_backdrill_bottom(drill_depth, drill_diameter, offset=0.0)
+
+   
+   Set backdrill from bottom.
+
+
+   :Parameters:
+
+       **drill_depth** : :class:`python:str`
+           Name of the drill to layer.
+
+       **drill_diameter** : :class:`python:float`, :class:`python:str`
+           Diameter of the backdrill size.
+
+       **offset** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Offset for the backdrill. The default is ``0.0``. If the value is other than the
+           default, the stub does not stop at the layer. In AEDT, this parameter is called
+           "Mfg stub length".
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if success, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parametrize_position(prefix=None)
+
+   
+   Parametrize the instance position.
+
+
+   :Parameters:
+
+       **prefix** : :class:`python:str`, :obj:`optional`
+           Prefix for the variable name. Default is ``None``.
+           Example `"MyVariableName"` will create 2 Project variables $MyVariableNamesX and $MyVariableNamesY.
+
+   :Returns:
+
+       :obj:`List`
+           List of variables created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: in_voids(net_name=None, layer_name=None)
+
+   
+   Check if this padstack instance is in any void.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`
+           Net name of the voids to be checked. Default is ``None``.
+
+       **layer_name** : :class:`python:str`
+           Layer name of the voids to be checked. Default is ``None``.
+
+   :Returns:
+
+       :class:`python:list`
+           List of the voids that include this padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rectangle_in_pad(layer_name, return_points=False, partition_max_order=16)
+
+   
+   Create a rectangle inscribed inside a padstack instance pad.
+
+   The rectangle is fully inscribed in the pad and has the maximum area.
+   It is necessary to specify the layer on which the rectangle will be created.
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Name of the layer on which to create the polygon.
+
+       **return_points** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If `True` does not create the rectangle and just returns a list containing the rectangle vertices.
+           Default is `False`.
+
+       **partition_max_order** : :class:`python:float`, :obj:`optional`
+           Order of the lattice partition used to find the quasi-lattice polygon that approximates ``polygon``.
+           Default is ``16``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`, :obj:`List`,  :class:`pyedb.dotnet.database.edb_data.primitives.EDBPrimitives`
+           Polygon when successful, ``False`` when failed, list of list if `return_points=True`.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_layout = edbapp.modeler
+   >>> list_of_padstack_instances = list(edbapp.padstacks.instances.values())
+   >>> padstack_inst = list_of_padstack_instances[0]
+   >>> padstack_inst.create_rectangle_in_pad("TOP")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_reference_pins(reference_net='GND', search_radius=0.005, max_limit=0, component_only=True)
+
+   
+   Search for reference pins using given criteria.
+
+
+   :Parameters:
+
+       **reference_net** : :class:`python:str`, :obj:`optional`
+           Reference net. The default is ``"GND"``.
+
+       **search_radius** : :class:`python:float`, :obj:`optional`
+           Search radius for finding padstack instances. The default is ``5e-3``.
+
+       **max_limit** : :class:`python:int`, :obj:`optional`
+           Maximum limit for the padstack instances found. The default is ``0``, in which
+           case no limit is applied. The maximum limit value occurs on the nearest
+           reference pins from the positive one that is found.
+
+       **component_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to limit the search to component padstack instances only. The
+           default is ``True``. When ``False``, the search is extended to the entire layout.
+
+   :Returns:
+
+       :class:`python:list`
+           List of :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = Edb("target_path")
+   >>> pin = edbapp.components.instances["J5"].pins["19"]
+   >>> reference_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0,
+   >>> component_only=True)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: split() -> list
+
+   
+   Split padstack instance into multiple instances. The new instances only connect adjacent layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: convert_hole_to_conical_shape(angle=75)
+
+   
+   Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+
+   :Parameters:
+
+       **angle** : :class:`python:float`, :obj:`optional`
+           Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+           HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+           The default is ``75``.
+           The lowest hole is ``0.75*HoleDepth/HoleDiam``.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

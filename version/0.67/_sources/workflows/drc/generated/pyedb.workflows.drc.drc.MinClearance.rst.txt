@@ -1,0 +1,103 @@
+﻿MinClearance
+============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: MinClearance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      MinClearance.construct
+      
+      
+      MinClearance.copy
+      
+      
+      MinClearance.dict
+      
+      
+      MinClearance.from_orm
+      
+      
+      MinClearance.json
+      
+      
+      MinClearance.model_construct
+      
+      
+      MinClearance.model_copy
+      
+      
+      MinClearance.model_dump
+      
+      
+      MinClearance.model_dump_json
+      
+      
+      MinClearance.model_json_schema
+      
+      
+      MinClearance.model_parametrized_name
+      
+      
+      MinClearance.model_post_init
+      
+      
+      MinClearance.model_rebuild
+      
+      
+      MinClearance.model_validate
+      
+      
+      MinClearance.model_validate_json
+      
+      
+      MinClearance.model_validate_strings
+      
+      
+      MinClearance.parse_file
+      
+      
+      MinClearance.parse_obj
+      
+      
+      MinClearance.parse_raw
+      
+      
+      MinClearance.schema
+      
+      
+      MinClearance.schema_json
+      
+      
+      MinClearance.update_forward_refs
+      
+      
+      MinClearance.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MinClearance.model_computed_fields
+      MinClearance.model_config
+      MinClearance.model_fields
+      MinClearance.name
+      MinClearance.value
+      MinClearance.net1
+      MinClearance.net2
+   
+   

@@ -1,0 +1,6 @@
+is\_wave\_port
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.is_wave_port

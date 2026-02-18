@@ -1,0 +1,6 @@
+sim\_setup\_info
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. autoproperty:: HFSSPISimulationSetup.sim_setup_info

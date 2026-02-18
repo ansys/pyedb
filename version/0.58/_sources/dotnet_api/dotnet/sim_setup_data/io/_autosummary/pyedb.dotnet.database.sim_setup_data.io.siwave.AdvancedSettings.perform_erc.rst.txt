@@ -1,0 +1,6 @@
+perform\_erc
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.perform_erc

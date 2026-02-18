@@ -1,0 +1,6 @@
+advanced\_meshing
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_settings
+
+.. autoproperty:: HFSSSimulationSettings.advanced_meshing

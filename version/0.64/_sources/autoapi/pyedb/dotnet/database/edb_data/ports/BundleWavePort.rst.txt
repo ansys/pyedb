@@ -1,0 +1,207 @@
+
+
+
+
+
+
+:class:`BundleWavePort`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.ports.BundleWavePort(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.bundle_terminal.BundleTerminal`
+
+
+   
+   Manages bundle wave port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal`
+           BundleTerminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BundleWavePort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~horizontal_extent_factor`
+            - Horizontal extent factor.
+          * - :py:attr:`~vertical_extent_factor`
+            - Vertical extent factor.
+          * - :py:attr:`~pec_launch_width`
+            - Launch width for the printed electronic component (PEC).
+          * - :py:attr:`~deembed`
+            - Whether deembed is active.
+          * - :py:attr:`~deembed_length`
+            - Deembed Length.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.ports import BundleWavePort
+
+Property detail
+---------------
+
+.. py:property:: horizontal_extent_factor
+
+   
+   Horizontal extent factor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: vertical_extent_factor
+
+   
+   Vertical extent factor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pec_launch_width
+
+   
+   Launch width for the printed electronic component (PEC).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: deembed
+
+   
+   Whether deembed is active.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: deembed_length
+
+   
+   Deembed Length.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

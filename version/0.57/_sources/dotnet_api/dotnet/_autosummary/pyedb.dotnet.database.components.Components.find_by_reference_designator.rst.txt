@@ -1,0 +1,6 @@
+find\_by\_reference\_designator
+===============================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.find_by_reference_designator

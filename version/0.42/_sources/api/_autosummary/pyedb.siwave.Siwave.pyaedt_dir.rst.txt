@@ -1,0 +1,6 @@
+pyaedt\_dir
+===========
+
+.. currentmodule:: pyedb.siwave
+
+.. autoproperty:: Siwave.pyaedt_dir

@@ -1,0 +1,6 @@
+set\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: CircuitPort.set_product_property

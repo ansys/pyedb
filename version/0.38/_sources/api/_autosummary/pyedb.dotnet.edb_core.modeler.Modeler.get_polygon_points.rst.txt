@@ -1,0 +1,6 @@
+get\_polygon\_points
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
+
+.. automethod:: Modeler.get_polygon_points

@@ -1,0 +1,6 @@
+dc\_settings
+============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_simulation_setup
+
+.. autoproperty:: SiwaveSimulationSetup.dc_settings

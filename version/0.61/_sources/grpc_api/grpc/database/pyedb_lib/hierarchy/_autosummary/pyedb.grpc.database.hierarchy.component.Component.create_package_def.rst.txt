@@ -1,0 +1,6 @@
+create\_package\_def
+====================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.create_package_def

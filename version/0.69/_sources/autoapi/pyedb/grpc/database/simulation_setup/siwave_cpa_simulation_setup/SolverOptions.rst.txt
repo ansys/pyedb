@@ -1,0 +1,576 @@
+
+
+
+
+
+
+:class:`SolverOptions`
+======================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SolverOptions(pedb, cfg_solver_options=None)
+
+   
+   Represents solver options configuration for SIwave CPA simulations.
+
+   Attributes:
+       extraction_mode (str): Extraction mode ('si' or 'pi')
+       custom_refinement (bool): Whether to use custom refinement settings
+       extraction_frequency (str): Frequency for extraction (e.g. '10Ghz')
+       compute_capacitance (bool): Whether to compute capacitance
+       compute_dc_parameters (bool): Whether to compute DC parameters
+       compute_dc_rl (bool): Whether to compute DC RL parameters
+       compute_dc_cg (bool): Whether to compute DC CG parameters
+       compute_ac_rl (bool): Whether to compute AC RL parameters
+       ground_power_nets_for_si (bool): Whether to ground power nets for SI analysis
+       small_hole_diameter (float|str): Small hole diameter value or 'auto'
+       adaptive_refinement_cg_max_passes (int): Max passes for CG adaptive refinement
+       adaptive_refinement_rl_max_passes (int): Max passes for RL adaptive refinement
+       adaptive_refinement_cg_percent_error (float): Target error for CG refinement
+       adaptive_refinement_rl_percent_error (float): Target error for RL refinement
+       rl_percent_refinement_per_pass (float): RL refinement percentage per pass
+       cg_percent_refinement_per_pass (float): CG refinement percentage per pass
+       return_path_net_for_loop_parameters (bool): Whether to use return path net
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SolverOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extraction_mode`
+            - Gets the extraction mode from the database.
+          * - :py:attr:`~custom_refinement`
+            - Gets the custom refinement setting from the database.
+          * - :py:attr:`~extraction_frequency`
+            - Gets the extraction frequency from the database.
+          * - :py:attr:`~compute_capacitance`
+            - Gets the compute capacitance setting from the database.
+          * - :py:attr:`~compute_dc_parameters`
+            - Gets the compute DC parameters setting from the database.
+          * - :py:attr:`~compute_dc_rl`
+            - Gets the compute DC RL parameters setting from the database.
+          * - :py:attr:`~compute_dc_cg`
+            - Gets the compute DC CG parameters setting from the database.
+          * - :py:attr:`~compute_ac_rl`
+            - Gets the compute AC RL parameters setting from the database.
+          * - :py:attr:`~ground_power_nets_for_si`
+            - Gets the ground power nets for SI analysis setting from the database.
+          * - :py:attr:`~small_hole_diameter`
+            - Gets the small hole diameter setting from the database.
+          * - :py:attr:`~model_type`
+            - Gets the model type setting from the database.
+          * - :py:attr:`~adaptive_refinement_cg_max_passes`
+            - Gets the maximum number of passes for CG adaptive refinement from the database.
+          * - :py:attr:`~adaptive_refinement_cg_percent_error`
+            - Gets the target error percentage for CG adaptive refinement from the database.
+          * - :py:attr:`~cg_percent_refinement_per_pass`
+            - Gets the percentage of CG refinement per pass from the database.
+          * - :py:attr:`~adaptive_refinement_rl_max_passes`
+            - Gets the maximum number of passes for RL adaptive refinement from the database.
+          * - :py:attr:`~adaptive_refinement_rl_percent_error`
+            - Gets the target error percentage for RL adaptive refinement from the database.
+          * - :py:attr:`~rl_percent_refinement_per_pass`
+            - Gets the percentage of RL refinement per pass from the database.
+          * - :py:attr:`~return_path_net_for_loop_parameters`
+            - Gets the return path net setting for loop parameters from the database.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import SolverOptions
+
+Property detail
+---------------
+
+.. py:property:: extraction_mode
+
+   
+   Gets the extraction mode from the database.
+
+   Returns:
+       str: The extraction mode. Returns "si" if the mode is set to "1", otherwise "pi".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: custom_refinement
+
+   
+   Gets the custom refinement setting from the database.
+
+   Returns:
+       bool: True if custom refinement is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extraction_frequency
+
+   
+   Gets the extraction frequency from the database.
+
+   Returns:
+       str: The extraction frequency value as a string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_capacitance
+
+   
+   Gets the compute capacitance setting from the database.
+
+   Returns:
+       bool: True if capacitance computation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_dc_parameters
+
+   
+   Gets the compute DC parameters setting from the database.
+
+   Returns:
+       bool: True if DC parameters computation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_dc_rl
+
+   
+   Gets the compute DC RL parameters setting from the database.
+
+   Returns:
+       bool: True if DC RL parameters computation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_dc_cg
+
+   
+   Gets the compute DC CG parameters setting from the database.
+
+   Returns:
+       bool: True if DC CG parameters computation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_ac_rl
+
+   
+   Gets the compute AC RL parameters setting from the database.
+
+   Returns:
+       bool: True if AC RL parameters computation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ground_power_nets_for_si
+
+   
+   Gets the ground power nets for SI analysis setting from the database.
+
+   Returns:
+       bool: True if grounding power nets for SI analysis is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: small_hole_diameter
+
+   
+   Gets the small hole diameter setting from the database.
+
+   Returns:
+       float|str: The small hole diameter as a float, or 'auto' if the value is set to -1.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+
+   
+   Gets the model type setting from the database.
+
+   Returns:
+       str: The model type. Returns "rlcg" if the model type is set to "0", otherwise "esd_r".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_refinement_cg_max_passes
+
+   
+   Gets the maximum number of passes for CG adaptive refinement from the database.
+
+   Returns:
+       int: The maximum number of passes for CG adaptive refinement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_refinement_cg_percent_error
+
+   
+   Gets the target error percentage for CG adaptive refinement from the database.
+
+   Returns:
+       float: The target error percentage for CG adaptive refinement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cg_percent_refinement_per_pass
+
+   
+   Gets the percentage of CG refinement per pass from the database.
+
+   Returns:
+       float: The percentage of CG refinement per pass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_refinement_rl_max_passes
+
+   
+   Gets the maximum number of passes for RL adaptive refinement from the database.
+
+   Returns:
+       int: The maximum number of passes for RL adaptive refinement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_refinement_rl_percent_error
+
+   
+   Gets the target error percentage for RL adaptive refinement from the database.
+
+   Returns:
+       float: The target error percentage for RL adaptive refinement.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rl_percent_refinement_per_pass
+
+   
+   Gets the percentage of RL refinement per pass from the database.
+
+   Returns:
+       float: The percentage of RL refinement per pass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: return_path_net_for_loop_parameters
+
+   
+   Gets the return path net setting for loop parameters from the database.
+
+   Returns:
+       bool: True if the return path net is enabled for loop parameters, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+can\_be\_zone\_primitive
+========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.can_be_zone_primitive

@@ -1,0 +1,6 @@
+port\_post\_processing\_prop
+============================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.port_post_processing_prop

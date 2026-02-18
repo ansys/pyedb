@@ -1,0 +1,6 @@
+component\_name
+===============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.component_name

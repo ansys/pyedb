@@ -1,0 +1,145 @@
+
+
+
+
+
+
+:class:`ControlFileVia`
+=======================
+
+
+.. py:class:: pyedb.generic.control_file.ControlFileVia(name: str, properties: Dict[str, Any])
+
+   Bases: :py:obj:`ControlFileLayer`
+
+
+   
+   Represents a via layer in the control file.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Via name.
+
+       **properties** : :class:`python:dict`
+           Via properties dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileVia
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_via_group`
+            - 
+          * - :py:attr:`~check_containment`
+            - 
+          * - :py:attr:`~method`
+            - 
+          * - :py:attr:`~persistent`
+            - 
+          * - :py:attr:`~tolerance`
+            - 
+          * - :py:attr:`~snap_via_groups`
+            - 
+          * - :py:attr:`~snap_method`
+            - 
+          * - :py:attr:`~remove_unconnected`
+            - 
+          * - :py:attr:`~snap_tolerance`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.control_file import ControlFileVia
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: create_via_group
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: check_containment
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: method
+   :type:  str
+   :value: 'proximity'
+
+
+.. py:attribute:: persistent
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: tolerance
+   :type:  str
+   :value: '1um'
+
+
+.. py:attribute:: snap_via_groups
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: snap_method
+   :type:  str
+   :value: 'areaFactor'
+
+
+.. py:attribute:: remove_unconnected
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: snap_tolerance
+   :type:  int
+   :value: 3
+
+
+
+
+
+

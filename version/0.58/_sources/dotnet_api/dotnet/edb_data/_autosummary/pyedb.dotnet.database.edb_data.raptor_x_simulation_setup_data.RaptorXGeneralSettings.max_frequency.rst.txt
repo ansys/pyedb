@@ -1,0 +1,6 @@
+max\_frequency
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXGeneralSettings.max_frequency

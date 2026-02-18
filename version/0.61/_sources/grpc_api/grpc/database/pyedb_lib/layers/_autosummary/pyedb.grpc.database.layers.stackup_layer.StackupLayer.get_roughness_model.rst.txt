@@ -1,0 +1,6 @@
+get\_roughness\_model
+=====================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. automethod:: StackupLayer.get_roughness_model

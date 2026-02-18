@@ -1,0 +1,6 @@
+radius
+======
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoproperty:: RatRace.radius

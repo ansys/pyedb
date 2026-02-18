@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``definitions.py`` module
+=============================
+
+.. py:module:: pyedb.dotnet.database.definition.definitions
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: definitions
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definitions.Definitions`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Definitions</autoapi/pyedb/dotnet/database/definition/definitions/Definitions>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

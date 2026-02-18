@@ -1,0 +1,150 @@
+
+
+
+
+
+
+The ``database.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.dotnet.database
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: database
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.HierarchyDotNet`
+            - Hierarchy.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.PolygonDataDotNet`
+            - Polygon Data.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.NetDotNet`
+            - Net Objects.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.NetClassDotNet`
+            - Net Class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.ExtendedNetDotNet`
+            - Extended net class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.DifferentialPairDotNet`
+            - Differential Pairs.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.CellClassDotNet`
+            - Cell Class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.UtilityDotNet`
+            - Utility Edb class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.GeometryDotNet`
+            - Geometry Edb Class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.CellDotNet`
+            - Cell Dot net.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database.Database`
+            - Class representing a database object.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HierarchyDotNet</autoapi/pyedb/dotnet/database/dotnet/database/HierarchyDotNet>
+    <span class="nf nf-cod-symbol_class"></span> PolygonDataDotNet</autoapi/pyedb/dotnet/database/dotnet/database/PolygonDataDotNet>
+    <span class="nf nf-cod-symbol_class"></span> NetDotNet</autoapi/pyedb/dotnet/database/dotnet/database/NetDotNet>
+    <span class="nf nf-cod-symbol_class"></span> NetClassDotNet</autoapi/pyedb/dotnet/database/dotnet/database/NetClassDotNet>
+    <span class="nf nf-cod-symbol_class"></span> ExtendedNetDotNet</autoapi/pyedb/dotnet/database/dotnet/database/ExtendedNetDotNet>
+    <span class="nf nf-cod-symbol_class"></span> DifferentialPairDotNet</autoapi/pyedb/dotnet/database/dotnet/database/DifferentialPairDotNet>
+    <span class="nf nf-cod-symbol_class"></span> CellClassDotNet</autoapi/pyedb/dotnet/database/dotnet/database/CellClassDotNet>
+    <span class="nf nf-cod-symbol_class"></span> UtilityDotNet</autoapi/pyedb/dotnet/database/dotnet/database/UtilityDotNet>
+    <span class="nf nf-cod-symbol_class"></span> GeometryDotNet</autoapi/pyedb/dotnet/database/dotnet/database/GeometryDotNet>
+    <span class="nf nf-cod-symbol_class"></span> CellDotNet</autoapi/pyedb/dotnet/database/dotnet/database/CellDotNet>
+    <span class="nf nf-cod-symbol_class"></span> Database</autoapi/pyedb/dotnet/database/dotnet/database/Database>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Database.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

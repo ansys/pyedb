@@ -1,0 +1,6 @@
+magnitude
+=========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.magnitude

@@ -1,0 +1,6 @@
+height
+======
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.height

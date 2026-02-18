@@ -1,0 +1,6 @@
+set\_solution\_broadband
+========================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.set_solution_broadband

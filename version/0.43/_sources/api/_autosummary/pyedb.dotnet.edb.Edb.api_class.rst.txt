@@ -1,0 +1,6 @@
+api\_class
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.api_class

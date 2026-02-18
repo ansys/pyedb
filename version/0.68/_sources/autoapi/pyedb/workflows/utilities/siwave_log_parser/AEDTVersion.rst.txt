@@ -1,0 +1,66 @@
+
+
+
+
+
+
+:class:`AEDTVersion`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.AEDTVersion
+
+
+.. py:currentmodule:: AEDTVersion
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~version`
+            - 
+          * - :py:attr:`~build`
+            - 
+          * - :py:attr:`~location`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import AEDTVersion
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: version
+   :type:  str
+
+.. py:attribute:: build
+   :type:  str
+
+.. py:attribute:: location
+   :type:  str
+
+
+
+
+

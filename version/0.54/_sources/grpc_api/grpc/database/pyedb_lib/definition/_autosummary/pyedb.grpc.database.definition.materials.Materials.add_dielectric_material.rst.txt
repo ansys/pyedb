@@ -1,0 +1,6 @@
+add\_dielectric\_material
+=========================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.add_dielectric_material

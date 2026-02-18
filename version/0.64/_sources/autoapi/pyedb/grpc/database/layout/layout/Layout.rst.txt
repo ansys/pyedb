@@ -1,0 +1,531 @@
+
+
+
+
+
+
+:class:`Layout`
+===============
+
+
+.. py:class:: pyedb.grpc.database.layout.layout.Layout(pedb)
+
+   Bases: :py:obj:`ansys.edb.core.layout.layout.Layout`
+
+
+   
+   Manage Layout class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Layout
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_primitive`
+            - Find a primitive objects by layer name.
+          * - :py:attr:`~find_padstack_instances`
+            - Finds padstack instances matching the specified criteria.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cell`
+            - :class:`Cell <ansys.edb.core.layout.cel.Cell>`: Owning cell for this layout.
+          * - :py:attr:`~primitives`
+            - :obj:`list` of :class:`.Primitive`: List of all primitives in the layout.
+          * - :py:attr:`~terminals`
+            - Get terminals belonging to active layout.
+          * - :py:attr:`~nets`
+            - Nets.
+          * - :py:attr:`~bondwires`
+            - Bondwires.
+          * - :py:attr:`~groups`
+            - Groups
+          * - :py:attr:`~pin_groups`
+            - Pin groups.
+          * - :py:attr:`~net_classes`
+            - Net classes.
+          * - :py:attr:`~extended_nets`
+            - Extended nets.
+          * - :py:attr:`~differential_pairs`
+            - Differential pairs.
+          * - :py:attr:`~padstack_instances`
+            - Get all padstack instances in a list.
+          * - :py:attr:`~voltage_regulators`
+            - Voltage regulators.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layout.layout import Layout
+
+Property detail
+---------------
+
+.. py:property:: cell
+
+   
+   :class:`Cell <ansys.edb.core.layout.cel.Cell>`: Owning cell for this layout.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives
+   :type: list[any]
+
+
+   
+   :obj:`list` of :class:`.Primitive`: List of all primitives in the layout.
+
+   This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminals
+   :type: list[any]
+
+
+   
+   Get terminals belonging to active layout.
+
+
+
+   :Returns:
+
+       **Terminal dictionary** : :obj:`Dict`\[:class:`python:str`, :class:`Terminal <pyedb.grpc.database.terminal.Terminal>`]
+           Dictionary of terminals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+   :type: list[pyedb.grpc.database.net.net.Net]
+
+
+   
+   Nets.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Net <pyedb.grpc.database.net.net.Net>`]
+           List of Net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bondwires
+   :type: list[pyedb.grpc.database.primitive.bondwire.Bondwire]
+
+
+   
+   Bondwires.
+
+
+
+   :Returns:
+
+       :class:`python:list` [:class:`pyedb.grpc.database.primitive.primitive.Primitive`]:
+           List of bondwires.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: groups
+   :type: list[pyedb.grpc.database.hierarchy.component.Component]
+
+
+   
+   Groups
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Group <pyedb.grpc.database.hierarch.component.Component>`].
+           List of Component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_groups
+   :type: list[pyedb.grpc.database.hierarchy.pingroup.PinGroup]
+
+
+   
+   Pin groups.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`]
+           List of PinGroup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_classes
+   :type: list[pyedb.grpc.database.net.net_class.NetClass]
+
+
+   
+   Net classes.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`]
+           List of NetClass.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extended_nets
+   :type: list[pyedb.grpc.database.net.extended_net.ExtendedNet]
+
+
+   
+   Extended nets.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
+           List of extended nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: differential_pairs
+   :type: list[pyedb.grpc.database.net.differential_pair.DifferentialPair]
+
+
+   
+   Differential pairs.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`DifferentialPair <pyedb.grpc.database.net.differential_pair.DifferentialPair>`
+           List of DifferentialPair.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instances
+   :type: Dict[int, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   Get all padstack instances in a list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voltage_regulators
+   :type: list[pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator]
+
+
+   
+   Voltage regulators.
+
+   List[:class:`VoltageRegulator <pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator>`.
+       List of VoltageRegulator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: find_primitive(layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None) -> list[any]
+
+   
+   Find a primitive objects by layer name.
+   Parameters
+   ----------
+   layer_name : str, list
+   layer_name : str, list, optional
+       Name of the layer.
+   name : str, list, optional
+       Name of the primitive
+   net_name : str, list, optional
+       Name of the primitive
+   Returns
+   -------
+   List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
+       List of Primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_padstack_instances(aedt_name: Union[str, List[str]] = None, component_name: Union[str, List[str]] = None, component_pin_name: Union[str, List[str]] = None, net_name: Union[str, List[str]] = None, instance_id: Union[int, List[int]] = None) -> List
+
+   
+   Finds padstack instances matching the specified criteria.
+
+   This method filters the available padstack instances based on specified attributes such as
+   `aedt_name`, `component_name`, `component_pin_name`, `net_name`, or `instance_id`. Criteria
+   can be passed as individual values or as a list of values. If no padstack instances match
+   the criteria, an error is raised.
+
+   :Parameters:
+
+       **aedt_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the AEDT padstack instance(s) to filter.
+
+       **component_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the component(s) to filter padstack instances by.
+
+       **component_pin_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the component pin(s) to filter padstack instances by.
+
+       **net_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the net(s) to filter padstack instances by.
+
+       **instance_id** : :obj:`Union`\[:class:`python:int`, :obj:`List`\[:class:`python:int`]], :obj:`optional`
+           ID(s) of the padstack instance(s) to filter.
+
+   :Returns:
+
+       :obj:`List`
+           A list of padstack instances matching the specified criteria.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

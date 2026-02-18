@@ -1,0 +1,6 @@
+hole\_finished\_size
+====================
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.hole_finished_size

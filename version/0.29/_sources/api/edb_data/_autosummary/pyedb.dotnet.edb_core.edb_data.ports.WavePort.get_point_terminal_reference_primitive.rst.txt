@@ -1,0 +1,6 @@
+get\_point\_terminal\_reference\_primitive
+==========================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. automethod:: WavePort.get_point_terminal_reference_primitive

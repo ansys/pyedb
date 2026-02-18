@@ -1,0 +1,6 @@
+renormalize
+===========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.renormalize

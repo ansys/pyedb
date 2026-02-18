@@ -1,0 +1,6 @@
+dcr\_settings
+=============
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.dcr_settings

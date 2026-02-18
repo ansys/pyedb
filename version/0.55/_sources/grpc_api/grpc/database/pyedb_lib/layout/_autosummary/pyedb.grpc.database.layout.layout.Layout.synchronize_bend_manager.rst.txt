@@ -1,0 +1,6 @@
+synchronize\_bend\_manager
+==========================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.synchronize_bend_manager

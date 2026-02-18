@@ -1,0 +1,6 @@
+padstack\_instance
+==================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.padstack_instance

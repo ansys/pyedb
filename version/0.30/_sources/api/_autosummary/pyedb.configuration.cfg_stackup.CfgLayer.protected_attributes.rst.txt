@@ -1,0 +1,6 @@
+protected\_attributes
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_stackup
+
+.. autoattribute:: CfgLayer.protected_attributes

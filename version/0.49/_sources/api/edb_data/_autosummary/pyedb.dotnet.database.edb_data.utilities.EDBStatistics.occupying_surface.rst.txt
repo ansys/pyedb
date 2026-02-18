@@ -1,0 +1,6 @@
+occupying\_surface
+==================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.occupying_surface

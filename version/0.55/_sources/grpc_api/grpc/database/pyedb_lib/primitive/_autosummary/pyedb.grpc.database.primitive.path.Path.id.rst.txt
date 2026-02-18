@@ -1,0 +1,6 @@
+id
+==
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.id

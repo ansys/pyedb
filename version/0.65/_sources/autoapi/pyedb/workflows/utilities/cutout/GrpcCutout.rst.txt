@@ -1,0 +1,432 @@
+
+
+
+
+
+
+:class:`GrpcCutout`
+===================
+
+
+.. py:class:: pyedb.workflows.utilities.cutout.GrpcCutout(edb)
+
+   
+   Create a clipped (cut-out) EDB cell from an existing layout.
+   High-performance EDB cut-out utility.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cut = Cutout(edb)
+   >>> cut.signals = ["DDR4_DQ0", "DDR4_DQ1"]
+   >>> cut.references = ["GND"]
+   >>> cut.expansion_size = 0.001
+   >>> polygon = cut.run()
+
+   :Attributes:
+
+       **signals** : :class:`python:list`\[:class:`python:str`]
+           List of signal net names to keep in the cut-out.
+
+       **references** : :class:`python:list`\[:class:`python:str`]
+           List of reference net names to keep in the cut-out.
+
+       **extent_type** : :class:`python:str`
+           Extent algorithm: ``ConvexHull`` (default), ``Conforming``, ``Bounding``.
+
+       **expansion_size** : :class:`python:float`
+           Additional margin (metres) around the computed extent.  Default 0.002.
+
+       **use_round_corner** : :ref:`bool <python:bltin-boolean-values>`
+           Round the corners of the expanded extent.  Default ``False``.
+
+       **custom_extent** : :class:`python:list`\[:class:`python:tuple`\[:class:`python:float`, :class:`python:float`]] | :data:`python:None`
+           Optional closed polygon [(x1,y1), …] overriding any automatic extent.
+
+       **custom_extent_units** : :class:`python:str`
+           Length unit for *custom_extent*.  Default ``mm``.
+
+       **include_voids_in_extents** : :ref:`bool <python:bltin-boolean-values>`
+           Include voids ≥ 5 % of the extent area when building the clip polygon.
+
+       **open_cutout_at_end** : :ref:`bool <python:bltin-boolean-values>`
+           Open the resulting cut-out database in the active Edb object.  Default ``True``.
+
+       **use_pyaedt_cutout** : :ref:`bool <python:bltin-boolean-values>`
+           Use the PyAEDT based implementation instead of native EDB API.  Default ``True``.
+
+       **smart_cutout** : :ref:`bool <python:bltin-boolean-values>`
+           Automatically enlarge *expansion_size* until all ports have reference.  Default ``False``.
+
+       **expansion_factor** : :class:`python:float`
+           If > 0, compute initial *expansion_size* from trace-width/dielectric.  Default 0.
+
+       **maximum_iterations** : :class:`python:int`
+           Maximum attempts for *smart_cutout* before giving up.  Default 10.
+
+       **number_of_threads** : :class:`python:int`
+           Worker threads for polygon clipping and padstack cleaning.  Default 1.
+
+       **remove_single_pin_components** : :ref:`bool <python:bltin-boolean-values>`
+           Delete RLC components with only one pin after cut-out.  Default ``False``.
+
+       **preserve_components_with_model** : :ref:`bool <python:bltin-boolean-values>`
+           Keep every pin of components that carry a Spice/S-parameter model.  Default ``False``.
+
+       **check_terminals** : :ref:`bool <python:bltin-boolean-values>`
+           Grow extent until all reference terminals are inside the cut-out.  Default ``False``.
+
+       **include_pingroups** : :ref:`bool <python:bltin-boolean-values>`
+           Ensure complete pin-groups are included (needs *check_terminals*).  Default ``False``.
+
+       **simple_pad_check** : :ref:`bool <python:bltin-boolean-values>`
+           Use fast centre-point padstack check instead of bounding-box.  Default ``True``.
+
+       **keep_lines_as_path** : :ref:`bool <python:bltin-boolean-values>`
+           Keep clipped traces as Path objects (3D Layout only).  Default ``False``.
+
+       **extent_defeature** : :class:`python:float`
+           Defeature tolerance (metres) for conformal extent.  Default 0.
+
+       **include_partial_instances** : :ref:`bool <python:bltin-boolean-values>`
+           Include padstacks that only partially overlap the clip polygon.  Default ``False``.
+
+       **keep_voids** : :ref:`bool <python:bltin-boolean-values>`
+           Retain voids that intersect the clip polygon.  Default ``True``.
+
+       **The cut-out can be produced with three different extent strategies:**
+           ..
+
+       **\* ``ConvexHull`` (default)**
+           ..
+
+       **\* ``Conforming`` (tight follow of geometry)**
+           ..
+
+       **\* ``Bounding`` (simple bounding box)**
+           ..
+
+       **Multi-threaded execution, automatic terminal expansion and smart**
+           ..
+
+       **expansion-factor logic are supported.**
+           ..
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: GrpcCutout
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~calculate_initial_extent`
+            - Compute a float representing the larger number between the dielectric thickness or trace width
+          * - :py:attr:`~pins_to_preserve`
+            - 
+          * - :py:attr:`~run`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - Edb logger.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~signals`
+            - 
+          * - :py:attr:`~references`
+            - 
+          * - :py:attr:`~extent_type`
+            - 
+          * - :py:attr:`~expansion_size`
+            - 
+          * - :py:attr:`~use_round_corner`
+            - 
+          * - :py:attr:`~output_file`
+            - 
+          * - :py:attr:`~open_cutout_at_end`
+            - 
+          * - :py:attr:`~use_pyaedt_cutout`
+            - 
+          * - :py:attr:`~smart_cutout`
+            - 
+          * - :py:attr:`~number_of_threads`
+            - 
+          * - :py:attr:`~use_pyaedt_extent_computing`
+            - 
+          * - :py:attr:`~extent_defeature`
+            - 
+          * - :py:attr:`~remove_single_pin_components`
+            - 
+          * - :py:attr:`~custom_extent`
+            - 
+          * - :py:attr:`~custom_extent_units`
+            - 
+          * - :py:attr:`~include_partial_instances`
+            - 
+          * - :py:attr:`~keep_voids`
+            - 
+          * - :py:attr:`~check_terminals`
+            - 
+          * - :py:attr:`~include_pingroups`
+            - 
+          * - :py:attr:`~expansion_factor`
+            - 
+          * - :py:attr:`~maximum_iterations`
+            - 
+          * - :py:attr:`~preserve_components_with_model`
+            - 
+          * - :py:attr:`~simple_pad_check`
+            - 
+          * - :py:attr:`~keep_lines_as_path`
+            - 
+          * - :py:attr:`~include_voids_in_extents`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.cutout import GrpcCutout
+
+Property detail
+---------------
+
+.. py:property:: logger
+
+   
+   Edb logger.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: signals
+   :type:  List[str]
+   :value: []
+
+
+.. py:attribute:: references
+   :type:  List[str]
+   :value: []
+
+
+.. py:attribute:: extent_type
+   :type:  str
+   :value: 'ConvexHull'
+
+
+.. py:attribute:: expansion_size
+   :type:  Union[str, float]
+   :value: 0.002
+
+
+.. py:attribute:: use_round_corner
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: output_file
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: open_cutout_at_end
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: use_pyaedt_cutout
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: smart_cutout
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: number_of_threads
+   :type:  int
+   :value: 2
+
+
+.. py:attribute:: use_pyaedt_extent_computing
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: extent_defeature
+   :type:  Union[int, float]
+   :value: 0
+
+
+.. py:attribute:: remove_single_pin_components
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: custom_extent
+   :type:  List[float, float]
+   :value: None
+
+
+.. py:attribute:: custom_extent_units
+   :type:  str
+   :value: 'mm'
+
+
+.. py:attribute:: include_partial_instances
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: keep_voids
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: check_terminals
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: include_pingroups
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: expansion_factor
+   :type:  Union[int, float]
+   :value: 0
+
+
+.. py:attribute:: maximum_iterations
+   :type:  int
+   :value: 10
+
+
+.. py:attribute:: preserve_components_with_model
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: simple_pad_check
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: keep_lines_as_path
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: include_voids_in_extents
+   :type:  bool
+   :value: False
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: calculate_initial_extent(expansion_factor)
+
+   
+   Compute a float representing the larger number between the dielectric thickness or trace width
+   multiplied by the nW factor. The trace width search is limited to nets with ports attached.
+
+
+   :Parameters:
+
+       **expansion_factor** : :class:`python:float`
+           Value for the width multiplier (nW factor).
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: pins_to_preserve()
+
+.. py:method:: run()
+
+
+
+

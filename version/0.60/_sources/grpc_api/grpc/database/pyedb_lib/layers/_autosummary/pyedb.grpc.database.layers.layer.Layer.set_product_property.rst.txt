@@ -1,0 +1,6 @@
+set\_product\_property
+======================
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. automethod:: Layer.set_product_property

@@ -1,0 +1,6 @@
+get\_product\_property\_ids
+===========================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. automethod:: VoltageRegulator.get_product_property_ids

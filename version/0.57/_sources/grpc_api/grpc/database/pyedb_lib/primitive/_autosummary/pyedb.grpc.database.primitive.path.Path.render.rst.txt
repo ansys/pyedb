@@ -1,0 +1,6 @@
+render
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.render

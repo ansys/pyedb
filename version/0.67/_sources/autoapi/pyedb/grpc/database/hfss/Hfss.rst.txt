@@ -1,0 +1,1464 @@
+
+
+
+
+
+
+:class:`Hfss`
+=============
+
+
+.. py:class:: pyedb.grpc.database.hfss.Hfss(p_edb)
+
+   
+   Manages EDB methods for HFSS setup configuration.
+
+   Provides access to HFSS-specific operations including:
+   - Excitation and port creation
+   - Source and probe management
+   - Simulation setup configuration
+   - Boundary condition creation
+   - Layout manipulation for simulation
+
+   Accessed via `Edb.hfss` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Hfss
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_trace_width_for_traces_with_ports`
+            - Retrieve trace widths for traces with ports.
+          * - :py:attr:`~create_circuit_port_on_pin`
+            - Create circuit port between two pins (deprecated).
+          * - :py:attr:`~create_voltage_source_on_pin`
+            - Create voltage source between two pins (deprecated).
+          * - :py:attr:`~create_current_source_on_pin`
+            - Create current source between two pins (deprecated).
+          * - :py:attr:`~create_resistor_on_pin`
+            - Create resistor between two pins (deprecated).
+          * - :py:attr:`~create_circuit_port_on_net`
+            - Create circuit port on net (deprecated).
+          * - :py:attr:`~create_voltage_source_on_net`
+            - Create voltage source on net (deprecated).
+          * - :py:attr:`~create_current_source_on_net`
+            - Create current source on net (deprecated).
+          * - :py:attr:`~create_coax_port_on_component`
+            - Create coaxial port on component (deprecated).
+          * - :py:attr:`~create_differential_wave_port`
+            - Create differential wave port (deprecated).
+          * - :py:attr:`~create_bundle_wave_port`
+            - Create bundle wave port (deprecated).
+          * - :py:attr:`~create_hfss_ports_on_padstack`
+            - Create HFSS port on padstack (deprecated).
+          * - :py:attr:`~create_edge_port_on_polygon`
+            - Create edge port on polygon (deprecated).
+          * - :py:attr:`~create_wave_port`
+            - Create wave port (deprecated).
+          * - :py:attr:`~create_edge_port_vertical`
+            - Create vertical edge port (deprecated).
+          * - :py:attr:`~create_edge_port_horizontal`
+            - Create horizontal edge port (deprecated).
+          * - :py:attr:`~create_lumped_port_on_net`
+            - Create lumped port on net (deprecated).
+          * - :py:attr:`~create_vertical_circuit_port_on_clipped_traces`
+            - Create vertical circuit port on clipped traces (deprecated).
+          * - :py:attr:`~get_layout_bounding_box`
+            - Calculate layout bounding box.
+          * - :py:attr:`~configure_hfss_extents`
+            - Configure HFSS extent box (deprecated).
+          * - :py:attr:`~configure_hfss_analysis_setup`
+            - Configure HFSS analysis setup (deprecated).
+          * - :py:attr:`~trim_component_reference_size`
+            - Trim component reference size (deprecated).
+          * - :py:attr:`~set_coax_port_attributes`
+            - Set coaxial port attributes (deprecated).
+          * - :py:attr:`~get_ports_number`
+            - Get number of excitation ports.
+          * - :py:attr:`~layout_defeaturing`
+            - Defeature layout polygons (deprecated).
+          * - :py:attr:`~create_rlc_boundary_on_pins`
+            - Create RLC boundary on pins (deprecated).
+          * - :py:attr:`~add_setup`
+            - Add HFSS analysis setup.
+          * - :py:attr:`~generate_auto_hfss_regions`
+            - Generate auto HFSS regions.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~hfss_extent_info`
+            - HFSS extent information.
+          * - :py:attr:`~excitations`
+            - All excitation definitions in the layout.
+          * - :py:attr:`~sources`
+            - All source definitions in the layout.
+          * - :py:attr:`~probes`
+            - All probe definitions in the layout.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hfss import Hfss
+
+Property detail
+---------------
+
+.. py:property:: hfss_extent_info
+   :type: pyedb.grpc.database.utility.hfss_extent_info.HfssExtentInfo
+
+
+   
+   HFSS extent information.
+
+
+
+
+
+   :Returns:
+
+       :obj:`HfssExtentInfo`
+           Object containing HFSS extent configuration data.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: excitations
+
+   
+   All excitation definitions in the layout.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of excitation objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sources
+
+   
+   All source definitions in the layout.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of source objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: probes
+
+   
+   All probe definitions in the layout.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of probe objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_trace_width_for_traces_with_ports()
+
+   
+   Retrieve trace widths for traces with ports.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary mapping net names to smallest trace widths.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_aedb")
+   >>> widths = edb.hfss.get_trace_width_for_traces_with_ports()
+   >>> for net_name, width in widths.items():
+   ...     print(f"Net '{net_name}': Smallest width = {width}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circuit_port_on_pin(pos_pin, neg_pin, impedance=50, port_name=None)
+
+   
+   Create circuit port between two pins (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Positive pin.
+
+       **neg_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Negative pin.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Port impedance.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_pin(pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name='')
+
+   
+   Create voltage source between two pins (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Positive pin.
+
+       **neg_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Negative pin.
+
+       **voltage_value** : :class:`python:float`, :obj:`optional`
+           Voltage value.
+
+       **phase_value** : :class:`python:float`, :obj:`optional`
+           Phase value.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Source name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_pin(pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name='')
+
+   
+   Create current source between two pins (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Positive pin.
+
+       **neg_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Negative pin.
+
+       **current_value** : :class:`python:float`, :obj:`optional`
+           Current value.
+
+       **phase_value** : :class:`python:float`, :obj:`optional`
+           Phase value.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Source name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_resistor_on_pin(pos_pin, neg_pin, rvalue=1, resistor_name='')
+
+   
+   Create resistor between two pins (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Positive pin.
+
+       **neg_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`
+           Negative pin.
+
+       **rvalue** : :class:`python:float`, :obj:`optional`
+           Resistance value.
+
+       **resistor_name** : :class:`python:str`, :obj:`optional`
+           Resistor name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Resistor name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circuit_port_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name='GND', impedance_value=50, port_name='')
+
+   
+   Create circuit port on net (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Positive component name.
+
+       **positive_net_name** : :class:`python:str`
+           Positive net name.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Negative component name.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Negative net name.
+
+       **impedance_value** : :class:`python:float`, :obj:`optional`
+           Port impedance.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name='GND', voltage_value=3.3, phase_value=0, source_name='')
+
+   
+   Create voltage source on net (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Positive component name.
+
+       **positive_net_name** : :class:`python:str`
+           Positive net name.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Negative component name.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Negative net name.
+
+       **voltage_value** : :class:`python:float`, :obj:`optional`
+           Voltage value.
+
+       **phase_value** : :class:`python:float`, :obj:`optional`
+           Phase value.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Source name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name='GND', current_value=0.1, phase_value=0, source_name='')
+
+   
+   Create current source on net (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_current_source_on_net` instead.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Positive component name.
+
+       **positive_net_name** : :class:`python:str`
+           Positive net name.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Negative component name.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Negative net name.
+
+       **current_value** : :class:`python:float`, :obj:`optional`
+           Current value.
+
+       **phase_value** : :class:`python:float`, :obj:`optional`
+           Phase value.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Source name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_coax_port_on_component(ref_des_list, net_list, delete_existing_terminal=False)
+
+   
+   Create coaxial port on component (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_coax_port_on_component` instead.
+
+   :Parameters:
+
+       **ref_des_list** : :class:`python:list`, :class:`python:str`
+           Reference designator(s).
+
+       **net_list** : :class:`python:list`, :class:`python:str`
+           Net name(s).
+
+       **delete_existing_terminal** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Delete existing terminals.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_differential_wave_port(positive_primitive_id, positive_points_on_edge, negative_primitive_id, negative_points_on_edge, port_name=None, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create differential wave port (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_differential_wave_port` instead.
+
+   :Parameters:
+
+       **positive_primitive_id** : :class:`python:int`, :obj:`EDBPrimitives`
+           Positive primitive ID.
+
+       **positive_points_on_edge** : :class:`python:list`
+           Point coordinates on positive edge.
+
+       **negative_primitive_id** : :class:`python:int`, :obj:`EDBPrimitives`
+           Negative primitive ID.
+
+       **negative_points_on_edge** : :class:`python:list`
+           Point coordinates on negative edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           PEC launch width.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           (Port name, ExcitationDifferential) tuple.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_bundle_wave_port(primitives_id, points_on_edge, port_name=None, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create bundle wave port (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_bundle_wave_port` instead.
+
+   :Parameters:
+
+       **primitives_id** : :class:`python:list`
+           Primitive IDs.
+
+       **points_on_edge** : :class:`python:list`
+           Point coordinates on edges.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           PEC launch width.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           (Port name, ExcitationDifferential) tuple.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_hfss_ports_on_padstack(pinpos, portname=None)
+
+   
+   Create HFSS port on padstack (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_hfss_ports_on_padstack` instead.
+
+   :Parameters:
+
+       **pinpos**
+           Pin position.
+
+       **portname** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port_on_polygon(polygon=None, reference_polygon=None, terminal_point=None, reference_point=None, reference_layer=None, port_name=None, port_impedance=50.0, force_circuit_port=False)
+
+   
+   Create edge port on polygon (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_edge_port_on_polygon` instead.
+
+   :Parameters:
+
+       **polygon** : :obj:`Edb.Cell.Primitive.Polygon`, :obj:`optional`
+           Port polygon.
+
+       **reference_polygon** : :obj:`Edb.Cell.Primitive.Polygon`, :obj:`optional`
+           Reference polygon.
+
+       **terminal_point** : :class:`python:list`, :obj:`optional`
+           Terminal point coordinates.
+
+       **reference_point** : :class:`python:list`, :obj:`optional`
+           Reference point coordinates.
+
+       **reference_layer** : :class:`python:str`, :obj:`optional`
+           Reference layer name.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+       **port_impedance** : :class:`python:float`, :obj:`optional`
+           Port impedance.
+
+       **force_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Force circuit port creation.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_wave_port(prim_id, point_on_edge, port_name=None, impedance=50, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create wave port (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_wave_port` instead.
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`, :obj:`Primitive`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Point coordinates on edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Port impedance.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           PEC launch width.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           (Port name, Excitation) tuple.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port_vertical(prim_id, point_on_edge, port_name=None, impedance=50, reference_layer=None, hfss_type='Gap', horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create vertical edge port (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_edge_port_vertical` instead.
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Point coordinates on edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Port impedance.
+
+       **reference_layer** : :class:`python:str`, :obj:`optional`
+           Reference layer name.
+
+       **hfss_type** : :class:`python:str`, :obj:`optional`
+           Port type ("Gap" or "Wave").
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           PEC launch width.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port_horizontal(prim_id, point_on_edge, ref_prim_id=None, point_on_ref_edge=None, port_name=None, impedance=50, layer_alignment='Upper')
+
+   
+   Create horizontal edge port (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_edge_port_horizontal` instead.
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Point coordinates on edge.
+
+       **ref_prim_id** : :class:`python:int`, :obj:`optional`
+           Reference primitive ID.
+
+       **point_on_ref_edge** : :class:`python:list`, :obj:`optional`
+           Point coordinates on reference edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Port impedance.
+
+       **layer_alignment** : :class:`python:str`, :obj:`optional`
+           Layer alignment ("Upper" or "Lower").
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_lumped_port_on_net(nets, reference_layer, return_points_only, digit_resolution, at_bounding_box)
+
+   
+   Create lumped port on net (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_lumped_port_on_net` instead.
+
+   :Parameters:
+
+       **nets** : :class:`python:list`
+           Net names or objects.
+
+       **reference_layer** : :class:`python:str`, :obj:`Edb.Layer`
+           Reference layer name or object.
+
+       **return_points_only** : :ref:`bool <python:bltin-boolean-values>`
+           Return points only without creating ports.
+
+       **digit_resolution** : :class:`python:int`
+           Coordinate digit resolution.
+
+       **at_bounding_box** : :ref:`bool <python:bltin-boolean-values>`
+           Use layout bounding box.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_vertical_circuit_port_on_clipped_traces(nets=None, reference_net=None, user_defined_extent=None)
+
+   
+   Create vertical circuit port on clipped traces (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_vertical_circuit_port_on_clipped_traces` instead.
+
+   :Parameters:
+
+       **nets** : :class:`python:list`, :obj:`optional`
+           Net names or objects.
+
+       **reference_net** : :class:`python:str`, :obj:`Edb.Net`, :obj:`optional`
+           Reference net name or object.
+
+       **user_defined_extent** : :class:`python:list`, :obj:`PolygonData`, :obj:`optional`
+           User-defined extent polygon.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of port data [net_name, x, y, terminal_name].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_layout_bounding_box(layout=None, digit_resolution=6)
+
+   
+   Calculate layout bounding box.
+
+
+   :Parameters:
+
+       **layout** : :obj:`Edb.Cell.Layout`, :obj:`optional`
+           Layout object (uses active layout if None).
+
+       **digit_resolution** : :class:`python:int`, :obj:`optional`
+           Coordinate rounding precision.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           [min_x, min_y, max_x, max_y] coordinates.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_aedb")
+   >>> bbox = edb.hfss.get_layout_bounding_box()
+   >>> print(f"Layout Bounding Box: {bbox}")
+   >>> custom_layout = edb.active_layout
+   >>> bbox = edb.hfss.get_layout_bounding_box(custom_layout, 5)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: configure_hfss_extents(simulation_setup=None)
+
+   
+   Configure HFSS extent box (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:
+       `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_extents`
+       instead.
+
+   :Parameters:
+
+       **simulation_setup** : :obj:`HfssSimulationSetup`, :obj:`optional`
+           Simulation setup object.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: configure_hfss_analysis_setup(simulation_setup=None)
+
+   
+   Configure HFSS analysis setup (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:
+       `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.configure_hfss_analysis_setup`
+       instead.
+
+   :Parameters:
+
+       **simulation_setup** : :obj:`HfssSimulationSetup`, :obj:`optional`
+           Simulation setup object.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: trim_component_reference_size(simulation_setup=None, trim_to_terminals=False)
+
+   
+   Trim component reference size (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:
+       `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.trim_component_reference_size`
+       instead.
+
+   :Parameters:
+
+       **simulation_setup** : :obj:`HfssSimulationSetup`, :obj:`optional`
+           Simulation setup object.
+
+       **trim_to_terminals** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Trim to active terminals only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_coax_port_attributes(simulation_setup=None)
+
+   
+   Set coaxial port attributes (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:
+       `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.set_coax_port_attributes`
+       instead.
+
+   :Parameters:
+
+       **simulation_setup** : :obj:`HfssSimulationSetup`, :obj:`optional`
+           Simulation setup object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_ports_number()
+
+   
+   Get number of excitation ports.
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitation.get_ports_number` instead.
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of ports.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: layout_defeaturing(simulation_setup=None)
+
+   
+   Defeature layout polygons (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:
+       `pyedb.grpc.core.utility.simulation_configuration.ProcessSimulationConfiguration.layout_defeaturing`
+       instead.
+
+   :Parameters:
+
+       **simulation_setup** : :obj:`HfssSimulationSetup`, :obj:`optional`
+           Simulation setup object.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rlc_boundary_on_pins(positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0)
+
+   
+   Create RLC boundary on pins (deprecated).
+
+   .. deprecated:: 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_rlc_boundary_on_pins` instead.
+
+   :Parameters:
+
+       **positive_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`, :obj:`optional`
+           Positive pin.
+
+       **negative_pin** : :obj:`Edb.Cell.Primitive.PadstackInstance`, :obj:`optional`
+           Negative pin.
+
+       **rvalue** : :class:`python:float`, :obj:`optional`
+           Resistance value.
+
+       **lvalue** : :class:`python:float`, :obj:`optional`
+           Inductance value.
+
+       **cvalue** : :class:`python:float`, :obj:`optional`
+           Capacitance value.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_setup(name=None, distribution='linear', start_freq=0, stop_freq=20000000000.0, step_freq=1000000.0, discrete_sweep=False) -> Optional[pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup]
+
+   
+   Add HFSS analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
+
+       **start_freq** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Starting frequency (Hz).
+
+       **stop_freq** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Stopping frequency (Hz).
+
+       **step_freq** : :class:`python:float`, :class:`python:str`, :class:`python:int`, :obj:`optional`
+           Frequency step (Hz) or count depending on distribution.
+
+       **discrete_sweep** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Use discrete sweep.
+
+
+
+   :Returns:
+
+       :obj:`HfssSimulationSetup`
+           Created setup object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_aedb")
+   >>> hfss_setup = edb.hfss.add_setup(
+   ...     name="MySetup",
+   ...     distribution="linear_count",
+   ...     start_freq=1e9,
+   ...     stop_freq=10e9,
+   ...     step_freq=100,
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_auto_hfss_regions()
+
+   
+   Generate auto HFSS regions.
+
+   This method automatically identifies areas for use as HFSS regions in SIwave simulations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

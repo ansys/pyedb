@@ -1,0 +1,6 @@
+s\_param\_model
+===============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.s_param_model

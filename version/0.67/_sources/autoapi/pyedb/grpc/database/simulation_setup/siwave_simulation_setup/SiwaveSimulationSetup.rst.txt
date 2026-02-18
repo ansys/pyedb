@@ -1,0 +1,251 @@
+
+
+
+
+
+
+:class:`SiwaveSimulationSetup`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup(pedb, core=None)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.siwave_simulation_setup.SIWaveSimulationSetup`
+
+
+   
+   SIwave simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_sweep`
+            - Add a HFSS frequency sweep.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced_settings`
+            - Setup advanced settings.
+          * - :py:attr:`~dc_settings`
+            - Setup dc settings.
+          * - :py:attr:`~dc_advanced_settings`
+            - Setup dc settings.
+          * - :py:attr:`~type`
+            - Simulation setup type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: advanced_settings
+
+   
+   Setup advanced settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_settings
+
+   
+   Setup dc settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_advanced_settings
+
+   
+   Setup dc settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Simulation setup type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Simulation type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_sweep(name=None, distribution='linear', start_freq='0GHz', stop_freq='20GHz', step='10MHz', discrete=False, frequency_set=None) -> bool
+
+   
+   Add a HFSS frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Sweep name.
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Type of the sweep. The default is `"linear"`. Options are:
+           - `"linear"`
+           - `"linear_count"`
+           - `"decade_count"`
+           - `"octave_count"`
+           - `"exponential"`
+
+       **start_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Starting frequency. The default is ``1``.
+
+       **stop_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stopping frequency. The default is ``1e9``.
+
+       **step** : :class:`python:str`, :class:`python:float`, :class:`python:int`, :obj:`optional`
+           Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+           distribution. Must be integer in that case.
+
+       **discrete** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the sweep is discrete. The default is ``False``.
+
+       **frequency_set** : :obj:`List`, :obj:`optional`
+           Frequency set is a list adding one or more frequency sweeps. If ``frequency_set`` is provided, the other
+           arguments are ignored except ``discrete``. Default value is ``None``.
+           example of frequency_set : [['linear_scale', '50MHz', '200MHz', '10MHz']].
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

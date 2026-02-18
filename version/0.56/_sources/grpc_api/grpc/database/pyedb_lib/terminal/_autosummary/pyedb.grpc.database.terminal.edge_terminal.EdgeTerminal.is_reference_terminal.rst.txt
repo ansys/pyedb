@@ -1,0 +1,6 @@
+is\_reference\_terminal
+=======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.is_reference_terminal

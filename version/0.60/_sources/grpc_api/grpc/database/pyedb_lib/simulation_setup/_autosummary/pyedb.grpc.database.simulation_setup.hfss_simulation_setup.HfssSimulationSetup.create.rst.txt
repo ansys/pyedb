@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.create

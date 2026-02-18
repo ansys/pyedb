@@ -1,0 +1,237 @@
+
+
+
+
+
+
+:class:`CPW`
+============
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.CPW(edb_cell: Optional[pyedb.Edb] = None, length: Union[str, float] = 0.001, width: Union[str, float] = 0.0003, gap: Union[str, float] = 0.0001, layer: str = 'TOP', ground_net: str = 'GND', ground_width: float = 0.0001, ground_layer: str = 'GND', net: str = 'SIG', substrate: pyedb.libraries.common.Substrate = Substrate(0.0001, 4.4, 0.02, 'SUB', (0.001, 0.001)))
+
+   
+   Coplanar waveguide with side ground planes.
+
+
+   :Parameters:
+
+       **length** : :class:`python:float`, :obj:`default` 1 :obj:`mm`
+           Physical length of the line.
+
+       **width** : :class:`python:float`, :obj:`default` 0.3 :obj:`mm`
+           Width of the centre conductor.
+
+       **gap** : :class:`python:float`, :obj:`default` 0.1 :obj:`mm`
+           Gap between centre conductor and ground planes.
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP"
+           Layer on which the CPW is drawn.
+
+       **ground_net** : :class:`python:str`, :obj:`default` "GND"
+           Net name for the ground planes.
+
+       **ground_width** : :class:`python:float`, :obj:`default` 0.1 :obj:`mm`
+           Width of the side ground strips.
+
+       **ground_layer** : :class:`python:str`, :obj:`default` "GND"
+           Layer for the underlying ground plane.
+
+       **net** : :class:`python:str`, :obj:`default` "SIG"
+           Net name for the centre conductor.
+
+       **substrate** : :obj:`Substrate`, :obj:`default` 100 µm :obj:`FR4`
+           Substrate definition.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> cpw = CPW(length=5e-3, width=0.4e-3, gap=0.2e-3)
+   >>> edb = Edb("cpw.aedb")
+   >>> cpw._pedb = edb
+   >>> cpw.create()
+   >>> f"{cpw.analytical_z0:.1f} Ω"
+   '46.5 Ω'
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CPW
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Draw the centre strip, side grounds and bottom ground plane.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~analytical_z0`
+            - Characteristic impedance obtained with the conformal-mapping
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~length`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~gap`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~ground_net`
+            - 
+          * - :py:attr:`~ground_width`
+            - 
+          * - :py:attr:`~ground_layer`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import CPW
+
+Property detail
+---------------
+
+.. py:property:: analytical_z0
+   :type: float
+
+
+   
+   Characteristic impedance obtained with the conformal-mapping
+   formula for CPW.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Z0 in Ohm.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: length
+
+.. py:attribute:: width
+
+.. py:attribute:: gap
+
+.. py:attribute:: layer
+   :value: 'TOP'
+
+
+.. py:attribute:: ground_net
+   :value: 'GND'
+
+
+.. py:attribute:: ground_width
+   :value: 0.0001
+
+
+.. py:attribute:: ground_layer
+   :value: 'GND'
+
+
+.. py:attribute:: net
+   :value: 'SIG'
+
+
+.. py:attribute:: substrate
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Draw the centre strip, side grounds and bottom ground plane.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True on success.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

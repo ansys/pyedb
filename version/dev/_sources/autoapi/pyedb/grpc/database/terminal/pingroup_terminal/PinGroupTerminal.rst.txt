@@ -1,0 +1,222 @@
+
+
+
+
+
+
+:class:`PinGroupTerminal`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal(pedb, core)
+
+   Bases: :py:obj:`pyedb.grpc.database.terminal.terminal.Terminal`
+
+
+   
+   Manages pin group terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PinGroupTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a pin group terminal.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~net`
+            - Terminal net.
+          * - :py:attr:`~pin_group`
+            - Pingroup.
+          * - :py:attr:`~is_reference_terminal`
+            - Check if the terminal is a reference terminal.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
+
+Property detail
+---------------
+
+.. py:property:: net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Terminal net.
+
+
+
+
+
+   :Returns:
+
+       :class:`Net <pyedb.grpc.database.net.net.Net>`
+           Terminal Net object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_group
+   :type: pyedb.grpc.database.hierarchy.pingroup.PinGroup
+
+
+   
+   Pingroup.
+
+
+
+
+
+   :Returns:
+
+       :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+           Terminal pingroup.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_reference_terminal
+   :type: bool
+
+
+   
+   Check if the terminal is a reference terminal.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the terminal is a reference terminal, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, name, pin_group, net=None, is_ref=False) -> PinGroupTerminal
+   :classmethod:
+
+
+   
+   Create a pin group terminal.
+   Parameters
+   ----------
+   layout : :class:`.Layout`
+       Layout to create the pin group terminal in.
+   name : :obj:`str`
+       Name of the pin group terminal.
+   pin_group : :class:`.PinGroup`
+       Pin group.
+   net : :class:`.Net` or :obj:`str`, optional
+       Net.
+   is_ref : :obj:`bool`, default: False
+       Whether the pin group terminal is a reference terminal.
+   Returns
+   -------
+   PinGroupTerminal
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

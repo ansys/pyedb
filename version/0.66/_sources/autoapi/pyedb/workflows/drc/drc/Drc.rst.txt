@@ -1,0 +1,181 @@
+
+
+
+
+
+
+:class:`Drc`
+============
+
+
+.. py:class:: pyedb.workflows.drc.drc.Drc(edb: pyedb.Edb)
+
+   
+   Lightweight, high-accuracy DRC engine that runs **inside** an open PyEDB session.
+
+   The engine is **thread-safe** and uses an R-tree spatial index for
+   scalable geometry queries.  All rule checks are parallelised with
+   `concurrent.futures.ThreadPoolExecutor`.
+
+   :Parameters:
+
+       **edb** : :obj:`pyedb.Edb`
+           Active EDB session (must already be open).
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb = pyedb.Edb("my_board.aedb")
+   >>> rules = Rules.load("rules.json")
+   >>> drc = Drc(edb)
+   >>> violations = drc.check(rules)
+   >>> drc.to_ipc356a("review.ipc")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Drc
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~check`
+            - Run **all** rules and return a list of violations.
+          * - :py:attr:`~to_ipc356a`
+            - Write a complete IPC-D-356A netlist plus DRC comments for fab review.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~edb`
+            - 
+          * - :py:attr:`~violations`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import Drc
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: edb
+
+.. py:attribute:: violations
+   :type:  List[Dict[str, Any]]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: check(rules: Rules) -> List[Dict[str, Any]]
+
+   
+   Run **all** rules and return a list of violations.
+
+   Rules are dispatched to the appropriate internal handler
+   (`_rule_*`) automatically.  The method is thread-safe and
+   re-entrant; successive calls **overwrite** previous results.
+
+   :Parameters:
+
+       **rules** : :obj:`Rules`
+           Validated rule container.
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:dict`]
+           Each dictionary describes a single violation and contains at
+           minimum the keys:
+           
+           * ``rule`` – rule type (``minLineWidth``, ``minClearance``, …)
+           * ``limit_um`` – limit value in micrometres
+           * Additional keys are rule-specific (``layer``, ``net1``, ``primitive``, …)
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_ipc356a(file_path: str) -> None
+
+   
+   Write a complete IPC-D-356A netlist plus DRC comments for fab review.
+
+   The file can be imported by any CAM tool that supports IPC-D-356A
+   (Valor, Genesis, etc.).  Violations are appended as comment lines
+   starting with ``C``.
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` | :obj:`os.PathLike`
+           Output path.  Overwrites existing files without warning.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

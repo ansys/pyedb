@@ -1,0 +1,6 @@
+points\_raw
+===========
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.points_raw

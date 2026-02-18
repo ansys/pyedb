@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. autoattribute:: PadstackInstanceTerminal.layout_obj_type

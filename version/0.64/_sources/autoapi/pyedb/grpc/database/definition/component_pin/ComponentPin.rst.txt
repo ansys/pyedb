@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`ComponentPin`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.definition.component_pin.ComponentPin(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.definition.component_pin.ComponentPin`
+
+
+   
+   Class managing :class:`ComponentPin <ansys.edb.core.definition.component_pin.ComponentPin>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.component_pin import ComponentPin
+
+
+
+
+

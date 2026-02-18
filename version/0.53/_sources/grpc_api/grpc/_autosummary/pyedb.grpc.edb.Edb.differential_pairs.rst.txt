@@ -1,0 +1,6 @@
+differential\_pairs
+===================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.differential_pairs

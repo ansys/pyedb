@@ -1,0 +1,1504 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>VariableManager &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=a5c2ae8b"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/Variables/VariableManager';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.66';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.66.1" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/Variables/VariableManager.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.66/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.66/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> Variables</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="CSVDataset.html"> <span class="nf nf-cod-symbol_class"></span> CSVDataset</a></li>
+<li class="toctree-l3 current active"><a class="current reference internal" href="#"> <span class="nf nf-cod-symbol_class"></span> VariableManager</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Variable.html"> <span class="nf nf-cod-symbol_class"></span> Variable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="DataSet.html"> <span class="nf nf-cod-symbol_class"></span> DataSet</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableManager</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="variablemanager">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">VariableManager</span></code><a class="headerlink" href="#variablemanager" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.Variables.VariableManager">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.Variables.</span></span><span class="sig-name descname"><span class="pre">VariableManager</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">app</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.Variables.VariableManager" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages design properties and project variables.</p>
+<p>Design properties are the local variables in a design. Project
+variables are defined at the project level and start with <code class="docutils literal notranslate"><span class="pre">$</span></code>.</p>
+<p>This class provides access to all variables or a subset of the
+variables. Manipulation of the numerical or string definitions of
+variable values is provided in the
+<a class="reference internal" href="Variable.html#pyedb.dotnet.database.Variables.Variable" title="pyedb.dotnet.database.Variables.Variable"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.Variables.Variable</span></code></a> class.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Dictionary of all design properties and project variables in
+the active design.</p>
+</dd>
+<dt><strong>design_variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Dictionary of all design properties in the active design.</p>
+</dd>
+<dt><strong>project_variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Dictionary of all project variables available to the active
+design (key by variable name).</p>
+</dd>
+<dt><strong>dependent_variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Dictionary of all dependent variables available to the active
+design (key by variable name).</p>
+</dd>
+<dt><strong>independent_variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd><p>Dictionary of all independent variables (constant numeric
+values) available to the active design (key by variable name).</p>
+</dd>
+<dt><strong>independent_design_variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd></dd>
+<dt><strong>independent_project_variables</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></span></dt><dd></dd>
+<dt><strong>variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>One or more variable names.</p>
+</dd>
+<dt><strong>project_variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>One or more project variable names.</p>
+</dd>
+<dt><strong>design_variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>One or more design variable names.</p>
+</dd>
+<dt><strong>dependent_variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>All dependent variable names within the project.</p>
+</dd>
+<dt><strong>independent_variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>All independent variable names within the project. These can
+be sweep variables for optimetrics.</p>
+</dd>
+<dt><strong>independent_project_variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>All independent project variable names within the
+project. These can be sweep variables for optimetrics.</p>
+</dd>
+<dt><strong>independent_design_variable_names</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>All independent design properties (local variables) within the
+project. These can be sweep variables for optimetrics.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<div class="admonition seealso">
+<p class="admonition-title">See also</p>
+<dl class="simple">
+<dt><a class="reference internal" href="Variable.html#pyedb.dotnet.database.Variables.Variable" title="pyedb.dotnet.database.Variables.Variable"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.dotnet.database.Variables.Variable</span></code></a></dt><dd></dd>
+</dl>
+</div>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.aedt.core.maxwell</span><span class="w"> </span><span class="kn">import</span> <span class="n">Maxwell3d</span>
+<span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">ansys.aedt.core.desktop</span><span class="w"> </span><span class="kn">import</span> <span class="n">Desktop</span>
+<span class="gp">>>> </span><span class="n">d</span> <span class="o">=</span> <span class="n">Desktop</span><span class="p">()</span>
+<span class="gp">>>> </span><span class="n">aedtapp</span> <span class="o">=</span> <span class="n">Maxwell3d</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Define some test variables.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">aedtapp</span><span class="p">[</span><span class="s2">&quot;Var1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="gp">>>> </span><span class="n">aedtapp</span><span class="p">[</span><span class="s2">&quot;Var2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;12deg&quot;</span>
+<span class="gp">>>> </span><span class="n">aedtapp</span><span class="p">[</span><span class="s2">&quot;Var3&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;Var1 * Var2&quot;</span>
+<span class="gp">>>> </span><span class="n">aedtapp</span><span class="p">[</span><span class="s2">&quot;$PrjVar1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;pi&quot;</span>
+</pre></div>
+</div>
+<p>Get the variable manager for the active design.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">aedtapp</span><span class="o">.</span><span class="n">variable_manager</span>
+</pre></div>
+</div>
+<p>Get a dictionary of all project and design variables.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span><span class="o">.</span><span class="n">variables</span>
+<span class="go">{&#39;Var1&#39;: <pyedb.dotnet.database.Variables.Variable at 0x2661f34c448>,</span>
+<span class="go"> &#39;Var2&#39;: <pyedb.dotnet.database.Variables.Variable at 0x2661f34c308>,</span>
+<span class="go"> &#39;Var3&#39;: <pyedb.dotnet.database.Variables.Expression at 0x2661f34cb48>,</span>
+<span class="go"> &#39;$PrjVar1&#39;: <pyedb.dotnet.database.Variables.Expression at 0x2661f34cc48>}</span>
+</pre></div>
+</div>
+<p>Get a dictionary of only the design variables.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span><span class="o">.</span><span class="n">design_variables</span>
+<span class="go">{&#39;Var1&#39;: <pyedb.dotnet.database.Variables.Variable at 0x2661f339508>,</span>
+<span class="go"> &#39;Var2&#39;: <pyedb.dotnet.database.Variables.Variable at 0x2661f3415c8>,</span>
+<span class="go"> &#39;Var3&#39;: <pyedb.dotnet.database.Variables.Expression at 0x2661f341808>}</span>
+</pre></div>
+</div>
+<p>Get a dictionary of only the independent design variables.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span><span class="o">.</span><span class="n">independent_design_variables</span>
+<span class="go">{&#39;Var1&#39;: <pyedb.dotnet.database.Variables.Variable at 0x2661f335d08>,</span>
+<span class="go"> &#39;Var2&#39;: <pyedb.dotnet.database.Variables.Variable at 0x2661f3557c8>}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.decompose" title="VariableManager.decompose"><code class="xref py py-attr docutils literal notranslate"><span class="pre">decompose</span></code></a></p></td>
+<td><p>Decompose a variable string to a floating with its unit.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.get_expression" title="VariableManager.get_expression"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_expression</span></code></a></p></td>
+<td><p>Retrieve the variable value of a project or design variable as a string.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.aedt_object" title="VariableManager.aedt_object"><code class="xref py py-attr docutils literal notranslate"><span class="pre">aedt_object</span></code></a></p></td>
+<td><p>Retrieve an AEDT object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.set_variable" title="VariableManager.set_variable"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_variable</span></code></a></p></td>
+<td><p>Set the value of a design property or project variable.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.delete_separator" title="VariableManager.delete_separator"><code class="xref py py-attr docutils literal notranslate"><span class="pre">delete_separator</span></code></a></p></td>
+<td><p>Delete a separator from either the active project or design.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.delete_variable" title="VariableManager.delete_variable"><code class="xref py py-attr docutils literal notranslate"><span class="pre">delete_variable</span></code></a></p></td>
+<td><p>Delete a variable.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.variables" title="VariableManager.variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">variables</span></code></a></p></td>
+<td><p>Variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.design_variables" title="VariableManager.design_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">design_variables</span></code></a></p></td>
+<td><p>Design variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.project_variables" title="VariableManager.project_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">project_variables</span></code></a></p></td>
+<td><p>Project variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.post_processing_variables" title="VariableManager.post_processing_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">post_processing_variables</span></code></a></p></td>
+<td><p>Post Processing variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.independent_variables" title="VariableManager.independent_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">independent_variables</span></code></a></p></td>
+<td><p>Independent variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.independent_project_variables" title="VariableManager.independent_project_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">independent_project_variables</span></code></a></p></td>
+<td><p>Independent project variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.independent_design_variables" title="VariableManager.independent_design_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">independent_design_variables</span></code></a></p></td>
+<td><p>Independent design variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.dependent_variables" title="VariableManager.dependent_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dependent_variables</span></code></a></p></td>
+<td><p>Dependent variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.dependent_project_variables" title="VariableManager.dependent_project_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dependent_project_variables</span></code></a></p></td>
+<td><p>Dependent project variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.dependent_design_variables" title="VariableManager.dependent_design_variables"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dependent_design_variables</span></code></a></p></td>
+<td><p>Dependent design variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.variable_names" title="VariableManager.variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">variable_names</span></code></a></p></td>
+<td><p>List of variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.project_variable_names" title="VariableManager.project_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">project_variable_names</span></code></a></p></td>
+<td><p>List of project variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.design_variable_names" title="VariableManager.design_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">design_variable_names</span></code></a></p></td>
+<td><p>List of design variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.independent_project_variable_names" title="VariableManager.independent_project_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">independent_project_variable_names</span></code></a></p></td>
+<td><p>List of independent project variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.independent_design_variable_names" title="VariableManager.independent_design_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">independent_design_variable_names</span></code></a></p></td>
+<td><p>List of independent design variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.independent_variable_names" title="VariableManager.independent_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">independent_variable_names</span></code></a></p></td>
+<td><p>List of independent variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.dependent_project_variable_names" title="VariableManager.dependent_project_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dependent_project_variable_names</span></code></a></p></td>
+<td><p>List of dependent project variables.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.dependent_design_variable_names" title="VariableManager.dependent_design_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dependent_design_variable_names</span></code></a></p></td>
+<td><p>List of dependent design variables.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.dependent_variable_names" title="VariableManager.dependent_variable_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dependent_variable_names</span></code></a></p></td>
+<td><p>List of dependent variables.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Special methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.__delitem__" title="VariableManager.__delitem__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__delitem__</span></code></a></p></td>
+<td><p>Implement del with array name or index.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#VariableManager.__getitem__" title="VariableManager.__getitem__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__getitem__</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#VariableManager.__setitem__" title="VariableManager.__setitem__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__setitem__</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">VariableManager</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">variables</span></span><a class="headerlink" href="#VariableManager.variables" title="Link to this definition">#</a></dt>
+<dd><p>Variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the <cite>Variable</cite> objects for each project variable and each
+design property in the active design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.design_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">design_variables</span></span><a class="headerlink" href="#VariableManager.design_variables" title="Link to this definition">#</a></dt>
+<dd><p>Design variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the design properties (local properties) in the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.project_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">project_variables</span></span><a class="headerlink" href="#VariableManager.project_variables" title="Link to this definition">#</a></dt>
+<dd><p>Project variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the project properties.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.post_processing_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">post_processing_variables</span></span><a class="headerlink" href="#VariableManager.post_processing_variables" title="Link to this definition">#</a></dt>
+<dd><p>Post Processing variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the post processing variables (constant numeric
+values) available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.independent_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">independent_variables</span></span><a class="headerlink" href="#VariableManager.independent_variables" title="Link to this definition">#</a></dt>
+<dd><p>Independent variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the independent variables (constant numeric
+values) available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.independent_project_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">independent_project_variables</span></span><a class="headerlink" href="#VariableManager.independent_project_variables" title="Link to this definition">#</a></dt>
+<dd><p>Independent project variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the independent project variables available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.independent_design_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">independent_design_variables</span></span><a class="headerlink" href="#VariableManager.independent_design_variables" title="Link to this definition">#</a></dt>
+<dd><p>Independent design variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the independent design properties (local
+variables) available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.dependent_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">dependent_variables</span></span><a class="headerlink" href="#VariableManager.dependent_variables" title="Link to this definition">#</a></dt>
+<dd><p>Dependent variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the dependent design properties (local
+variables) and project variables available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.dependent_project_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">dependent_project_variables</span></span><a class="headerlink" href="#VariableManager.dependent_project_variables" title="Link to this definition">#</a></dt>
+<dd><p>Dependent project variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the dependent project variables available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.dependent_design_variables">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">dependent_design_variables</span></span><a class="headerlink" href="#VariableManager.dependent_design_variables" title="Link to this definition">#</a></dt>
+<dd><p>Dependent design variables.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of the dependent design properties (local
+variables) available to the design.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">variable_names</span></span><a class="headerlink" href="#VariableManager.variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of variables.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.project_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">project_variable_names</span></span><a class="headerlink" href="#VariableManager.project_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of project variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.design_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">design_variable_names</span></span><a class="headerlink" href="#VariableManager.design_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of design variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.independent_project_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">independent_project_variable_names</span></span><a class="headerlink" href="#VariableManager.independent_project_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of independent project variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.independent_design_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">independent_design_variable_names</span></span><a class="headerlink" href="#VariableManager.independent_design_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of independent design variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.independent_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">independent_variable_names</span></span><a class="headerlink" href="#VariableManager.independent_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of independent variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.dependent_project_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">dependent_project_variable_names</span></span><a class="headerlink" href="#VariableManager.dependent_project_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of dependent project variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.dependent_design_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">dependent_design_variable_names</span></span><a class="headerlink" href="#VariableManager.dependent_design_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of dependent design variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="VariableManager.dependent_variable_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">dependent_variable_names</span></span><a class="headerlink" href="#VariableManager.dependent_variable_names" title="Link to this definition">#</a></dt>
+<dd><p>List of dependent variables.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariables</span>
+<span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetChildObject</span><span class="p">(</span><span class="s2">&quot;Variables&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">GetChildNames</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.decompose">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">decompose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.decompose" title="Link to this definition">#</a></dt>
+<dd><p>Decompose a variable string to a floating with its unit.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>variable_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>The float value of the variable and the units exposed as a string.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">hfss</span> <span class="o">=</span> <span class="n">Hfss</span><span class="p">()</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="n">hfss</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="s2">&quot;5mm&quot;</span><span class="p">))</span>
+<span class="gp">>>> </span><span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">hfss</span><span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3N&quot;</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="n">hfss</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="s2">&quot;v1&quot;</span><span class="p">))</span>
+<span class="gp">>>> </span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">hfss</span><span class="p">[</span><span class="s2">&quot;v2&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;2*v1&quot;</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="n">hfss</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="s2">&quot;v2&quot;</span><span class="p">))</span>
+<span class="gp">>>> </span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.__delitem__">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">__delitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.__delitem__" title="Link to this definition">#</a></dt>
+<dd><p>Implement del with array name or index.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.__getitem__">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">__getitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.__getitem__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.__setitem__">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">__setitem__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.__setitem__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.get_expression">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">get_expression</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.get_expression" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the variable value of a project or design variable as a string.</p>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">GetVariableValue</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">GetVariableValue</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.aedt_object">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">aedt_object</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.aedt_object" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve an AEDT object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>variable</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd></dd>
+<dt><strong>Name of the variable.</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.set_variable">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">set_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">variable_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">expression</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_parameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.set_variable" title="Link to this definition">#</a></dt>
+<dd><p>Set the value of a design property or project variable.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>variable_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the design property or project variable
+(<code class="docutils literal notranslate"><span class="pre">$var</span></code>). If this variable does not exist, a new one is
+created and a value is set.</p>
+</dd>
+<dt><strong>expression</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Valid string expression within the AEDT design and project
+structure.  For example, <code class="docutils literal notranslate"><span class="pre">&quot;3*cos(34deg)&quot;</span></code>.</p>
+</dd>
+<dt><strong>readonly</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to set the design property or project variable to
+read-only. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>hidden</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to hide the design property or project variable. The
+default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>description</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Text to display for the design property or project variable in the
+<code class="docutils literal notranslate"><span class="pre">Properties</span></code> window. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>overwrite</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to overwrite an existing value for the design
+property or project variable. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>, in
+which case this method is ignored.</p>
+</dd>
+<dt><strong>postprocessing</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><dl class="simple">
+<dt>Whether to define a postprocessing variable.</dt><dd><p>The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>, in which case the variable is not used in postprocessing.</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>circuit_parameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><dl class="simple">
+<dt>Whether to define a parameter in a circuit design or a local parameter.</dt><dd><p>The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>, in which case a circuit variable is created as a parameter default.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">ChangeProperty</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">ChangeProperty</span>
+</pre></div>
+</div>
+<p class="rubric">Examples</p>
+<p>Set the value of design property <code class="docutils literal notranslate"><span class="pre">p1</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;10mm&quot;</span></code>,
+creating the property if it does not already eixst.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">aedtapp</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;10mm&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the value of design property <code class="docutils literal notranslate"><span class="pre">p1</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;20mm&quot;</span></code> only if
+the property does not already exist.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">aedtapp</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span><span class="s2">&quot;p1&quot;</span><span class="p">,</span> <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;20mm&quot;</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the value of design property <code class="docutils literal notranslate"><span class="pre">p2</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;10mm&quot;</span></code>,
+creating the property if it does not already exist. Also make
+it read-only and hidden and add a description.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">aedtapp</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">set_variable</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">variable_name</span><span class="o">=</span><span class="s2">&quot;p2&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">expression</span><span class="o">=</span><span class="s2">&quot;10mm&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">readonly</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">hidden</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">description</span><span class="o">=</span><span class="s2">&quot;This is the description of this variable.&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Set the value of the project variable <code class="docutils literal notranslate"><span class="pre">$p1</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;30mm&quot;</span></code>,
+creating the variable if it does not exist.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">aedtapp</span><span class="o">.</span><span class="n">variable_manager</span><span class="o">.</span><span class="n">set_variable</span><span class="p">[</span><span class="s2">&quot;$p1&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;30mm&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.delete_separator">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">delete_separator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">separator_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.delete_separator" title="Link to this definition">#</a></dt>
+<dd><p>Delete a separator from either the active project or design.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>separator_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Value to use for the delimiter.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when the separator exists and can be deleted, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">ChangeProperty</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">ChangeProperty</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="VariableManager.delete_variable">
+<span class="sig-prename descclassname"><span class="pre">VariableManager.</span></span><span class="sig-name descname"><span class="pre">delete_variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">var_name</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#VariableManager.delete_variable" title="Link to this definition">#</a></dt>
+<dd><p>Delete a variable.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>var_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the variable.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">References</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">oProject</span><span class="o">.</span><span class="n">ChangeProperty</span>
+<span class="gp">>>> </span><span class="n">oDesign</span><span class="o">.</span><span class="n">ChangeProperty</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.Variables.VariableManager"><code class="docutils literal notranslate"><span class="pre">VariableManager</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.variables"><code class="docutils literal notranslate"><span class="pre">variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.design_variables"><code class="docutils literal notranslate"><span class="pre">design_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.project_variables"><code class="docutils literal notranslate"><span class="pre">project_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.post_processing_variables"><code class="docutils literal notranslate"><span class="pre">post_processing_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.independent_variables"><code class="docutils literal notranslate"><span class="pre">independent_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.independent_project_variables"><code class="docutils literal notranslate"><span class="pre">independent_project_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.independent_design_variables"><code class="docutils literal notranslate"><span class="pre">independent_design_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.dependent_variables"><code class="docutils literal notranslate"><span class="pre">dependent_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.dependent_project_variables"><code class="docutils literal notranslate"><span class="pre">dependent_project_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.dependent_design_variables"><code class="docutils literal notranslate"><span class="pre">dependent_design_variables</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.variable_names"><code class="docutils literal notranslate"><span class="pre">variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.project_variable_names"><code class="docutils literal notranslate"><span class="pre">project_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.design_variable_names"><code class="docutils literal notranslate"><span class="pre">design_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.independent_project_variable_names"><code class="docutils literal notranslate"><span class="pre">independent_project_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.independent_design_variable_names"><code class="docutils literal notranslate"><span class="pre">independent_design_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.independent_variable_names"><code class="docutils literal notranslate"><span class="pre">independent_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.dependent_project_variable_names"><code class="docutils literal notranslate"><span class="pre">dependent_project_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.dependent_design_variable_names"><code class="docutils literal notranslate"><span class="pre">dependent_design_variable_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.dependent_variable_names"><code class="docutils literal notranslate"><span class="pre">dependent_variable_names</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.decompose"><code class="docutils literal notranslate"><span class="pre">decompose()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.__delitem__"><code class="docutils literal notranslate"><span class="pre">__delitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.__getitem__"><code class="docutils literal notranslate"><span class="pre">__getitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.__setitem__"><code class="docutils literal notranslate"><span class="pre">__setitem__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.get_expression"><code class="docutils literal notranslate"><span class="pre">get_expression()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.aedt_object"><code class="docutils literal notranslate"><span class="pre">aedt_object()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.set_variable"><code class="docutils literal notranslate"><span class="pre">set_variable()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.delete_separator"><code class="docutils literal notranslate"><span class="pre">delete_separator()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#VariableManager.delete_variable"><code class="docutils literal notranslate"><span class="pre">delete_variable()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/Variables/VariableManager.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/dotnet/database/Variables/VariableManager.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

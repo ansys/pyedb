@@ -1,0 +1,6 @@
+id
+==
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pin_pair_model
+
+.. autoproperty:: PinPairModel.id

@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`HierarchyObj`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.HierarchyObj(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.connectable.Connectable`
+
+
+   
+   Manages EDB functionalities for a connectable object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HierarchyObj
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component_def`
+            - Component definition.
+          * - :py:attr:`~location`
+            - XY Coordinates.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import HierarchyObj
+
+Property detail
+---------------
+
+.. py:property:: component_def
+
+   
+   Component definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+
+   
+   XY Coordinates.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

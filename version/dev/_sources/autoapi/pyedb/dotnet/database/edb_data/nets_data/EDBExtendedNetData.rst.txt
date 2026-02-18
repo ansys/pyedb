@@ -1,0 +1,207 @@
+
+
+
+
+
+
+:class:`EDBExtendedNetData`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetData(core_app, raw_extended_net=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.dotnet.database.ExtendedNetDotNet`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It Inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_extended_net = edb.nets.extended_nets["GND"]
+   >>> edb_extended_net.name  # Class Property
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBExtendedNetData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~nets`
+            - Nets dictionary.
+          * - :py:attr:`~components`
+            - Dictionary of components.
+          * - :py:attr:`~rlc`
+            - Dictionary of RLC components.
+          * - :py:attr:`~serial_rlc`
+            - Dictionary of serial RLC components.
+          * - :py:attr:`~shunt_rlc`
+            - Dictionary of shunt RLC components.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.nets_data import EDBExtendedNetData
+
+Property detail
+---------------
+
+.. py:property:: nets
+
+   
+   Nets dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+
+   
+   Dictionary of components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc
+
+   
+   Dictionary of RLC components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: serial_rlc
+
+   
+   Dictionary of serial RLC components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: shunt_rlc
+
+   
+   Dictionary of shunt RLC components.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

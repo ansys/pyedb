@@ -1,0 +1,6 @@
+ind\_value
+==========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.ind_value

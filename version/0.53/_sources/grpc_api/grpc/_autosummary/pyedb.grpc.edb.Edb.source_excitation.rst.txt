@@ -1,0 +1,6 @@
+source\_excitation
+==================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.source_excitation

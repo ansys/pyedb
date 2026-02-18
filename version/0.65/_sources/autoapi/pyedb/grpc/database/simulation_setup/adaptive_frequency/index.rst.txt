@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``adaptive_frequency.py`` module
+====================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.adaptive_frequency
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: adaptive_frequency
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.adaptive_frequency.AdaptiveFrequency`
+            - EDB-core Adaptive Frequency class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AdaptiveFrequency</autoapi/pyedb/grpc/database/simulation_setup/adaptive_frequency/AdaptiveFrequency>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

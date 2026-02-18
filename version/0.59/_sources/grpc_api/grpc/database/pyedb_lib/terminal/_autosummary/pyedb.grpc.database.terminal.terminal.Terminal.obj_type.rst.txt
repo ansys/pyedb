@@ -1,0 +1,6 @@
+obj\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.obj_type

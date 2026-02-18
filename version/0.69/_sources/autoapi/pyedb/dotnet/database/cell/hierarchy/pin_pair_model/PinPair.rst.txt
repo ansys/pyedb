@@ -1,0 +1,78 @@
+
+
+
+
+
+
+:class:`PinPair`
+================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.pin_pair_model.PinPair(pcomp, edb_comp, edb_comp_prop, edb_model, edb_pin_pair)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: PinPair
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_parallel`
+            - 
+          * - :py:attr:`~rlc_enable`
+            - 
+          * - :py:attr:`~resistance`
+            - 
+          * - :py:attr:`~inductance`
+            - 
+          * - :py:attr:`~capacitance`
+            - 
+          * - :py:attr:`~rlc_values`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.pin_pair_model import PinPair
+
+Property detail
+---------------
+
+.. py:property:: is_parallel
+
+.. py:property:: rlc_enable
+
+.. py:property:: resistance
+
+.. py:property:: inductance
+
+.. py:property:: capacitance
+
+.. py:property:: rlc_values
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.delete

@@ -1,0 +1,6 @@
+longest\_arc
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.longest_arc

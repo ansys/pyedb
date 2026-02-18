@@ -1,0 +1,6 @@
+via\_num\_sides
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: ViaSettings.via_num_sides

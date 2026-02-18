@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``tag_library.py`` module
+=============================
+
+.. py:module:: pyedb.misc.siw_feature_config.emc.tag_library
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: tag_library
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.tag_library.TagType`
+            - Manages tag type.
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.tag_library.TagConfig`
+            - Manages tag config.
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.tag_library.Tag`
+            - Manages tag.
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.tag_library.TagLibrary`
+            - Manages tag library.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> TagType</autoapi/pyedb/misc/siw_feature_config/emc/tag_library/TagType>
+    <span class="nf nf-cod-symbol_class"></span> TagConfig</autoapi/pyedb/misc/siw_feature_config/emc/tag_library/TagConfig>
+    <span class="nf nf-cod-symbol_class"></span> Tag</autoapi/pyedb/misc/siw_feature_config/emc/tag_library/Tag>
+    <span class="nf nf-cod-symbol_class"></span> TagLibrary</autoapi/pyedb/misc/siw_feature_config/emc/tag_library/TagLibrary>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

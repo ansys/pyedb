@@ -1,0 +1,6 @@
+permeability
+============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.permeability

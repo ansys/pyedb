@@ -1,0 +1,24 @@
+﻿Layer
+=====
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: Layer
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Layer.material
+      Layer.name
+      Layer.thickness
+   
+   

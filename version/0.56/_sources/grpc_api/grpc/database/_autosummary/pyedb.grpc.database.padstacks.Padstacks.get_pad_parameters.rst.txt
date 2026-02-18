@@ -1,0 +1,6 @@
+get\_pad\_parameters
+====================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_pad_parameters

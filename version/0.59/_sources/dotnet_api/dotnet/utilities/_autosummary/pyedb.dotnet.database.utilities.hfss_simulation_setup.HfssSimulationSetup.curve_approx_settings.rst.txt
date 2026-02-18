@@ -1,0 +1,6 @@
+curve\_approx\_settings
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.curve_approx_settings

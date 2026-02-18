@@ -1,0 +1,6 @@
+get\_end\_cap\_style
+====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.get_end_cap_style

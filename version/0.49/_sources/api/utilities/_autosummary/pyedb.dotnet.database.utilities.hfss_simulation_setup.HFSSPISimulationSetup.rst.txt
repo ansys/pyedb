@@ -1,0 +1,60 @@
+﻿HFSSPISimulationSetup
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoclass:: HFSSPISimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HFSSPISimulationSetup.add_frequency_sweep
+      
+      
+      HFSSPISimulationSetup.add_sweep
+      
+      
+      HFSSPISimulationSetup.delete
+      
+      
+      HFSSPISimulationSetup.delete_frequency_sweep
+      
+      
+      HFSSPISimulationSetup.get_simulation_settings
+      
+      
+      HFSSPISimulationSetup.set_sim_setup_info
+      
+      
+      HFSSPISimulationSetup.set_simulation_settings
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSPISimulationSetup.enabled
+      HFSSPISimulationSetup.frequency_sweeps
+      HFSSPISimulationSetup.get_sim_setup_info
+      HFSSPISimulationSetup.is_null
+      HFSSPISimulationSetup.mesh_operations
+      HFSSPISimulationSetup.name
+      HFSSPISimulationSetup.position
+      HFSSPISimulationSetup.setup_type
+      HFSSPISimulationSetup.sim_setup_info
+      HFSSPISimulationSetup.sweep_data
+      HFSSPISimulationSetup.sweeps
+      HFSSPISimulationSetup.type
+   
+   

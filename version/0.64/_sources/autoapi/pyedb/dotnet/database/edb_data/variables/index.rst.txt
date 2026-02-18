@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``variables.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.edb_data.variables
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: variables
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.variables.Variable`
+            - Manages EDB methods for variable accessible from `Edb.Utility.VariableServer` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Variable</autoapi/pyedb/dotnet/database/edb_data/variables/Variable>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

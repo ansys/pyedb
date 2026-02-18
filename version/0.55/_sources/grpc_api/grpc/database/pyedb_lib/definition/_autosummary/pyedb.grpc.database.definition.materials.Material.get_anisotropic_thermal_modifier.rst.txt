@@ -1,0 +1,6 @@
+get\_anisotropic\_thermal\_modifier
+===================================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.get_anisotropic_thermal_modifier

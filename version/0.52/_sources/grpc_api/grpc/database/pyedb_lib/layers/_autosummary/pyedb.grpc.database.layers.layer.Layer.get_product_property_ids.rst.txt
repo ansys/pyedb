@@ -1,0 +1,6 @@
+get\_product\_property\_ids
+===========================
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. automethod:: Layer.get_product_property_ids

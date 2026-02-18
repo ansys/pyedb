@@ -1,0 +1,6 @@
+min\_num\_passes
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationAc.min_num_passes

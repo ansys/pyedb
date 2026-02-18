@@ -1,0 +1,39 @@
+﻿EDBNetsData
+===========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
+
+.. autoclass:: EDBNetsData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EDBNetsData.create
+      
+      
+      EDBNetsData.delete
+      
+      
+      EDBNetsData.find_by_name
+      
+      
+      EDBNetsData.find_dc_short
+      
+      
+      EDBNetsData.get_smallest_trace_width
+      
+      
+      EDBNetsData.plot
+      
+   
+   
+
+   
+   
+   

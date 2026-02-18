@@ -1,0 +1,79 @@
+
+
+
+
+
+
+:class:`InitMeshBlockParser`
+============================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.InitMeshBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Base class for a single block parser.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: InitMeshBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - 
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import InitMeshBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> InitMesh
+
+
+
+

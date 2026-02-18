@@ -1,0 +1,6 @@
+find\_by\_name
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. automethod:: PadstackDef.find_by_name

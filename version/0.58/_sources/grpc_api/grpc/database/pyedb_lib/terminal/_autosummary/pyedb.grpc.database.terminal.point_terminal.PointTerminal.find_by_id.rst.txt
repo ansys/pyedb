@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. automethod:: PointTerminal.find_by_id

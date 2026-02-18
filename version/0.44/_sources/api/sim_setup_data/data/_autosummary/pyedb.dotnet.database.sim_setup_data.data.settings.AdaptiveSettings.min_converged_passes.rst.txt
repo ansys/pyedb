@@ -1,0 +1,6 @@
+min\_converged\_passes
+======================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: AdaptiveSettings.min_converged_passes

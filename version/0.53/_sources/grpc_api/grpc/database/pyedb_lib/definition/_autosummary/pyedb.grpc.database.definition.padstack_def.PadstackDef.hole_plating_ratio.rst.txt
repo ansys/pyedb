@@ -1,0 +1,6 @@
+hole\_plating\_ratio
+====================
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.hole_plating_ratio

@@ -1,0 +1,33 @@
+﻿RectangularPatch
+================
+
+.. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
+
+.. autoclass:: RectangularPatch
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      RectangularPatch.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RectangularPatch.estimated_frequency
+      RectangularPatch.length
+      RectangularPatch.width
+   
+   

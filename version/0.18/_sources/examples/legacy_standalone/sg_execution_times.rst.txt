@@ -1,0 +1,61 @@
+
+:orphan:
+
+.. _sphx_glr_examples_legacy_standalone_sg_execution_times:
+
+
+Computation times
+=================
+**00:05.406** total execution time for 9 files **from examples\legacy_standalone**:
+
+.. container::
+
+  .. raw:: html
+
+    <style scoped>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
+    </style>
+    <script src="https://code.jquery.com/jquery-3.7.0.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+    <script type="text/javascript" class="init">
+    $(document).ready( function () {
+        $('table.sg-datatable').DataTable({order: [[1, 'desc']]});
+    } );
+    </script>
+
+  .. list-table::
+   :header-rows: 1
+   :class: table table-striped sg-datatable
+
+   * - Example
+     - Time
+     - Mem (MB)
+   * - :ref:`sphx_glr_examples_legacy_standalone_10_GDS_workflow.py` (``10_GDS_workflow.py``)
+     - 00:03.219
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_02_edb_to_ipc2581.py` (``02_edb_to_ipc2581.py``)
+     - 00:00.453
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_01_edb_example.py` (``01_edb_example.py``)
+     - 00:00.438
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_11_post_layout_parameterization.py` (``11_post_layout_parameterization.py``)
+     - 00:00.422
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_05_Plot_nets.py` (``05_Plot_nets.py``)
+     - 00:00.422
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_03_rename_nets_and_ports.py` (``03_rename_nets_and_ports.py``)
+     - 00:00.422
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_08_CPWG.py` (``08_CPWG.py``)
+     - 00:00.016
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_06_Advanced_EDB.py` (``06_Advanced_EDB.py``)
+     - 00:00.016
+     - 0.0
+   * - :ref:`sphx_glr_examples_legacy_standalone_00_EDB_Create_VIA.py` (``00_EDB_Create_VIA.py``)
+     - 00:00.000
+     - 0.0

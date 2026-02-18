@@ -1,0 +1,1583 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EDBComponent &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../../../_static/documentation_options.js?v=4797eaa1"></script>
+    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/cell/hierarchy/component/EDBComponent';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.67';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.67.3" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/cell/hierarchy/component/EDBComponent.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.67/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.67/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html"> <span class="nf nf-md-package"></span> cell</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> hierarchy</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> component</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hierarchy_obj/index.html"> <span class="nf nf-fa-file"></span> hierarchy_obj</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../model/index.html"> <span class="nf nf-fa-file"></span> model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../netlist_model/index.html"> <span class="nf nf-fa-file"></span> netlist_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../pin_pair_model/index.html"> <span class="nf nf-fa-file"></span> pin_pair_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../s_parameter_model/index.html"> <span class="nf nf-fa-file"></span> s_parameter_model</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../spice_model/index.html"> <span class="nf nf-fa-file"></span> spice_model</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../primitive/index.html"> <span class="nf nf-md-package"></span> primitive</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../terminal/index.html"> <span class="nf nf-md-package"></span> terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../cell/index.html"> <span class="nf nf-fa-file"></span> cell</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../connectable/index.html"> <span class="nf nf-fa-file"></span> connectable</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../layout/index.html"> <span class="nf nf-fa-file"></span> layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../layout_obj/index.html"> <span class="nf nf-fa-file"></span> layout_obj</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../voltage_regulator/index.html"> <span class="nf nf-fa-file"></span> voltage_regulator</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Variables/index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">EDBComponent</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="edbcomponent">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">EDBComponent</span></code><a class="headerlink" href="#edbcomponent" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.cell.hierarchy.component.EDBComponent">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.cell.hierarchy.component.</span></span><span class="sig-name descname"><span class="pre">EDBComponent</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pedb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edb_object</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.cell.hierarchy.component.EDBComponent" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference internal" href="../hierarchy_obj/Group.html#pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.Group" title="pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.Group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.Group</span></code></a></p>
+<p>Manages EDB functionalities for components.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>parent</strong><span class="classifier"><a class="reference internal" href="../../../components/Components.html#pyedb.dotnet.database.components.Components" title="pyedb.dotnet.database.components.Components"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.components.Components</span></code></a></span></dt><dd><p>Components object.</p>
+</dd>
+<dt><strong>component</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></span></dt><dd><p>Edb Component Object</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.create_package_def" title="EDBComponent.create_package_def"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_package_def</span></code></a></p></td>
+<td><p>Create a package definition and assign it to the component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.assign_spice_model" title="EDBComponent.assign_spice_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">assign_spice_model</span></code></a></p></td>
+<td><p>Assign Spice model to this component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.assign_s_param_model" title="EDBComponent.assign_s_param_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">assign_s_param_model</span></code></a></p></td>
+<td><p>Assign S-parameter to this component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.use_s_parameter_model" title="EDBComponent.use_s_parameter_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_s_parameter_model</span></code></a></p></td>
+<td><p>Use S-parameter model on the component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.assign_rlc_model" title="EDBComponent.assign_rlc_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">assign_rlc_model</span></code></a></p></td>
+<td><p>Assign RLC to this component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.create_clearance_on_component" title="EDBComponent.create_clearance_on_component"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_clearance_on_component</span></code></a></p></td>
+<td><p>Create a Clearance on Soldermask layer by drawing a rectangle.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.name" title="EDBComponent.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Name of the definition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.group_type" title="EDBComponent.group_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">group_type</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.layout_instance" title="EDBComponent.layout_instance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layout_instance</span></code></a></p></td>
+<td><p>EDB layout instance object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.component_instance" title="EDBComponent.component_instance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">component_instance</span></code></a></p></td>
+<td><p>Edb component instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.component_property" title="EDBComponent.component_property"><code class="xref py py-attr docutils literal notranslate"><span class="pre">component_property</span></code></a></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">ComponentProperty</span></code> object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.model" title="EDBComponent.model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model</span></code></a></p></td>
+<td><p>Component model.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.package_def" title="EDBComponent.package_def"><code class="xref py py-attr docutils literal notranslate"><span class="pre">package_def</span></code></a></p></td>
+<td><p>Package definition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.ic_die_properties" title="EDBComponent.ic_die_properties"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ic_die_properties</span></code></a></p></td>
+<td><p>Adding IC properties for grpc compatibility.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.is_enabled" title="EDBComponent.is_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_enabled</span></code></a></p></td>
+<td><p>Get or Set the component to active mode.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.enabled" title="EDBComponent.enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">enabled</span></code></a></p></td>
+<td><p>Get or Set the component to active mode.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.spice_model" title="EDBComponent.spice_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">spice_model</span></code></a></p></td>
+<td><p>Get assigned Spice model properties.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.s_param_model" title="EDBComponent.s_param_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">s_param_model</span></code></a></p></td>
+<td><p>Get assigned S-parameter model properties.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.netlist_model" title="EDBComponent.netlist_model"><code class="xref py py-attr docutils literal notranslate"><span class="pre">netlist_model</span></code></a></p></td>
+<td><p>Get assigned netlist model properties.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.solder_ball_height" title="EDBComponent.solder_ball_height"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solder_ball_height</span></code></a></p></td>
+<td><p>Solder ball height if available.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.solder_ball_shape" title="EDBComponent.solder_ball_shape"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solder_ball_shape</span></code></a></p></td>
+<td><p>Solder ball shape.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.solder_ball_diameter" title="EDBComponent.solder_ball_diameter"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solder_ball_diameter</span></code></a></p></td>
+<td><p>Solder ball diameter.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.solder_ball_placement" title="EDBComponent.solder_ball_placement"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solder_ball_placement</span></code></a></p></td>
+<td><p>Solder ball placement if available..</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.refdes" title="EDBComponent.refdes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">refdes</span></code></a></p></td>
+<td><p>Reference Designator Name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.is_null" title="EDBComponent.is_null"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_null</span></code></a></p></td>
+<td><p>Flag indicating if the current object exists.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.model_type" title="EDBComponent.model_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">model_type</span></code></a></p></td>
+<td><p>Retrieve assigned model type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.rlc_values" title="EDBComponent.rlc_values"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rlc_values</span></code></a></p></td>
+<td><p>Get component rlc values.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.value" title="EDBComponent.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a></p></td>
+<td><p>Retrieve discrete component value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.res_value" title="EDBComponent.res_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">res_value</span></code></a></p></td>
+<td><p>Resistance value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.cap_value" title="EDBComponent.cap_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cap_value</span></code></a></p></td>
+<td><p>Capacitance Value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.ind_value" title="EDBComponent.ind_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ind_value</span></code></a></p></td>
+<td><p>Inductance Value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.is_parallel_rlc" title="EDBComponent.is_parallel_rlc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_parallel_rlc</span></code></a></p></td>
+<td><p>Define if model is Parallel or Series.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.center" title="EDBComponent.center"><code class="xref py py-attr docutils literal notranslate"><span class="pre">center</span></code></a></p></td>
+<td><p>Compute the component center.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.bounding_box" title="EDBComponent.bounding_box"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bounding_box</span></code></a></p></td>
+<td><p>Component’s bounding box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.rotation" title="EDBComponent.rotation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rotation</span></code></a></p></td>
+<td><p>Compute the component rotation in radian.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.pinlist" title="EDBComponent.pinlist"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pinlist</span></code></a></p></td>
+<td><p>Pins of the component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.nets" title="EDBComponent.nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">nets</span></code></a></p></td>
+<td><p>Nets of Component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.pins" title="EDBComponent.pins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pins</span></code></a></p></td>
+<td><p>EDBPadstackInstance of Component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.type" title="EDBComponent.type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a></p></td>
+<td><p>Component type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.numpins" title="EDBComponent.numpins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numpins</span></code></a></p></td>
+<td><p>Number of Pins of Component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.partname" title="EDBComponent.partname"><code class="xref py py-attr docutils literal notranslate"><span class="pre">partname</span></code></a></p></td>
+<td><p>Component part name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.part_name" title="EDBComponent.part_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">part_name</span></code></a></p></td>
+<td><p>Component part name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.placement_layer" title="EDBComponent.placement_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">placement_layer</span></code></a></p></td>
+<td><p>Placement layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.is_top_mounted" title="EDBComponent.is_top_mounted"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_top_mounted</span></code></a></p></td>
+<td><p>Check if a component is mounted on top or bottom of the layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.lower_elevation" title="EDBComponent.lower_elevation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lower_elevation</span></code></a></p></td>
+<td><p>Lower elevation of the placement layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EDBComponent.upper_elevation" title="EDBComponent.upper_elevation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">upper_elevation</span></code></a></p></td>
+<td><p>Upper elevation of the placement layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.top_bottom_association" title="EDBComponent.top_bottom_association"><code class="xref py py-attr docutils literal notranslate"><span class="pre">top_bottom_association</span></code></a></p></td>
+<td><p>Top/bottom association of the placement layer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Attributes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EDBComponent.edbcomponent" title="EDBComponent.edbcomponent"><code class="xref py py-attr docutils literal notranslate"><span class="pre">edbcomponent</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.cell.hierarchy.component</span><span class="w"> </span><span class="kn">import</span> <span class="n">EDBComponent</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#EDBComponent.name" title="Link to this definition">#</a></dt>
+<dd><p>Name of the definition.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.group_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">group_type</span></span><a class="headerlink" href="#EDBComponent.group_type" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.layout_instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">layout_instance</span></span><a class="headerlink" href="#EDBComponent.layout_instance" title="Link to this definition">#</a></dt>
+<dd><p>EDB layout instance object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.component_instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">component_instance</span></span><a class="headerlink" href="#EDBComponent.component_instance" title="Link to this definition">#</a></dt>
+<dd><p>Edb component instance.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.component_property">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">component_property</span></span><a class="headerlink" href="#EDBComponent.component_property" title="Link to this definition">#</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">ComponentProperty</span></code> object.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">model</span></span><a class="headerlink" href="#EDBComponent.model" title="Link to this definition">#</a></dt>
+<dd><p>Component model.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.package_def">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">package_def</span></span><a class="headerlink" href="#EDBComponent.package_def" title="Link to this definition">#</a></dt>
+<dd><p>Package definition.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.ic_die_properties">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">ic_die_properties</span></span><a class="headerlink" href="#EDBComponent.ic_die_properties" title="Link to this definition">#</a></dt>
+<dd><p>Adding IC properties for grpc compatibility.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.is_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">is_enabled</span></span><a class="headerlink" href="#EDBComponent.is_enabled" title="Link to this definition">#</a></dt>
+<dd><p>Get or Set the component to active mode.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if component is active, <code class="docutils literal notranslate"><span class="pre">False</span></code> if is disabled..</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">enabled</span></span><a class="headerlink" href="#EDBComponent.enabled" title="Link to this definition">#</a></dt>
+<dd><p>Get or Set the component to active mode.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.spice_model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">spice_model</span></span><a class="headerlink" href="#EDBComponent.spice_model" title="Link to this definition">#</a></dt>
+<dd><p>Get assigned Spice model properties.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.s_param_model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">s_param_model</span></span><a class="headerlink" href="#EDBComponent.s_param_model" title="Link to this definition">#</a></dt>
+<dd><p>Get assigned S-parameter model properties.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.netlist_model">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">netlist_model</span></span><a class="headerlink" href="#EDBComponent.netlist_model" title="Link to this definition">#</a></dt>
+<dd><p>Get assigned netlist model properties.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.solder_ball_height">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">solder_ball_height</span></span><a class="headerlink" href="#EDBComponent.solder_ball_height" title="Link to this definition">#</a></dt>
+<dd><p>Solder ball height if available.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.solder_ball_shape">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">solder_ball_shape</span></span><a class="headerlink" href="#EDBComponent.solder_ball_shape" title="Link to this definition">#</a></dt>
+<dd><p>Solder ball shape.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.solder_ball_diameter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">solder_ball_diameter</span></span><a class="headerlink" href="#EDBComponent.solder_ball_diameter" title="Link to this definition">#</a></dt>
+<dd><p>Solder ball diameter.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.solder_ball_placement">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">solder_ball_placement</span></span><a class="headerlink" href="#EDBComponent.solder_ball_placement" title="Link to this definition">#</a></dt>
+<dd><p>Solder ball placement if available..</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.refdes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">refdes</span></span><a class="headerlink" href="#EDBComponent.refdes" title="Link to this definition">#</a></dt>
+<dd><p>Reference Designator Name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Reference Designator Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.is_null">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">is_null</span></span><a class="headerlink" href="#EDBComponent.is_null" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if the current object exists.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.model_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">model_type</span></span><a class="headerlink" href="#EDBComponent.model_type" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve assigned model type.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.rlc_values">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">rlc_values</span></span><a class="headerlink" href="#EDBComponent.rlc_values" title="Link to this definition">#</a></dt>
+<dd><p>Get component rlc values.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#EDBComponent.value" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve discrete component value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Value. <code class="docutils literal notranslate"><span class="pre">None</span></code> if not an RLC Type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.res_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">res_value</span></span><a class="headerlink" href="#EDBComponent.res_value" title="Link to this definition">#</a></dt>
+<dd><p>Resistance value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Resistance value or <code class="docutils literal notranslate"><span class="pre">None</span></code> if not an RLC type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.cap_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">cap_value</span></span><a class="headerlink" href="#EDBComponent.cap_value" title="Link to this definition">#</a></dt>
+<dd><p>Capacitance Value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Capacitance Value. <code class="docutils literal notranslate"><span class="pre">None</span></code> if not an RLC Type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.ind_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">ind_value</span></span><a class="headerlink" href="#EDBComponent.ind_value" title="Link to this definition">#</a></dt>
+<dd><p>Inductance Value.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Inductance Value. <code class="docutils literal notranslate"><span class="pre">None</span></code> if not an RLC Type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.is_parallel_rlc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">is_parallel_rlc</span></span><a class="headerlink" href="#EDBComponent.is_parallel_rlc" title="Link to this definition">#</a></dt>
+<dd><p>Define if model is Parallel or Series.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if it is a parallel rlc model. <code class="docutils literal notranslate"><span class="pre">False</span></code> for series RLC. <code class="docutils literal notranslate"><span class="pre">None</span></code> if not an RLC Type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.center">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">center</span></span><a class="headerlink" href="#EDBComponent.center" title="Link to this definition">#</a></dt>
+<dd><p>Compute the component center.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.bounding_box">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">bounding_box</span></span><a class="headerlink" href="#EDBComponent.bounding_box" title="Link to this definition">#</a></dt>
+<dd><p>Component’s bounding box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>]</dt><dd><p>List of coordinates for the component’s bounding box, with the list of
+coordinates in this order: [X lower left corner, Y lower left corner,
+X upper right corner, Y upper right corner].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.rotation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">rotation</span></span><a class="headerlink" href="#EDBComponent.rotation" title="Link to this definition">#</a></dt>
+<dd><p>Compute the component rotation in radian.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.pinlist">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">pinlist</span></span><a class="headerlink" href="#EDBComponent.pinlist" title="Link to this definition">#</a></dt>
+<dd><p>Pins of the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of Pins of Component.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.nets">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">nets</span></span><a class="headerlink" href="#EDBComponent.nets" title="Link to this definition">#</a></dt>
+<dd><p>Nets of Component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of Nets of Component.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.pins">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">pins</span></span><a class="headerlink" href="#EDBComponent.pins" title="Link to this definition">#</a></dt>
+<dd><p>EDBPadstackInstance of Component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">dic</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-class docutils literal notranslate"><span class="pre">dotnet.database.edb_data.definitions.EDBPadstackInstance</span></code>]</dt><dd><p>Dictionary of EDBPadstackInstance Components.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#EDBComponent.type" title="Link to this definition">#</a></dt>
+<dd><p>Component type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Component type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.numpins">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">numpins</span></span><a class="headerlink" href="#EDBComponent.numpins" title="Link to this definition">#</a></dt>
+<dd><p>Number of Pins of Component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd><p>Number of Pins of Component.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.partname">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">partname</span></span><a class="headerlink" href="#EDBComponent.partname" title="Link to this definition">#</a></dt>
+<dd><p>Component part name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Component Part Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.part_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">part_name</span></span><a class="headerlink" href="#EDBComponent.part_name" title="Link to this definition">#</a></dt>
+<dd><p>Component part name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Component part name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.placement_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">placement_layer</span></span><a class="headerlink" href="#EDBComponent.placement_layer" title="Link to this definition">#</a></dt>
+<dd><p>Placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.is_top_mounted">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">is_top_mounted</span></span><a class="headerlink" href="#EDBComponent.is_top_mounted" title="Link to this definition">#</a></dt>
+<dd><p>Check if a component is mounted on top or bottom of the layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> component is mounted on top, <code class="docutils literal notranslate"><span class="pre">False</span></code> on down.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.lower_elevation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">lower_elevation</span></span><a class="headerlink" href="#EDBComponent.lower_elevation" title="Link to this definition">#</a></dt>
+<dd><p>Lower elevation of the placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Lower elevation of the placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.upper_elevation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">upper_elevation</span></span><a class="headerlink" href="#EDBComponent.upper_elevation" title="Link to this definition">#</a></dt>
+<dd><p>Upper elevation of the placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Upper elevation of the placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EDBComponent.top_bottom_association">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">top_bottom_association</span></span><a class="headerlink" href="#EDBComponent.top_bottom_association" title="Link to this definition">#</a></dt>
+<dd><p>Top/bottom association of the placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd><p>Top/bottom association of the placement layer, where:</p>
+<ul class="simple">
+<li><p>0 - Top associated</p></li>
+<li><p>1 - No association</p></li>
+<li><p>2 - Bottom associated</p></li>
+<li><p>4 - Number of top/bottom associations.</p></li>
+<li><p>-1 - Undefined</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="attribute-detail">
+<h2>Attribute detail<a class="headerlink" href="#attribute-detail" title="Link to this heading">#</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="EDBComponent.edbcomponent">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">edbcomponent</span></span><a class="headerlink" href="#EDBComponent.edbcomponent" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="EDBComponent.create_package_def">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">create_package_def</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_part_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EDBComponent.create_package_def" title="Link to this definition">#</a></dt>
+<dd><p>Create a package definition and assign it to the component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name: str, optional</strong></dt><dd><p>Name of the package definition</p>
+</dd>
+<dt><strong>component_part_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Part name of the component.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if succeeded, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EDBComponent.assign_spice_model">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">assign_spice_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sub_circuit_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminal_pairs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EDBComponent.assign_spice_model" title="Link to this definition">#</a></dt>
+<dd><p>Assign Spice model to this component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>file_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>File path of the Spice model.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the Spice model.</p>
+</dd>
+<dt><strong>sub_circuit_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the sub circuit.</p>
+</dd>
+<dt><strong>terminal_pairs</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>list of terminal pairs.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"></dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EDBComponent.assign_s_param_model">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">assign_s_param_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">file_path</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EDBComponent.assign_s_param_model" title="Link to this definition">#</a></dt>
+<dd><p>Assign S-parameter to this component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>file_path</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>File path of the S-parameter model.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the S-parameter model.</p>
+</dd>
+<dt><strong>reference_net</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the reference net.</p>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EDBComponent.use_s_parameter_model">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">use_s_parameter_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EDBComponent.use_s_parameter_model" title="Link to this definition">#</a></dt>
+<dd><p>Use S-parameter model on the component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>name: str</strong></dt><dd><p>Name of the S-parameter model.</p>
+</dd>
+<dt><strong>reference_net: str, optional</strong></dt><dd><p>Reference net of the model.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">()</span>
+<span class="go">>>>comp_def = edbapp.definitions.components[&quot;CAPC3216X180X55ML20T25&quot;]</span>
+<span class="go">>>>comp_def.add_n_port_model(&quot;c:GRM32_DC0V_25degC_series.s2p&quot;, &quot;GRM32_DC0V_25degC_series&quot;)</span>
+<span class="go">>>>edbapp.components[&quot;C200&quot;].use_s_parameter_model(&quot;GRM32_DC0V_25degC_series&quot;)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EDBComponent.assign_rlc_model">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">assign_rlc_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">res</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cap</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_parallel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EDBComponent.assign_rlc_model" title="Link to this definition">#</a></dt>
+<dd><p>Assign RLC to this component.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>res</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Resistance. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>ind</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Inductance. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>cap</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Capacitance. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>is_parallel</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether it is a parallel or series RLC component. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EDBComponent.create_clearance_on_component">
+<span class="sig-prename descclassname"><span class="pre">EDBComponent.</span></span><span class="sig-name descname"><span class="pre">create_clearance_on_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">extra_soldermask_clearance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0001</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EDBComponent.create_clearance_on_component" title="Link to this definition">#</a></dt>
+<dd><p>Create a Clearance on Soldermask layer by drawing a rectangle.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>extra_soldermask_clearance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Extra Soldermask value in meter to be applied on component bounding box.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.cell.hierarchy.component.EDBComponent"><code class="docutils literal notranslate"><span class="pre">EDBComponent</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.name"><code class="docutils literal notranslate"><span class="pre">name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.group_type"><code class="docutils literal notranslate"><span class="pre">group_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.layout_instance"><code class="docutils literal notranslate"><span class="pre">layout_instance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.component_instance"><code class="docutils literal notranslate"><span class="pre">component_instance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.component_property"><code class="docutils literal notranslate"><span class="pre">component_property</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.model"><code class="docutils literal notranslate"><span class="pre">model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.package_def"><code class="docutils literal notranslate"><span class="pre">package_def</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.ic_die_properties"><code class="docutils literal notranslate"><span class="pre">ic_die_properties</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.is_enabled"><code class="docutils literal notranslate"><span class="pre">is_enabled</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.enabled"><code class="docutils literal notranslate"><span class="pre">enabled</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.spice_model"><code class="docutils literal notranslate"><span class="pre">spice_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.s_param_model"><code class="docutils literal notranslate"><span class="pre">s_param_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.netlist_model"><code class="docutils literal notranslate"><span class="pre">netlist_model</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.solder_ball_height"><code class="docutils literal notranslate"><span class="pre">solder_ball_height</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.solder_ball_shape"><code class="docutils literal notranslate"><span class="pre">solder_ball_shape</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.solder_ball_diameter"><code class="docutils literal notranslate"><span class="pre">solder_ball_diameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.solder_ball_placement"><code class="docutils literal notranslate"><span class="pre">solder_ball_placement</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.refdes"><code class="docutils literal notranslate"><span class="pre">refdes</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.is_null"><code class="docutils literal notranslate"><span class="pre">is_null</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.model_type"><code class="docutils literal notranslate"><span class="pre">model_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.rlc_values"><code class="docutils literal notranslate"><span class="pre">rlc_values</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.value"><code class="docutils literal notranslate"><span class="pre">value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.res_value"><code class="docutils literal notranslate"><span class="pre">res_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.cap_value"><code class="docutils literal notranslate"><span class="pre">cap_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.ind_value"><code class="docutils literal notranslate"><span class="pre">ind_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.is_parallel_rlc"><code class="docutils literal notranslate"><span class="pre">is_parallel_rlc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.center"><code class="docutils literal notranslate"><span class="pre">center</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.bounding_box"><code class="docutils literal notranslate"><span class="pre">bounding_box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.rotation"><code class="docutils literal notranslate"><span class="pre">rotation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.pinlist"><code class="docutils literal notranslate"><span class="pre">pinlist</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.nets"><code class="docutils literal notranslate"><span class="pre">nets</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.pins"><code class="docutils literal notranslate"><span class="pre">pins</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.type"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.numpins"><code class="docutils literal notranslate"><span class="pre">numpins</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.partname"><code class="docutils literal notranslate"><span class="pre">partname</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.part_name"><code class="docutils literal notranslate"><span class="pre">part_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.placement_layer"><code class="docutils literal notranslate"><span class="pre">placement_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.is_top_mounted"><code class="docutils literal notranslate"><span class="pre">is_top_mounted</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.lower_elevation"><code class="docutils literal notranslate"><span class="pre">lower_elevation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.upper_elevation"><code class="docutils literal notranslate"><span class="pre">upper_elevation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.top_bottom_association"><code class="docutils literal notranslate"><span class="pre">top_bottom_association</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-detail">Attribute detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.edbcomponent"><code class="docutils literal notranslate"><span class="pre">edbcomponent</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.create_package_def"><code class="docutils literal notranslate"><span class="pre">create_package_def()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.assign_spice_model"><code class="docutils literal notranslate"><span class="pre">assign_spice_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.assign_s_param_model"><code class="docutils literal notranslate"><span class="pre">assign_s_param_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.use_s_parameter_model"><code class="docutils literal notranslate"><span class="pre">use_s_parameter_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.assign_rlc_model"><code class="docutils literal notranslate"><span class="pre">assign_rlc_model()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EDBComponent.create_clearance_on_component"><code class="docutils literal notranslate"><span class="pre">create_clearance_on_component()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/cell/hierarchy/component/EDBComponent.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../../../_sources/autoapi/pyedb/dotnet/database/cell/hierarchy/component/EDBComponent.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

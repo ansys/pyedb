@@ -1,0 +1,6 @@
+term\_to\_ground
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.term_to_ground

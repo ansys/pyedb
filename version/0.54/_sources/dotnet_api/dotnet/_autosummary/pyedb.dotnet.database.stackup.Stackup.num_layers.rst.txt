@@ -1,0 +1,6 @@
+num\_layers
+===========
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. autoproperty:: Stackup.num_layers

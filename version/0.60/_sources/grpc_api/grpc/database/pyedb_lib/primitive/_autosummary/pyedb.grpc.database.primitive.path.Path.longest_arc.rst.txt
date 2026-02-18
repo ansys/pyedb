@@ -1,0 +1,6 @@
+longest\_arc
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.longest_arc

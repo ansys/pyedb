@@ -1,0 +1,6 @@
+zone\_primitives
+================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.zone_primitives

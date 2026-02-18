@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``netlist_model.py`` module
+===============================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.netlist_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: netlist_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.netlist_model.NetlistModel`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> NetlistModel</autoapi/pyedb/dotnet/database/cell/hierarchy/netlist_model/NetlistModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

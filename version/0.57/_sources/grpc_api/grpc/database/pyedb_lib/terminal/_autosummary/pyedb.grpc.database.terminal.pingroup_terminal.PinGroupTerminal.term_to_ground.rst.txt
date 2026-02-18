@@ -1,0 +1,6 @@
+term\_to\_ground
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.term_to_ground

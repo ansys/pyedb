@@ -1,0 +1,6 @@
+bounding\_box
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.ports
+
+.. autoproperty:: GapPort.bounding_box

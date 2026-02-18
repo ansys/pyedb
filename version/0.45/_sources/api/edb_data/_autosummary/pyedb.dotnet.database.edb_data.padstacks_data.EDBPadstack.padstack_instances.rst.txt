@@ -1,0 +1,6 @@
+padstack\_instances
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstack.padstack_instances

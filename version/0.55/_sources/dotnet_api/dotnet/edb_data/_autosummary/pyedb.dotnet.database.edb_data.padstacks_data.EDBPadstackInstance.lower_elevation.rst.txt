@@ -1,0 +1,6 @@
+lower\_elevation
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.lower_elevation

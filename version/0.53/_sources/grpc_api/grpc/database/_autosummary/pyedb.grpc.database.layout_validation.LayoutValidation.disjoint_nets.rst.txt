@@ -1,0 +1,6 @@
+disjoint\_nets
+==============
+
+.. currentmodule:: pyedb.grpc.database.layout_validation
+
+.. automethod:: LayoutValidation.disjoint_nets

@@ -1,0 +1,24 @@
+﻿CfgSIwaveDCSetup
+================
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgSIwaveDCSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSIwaveDCSetup.to_dict
+      
+   
+   
+
+   
+   
+   

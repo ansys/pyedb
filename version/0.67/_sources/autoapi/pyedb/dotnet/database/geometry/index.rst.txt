@@ -1,0 +1,74 @@
+
+
+
+
+
+
+The ``geometry`` package
+============================
+
+.. py:module:: pyedb.dotnet.database.geometry
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: geometry
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.geometry.point_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.geometry.polygon_data`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> point_data</autoapi/pyedb/dotnet/database/geometry/point_data/index>
+    <span class="nf nf-fa-file"></span> polygon_data</autoapi/pyedb/dotnet/database/geometry/polygon_data/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+use\_extract\_floating\_metals\_floating
+========================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_extract_floating_metals_floating

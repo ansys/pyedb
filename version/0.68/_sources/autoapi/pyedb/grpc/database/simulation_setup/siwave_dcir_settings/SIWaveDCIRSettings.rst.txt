@@ -1,0 +1,456 @@
+
+
+
+
+
+
+:class:`SIWaveDCIRSettings`
+===========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dcir_settings.SIWaveDCIRSettings(pedb, core)
+
+
+.. py:currentmodule:: SIWaveDCIRSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - 
+          * - :py:attr:`~dc`
+            - 
+          * - :py:attr:`~dc_advanced`
+            - 
+          * - :py:attr:`~general`
+            - 
+          * - :py:attr:`~s_parameter`
+            - 
+          * - :py:attr:`~dc_report_config_file`
+            - DC report configuration file path.
+          * - :py:attr:`~dc_report_show_active_devices`
+            - Whether to show active devices in the DC report.
+          * - :py:attr:`~enabled`
+            - Whether the DC IR simulation is enabled.
+          * - :py:attr:`~export_dc_thermal_data`
+            - Whether to export DC thermal data.
+          * - :py:attr:`~full_dc_report_path`
+            - Full DC report path.
+          * - :py:attr:`~icepak_temp_file`
+            - Icepak temperature file path.
+          * - :py:attr:`~import_thermal_data`
+            - Whether to import thermal data.
+          * - :py:attr:`~per_pin_res_path`
+            - Per-pin resistance file path.
+          * - :py:attr:`~per_pin_use_pin_format`
+            - Whether to use pin format for per-pin resistance.
+          * - :py:attr:`~source_terms_to_ground`
+            - Source terms to ground mapping.
+          * - :py:attr:`~use_loop_res_for_per_pin`
+            - Whether to use loop resistance for per-pin resistance.
+          * - :py:attr:`~via_report_path`
+            - Via report file path.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dcir_settings import SIWaveDCIRSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+
+.. py:property:: dc
+
+.. py:property:: dc_advanced
+
+.. py:property:: general
+
+.. py:property:: s_parameter
+
+.. py:property:: dc_report_config_file
+   :type: str
+
+
+   
+   DC report configuration file path.
+
+
+
+
+
+   :Returns:
+
+       str:
+           file path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_show_active_devices
+   :type: bool
+
+
+   
+   Whether to show active devices in the DC report.
+
+
+
+
+
+   :Returns:
+
+       bool:
+           True if active devices are shown, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+
+   
+   Whether the DC IR simulation is enabled.
+
+
+
+
+
+   :Returns:
+
+       bool:
+           True if enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: export_dc_thermal_data
+   :type: bool
+
+
+   
+   Whether to export DC thermal data.
+
+
+
+
+
+   :Returns:
+
+       bool:
+           True if DC thermal data is exported, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: full_dc_report_path
+   :type: str
+
+
+   
+   Full DC report path.
+
+
+
+
+
+   :Returns:
+
+       str:
+           file path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_temp_file
+   :type: str
+
+
+   
+   Icepak temperature file path.
+
+
+
+
+
+   :Returns:
+
+       str:
+           file path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: import_thermal_data
+   :type: bool
+
+
+   
+   Whether to import thermal data.
+
+
+
+
+
+   :Returns:
+
+       bool:
+           True if thermal data is imported, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_res_path
+   :type: str
+
+
+   
+   Per-pin resistance file path.
+
+
+
+
+
+   :Returns:
+
+       str:
+           file path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_use_pin_format
+   :type: bool
+
+
+   
+   Whether to use pin format for per-pin resistance.
+
+
+
+
+
+   :Returns:
+
+       bool:
+           True if pin format is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_terms_to_ground
+   :type: dict[str, int]
+
+
+   
+   Source terms to ground mapping.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:int`]:
+           Mapping of source terms to ground.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_loop_res_for_per_pin
+   :type: bool
+
+
+   
+   Whether to use loop resistance for per-pin resistance.
+
+
+
+
+
+   :Returns:
+
+       bool:
+           True if loop resistance is used for per-pin resistance, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_report_path
+   :type: str
+
+
+   
+   Via report file path.
+
+
+
+
+
+   :Returns:
+
+       str:
+           file path.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

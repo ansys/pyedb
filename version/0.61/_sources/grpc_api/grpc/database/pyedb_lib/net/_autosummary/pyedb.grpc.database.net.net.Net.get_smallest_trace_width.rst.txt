@@ -1,0 +1,6 @@
+get\_smallest\_trace\_width
+===========================
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. automethod:: Net.get_smallest_trace_width

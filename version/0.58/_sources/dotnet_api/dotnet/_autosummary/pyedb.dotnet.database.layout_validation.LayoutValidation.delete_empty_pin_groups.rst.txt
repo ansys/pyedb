@@ -1,0 +1,6 @@
+delete\_empty\_pin\_groups
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.layout_validation
+
+.. automethod:: LayoutValidation.delete_empty_pin_groups

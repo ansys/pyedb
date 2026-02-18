@@ -1,0 +1,6 @@
+has\_voids
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.has_voids

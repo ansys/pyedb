@@ -1,0 +1,6 @@
+reference\_object
+=================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: GapPort.reference_object

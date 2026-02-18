@@ -1,0 +1,6 @@
+move\_layer
+===========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. automethod:: EdbPolygon.move_layer

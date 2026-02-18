@@ -1,0 +1,6 @@
+intersection\_type
+==================
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.intersection_type

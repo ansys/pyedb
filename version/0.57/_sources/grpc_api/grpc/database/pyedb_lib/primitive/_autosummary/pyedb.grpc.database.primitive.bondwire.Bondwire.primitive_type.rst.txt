@@ -1,0 +1,6 @@
+primitive\_type
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.primitive_type

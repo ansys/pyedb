@@ -1,0 +1,153 @@
+
+
+
+
+
+
+:class:`PinGroupTerminal`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.terminal.Terminal`
+
+
+   
+   Manages pin group terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PinGroupTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a pin group terminal.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pin_group`
+            - Gets the pin group the terminal refers to.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+
+Property detail
+---------------
+
+.. py:property:: pin_group
+
+   
+   Gets the pin group the terminal refers to.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name, net_name, pin_group_name, is_ref=False)
+
+   
+   Create a pin group terminal.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the terminal.
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+       **pin_group_name** : str,
+           Name of the pin group.
+
+       **is_ref** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a reference terminal. The default is ``False``.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

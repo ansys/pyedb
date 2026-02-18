@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. automethod:: VoltageRegulator.find_by_id

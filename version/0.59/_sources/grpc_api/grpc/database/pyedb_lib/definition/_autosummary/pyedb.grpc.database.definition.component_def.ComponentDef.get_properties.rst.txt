@@ -1,0 +1,6 @@
+get\_properties
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. automethod:: ComponentDef.get_properties

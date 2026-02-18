@@ -1,0 +1,6 @@
+bottom\_hallhuray\_surface\_ratio
+=================================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.bottom_hallhuray_surface_ratio

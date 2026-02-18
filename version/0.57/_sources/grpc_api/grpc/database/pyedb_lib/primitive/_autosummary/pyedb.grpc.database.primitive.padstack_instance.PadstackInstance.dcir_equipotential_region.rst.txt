@@ -1,0 +1,6 @@
+dcir\_equipotential\_region
+===========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.dcir_equipotential_region

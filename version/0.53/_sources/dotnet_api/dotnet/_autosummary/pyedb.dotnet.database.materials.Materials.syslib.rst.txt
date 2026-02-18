@@ -1,0 +1,6 @@
+syslib
+======
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. autoproperty:: Materials.syslib

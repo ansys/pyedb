@@ -1,0 +1,32 @@
+﻿InterdigitalCapacitor
+=====================
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoclass:: InterdigitalCapacitor
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      InterdigitalCapacitor.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      InterdigitalCapacitor.VAR_PREFIX
+      InterdigitalCapacitor.capacitance_pf
+   
+   

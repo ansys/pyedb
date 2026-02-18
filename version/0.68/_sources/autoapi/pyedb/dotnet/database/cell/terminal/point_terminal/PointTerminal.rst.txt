@@ -1,0 +1,181 @@
+
+
+
+
+
+
+:class:`PointTerminal`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.terminal.Terminal`
+
+
+   
+   Manages point terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PointTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a point terminal.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer`
+            - Get layer of the terminal.
+          * - :py:attr:`~location`
+            - Location of the terminal.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
+
+Property detail
+---------------
+
+.. py:property:: layer
+
+   
+   Get layer of the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+
+   
+   Location of the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name, net, location, layer, is_ref=False)
+
+   
+   Create a point terminal.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the terminal.
+
+       **net** : :class:`python:str`
+           Name of the net.
+
+       **location** : :class:`python:list`
+           Location of the terminal.
+
+       **layer** : :class:`python:str`
+           Name of the layer.
+
+       **is_ref** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a reference terminal.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

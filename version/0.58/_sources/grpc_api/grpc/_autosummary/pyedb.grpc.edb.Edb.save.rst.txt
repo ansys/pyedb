@@ -1,0 +1,6 @@
+save
+====
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.save

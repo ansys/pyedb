@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup
+
+.. autoproperty:: SIWaveCPASimulationSetup.name

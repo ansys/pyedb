@@ -1,0 +1,6 @@
+layout\_validation
+==================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.layout_validation

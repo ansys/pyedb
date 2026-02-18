@@ -1,0 +1,6 @@
+net
+===
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.net

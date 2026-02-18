@@ -1,0 +1,6 @@
+compress\_primitives
+====================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.compress_primitives

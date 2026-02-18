@@ -1,0 +1,6 @@
+imag
+====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoattribute:: Value.imag

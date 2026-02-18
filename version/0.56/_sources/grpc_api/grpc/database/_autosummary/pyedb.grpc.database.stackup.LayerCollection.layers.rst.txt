@@ -1,0 +1,6 @@
+layers
+======
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: LayerCollection.layers

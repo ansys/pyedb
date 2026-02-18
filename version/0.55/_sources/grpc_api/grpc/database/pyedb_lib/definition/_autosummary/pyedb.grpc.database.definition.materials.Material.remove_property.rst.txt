@@ -1,0 +1,6 @@
+remove\_property
+================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.remove_property

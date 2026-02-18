@@ -1,0 +1,253 @@
+
+
+
+
+
+
+:class:`SpiralInductor`
+=======================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.SpiralInductor(edb_cell: Optional[pyedb.Edb] = None, turns: Union[int, float] = 4.5, trace_width: Union[str, float] = 2e-05, spacing: Union[str, float] = 1.2e-05, inner_diameter: Union[str, float] = 6e-05, layer: str = 'M1', bridge_layer: str = 'M2', via_layer: str = 'M3', net: str = 'IN', inductor_center: Tuple[Union[str, float], Union[str, float]] = (0, 0), via_size: Union[str, float] = 2.5e-05, bridge_width: Union[str, float] = 1.2e-05, bridge_clearance: Union[str, float] = 6e-06, bridge_length: Union[str, float] = 0.0002, ground_layer: str = 'GND')
+
+   
+   Square spiral inductor with an optional under-pass bridge.
+
+
+   :Parameters:
+
+       **turns** : :class:`python:float`, :obj:`default` 4.5
+           Number of half-turns (4.5 = 4 full turns + 1 half turn).
+
+       **trace_width** : :class:`python:float`, :obj:`default` 20 µm
+           Width of the spiral trace.
+
+       **spacing** : :class:`python:float`, :obj:`default` 12 µm
+           Gap between successive turns.
+
+       **inner_diameter** : :class:`python:float`, :obj:`default` 60 µm
+           Side length of the innermost square.
+
+       **layer** : :class:`python:str`, :obj:`default` "M1"
+           Layer on which the spiral is drawn.
+
+       **bridge_layer** : :class:`python:str`, :obj:`default` "M2"
+           Layer used for the under-pass.
+
+       **via_layer** : :class:`python:str`, :obj:`default` "M3"
+           Via layer connecting spiral end to the under-pass.
+
+       **net** : :class:`python:str`, :obj:`default` "IN"
+           Net name.
+
+       **inductor_center** : :class:`python:tuple`\[:class:`python:float`, :class:`python:float`], :obj:`default` (0, 0)
+           Absolute centre coordinates of the structure.
+
+       **via_size** : :class:`python:float`, :obj:`default` 25 µm
+           Side length of the square via pad.
+
+       **bridge_width** : :class:`python:float`, :obj:`default` 12 µm
+           Width of the under-pass trace.
+
+       **bridge_clearance** : :class:`python:float`, :obj:`default` 6 µm
+           Dielectric clearance under the bridge.
+
+       **bridge_length** : :class:`python:float`, :obj:`default` 200 µm
+           Length of the under-pass beyond the via.
+
+       **ground_layer** : :class:`python:str`, :obj:`default` "GND"
+           Layer on which the ground plane is drawn.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> sp = SpiralInductor(turns=3.5, trace_width=25e-6, inner_diameter=80e-6)
+   >>> edb = Edb("spiral.aedb")
+   >>> sp._pedb = edb
+   >>> sp.create()
+   >>> f"{sp.inductance_nh:.1f} nH"
+   '3.4 nH'
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SpiralInductor
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~inductance_nh`
+            - Accurate inductance calculated with the improved Wheeler formula
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~turns`
+            - 
+          * - :py:attr:`~trace_width`
+            - 
+          * - :py:attr:`~spacing`
+            - 
+          * - :py:attr:`~inner_diameter`
+            - 
+          * - :py:attr:`~via_size`
+            - 
+          * - :py:attr:`~inductor_center`
+            - 
+          * - :py:attr:`~bridge_width`
+            - 
+          * - :py:attr:`~bridge_clearance`
+            - 
+          * - :py:attr:`~bridge_length`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~bridge_layer`
+            - 
+          * - :py:attr:`~via_layer`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~ground_layer`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import SpiralInductor
+
+Property detail
+---------------
+
+.. py:property:: inductance_nh
+   :type: float
+
+
+   
+   Accurate inductance calculated with the improved Wheeler formula
+   for square spirals.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Inductance in nano-Henries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: turns
+   :value: 4.5
+
+
+.. py:attribute:: trace_width
+
+.. py:attribute:: spacing
+
+.. py:attribute:: inner_diameter
+
+.. py:attribute:: via_size
+
+.. py:attribute:: inductor_center
+
+.. py:attribute:: bridge_width
+
+.. py:attribute:: bridge_clearance
+
+.. py:attribute:: bridge_length
+
+.. py:attribute:: layer
+   :value: 'M1'
+
+
+.. py:attribute:: bridge_layer
+   :value: 'M2'
+
+
+.. py:attribute:: via_layer
+   :value: 'M3'
+
+
+.. py:attribute:: substrate
+
+.. py:attribute:: net_name
+   :value: 'IN'
+
+
+.. py:attribute:: ground_layer
+   :value: 'GND'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+
+
+

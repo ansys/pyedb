@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_common`` library
+==============================================
+
+.. py:module:: pyedb.configuration.cfg_common
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_common
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgBase`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgVar`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgVariables`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_common.CfgBaseModel`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgBase</autoapi/pyedb/configuration/cfg_common/CfgBase>
+    <span class="nf nf-cod-symbol_class"></span> CfgVar</autoapi/pyedb/configuration/cfg_common/CfgVar>
+    <span class="nf nf-cod-symbol_class"></span> CfgVariables</autoapi/pyedb/configuration/cfg_common/CfgVariables>
+    <span class="nf nf-cod-symbol_class"></span> CfgBaseModel</autoapi/pyedb/configuration/cfg_common/CfgBaseModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

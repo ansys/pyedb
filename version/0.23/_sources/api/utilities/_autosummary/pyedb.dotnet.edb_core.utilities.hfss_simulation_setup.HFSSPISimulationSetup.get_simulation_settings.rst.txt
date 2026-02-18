@@ -1,0 +1,6 @@
+get\_simulation\_settings
+=========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. automethod:: HFSSPISimulationSetup.get_simulation_settings

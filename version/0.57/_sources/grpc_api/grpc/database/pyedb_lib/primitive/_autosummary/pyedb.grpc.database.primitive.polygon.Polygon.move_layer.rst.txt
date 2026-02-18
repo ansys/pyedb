@@ -1,0 +1,6 @@
+move\_layer
+===========
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.move_layer

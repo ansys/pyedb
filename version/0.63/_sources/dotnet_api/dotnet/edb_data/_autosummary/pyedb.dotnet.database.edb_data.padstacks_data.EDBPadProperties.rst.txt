@@ -1,0 +1,27 @@
+﻿EDBPadProperties
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoclass:: EDBPadProperties
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EDBPadProperties.int_to_geometry_type
+      
+      
+      EDBPadProperties.int_to_pad_type
+      
+   
+   
+
+   
+   
+   

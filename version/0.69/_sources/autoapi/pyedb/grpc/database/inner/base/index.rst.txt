@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``base.py`` module
+======================
+
+.. py:module:: pyedb.grpc.database.inner.base
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: base
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.inner.base.ObjBase`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ObjBase</autoapi/pyedb/grpc/database/inner/base/ObjBase>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

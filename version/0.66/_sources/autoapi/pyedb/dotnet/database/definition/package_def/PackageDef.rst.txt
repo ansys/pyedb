@@ -1,0 +1,358 @@
+
+
+
+
+
+
+:class:`PackageDef`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.definition.package_def.PackageDef(pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Manages EDB functionalities for package definitions.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.edb`
+           Edb object.
+
+       **edb_object** : :obj:`object`
+           ..
+
+       **Edb PackageDef Object**
+           component_part_name : str, optional
+           Part name of the component.
+
+       **extent_bounding_box** : :class:`python:list`, :obj:`optional`
+           Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"]].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PackageDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete a package definition object from the database.
+          * - :py:attr:`~set_heatsink`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~exterior_boundary`
+            - Get the exterior boundary of a package definition.
+          * - :py:attr:`~maximum_power`
+            - Maximum power of the package.
+          * - :py:attr:`~thermal_conductivity`
+            - Adding this property for compatibility with grpc.
+          * - :py:attr:`~therm_cond`
+            - Thermal conductivity of the package.
+          * - :py:attr:`~theta_jb`
+            - Theta Junction-to-Board of the package.
+          * - :py:attr:`~theta_jc`
+            - Theta Junction-to-Case of the package.
+          * - :py:attr:`~height`
+            - Height of the package.
+          * - :py:attr:`~heatsink`
+            - Component heatsink.
+          * - :py:attr:`~heat_sink`
+            - Component heatsink.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.package_def import PackageDef
+
+Property detail
+---------------
+
+.. py:property:: exterior_boundary
+
+   
+   Get the exterior boundary of a package definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: maximum_power
+
+   
+   Maximum power of the package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_conductivity
+
+   
+   Adding this property for compatibility with grpc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: therm_cond
+
+   
+   Thermal conductivity of the package.
+
+   ..deprecated:: 0.48.0
+      Use: func:`thermal_conductivity` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: theta_jb
+
+   
+   Theta Junction-to-Board of the package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: theta_jc
+
+   
+   Theta Junction-to-Case of the package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+
+   
+   Height of the package.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: heatsink
+
+   
+   Component heatsink.
+
+   ..deprecated:: 0.48.0
+      Use: func:`heat_sink` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: heat_sink
+
+   
+   Component heatsink.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete()
+
+   
+   Delete a package definition object from the database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_heatsink(fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness)
+
+
+
+

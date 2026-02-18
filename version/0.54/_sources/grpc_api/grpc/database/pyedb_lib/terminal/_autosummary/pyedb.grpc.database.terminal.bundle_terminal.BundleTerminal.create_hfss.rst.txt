@@ -1,0 +1,6 @@
+create\_hfss
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. automethod:: BundleTerminal.create_hfss

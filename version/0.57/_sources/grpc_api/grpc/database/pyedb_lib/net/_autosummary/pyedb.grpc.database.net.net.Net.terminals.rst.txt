@@ -1,0 +1,6 @@
+terminals
+=========
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.terminals

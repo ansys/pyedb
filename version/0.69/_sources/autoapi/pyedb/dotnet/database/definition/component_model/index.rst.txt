@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``component_model.py`` module
+=================================
+
+.. py:module:: pyedb.dotnet.database.definition.component_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: component_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.component_model.ComponentModel`
+            - Manages component model class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.component_model.NPortComponentModel`
+            - Class for n-port component models.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ComponentModel</autoapi/pyedb/dotnet/database/definition/component_model/ComponentModel>
+    <span class="nf nf-cod-symbol_class"></span> NPortComponentModel</autoapi/pyedb/dotnet/database/definition/component_model/NPortComponentModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

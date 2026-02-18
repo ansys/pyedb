@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: LayerCollection.msg

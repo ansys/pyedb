@@ -1,0 +1,161 @@
+
+
+
+
+
+
+:class:`ControlFileMeshOp`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileMeshOp(name: str, region: str, type: str, nets_layers: Dict[str, str])
+
+   
+   Represents a mesh operation.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Operation name.
+
+       **region** : :class:`python:str`
+           Region name.
+
+       **type** : :class:`python:str`
+           Operation type ("MeshOperationLength" or "MeshOperationSkinDepth").
+
+       **nets_layers** : :class:`python:dict`
+           Dictionary of nets and layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileMeshOp
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~region`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~nets_layers`
+            - 
+          * - :py:attr:`~num_max_elem`
+            - 
+          * - :py:attr:`~restrict_elem`
+            - 
+          * - :py:attr:`~restrict_length`
+            - 
+          * - :py:attr:`~max_length`
+            - 
+          * - :py:attr:`~skin_depth`
+            - 
+          * - :py:attr:`~surf_tri_length`
+            - 
+          * - :py:attr:`~num_layers`
+            - 
+          * - :py:attr:`~region_solve_inside`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileMeshOp
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: region
+   :type:  str
+
+.. py:attribute:: type
+   :type:  str
+
+.. py:attribute:: nets_layers
+   :type:  Dict[str, str]
+
+.. py:attribute:: num_max_elem
+   :type:  int
+   :value: 1000
+
+
+.. py:attribute:: restrict_elem
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: restrict_length
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: max_length
+   :type:  str
+   :value: '20um'
+
+
+.. py:attribute:: skin_depth
+   :type:  str
+   :value: '1um'
+
+
+.. py:attribute:: surf_tri_length
+   :type:  str
+   :value: '1mm'
+
+
+.. py:attribute:: num_layers
+   :type:  int
+   :value: 2
+
+
+.. py:attribute:: region_solve_inside
+   :type:  bool
+   :value: False
+
+
+
+
+
+

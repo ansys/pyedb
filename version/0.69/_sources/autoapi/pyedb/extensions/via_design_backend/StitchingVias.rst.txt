@@ -1,0 +1,104 @@
+
+
+
+
+
+
+:class:`StitchingVias`
+======================
+
+
+.. py:class:: pyedb.extensions.via_design_backend.StitchingVias(p_via, start_angle, step_angle, number_of_vias, distance, clockwise=True)
+
+
+.. py:currentmodule:: StitchingVias
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~populate_config`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~p_via`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~start_angle`
+            - 
+          * - :py:attr:`~step_angle`
+            - 
+          * - :py:attr:`~number_of_vias`
+            - 
+          * - :py:attr:`~distance`
+            - 
+          * - :py:attr:`~clockwise`
+            - 
+          * - :py:attr:`~vias`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import StitchingVias
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: p_via
+
+.. py:attribute:: name
+   :value: 'Uninferable_stitching_via'
+
+
+.. py:attribute:: start_angle
+
+.. py:attribute:: step_angle
+
+.. py:attribute:: number_of_vias
+
+.. py:attribute:: distance
+
+.. py:attribute:: clockwise
+   :value: True
+
+
+.. py:attribute:: vias
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: populate_config(cfg)
+
+
+
+

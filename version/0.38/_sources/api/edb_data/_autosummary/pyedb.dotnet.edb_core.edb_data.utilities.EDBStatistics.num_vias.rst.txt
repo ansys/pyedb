@@ -1,0 +1,6 @@
+num\_vias
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.num_vias

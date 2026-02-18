@@ -1,0 +1,45 @@
+﻿Siwave
+======
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. autoclass:: Siwave
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Siwave.add_siwave_dc_analysis
+      
+      
+      Siwave.add_siwave_syz_analysis
+      
+      
+      Siwave.create_exec_file
+      
+      
+      Siwave.create_impedance_crosstalk_scan
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Siwave.excitations
+      Siwave.icepak_component_file
+      Siwave.icepak_use_minimal_comp_defaults
+      Siwave.pin_groups
+      Siwave.probes
+      Siwave.sources
+   
+   

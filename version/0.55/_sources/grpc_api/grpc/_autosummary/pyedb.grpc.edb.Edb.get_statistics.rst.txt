@@ -1,0 +1,6 @@
+get\_statistics
+===============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.get_statistics

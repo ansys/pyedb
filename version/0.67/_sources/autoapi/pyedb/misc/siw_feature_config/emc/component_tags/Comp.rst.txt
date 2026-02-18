@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`Comp`
+=============
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.component_tags.Comp(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages component tags.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.component_tags import Comp
+
+
+
+
+

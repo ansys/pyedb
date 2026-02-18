@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``pyedb.misc.utilities`` library
+====================================
+
+.. py:module:: pyedb.misc.utilities
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: utilities
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~compute_arc_points`
+            - Get the points of the arc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Module gathering utility functions for PyEDB modules.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: compute_arc_points(p1, p2, h, n=6, tol=1e-12)
+
+   
+   Get the points of the arc.
+
+
+   :Parameters:
+
+       **p1** : :class:`python:list`
+           Arc starting point.
+
+       **p2** : :class:`python:list`
+           Arc ending point.
+
+       **h** : :class:`python:float`
+           Arc height.
+
+       **n** : :class:`python:int`
+           Number of points to generate along the arc.
+
+       **tol** : :class:`python:float`
+           Geometric tolerance.
+
+   :Returns:
+
+       :class:`python:list`, :class:`python:list`
+           Points generated along the arc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

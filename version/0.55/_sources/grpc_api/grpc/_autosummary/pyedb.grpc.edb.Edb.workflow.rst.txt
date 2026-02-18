@@ -1,0 +1,6 @@
+workflow
+========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.workflow

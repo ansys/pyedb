@@ -1,0 +1,15 @@
+﻿EDBArcs
+=======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. autoclass:: EDBArcs
+
+   
+
+   
+   
+
+   
+   
+   

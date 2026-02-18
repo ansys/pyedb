@@ -1,0 +1,6 @@
+components\_by\_nets
+====================
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. autoproperty:: EdbNets.components_by_nets

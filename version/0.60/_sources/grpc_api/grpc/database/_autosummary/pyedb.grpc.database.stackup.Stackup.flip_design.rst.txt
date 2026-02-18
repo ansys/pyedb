@@ -1,0 +1,6 @@
+flip\_design
+============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.flip_design

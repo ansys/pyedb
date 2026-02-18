@@ -1,0 +1,864 @@
+
+
+
+
+
+
+:class:`EDBPadstack`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstack(edb_padstack, ppadstack)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB functionalities for a padstack.
+
+
+   :Parameters:
+
+       **edb_padstack**
+           ..
+
+       **ppadstack** : :class:`python:str`
+           Inherited AEDT object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_padstack = edb.padstacks.definitions["MyPad"]
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBPadstack
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~convert_to_3d_microvias`
+            - Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+          * - :py:attr:`~split_to_microvias`
+            - Convert actual padstack definition to multiple microvias definitions.
+          * - :py:attr:`~get_pad_parameters`
+            - Pad parameters.
+          * - :py:attr:`~set_pad_parameters`
+            - 
+          * - :py:attr:`~get_hole_parameters`
+            - 
+          * - :py:attr:`~set_hole_parameters`
+            - 
+          * - :py:attr:`~get_solder_parameters`
+            - 
+          * - :py:attr:`~set_solder_parameters`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pad_by_layer`
+            - Regular pad property.
+          * - :py:attr:`~antipad_by_layer`
+            - Anti pad property.
+          * - :py:attr:`~thermalpad_by_layer`
+            - Thermal pad property.
+          * - :py:attr:`~instances`
+            - Definitions Instances.
+          * - :py:attr:`~name`
+            - Padstack Definition Name.
+          * - :py:attr:`~via_layers`
+            - Layers.
+          * - :py:attr:`~via_start_layer`
+            - Starting layer.
+          * - :py:attr:`~via_stop_layer`
+            - Stopping layer.
+          * - :py:attr:`~hole_params`
+            - Via Hole parameters values.
+          * - :py:attr:`~hole_diameter`
+            - Hole diameter.
+          * - :py:attr:`~hole_diameter_string`
+            - Hole diameter in string format.
+          * - :py:attr:`~hole_properties`
+            - Hole properties.
+          * - :py:attr:`~hole_type`
+            - Hole type.
+          * - :py:attr:`~hole_offset_x`
+            - Hole offset for the X axis.
+          * - :py:attr:`~hole_offset_y`
+            - Hole offset for the Y axis.
+          * - :py:attr:`~hole_rotation`
+            - Hole rotation.
+          * - :py:attr:`~hole_plating_ratio`
+            - Hole plating ratio.
+          * - :py:attr:`~hole_plating_thickness`
+            - Hole plating thickness.
+          * - :py:attr:`~hole_finished_size`
+            - Finished hole size.
+          * - :py:attr:`~material`
+            - Hole material.
+          * - :py:attr:`~padstack_instances`
+            - Get all the vias that belongs to active Padstack definition.
+          * - :py:attr:`~hole_range`
+            - Get hole range value from padstack definition.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~PAD_SHAPE_PARAMETERS`
+            - 
+          * - :py:attr:`~edb_padstack`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstack
+
+Property detail
+---------------
+
+.. py:property:: pad_by_layer
+
+   
+   Regular pad property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: antipad_by_layer
+
+   
+   Anti pad property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermalpad_by_layer
+
+   
+   Thermal pad property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: instances
+
+   
+   Definitions Instances.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Padstack Definition Name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_layers
+
+   
+   Layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of layers.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_start_layer
+
+   
+   Starting layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the starting layer.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_stop_layer
+
+   
+   Stopping layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the stopping layer.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_params
+
+   
+   Via Hole parameters values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_diameter
+
+   
+   Hole diameter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_diameter_string
+
+   
+   Hole diameter in string format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_properties
+
+   
+   Hole properties.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of float values for hole properties.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_type
+
+   
+   Hole type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Type of the hole.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_offset_x
+
+   
+   Hole offset for the X axis.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Hole offset value for the X axis.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_offset_y
+
+   
+   Hole offset for the Y axis.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Hole offset value for the Y axis.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_rotation
+
+   
+   Hole rotation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Value for the hole rotation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_plating_ratio
+
+   
+   Hole plating ratio.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Percentage for the hole plating.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_plating_thickness
+
+   
+   Hole plating thickness.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Thickness of the hole plating if present.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_finished_size
+
+   
+   Finished hole size.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Finished size of the hole (Total Size + PlatingThickess*2).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material
+
+   
+   Hole material.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material of the hole.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instances
+
+   
+   Get all the vias that belongs to active Padstack definition.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hole_range
+
+   
+   Get hole range value from padstack definition.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Possible returned values are ``"through"``, ``"begin_on_upper_pad"``,
+           ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"unknown_range"``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: PAD_SHAPE_PARAMETERS
+
+.. py:attribute:: edb_padstack
+
+
+
+Method detail
+-------------
+
+.. py:method:: convert_to_3d_microvias(convert_only_signal_vias=True, hole_wall_angle=75, delete_padstack_def=True)
+
+   
+   Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+
+
+   :Parameters:
+
+       **convert_only_signal_vias** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either to convert only vias belonging to signal nets or all vias. Defaults is ``True``.
+
+       **hole_wall_angle** : :class:`python:float`, :obj:`optional`
+           Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+           HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+           The default is ``15``.
+           The lowest hole is ``0.75*HoleDepth/HoleDiam``.
+
+       **delete_padstack_def** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to delete the padstack definition. The default is ``True``.
+           If ``False``, the padstack definition is not deleted and the hole size is set to zero.
+
+
+
+   :Returns:
+
+       ``True`` :obj:`when` :obj:`successful`, ``False`` :obj:`when` failed.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: split_to_microvias()
+
+   
+   Convert actual padstack definition to multiple microvias definitions.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List` :obj:`of` :class:`pyedb.dotnet.database.padstackEDBPadstack`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pad_parameters()
+
+   
+   Pad parameters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           params = {
+           'regular_pad': [
+               {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
+               'rotation': '0', 'diameter': '0.5mm'}
+           ],
+           'anti_pad': [
+               {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+               'diameter': '1mm'}
+           ],
+           'thermal_pad': [
+               {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+               'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
+           ],
+           'hole': [
+               {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'diameter': '0.1499997mm'},
+           ]
+
+       }
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_pad_parameters(param)
+
+.. py:method:: get_hole_parameters()
+
+.. py:method:: set_hole_parameters(params)
+
+.. py:method:: get_solder_parameters()
+
+.. py:method:: set_solder_parameters(parameters)
+
+
+
+

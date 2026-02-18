@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`VoltageSource`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.VoltageSource
+
+   Bases: :py:obj:`Source`
+
+
+   
+   Manages a voltage source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: VoltageSource
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~magnitude`
+            - Magnitude.
+          * - :py:attr:`~phase`
+            - Phase.
+          * - :py:attr:`~impedance`
+            - Impedance.
+          * - :py:attr:`~source_type`
+            - Source type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import VoltageSource
+
+Property detail
+---------------
+
+.. py:property:: magnitude
+
+   
+   Magnitude.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Phase.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   Source type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

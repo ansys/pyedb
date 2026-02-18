@@ -1,0 +1,292 @@
+
+
+
+
+
+
+:class:`GeometryDotNet`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.GeometryDotNet(app)
+
+   
+   Geometry Edb Class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: GeometryDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~point_data`
+            - Edb Dotnet Api Point.
+          * - :py:attr:`~point3d_data`
+            - Edb Dotnet Api Point 3D.
+          * - :py:attr:`~arc_data`
+            - Compute EBD arc data.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+          * - :py:attr:`~utility`
+            - 
+          * - :py:attr:`~extent_type`
+            - Edb Dotnet Api Extent Type.
+          * - :py:attr:`~polygon_data`
+            - Polygon Data.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~geometry`
+            - 
+          * - :py:attr:`~core`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import GeometryDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: utility
+
+.. py:property:: extent_type
+
+   
+   Edb Dotnet Api Extent Type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygon_data
+
+   
+   Polygon Data.
+
+
+
+
+
+   :Returns:
+
+       :class:`dotnet.database.dotnet.PolygonDataDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: geometry
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(key)
+
+.. py:method:: point_data(p1, p2)
+
+   
+   Edb Dotnet Api Point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: point3d_data(p1, p2, p3)
+
+   
+   Edb Dotnet Api Point 3D.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: arc_data(point1, point2, rotation=None, center=None, height=None)
+
+   
+   Compute EBD arc data.
+
+
+   :Parameters:
+
+       **point1** : :class:`python:list` or :obj:`PointData` :obj:`object`
+           ..
+
+       **point2** : :class:`python:list` or :obj:`PointData` :obj:`object`
+           ..
+
+       **rotation** : :class:`python:int` or :obj:`RotationDir` :obj:`enumerator`
+           ..
+
+       **center** :  :class:`python:list` or :obj:`PointData` :obj:`object`
+           ..
+
+       **height** : :class:`python:float`
+           ..
+
+
+
+   :Returns:
+
+       :obj:`Edb` :obj:`ArcData` :obj:`object`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

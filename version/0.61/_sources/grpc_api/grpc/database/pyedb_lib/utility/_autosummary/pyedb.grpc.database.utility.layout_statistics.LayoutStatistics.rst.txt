@@ -1,0 +1,15 @@
+﻿LayoutStatistics
+================
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoclass:: LayoutStatistics
+
+   
+
+   
+   
+
+   
+   
+   

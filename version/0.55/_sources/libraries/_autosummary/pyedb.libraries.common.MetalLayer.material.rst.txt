@@ -1,0 +1,6 @@
+material
+========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoproperty:: MetalLayer.material

@@ -1,0 +1,6 @@
+hole\_offset\_y
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.hole_offset_y

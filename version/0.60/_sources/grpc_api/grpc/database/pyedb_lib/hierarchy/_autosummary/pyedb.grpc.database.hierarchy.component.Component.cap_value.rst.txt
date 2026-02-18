@@ -1,0 +1,6 @@
+cap\_value
+==========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.cap_value

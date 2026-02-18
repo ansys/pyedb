@@ -1,0 +1,266 @@
+
+
+
+
+
+
+:class:`TriangularPatch`
+========================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.planar_antennas.TriangularPatch(edb_cell=None, target_frequency: Union[str, float] = '2.4GHz', length_feeding_line: Union[str, float] = 0, layer: str = 'TOP_METAL', bottom_layer: str = 'BOT_METAL', add_port: bool = True)
+
+   
+   Equilateral-triangle microstrip patch antenna (optionally probe-fed).
+
+   The class automatically determines the physical dimensions for a
+   desired resonance frequency, creates the patch, ground plane and
+   either an inset microstrip feed or a coaxial probe feed, and
+   optionally sets up an HFSS simulation.
+
+   :Parameters:
+
+       **edb_cell** : :obj:`pyedb.Edb`, :obj:`optional`
+           EDB project/cell in which the antenna will be built.
+
+       **freq** : :class:`python:str` or :class:`python:float`, :obj:`default` "2.4GHz"
+           Target resonance frequency of the patch.  A string such as
+           ``"2.4GHz"`` or a numeric value in Hz can be given.
+
+       **probe_offset** : :class:`python:str` or :class:`python:float`, :obj:`default` 0
+           Radial offset of the 50 Ω coax probe from the patch centroid.
+           A value of 0 places the probe at the centroid (not recommended
+           for good matching).
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP_METAL"
+           Metallization layer on which the patch polygon is drawn.
+
+       **bottom_layer** : :class:`python:str`, :obj:`default` "BOT_METAL"
+           Metallization layer on which the ground polygon is drawn.
+
+       **add_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`default` :data:`python:True`
+           If True, create a lumped port (probe feed) and add an HFSS
+           setup with a frequency sweep.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Build a 5.8 GHz triangular patch on a 0.787 mm Rogers RO4350B substrate:
+
+   >>> edb = pyedb.Edb()
+   >>> patch = TriangularPatch(edb_cell=edb, freq="5.8GHz", probe_offset="5.6mm", layer="TOP", bottom_layer="GND")
+   >>> patch.substrate.er = 3.66
+   >>> patch.substrate.tand = 0.0037
+   >>> patch.substrate.h = 0.000787
+   >>> patch.create()
+   >>> edb.save_as("tri_patch_5p8GHz.aedb")
+
+   Probe-fed 2.4 GHz patch with default 0 offset (center feed):
+
+   >>> edb = pyedb.Edb()
+   >>> TriangularPatch(edb, freq=2.4e9).create()
+   >>> edb.save_as("probe_tri_patch_2p4GHz.aedb")
+
+   :Attributes:
+
+       **substrate** : :obj:`Substrate`
+           Substrate definition (``er``, ``tand``, ``h``) used for all
+           analytical calculations.
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: TriangularPatch
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Draw the patch, ground plane and feed geometry in EDB.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~estimated_frequency`
+            - Improved analytical resonance frequency (Hz) of the dominant TM10 mode.
+          * - :py:attr:`~side`
+            - Patch physical side length (m) for the target frequency.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~target_frequency`
+            - 
+          * - :py:attr:`~length_feeding_line`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~bottom_layer`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+          * - :py:attr:`~add_port`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.planar_antennas import TriangularPatch
+
+Property detail
+---------------
+
+.. py:property:: estimated_frequency
+   :type: float
+
+
+   
+   Improved analytical resonance frequency (Hz) of the dominant TM10 mode.
+
+   Uses a closed-form model for equilateral-triangle patches.
+   Accuracy ≈ ±1 % compared with full-wave solvers for
+   0.003 ≤ h/λd ≤ 0.05 and εr 2–12.
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resonant frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: side
+   :type: float
+
+
+   
+   Patch physical side length (m) for the target frequency.
+
+   Uses a **full-cavity model** with dynamic fringing and dispersion
+   corrections that keeps the error < 0.25 % for
+   0.003 ≤ h/λd ≤ 0.06 and 2 ≤ εr ≤ 12.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: target_frequency
+
+.. py:attribute:: length_feeding_line
+
+.. py:attribute:: layer
+   :value: 'TOP_METAL'
+
+
+.. py:attribute:: bottom_layer
+   :value: 'BOT_METAL'
+
+
+.. py:attribute:: substrate
+
+.. py:attribute:: add_port
+   :value: True
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Draw the patch, ground plane and feed geometry in EDB.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True when the geometry has been successfully created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

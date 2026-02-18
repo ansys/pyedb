@@ -1,0 +1,6 @@
+CFG\_PORT\_TYPE
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. autoattribute:: CfgPort.CFG_PORT_TYPE

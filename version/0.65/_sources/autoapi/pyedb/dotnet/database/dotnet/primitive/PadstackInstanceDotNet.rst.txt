@@ -1,0 +1,767 @@
+
+
+
+
+
+
+:class:`PadstackInstanceDotNet`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.PadstackInstanceDotNet(api, prim_obj=None)
+
+   Bases: :py:obj:`PrimitiveDotNet`
+
+
+   
+   Class representing a Padstack Instance object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PadstackInstanceDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a PadstackInstance object.
+          * - :py:attr:`~get_position_and_rotation`
+            - Get the position and rotation of a Padstack Instance.
+          * - :py:attr:`~set_position_and_rotation`
+            - Set the position and rotation of a Padstack Instance.
+          * - :py:attr:`~get_layer_range`
+            - Get the top and bottom layers of a Padstack Instance.
+          * - :py:attr:`~set_layer_range`
+            - Set the top and bottom layers of a Padstack Instance.
+          * - :py:attr:`~get_hole_overrides`
+            - Get the hole overrides of Padstack Instance.
+          * - :py:attr:`~set_hole_overrides`
+            - Set the hole overrides of Padstack Instance.
+          * - :py:attr:`~get_back_drill_type`
+            - Get the back drill type of Padstack Instance.
+          * - :py:attr:`~get_back_drill_by_layer`
+            - Get the back drill by layer.
+          * - :py:attr:`~set_back_drill_by_layer`
+            - Set the back drill by layer.
+          * - :py:attr:`~get_back_drill_by_depth`
+            - Get the back drill by depth.
+          * - :py:attr:`~set_back_drill_by_depth`
+            - Set the back drill by Depth.
+          * - :py:attr:`~get_padstack_instance_terminal`
+            - :class:`TerminalInstance <ansys.edb.terminal.TerminalInstance>`: Padstack Instance's terminal.
+          * - :py:attr:`~is_in_pin_group`
+            - Check if Padstack instance is in the Pin Group.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~padstack_def`
+            - :class:`PadstackDef <ansys.edb.definition.padstack_def>`: PadstackDef of a Padstack Instance.
+          * - :py:attr:`~name`
+            - :obj:`str`: Name of a Padstack Instance.
+          * - :py:attr:`~solderball_layer`
+            - :class:`Layer <ansys.edb.layer.Layer>`: SolderBall Layer of Padstack Instance.
+          * - :py:attr:`~layer_map`
+            - :class:`LayerMap <ansys.edb.utility.LayerMap>`: Layer Map of the Padstack Instance.
+          * - :py:attr:`~is_layout_pin`
+            - :obj:`bool`: If padstack instance is layout pin.
+          * - :py:attr:`~pin_groups`
+            - :obj:`list` of :class:`PinGroup <ansys.edb.hierarchy.PinGroup>`: Pin groups of Padstack instance object.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import PadstackInstanceDotNet
+
+Property detail
+---------------
+
+.. py:property:: padstack_def
+
+   
+   :class:`PadstackDef <ansys.edb.definition.padstack_def>`: PadstackDef of a Padstack Instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   :obj:`str`: Name of a Padstack Instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solderball_layer
+
+   
+   :class:`Layer <ansys.edb.layer.Layer>`: SolderBall Layer of Padstack Instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_map
+
+   
+   :class:`LayerMap <ansys.edb.utility.LayerMap>`: Layer Map of the Padstack Instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_layout_pin
+
+   
+   :obj:`bool`: If padstack instance is layout pin.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_groups
+
+   
+   :obj:`list` of :class:`PinGroup <ansys.edb.hierarchy.PinGroup>`: Pin groups of Padstack instance object.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, net, name, padstack_def, point, rotation, top_layer, bottom_layer, solder_ball_layer, layer_map)
+
+   
+   Create a PadstackInstance object.
+
+
+   :Parameters:
+
+       **layout** : :class:`Layout <ansys.edb.layout.Layout>`
+           Layout this padstack instance will be in.
+
+       **net** : :class:`Net <ansys.edb.net.Net>`
+           Net of this padstack instance.
+
+       **name** : :class:`python:str`
+           Name of padstack instance.
+
+       **padstack_def** : :obj:`PadstackDef`
+           Padstack definition of this padstack instance.
+
+       **rotation** : :class:`Value <ansys.edb.utility.Value>`
+           Rotation of this padstack instance.
+
+       **top_layer** : :class:`Layer <ansys.edb.layer.Layer>`
+           Top layer of this padstack instance.
+
+       **bottom_layer** : :class:`Layer <ansys.edb.layer.Layer>`
+           Bottom layer of this padstack instance.
+
+       **solder_ball_layer** : :class:`Layer <ansys.edb.layer.Layer>`
+           Solder ball layer of this padstack instance, or None for none.
+
+       **layer_map** : :class:`LayerMap <ansys.edb.utility.LayerMap>`
+           Layer map of this padstack instance. None or empty means do auto-mapping.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.primitive.PadstackInstanceDotNet`
+           Padstack instance object created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_position_and_rotation()
+
+   
+   Get the position and rotation of a Padstack Instance.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(x, y, rotation)**
+           
+           **x** : X coordinate.
+           
+           **y** : Y coordinate.
+           
+           **rotation** : Rotation in radians.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_position_and_rotation(x, y, rotation)
+
+   
+   Set the position and rotation of a Padstack Instance.
+
+
+   :Parameters:
+
+       **x** : :class:`Value <ansys.edb.utility.Value>`
+           x : X coordinate.
+
+       **y** : :class:`Value <ansys.edb.utility.Value>`
+           y : Y coordinate.
+
+       **rotation** : :class:`Value <ansys.edb.utility.Value>`
+           rotation : Rotation in radians.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_layer_range()
+
+   
+   Get the top and bottom layers of a Padstack Instance.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           :class:`Layer <ansys.edb.layer.Layer>`,
+           :class:`Layer <ansys.edb.layer.Layer>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(top_layer, bottom_layer)**
+           
+           **top_layer** : Top layer of the Padstack instance
+           
+           **bottom_layer** : Bottom layer of the Padstack instance
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_layer_range(top_layer, bottom_layer)
+
+   
+   Set the top and bottom layers of a Padstack Instance.
+
+
+   :Parameters:
+
+       **top_layer** : :class:`Layer <ansys.edb.layer.Layer>`
+           Top layer of the Padstack instance.
+
+       **bottom_layer** : :class:`Layer <ansys.edb.layer.Layer>`
+           Bottom layer of the Padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_hole_overrides()
+
+   
+   Get the hole overrides of Padstack Instance.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           bool,
+           :class:`Value <ansys.edb.utility.Value>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(is_hole_override, hole_override)**
+           
+           **is_hole_override** : If padstack instance is hole override.
+           
+           **hole_override** : Hole override diameter of this padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_hole_overrides(is_hole_override, hole_override)
+
+   
+   Set the hole overrides of Padstack Instance.
+
+
+   :Parameters:
+
+       **is_hole_override** : :ref:`bool <python:bltin-boolean-values>`
+           If padstack instance is hole override.
+
+       **hole_override** : :class:`Value <ansys.edb.utility.Value>`
+           Hole override diameter of this padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_back_drill_type(from_bottom)
+
+   
+   Get the back drill type of Padstack Instance.
+
+
+   :Parameters:
+
+       **from_bottom** : :ref:`bool <python:bltin-boolean-values>`
+           True to get drill type from bottom.
+
+   :Returns:
+
+       :class:`BackDrillType`
+           Back-Drill Type of padastack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_back_drill_by_layer(from_bottom)
+
+   
+   Get the back drill by layer.
+
+
+   :Parameters:
+
+       **from_bottom** : :ref:`bool <python:bltin-boolean-values>`
+           True to get drill type from bottom.
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           bool,
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(drill_to_layer, offset, diameter)**
+           
+           **drill_to_layer** : Layer drills to. If drill from top, drill stops at the upper elevation of the layer.            If from bottom, drill stops at the lower elevation of the layer.
+           
+           **offset** : Layer offset (or depth if layer is empty).
+           
+           **diameter** : Drilling diameter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_back_drill_by_layer(drill_to_layer, offset, diameter, from_bottom)
+
+   
+   Set the back drill by layer.
+
+
+   :Parameters:
+
+       **drill_to_layer** : :class:`Layer <ansys.edb.layer.Layer>`
+           Layer drills to. If drill from top, drill stops at the upper elevation of the layer.
+           If from bottom, drill stops at the lower elevation of the layer.
+
+       **offset** : :class:`Value <ansys.edb.utility.Value>`
+           Layer offset (or depth if layer is empty).
+
+       **diameter** : :class:`Value <ansys.edb.utility.Value>`
+           Drilling diameter.
+
+       **from_bottom** : :ref:`bool <python:bltin-boolean-values>`
+           True to set drill type from bottom.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_back_drill_by_depth(from_bottom)
+
+   
+   Get the back drill by depth.
+
+
+   :Parameters:
+
+       **from_bottom** : :ref:`bool <python:bltin-boolean-values>`
+           True to get drill type from bottom.
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           bool,
+           :class:`Value <ansys.edb.utility.Value>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(drill_depth, diameter)**
+           
+           **drill_depth** : Drilling depth, may not align with layer.
+           
+           **diameter** : Drilling diameter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_back_drill_by_depth(drill_depth, diameter, from_bottom)
+
+   
+   Set the back drill by Depth.
+
+
+   :Parameters:
+
+       **drill_depth** : :class:`Value <ansys.edb.utility.Value>`
+           Drilling depth, may not align with layer.
+
+       **diameter** : :class:`Value <ansys.edb.utility.Value>`
+           Drilling diameter.
+
+       **from_bottom** : :ref:`bool <python:bltin-boolean-values>`
+           True to set drill type from bottom.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_padstack_instance_terminal()
+
+   
+   :class:`TerminalInstance <ansys.edb.terminal.TerminalInstance>`: Padstack Instance's terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_in_pin_group(pin_group)
+
+   
+   Check if Padstack instance is in the Pin Group.
+
+
+   :Parameters:
+
+       **pin_group** : :class:`PinGroup <ansys.edb.hierarchy.PinGroup>`
+           Pin group to check if padstack instance is in.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if padstack instance is in pin group.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

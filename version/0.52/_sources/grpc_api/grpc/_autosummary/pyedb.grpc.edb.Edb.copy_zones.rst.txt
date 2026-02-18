@@ -1,0 +1,6 @@
+copy\_zones
+===========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.copy_zones

@@ -1,0 +1,6 @@
+model\_config
+=============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: CopperBalance.model_config

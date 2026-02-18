@@ -1,0 +1,6 @@
+obj\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoproperty:: DifferentialPair.obj_type

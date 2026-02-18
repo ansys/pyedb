@@ -1,0 +1,6 @@
+create\_coax\_port
+==================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.create_coax_port

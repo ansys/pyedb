@@ -1,0 +1,707 @@
+
+
+
+
+
+
+:class:`HFSSSimulationConfig`
+=============================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig(**data)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Complete, validated simulation configuration.
+
+   The class is a **frozen** dataclass (after ``__post_init__``) and can be
+   serialised to/from JSON via :meth:`to_dict` / :meth:`from_dict`.
+   e
+   Parameters
+   ----------
+   ansys_edt_path : str
+       Path to ``ansysedt`` executable.
+   solver : str, optional
+       Solver name.  Defaults to ``"Hfss3DLayout"``.
+   jobid : str, optional
+       Unique identifier.  Auto-generated with timestamp if omitted.
+   distributed : bool, optional
+       Enable MPI distribution.  Defaults to ``True``.
+   machine_nodes : list[MachineNode], optional
+       Compute nodes.  Defaults to ``[MachineNode()]``.
+   auto : bool, optional
+       Non-interactive mode.  Defaults to ``True``.
+   non_graphical : bool, optional
+       Hide GUI.  Defaults to ``True``.
+   monitor : bool, optional
+       Stream solver log.  Defaults to ``True``.
+   layout_options : HFSS3DLayoutBatchOptions, optional
+       Solver flags.  Defaults to a new instance.
+   project_path : str, optional
+       ``.aedt`` or ``.aedb`` file.  Defaults to platform temp.
+   design_name : str, optional
+       Design inside project.  Defaults to ``""`` (use active).
+   design_mode : str, optional
+       Variation name.  Defaults to ``""``.
+   setup_name : str, optional
+       Setup to solve.  Defaults to ``""``.
+   scheduler_type : SchedulerType, optional
+       External scheduler.  Defaults to :attr:`SchedulerType.NONE`.
+   scheduler_options : SchedulerOptions, optional
+       Scheduler directives.  Defaults to a new instance.
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           On validation failure.
+
+       :obj:`FileNotFoundError`
+           If *project_path* does not exist.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: HFSSSimulationConfig
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_dict`
+            - Deserialize a dictionary produced by :meth:`to_dict`.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~validate_fields`
+            - Validate all options and raise ``ValueError`` on violation.
+          * - :py:attr:`~generate_machinelist_string`
+            - Return HFSS ``-machinelist`` argument.
+          * - :py:attr:`~generate_batch_options_string`
+            - Generate HFSS batch options string from layout options.
+          * - :py:attr:`~generate_design_string`
+            - Generate design specification string for HFSS command.
+          * - :py:attr:`~generate_slurm_script`
+            - Returns a proper SLURM batch script with shebang.
+          * - :py:attr:`~generate_lsf_script`
+            - Return LSF batch script that matches the reference command.
+          * - :py:attr:`~generate_scheduler_script`
+            - Delegate to the correct generator based on
+          * - :py:attr:`~generate_command_string`
+            - Platform-escaped command line.
+          * - :py:attr:`~submit_to_scheduler`
+            - Write the batch script (if *script_path* given) and submit to the
+          * - :py:attr:`~run_simulation`
+            - **Main entry point** — run the simulation **either**
+          * - :py:attr:`~generate_command_list`
+            - List form for subprocess.run(shell=False).
+          * - :py:attr:`~to_dict`
+            - Serialize the **complete** configuration to a JSON-safe dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+          * - :py:attr:`~ansys_edt_path`
+            - 
+          * - :py:attr:`~solver`
+            - 
+          * - :py:attr:`~jobid`
+            - 
+          * - :py:attr:`~user`
+            - 
+          * - :py:attr:`~distributed`
+            - 
+          * - :py:attr:`~machine_nodes`
+            - 
+          * - :py:attr:`~auto`
+            - 
+          * - :py:attr:`~non_graphical`
+            - 
+          * - :py:attr:`~monitor`
+            - 
+          * - :py:attr:`~layout_options`
+            - 
+          * - :py:attr:`~project_path`
+            - 
+          * - :py:attr:`~design_name`
+            - 
+          * - :py:attr:`~design_mode`
+            - 
+          * - :py:attr:`~setup_name`
+            - 
+          * - :py:attr:`~scheduler_type`
+            - 
+          * - :py:attr:`~scheduler_options`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__str__`
+            - String representation of the complete HFSS command.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.job_submission import HFSSSimulationConfig
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: ansys_edt_path
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: solver
+   :type:  str
+   :value: 'Hfss3DLayout'
+
+
+.. py:attribute:: jobid
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: user
+   :type:  str
+   :value: 'unknown'
+
+
+.. py:attribute:: distributed
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: machine_nodes
+   :type:  List[MachineNode]
+   :value: None
+
+
+.. py:attribute:: auto
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: non_graphical
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: monitor
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: layout_options
+   :type:  HFSS3DLayoutBatchOptions
+   :value: None
+
+
+.. py:attribute:: project_path
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: design_name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: design_mode
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: setup_name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: scheduler_type
+   :type:  SchedulerType
+
+.. py:attribute:: scheduler_options
+   :type:  SchedulerOptions
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: validate_fields() -> None
+
+   
+   Validate all options and raise ``ValueError`` on violation.
+   Checks ranges, formats, and scheduler-specific rules.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_machinelist_string() -> str
+
+   
+   Return HFSS ``-machinelist`` argument.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Machine list string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_batch_options_string() -> str
+
+   
+   Generate HFSS batch options string from layout options.
+   Converts HFSS3DLayoutOptions to command-line batch options format.
+   Format matches Ansys reference: "key1=value1 key2=value2"
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Batch options string with space-separated key=value pairs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_design_string() -> str
+
+   
+   Generate design specification string for HFSS command.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Design string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_slurm_script() -> str
+
+   
+   Returns a proper SLURM batch script with shebang.
+   This script can be written to a file and submitted via sbatch.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_lsf_script() -> str
+
+   
+   Return LSF batch script that matches the reference command.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_scheduler_script() -> str
+
+   
+   Delegate to the correct generator based on
+   :attr:`scheduler_type`.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Batch script or PowerShell code.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If *scheduler_type* is unsupported.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_command_string() -> str
+
+   
+   Platform-escaped command line.
+   Local  →  list=…
+   Scheduler →  distributed numcores=…  +  -auto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: submit_to_scheduler(script_path: Optional[str] = None) -> subprocess.CompletedProcess
+
+   
+   Write the batch script (if *script_path* given) and submit to the
+   configured scheduler.
+
+
+   :Parameters:
+
+       **script_path** : :class:`python:str`, :obj:`optional`
+           Destination file name.  Auto-generated if omitted.
+
+   :Returns:
+
+       :obj:`subprocess.CompletedProcess`
+           Result of ``sbatch`` / ``bsub`` / ``qsub`` / PowerShell.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If *scheduler_type* is :attr:`SchedulerType.NONE`. subprocess.TimeoutExpired If submission takes longer
+           than 30 s.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: run_simulation(**subprocess_kwargs) -> Union[subprocess.CompletedProcess, str]
+
+   
+   **Main entry point** — run the simulation **either**
+
+   * locally (subprocess), or
+   * by submitting to an external scheduler.
+
+   :Parameters:
+
+       **\*\*subprocess_kwargs**
+           Forwarded to ``subprocess.run`` for local execution.
+
+   :Returns:
+
+       :obj:`subprocess.CompletedProcess`
+           For local runs (contains ``stdout``, ``stderr``, ``returncode``).
+
+       :class:`python:str`
+           For scheduler runs — external job ID such as ``"slurm_job_12345"``.
+
+
+
+
+   :Raises:
+
+       :obj:`Exception`
+           On any failure (solver not found, submission error, timeout, …).
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_command_list() -> List[str]
+
+   
+   List form for subprocess.run(shell=False).
+   Local  →  list=…
+   Scheduler →  distributed numcores=…  +  -auto
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> Dict[str, Any]
+
+   
+   Serialize the **complete** configuration to a JSON-safe dictionary.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Contains all fields including nested BaseModels and enums.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: from_dict(data: Dict[str, Any]) -> HFSSSimulationConfig
+   :classmethod:
+
+
+   
+   Deserialize a dictionary produced by :meth:`to_dict`.
+
+
+   :Parameters:
+
+       **data** : :class:`python:dict`
+           Dictionary obtained via ``json.load`` or equivalent.
+
+   :Returns:
+
+       :obj:`HFSSSimulationConfig`
+           New validated instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __str__() -> str
+
+   
+   String representation of the complete HFSS command.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Complete HFSS command string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

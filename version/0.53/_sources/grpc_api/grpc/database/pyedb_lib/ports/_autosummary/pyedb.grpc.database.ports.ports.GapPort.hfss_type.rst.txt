@@ -1,0 +1,6 @@
+hfss\_type
+==========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.hfss_type

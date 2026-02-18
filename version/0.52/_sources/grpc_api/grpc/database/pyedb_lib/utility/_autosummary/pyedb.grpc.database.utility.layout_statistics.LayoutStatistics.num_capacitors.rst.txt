@@ -1,0 +1,6 @@
+num\_capacitors
+===============
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoproperty:: LayoutStatistics.num_capacitors

@@ -1,0 +1,469 @@
+
+
+
+
+
+
+:class:`HFSSGeneralSettings`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSGeneralSettings)
+
+   
+   PyEDB-core HFSS general settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adapt_type`
+            - Adaptation type.
+          * - :py:attr:`~adaptive_solution_type`
+            - Adaptive solution type.
+          * - :py:attr:`~broadband_adaptive_solution`
+            - Settings for a broadband adaptive solution.
+          * - :py:attr:`~mesh_region_name`
+            - Name of the mesh region to use.
+          * - :py:attr:`~multi_frequency_adaptive_solution`
+            - 
+          * - :py:attr:`~save_fields`
+            - Indicates whether to save fields.
+          * - :py:attr:`~save_rad_field_only`
+            - Indicates whether to save radiation field only.
+          * - :py:attr:`~save_rad_fields_only`
+            - Indicates whether to save radiation fields only.
+          * - :py:attr:`~single_frequency_adaptive_solution`
+            - 
+          * - :py:attr:`~use_mesh_region`
+            - Indicates whether to use a mesh region.
+          * - :py:attr:`~use_parallel_refinement`
+            - Indicates whether to use parallel refinement.
+          * - :py:attr:`~max_refine_per_pass`
+            - Maximum refinement per pass.
+          * - :py:attr:`~min_passes`
+            - Minimum number of passes.
+          * - :py:attr:`~use_max_refinement`
+            - Indicates whether to use maximum refinement.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: adapt_type
+   :type: str
+
+
+   
+   Adaptation type.
+
+   ..deprecated:: 0.67.0
+       This property is deprecated and will be removed in future versions.
+       Attribute added for dotnet compatibility.
+       Use :attr:`adaptive_solution_type` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_solution_type
+   :type: str
+
+
+   
+   Adaptive solution type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Adaptive solution type name. Returned values are `single`, `multi_frequencies`, `broadband`,
+           or `num_adapt_type`.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: broadband_adaptive_solution
+   :type: BroadbandAdaptiveSolution
+
+
+   
+   Settings for a broadband adaptive solution.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSBroadbandAdaptiveSolution
+           ..
+
+       <pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSBroadbandAdaptiveSolution>`
+           Broadband adaptive solution settings object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_region_name
+   :type: str
+
+
+   
+   Name of the mesh region to use.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Mesh region name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: multi_frequency_adaptive_solution
+   :type: MultiFrequencyAdaptiveSolution
+
+
+.. py:property:: save_fields
+   :type: bool
+
+
+   
+   Indicates whether to save fields.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if fields are to be saved, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_rad_field_only
+   :type: bool
+
+
+   
+   Indicates whether to save radiation field only.
+
+   .. deprecated:: 0.67.0
+       This property is deprecated and will be removed in future versions.
+       Use :attr:`save_rad_fields_only` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_rad_fields_only
+   :type: bool
+
+
+   
+   Indicates whether to save radiation fields only.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if only radiation fields are to be saved, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: single_frequency_adaptive_solution
+
+.. py:property:: use_mesh_region
+   :type: bool
+
+
+   
+   Indicates whether to use a mesh region.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if a mesh region is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_parallel_refinement
+   :type: bool
+
+
+   
+   Indicates whether to use parallel refinement.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if parallel refinement is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refine_per_pass
+   :type: float
+
+
+   
+   Maximum refinement per pass.
+
+   .. deprecated:: 0.67.0
+   This property is deprecated and will be removed in future versions.
+   use settings.options.max_refinement_per_pass instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum number of passes.
+
+   .. deprecated:: 0.67.0
+   This property is deprecated and will be removed in future versions.
+   use settings.options.min_passes instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_max_refinement
+   :type: bool
+
+
+   
+   Indicates whether to use maximum refinement.
+
+   .. deprecated:: 0.67.0
+   This property is deprecated and will be removed in future versions.
+   use settings.options.use_max_refinement instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

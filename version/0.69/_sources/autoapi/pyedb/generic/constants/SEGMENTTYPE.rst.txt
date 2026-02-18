@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SEGMENTTYPE`
+====================
+
+
+.. py:class:: pyedb.generic.constants.SEGMENTTYPE
+
+   Bases: :py:obj:`object`
+
+
+   
+   CROSSSECTION Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SEGMENTTYPE
+
+
+
+
+

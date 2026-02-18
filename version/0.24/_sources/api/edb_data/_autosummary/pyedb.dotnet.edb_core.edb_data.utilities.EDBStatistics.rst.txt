@@ -1,0 +1,34 @@
+﻿EDBStatistics
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.utilities
+
+.. autoclass:: EDBStatistics
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      EDBStatistics.layout_size
+      EDBStatistics.num_capacitors
+      EDBStatistics.num_discrete_components
+      EDBStatistics.num_inductors
+      EDBStatistics.num_layers
+      EDBStatistics.num_nets
+      EDBStatistics.num_polygons
+      EDBStatistics.num_resistors
+      EDBStatistics.num_traces
+      EDBStatistics.num_vias
+      EDBStatistics.occupying_ratio
+      EDBStatistics.occupying_surface
+      EDBStatistics.stackup_thickness
+   
+   

@@ -1,0 +1,74 @@
+﻿CircuitPort
+===========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: CircuitPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CircuitPort.cast
+      
+      
+      CircuitPort.couple_ports
+      
+      
+      CircuitPort.create
+      
+      
+      CircuitPort.create_3d_comp
+      
+      
+      CircuitPort.create_hfss
+      
+      
+      CircuitPort.create_stride
+      
+      
+      CircuitPort.delete
+      
+      
+      CircuitPort.find
+      
+      
+      CircuitPort.find_by_id
+      
+      
+      CircuitPort.get_product_property
+      
+      
+      CircuitPort.get_product_property_ids
+      
+      
+      CircuitPort.product_solver_names
+      
+      
+      CircuitPort.product_solver_option
+      
+      
+      CircuitPort.set_product_property
+      
+      
+      CircuitPort.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CircuitPort.layout_obj_type
+      CircuitPort.type
+   
+   

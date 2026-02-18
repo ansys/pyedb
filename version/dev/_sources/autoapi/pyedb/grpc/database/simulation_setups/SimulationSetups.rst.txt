@@ -1,0 +1,618 @@
+
+
+
+
+
+
+:class:`SimulationSetups`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setups.SimulationSetups(pedb)
+
+   
+   Simulation setups container class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Add analysis setup.
+          * - :py:attr:`~create_hfss_setup`
+            - Add HFSS analysis setup.
+          * - :py:attr:`~create_siwave_setup`
+            - Add SIWave analysis setup.
+          * - :py:attr:`~create_siwave_dcir_setup`
+            - Add SIWave DCIR analysis setup.
+          * - :py:attr:`~create_siwave_cpa_setup`
+            - Add SIWave CPA analysis setup.
+          * - :py:attr:`~create_raptor_x_setup`
+            - Add RaptorX analysis setup
+          * - :py:attr:`~create_q3d_setup`
+            - Add Q3D analysis setup
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~hfss`
+            - HFSS simulation setups.
+          * - :py:attr:`~siwave`
+            - SIWave simulation setups.
+          * - :py:attr:`~siwave_dcir`
+            - SIWave DCIR simulation setups.
+          * - :py:attr:`~siwave_cpa`
+            - SIWave CPA simulation setups.
+          * - :py:attr:`~raptorx`
+            - RaptorX simulation setups.
+          * - :py:attr:`~q3d`
+            - Q3D simulation setups.
+          * - :py:attr:`~setups`
+            - All simulation setups.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setups import SimulationSetups
+
+Property detail
+---------------
+
+.. py:property:: hfss
+   :type: dict[str, pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup]
+
+
+   
+   HFSS simulation setups.
+
+
+
+
+
+   :Returns:
+
+       List[:class:`HFSSSimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       hfss_simulation_setup.HFSSSimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave
+   :type: dict[str, pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup]
+
+
+   
+   SIWave simulation setups.
+
+
+
+
+
+   :Returns:
+
+       List[:class:`SIWaveSimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_simulation_setup.SIWaveSimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave_dcir
+   :type: dict[str, pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup]
+
+
+   
+   SIWave DCIR simulation setups.
+
+
+
+
+
+   :Returns:
+
+       List[:class:`SIWaveDCIRSimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave_cpa
+   :type: dict[str, pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SIWaveCPASimulationSetup]
+
+
+   
+   SIWave CPA simulation setups.
+
+
+
+
+
+   :Returns:
+
+       List[:class:`SIWaveCPASimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       siwave_cpa_simulation_setup.SIWaveCPASimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: raptorx
+   :type: dict[str, pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSetup]
+
+
+   
+   RaptorX simulation setups.
+
+
+
+
+
+   :Returns:
+
+       List[:class:`RaptorXSimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       raptor_x_simulation_setup.RaptorXSimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: q3d
+   :type: dict[str, pyedb.grpc.database.simulation_setup.q3d_simulation_setup.Q3DSimulationSetup]
+
+
+   
+   Q3D simulation setups.
+
+
+
+
+
+   :Returns:
+
+       List[:class:`Q3DSimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       q3d_simulation_setup.Q3DSimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: setups
+   :type: dict[str, object]
+
+
+   
+   All simulation setups.
+
+
+
+
+
+   :Returns:
+
+       dict[str:setup name, :class:`SimulationSetup <pyedb.grpc.database.simulation_setup.
+           ..
+
+       simulation_setup.SimulationSetup>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name=None, solver='hfss') -> Union[pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup, None]
+
+   
+   Add analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+       **solver** : :class:`python:str`, :obj:`optional`
+           Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d").
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_hfss_setup(name=None, distribution='linear', start_freq: float = None, stop_freq: float = None, step_freq: float = None, discrete_sweep=False, sweep_name: str = 'frequency_sweep', **kwargs) -> pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup
+
+   
+   Add HFSS analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
+
+       **start_freq** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Starting frequency (Hz).
+
+       **stop_freq** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Stopping frequency (Hz).
+
+       **step_freq** : :class:`python:float`, :class:`python:str`, :class:`python:int`, :obj:`optional`
+           ..
+
+       **Frequency step (Hz) or count depending on distribution.**
+           ..
+
+       **discrete_sweep** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Use discrete sweep.
+
+       **sweep_name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep.
+
+
+
+   :Returns:
+
+       :obj:`HfssSimulationSetup`
+           Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_siwave_setup(name=None, distribution='linear', start_freq: float = None, stop_freq: float = None, step_freq: float = None, discrete_sweep=False, sweep_name: str = 'frequency_sweep', **kwargs) -> pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup
+
+   
+   Add SIWave analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
+
+       **start_freq** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Starting frequency (Hz).
+
+       **stop_freq** : :class:`python:float`, :class:`python:str`, :obj:`optional`
+           Stopping frequency (Hz).
+
+       **step_freq** : :class:`python:float`, :class:`python:str`, :class:`python:int`, :obj:`optional`
+           Frequency step (Hz) or count depending on distribution.
+
+       **discrete_sweep** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Use discrete sweep.
+
+       **sweep_name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep.
+
+
+
+   :Returns:
+
+       :obj:`SIWaveSimulationSetup`
+           Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_siwave_dcir_setup(name=None, **kwargs) -> pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup
+
+   
+   Add SIWave DCIR analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+
+
+   :Returns:
+
+       :obj:`SIWaveDCIRSimulationSetup`
+           Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_siwave_cpa_setup(name=None, siwave_cpa_config=None, **kwargs) -> pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SIWaveCPASimulationSetup
+
+   
+   Add SIWave CPA analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+
+
+   :Returns:
+
+       :obj:`SIWaveCPASimulationSetup`
+           Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_raptor_x_setup(name=None, distribution='linear', start_freq: float = None, stop_freq: float = None, step_freq: float = None, discrete_sweep=False, sweep_name: str = 'frequency_sweep', **kwargs) -> pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSetup
+
+   
+   Add RaptorX analysis setup
+   Parameters
+   ----------
+   name : str, optional
+       Setup name (auto-generated if None).
+   distribution : str, optional
+       Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
+   start_freq : float, str, optional
+       Starting frequency (Hz).
+   stop_freq : float, str, optional
+       Stopping frequency (Hz).
+   step_freq : float, str, int, optional
+       Frequency step (Hz) or count depending on distribution.
+   discrete_sweep : bool, optional
+       Use discrete sweep.
+   sweep_name : str, optional
+       Name of the frequency sweep.
+   Returns
+   -------
+   RaptorXSimulationSetup
+       Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_q3d_setup(name=None, distribution='linear', start_freq: float = None, stop_freq: float = None, step_freq: float = None, discrete_sweep=False, sweep_name: str = 'frequency_sweep', **kwargs) -> pyedb.grpc.database.simulation_setup.q3d_simulation_setup.Q3DSimulationSetup
+
+   
+   Add Q3D analysis setup
+   Parameters
+   ----------
+   name : str, optional
+       Setup name (auto-generated if None).
+   distribution : str, optional
+       Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
+   start_freq : float, str, optional
+       Starting frequency (Hz).
+   stop_freq : float, str, optional
+       Stopping frequency (Hz).
+   step_freq : float, str, int, optional
+       Frequency step (Hz) or count depending on distribution.
+   discrete_sweep : bool, optional
+       Use discrete sweep.
+   sweep_name : str, optional
+       Name of the frequency sweep.
+   Returns
+   -------
+   Q3DSimulationSetup
+       Created setup object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

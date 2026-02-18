@@ -1,0 +1,6 @@
+json
+====
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.json

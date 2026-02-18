@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoproperty:: PinGroup.msg

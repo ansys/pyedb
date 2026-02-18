@@ -1,0 +1,6 @@
+delete\_variable
+================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.delete_variable

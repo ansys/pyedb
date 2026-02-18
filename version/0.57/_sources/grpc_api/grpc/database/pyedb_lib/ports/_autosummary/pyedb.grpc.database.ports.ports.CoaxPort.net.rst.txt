@@ -1,0 +1,6 @@
+net
+===
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.net

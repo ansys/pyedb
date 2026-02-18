@@ -1,0 +1,6 @@
+tofloat
+=======
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.edbvalue
+
+.. autoproperty:: EdbValue.tofloat

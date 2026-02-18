@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.dotnet.edb_core.components
+
+.. automethod:: Components.create

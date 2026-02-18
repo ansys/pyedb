@@ -1,0 +1,6 @@
+width
+=====
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.width

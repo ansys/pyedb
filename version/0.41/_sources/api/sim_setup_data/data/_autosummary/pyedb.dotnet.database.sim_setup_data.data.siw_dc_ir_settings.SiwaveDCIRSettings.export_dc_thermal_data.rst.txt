@@ -1,0 +1,6 @@
+export\_dc\_thermal\_data
+=========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoproperty:: SiwaveDCIRSettings.export_dc_thermal_data

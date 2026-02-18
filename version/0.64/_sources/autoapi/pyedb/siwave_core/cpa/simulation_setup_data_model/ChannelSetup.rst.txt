@@ -1,0 +1,108 @@
+
+
+
+
+
+
+:class:`ChannelSetup`
+=====================
+
+
+.. py:class:: pyedb.siwave_core.cpa.simulation_setup_data_model.ChannelSetup(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Channel configuration setup.
+
+   Attributes:
+       die_name (str): Name of the die, defaults to empty string
+       pin_grouping_mode (str): Mode for pin grouping, defaults to "perpin"
+       channel_component_exposure (Dict[str, bool]): Component exposure settings
+       vrm_setup (List[Vrm]): List of VRM configurations
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ChannelSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~die_name`
+            - 
+          * - :py:attr:`~pin_grouping_mode`
+            - 
+          * - :py:attr:`~channel_component_exposure`
+            - 
+          * - :py:attr:`~vrm_setup`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.siwave_core.cpa.simulation_setup_data_model import ChannelSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: die_name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: pin_grouping_mode
+   :type:  str
+   :value: 'perpin'
+
+
+.. py:attribute:: channel_component_exposure
+   :type:  Dict[str, bool]
+   :value: None
+
+
+.. py:attribute:: vrm_setup
+   :type:  List[Vrm]
+   :value: None
+
+
+
+
+
+

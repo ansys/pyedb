@@ -1,0 +1,6 @@
+icepak\_use\_minimal\_comp\_defaults
+====================================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. autoproperty:: EdbSiwave.icepak_use_minimal_comp_defaults

@@ -1,0 +1,249 @@
+
+
+
+
+
+
+:class:`SiwaveSimulationSetup`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_setup.SIWaveSimulationSetup)
+
+   Bases: :py:obj:`pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup`
+
+
+   
+   SIwave simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: SiwaveSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a SIWave simulation setup object.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~settings`
+            - Setup simulation settings.
+          * - :py:attr:`~advanced_settings`
+            - Setup advanced settings.
+          * - :py:attr:`~dc_settings`
+            - Setup dc settings.
+          * - :py:attr:`~dc_advanced_settings`
+            - Setup dc settings.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: settings
+   :type: pyedb.grpc.database.simulation_setup.siwave_simulation_settings.SIWaveSimulationSettings
+
+
+   
+   Setup simulation settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: advanced_settings
+   :type: pyedb.grpc.database.simulation_setup.siwave_advanced_settings.SIWaveAdvancedSettings
+
+
+   
+   Setup advanced settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_settings
+   :type: pyedb.grpc.database.simulation_setup.siwave_dc_settings.SIWaveDCSettings
+
+
+   
+   Setup dc settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_advanced_settings
+   :type: pyedb.grpc.database.simulation_setup.siwave_dc_advanced.SIWaveDCAdvancedSettings
+
+
+   
+   Setup dc settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :type:  ansys.edb.core.simulation_setup.siwave_simulation_setup.SIWaveSimulationSetup
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb: pyedb.grpc.edb.Edb, name: str = 'siwave_setup') -> SiwaveSimulationSetup
+   :classmethod:
+
+
+   
+   Create a SIWave simulation setup object.
+
+
+   :Parameters:
+
+       **edb** : :class:`Edb`
+           Inherited object.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the simulation setup. The default is "siwave_setup".
+
+
+
+   :Returns:
+
+       :obj:`SiwaveSimulationSetup`
+           The SIWave simulation setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

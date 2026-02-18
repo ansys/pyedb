@@ -1,0 +1,6 @@
+components\_by\_nets
+====================
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. autoproperty:: Nets.components_by_nets

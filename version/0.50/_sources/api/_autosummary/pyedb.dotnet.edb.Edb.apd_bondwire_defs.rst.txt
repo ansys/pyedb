@@ -1,0 +1,6 @@
+apd\_bondwire\_defs
+===================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.apd_bondwire_defs

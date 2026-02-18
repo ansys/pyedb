@@ -1,0 +1,6 @@
+net\_classes
+============
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.net_classes

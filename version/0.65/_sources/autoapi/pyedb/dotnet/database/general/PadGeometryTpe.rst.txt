@@ -1,0 +1,148 @@
+
+
+
+
+
+
+:class:`PadGeometryTpe`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.general.PadGeometryTpe
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PadGeometryTpe
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~Circle`
+            - 
+          * - :py:attr:`~Square`
+            - 
+          * - :py:attr:`~Rectangle`
+            - 
+          * - :py:attr:`~Oval`
+            - 
+          * - :py:attr:`~Bullet`
+            - 
+          * - :py:attr:`~NSidedPolygon`
+            - 
+          * - :py:attr:`~Polygon`
+            - 
+          * - :py:attr:`~Round45`
+            - 
+          * - :py:attr:`~Round90`
+            - 
+          * - :py:attr:`~Square45`
+            - 
+          * - :py:attr:`~Square90`
+            - 
+          * - :py:attr:`~InvalidGeometry`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.general import PadGeometryTpe
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: Circle
+   :value: 1
+
+
+.. py:attribute:: Square
+   :value: 2
+
+
+.. py:attribute:: Rectangle
+   :value: 3
+
+
+.. py:attribute:: Oval
+   :value: 4
+
+
+.. py:attribute:: Bullet
+   :value: 5
+
+
+.. py:attribute:: NSidedPolygon
+   :value: 6
+
+
+.. py:attribute:: Polygon
+   :value: 7
+
+
+.. py:attribute:: Round45
+   :value: 8
+
+
+.. py:attribute:: Round90
+   :value: 9
+
+
+.. py:attribute:: Square45
+   :value: 10
+
+
+.. py:attribute:: Square90
+   :value: 11
+
+
+.. py:attribute:: InvalidGeometry
+   :value: 12
+
+
+
+
+
+

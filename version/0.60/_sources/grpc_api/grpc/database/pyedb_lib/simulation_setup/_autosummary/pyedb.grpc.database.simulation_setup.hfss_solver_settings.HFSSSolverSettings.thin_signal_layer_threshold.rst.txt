@@ -1,0 +1,6 @@
+thin\_signal\_layer\_threshold
+==============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+.. autoproperty:: HFSSSolverSettings.thin_signal_layer_threshold

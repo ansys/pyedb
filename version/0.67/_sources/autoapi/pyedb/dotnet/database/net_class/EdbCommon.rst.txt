@@ -1,0 +1,85 @@
+
+
+
+
+
+
+:class:`EdbCommon`
+==================
+
+
+.. py:class:: pyedb.dotnet.database.net_class.EdbCommon(pedb)
+
+
+
+.. py:currentmodule:: EdbCommon
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get  a net from the EDB project.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.net_class import EdbCommon
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name)
+
+   
+   Get  a net from the EDB project.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :class:`python:int`
+           Name or ID of the net.
+
+
+
+   :Returns:
+
+       :class:` :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

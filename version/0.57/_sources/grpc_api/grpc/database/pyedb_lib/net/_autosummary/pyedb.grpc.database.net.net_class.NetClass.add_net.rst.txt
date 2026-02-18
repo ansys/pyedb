@@ -1,0 +1,6 @@
+add\_net
+========
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. automethod:: NetClass.add_net

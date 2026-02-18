@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoattribute:: CircuitPort.type

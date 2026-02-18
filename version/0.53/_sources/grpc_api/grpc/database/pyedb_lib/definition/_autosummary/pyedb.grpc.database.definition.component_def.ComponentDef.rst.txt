@@ -1,0 +1,84 @@
+﻿ComponentDef
+============
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. autoclass:: ComponentDef
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ComponentDef.add_component_model
+      
+      
+      ComponentDef.add_n_port_model
+      
+      
+      ComponentDef.assign_rlc_model
+      
+      
+      ComponentDef.assign_s_param_model
+      
+      
+      ComponentDef.assign_spice_model
+      
+      
+      ComponentDef.create
+      
+      
+      ComponentDef.find
+      
+      
+      ComponentDef.get_product_property
+      
+      
+      ComponentDef.get_product_property_ids
+      
+      
+      ComponentDef.get_properties
+      
+      
+      ComponentDef.remove_component_model
+      
+      
+      ComponentDef.remove_pin
+      
+      
+      ComponentDef.reorder_pins
+      
+      
+      ComponentDef.set_product_property
+      
+      
+      ComponentDef.set_properties
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ComponentDef.component_models
+      ComponentDef.component_pins
+      ComponentDef.components
+      ComponentDef.definition_type
+      ComponentDef.footprint
+      ComponentDef.id
+      ComponentDef.is_null
+      ComponentDef.msg
+      ComponentDef.name
+      ComponentDef.part_name
+      ComponentDef.reference_file
+      ComponentDef.type
+   
+   

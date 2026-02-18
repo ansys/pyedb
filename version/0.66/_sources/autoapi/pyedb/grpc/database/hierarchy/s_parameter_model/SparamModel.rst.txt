@@ -1,0 +1,116 @@
+
+
+
+
+
+
+:class:`SparamModel`
+====================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.s_parameter_model.SparamModel(edb_object)
+
+   
+   Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SparamModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_null`
+            - Check if the S-parameter model is null.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
+
+Property detail
+---------------
+
+.. py:property:: is_null
+
+   
+   Check if the S-parameter model is null.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the S-parameter model is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,33 @@
+﻿ControlFile
+===========
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. autoclass:: ControlFile
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ControlFile.parse_layer_map
+      
+      
+      ControlFile.parse_technology
+      
+      
+      ControlFile.parse_xml
+      
+      
+      ControlFile.write_xml
+      
+   
+   
+
+   
+   
+   

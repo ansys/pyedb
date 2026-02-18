@@ -1,0 +1,6 @@
+default\_dielectric\_property\_values
+=====================================
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. autoattribute:: Materials.default_dielectric_property_values

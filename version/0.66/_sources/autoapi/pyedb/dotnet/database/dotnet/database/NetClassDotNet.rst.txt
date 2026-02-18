@@ -1,0 +1,266 @@
+
+
+
+
+
+
+:class:`NetClassDotNet`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.NetClassDotNet(app, api_object=None)
+
+   
+   Net Class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: NetClassDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_create`
+            - Edb Dotnet Api Database `Edb.NetClass.Create`.
+          * - :py:attr:`~add_net`
+            - Add a new net.
+          * - :py:attr:`~delete`
+            - Edb Dotnet Api Database `Delete`.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_nets`
+            - Return Edb Nets object dictionary.
+          * - :py:attr:`~name`
+            - Edb Dotnet Api Database `NetClass.name` and  `NetClass.SetName()`.
+          * - :py:attr:`~is_null`
+            - Edb Dotnet Api Database `NetClass.IsNull()`.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cell_net_class`
+            - 
+          * - :py:attr:`~api_object`
+            - 
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import NetClassDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_nets
+
+   
+   Return Edb Nets object dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Edb Dotnet Api Database `NetClass.name` and  `NetClass.SetName()`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+
+   
+   Edb Dotnet Api Database `NetClass.IsNull()`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: cell_net_class
+
+.. py:attribute:: api_object
+   :value: None
+
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: api_create(name)
+
+   
+   Edb Dotnet Api Database `Edb.NetClass.Create`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_net(name)
+
+   
+   Add a new net.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           The name of the net to be added.
+
+   :Returns:
+
+       :obj:`object`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Edb Dotnet Api Database `Delete`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

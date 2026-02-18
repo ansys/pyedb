@@ -1,0 +1,6 @@
+operating\_power
+================
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. autoproperty:: PackageDef.operating_power

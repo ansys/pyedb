@@ -1,0 +1,6 @@
+has\_self\_intersections
+========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.has_self_intersections

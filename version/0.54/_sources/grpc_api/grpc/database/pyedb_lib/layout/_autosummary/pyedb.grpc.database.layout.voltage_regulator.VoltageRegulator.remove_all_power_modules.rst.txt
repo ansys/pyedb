@@ -1,0 +1,6 @@
+remove\_all\_power\_modules
+===========================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. automethod:: VoltageRegulator.remove_all_power_modules

@@ -1,0 +1,226 @@
+
+
+
+
+
+
+:class:`SIwaveCpaSetup`
+=======================
+
+
+.. py:class:: pyedb.siwave_core.cpa.simulation_setup_data_model.SIwaveCpaSetup(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
+
+   Attributes:
+       name (str): Name of the setup, defaults to empty string
+       mode (str): Operation mode, defaults to "channel"
+       model_type (str): Type of model, defaults to "rlcg"
+       use_q3d_solver (bool): Use Q3D solver flag, defaults to True
+       net_processing_mode (str): Net processing mode, defaults to "userspecified"
+       return_path_net_for_loop_parameters (bool): Include return path net for loop parameters, defaults to True
+       channel_setup (ChannelSetup): Channel configuration settings
+       solver_options (SolverOptions): Solver configuration options
+       nets_to_process (List[str]): List of nets to process
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: SIwaveCpaSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~from_dict`
+            - Convert dictionary to SIwaveCpaSetup object.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_dict`
+            - Convert SIwaveCpaSetup object to dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~mode`
+            - 
+          * - :py:attr:`~model_type`
+            - 
+          * - :py:attr:`~use_q3d_solver`
+            - 
+          * - :py:attr:`~net_processing_mode`
+            - 
+          * - :py:attr:`~return_path_net_for_loop_parameters`
+            - 
+          * - :py:attr:`~channel_setup`
+            - 
+          * - :py:attr:`~solver_options`
+            - 
+          * - :py:attr:`~nets_to_process`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.siwave_core.cpa.simulation_setup_data_model import SIwaveCpaSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: mode
+   :type:  str
+   :value: 'channel'
+
+
+.. py:attribute:: model_type
+   :type:  str
+   :value: 'rlcg'
+
+
+.. py:attribute:: use_q3d_solver
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: net_processing_mode
+   :type:  str
+   :value: 'userspecified'
+
+
+.. py:attribute:: return_path_net_for_loop_parameters
+   :type:  bool
+   :value: True
+
+
+.. py:attribute:: channel_setup
+   :type:  ChannelSetup
+   :value: None
+
+
+.. py:attribute:: solver_options
+   :type:  SolverOptions
+   :value: None
+
+
+.. py:attribute:: nets_to_process
+   :type:  List[str]
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: from_dict(data: Dict) -> SIwaveCpaSetup
+   :classmethod:
+
+
+   
+   Convert dictionary to SIwaveCpaSetup object.
+
+   Args:
+       data (Dict): Dictionary containing SIwaveCpaSetup configuration
+
+   Returns:
+       SIwaveCpaSetup: New instance created from the dictionary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> Dict
+
+   
+   Convert SIwaveCpaSetup object to dictionary.
+
+   Returns:
+       Dict: Dictionary representation of the SIwaveCpaSetup instance
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

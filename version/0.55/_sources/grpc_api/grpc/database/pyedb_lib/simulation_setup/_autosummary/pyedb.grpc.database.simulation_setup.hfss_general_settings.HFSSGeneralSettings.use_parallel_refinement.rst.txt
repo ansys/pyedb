@@ -1,0 +1,6 @@
+use\_parallel\_refinement
+=========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_general_settings
+
+.. autoproperty:: HFSSGeneralSettings.use_parallel_refinement

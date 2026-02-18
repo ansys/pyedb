@@ -1,0 +1,6 @@
+find\_by\_name
+==============
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. automethod:: DifferentialPair.find_by_name

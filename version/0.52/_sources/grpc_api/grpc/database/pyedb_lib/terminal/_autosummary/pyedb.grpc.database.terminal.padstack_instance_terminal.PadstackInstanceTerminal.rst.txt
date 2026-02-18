@@ -1,0 +1,113 @@
+﻿PadstackInstanceTerminal
+========================
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. autoclass:: PadstackInstanceTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PadstackInstanceTerminal.cast
+      
+      
+      PadstackInstanceTerminal.create
+      
+      
+      PadstackInstanceTerminal.create_3d_comp
+      
+      
+      PadstackInstanceTerminal.create_hfss
+      
+      
+      PadstackInstanceTerminal.create_stride
+      
+      
+      PadstackInstanceTerminal.delete
+      
+      
+      PadstackInstanceTerminal.find
+      
+      
+      PadstackInstanceTerminal.find_by_id
+      
+      
+      PadstackInstanceTerminal.get_product_property
+      
+      
+      PadstackInstanceTerminal.get_product_property_ids
+      
+      
+      PadstackInstanceTerminal.product_solver_names
+      
+      
+      PadstackInstanceTerminal.product_solver_option
+      
+      
+      PadstackInstanceTerminal.set_product_property
+      
+      
+      PadstackInstanceTerminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PadstackInstanceTerminal.boundary_type
+      PadstackInstanceTerminal.bundle_terminal
+      PadstackInstanceTerminal.component
+      PadstackInstanceTerminal.edb_uid
+      PadstackInstanceTerminal.group
+      PadstackInstanceTerminal.hfss_pi_type
+      PadstackInstanceTerminal.id
+      PadstackInstanceTerminal.impedance
+      PadstackInstanceTerminal.is_auto_port
+      PadstackInstanceTerminal.is_circuit_port
+      PadstackInstanceTerminal.is_interface_terminal
+      PadstackInstanceTerminal.is_mcad
+      PadstackInstanceTerminal.is_mcad_3d_comp
+      PadstackInstanceTerminal.is_mcad_hfss
+      PadstackInstanceTerminal.is_mcad_stride
+      PadstackInstanceTerminal.is_null
+      PadstackInstanceTerminal.is_port
+      PadstackInstanceTerminal.is_reference_terminal
+      PadstackInstanceTerminal.layer
+      PadstackInstanceTerminal.layout
+      PadstackInstanceTerminal.layout_obj_type
+      PadstackInstanceTerminal.location
+      PadstackInstanceTerminal.magnitude
+      PadstackInstanceTerminal.model
+      PadstackInstanceTerminal.msg
+      PadstackInstanceTerminal.name
+      PadstackInstanceTerminal.net
+      PadstackInstanceTerminal.net_name
+      PadstackInstanceTerminal.obj_type
+      PadstackInstanceTerminal.padstack_instance
+      PadstackInstanceTerminal.params
+      PadstackInstanceTerminal.phase
+      PadstackInstanceTerminal.port_post_processing_prop
+      PadstackInstanceTerminal.position
+      PadstackInstanceTerminal.ref_terminal
+      PadstackInstanceTerminal.reference_layer
+      PadstackInstanceTerminal.reference_terminal
+      PadstackInstanceTerminal.rlc_boundary_parameters
+      PadstackInstanceTerminal.source_amplitude
+      PadstackInstanceTerminal.source_phase
+      PadstackInstanceTerminal.term_to_ground
+      PadstackInstanceTerminal.terminal_type
+      PadstackInstanceTerminal.type
+      PadstackInstanceTerminal.use_reference_from_hierarchy
+   
+   

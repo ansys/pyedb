@@ -1,0 +1,6 @@
+youngs\_modulus
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.youngs_modulus

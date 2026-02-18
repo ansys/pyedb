@@ -1,0 +1,6 @@
+upper\_elevation
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.upper_elevation

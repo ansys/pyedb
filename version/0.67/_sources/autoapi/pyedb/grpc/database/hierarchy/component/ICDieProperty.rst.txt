@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`ICDieProperty`
+======================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.component.ICDieProperty(component)
+
+
+.. py:currentmodule:: ICDieProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~die_orientation`
+            - Die orientation.
+          * - :py:attr:`~die_type`
+            - Die type.
+          * - :py:attr:`~height`
+            - Die height.
+          * - :py:attr:`~is_null`
+            - Test is die is null.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.component import ICDieProperty
+
+Property detail
+---------------
+
+.. py:property:: die_orientation
+   :type: str
+
+
+   
+   Die orientation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Die orientation, ``chip_up`` or ``chip_down``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: die_type
+   :type: str
+
+
+   
+   Die type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Die type, ``noine``, ``flipchip``, ``wirebond``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+   :type: float
+
+
+   
+   Die height.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Die height.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Test is die is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

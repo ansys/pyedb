@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`HFSSAdvancedMeshingSettings`
+====================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings(pedb, core)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSAdvancedMeshingSettings`
+
+
+   
+   Represents advanced meshing settings for HFSS simulations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings import HFSSAdvancedMeshingSettings
+
+
+
+
+

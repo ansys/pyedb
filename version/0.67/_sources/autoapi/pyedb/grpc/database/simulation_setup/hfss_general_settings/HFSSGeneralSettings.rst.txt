@@ -1,0 +1,106 @@
+
+
+
+
+
+
+:class:`HFSSGeneralSettings`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings(pedb, core)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSGeneralSettings`
+
+
+   
+   PyEDB-core HFSS general settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adaptive_solution_type`
+            - Adaptive solution type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: adaptive_solution_type
+   :type: str
+
+
+   
+   Adaptive solution type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Adaptive solution type name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

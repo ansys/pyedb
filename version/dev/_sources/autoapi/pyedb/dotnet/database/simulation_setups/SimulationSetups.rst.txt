@@ -1,0 +1,104 @@
+
+
+
+
+
+
+:class:`SimulationSetups`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.simulation_setups.SimulationSetups(pedb)
+
+   
+   Simulation setups container class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Add analysis setup.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.simulation_setups import SimulationSetups
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name=None, solver='hfss')
+
+   
+   Add analysis setup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name (auto-generated if None).
+
+       **solver** : :class:`python:str`, :obj:`optional`
+           Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

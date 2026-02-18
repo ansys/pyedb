@@ -1,0 +1,6 @@
+dielectric\_loss\_tangent
+=========================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.dielectric_loss_tangent

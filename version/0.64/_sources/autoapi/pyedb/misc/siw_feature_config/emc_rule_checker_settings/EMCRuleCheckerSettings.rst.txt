@@ -1,0 +1,329 @@
+
+
+
+
+
+
+:class:`EMCRuleCheckerSettings`
+===============================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc_rule_checker_settings.EMCRuleCheckerSettings
+
+   
+   Manages EMI scanner settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EMCRuleCheckerSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~read_xml`
+            - Read settings from a json file.
+          * - :py:attr:`~write_xml`
+            - Write settings to a file in xml format.
+          * - :py:attr:`~write_json`
+            - Write settings to a file in json format.
+          * - :py:attr:`~read_json`
+            - Read settings from a json file.
+          * - :py:attr:`~add_net`
+            - Assign tags to a net.
+          * - :py:attr:`~add_component`
+            - Assign tags to a component.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~version`
+            - 
+          * - :py:attr:`~encoding`
+            - 
+          * - :py:attr:`~standalone`
+            - 
+          * - :py:attr:`~tag_library`
+            - 
+          * - :py:attr:`~net_tags`
+            - 
+          * - :py:attr:`~component_tags`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc_rule_checker_settings import EMCRuleCheckerSettings
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: version
+   :value: '1.0'
+
+
+.. py:attribute:: encoding
+   :value: 'UTF-8'
+
+
+.. py:attribute:: standalone
+   :value: 'no'
+
+
+.. py:attribute:: tag_library
+
+.. py:attribute:: net_tags
+
+.. py:attribute:: component_tags
+
+
+
+Method detail
+-------------
+
+.. py:method:: read_xml(fpath)
+
+   
+   Read settings from a json file.
+
+
+   :Parameters:
+
+       **fpath: str**
+           Path to file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_xml(fpath)
+
+   
+   Write settings to a file in xml format.
+
+
+   :Parameters:
+
+       **fpath: str, Path**
+           Path to file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_json(fpath)
+
+   
+   Write settings to a file in json format.
+
+
+   :Parameters:
+
+       **fpath: str**
+           Path to file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: read_json(fpath)
+
+   
+   Read settings from a json file.
+
+
+   :Parameters:
+
+       **fpath: str**
+           Path to file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_net(name, is_bus=False, is_clock=False, is_critical=False, net_type='Single-Ended', diff_mate_name='')
+
+   
+   Assign tags to a net.
+
+
+   :Parameters:
+
+       **is_bus: str, int**
+           Whether the net is a bus.
+
+       **is_clock: str, int**
+           Whether the net is a clock.
+
+       **is_critical: str**
+           Whether the net is critical.
+
+       **name: str**
+           Name of the net.
+
+       **net_type: str**
+           Type of the net.
+
+       **diff_mate_name: str, optional**
+           differential mate name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_component(comp_name, comp_value, device_name, is_clock_driver, is_high_speed, is_ic, is_oscillator, x_loc, y_loc, cap_type=None)
+
+   
+   Assign tags to a component.
+
+
+   :Parameters:
+
+       **comp_name: str**
+           Name of the component.
+
+       **comp_value: str**
+           Value of the component.
+
+       **device_name: str**
+           Name of the device.
+
+       **is_clock_driver: str**
+           Whether the component is a clock driver.
+
+       **is_high_speed: str**
+           Whether the component is a high speed.
+
+       **is_ic: str**
+           Whether the component is a IC.
+
+       **is_oscillator: str**
+           Whether the component is an oscillator.
+
+       **x_loc: str**
+           X coordinate.
+
+       **y_loc: str**
+           Y coordinate
+
+       **cap_type: str, optional**
+           Type of the capacitor. The default is ``"None"``. Options are ``"Decoupling"``, ``"Stitching"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

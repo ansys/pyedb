@@ -1,0 +1,34 @@
+﻿LayoutStatistics
+================
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoclass:: LayoutStatistics
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      LayoutStatistics.layout_size
+      LayoutStatistics.num_capacitors
+      LayoutStatistics.num_discrete_components
+      LayoutStatistics.num_inductors
+      LayoutStatistics.num_layers
+      LayoutStatistics.num_nets
+      LayoutStatistics.num_polygons
+      LayoutStatistics.num_resistors
+      LayoutStatistics.num_traces
+      LayoutStatistics.num_vias
+      LayoutStatistics.occupying_ratio
+      LayoutStatistics.occupying_surface
+      LayoutStatistics.stackup_thickness
+   
+   

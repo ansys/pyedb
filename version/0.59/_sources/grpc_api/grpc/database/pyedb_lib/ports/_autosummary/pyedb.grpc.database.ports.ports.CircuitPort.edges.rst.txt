@@ -1,0 +1,6 @@
+edges
+=====
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.edges

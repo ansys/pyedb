@@ -1,0 +1,6 @@
+use\_reference\_from\_hierarchy
+===============================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.use_reference_from_hierarchy

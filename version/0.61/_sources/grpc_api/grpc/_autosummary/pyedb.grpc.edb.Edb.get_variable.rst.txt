@@ -1,0 +1,6 @@
+get\_variable
+=============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.get_variable

@@ -1,0 +1,6 @@
+fin\_orientation
+================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.heatsink
+
+.. autoproperty:: HeatSink.fin_orientation

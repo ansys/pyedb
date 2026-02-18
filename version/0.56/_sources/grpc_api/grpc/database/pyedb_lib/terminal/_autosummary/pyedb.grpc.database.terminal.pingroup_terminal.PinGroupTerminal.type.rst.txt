@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoattribute:: PinGroupTerminal.type

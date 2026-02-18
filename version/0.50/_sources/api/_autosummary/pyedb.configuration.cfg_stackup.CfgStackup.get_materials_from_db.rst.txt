@@ -1,0 +1,6 @@
+get\_materials\_from\_db
+========================
+
+.. currentmodule:: pyedb.configuration.cfg_stackup
+
+.. automethod:: CfgStackup.get_materials_from_db

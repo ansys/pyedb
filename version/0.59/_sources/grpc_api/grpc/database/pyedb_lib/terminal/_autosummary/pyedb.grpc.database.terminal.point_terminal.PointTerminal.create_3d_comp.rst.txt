@@ -1,0 +1,6 @@
+create\_3d\_comp
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. automethod:: PointTerminal.create_3d_comp

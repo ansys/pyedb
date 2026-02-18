@@ -1,0 +1,6 @@
+primitive\_type
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.primitive_type

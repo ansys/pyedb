@@ -1,0 +1,6 @@
+is\_stackup\_layer
+==================
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoproperty:: Layer.is_stackup_layer

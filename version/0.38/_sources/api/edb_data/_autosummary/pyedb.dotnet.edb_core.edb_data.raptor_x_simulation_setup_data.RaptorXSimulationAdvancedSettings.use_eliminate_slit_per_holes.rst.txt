@@ -1,0 +1,6 @@
+use\_eliminate\_slit\_per\_holes
+================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.use_eliminate_slit_per_holes

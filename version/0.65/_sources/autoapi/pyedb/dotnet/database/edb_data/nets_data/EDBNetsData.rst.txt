@@ -1,0 +1,339 @@
+
+
+
+
+
+
+:class:`EDBNetsData`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.nets_data.EDBNetsData(raw_net, core_app)
+
+   Bases: :py:obj:`pyedb.dotnet.database.dotnet.database.NetDotNet`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It Inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_net = edb.nets.nets["GND"]
+   >>> edb_net.name  # Class Property
+   >>> edb_net.name  # EDB Object Property
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBNetsData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_dc_short`
+            - Find DC-shorted nets.
+          * - :py:attr:`~plot`
+            - Plot a net to Matplotlib 2D chart.
+          * - :py:attr:`~get_smallest_trace_width`
+            - Retrieve the smallest trace width from paths.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~primitives`
+            - Return the list of primitives that belongs to the net.
+          * - :py:attr:`~padstack_instances`
+            - Return the list of primitives that belongs to the net.
+          * - :py:attr:`~components`
+            - Return the list of components that touch the net.
+          * - :py:attr:`~extended_net`
+            - Get extended net and associated components.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~net_object`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
+
+Property detail
+---------------
+
+.. py:property:: primitives
+
+   
+   Return the list of primitives that belongs to the net.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instances
+
+   
+   Return the list of primitives that belongs to the net.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+
+   
+   Return the list of components that touch the net.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extended_net
+
+   
+   Get extended net and associated components.
+
+
+
+   :Returns:
+
+       :class:` :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetData`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> app = Edb()
+   >>> app.nets["BST_V3P3_S5"].extended_net
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: net_object
+
+
+
+Method detail
+-------------
+
+.. py:method:: find_dc_short(fix=False)
+
+   
+   Find DC-shorted nets.
+
+
+   :Parameters:
+
+       **fix** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If `True`, rename all the nets. (default)
+           If `False`, only report dc shorts.
+
+   :Returns:
+
+       :obj:`List`\[:obj:`List`\[:class:`python:str`, :class:`python:str`]]
+           [[net name, net name]].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: plot(layers=None, show_legend=True, save_plot=None, outline=None, size=(2000, 1000), show=True)
+
+   
+   Plot a net to Matplotlib 2D chart.
+
+
+   :Parameters:
+
+       **layers** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the layers to include in the plot. If `None` all the signal layers will be considered.
+
+       **show_legend** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If `True` the legend is shown in the plot. (default)
+           If `False` the legend is not shown.
+
+       **save_plot** : :class:`python:str`, :obj:`optional`
+           If a path is specified the plot will be saved in this location.
+           If ``save_plot`` is provided, the ``show`` parameter is ignored.
+
+       **outline** : :class:`python:list`, :obj:`optional`
+           List of points of the outline to plot.
+
+       **size** : :class:`python:tuple`, :obj:`optional`
+           Image size in pixel (width, height).
+
+       **show** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to show the plot or not. Default is `True`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_smallest_trace_width()
+
+   
+   Retrieve the smallest trace width from paths.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Trace smallest width.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

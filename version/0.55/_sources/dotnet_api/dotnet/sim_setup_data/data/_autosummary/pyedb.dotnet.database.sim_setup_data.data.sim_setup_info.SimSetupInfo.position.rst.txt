@@ -1,0 +1,6 @@
+position
+========
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sim_setup_info
+
+.. autoproperty:: SimSetupInfo.position

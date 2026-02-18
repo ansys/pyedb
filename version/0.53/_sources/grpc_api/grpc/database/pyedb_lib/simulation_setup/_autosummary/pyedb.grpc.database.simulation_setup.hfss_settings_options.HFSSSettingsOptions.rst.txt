@@ -1,0 +1,35 @@
+﻿HFSSSettingsOptions
+===================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoclass:: HFSSSettingsOptions
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSSettingsOptions.do_lambda_refine
+      HFSSSettingsOptions.enhanced_low_frequency_accuracy
+      HFSSSettingsOptions.lambda_target
+      HFSSSettingsOptions.max_refinement_per_pass
+      HFSSSettingsOptions.mesh_size_factor
+      HFSSSettingsOptions.min_converged_passes
+      HFSSSettingsOptions.min_passes
+      HFSSSettingsOptions.msg
+      HFSSSettingsOptions.order_basis
+      HFSSSettingsOptions.relative_residual
+      HFSSSettingsOptions.solver_type
+      HFSSSettingsOptions.use_default_lambda_value
+      HFSSSettingsOptions.use_max_refinement
+      HFSSSettingsOptions.use_shell_elements
+   
+   

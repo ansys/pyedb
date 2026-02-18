@@ -1,0 +1,6 @@
+edb\_hole\_type
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.edb_hole_type

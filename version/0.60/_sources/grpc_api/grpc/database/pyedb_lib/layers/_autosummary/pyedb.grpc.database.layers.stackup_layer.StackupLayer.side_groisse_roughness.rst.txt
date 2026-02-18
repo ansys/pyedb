@@ -1,0 +1,6 @@
+side\_groisse\_roughness
+========================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.side_groisse_roughness

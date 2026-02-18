@@ -1,0 +1,1273 @@
+
+
+
+
+
+
+:class:`Modeler`
+================
+
+
+.. py:class:: pyedb.grpc.database.modeler.Modeler(p_edb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for primitives management accessible from `Edb.modeler`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_layout = edbapp.modeler
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: Modeler
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete_batch_primitives`
+            - Delete a batch of primitives and update caches.
+          * - :py:attr:`~get_primitive`
+            - Retrieve primitive by ID.
+          * - :py:attr:`~get_polygons_by_layer`
+            - Retrieve polygons by layer.
+          * - :py:attr:`~get_primitive_by_layer_and_point`
+            - Get primitive at specified point on layer.
+          * - :py:attr:`~parametrize_polygon`
+            - Parametrize polygon points based on another polygon.
+          * - :py:attr:`~create_trace`
+            - Create trace path.
+          * - :py:attr:`~create_polygon`
+            - Create polygon primitive.
+          * - :py:attr:`~create_rectangle`
+            - Create rectangle primitive.
+          * - :py:attr:`~create_circle`
+            - Create circle primitive.
+          * - :py:attr:`~delete_primitives`
+            - Delete primitives by net name(s).
+          * - :py:attr:`~get_primitives`
+            - Get primitives with filtering.
+          * - :py:attr:`~fix_circle_void_for_clipping`
+            - Fix circle void clipping issues.
+          * - :py:attr:`~parametrize_trace_width`
+            - Parametrize trace width.
+          * - :py:attr:`~unite_polygons_on_layer`
+            - Unite polygons on layer.
+          * - :py:attr:`~defeature_polygon`
+            - Defeature polygon.
+          * - :py:attr:`~get_layout_statistics`
+            - Get layout statistics.
+          * - :py:attr:`~create_bondwire`
+            - Create bondwire.
+          * - :py:attr:`~create_pin_group`
+            - Create pin group.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~primitives`
+            - 
+          * - :py:attr:`~primitives_by_name`
+            - 
+          * - :py:attr:`~primitives_by_net`
+            - 
+          * - :py:attr:`~primitives_by_layer`
+            - 
+          * - :py:attr:`~primitives_by_layer_and_net`
+            - Return all primitives indexed first by layer, then by net.
+          * - :py:attr:`~db`
+            - Database object.
+          * - :py:attr:`~layers`
+            - Dictionary of layers.
+          * - :py:attr:`~polygons_by_layer`
+            - Primitives organized by layer names.
+          * - :py:attr:`~rectangles`
+            - All rectangle primitives.
+          * - :py:attr:`~circles`
+            - All circle primitives.
+          * - :py:attr:`~paths`
+            - All path primitives.
+          * - :py:attr:`~polygons`
+            - All polygon primitives.
+
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_polygon_bounding_box`
+            - Get bounding box of polygon.
+          * - :py:attr:`~get_polygon_points`
+            - Get points defining a polygon.
+          * - :py:attr:`~add_void`
+            - Add void to shape.
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get a primitive by name or ID.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.modeler import Modeler
+
+Property detail
+---------------
+
+.. py:property:: primitives
+   :type: list[pyedb.grpc.database.primitive.primitive.Primitive]
+
+
+.. py:property:: primitives_by_name
+
+.. py:property:: primitives_by_net
+
+.. py:property:: primitives_by_layer
+
+.. py:property:: primitives_by_layer_and_net
+   :type: Dict[str, Dict[str, List[pyedb.grpc.database.primitive.primitive.Primitive]]]
+
+
+   
+   Return all primitives indexed first by layer, then by net.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Nested dictionary:  layer -> net -> list[Primitive]
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: db
+   :type: Any
+
+
+   
+   Database object.
+
+
+
+   :Returns:
+
+       :obj:`ansys.edb.core.database.Database`
+           Database object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers
+   :type: Dict[str, object]
+
+
+   
+   Dictionary of layers.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of layers with layer names as keys.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygons_by_layer
+   :type: Dict[str, List[pyedb.grpc.database.primitive.primitive.Primitive]]
+
+
+   
+   Primitives organized by layer names.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary where keys are layer names and values are lists of polygons.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rectangles
+   :type: List[pyedb.grpc.database.primitive.rectangle.Rectangle]
+
+
+   
+   All rectangle primitives.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: circles
+   :type: List[pyedb.grpc.database.primitive.circle.Circle]
+
+
+   
+   All circle primitives.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: paths
+   :type: List[pyedb.grpc.database.primitive.path.Path]
+
+
+   
+   All path primitives.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygons
+   :type: List[pyedb.grpc.database.primitive.polygon.Polygon]
+
+
+   
+   All polygon primitives.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name: Union[str, int]) -> pyedb.grpc.database.primitive.primitive.Primitive
+
+   
+   Get a primitive by name or ID.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str` or :class:`python:int`
+           Name or ID of the primitive.
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.primitive.primitive.Primitive`
+           Primitive instance if found, None otherwise.
+
+
+
+
+   :Raises:
+
+       :obj:`TypeError`
+           If name is not str or int.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_batch_primitives(prim_list: List[pyedb.grpc.database.primitive.primitive.Primitive]) -> None
+
+   
+   Delete a batch of primitives and update caches.
+
+
+   :Parameters:
+
+       **prim_list** : :class:`python:list`
+           List of primitive objects to delete.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitive(primitive_id: int, edb_uid=True) -> Optional[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Retrieve primitive by ID.
+
+
+   :Parameters:
+
+       **primitive_id** : :class:`python:int`
+           Primitive ID.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or :ref:`bool <python:bltin-boolean-values>`
+           Primitive object if found, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygons_by_layer(layer_name: str, net_list: Optional[List[str]] = None) -> List[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Retrieve polygons by layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **net_list** : :class:`python:list`, :obj:`optional`
+           List of net names to filter by.
+
+   :Returns:
+
+       :class:`python:list`
+           List of polygon objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitive_by_layer_and_point(point: Optional[List[float]] = None, layer: Optional[Union[str, List[str]]] = None, nets: Optional[Union[str, List[str]]] = None) -> List[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Get primitive at specified point on layer.
+
+
+   :Parameters:
+
+       **point** : :class:`python:list`, :obj:`optional`
+           [x, y] coordinate point.
+
+       **layer** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Layer name(s) to filter by.
+
+       **nets** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Net name(s) to filter by.
+
+   :Returns:
+
+       :class:`python:list`
+           List of primitive objects at the point.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If point is invalid.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygon_bounding_box(polygon: pyedb.grpc.database.primitive.primitive.Primitive) -> List[float]
+   :staticmethod:
+
+
+   
+   Get bounding box of polygon.
+
+
+   :Parameters:
+
+       **polygon** : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Polygon primitive.
+
+   :Returns:
+
+       :class:`python:list`
+           Bounding box coordinates [min_x, min_y, max_x, max_y].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygon_points(polygon) -> List[List[float]]
+   :staticmethod:
+
+
+   
+   Get points defining a polygon.
+
+
+   :Parameters:
+
+       **polygon** : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Polygon primitive.
+
+   :Returns:
+
+       :class:`python:list`
+           List of point coordinates.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parametrize_polygon(polygon, selection_polygon, offset_name='offsetx', origin=None) -> bool
+
+   
+   Parametrize polygon points based on another polygon.
+
+
+   :Parameters:
+
+       **polygon** : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Polygon to parametrize.
+
+       **selection_polygon** : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Polygon used for selection.
+
+       **offset_name** : :class:`python:str`, :obj:`optional`
+           Name of offset parameter.
+
+       **origin** : :class:`python:list`, :obj:`optional`
+           [x, y] origin point for vector calculation.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_trace(path_list: Union[Iterable[float], ansys.edb.core.geometry.polygon_data.PolygonData], layer_name: str, width: float = 1, net_name: str = '', start_cap_style: str = 'Round', end_cap_style: str = 'Round', corner_style: str = 'Round') -> Optional[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Create trace path.
+
+
+   :Parameters:
+
+       **path_list** : :obj:`Iterable`
+           List of points [x,y] or [[x, y], ...]
+           or [(x, y)...].
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **width** : :class:`python:float`, :obj:`optional`
+           Trace width.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Associated net name.
+
+       **start_cap_style** : :class:`python:str`, :obj:`optional`
+           Start cap style ("Round", "Extended", "Flat").
+
+       **end_cap_style** : :class:`python:str`, :obj:`optional`
+           End cap style ("Round", "Extended", "Flat").
+
+       **corner_style** : :class:`python:str`, :obj:`optional`
+           Corner style ("Round", "Sharp", "Mitered").
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` or :ref:`bool <python:bltin-boolean-values>`
+           Path object if created, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_polygon(points: Union[List[List[float]], ansys.edb.core.geometry.polygon_data.PolygonData], layer_name: str, voids: Optional[List[Any]] = [], net_name: str = '') -> Optional[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Create polygon primitive.
+
+
+   :Parameters:
+
+       **points** : :class:`python:list` or :class:`ansys.edb.core.geometry.polygon_data.PolygonData`
+           Polygon points or PolygonData object.
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **voids** : :class:`python:list`, :obj:`optional`
+           List of void shapes or points.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Associated net name.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` or :ref:`bool <python:bltin-boolean-values>`
+           Polygon object if created, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rectangle(layer_name: str, net_name: str = '', lower_left_point: str = '', upper_right_point: str = '', center_point: str = '', width: Union[str, float] = '', height: Union[str, float] = '', representation_type: str = 'lower_left_upper_right', corner_radius: str = '0mm', rotation: str = '0deg') -> Optional[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Create rectangle primitive.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Associated net name.
+
+       **lower_left_point** : :class:`python:list`, :obj:`optional`
+           [x,y] lower left point.
+
+       **upper_right_point** : :class:`python:list`, :obj:`optional`
+           [x,y] upper right point.
+
+       **center_point** : :class:`python:list`, :obj:`optional`
+           [x,y] center point.
+
+       **width** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Rectangle width.
+
+       **height** : :class:`python:str` or :class:`python:float`, :obj:`optional`
+           Rectangle height.
+
+       **representation_type** : :class:`python:str`, :obj:`optional`
+           "lower_left_upper_right" or "center_width_height".
+
+       **corner_radius** : :class:`python:str`, :obj:`optional`
+           Corner radius with units.
+
+       **rotation** : :class:`python:str`, :obj:`optional`
+           Rotation angle with units.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or :ref:`bool <python:bltin-boolean-values>`
+           Rectangle object if created, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circle(layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = '') -> Optional[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Create circle primitive.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **x** : :class:`python:float`
+           Center x-coordinate.
+
+       **y** : :class:`python:float`
+           Center y-coordinate.
+
+       **radius** : :class:`python:float`
+           Circle radius.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Associated net name.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` or :ref:`bool <python:bltin-boolean-values>`
+           Circle object if created, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_primitives(net_names: Union[str, List[str]]) -> bool
+
+   
+   Delete primitives by net name(s).
+
+
+   :Parameters:
+
+       **net_names** : :class:`python:str` or :class:`python:list`
+           Net name(s).
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitives(net_name: Optional[str] = None, layer_name: Optional[str] = None, prim_type: Optional[str] = None, is_void: bool = False) -> List[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Get primitives with filtering.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net name filter.
+
+       **layer_name** : :class:`python:str`, :obj:`optional`
+           Layer name filter.
+
+       **prim_type** : :class:`python:str`, :obj:`optional`
+           Primitive type filter.
+
+       **is_void** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Void primitive filter.
+
+   :Returns:
+
+       :class:`python:list`
+           List of filtered primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: fix_circle_void_for_clipping() -> bool
+
+   
+   Fix circle void clipping issues.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if changes made, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parametrize_trace_width(nets_name: Union[str, List[str]], layers_name: Optional[Union[str, List[str]]] = None, parameter_name: str = 'trace_width', variable_value: Optional[Union[float, str]] = None) -> bool
+
+   
+   Parametrize trace width.
+
+
+   :Parameters:
+
+       **nets_name** : :class:`python:str` or :class:`python:list`
+           Net name(s).
+
+       **layers_name** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Layer name(s) filter.
+
+       **parameter_name** : :class:`python:str`, :obj:`optional`
+           Parameter name prefix.
+
+       **variable_value** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Initial parameter value.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: unite_polygons_on_layer(layer_name: Optional[Union[str, List[str]]] = None, delete_padstack_gemometries: bool = False, net_names_list: Optional[List[str]] = None) -> bool
+
+   
+   Unite polygons on layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Layer name(s) to process.
+
+       **delete_padstack_gemometries** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to delete padstack geometries.
+
+       **net_names_list** : :class:`python:list`, :obj:`optional`
+           Net names filter.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: defeature_polygon(poly: pyedb.grpc.database.primitive.polygon.Polygon, tolerance: float = 0.001) -> bool
+
+   
+   Defeature polygon.
+
+
+   :Parameters:
+
+       **poly** : :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon`
+           Polygon to defeature.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Maximum surface deviation tolerance.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_layout_statistics(evaluate_area: bool = False, net_list: Optional[List[str]] = None) -> pyedb.grpc.database.utility.layout_statistics.LayoutStatistics
+
+   
+   Get layout statistics.
+
+
+   :Parameters:
+
+       **evaluate_area** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to compute metal area statistics.
+
+       **net_list** : :class:`python:list`, :obj:`optional`
+           Net list for area computation.
+
+   :Returns:
+
+       :class:`LayoutStatistics`
+           Layout statistics object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_bondwire(definition_name: str, placement_layer: str, width: Union[float, str], material: str, start_layer_name: str, start_x: Union[float, str], start_y: Union[float, str], end_layer_name: str, end_x: Union[float, str], end_y: Union[float, str], net: str, start_cell_instance_name: Optional[str] = None, end_cell_instance_name: Optional[str] = None, bondwire_type: str = 'jedec4') -> Optional[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Create bondwire.
+
+
+   :Parameters:
+
+       **definition_name** : :class:`python:str`
+           Bondwire definition name.
+
+       **placement_layer** : :class:`python:str`
+           Placement layer name.
+
+       **width** : :class:`python:float` or :class:`python:str`
+           Bondwire width.
+
+       **material** : :class:`python:str`
+           Material name.
+
+       **start_layer_name** : :class:`python:str`
+           Start layer name.
+
+       **start_x** : :class:`python:float` or :class:`python:str`
+           Start x-coordinate.
+
+       **start_y** : :class:`python:float` or :class:`python:str`
+           Start y-coordinate.
+
+       **end_layer_name** : :class:`python:str`
+           End layer name.
+
+       **end_x** : :class:`python:float` or :class:`python:str`
+           End x-coordinate.
+
+       **end_y** : :class:`python:float` or :class:`python:str`
+           End y-coordinate.
+
+       **net** : :class:`python:str`
+           Associated net name.
+
+       **start_cell_instance_name** : :class:`python:str`, :obj:`optional`
+           Start cell instance name.
+
+       **end_cell_instance_name** : :class:`python:str`, :obj:`optional`
+           End cell instance name.
+
+       **bondwire_type** : :class:`python:str`, :obj:`optional`
+           Bondwire type ("jedec4", "jedec5", "apd").
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Bondwire` or :ref:`bool <python:bltin-boolean-values>`
+           Bondwire object if created, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pin_group(name: str, pins_by_id: Optional[List[int]] = None, pins_by_aedt_name: Optional[List[str]] = None, pins_by_name: Optional[List[str]] = None) -> bool
+
+   
+   Create pin group.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Pin group name.
+
+       **pins_by_id** : :class:`python:list`, :obj:`optional`
+           List of pin IDs.
+
+       **pins_by_aedt_name** : :class:`python:list`, :obj:`optional`
+           List of pin AEDT names.
+
+       **pins_by_name** : :class:`python:list`, :obj:`optional`
+           List of pin names.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.siwave.pin_group.PinGroup` or :ref:`bool <python:bltin-boolean-values>`
+           PinGroup object if created, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_void(shape: pyedb.grpc.database.primitive.primitive.Primitive, void_shape: Union[pyedb.grpc.database.primitive.primitive.Primitive, List[pyedb.grpc.database.primitive.primitive.Primitive]]) -> bool
+   :staticmethod:
+
+
+   
+   Add void to shape.
+
+
+   :Parameters:
+
+       **shape** : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Main shape.
+
+       **void_shape** : :class:`python:list` or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Void shape(s).
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if successful, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

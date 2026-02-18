@@ -1,0 +1,6 @@
+net\_name
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.net_name

@@ -1,0 +1,375 @@
+
+
+
+
+
+
+:class:`BundleTerminal`
+=======================
+
+
+.. py:class:: pyedb.grpc.database.terminal.bundle_terminal.BundleTerminal(pedb, core)
+
+   Bases: :py:obj:`pyedb.grpc.database.terminal.terminal.Terminal`
+
+
+   
+   Manages bundle terminal properties.
+
+
+   :Parameters:
+
+       **pedb** : :class:`Edb <pyedb.grpc.edb.Edb>`
+           EDB object.
+
+       **edb_object** : :class:`BundleTerminal <ansys.edb.core.terminal.terminals.BundleTerminal>`
+           BundleTerminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: BundleTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a bundle terminal.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~decouple`
+            - Ungroup a bundle of terminals.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_reference_terminal`
+            - Check if the bundle terminal is a reference terminal.
+          * - :py:attr:`~component`
+            - Component.
+          * - :py:attr:`~net`
+            - Returns Net object.
+          * - :py:attr:`~hfss_pi_type`
+            - Returns HFSS PI type.
+          * - :py:attr:`~rlc_boundary_parameters`
+            - Returns Rlc parameters
+          * - :py:attr:`~term_to_ground`
+            - Returns terminal to ground.
+          * - :py:attr:`~terminals`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
+
+Property detail
+---------------
+
+.. py:property:: is_reference_terminal
+   :type: bool
+
+
+   
+   Check if the bundle terminal is a reference terminal.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component
+   :type: pyedb.grpc.database.hierarchy.component.Component
+
+
+   
+   Component.
+
+
+
+
+
+   :Returns:
+
+       :class:`Component <pyedb.grpc.database.hierarchy.component.Component`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Returns Net object.
+
+
+
+
+
+   :Returns:
+
+       :class:`Net <pyedb.grpc.database.net.net.Net>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hfss_pi_type
+   :type: str
+
+
+   
+   Returns HFSS PI type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rlc_boundary_parameters
+   :type: pyedb.grpc.database.utility.rlc.Rlc
+
+
+   
+   Returns Rlc parameters
+
+
+
+
+
+   :Returns:
+
+       :class:`Rlc <pyedb.grpc.database.utility.rlc.Rlc>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: term_to_ground
+   :type: str
+
+
+   
+   Returns terminal to ground.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Terminal name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminals
+   :type: list[pyedb.grpc.database.terminal.terminal.Terminal]
+
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb, name: str, terminals: list[Union[pyedb.grpc.database.terminal.terminal.Terminal, pyedb.grpc.database.ports.ports.WavePort, str]]) -> BundleTerminal
+   :classmethod:
+
+
+   
+   Create a bundle terminal.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Bundle terminal name.
+
+       **terminals** : :class:`python:list`\[:obj:`Union`\[:obj:`Terminal`, :obj:`WavePort`]]
+           List of terminals to bundle.
+
+
+
+   :Returns:
+
+       :obj:`BundleTerminal`
+           The created bundle terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: decouple() -> bool
+
+   
+   Ungroup a bundle of terminals.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

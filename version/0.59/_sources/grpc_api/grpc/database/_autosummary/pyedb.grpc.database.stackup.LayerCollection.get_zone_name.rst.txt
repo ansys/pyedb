@@ -1,0 +1,6 @@
+get\_zone\_name
+===============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.get_zone_name

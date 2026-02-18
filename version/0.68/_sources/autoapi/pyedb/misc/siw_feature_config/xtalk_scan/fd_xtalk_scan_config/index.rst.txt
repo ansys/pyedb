@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``fd_xtalk_scan_config.py`` module
+======================================
+
+.. py:module:: pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: fd_xtalk_scan_config
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.xtalk_scan.fd_xtalk_scan_config.CrosstalkFrequency`
+            - Siwave frequency domain crosstalk configuration handler.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CrosstalkFrequency</autoapi/pyedb/misc/siw_feature_config/xtalk_scan/fd_xtalk_scan_config/CrosstalkFrequency>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

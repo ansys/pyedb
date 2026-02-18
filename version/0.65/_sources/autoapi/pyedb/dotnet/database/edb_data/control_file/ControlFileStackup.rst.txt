@@ -1,0 +1,458 @@
+
+
+
+
+
+
+:class:`ControlFileStackup`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.control_file.ControlFileStackup(units='mm')
+
+   
+   Class that manages the Stackup info.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileStackup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_material`
+            - Add a new material with specific properties.
+          * - :py:attr:`~add_layer`
+            - Add a new layer.
+          * - :py:attr:`~add_dielectric`
+            - Add a new dielectric.
+          * - :py:attr:`~add_via`
+            - Add a new via layer.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~vias`
+            - Via list.
+          * - :py:attr:`~materials`
+            - Material list.
+          * - :py:attr:`~dielectrics`
+            - Dielectric layer list.
+          * - :py:attr:`~layers`
+            - Layer list.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~units`
+            - 
+          * - :py:attr:`~metal_layer_snapping_tolerance`
+            - 
+          * - :py:attr:`~dielectrics_base_elevation`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.control_file import ControlFileStackup
+
+Property detail
+---------------
+
+.. py:property:: vias
+
+   
+   Via list.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileVia`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: materials
+
+   
+   Material list.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileMaterial`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectrics
+
+   
+   Dielectric layer list.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileLayer`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers
+
+   
+   Layer list.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileLayer`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: units
+   :value: 'mm'
+
+
+.. py:attribute:: metal_layer_snapping_tolerance
+   :value: None
+
+
+.. py:attribute:: dielectrics_base_elevation
+   :value: 0
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_material(material_name, permittivity=1.0, dielectric_loss_tg=0.0, permeability=1.0, conductivity=0.0, properties=None)
+
+   
+   Add a new material with specific properties.
+
+
+   :Parameters:
+
+       **material_name** : :class:`python:str`
+           Material name.
+
+       **permittivity** : :class:`python:float`, :obj:`optional`
+           Material permittivity. The default is ``1.0``.
+
+       **dielectric_loss_tg** : :class:`python:float`, :obj:`optional`
+           Material tangent losses. The default is ``0.0``.
+
+       **permeability** : :class:`python:float`, :obj:`optional`
+           Material permeability. The default is ``1.0``.
+
+       **conductivity** : :class:`python:float`, :obj:`optional`
+           Material conductivity. The default is ``0.0``.
+
+       **properties** : :class:`python:dict`, :obj:`optional`
+           Specific material properties. The default is ``None``.
+           Dictionary with key and material property value.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileMaterial`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer(layer_name, elevation=0.0, material='', gds_type=0, target_layer='', thickness=0.0, layer_type='conductor', solve_inside=True, properties=None)
+
+   
+   Add a new layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **elevation** : :class:`python:float`
+           Layer elevation.
+
+       **material** : :class:`python:str`
+           Material for the layer.
+
+       **gds_type** : :class:`python:int`
+           GDS type assigned on the layer. The value must be the same as in the GDS file otherwise geometries won't be
+           imported.
+
+       **target_layer** : :class:`python:str`
+           Layer name assigned in EDB or HFSS 3D layout after import.
+
+       **thickness** : :class:`python:float`
+           Layer thickness
+
+       **layer_type** : :class:`python:str`
+           Define the layer type, default value for a layer is ``"conductor"``
+
+       **solve_inside** : :ref:`bool <python:bltin-boolean-values>`
+           When ``True`` solver will solve inside metal, and not id ``False``. Default value is ``True``.
+
+       **properties** : :class:`python:dict`
+           Dictionary with key and  property value.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileLayer`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_dielectric(layer_name, layer_index=None, material='', thickness=0.0, properties=None, base_layer=None, add_on_top=True)
+
+   
+   Add a new dielectric.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **layer_index** : :class:`python:int`, :obj:`optional`
+           Dielectric layer index as they must be stacked. If not provided the layer index will be incremented.
+
+       **material** : :class:`python:str`
+           Material name.
+
+       **thickness** : :class:`python:float`
+           Layer thickness.
+
+       **properties** : :class:`python:dict`
+           Dictionary with key and  property value.
+
+       **base_layer** : :class:`python:str`,  :obj:`optional`
+           Layer name used for layer placement. Default value is ``None``. This option is used for inserting
+           dielectric layer between two existing ones. When no argument is provided the dielectric layer will be placed
+           on top of the stacked ones.
+
+       **method** : :ref:`bool <python:bltin-boolean-values>`, Optional.
+           Provides the method to use when the argument ``base_layer`` is provided. When ``True`` the layer is added
+           on top on the base layer, when ``False`` it will be added below.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileDielectric`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_via(layer_name, material='', gds_type=0, target_layer='', start_layer='', stop_layer='', solve_inside=True, via_group_method='proximity', via_group_tol=1e-06, via_group_persistent=True, snap_via_group_method='distance', snap_via_group_tol=1e-08, properties=None)
+
+   
+   Add a new via layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **material** : :class:`python:str`
+           Define the material for this layer.
+
+       **gds_type** : :class:`python:int`
+           Define the gds type.
+
+       **target_layer** : :class:`python:str`
+           Target layer used after layout import in EDB and HFSS 3D layout.
+
+       **start_layer** : :class:`python:str`
+           Define the start layer for the via
+
+       **stop_layer** : :class:`python:str`
+           Define the stop layer for the via.
+
+       **solve_inside** : :ref:`bool <python:bltin-boolean-values>`
+           When ``True`` solve inside this layer is anbled. Default value is ``True``.
+
+       **via_group_method** : :class:`python:str`
+           Define the via group method, default value is ``"proximity"``
+
+       **via_group_tol** : :class:`python:float`
+           Define the via group tolerance.
+
+       **via_group_persistent** : :ref:`bool <python:bltin-boolean-values>`
+           When ``True`` activated otherwise when ``False``is deactivated. Default value is ``True``.
+
+       **snap_via_group_method** : :class:`python:str`
+           Define the via group method, default value is ``"distance"``
+
+       **snap_via_group_tol** : :class:`python:float`
+           Define the via group tolerance, default value is 10e-9.
+
+       **properties** : :class:`python:dict`
+           Dictionary with key and  property value.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileVia`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

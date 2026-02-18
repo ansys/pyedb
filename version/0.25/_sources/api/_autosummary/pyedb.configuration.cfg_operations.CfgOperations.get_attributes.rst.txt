@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_operations
+
+.. automethod:: CfgOperations.get_attributes

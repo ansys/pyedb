@@ -1,0 +1,6 @@
+ansys\_em\_path
+===============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.ansys_em_path

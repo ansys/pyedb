@@ -1,0 +1,6 @@
+auto\_mesh\_operation
+=====================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.auto_mesh_operation

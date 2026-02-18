@@ -1,0 +1,6 @@
+is\_complex
+===========
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoproperty:: Value.is_complex

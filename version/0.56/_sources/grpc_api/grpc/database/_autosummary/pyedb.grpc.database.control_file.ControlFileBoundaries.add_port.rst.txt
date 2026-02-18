@@ -1,0 +1,6 @@
+add\_port
+=========
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. automethod:: ControlFileBoundaries.add_port

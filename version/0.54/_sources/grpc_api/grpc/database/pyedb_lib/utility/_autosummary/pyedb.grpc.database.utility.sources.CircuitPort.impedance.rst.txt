@@ -1,0 +1,6 @@
+impedance
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: CircuitPort.impedance

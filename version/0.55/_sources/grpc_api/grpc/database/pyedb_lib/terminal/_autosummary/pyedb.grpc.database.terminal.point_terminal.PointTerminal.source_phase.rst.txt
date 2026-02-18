@@ -1,0 +1,6 @@
+source\_phase
+=============
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.source_phase

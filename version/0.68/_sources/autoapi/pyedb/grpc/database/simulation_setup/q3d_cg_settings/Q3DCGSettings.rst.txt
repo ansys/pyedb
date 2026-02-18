@@ -1,0 +1,363 @@
+
+
+
+
+
+
+:class:`Q3DCGSettings`
+======================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.q3d_cg_settings.Q3DCGSettings(pedb, core: ansys.edb.core.simulation_setup.q3d_simulation_settings.Q3DCGSettings)
+
+   
+   Q3D CG settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Q3DCGSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_incr_sol_order`
+            - Get auto increment solution order setting.
+          * - :py:attr:`~compression_tol`
+            - Get compression tolerance.
+          * - :py:attr:`~max_passes`
+            - Maximum number of passes.
+          * - :py:attr:`~max_refine_per_pass`
+            - Maximum refinement per pass.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum number of converged passes.
+          * - :py:attr:`~min_passes`
+            - Minimum number of passes.
+          * - :py:attr:`~percent_error`
+            - Percent error during conduction adaptive passes.
+          * - :py:attr:`~solution_order`
+            - Get solution order.
+          * - :py:attr:`~solver_type`
+            - Get solver type.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.q3d_cg_settings import Q3DCGSettings
+
+Property detail
+---------------
+
+.. py:property:: auto_incr_sol_order
+   :type: bool
+
+
+   
+   Get auto increment solution order setting.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Auto increment solution order setting.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compression_tol
+   :type: float
+
+
+   
+   Get compression tolerance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Compression tolerance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_passes
+   :type: int
+
+
+   
+   Maximum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refine_per_pass
+   :type: float
+
+
+   
+   Maximum refinement per pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Maximum refinement per pass.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+   :type: int
+
+
+   
+   Minimum number of converged passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum number of converged passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum number of passes.
+   Returns
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percent_error
+   :type: float
+
+
+   
+   Percent error during conduction adaptive passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Percent error during conduction adaptive passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solution_order
+   :type: str
+
+
+   
+   Get solution order.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Solution order.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver_type
+   :type: str
+
+
+   
+   Get solver type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Solver type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

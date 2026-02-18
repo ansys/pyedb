@@ -1,0 +1,30 @@
+﻿AdaptiveSettings
+================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoclass:: AdaptiveSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      AdaptiveSettings.add_adaptive_frequency_data
+      
+      
+      AdaptiveSettings.add_broadband_adaptive_frequency_data
+      
+      
+      AdaptiveSettings.add_multi_frequency_adaptive_setup
+      
+   
+   
+
+   
+   
+   

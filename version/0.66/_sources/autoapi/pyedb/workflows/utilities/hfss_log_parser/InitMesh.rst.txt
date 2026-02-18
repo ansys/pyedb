@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`InitMesh`
+=================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.InitMesh
+
+   
+   Statistics reported during the initial tetrahedral meshing phase.
+
+   :ivar int tetrahedra: Number of tetrahedra created.
+   :ivar float memory_mb: Peak memory consumption in megabytes.
+   :ivar int real_time_sec: Wall clock time in seconds.
+   :ivar int cpu_time_sec: CPU time in seconds.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: InitMesh
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~tetrahedra`
+            - 
+          * - :py:attr:`~memory_mb`
+            - 
+          * - :py:attr:`~real_time_sec`
+            - 
+          * - :py:attr:`~cpu_time_sec`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import InitMesh
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: tetrahedra
+   :type:  int
+
+.. py:attribute:: memory_mb
+   :type:  float
+
+.. py:attribute:: real_time_sec
+   :type:  int
+
+.. py:attribute:: cpu_time_sec
+   :type:  int
+
+
+
+
+

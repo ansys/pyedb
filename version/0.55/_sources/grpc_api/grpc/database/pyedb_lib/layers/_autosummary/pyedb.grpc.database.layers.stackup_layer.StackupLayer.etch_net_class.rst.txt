@@ -1,0 +1,6 @@
+etch\_net\_class
+================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.etch_net_class

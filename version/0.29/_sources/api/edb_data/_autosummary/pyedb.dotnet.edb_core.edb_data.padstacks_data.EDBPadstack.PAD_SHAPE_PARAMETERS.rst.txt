@@ -1,0 +1,6 @@
+PAD\_SHAPE\_PARAMETERS
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.padstacks_data
+
+.. autoattribute:: EDBPadstack.PAD_SHAPE_PARAMETERS

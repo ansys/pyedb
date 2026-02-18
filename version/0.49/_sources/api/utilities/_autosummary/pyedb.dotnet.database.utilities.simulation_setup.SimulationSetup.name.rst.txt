@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoproperty:: SimulationSetup.name

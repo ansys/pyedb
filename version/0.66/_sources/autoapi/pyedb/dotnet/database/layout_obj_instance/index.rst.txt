@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``layout_obj_instance.py`` module
+=====================================
+
+.. py:module:: pyedb.dotnet.database.layout_obj_instance
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layout_obj_instance
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.layout_obj_instance.LayoutObjInstance`
+            - Manages EDB functionalities for the layout object instance.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> LayoutObjInstance</autoapi/pyedb/dotnet/database/layout_obj_instance/LayoutObjInstance>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

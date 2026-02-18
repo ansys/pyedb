@@ -1,0 +1,6 @@
+frequency\_string
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.sweep_data
+
+.. autoproperty:: SweepData.frequency_string

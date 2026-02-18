@@ -1,0 +1,173 @@
+
+
+
+
+
+
+:class:`DifferentialPairs`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.net.differential_pair.DifferentialPairs(pedb)
+
+
+.. py:currentmodule:: DifferentialPairs
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - :Parameters:
+          * - :py:attr:`~auto_identify`
+            - Auto identify differential pairs by naming conversion.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~items`
+            - Extended nets.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.net.differential_pair import DifferentialPairs
+
+Property detail
+---------------
+
+.. py:property:: items
+   :type: dict[str, any]
+
+
+   
+   Extended nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
+           Dictionary of extended nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name: str, net_p: str, net_n: str) -> DifferentialPair
+
+   
+
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the differential pair.
+
+       **net_p** : :class:`python:str`
+           Name of the positive net.
+
+       **net_n** : :class:`python:str`
+           Name of the negative net.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_identify(positive_differentiator='_P', negative_differentiator='_N') -> list[str]
+
+   
+   Auto identify differential pairs by naming conversion.
+
+
+   :Parameters:
+
+       **positive_differentiator: str, optional**
+           Differentiator of the positive net. The default is ``"_P"``.
+
+       **negative_differentiator: str, optional**
+           Differentiator of the negative net. The default is ``"_N"``.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           A list containing identified differential pair names.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2025.2")
+   >>> edb_nets = edbapp.differential_pairs.auto_identify()
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

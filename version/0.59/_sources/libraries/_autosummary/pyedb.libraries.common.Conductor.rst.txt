@@ -1,0 +1,23 @@
+﻿Conductor
+=========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: Conductor
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Conductor.conductivity
+      Conductor.name
+   
+   

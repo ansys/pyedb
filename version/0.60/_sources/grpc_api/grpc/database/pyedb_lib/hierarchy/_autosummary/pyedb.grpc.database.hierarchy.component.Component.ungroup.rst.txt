@@ -1,0 +1,6 @@
+ungroup
+=======
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.ungroup

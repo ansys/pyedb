@@ -1,0 +1,178 @@
+
+
+
+
+
+
+:class:`LayoutObjType`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.general.LayoutObjType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: LayoutObjType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~InvalidLayoutObj`
+            - 
+          * - :py:attr:`~Primitive`
+            - 
+          * - :py:attr:`~PadstackInstance`
+            - 
+          * - :py:attr:`~Terminal`
+            - 
+          * - :py:attr:`~TerminalInstance`
+            - 
+          * - :py:attr:`~CellInstance`
+            - 
+          * - :py:attr:`~Layer`
+            - 
+          * - :py:attr:`~Net`
+            - 
+          * - :py:attr:`~Padstack`
+            - 
+          * - :py:attr:`~Group`
+            - 
+          * - :py:attr:`~NetClass`
+            - 
+          * - :py:attr:`~Cell`
+            - 
+          * - :py:attr:`~DifferentialPair`
+            - 
+          * - :py:attr:`~PinGroup`
+            - 
+          * - :py:attr:`~VoltageRegulator`
+            - 
+          * - :py:attr:`~ExtendedNet`
+            - 
+          * - :py:attr:`~LayoutObjTypeCount`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.general import LayoutObjType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: InvalidLayoutObj
+   :value: -1
+
+
+.. py:attribute:: Primitive
+   :value: 0
+
+
+.. py:attribute:: PadstackInstance
+   :value: 1
+
+
+.. py:attribute:: Terminal
+   :value: 2
+
+
+.. py:attribute:: TerminalInstance
+   :value: 3
+
+
+.. py:attribute:: CellInstance
+   :value: 4
+
+
+.. py:attribute:: Layer
+   :value: 5
+
+
+.. py:attribute:: Net
+   :value: 6
+
+
+.. py:attribute:: Padstack
+   :value: 7
+
+
+.. py:attribute:: Group
+   :value: 8
+
+
+.. py:attribute:: NetClass
+   :value: 9
+
+
+.. py:attribute:: Cell
+   :value: 10
+
+
+.. py:attribute:: DifferentialPair
+   :value: 11
+
+
+.. py:attribute:: PinGroup
+   :value: 12
+
+
+.. py:attribute:: VoltageRegulator
+   :value: 13
+
+
+.. py:attribute:: ExtendedNet
+   :value: 14
+
+
+.. py:attribute:: LayoutObjTypeCount
+   :value: 15
+
+
+
+
+
+

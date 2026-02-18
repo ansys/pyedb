@@ -1,0 +1,6 @@
+arc\_data
+=========
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. autoproperty:: PolygonData.arc_data

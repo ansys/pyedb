@@ -1,0 +1,6 @@
+set\_material
+=============
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.set_material

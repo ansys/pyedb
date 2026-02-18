@@ -1,0 +1,6 @@
+parameters\_values
+==================
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadProperties.parameters_values

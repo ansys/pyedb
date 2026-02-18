@@ -1,0 +1,267 @@
+
+
+
+
+
+
+:class:`Source`
+===============
+
+
+.. py:class:: pyedb.grpc.database.utility.sources.Source(pedb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides for handling Siwave sources.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Source
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Source name.
+          * - :py:attr:`~source_type`
+            - Source type.
+          * - :py:attr:`~positive_node`
+            - Positive node of the source.
+          * - :py:attr:`~negative_node`
+            - Negative node of the source.
+          * - :py:attr:`~amplitude`
+            - Amplitude value of the source. Either amperes for current source or volts for
+          * - :py:attr:`~phase`
+            - Phase of the source.
+          * - :py:attr:`~impedance`
+            - Impedance values of the source.
+          * - :py:attr:`~r_value`
+            - 
+          * - :py:attr:`~l_value`
+            - 
+          * - :py:attr:`~c_value`
+            - 
+          * - :py:attr:`~create_physical_resistor`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.sources import Source
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Source name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   Source type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: positive_node
+
+   
+   Positive node of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_node
+
+   
+   Negative node of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: amplitude
+
+   
+   Amplitude value of the source. Either amperes for current source or volts for
+   voltage source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Phase of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance values of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: r_value
+
+.. py:property:: l_value
+
+.. py:property:: c_value
+
+.. py:property:: create_physical_resistor
+
+
+
+
+
+

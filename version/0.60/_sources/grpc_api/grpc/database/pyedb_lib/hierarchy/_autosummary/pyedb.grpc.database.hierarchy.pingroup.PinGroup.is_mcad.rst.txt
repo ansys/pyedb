@@ -1,0 +1,6 @@
+is\_mcad
+========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoproperty:: PinGroup.is_mcad

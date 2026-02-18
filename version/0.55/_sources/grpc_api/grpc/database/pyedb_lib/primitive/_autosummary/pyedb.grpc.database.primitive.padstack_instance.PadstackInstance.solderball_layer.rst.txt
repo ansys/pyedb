@@ -1,0 +1,6 @@
+solderball\_layer
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.solderball_layer

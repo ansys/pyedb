@@ -1,0 +1,6 @@
+load\_configuration
+===================
+
+.. currentmodule:: pyedb.siwave
+
+.. automethod:: Siwave.load_configuration

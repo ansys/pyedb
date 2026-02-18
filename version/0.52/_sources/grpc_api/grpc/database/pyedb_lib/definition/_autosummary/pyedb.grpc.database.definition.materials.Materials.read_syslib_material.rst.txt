@@ -1,0 +1,6 @@
+read\_syslib\_material
+======================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.read_syslib_material

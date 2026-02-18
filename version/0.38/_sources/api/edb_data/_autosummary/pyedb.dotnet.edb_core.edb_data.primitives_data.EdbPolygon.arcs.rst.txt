@@ -1,0 +1,6 @@
+arcs
+====
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. autoproperty:: EdbPolygon.arcs

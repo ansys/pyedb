@@ -1,0 +1,6 @@
+add\_sweep
+==========
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. automethod:: ControlFileSetup.add_sweep

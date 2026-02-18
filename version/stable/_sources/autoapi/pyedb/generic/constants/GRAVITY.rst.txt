@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`GRAVITY`
+================
+
+
+.. py:class:: pyedb.generic.constants.GRAVITY
+
+   Bases: :py:obj:`object`
+
+
+   
+   GravityDirection Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import GRAVITY
+
+
+
+
+

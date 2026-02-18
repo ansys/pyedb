@@ -1,0 +1,6 @@
+is\_intersecting
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadstackInstance.is_intersecting

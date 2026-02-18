@@ -1,0 +1,6 @@
+export\_hfss
+============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.export_hfss

@@ -1,0 +1,6 @@
+set\_product\_solver\_option
+============================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. automethod:: PinGroupTerminal.set_product_solver_option

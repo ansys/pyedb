@@ -1,0 +1,6 @@
+nets
+====
+
+.. currentmodule:: pyedb.dotnet.database.nets
+
+.. autoproperty:: EdbNets.nets

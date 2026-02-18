@@ -1,0 +1,114 @@
+﻿CoaxPort
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: CoaxPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CoaxPort.cast
+      
+      
+      CoaxPort.create
+      
+      
+      CoaxPort.create_3d_comp
+      
+      
+      CoaxPort.create_hfss
+      
+      
+      CoaxPort.create_stride
+      
+      
+      CoaxPort.delete
+      
+      
+      CoaxPort.find
+      
+      
+      CoaxPort.find_by_id
+      
+      
+      CoaxPort.get_product_property
+      
+      
+      CoaxPort.get_product_property_ids
+      
+      
+      CoaxPort.product_solver_names
+      
+      
+      CoaxPort.product_solver_option
+      
+      
+      CoaxPort.set_product_property
+      
+      
+      CoaxPort.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CoaxPort.boundary_type
+      CoaxPort.bundle_terminal
+      CoaxPort.component
+      CoaxPort.edb_uid
+      CoaxPort.group
+      CoaxPort.hfss_pi_type
+      CoaxPort.id
+      CoaxPort.impedance
+      CoaxPort.is_auto_port
+      CoaxPort.is_circuit_port
+      CoaxPort.is_interface_terminal
+      CoaxPort.is_mcad
+      CoaxPort.is_mcad_3d_comp
+      CoaxPort.is_mcad_hfss
+      CoaxPort.is_mcad_stride
+      CoaxPort.is_null
+      CoaxPort.is_port
+      CoaxPort.is_reference_terminal
+      CoaxPort.layer
+      CoaxPort.layout
+      CoaxPort.layout_obj_type
+      CoaxPort.location
+      CoaxPort.magnitude
+      CoaxPort.model
+      CoaxPort.msg
+      CoaxPort.name
+      CoaxPort.net
+      CoaxPort.net_name
+      CoaxPort.obj_type
+      CoaxPort.padstack_instance
+      CoaxPort.params
+      CoaxPort.phase
+      CoaxPort.port_post_processing_prop
+      CoaxPort.position
+      CoaxPort.radial_extent_factor
+      CoaxPort.ref_terminal
+      CoaxPort.reference_layer
+      CoaxPort.reference_terminal
+      CoaxPort.rlc_boundary_parameters
+      CoaxPort.source_amplitude
+      CoaxPort.source_phase
+      CoaxPort.term_to_ground
+      CoaxPort.terminal_type
+      CoaxPort.type
+      CoaxPort.use_reference_from_hierarchy
+   
+   

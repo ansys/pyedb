@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_data`` library
+============================================
+
+.. py:module:: pyedb.configuration.cfg_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_data.CfgData`
+            - Manages configure data.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgData</autoapi/pyedb/configuration/cfg_data/CfgData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

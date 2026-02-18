@@ -1,0 +1,1017 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:site_name" content="PyAnsys" />
+    <title>StackupLayer &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../../_static/documentation_options.js?v=36f06ebc"></script>
+    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'grpc_api/grpc/database/pyedb_lib/layers/_autosummary/pyedb.grpc.database.layers.stackup_layer.StackupLayer';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.56';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="assign_roughness_model" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.assign_roughness_model.html" />
+    <link rel="prev" title="Stackup Layer" href="../stackup_layer.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.56.0" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/grpc_api/grpc/database/pyedb_lib/layers/_autosummary/pyedb.grpc.database.layers.stackup_layer.StackupLayer.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.56/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.56/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../../index.html">PyEDB</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../../edb.html">Edb gRPC main class</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../../index.html">Database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../../components.html">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../control_file.html">Control file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../definitions.html">Definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../hfss.html">HFSS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../layout_validation.html">Layout validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../modeler.html">Modeler &amp; primitives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../nets.html">Sources and excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../padstacks.html">Padstacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../siwave.html">Siwave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../source_excitations.html">Sources excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../../stackup.html">Stackup</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../../index.html">EDB lib</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../../definition/index.html">Definition classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../geometry/index.html">Geometry classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../hierarchy/index.html">Hierarchy classes</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="../index.html">Layers classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../layout/index.html">Layout classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../net/index.html">Net classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../ports/index.html">Port classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../primitive/index.html">Primitive classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../simulation_setup/index.html">Simulation setup classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utility/index.html">Utility classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../terminal/index.html">Terminal classes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../../utility/index.html">Utility classes</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../index.html" class="nav-link">PyEDB</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../index.html" class="nav-link">Database</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">EDB lib</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">Layers classes</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../stackup_layer.html" class="nav-link">Stackup Layer</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">StackupLayer</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="stackuplayer">
+<h1>StackupLayer<a class="headerlink" href="#stackuplayer" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.grpc.database.layers.stackup_layer.StackupLayer">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.grpc.database.layers.stackup_layer.</span></span><span class="sig-name descname"><span class="pre">StackupLayer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pedb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edb_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="Link to this definition">#</a></dt>
+<dd><p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.assign_roughness_model.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.assign_roughness_model" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.assign_roughness_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.assign_roughness_model</span></code></a>([...])</p></td>
+<td><p>Assign roughness model on this layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.cast.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.cast" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.cast"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.cast</span></code></a>()</p></td>
+<td><p>Cast the layer object to the correct concrete type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.clone.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.clone" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.clone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.clone</span></code></a>([copy_id])</p></td>
+<td><p>Create a clone of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.create.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.create" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.create"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.create</span></code></a>(name, layer_type, ...)</p></td>
+<td><p>Create a stackup layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_fill_material.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_fill_material" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_fill_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.get_fill_material</span></code></a>([evaluated])</p></td>
+<td><p>Get the name of the fill material of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_material.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_material" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.get_material</span></code></a>([evaluated])</p></td>
+<td><p>Get the name of the material of the layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_product_property.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_product_property" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_product_property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.get_product_property</span></code></a>(prod_id, ...)</p></td>
+<td><p>Get the product property of the layer for a given product ID and attribute ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_product_property_ids.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_product_property_ids" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_product_property_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.get_product_property_ids</span></code></a>(prod_id)</p></td>
+<td><p>Get a list of attribute IDs for a given product ID for the layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_roughness_model.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_roughness_model" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.get_roughness_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.get_roughness_model</span></code></a>(region)</p></td>
+<td><p>Get the roughness model used by the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_in_zone.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_in_zone" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_in_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.is_in_zone</span></code></a>(zone)</p></td>
+<td><p>Determine if the layer exists in the given zone.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_fill_material.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_fill_material" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_fill_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.set_fill_material</span></code></a>(...)</p></td>
+<td><p>Set the name of the fill material of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_is_in_zone.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_is_in_zone" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_is_in_zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.set_is_in_zone</span></code></a>(zone[, in_zone])</p></td>
+<td><p>Set whether the layer exists in a given zone.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_material.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_material" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.set_material</span></code></a>(material_name)</p></td>
+<td><p>Set the name of the material of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_product_property.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_product_property" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_product_property"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.set_product_property</span></code></a>(prod_id, ...)</p></td>
+<td><p>Set the product property of the layer for a given product ID and attribute ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_roughness_model.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_roughness_model" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.set_roughness_model"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.set_roughness_model</span></code></a>(...)</p></td>
+<td><p>Set the roughness model used by the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.update.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.update" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.update"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.update</span></code></a>(**kwargs)</p></td>
+<td><p></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_groisse_roughness.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_groisse_roughness" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_groisse_roughness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.bottom_groisse_roughness</span></code></a></p></td>
+<td><p>Groisse model on layer bottom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_hallhuray_nodule_radius.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_hallhuray_nodule_radius" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_hallhuray_nodule_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.bottom_hallhuray_nodule_radius</span></code></a></p></td>
+<td><p>Huray model nodule radius on layer bottom.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_hallhuray_surface_ratio.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_hallhuray_surface_ratio" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.bottom_hallhuray_surface_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.bottom_hallhuray_surface_ratio</span></code></a></p></td>
+<td><p>Huray model surface ratio on layer bottom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.color.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.color" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.color"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.color</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">tuple</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>]: Color of the layer in (R,G,B) format.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.conductivity.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.conductivity" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.conductivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.conductivity</span></code></a></p></td>
+<td><p>Material conductivity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.dielectric_fill.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.dielectric_fill" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.dielectric_fill"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.dielectric_fill</span></code></a></p></td>
+<td><p>Material name of the layer dielectric fill.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.draw_override.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.draw_override" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.draw_override"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.draw_override</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">DrawOverride</span></code>: Draw override of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_factor.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_factor" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_factor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.etch_factor</span></code></a></p></td>
+<td><p>Layer etching factor.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_factor_enabled.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_factor_enabled" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_factor_enabled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.etch_factor_enabled</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if an etch factor is used by the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_net_class.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_net_class" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.etch_net_class"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.etch_net_class</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">EtchNetClass</span></code>: Etch net class of the layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.fill_material.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.fill_material" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.fill_material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.fill_material</span></code></a></p></td>
+<td><p>The layer's fill material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.hfss_solver_properties.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.hfss_solver_properties" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.hfss_solver_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.hfss_solver_properties</span></code></a></p></td>
+<td><p><span class="xref std std-term">HFSSSolverProperties</span>: HFSS solver properties of the layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.id.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.id" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.id</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>: Unique ID of the EDB object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_negative.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_negative" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_negative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.is_negative</span></code></a></p></td>
+<td><p>Determine whether this layer is a negative layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_null.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_null" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_null"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.is_null</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if the object exists in the database.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_stackup_layer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_stackup_layer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_stackup_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.is_stackup_layer</span></code></a></p></td>
+<td><p>Testing if layer is stackup layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_via_layer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_via_layer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.is_via_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.is_via_layer</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if the layer is a <code class="xref py py-class docutils literal notranslate"><span class="pre">ViaLayer</span></code> instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.layer_id.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.layer_id" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.layer_id"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.layer_id</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>: Layer ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.layout_obj_type.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.layout_obj_type" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.layout_obj_type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.layout_obj_type</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.locked.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.locked" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.locked"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.locked</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if the layer is locked.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.loss_tangent.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.loss_tangent" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.loss_tangent"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.loss_tangent</span></code></a></p></td>
+<td><p>Material loss_tangent.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.lower_elevation.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.lower_elevation" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.lower_elevation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.lower_elevation</span></code></a></p></td>
+<td><p>Lower elevation.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.material.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.material" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.material"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.material</span></code></a></p></td>
+<td><p>Material.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.msg.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.msg" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.msg"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.msg</span></code></a></p></td>
+<td><p><code class="xref py py-obj docutils literal notranslate"><span class="pre">EDBObjMessage</span></code>: Protobuf message that represents the object's ID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.name.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.name" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.name"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.name</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">str</span></code></a>: Name of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.negative.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.negative" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.negative"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.negative</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if the layer is a negative layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.permittivity.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.permittivity" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.permittivity"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.permittivity</span></code></a></p></td>
+<td><p>Material permittivity.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.properties.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.properties" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.properties</span></code></a></p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.referencing_via_layer_ids.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.referencing_via_layer_ids" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.referencing_via_layer_ids"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.referencing_via_layer_ids</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>]: Layer IDs for all via layers referencing the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.roughness_enabled.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.roughness_enabled" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.roughness_enabled"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.roughness_enabled</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if roughness models are used by the layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_groisse_roughness.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_groisse_roughness" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_groisse_roughness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.side_groisse_roughness</span></code></a></p></td>
+<td><p>Groisse model on layer bottom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_hallhuray_nodule_radius.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_hallhuray_nodule_radius" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_hallhuray_nodule_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.side_hallhuray_nodule_radius</span></code></a></p></td>
+<td><p>Huray model nodule radius on layer sides.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_hallhuray_surface_ratio.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_hallhuray_surface_ratio" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.side_hallhuray_surface_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.side_hallhuray_surface_ratio</span></code></a></p></td>
+<td><p>Huray model surface ratio on layer sides.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.thickness.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.thickness" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.thickness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.thickness</span></code></a></p></td>
+<td><p>Layer thickness.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_bottom_association.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_bottom_association" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_bottom_association"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.top_bottom_association</span></code></a></p></td>
+<td><p><code class="xref py py-class docutils literal notranslate"><span class="pre">TopBottomAssociation</span></code>: Top-bottom association of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_groisse_roughness.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_groisse_roughness" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_groisse_roughness"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.top_groisse_roughness</span></code></a></p></td>
+<td><p>Groisse model on layer top.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_hallhuray_nodule_radius.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_hallhuray_nodule_radius" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_hallhuray_nodule_radius"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.top_hallhuray_nodule_radius</span></code></a></p></td>
+<td><p>Huray model nodule radius on layer top.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_hallhuray_surface_ratio.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_hallhuray_surface_ratio" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.top_hallhuray_surface_ratio"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.top_hallhuray_surface_ratio</span></code></a></p></td>
+<td><p>Huray model surface ratio on layer top.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.transparency.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.transparency" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.transparency"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.transparency</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>: Transparency value of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.type.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.type" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.type"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.type</span></code></a></p></td>
+<td><p>Layer type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.upper_elevation.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.upper_elevation" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.upper_elevation"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.upper_elevation</span></code></a></p></td>
+<td><p>Upper elevation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.use_solver_properties.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.use_solver_properties" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.use_solver_properties"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.use_solver_properties</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">bool</span></code></a>: Flag indicating if solver properties are used by the layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.visibility_mask.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.visibility_mask" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.visibility_mask"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.visibility_mask</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>: Visibility mask of the layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.zone.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.zone" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.zone"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.zone</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>: Zone index associated with the owning layer collection.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.layers.stackup_layer.StackupLayer.zones.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer.zones" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer.zones"><code class="xref py py-obj docutils literal notranslate"><span class="pre">StackupLayer.zones</span></code></a></p></td>
+<td><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.13)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">int</span></code></a>]: IDs of all zones containing the layer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.grpc.database.layers.stackup_layer.StackupLayer"><code class="docutils literal notranslate"><span class="pre">StackupLayer</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="None">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../../_sources/grpc_api/grpc/database/pyedb_lib/layers/_autosummary/pyedb.grpc.database.layers.stackup_layer.StackupLayer.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../../_static/search.json";
+</script>
+
+
+<script src="../../../../../../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.4.5. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

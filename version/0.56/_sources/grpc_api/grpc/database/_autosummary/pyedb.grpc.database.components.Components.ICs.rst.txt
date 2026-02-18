@@ -1,0 +1,6 @@
+ICs
+===
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. autoproperty:: Components.ICs

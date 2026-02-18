@@ -1,0 +1,6 @@
+get\_closest\_arc\_midpoint
+===========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.get_closest_arc_midpoint

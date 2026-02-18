@@ -1,0 +1,442 @@
+
+
+
+
+
+
+:class:`Settings`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.siwave_simulation_setup.Settings(parent, sim_setup_info)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup`, :py:obj:`pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings.SiwaveDCIRSettings`
+
+
+   
+   Class to manage global settings for the Siwave simulation setup module.
+   Added to be compliant with ansys-edbe-core settings structure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Settings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_source_terminal_to_ground`
+            - Add a source terminal to ground.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - 
+          * - :py:attr:`~dc`
+            - 
+          * - :py:attr:`~dc_advanced`
+            - 
+          * - :py:attr:`~general`
+            - 
+          * - :py:attr:`~dc_report_config_file`
+            - Path to the DC report configuration file.
+          * - :py:attr:`~dc_report_show_active_devices`
+            - Flag to show active devices in the DC report.
+          * - :py:attr:`~enabled`
+            - Flag indicating if the setup is enabled.
+          * - :py:attr:`~export_dc_thermal_data`
+            - Flag to export DC thermal data.
+          * - :py:attr:`~full_dc_report_path`
+            - Full path to the DC report.
+          * - :py:attr:`~icepak_temp_file_path`
+            - Path to the Icepak temporary file.
+          * - :py:attr:`~import_thermal_data`
+            - Flag to import thermal data.
+          * - :py:attr:`~s_parameter`
+            - S-parameter settings.
+          * - :py:attr:`~source_terms_to_ground`
+            - Dictionary of grounded terminals.
+          * - :py:attr:`~use_loop_res_for_per_pin`
+            - Flag to use loop resistance for per-pin calculations.
+          * - :py:attr:`~via_report_path`
+            - Path to the via report.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.siwave_simulation_setup import Settings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+
+.. py:property:: dc
+
+.. py:property:: dc_advanced
+
+.. py:property:: general
+
+.. py:property:: dc_report_config_file
+   :type: str
+
+
+   
+   Path to the DC report configuration file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_show_active_devices
+   :type: bool
+
+
+   
+   Flag to show active devices in the DC report.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Flag indicating if the setup is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: export_dc_thermal_data
+   :type: bool
+
+
+   
+   Flag to export DC thermal data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: full_dc_report_path
+   :type: str
+
+
+   
+   Full path to the DC report.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_temp_file_path
+   :type: str
+
+
+   
+   Path to the Icepak temporary file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: import_thermal_data
+   :type: bool
+
+
+   
+   Flag to import thermal data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: s_parameter
+   :type: SIwaveSParameterSettings
+
+
+   
+   S-parameter settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_terms_to_ground
+   :type: dict[str, int]
+
+
+   
+   Dictionary of grounded terminals.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dictionary`
+           {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_loop_res_for_per_pin
+
+   
+   Flag to use loop resistance for per-pin calculations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_report_path
+   :type: str
+
+
+   
+   Path to the via report.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_source_terminal_to_ground(source_name, terminal=0)
+
+   
+   Add a source terminal to ground.
+
+
+   :Parameters:
+
+       **source_name** : str,
+           Source name.
+
+       **terminal** : :class:`python:int`, :obj:`optional`
+           Terminal to assign. Options are:
+           
+            - 0=Unspecified
+            - 1=Negative node
+            - 2=Positive none
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

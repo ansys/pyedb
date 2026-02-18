@@ -1,0 +1,6 @@
+owner
+=====
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.owner

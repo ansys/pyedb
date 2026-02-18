@@ -1,0 +1,6 @@
+find\_by\_name
+==============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.find_by_name

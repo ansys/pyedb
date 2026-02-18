@@ -1,0 +1,6 @@
+is\_in\_zone
+============
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. automethod:: Layer.is_in_zone

@@ -1,0 +1,134 @@
+
+
+
+
+
+
+The ``edb_data`` package
+============================
+
+.. py:module:: pyedb.dotnet.database.edb_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: edb_data
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.control_file`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.design_options`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.edbvalue`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.hfss_extent_info`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.layer_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.nets_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.padstacks_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.primitives_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.simulation_configuration`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.utilities`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.variables`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> control_file</autoapi/pyedb/dotnet/database/edb_data/control_file/index>
+    <span class="nf nf-fa-file"></span> design_options</autoapi/pyedb/dotnet/database/edb_data/design_options/index>
+    <span class="nf nf-fa-file"></span> edbvalue</autoapi/pyedb/dotnet/database/edb_data/edbvalue/index>
+    <span class="nf nf-fa-file"></span> hfss_extent_info</autoapi/pyedb/dotnet/database/edb_data/hfss_extent_info/index>
+    <span class="nf nf-fa-file"></span> layer_data</autoapi/pyedb/dotnet/database/edb_data/layer_data/index>
+    <span class="nf nf-fa-file"></span> nets_data</autoapi/pyedb/dotnet/database/edb_data/nets_data/index>
+    <span class="nf nf-fa-file"></span> padstacks_data</autoapi/pyedb/dotnet/database/edb_data/padstacks_data/index>
+    <span class="nf nf-fa-file"></span> ports</autoapi/pyedb/dotnet/database/edb_data/ports/index>
+    <span class="nf nf-fa-file"></span> primitives_data</autoapi/pyedb/dotnet/database/edb_data/primitives_data/index>
+    <span class="nf nf-fa-file"></span> raptor_x_simulation_setup_data</autoapi/pyedb/dotnet/database/edb_data/raptor_x_simulation_setup_data/index>
+    <span class="nf nf-fa-file"></span> simulation_configuration</autoapi/pyedb/dotnet/database/edb_data/simulation_configuration/index>
+    <span class="nf nf-fa-file"></span> sources</autoapi/pyedb/dotnet/database/edb_data/sources/index>
+    <span class="nf nf-fa-file"></span> utilities</autoapi/pyedb/dotnet/database/edb_data/utilities/index>
+    <span class="nf nf-fa-file"></span> variables</autoapi/pyedb/dotnet/database/edb_data/variables/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

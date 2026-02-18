@@ -1,0 +1,6 @@
+remove\_net
+===========
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. automethod:: NetClass.remove_net

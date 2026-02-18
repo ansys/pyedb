@@ -1,0 +1,6 @@
+add\_via
+========
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. automethod:: ControlFileStackup.add_via

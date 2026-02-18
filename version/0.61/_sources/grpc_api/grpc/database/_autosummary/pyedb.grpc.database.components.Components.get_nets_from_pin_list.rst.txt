@@ -1,0 +1,6 @@
+get\_nets\_from\_pin\_list
+==========================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.get_nets_from_pin_list

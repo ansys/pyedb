@@ -1,0 +1,6 @@
+hole\_range
+===========
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.hole_range

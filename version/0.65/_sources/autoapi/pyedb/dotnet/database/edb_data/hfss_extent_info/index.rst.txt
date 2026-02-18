@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``hfss_extent_info.py`` module
+==================================
+
+.. py:module:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_extent_info
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.hfss_extent_info.HfssExtentInfo`
+            - Manages EDB functionalities for HFSS extent information.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HfssExtentInfo</autoapi/pyedb/dotnet/database/edb_data/hfss_extent_info/HfssExtentInfo>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

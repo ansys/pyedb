@@ -1,0 +1,6 @@
+auto\_removal\_sliver\_poly
+===========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.auto_removal_sliver_poly

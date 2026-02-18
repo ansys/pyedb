@@ -1,0 +1,6 @@
+use\_eliminate\_slit\_per\_holes
+================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_eliminate_slit_per_holes

@@ -1,0 +1,6 @@
+load\_amat
+==========
+
+.. currentmodule:: pyedb.dotnet.database.materials
+
+.. automethod:: Materials.load_amat

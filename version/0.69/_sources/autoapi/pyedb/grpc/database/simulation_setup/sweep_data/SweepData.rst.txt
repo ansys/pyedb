@@ -1,0 +1,514 @@
+
+
+
+
+
+
+:class:`SweepData`
+==================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.sweep_data.SweepData(pedb, name='sweep_data', distribution='lin', start_f=0.0, end_f=10000000000.0, step=10000000.0, core: GrpcSweepData = None)
+
+   
+   Frequency sweep data class.
+   PARAMETERS
+   ----------
+   pedb : Pedb
+       Parent EDB object.
+   name : str, default: “”
+       Name of the sweep data.
+   distribution : str, default: “lin”
+       Distribution type of the frequency sweep. Supported types are: "lin", "dec", "estp", "linc", "oct".
+   start_f : float, default: 0.0
+       Start frequency of the sweep in Hz.
+   end_f : float, default: 10e9
+       End frequency of the sweep in Hz.
+   step : float, default: 10e6
+       Frequency step of the sweep in Hz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SweepData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Get the name of the frequency sweep data.
+          * - :py:attr:`~frequency_data`
+            - Get the frequency data of the sweep.
+          * - :py:attr:`~enabled`
+            - Get the enabled status of the frequency sweep.
+          * - :py:attr:`~type`
+            - Get the type of the frequency sweep.
+          * - :py:attr:`~use_q3d_for_dc`
+            - Get the flag indicating if Q3D is used for DC bias.
+          * - :py:attr:`~save_fields`
+            - Get the flag indicating if fields are saved during the sweep.
+          * - :py:attr:`~save_rad_fields_only`
+            - Get the flag indicating if only radiation fields are saved.
+          * - :py:attr:`~compute_dc_point`
+            - Get the flag indicating if DC point is computed.
+          * - :py:attr:`~siwave_with_3dddm`
+            - Get the flag indicating if SIwave with 3D-DDM is used.
+          * - :py:attr:`~use_hfss_solver_regions`
+            - Get the flag indicating if HFSS solver regions are used.
+          * - :py:attr:`~frequency_string`
+            - Get the frequency sweep string.
+          * - :py:attr:`~enforce_causality`
+            - Get the flag indicating if causality is enforced.
+          * - :py:attr:`~enforce_passivity`
+            - Get the flag indicating if passivity is enforced.
+          * - :py:attr:`~interpolation_data`
+            - Get the interpolation data points.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Get the name of the frequency sweep data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: frequency_data
+   :type: ansys.edb.core.simulation_setup.simulation_setup.FrequencyData
+
+
+   
+   Get the frequency data of the sweep.
+
+
+
+
+
+   :Returns:
+
+       :obj:`GrpcFrequencyData`
+           Frequency data object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Get the enabled status of the frequency sweep.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Enabled status.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Get the type of the frequency sweep.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Frequency sweep type. Values are: "interpolating", "discrete", "broadband".
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_q3d_for_dc
+   :type: bool
+
+
+   
+   Get the flag indicating if Q3D is used for DC bias.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if Q3D is used for DC bias, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_fields
+   :type: bool
+
+
+   
+   Get the flag indicating if fields are saved during the sweep.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if fields are saved, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_rad_fields_only
+   :type: bool
+
+
+   
+   Get the flag indicating if only radiation fields are saved.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if only radiation fields are saved, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_dc_point
+   :type: bool
+
+
+   
+   Get the flag indicating if DC point is computed.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if DC point is computed, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: siwave_with_3dddm
+   :type: bool
+
+
+   
+   Get the flag indicating if SIwave with 3D-DDM is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if SIwave with 3D-DDM is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_hfss_solver_regions
+   :type: bool
+
+
+   
+   Get the flag indicating if HFSS solver regions are used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if HFSS solver regions are used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: frequency_string
+   :type: str
+
+
+   
+   Get the frequency sweep string.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Frequency sweep string.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_causality
+   :type: bool
+
+
+   
+   Get the flag indicating if causality is enforced.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if causality is enforced, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_passivity
+   :type: bool
+
+
+   
+   Get the flag indicating if passivity is enforced.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if passivity is enforced, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: interpolation_data
+
+   
+   Get the interpolation data points.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:float`]
+           List of interpolation data points in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

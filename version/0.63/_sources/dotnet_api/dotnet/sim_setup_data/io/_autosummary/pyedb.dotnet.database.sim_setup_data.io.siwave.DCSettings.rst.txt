@@ -1,0 +1,27 @@
+﻿DCSettings
+==========
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoclass:: DCSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DCSettings.get_configurations
+      
+      
+      DCSettings.restore_default
+      
+   
+   
+
+   
+   
+   

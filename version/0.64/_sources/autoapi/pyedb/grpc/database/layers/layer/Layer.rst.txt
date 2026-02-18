@@ -1,0 +1,123 @@
+
+
+
+
+
+
+:class:`Layer`
+==============
+
+
+.. py:class:: pyedb.grpc.database.layers.layer.Layer(pedb, edb_object=None, name='', layer_type='undefined', **kwargs)
+
+   Bases: :py:obj:`ansys.edb.core.layer.layer.Layer`
+
+
+   
+   Manages Layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Layer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~properties`
+            - 
+          * - :py:attr:`~type`
+            - :class:`LayerType`: Type of the layer.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layers.layer import Layer
+
+Property detail
+---------------
+
+.. py:property:: properties
+   :type: dict[str, str]
+
+
+.. py:property:: type
+   :type: str
+
+
+   
+   :class:`LayerType`: Type of the layer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: update(**kwargs)
+
+
+
+

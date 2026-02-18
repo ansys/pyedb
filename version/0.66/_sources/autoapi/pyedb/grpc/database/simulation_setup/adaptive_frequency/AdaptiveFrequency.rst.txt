@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`AdaptiveFrequency`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.adaptive_frequency.AdaptiveFrequency(adaptive_frequency)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.adaptive_solutions.AdaptiveFrequency`
+
+
+   
+   EDB-core Adaptive Frequency class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.adaptive_frequency import AdaptiveFrequency
+
+
+
+
+

@@ -1,0 +1,15 @@
+﻿SiwaveDCIRSettings
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoclass:: SiwaveDCIRSettings
+
+   
+
+   
+   
+
+   
+   
+   

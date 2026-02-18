@@ -1,0 +1,81 @@
+
+
+
+
+
+
+:class:`SimSettings`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.SimSettings
+
+
+.. py:currentmodule:: SimSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~design_type`
+            - 
+          * - :py:attr:`~allow_off_core`
+            - 
+          * - :py:attr:`~manual_settings`
+            - 
+          * - :py:attr:`~two_level`
+            - 
+          * - :py:attr:`~distribution_types`
+            - 
+          * - :py:attr:`~machines`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import SimSettings
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: design_type
+   :type:  str
+
+.. py:attribute:: allow_off_core
+   :type:  bool
+
+.. py:attribute:: manual_settings
+   :type:  bool
+
+.. py:attribute:: two_level
+   :type:  bool
+
+.. py:attribute:: distribution_types
+   :type:  List[str]
+
+.. py:attribute:: machines
+   :type:  List[str]
+
+
+
+
+

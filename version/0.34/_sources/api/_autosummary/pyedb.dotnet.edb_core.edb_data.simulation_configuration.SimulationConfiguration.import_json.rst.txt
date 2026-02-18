@@ -1,0 +1,6 @@
+import\_json
+============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. automethod:: SimulationConfiguration.import_json

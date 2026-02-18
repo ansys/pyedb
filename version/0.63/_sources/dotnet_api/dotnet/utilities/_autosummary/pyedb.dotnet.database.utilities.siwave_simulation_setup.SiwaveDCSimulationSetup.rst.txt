@@ -1,0 +1,51 @@
+﻿SiwaveDCSimulationSetup
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. autoclass:: SiwaveDCSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SiwaveDCSimulationSetup.add_frequency_sweep
+      
+      
+      SiwaveDCSimulationSetup.add_sweep
+      
+      
+      SiwaveDCSimulationSetup.create
+      
+      
+      SiwaveDCSimulationSetup.delete
+      
+      
+      SiwaveDCSimulationSetup.delete_frequency_sweep
+      
+      
+      SiwaveDCSimulationSetup.get_configurations
+      
+      
+      SiwaveDCSimulationSetup.get_simulation_settings
+      
+      
+      SiwaveDCSimulationSetup.set_dc_slider
+      
+      
+      SiwaveDCSimulationSetup.set_sim_setup_info
+      
+      
+      SiwaveDCSimulationSetup.set_simulation_settings
+      
+   
+   
+
+   
+   
+   

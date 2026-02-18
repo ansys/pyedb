@@ -1,0 +1,6 @@
+metal\_volume
+=============
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.metal_volume

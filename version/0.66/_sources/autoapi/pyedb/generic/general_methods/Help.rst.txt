@@ -1,0 +1,283 @@
+
+
+
+
+
+
+:class:`Help`
+=============
+
+
+.. py:class:: pyedb.generic.general_methods.Help
+
+
+.. py:currentmodule:: Help
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~search`
+            - Search for one or more keywords.
+          * - :py:attr:`~getting_started`
+            - Open the PyEDB User guide page.
+          * - :py:attr:`~examples`
+            - Open the PyEDB Examples page.
+          * - :py:attr:`~github`
+            - Open the PyEDB GitHub page.
+          * - :py:attr:`~changelog`
+            - Open the PyEDB GitHub Changelog for a given release.
+          * - :py:attr:`~issues`
+            - Open the PyEDB GitHub Issues page.
+          * - :py:attr:`~ansys_forum`
+            - Open the PyEDB GitHub Issues page.
+          * - :py:attr:`~developer_forum`
+            - Open the Discussions page on the Ansys Developer site.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~browser`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.general_methods import Help
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: browser
+   :value: 'default'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: search(keywords, app_name=None, search_in_examples_only=False)
+
+   
+   Search for one or more keywords.
+
+
+   :Parameters:
+
+       **keywords** : :class:`python:str` or :class:`python:list`
+           ..
+
+       **app_name** : :class:`python:str`, :obj:`optional`
+           Name of a PyEDB app.
+
+       **search_in_examples_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to search for the one or more keywords only in the PyEDB examples.
+           The default is ``False``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: getting_started()
+
+   
+   Open the PyEDB User guide page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: examples()
+
+   
+   Open the PyEDB Examples page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: github()
+
+   
+   Open the PyEDB GitHub page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: changelog(release=None)
+
+   
+   Open the PyEDB GitHub Changelog for a given release.
+
+
+   :Parameters:
+
+       **release** : :class:`python:str`, :obj:`optional`
+           Release to get the changelog for. For example, ``"0.6.70"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: issues()
+
+   
+   Open the PyEDB GitHub Issues page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: ansys_forum()
+
+   
+   Open the PyEDB GitHub Issues page.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: developer_forum()
+
+   
+   Open the Discussions page on the Ansys Developer site.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

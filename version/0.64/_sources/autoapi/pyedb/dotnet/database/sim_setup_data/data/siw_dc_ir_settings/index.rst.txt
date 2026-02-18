@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``siw_dc_ir_settings.py`` module
+====================================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siw_dc_ir_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings.SiwaveDCIRSettings`
+            - Class for DC IR settings.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SiwaveDCIRSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/siw_dc_ir_settings/SiwaveDCIRSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

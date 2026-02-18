@@ -1,0 +1,6 @@
+pml\_radiation\_factor
+======================
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.pml_radiation_factor

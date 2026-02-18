@@ -1,0 +1,6 @@
+reference\_file
+===============
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. autoproperty:: ComponentDef.reference_file

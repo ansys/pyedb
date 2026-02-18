@@ -1,0 +1,1383 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>SweepData &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../../../_static/documentation_options.js?v=4a0ff1d5"></script>
+    <script src="../../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/sim_setup_data/data/sweep_data/SweepData';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.70.dev0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/sim_setup_data/data/sweep_data/SweepData.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/dev/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/dev/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> data</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../adaptive_frequency_data/index.html"> <span class="nf nf-fa-file"></span> adaptive_frequency_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../mesh_operation/index.html"> <span class="nf nf-fa-file"></span> mesh_operation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../settings/index.html"> <span class="nf nf-fa-file"></span> settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sim_setup_info/index.html"> <span class="nf nf-fa-file"></span> sim_setup_info</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../simulation_settings/index.html"> <span class="nf nf-fa-file"></span> simulation_settings</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../siw_dc_ir_settings/index.html"> <span class="nf nf-fa-file"></span> siw_dc_ir_settings</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> sweep_data</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../io/index.html"> <span class="nf nf-md-package"></span> io</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../Variables/index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../simulation_setups/index.html"> <span class="nf nf-fa-file"></span> simulation_setups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">SweepData</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="sweepdata">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">SweepData</span></code><a class="headerlink" href="#sweepdata" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.sim_setup_data.data.sweep_data.SweepData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.sim_setup_data.data.sweep_data.</span></span><span class="sig-name descname"><span class="pre">SweepData</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pedb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edb_object</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.sim_setup_data.data.sweep_data.SweepData" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages EDB methods for a frequency sweep.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>sim_setup</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup</span></code></span></dt><dd></dd>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the frequency sweep.</p>
+</dd>
+<dt><strong>edb_object</strong><span class="classifier"><code class="xref py py-class docutils literal notranslate"><span class="pre">Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>EDB object. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.set_frequencies_linear_scale" title="SweepData.set_frequencies_linear_scale"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_frequencies_linear_scale</span></code></a></p></td>
+<td><p>Set a linear scale frequency sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.set_frequencies_linear_count" title="SweepData.set_frequencies_linear_count"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_frequencies_linear_count</span></code></a></p></td>
+<td><p>Set a linear count frequency sweep.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.set_frequencies_log_scale" title="SweepData.set_frequencies_log_scale"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_frequencies_log_scale</span></code></a></p></td>
+<td><p>Set a log-count frequency sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.set_frequencies" title="SweepData.set_frequencies"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_frequencies</span></code></a></p></td>
+<td><p>Set frequency list to the sweep frequencies.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.add" title="SweepData.add"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.add_frequencies" title="SweepData.add_frequencies"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_frequencies</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.clear" title="SweepData.clear"><code class="xref py py-attr docutils literal notranslate"><span class="pre">clear</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.name" title="SweepData.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Name of the sweep.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.frequencies" title="SweepData.frequencies"><code class="xref py py-attr docutils literal notranslate"><span class="pre">frequencies</span></code></a></p></td>
+<td><p>List of frequency points.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.adaptive_sampling" title="SweepData.adaptive_sampling"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adaptive_sampling</span></code></a></p></td>
+<td><p>Flag indicating if adaptive sampling is turned on.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.adv_dc_extrapolation" title="SweepData.adv_dc_extrapolation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">adv_dc_extrapolation</span></code></a></p></td>
+<td><p>Flag indicating if advanced DC extrapolation is turned on.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.compute_dc_point" title="SweepData.compute_dc_point"><code class="xref py py-attr docutils literal notranslate"><span class="pre">compute_dc_point</span></code></a></p></td>
+<td><p>Flag indicating if computing the exact DC point is turned on.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.auto_s_mat_only_solve" title="SweepData.auto_s_mat_only_solve"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auto_s_mat_only_solve</span></code></a></p></td>
+<td><p>Flag indicating if Auto SMatrix only solve is turned on.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.enforce_causality" title="SweepData.enforce_causality"><code class="xref py py-attr docutils literal notranslate"><span class="pre">enforce_causality</span></code></a></p></td>
+<td><p>Flag indicating if causality is enforced.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.enforce_dc_and_causality" title="SweepData.enforce_dc_and_causality"><code class="xref py py-attr docutils literal notranslate"><span class="pre">enforce_dc_and_causality</span></code></a></p></td>
+<td><p>Flag indicating if DC point and causality are enforced.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.enforce_passivity" title="SweepData.enforce_passivity"><code class="xref py py-attr docutils literal notranslate"><span class="pre">enforce_passivity</span></code></a></p></td>
+<td><p>Flag indicating if passivity is enforced.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.freq_sweep_type" title="SweepData.freq_sweep_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">freq_sweep_type</span></code></a></p></td>
+<td><p>Sweep type.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.type" title="SweepData.type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">type</span></code></a></p></td>
+<td><p>Sweep type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.interpolation_use_full_basis" title="SweepData.interpolation_use_full_basis"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interpolation_use_full_basis</span></code></a></p></td>
+<td><p>Flag indicating if full-basis elements is used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.interpolation_use_port_impedance" title="SweepData.interpolation_use_port_impedance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interpolation_use_port_impedance</span></code></a></p></td>
+<td><p>Flag indicating if port impedance interpolation is turned on.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.interpolation_use_prop_const" title="SweepData.interpolation_use_prop_const"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interpolation_use_prop_const</span></code></a></p></td>
+<td><p>Flag indicating if propagation constants are used.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.interpolation_use_s_matrix" title="SweepData.interpolation_use_s_matrix"><code class="xref py py-attr docutils literal notranslate"><span class="pre">interpolation_use_s_matrix</span></code></a></p></td>
+<td><p>Flag indicating if the S matrix is used.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.max_solutions" title="SweepData.max_solutions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">max_solutions</span></code></a></p></td>
+<td><p>Number of maximum solutions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.min_freq_s_mat_only_solve" title="SweepData.min_freq_s_mat_only_solve"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_freq_s_mat_only_solve</span></code></a></p></td>
+<td><p>Minimum frequency SMatrix only solve.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.min_solved_freq" title="SweepData.min_solved_freq"><code class="xref py py-attr docutils literal notranslate"><span class="pre">min_solved_freq</span></code></a></p></td>
+<td><p>Minimum solved frequency with units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.passivity_tolerance" title="SweepData.passivity_tolerance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">passivity_tolerance</span></code></a></p></td>
+<td><p>Tolerance for passivity enforcement.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.relative_s_error" title="SweepData.relative_s_error"><code class="xref py py-attr docutils literal notranslate"><span class="pre">relative_s_error</span></code></a></p></td>
+<td><p>S-parameter error tolerance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.save_fields" title="SweepData.save_fields"><code class="xref py py-attr docutils literal notranslate"><span class="pre">save_fields</span></code></a></p></td>
+<td><p>Flag indicating if the extraction of surface current data is turned on.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.save_rad_fields_only" title="SweepData.save_rad_fields_only"><code class="xref py py-attr docutils literal notranslate"><span class="pre">save_rad_fields_only</span></code></a></p></td>
+<td><p>Flag indicating if the saving of only radiated fields is turned on.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.use_q3d_for_dc" title="SweepData.use_q3d_for_dc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_q3d_for_dc</span></code></a></p></td>
+<td><p>Flag indicating if the Q3D solver is used for DC point extraction.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.frequency_string" title="SweepData.frequency_string"><code class="xref py py-attr docutils literal notranslate"><span class="pre">frequency_string</span></code></a></p></td>
+<td><p>A string describing the frequency sweep. Below is an example.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../../../../../grpc/database/simulation_setup/sweep_data/SweepData.html#SweepData.use_hfss_solver_regions" title="SweepData.use_hfss_solver_regions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">use_hfss_solver_regions</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#SweepData.hfss_solver_region_setup_name" title="SweepData.hfss_solver_region_setup_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hfss_solver_region_setup_name</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.hfss_solver_region_sweep_name" title="SweepData.hfss_solver_region_sweep_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hfss_solver_region_sweep_name</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Attributes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#SweepData.sim_setup" title="SweepData.sim_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sim_setup</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.sim_setup_data.data.sweep_data</span><span class="w"> </span><span class="kn">import</span> <span class="n">SweepData</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#SweepData.name" title="Link to this definition">#</a></dt>
+<dd><p>Name of the sweep.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.frequencies">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">frequencies</span></span><a class="headerlink" href="#SweepData.frequencies" title="Link to this definition">#</a></dt>
+<dd><p>List of frequency points.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.adaptive_sampling">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">adaptive_sampling</span></span><a class="headerlink" href="#SweepData.adaptive_sampling" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if adaptive sampling is turned on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if adaptive sampling is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.adv_dc_extrapolation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">adv_dc_extrapolation</span></span><a class="headerlink" href="#SweepData.adv_dc_extrapolation" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if advanced DC extrapolation is turned on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if advanced DC Extrapolation is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.compute_dc_point">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">compute_dc_point</span></span><a class="headerlink" href="#SweepData.compute_dc_point" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if computing the exact DC point is turned on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.auto_s_mat_only_solve">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">auto_s_mat_only_solve</span></span><a class="headerlink" href="#SweepData.auto_s_mat_only_solve" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if Auto SMatrix only solve is turned on.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.enforce_causality">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">enforce_causality</span></span><a class="headerlink" href="#SweepData.enforce_causality" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if causality is enforced.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if enforce causality is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.enforce_dc_and_causality">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">enforce_dc_and_causality</span></span><a class="headerlink" href="#SweepData.enforce_dc_and_causality" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if DC point and causality are enforced.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if enforce dc point and causality is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.enforce_passivity">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">enforce_passivity</span></span><a class="headerlink" href="#SweepData.enforce_passivity" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if passivity is enforced.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if enforce passivity is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.freq_sweep_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">freq_sweep_type</span></span><a class="headerlink" href="#SweepData.freq_sweep_type" title="Link to this definition">#</a></dt>
+<dd><p>Sweep type.</p>
+<p>Options are:
+- <code class="docutils literal notranslate"><span class="pre">&quot;kInterpolatingSweep&quot;</span></code>
+- <code class="docutils literal notranslate"><span class="pre">&quot;kDiscreteSweep&quot;</span></code>
+- <code class="docutils literal notranslate"><span class="pre">&quot;kBroadbandFastSweep&quot;</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Sweep type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">type</span></span><a class="headerlink" href="#SweepData.type" title="Link to this definition">#</a></dt>
+<dd><p>Sweep type.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.interpolation_use_full_basis">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">interpolation_use_full_basis</span></span><a class="headerlink" href="#SweepData.interpolation_use_full_basis" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if full-basis elements is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if full basis interpolation is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.interpolation_use_port_impedance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">interpolation_use_port_impedance</span></span><a class="headerlink" href="#SweepData.interpolation_use_port_impedance" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if port impedance interpolation is turned on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if port impedance is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.interpolation_use_prop_const">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">interpolation_use_prop_const</span></span><a class="headerlink" href="#SweepData.interpolation_use_prop_const" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if propagation constants are used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if propagation constants are used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.interpolation_use_s_matrix">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">interpolation_use_s_matrix</span></span><a class="headerlink" href="#SweepData.interpolation_use_s_matrix" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if the S matrix is used.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if S matrix are used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.max_solutions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">max_solutions</span></span><a class="headerlink" href="#SweepData.max_solutions" title="Link to this definition">#</a></dt>
+<dd><p>Number of maximum solutions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.min_freq_s_mat_only_solve">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">min_freq_s_mat_only_solve</span></span><a class="headerlink" href="#SweepData.min_freq_s_mat_only_solve" title="Link to this definition">#</a></dt>
+<dd><p>Minimum frequency SMatrix only solve.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Frequency with units.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.min_solved_freq">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">min_solved_freq</span></span><a class="headerlink" href="#SweepData.min_solved_freq" title="Link to this definition">#</a></dt>
+<dd><p>Minimum solved frequency with units.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Frequency with units.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.passivity_tolerance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">passivity_tolerance</span></span><a class="headerlink" href="#SweepData.passivity_tolerance" title="Link to this definition">#</a></dt>
+<dd><p>Tolerance for passivity enforcement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.relative_s_error">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">relative_s_error</span></span><a class="headerlink" href="#SweepData.relative_s_error" title="Link to this definition">#</a></dt>
+<dd><p>S-parameter error tolerance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.save_fields">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">save_fields</span></span><a class="headerlink" href="#SweepData.save_fields" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if the extraction of surface current data is turned on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if save fields is enabled, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.save_rad_fields_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">save_rad_fields_only</span></span><a class="headerlink" href="#SweepData.save_rad_fields_only" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if the saving of only radiated fields is turned on.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if save radiated field only is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.use_q3d_for_dc">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">use_q3d_for_dc</span></span><a class="headerlink" href="#SweepData.use_q3d_for_dc" title="Link to this definition">#</a></dt>
+<dd><p>Flag indicating if the Q3D solver is used for DC point extraction.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if Q3d for DC point is used, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.frequency_string">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">frequency_string</span></span><a class="headerlink" href="#SweepData.frequency_string" title="Link to this definition">#</a></dt>
+<dd><p>A string describing the frequency sweep. Below is an example.
+[‘LIN 0GHz 20GHz 0.05GHz’, ‘LINC 20GHz 30GHz 10’, ‘DEC 40GHz 50GHz 10’]</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.use_hfss_solver_regions">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">use_hfss_solver_regions</span></span><a class="headerlink" href="#SweepData.use_hfss_solver_regions" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.hfss_solver_region_setup_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">hfss_solver_region_setup_name</span></span><a class="headerlink" href="#SweepData.hfss_solver_region_setup_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="SweepData.hfss_solver_region_sweep_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">hfss_solver_region_sweep_name</span></span><a class="headerlink" href="#SweepData.hfss_solver_region_sweep_name" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="attribute-detail">
+<h2>Attribute detail<a class="headerlink" href="#attribute-detail" title="Link to this heading">#</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="SweepData.sim_setup">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">sim_setup</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">None</span></em><a class="headerlink" href="#SweepData.sim_setup" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.set_frequencies_linear_scale">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">set_frequencies_linear_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.1GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'20GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'50MHz'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.set_frequencies_linear_scale" title="Link to this definition">#</a></dt>
+<dd><p>Set a linear scale frequency sweep.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>start</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Start frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;0.1GHz&quot;</span></code>.</p>
+</dd>
+<dt><strong>stop</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Stop frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;20GHz&quot;</span></code>.</p>
+</dd>
+<dt><strong>step</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Step frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;50MHz&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if correctly executed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.set_frequencies_linear_count">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">set_frequencies_linear_count</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1kHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.1GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.set_frequencies_linear_count" title="Link to this definition">#</a></dt>
+<dd><p>Set a linear count frequency sweep.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>start</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Start frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;1kHz&quot;</span></code>.</p>
+</dd>
+<dt><strong>stop</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Stop frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;0.1GHz&quot;</span></code>.</p>
+</dd>
+<dt><strong>count</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Step frequency. The default is <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if correctly executed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.set_frequencies_log_scale">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">set_frequencies_log_scale</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'1kHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.1GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">samples</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.set_frequencies_log_scale" title="Link to this definition">#</a></dt>
+<dd><p>Set a log-count frequency sweep.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>start</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Start frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;1kHz&quot;</span></code>.</p>
+</dd>
+<dt><strong>stop</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Stop frequency. The default is <code class="docutils literal notranslate"><span class="pre">&quot;0.1GHz&quot;</span></code>.</p>
+</dd>
+<dt><strong>samples</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Step frequency. The default is <code class="docutils literal notranslate"><span class="pre">10</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if correctly executed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.set_frequencies">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">set_frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequency_list</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">update</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.set_frequencies" title="Link to this definition">#</a></dt>
+<dd><p>Set frequency list to the sweep frequencies.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>frequency_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><dl class="simple">
+<dt>List of lists with four elements. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>. If provided, each list must contain:</dt><dd><p>1 - frequency type (<code class="docutils literal notranslate"><span class="pre">&quot;linear</span> <span class="pre">count&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;log</span> <span class="pre">scale&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;linear</span> <span class="pre">scale&quot;</span></code>)
+2 - start frequency
+3 - stop frequency
+4 - step frequency or count</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>Returns</strong></dt><dd></dd>
+<dt><strong>——-</strong></dt><dd></dd>
+<dt><strong>bool</strong></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> if correctly executed, <code class="docutils literal notranslate"><span class="pre">False</span></code> otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.add">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">add</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sweep_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">increment</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.add" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.add_frequencies">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">add_frequencies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frequencies</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.add_frequencies" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="SweepData.clear">
+<span class="sig-prename descclassname"><span class="pre">SweepData.</span></span><span class="sig-name descname"><span class="pre">clear</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#SweepData.clear" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.sim_setup_data.data.sweep_data.SweepData"><code class="docutils literal notranslate"><span class="pre">SweepData</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.name"><code class="docutils literal notranslate"><span class="pre">name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.frequencies"><code class="docutils literal notranslate"><span class="pre">frequencies</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.adaptive_sampling"><code class="docutils literal notranslate"><span class="pre">adaptive_sampling</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.adv_dc_extrapolation"><code class="docutils literal notranslate"><span class="pre">adv_dc_extrapolation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.compute_dc_point"><code class="docutils literal notranslate"><span class="pre">compute_dc_point</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.auto_s_mat_only_solve"><code class="docutils literal notranslate"><span class="pre">auto_s_mat_only_solve</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.enforce_causality"><code class="docutils literal notranslate"><span class="pre">enforce_causality</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.enforce_dc_and_causality"><code class="docutils literal notranslate"><span class="pre">enforce_dc_and_causality</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.enforce_passivity"><code class="docutils literal notranslate"><span class="pre">enforce_passivity</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.freq_sweep_type"><code class="docutils literal notranslate"><span class="pre">freq_sweep_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.type"><code class="docutils literal notranslate"><span class="pre">type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.interpolation_use_full_basis"><code class="docutils literal notranslate"><span class="pre">interpolation_use_full_basis</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.interpolation_use_port_impedance"><code class="docutils literal notranslate"><span class="pre">interpolation_use_port_impedance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.interpolation_use_prop_const"><code class="docutils literal notranslate"><span class="pre">interpolation_use_prop_const</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.interpolation_use_s_matrix"><code class="docutils literal notranslate"><span class="pre">interpolation_use_s_matrix</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.max_solutions"><code class="docutils literal notranslate"><span class="pre">max_solutions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.min_freq_s_mat_only_solve"><code class="docutils literal notranslate"><span class="pre">min_freq_s_mat_only_solve</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.min_solved_freq"><code class="docutils literal notranslate"><span class="pre">min_solved_freq</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.passivity_tolerance"><code class="docutils literal notranslate"><span class="pre">passivity_tolerance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.relative_s_error"><code class="docutils literal notranslate"><span class="pre">relative_s_error</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.save_fields"><code class="docutils literal notranslate"><span class="pre">save_fields</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.save_rad_fields_only"><code class="docutils literal notranslate"><span class="pre">save_rad_fields_only</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.use_q3d_for_dc"><code class="docutils literal notranslate"><span class="pre">use_q3d_for_dc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.frequency_string"><code class="docutils literal notranslate"><span class="pre">frequency_string</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.use_hfss_solver_regions"><code class="docutils literal notranslate"><span class="pre">use_hfss_solver_regions</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.hfss_solver_region_setup_name"><code class="docutils literal notranslate"><span class="pre">hfss_solver_region_setup_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.hfss_solver_region_sweep_name"><code class="docutils literal notranslate"><span class="pre">hfss_solver_region_sweep_name</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-detail">Attribute detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.sim_setup"><code class="docutils literal notranslate"><span class="pre">sim_setup</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.set_frequencies_linear_scale"><code class="docutils literal notranslate"><span class="pre">set_frequencies_linear_scale()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.set_frequencies_linear_count"><code class="docutils literal notranslate"><span class="pre">set_frequencies_linear_count()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.set_frequencies_log_scale"><code class="docutils literal notranslate"><span class="pre">set_frequencies_log_scale()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.set_frequencies"><code class="docutils literal notranslate"><span class="pre">set_frequencies()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.add"><code class="docutils literal notranslate"><span class="pre">add()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.add_frequencies"><code class="docutils literal notranslate"><span class="pre">add_frequencies()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#SweepData.clear"><code class="docutils literal notranslate"><span class="pre">clear()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/sim_setup_data/data/sweep_data/SweepData.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../../../_sources/autoapi/pyedb/dotnet/database/sim_setup_data/data/sweep_data/SweepData.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

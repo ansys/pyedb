@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``wirebond_def.py`` module
+==============================
+
+.. py:module:: pyedb.dotnet.database.definition.wirebond_def
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: wirebond_def
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.wirebond_def.WirebondDef`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.wirebond_def.Jedec4BondwireDef`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.wirebond_def.Jedec5BondwireDef`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.wirebond_def.ApdBondwireDef`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> WirebondDef</autoapi/pyedb/dotnet/database/definition/wirebond_def/WirebondDef>
+    <span class="nf nf-cod-symbol_class"></span> Jedec4BondwireDef</autoapi/pyedb/dotnet/database/definition/wirebond_def/Jedec4BondwireDef>
+    <span class="nf nf-cod-symbol_class"></span> Jedec5BondwireDef</autoapi/pyedb/dotnet/database/definition/wirebond_def/Jedec5BondwireDef>
+    <span class="nf nf-cod-symbol_class"></span> ApdBondwireDef</autoapi/pyedb/dotnet/database/definition/wirebond_def/ApdBondwireDef>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

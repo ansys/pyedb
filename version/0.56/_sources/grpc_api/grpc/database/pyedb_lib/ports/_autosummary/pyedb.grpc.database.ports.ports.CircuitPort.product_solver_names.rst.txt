@@ -1,0 +1,6 @@
+product\_solver\_names
+======================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: CircuitPort.product_solver_names

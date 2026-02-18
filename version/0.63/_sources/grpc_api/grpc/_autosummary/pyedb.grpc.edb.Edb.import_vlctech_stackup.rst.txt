@@ -1,0 +1,6 @@
+import\_vlctech\_stackup
+========================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.import_vlctech_stackup

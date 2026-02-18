@@ -1,0 +1,6 @@
+get\_closest\_point
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.get_closest_point

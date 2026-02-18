@@ -1,0 +1,6 @@
+pin\_pairs
+==========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pin_pair_model
+
+.. automethod:: PinPairModel.pin_pairs

@@ -1,0 +1,6 @@
+dielectric\_layers
+==================
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. autoproperty:: Stackup.dielectric_layers

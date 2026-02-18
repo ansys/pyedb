@@ -1,0 +1,151 @@
+
+
+
+
+
+
+:class:`CfgModeler`
+===================
+
+
+.. py:class:: pyedb.configuration.cfg_modeler.CfgModeler(pedb, data: Dict)
+
+   
+   Manage configuration general settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgModeler
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_trace`
+            - Add a trace from a dictionary of parameters.
+          * - :py:attr:`~add_rectangular_plane`
+            - 
+          * - :py:attr:`~add_circular_plane`
+            - 
+          * - :py:attr:`~add_polygon_plane`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~traces`
+            - 
+          * - :py:attr:`~planes`
+            - 
+          * - :py:attr:`~padstack_defs`
+            - 
+          * - :py:attr:`~padstack_instances`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~primitives_to_delete`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_modeler import CfgModeler
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: traces
+   :type:  List[CfgTrace]
+   :value: []
+
+
+.. py:attribute:: planes
+   :type:  List[CfgPlane]
+   :value: []
+
+
+.. py:attribute:: padstack_defs
+
+.. py:attribute:: padstack_instances
+
+.. py:attribute:: components
+
+.. py:attribute:: primitives_to_delete
+   :type:  PrimitivesToDeleteDict
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_trace(layer: str, width: str, name: str, net_name: str = '', start_cap_style: str = 'round', end_cap_style: str = 'round', corner_style: str = 'sharp', path: Optional[Any] = None, incremental_path: Optional[Any] = None)
+
+   
+   Add a trace from a dictionary of parameters.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_rectangular_plane(layer: str, name: str = '', net_name: str = '', lower_left_point: List[float] = '', upper_right_point: List[float] = '', corner_radius: float = 0, rotation: float = 0, voids: Optional[List[Any]] = '')
+
+.. py:method:: add_circular_plane(layer: str, name: str = '', net_name: str = '', corner_radius: float = 0, rotation: float = 0, voids: Optional[List[Any]] = '', radius: Union[float, str] = 0, position: List[Union[float, str]] = '')
+
+.. py:method:: add_polygon_plane(layer: str, name: str = '', net_name: str = '', corner_radius: float = 0, rotation: float = 0, voids: Optional[List[Any]] = '', points: List[List[float]] = '')
+
+
+
+

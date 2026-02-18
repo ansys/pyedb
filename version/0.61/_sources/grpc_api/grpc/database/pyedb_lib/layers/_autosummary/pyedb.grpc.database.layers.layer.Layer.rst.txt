@@ -1,0 +1,55 @@
+﻿Layer
+=====
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoclass:: Layer
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Layer.cast
+      
+      
+      Layer.clone
+      
+      
+      Layer.create
+      
+      
+      Layer.get_product_property
+      
+      
+      Layer.get_product_property_ids
+      
+      
+      Layer.is_in_zone
+      
+      
+      Layer.set_is_in_zone
+      
+      
+      Layer.set_product_property
+      
+      
+      Layer.update
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Layer.layout_obj_type
+   
+   

@@ -1,0 +1,30 @@
+﻿DCAdvancedSettings
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoclass:: DCAdvancedSettings
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DCAdvancedSettings.get_configurations
+      
+      
+      DCAdvancedSettings.restore_default
+      
+      
+      DCAdvancedSettings.set_dc_slider
+      
+   
+   
+
+   
+   
+   

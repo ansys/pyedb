@@ -1,0 +1,15 @@
+﻿PadProperties
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoclass:: PadProperties
+
+   
+
+   
+   
+
+   
+   
+   

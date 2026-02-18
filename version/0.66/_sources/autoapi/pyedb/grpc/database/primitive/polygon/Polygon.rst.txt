@@ -1,0 +1,597 @@
+
+
+
+
+
+
+:class:`Polygon`
+================
+
+
+.. py:class:: pyedb.grpc.database.primitive.polygon.Polygon(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.grpc.database.primitive.primitive.Primitive`
+
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2025.2", grpc=True)
+   >>> edb_prim = edb.modeler.primitives[0]
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Polygon
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a polygon in the specified layout, layer, and net using the provided polygon data.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - Delete polygon from layout.
+          * - :py:attr:`~fix_self_intersections`
+            - Remove self intersections if they exist.
+          * - :py:attr:`~clone`
+            - Duplicate polygon.
+          * - :py:attr:`~duplicate_across_layers`
+            - Duplicate across layer a primitive object.
+          * - :py:attr:`~move`
+            - Move polygon along a vector.
+          * - :py:attr:`~scale`
+            - Scales the polygon relative to a center point by a factor.
+          * - :py:attr:`~rotate`
+            - Rotate polygon around a center point by an angle.
+          * - :py:attr:`~move_layer`
+            - Move polygon to given layer.
+          * - :py:attr:`~in_polygon`
+            - Check if padstack Instance is in given polygon data.
+          * - :py:attr:`~add_void`
+            - Add a void to current primitive.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer`
+            - Layer of the polygon.
+          * - :py:attr:`~type`
+            - Primitive type.
+          * - :py:attr:`~has_self_intersections`
+            - Check if Polygon has self intersections.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.polygon import Polygon
+
+Property detail
+---------------
+
+.. py:property:: layer
+   :type: pyedb.grpc.database.layers.layer.Layer
+
+
+   
+   Layer of the polygon.
+
+
+
+   :Returns:
+
+       :class:`Layer <pyedb.edb.database.layers.layer.Layer>`
+           Layer object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Primitive type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: has_self_intersections
+   :type: bool
+
+
+   
+   Check if Polygon has self intersections.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout: pyedb.grpc.database.layout.layout.Layout, layer: Union[str, pyedb.grpc.database.layers.layer.Layer], net: Union[str, pyedb.grpc.database.net.net.Net] = None, polygon_data=None)
+   :classmethod:
+
+
+   
+   Create a polygon in the specified layout, layer, and net using the provided polygon data.
+
+
+   :Parameters:
+
+       **layout** : :obj:`Layout`
+           The layout in which the polygon will be created. If not provided, the active layout of the `pedb`
+           instance will be used.
+
+       **layer** : :obj:`Union`\[:class:`python:str`, :obj:`Layer`]
+           The layer in which the polygon will be created. This parameter is required and must be specified.
+
+       **net** : :obj:`Union`\[:class:`python:str`, :obj:`Net`], :obj:`optional`
+           The net to which the polygon will belong. If not provided, the polygon will not be associated with a
+           net.
+
+       **polygon_data** : :class:`python:list` or :obj:`GrpcPolygonData`, :obj:`optional`
+           The data defining the polygon. This can be a list of points or an instance of `GrpcPolygonData`.
+           This parameter is required and must be specified.
+
+   :Returns:
+
+       :class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`
+           The created polygon object.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If the `layer` parameter is not provided.
+
+       :obj:`ValueError`
+           If the `polygon_data` parameter is not provided.
+
+
+
+
+   .. rubric:: Notes
+
+   - If `polygon_data` is provided as a list, it will be converted to a `GrpcPolygonData` object.
+   - The created polygon is added to the modeler primitives of the `pedb` instance.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete polygon from layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: fix_self_intersections() -> list[any]
+
+   
+   Remove self intersections if they exist.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`]
+           All new polygons created from the removal operation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clone()
+
+   
+   Duplicate polygon.
+
+
+
+   :Returns:
+
+       :class:`Polygon <ansys.edb.core.primitive.polygon.Polygon>`
+           Cloned polygon.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: duplicate_across_layers(layers) -> bool
+
+   
+   Duplicate across layer a primitive object.
+
+   Parameters:
+
+   layers: list
+       list of str, with layer names
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move(vector) -> bool
+
+   
+   Move polygon along a vector.
+
+
+   :Parameters:
+
+       **vector** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y].
+           ..
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
+   >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
+   >>> for polygon in top_layer_polygon:
+   >>>     polygon.move(vector=["2mm", "100um"])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: scale(factor, center=None) -> bool
+
+   
+   Scales the polygon relative to a center point by a factor.
+
+
+   :Parameters:
+
+       **factor** : :class:`python:float`
+           Scaling factor.
+
+       **center** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y], :obj:`optional`
+           If None scaling is done from polygon center.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rotate(angle, center=None) -> bool
+
+   
+   Rotate polygon around a center point by an angle.
+
+
+   :Parameters:
+
+       **angle** : :class:`python:float`
+           Value of the rotation angle in degree.
+
+       **center** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y], :obj:`optional`
+           If None rotation is done from polygon center.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
+   >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
+   >>> for polygon in top_layer_polygon:
+   >>>     polygon.rotate(angle=45)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move_layer(layer) -> bool
+
+   
+   Move polygon to given layer.
+
+
+   :Parameters:
+
+       **layer** : :class:`python:str`
+           layer name.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: in_polygon(point_data, include_partial=True) -> bool
+
+   
+   Check if padstack Instance is in given polygon data.
+
+
+   :Parameters:
+
+       **point_data** : :obj:`PointData` :obj:`Object` or :class:`python:list` :obj:`of` :class:`python:float`
+           ..
+
+       **include_partial** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to include partial intersecting instances. The default is ``True``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_void(polygon)
+
+   
+   Add a void to current primitive.
+
+
+   :Parameters:
+
+       **point_list** : :class:`python:list` or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`             or :obj:`point` :class:`python:list` :obj:`in` :obj:`the` :obj:`format` :obj:`of` `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+           ..
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, either  ``False``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

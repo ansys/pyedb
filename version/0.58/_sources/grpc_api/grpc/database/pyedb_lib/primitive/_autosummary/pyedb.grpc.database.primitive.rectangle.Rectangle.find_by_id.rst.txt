@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. automethod:: Rectangle.find_by_id

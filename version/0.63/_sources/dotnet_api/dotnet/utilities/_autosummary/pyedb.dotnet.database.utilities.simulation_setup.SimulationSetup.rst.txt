@@ -1,0 +1,42 @@
+﻿SimulationSetup
+===============
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoclass:: SimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SimulationSetup.add_frequency_sweep
+      
+      
+      SimulationSetup.add_sweep
+      
+      
+      SimulationSetup.delete
+      
+      
+      SimulationSetup.delete_frequency_sweep
+      
+      
+      SimulationSetup.get_simulation_settings
+      
+      
+      SimulationSetup.set_sim_setup_info
+      
+      
+      SimulationSetup.set_simulation_settings
+      
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+is\_parametric
+==============
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoproperty:: Value.is_parametric

@@ -1,0 +1,6 @@
+arcs
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.arcs

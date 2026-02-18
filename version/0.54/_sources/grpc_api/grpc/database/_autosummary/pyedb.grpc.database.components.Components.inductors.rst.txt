@@ -1,0 +1,6 @@
+inductors
+=========
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. autoproperty:: Components.inductors

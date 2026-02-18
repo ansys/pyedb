@@ -1,0 +1,6 @@
+model
+=====
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.model

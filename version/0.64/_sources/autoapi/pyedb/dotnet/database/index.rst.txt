@@ -1,0 +1,177 @@
+
+
+
+
+
+
+The ``pyedb.dotnet.database`` library
+=====================================
+
+.. py:module:: pyedb.dotnet.database
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: database
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.geometry`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.Variables`
+            - This module contains these classes: `CSVDataset`, `DataSet`, `Expression`, `Variable`, and `VariableManager`.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.components`
+            - This module contains the `Components` class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.general`
+            - This module contains EDB general methods and related methods.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.hfss`
+            - This module contains the ``EdbHfss`` class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.layout_obj_instance`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.layout_validation`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.materials`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.modeler`
+            - This module contains these classes: `EdbLayout` and `Shape`.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.net_class`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.nets`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.padstack`
+            - This module contains the `EdbPadstacks` class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.siwave`
+            - This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
+
+
+          * - :py:obj:`~pyedb.dotnet.database.stackup`
+            - This module contains the `EdbStackup` class.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> cell</autoapi/pyedb/dotnet/database/cell/index>
+    <span class="nf nf-md-package"></span> definition</autoapi/pyedb/dotnet/database/definition/index>
+    <span class="nf nf-md-package"></span> dotnet</autoapi/pyedb/dotnet/database/dotnet/index>
+    <span class="nf nf-md-package"></span> edb_data</autoapi/pyedb/dotnet/database/edb_data/index>
+    <span class="nf nf-md-package"></span> geometry</autoapi/pyedb/dotnet/database/geometry/index>
+    <span class="nf nf-md-package"></span> sim_setup_data</autoapi/pyedb/dotnet/database/sim_setup_data/index>
+    <span class="nf nf-md-package"></span> utilities</autoapi/pyedb/dotnet/database/utilities/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> Variables</autoapi/pyedb/dotnet/database/Variables/index>
+    <span class="nf nf-fa-file"></span> components</autoapi/pyedb/dotnet/database/components/index>
+    <span class="nf nf-fa-file"></span> general</autoapi/pyedb/dotnet/database/general/index>
+    <span class="nf nf-fa-file"></span> hfss</autoapi/pyedb/dotnet/database/hfss/index>
+    <span class="nf nf-fa-file"></span> layout_obj_instance</autoapi/pyedb/dotnet/database/layout_obj_instance/index>
+    <span class="nf nf-fa-file"></span> layout_validation</autoapi/pyedb/dotnet/database/layout_validation/index>
+    <span class="nf nf-fa-file"></span> materials</autoapi/pyedb/dotnet/database/materials/index>
+    <span class="nf nf-fa-file"></span> modeler</autoapi/pyedb/dotnet/database/modeler/index>
+    <span class="nf nf-fa-file"></span> net_class</autoapi/pyedb/dotnet/database/net_class/index>
+    <span class="nf nf-fa-file"></span> nets</autoapi/pyedb/dotnet/database/nets/index>
+    <span class="nf nf-fa-file"></span> padstack</autoapi/pyedb/dotnet/database/padstack/index>
+    <span class="nf nf-fa-file"></span> siwave</autoapi/pyedb/dotnet/database/siwave/index>
+    <span class="nf nf-fa-file"></span> stackup</autoapi/pyedb/dotnet/database/stackup/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+is\_power\_ground
+=================
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.is_power_ground

@@ -1,0 +1,6 @@
+renormalize\_z0
+===============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.renormalize_z0

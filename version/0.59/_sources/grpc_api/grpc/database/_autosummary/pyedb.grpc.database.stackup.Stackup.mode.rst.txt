@@ -1,0 +1,6 @@
+mode
+====
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: Stackup.mode

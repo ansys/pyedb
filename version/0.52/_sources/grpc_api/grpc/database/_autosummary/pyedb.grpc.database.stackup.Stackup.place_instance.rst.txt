@@ -1,0 +1,6 @@
+place\_instance
+===============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.place_instance

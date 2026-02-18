@@ -1,0 +1,6 @@
+remove\_layer
+=============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: Stackup.remove_layer

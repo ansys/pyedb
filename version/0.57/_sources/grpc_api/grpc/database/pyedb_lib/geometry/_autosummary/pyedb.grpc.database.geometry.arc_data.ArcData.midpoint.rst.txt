@@ -1,0 +1,6 @@
+midpoint
+========
+
+.. currentmodule:: pyedb.grpc.database.geometry.arc_data
+
+.. autoproperty:: ArcData.midpoint

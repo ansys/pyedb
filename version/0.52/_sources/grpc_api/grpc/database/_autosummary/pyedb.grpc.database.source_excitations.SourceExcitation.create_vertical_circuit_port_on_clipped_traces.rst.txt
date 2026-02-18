@@ -1,0 +1,6 @@
+create\_vertical\_circuit\_port\_on\_clipped\_traces
+====================================================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_vertical_circuit_port_on_clipped_traces

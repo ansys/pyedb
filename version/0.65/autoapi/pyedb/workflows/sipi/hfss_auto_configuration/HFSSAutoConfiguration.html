@@ -1,0 +1,1265 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>HFSSAutoConfiguration &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=0045fa0a"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/workflows/sipi/hfss_auto_configuration/HFSSAutoConfiguration';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.65';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.65.2" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/workflows/sipi/hfss_auto_configuration/HFSSAutoConfiguration.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../workflows/index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.65/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../workflows/index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.65/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">HFSSAutoConfiguration</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="hfssautoconfiguration">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">HFSSAutoConfiguration</span></code><a class="headerlink" href="#hfssautoconfiguration" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.workflows.sipi.hfss_auto_configuration.</span></span><span class="sig-name descname"><span class="pre">HFSSAutoConfiguration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">edb</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.auto_populate_batch_groups" title="HFSSAutoConfiguration.auto_populate_batch_groups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auto_populate_batch_groups</span></code></a></p></td>
+<td><p>Automatically create and populate <a class="reference internal" href="#HFSSAutoConfiguration.batch_groups" title="HFSSAutoConfiguration.batch_groups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_groups</span></code></a> from the current</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.add_batch_group" title="HFSSAutoConfiguration.add_batch_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_batch_group</span></code></a></p></td>
+<td><p>Append a new BatchGroup to the configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.add_solder_ball" title="HFSSAutoConfiguration.add_solder_ball"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_solder_ball</span></code></a></p></td>
+<td><p>Append a new <a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo" title="pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">SolderBallsInfo</span></code></a> entry to the configuration.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.add_simulation_setup" title="HFSSAutoConfiguration.add_simulation_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_simulation_setup</span></code></a></p></td>
+<td><p>Create a: class:<cite>.SimulationSetup</cite> instance and attach it to the configuration.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.group_nets_by_prefix" title="HFSSAutoConfiguration.group_nets_by_prefix"><code class="xref py py-attr docutils literal notranslate"><span class="pre">group_nets_by_prefix</span></code></a></p></td>
+<td><p>Group signal nets into <em>disjoint</em> batches while preserving differential pairs.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.create_projects" title="HFSSAutoConfiguration.create_projects"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_projects</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Attributes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.ansys_version" title="HFSSAutoConfiguration.ansys_version"><code class="xref py py-attr docutils literal notranslate"><span class="pre">ansys_version</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.grpc" title="HFSSAutoConfiguration.grpc"><code class="xref py py-attr docutils literal notranslate"><span class="pre">grpc</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.source_edb_path" title="HFSSAutoConfiguration.source_edb_path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">source_edb_path</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.target_edb_path" title="HFSSAutoConfiguration.target_edb_path"><code class="xref py py-attr docutils literal notranslate"><span class="pre">target_edb_path</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.batch_group_folder" title="HFSSAutoConfiguration.batch_group_folder"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_group_folder</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.signal_nets" title="HFSSAutoConfiguration.signal_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">signal_nets</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.power_nets" title="HFSSAutoConfiguration.power_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">power_nets</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.reference_net" title="HFSSAutoConfiguration.reference_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">reference_net</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.batch_size" title="HFSSAutoConfiguration.batch_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_size</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.batch_groups" title="HFSSAutoConfiguration.batch_groups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_groups</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.components" title="HFSSAutoConfiguration.components"><code class="xref py py-attr docutils literal notranslate"><span class="pre">components</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.solder_balls" title="HFSSAutoConfiguration.solder_balls"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solder_balls</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.simulation_setup" title="HFSSAutoConfiguration.simulation_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">simulation_setup</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.extent_type" title="HFSSAutoConfiguration.extent_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">extent_type</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.cutout_expansion" title="HFSSAutoConfiguration.cutout_expansion"><code class="xref py py-attr docutils literal notranslate"><span class="pre">cutout_expansion</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.auto_mesh_seeding" title="HFSSAutoConfiguration.auto_mesh_seeding"><code class="xref py py-attr docutils literal notranslate"><span class="pre">auto_mesh_seeding</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.port_type" title="HFSSAutoConfiguration.port_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">port_type</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#HFSSAutoConfiguration.create_pin_group" title="HFSSAutoConfiguration.create_pin_group"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_pin_group</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.workflows.sipi.hfss_auto_configuration</span><span class="w"> </span><span class="kn">import</span> <span class="n">HFSSAutoConfiguration</span>
+</pre></div>
+</div>
+</section>
+<section id="attribute-detail">
+<h2>Attribute detail<a class="headerlink" href="#attribute-detail" title="Link to this heading">#</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.ansys_version">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">ansys_version</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2025.2'</span></em><a class="headerlink" href="#HFSSAutoConfiguration.ansys_version" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.grpc">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">grpc</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#HFSSAutoConfiguration.grpc" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.source_edb_path">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">source_edb_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#HFSSAutoConfiguration.source_edb_path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.target_edb_path">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">target_edb_path</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#HFSSAutoConfiguration.target_edb_path" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.batch_group_folder">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">batch_group_folder</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#HFSSAutoConfiguration.batch_group_folder" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.signal_nets">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">signal_nets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#HFSSAutoConfiguration.signal_nets" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.power_nets">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">power_nets</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#HFSSAutoConfiguration.power_nets" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.reference_net">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">reference_net</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">''</span></em><a class="headerlink" href="#HFSSAutoConfiguration.reference_net" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.batch_size">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">batch_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#HFSSAutoConfiguration.batch_size" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.batch_groups">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">batch_groups</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup" title="pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup"><span class="pre">BatchGroup</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#HFSSAutoConfiguration.batch_groups" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.components">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">components</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#HFSSAutoConfiguration.components" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.solder_balls">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">solder_balls</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo" title="pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo"><span class="pre">SolderBallsInfo</span></a><span class="p"><span class="pre">]</span></span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[]</span></em><a class="headerlink" href="#HFSSAutoConfiguration.solder_balls" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.simulation_setup">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">simulation_setup</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../../dotnet/database/utilities/simulation_setup/SimulationSetup.html#pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup" title="pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup"><span class="pre">SimulationSetup</span></a></em><a class="headerlink" href="#HFSSAutoConfiguration.simulation_setup" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.extent_type">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">extent_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'bounding_box'</span></em><a class="headerlink" href="#HFSSAutoConfiguration.extent_type" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.cutout_expansion">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">cutout_expansion</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'2mm'</span></em><a class="headerlink" href="#HFSSAutoConfiguration.cutout_expansion" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.auto_mesh_seeding">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">auto_mesh_seeding</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#HFSSAutoConfiguration.auto_mesh_seeding" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.port_type">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">port_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'coaxial'</span></em><a class="headerlink" href="#HFSSAutoConfiguration.port_type" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.create_pin_group">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">create_pin_group</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#HFSSAutoConfiguration.create_pin_group" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.auto_populate_batch_groups">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">auto_populate_batch_groups</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pattern</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span></span><a class="headerlink" href="#HFSSAutoConfiguration.auto_populate_batch_groups" title="Link to this definition">#</a></dt>
+<dd><p>Automatically create and populate <a class="reference internal" href="#HFSSAutoConfiguration.batch_groups" title="HFSSAutoConfiguration.batch_groups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_groups</span></code></a> from the current
+<a class="reference internal" href="#HFSSAutoConfiguration.signal_nets" title="HFSSAutoConfiguration.signal_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">signal_nets</span></code></a>.</p>
+<p>This is a thin convenience wrapper around <a class="reference internal" href="#HFSSAutoConfiguration.group_nets_by_prefix" title="HFSSAutoConfiguration.group_nets_by_prefix"><code class="xref py py-meth docutils literal notranslate"><span class="pre">group_nets_by_prefix()</span></code></a>.
+It <strong>only</strong> executes when both:</p>
+<ul class="simple">
+<li><p><code class="xref py py-attr docutils literal notranslate"><span class="pre">auto_evaluate_batch_groups</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, and</p></li>
+<li><p><a class="reference internal" href="#HFSSAutoConfiguration.signal_nets" title="HFSSAutoConfiguration.signal_nets"><code class="xref py py-attr docutils literal notranslate"><span class="pre">signal_nets</span></code></a> is non-empty.</p></li>
+</ul>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pattern</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] | <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>POSIX ERE prefix pattern(s) that control which nets are grouped.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">None</span></code> <em>(default)</em> – activate <strong>auto-discovery</strong> mode: nets are
+clustered heuristically and then split into chunks of size
+<a class="reference internal" href="#HFSSAutoConfiguration.batch_size" title="HFSSAutoConfiguration.batch_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_size</span></code></a>.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> – treat the single string as a prefix pattern
+(automatically anchored: <code class="docutils literal notranslate"><span class="pre">pattern</span> <span class="pre">+</span> <span class="pre">&quot;.*&quot;</span></code>).</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a> [<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>] – each list element becomes its own
+prefix pattern; one <a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup" title="pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchGroup</span></code></a> is created <strong>per list
+entry</strong>, regardless of <a class="reference internal" href="#HFSSAutoConfiguration.batch_size" title="HFSSAutoConfiguration.batch_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_size</span></code></a>.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.add_batch_group">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">add_batch_group</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">nets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../../dotnet/database/utilities/simulation_setup/SimulationSetup.html#pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup" title="pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup"><span class="pre">SimulationSetup</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup" title="pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup"><span class="pre">BatchGroup</span></a></span></span><a class="headerlink" href="#HFSSAutoConfiguration.add_batch_group" title="Link to this definition">#</a></dt>
+<dd><p>Append a new BatchGroup to the configuration.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Descriptive name for the group (will also become the regex
+pattern when the group is built automatically).</p>
+</dd>
+<dt><strong>nets</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequence</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of net names that belong to this batch.  If omitted
+an empty list is assumed and you can fill it later.</p>
+</dd>
+<dt><strong>simulation_setup</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SimulationSetup</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Per-batch simulation settings.  When None the global
+<code class="docutils literal notranslate"><span class="pre">self.simulation_setup</span></code> is used.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">BatchGroup</span></code></dt><dd><p>The freshly created instance (already appended to
+<code class="docutils literal notranslate"><span class="pre">self.batch_groups</span></code>) so the caller can further
+manipulate it if desired.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.add_solder_ball">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">add_solder_ball</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_des</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cylinder'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mid_diameter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo" title="pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo"><span class="pre">SolderBallsInfo</span></a></span></span><a class="headerlink" href="#HFSSAutoConfiguration.add_solder_ball" title="Link to this definition">#</a></dt>
+<dd><p>Append a new <a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo" title="pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">SolderBallsInfo</span></code></a> entry to the configuration.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ref_des</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Reference designator of the component to which the solder-ball
+definition applies (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;U1&quot;</span></code>).</p>
+</dd>
+<dt><strong>shape</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">default</span></code> <code class="docutils literal notranslate"><span class="pre">&quot;cylinder&quot;</span></code></span></dt><dd><p>Geometric model used for the solder ball. Supported values are
+<code class="docutils literal notranslate"><span class="pre">&quot;cylinder&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;sphere&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;spheroid&quot;</span></code>, etc.</p>
+</dd>
+<dt><strong>diameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Nominal diameter.  When <code class="docutils literal notranslate"><span class="pre">None</span></code> HFSS auto-evaluates the value
+from the footprint.</p>
+</dd>
+<dt><strong>mid_diameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Middle diameter <strong>required only for spheroid shapes</strong>.  Ignored
+for all other geometries.</p>
+</dd>
+<dt><strong>height</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a> | <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code></a> | <code class="docutils literal notranslate"><span class="pre">None</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Ball height.  When <code class="docutils literal notranslate"><span class="pre">None</span></code> HFSS computes an appropriate value
+automatically.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo" title="pyedb.workflows.sipi.hfss_auto_configuration.SolderBallsInfo"><code class="xref py py-class docutils literal notranslate"><span class="pre">SolderBallsInfo</span></code></a></dt><dd><p>The newly created instance (already appended to
+<a class="reference internal" href="#HFSSAutoConfiguration.solder_balls" title="HFSSAutoConfiguration.solder_balls"><code class="xref py py-attr docutils literal notranslate"><span class="pre">solder_balls</span></code></a>).  The object can be further edited in-place
+by the caller if desired.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">HfssAutoConfig</span><span class="p">()</span>
+<span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">add_solder_ball</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">diameter</span><span class="o">=</span><span class="s2">&quot;0.3mm&quot;</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="s2">&quot;0.2mm&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">add_solder_ball</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;U2&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">shape</span><span class="o">=</span><span class="s2">&quot;spheroid&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">diameter</span><span class="o">=</span><span class="s2">&quot;0.25mm&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">mid_diameter</span><span class="o">=</span><span class="s2">&quot;0.35mm&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">height</span><span class="o">=</span><span class="s2">&quot;0.18mm&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.add_simulation_setup">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">add_simulation_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meshing_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'10GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maximum_pass_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stop_frequency</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'40GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frequency_step</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'0.05GHz'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replace</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../../dotnet/database/utilities/simulation_setup/SimulationSetup.html#pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup" title="pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup"><span class="pre">SimulationSetup</span></a></span></span><a class="headerlink" href="#HFSSAutoConfiguration.add_simulation_setup" title="Link to this definition">#</a></dt>
+<dd><p>Create a: class:<cite>.SimulationSetup</cite> instance and attach it to the configuration.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>meshing_frequency</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>,: class:<cite>float</cite>], default <code class="docutils literal notranslate"><span class="pre">&quot;10GHz&quot;</span></code></span></dt><dd><p>Driven frequency used during mesh generation.</p>
+</dd>
+<dt><strong>maximum_pass_number</strong><span class="classifier">class:<cite>int</cite>, default <code class="docutils literal notranslate"><span class="pre">15</span></code></span></dt><dd><p>Maximum number of adaptive passes.</p>
+</dd>
+<dt><strong>start_frequency</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>,: class:<cite>float</cite>], default <code class="docutils literal notranslate"><span class="pre">0</span></code></span></dt><dd><p>Lower bound of the sweep window.</p>
+</dd>
+<dt><strong>stop_frequency</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>,: class:<cite>float</cite>], default <code class="docutils literal notranslate"><span class="pre">&quot;40GHz&quot;</span></code></span></dt><dd><p>Upper bound of the sweep window.</p>
+</dd>
+<dt><strong>frequency_step</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>,: class:<cite>float</cite>], default <code class="docutils literal notranslate"><span class="pre">&quot;0.05GHz&quot;</span></code></span></dt><dd><p>Linear step size for the frequency sweep.</p>
+</dd>
+<dt><strong>mesh_operation_size</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Union</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code></a>,: class:<cite>float</cite>, <code class="docutils literal notranslate"><span class="pre">None</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Maximum element size for mesh operations.  When <code class="docutils literal notranslate"><span class="pre">None</span></code> HFSS
+computes an appropriate value automatically.</p>
+</dd>
+<dt><strong>replace</strong><span class="classifier">class:<cite>bool</cite>, default <code class="docutils literal notranslate"><span class="pre">False</span></code></span></dt><dd><p>Placement strategy for the new setup:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">False</span></code> – append a <em>per-batch</em> setup by creating an auxiliary
+<a class="reference internal" href="../../../../../workflows/sipi/hfss_auto_configuration.html#pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup" title="pyedb.workflows.sipi.hfss_auto_configuration.BatchGroup"><code class="xref py py-class docutils literal notranslate"><span class="pre">BatchGroup</span></code></a> (<code class="docutils literal notranslate"><span class="pre">name=&quot;extra_setup&quot;</span></code>) whose
+<a class="reference internal" href="BatchGroup.html#BatchGroup.simulation_setup" title="BatchGroup.simulation_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">BatchGroup.simulation_setup</span></code></a> points to the new object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">True</span></code> – overwrite the <strong>global</strong>: attr:<cite>simulation_setup</cite>
+attribute of the current <code class="xref py py-class docutils literal notranslate"><span class="pre">HfssAutoConfig</span></code> instance.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../../../dotnet/database/utilities/simulation_setup/SimulationSetup.html#pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup" title="pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup"><code class="xref py py-class docutils literal notranslate"><span class="pre">SimulationSetup</span></code></a></dt><dd><p>The newly created instance (already stored inside the configuration).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">cfg</span> <span class="o">=</span> <span class="n">HfssAutoConfig</span><span class="p">()</span>
+<span class="gp">>>> </span><span class="c1"># global setup</span>
+<span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">add_simulation_setup</span><span class="p">(</span><span class="n">frequency_max</span><span class="o">=</span><span class="s2">&quot;60GHz&quot;</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="c1"># per-batch setup</span>
+<span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">add_simulation_setup</span><span class="p">(</span><span class="n">frequency_step</span><span class="o">=</span><span class="s2">&quot;0.1GHz&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.group_nets_by_prefix">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">group_nets_by_prefix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix_patterns</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.14)"><span class="pre">None</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#HFSSAutoConfiguration.group_nets_by_prefix" title="Link to this definition">#</a></dt>
+<dd><p>Group signal nets into <em>disjoint</em> batches while preserving differential pairs.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>prefix_patterns</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Sequence</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>POSIX ERE patterns that define the prefixes to be grouped.
+Example: <code class="docutils literal notranslate"><span class="pre">[&quot;PCIe&quot;,</span> <span class="pre">&quot;USB&quot;]</span></code>  ➜  interpreted as <code class="docutils literal notranslate"><span class="pre">[&quot;PCIe.*&quot;,</span> <span class="pre">&quot;USB.*&quot;]</span></code>.
+If <code class="docutils literal notranslate"><span class="pre">None</span></code> patterns are derived heuristically from the data set
+(see <code class="xref py py-meth docutils literal notranslate"><span class="pre">_infer_prefix_patterns()</span></code>).</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">Dict</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]]]</dt><dd><p>Keys are the original / generated pattern strings.
+Values are lists of batches; each batch is an alphabetically sorted
+list of net names.  When <em>prefix_patterns</em> was supplied the list
+contains <strong>exactly one</strong> element (the complete group); in auto-discovery
+mode the list may contain multiple slices sized according to
+<a class="reference internal" href="#HFSSAutoConfiguration.batch_size" title="HFSSAutoConfiguration.batch_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_size</span></code></a>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<ul class="simple">
+<li><p>Differential recognition strips the suffixes <code class="docutils literal notranslate"><span class="pre">_[PN]</span></code>, <code class="docutils literal notranslate"><span class="pre">_[ML]</span></code>, <code class="docutils literal notranslate"><span class="pre">_[+-]</span></code>
+(case-insensitive).</p></li>
+<li><p>The function updates the instance attribute <a class="reference internal" href="#HFSSAutoConfiguration.batch_groups" title="HFSSAutoConfiguration.batch_groups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">batch_groups</span></code></a> in place.</p></li>
+</ul>
+<p class="rubric">Examples</p>
+<p>Explicit grouping (production intent):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">signal_nets</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PCIe_RX0_P&quot;</span><span class="p">,</span> <span class="s2">&quot;PCIe_RX0_N&quot;</span><span class="p">,</span> <span class="s2">&quot;PCIe_TX0_P&quot;</span><span class="p">,</span>
+<span class="gp">... </span>                   <span class="s2">&quot;USB3_DP&quot;</span><span class="p">,</span> <span class="s2">&quot;USB3_DN&quot;</span><span class="p">,</span> <span class="s2">&quot;DDR4_A0&quot;</span><span class="p">,</span> <span class="s2">&quot;DDR4_A1&quot;</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">batch_size</span> <span class="o">=</span> <span class="mi">1_000</span>          <span class="c1"># ignored when patterns are supplied</span>
+<span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">group_nets_by_prefix</span><span class="p">([</span><span class="s2">&quot;PCIe&quot;</span><span class="p">,</span> <span class="s2">&quot;USB&quot;</span><span class="p">])</span>
+<span class="go">{&#39;PCIe.*&#39;: [[&#39;PCIe_RX0_N&#39;, &#39;PCIe_RX0_P&#39;, &#39;PCIe_TX0_P&#39;]],</span>
+<span class="go"> &#39;USB.*&#39;:  [[&#39;USB3_DN&#39;, &#39;USB3_DP&#39;]]}</span>
+</pre></div>
+</div>
+<p>Auto-discovery with batching:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">cfg</span><span class="o">.</span><span class="n">group_nets_by_prefix</span><span class="p">()</span>      <span class="c1"># batch_size = 2</span>
+<span class="go">{&#39;PCIe.*&#39;: [[&#39;PCIe_RX0_N&#39;, &#39;PCIe_RX0_P&#39;], [&#39;PCIe_TX0_P&#39;]],</span>
+<span class="go"> &#39;USB.*&#39;:  [[&#39;USB3_DN&#39;, &#39;USB3_DP&#39;]],</span>
+<span class="go"> &#39;DDR4.*&#39;: [[&#39;DDR4_A0&#39;, &#39;DDR4_A1&#39;]]}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="HFSSAutoConfiguration.create_projects">
+<span class="sig-prename descclassname"><span class="pre">HFSSAutoConfiguration.</span></span><span class="sig-name descname"><span class="pre">create_projects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#HFSSAutoConfiguration.create_projects" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.workflows.sipi.hfss_auto_configuration.HFSSAutoConfiguration"><code class="docutils literal notranslate"><span class="pre">HFSSAutoConfiguration</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-detail">Attribute detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.ansys_version"><code class="docutils literal notranslate"><span class="pre">ansys_version</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.grpc"><code class="docutils literal notranslate"><span class="pre">grpc</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.source_edb_path"><code class="docutils literal notranslate"><span class="pre">source_edb_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.target_edb_path"><code class="docutils literal notranslate"><span class="pre">target_edb_path</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.batch_group_folder"><code class="docutils literal notranslate"><span class="pre">batch_group_folder</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.signal_nets"><code class="docutils literal notranslate"><span class="pre">signal_nets</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.power_nets"><code class="docutils literal notranslate"><span class="pre">power_nets</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.reference_net"><code class="docutils literal notranslate"><span class="pre">reference_net</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.batch_size"><code class="docutils literal notranslate"><span class="pre">batch_size</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.batch_groups"><code class="docutils literal notranslate"><span class="pre">batch_groups</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.components"><code class="docutils literal notranslate"><span class="pre">components</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.solder_balls"><code class="docutils literal notranslate"><span class="pre">solder_balls</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.simulation_setup"><code class="docutils literal notranslate"><span class="pre">simulation_setup</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.extent_type"><code class="docutils literal notranslate"><span class="pre">extent_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.cutout_expansion"><code class="docutils literal notranslate"><span class="pre">cutout_expansion</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.auto_mesh_seeding"><code class="docutils literal notranslate"><span class="pre">auto_mesh_seeding</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.port_type"><code class="docutils literal notranslate"><span class="pre">port_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.create_pin_group"><code class="docutils literal notranslate"><span class="pre">create_pin_group</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.auto_populate_batch_groups"><code class="docutils literal notranslate"><span class="pre">auto_populate_batch_groups()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.add_batch_group"><code class="docutils literal notranslate"><span class="pre">add_batch_group()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.add_solder_ball"><code class="docutils literal notranslate"><span class="pre">add_solder_ball()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.add_simulation_setup"><code class="docutils literal notranslate"><span class="pre">add_simulation_setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.group_nets_by_prefix"><code class="docutils literal notranslate"><span class="pre">group_nets_by_prefix()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#HFSSAutoConfiguration.create_projects"><code class="docutils literal notranslate"><span class="pre">create_projects()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/workflows/sipi/hfss_auto_configuration/HFSSAutoConfiguration.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/workflows/sipi/hfss_auto_configuration/HFSSAutoConfiguration.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.3. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

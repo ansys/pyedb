@@ -1,0 +1,259 @@
+
+
+
+
+
+
+:class:`VoltageRegulator`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.layout.voltage_regulator.VoltageRegulator`
+
+
+   
+   Class managing voltage regulator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: VoltageRegulator
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component`
+            - Voltage regulator component
+          * - :py:attr:`~load_regulator_current`
+            - Load regulator current value
+          * - :py:attr:`~load_regulation_percent`
+            - Retrieve load regulation percent value.
+          * - :py:attr:`~negative_remote_sense_pin`
+            - Retrieve negative remote sense pin.
+          * - :py:attr:`~positive_remote_sense_pin`
+            - Retrieve positive remote sense pin.
+          * - :py:attr:`~voltage`
+            - Retrieve voltage value.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
+
+Property detail
+---------------
+
+.. py:property:: component
+
+   
+   Voltage regulator component
+
+
+
+   :Returns:
+
+       :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
+           Component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: load_regulator_current
+   :type: float
+
+
+   
+   Load regulator current value
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Current value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: load_regulation_percent
+   :type: float
+
+
+   
+   Retrieve load regulation percent value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Percent value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_remote_sense_pin
+   :type: pyedb.grpc.database.primitive.padstack_instance.PadstackInstance
+
+
+   
+   Retrieve negative remote sense pin.
+
+
+
+   :Returns:
+
+       :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+           PadstackInstance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: positive_remote_sense_pin
+   :type: pyedb.grpc.database.primitive.padstack_instance.PadstackInstance
+
+
+   
+   Retrieve positive remote sense pin.
+
+
+
+   :Returns:
+
+       :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+           PadstackInstance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voltage
+   :type: float
+
+
+   
+   Retrieve voltage value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Voltage value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

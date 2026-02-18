@@ -1,0 +1,41 @@
+﻿Point3DData
+===========
+
+.. currentmodule:: pyedb.grpc.database.geometry.point_3d_data
+
+.. autoclass:: Point3DData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Point3DData.distance
+      
+      
+      Point3DData.equals
+      
+      
+      Point3DData.midpoint
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Point3DData.magnitude
+      Point3DData.magnitude_sqr
+      Point3DData.x
+      Point3DData.y
+      Point3DData.z
+   
+   

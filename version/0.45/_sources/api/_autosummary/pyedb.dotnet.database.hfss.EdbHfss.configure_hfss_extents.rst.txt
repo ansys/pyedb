@@ -1,0 +1,6 @@
+configure\_hfss\_extents
+========================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.configure_hfss_extents

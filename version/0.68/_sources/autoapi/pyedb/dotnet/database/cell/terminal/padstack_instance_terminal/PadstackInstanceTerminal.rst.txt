@@ -1,0 +1,213 @@
+
+
+
+
+
+
+:class:`PadstackInstanceTerminal`
+=================================
+
+
+.. py:class:: pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.terminal.Terminal`
+
+
+   
+   Manages bundle terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PadstackInstanceTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create an edge terminal.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~position`
+            - Return terminal position.
+          * - :py:attr:`~location`
+            - Location of the padstack instance.
+          * - :py:attr:`~padstack_instance`
+            - 
+          * - :py:attr:`~layer`
+            - Get layer of the terminal.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+
+Property detail
+---------------
+
+.. py:property:: position
+
+   
+   Return terminal position.
+   Returns
+   -------
+   Position [x,y] : [float, float]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+
+   
+   Location of the padstack instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instance
+
+.. py:property:: layer
+
+   
+   Get layer of the terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(padstack_instance, name=None, layer=None, is_ref=False)
+
+   
+   Create an edge terminal.
+
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be on the target edge but not on the two
+           ends of the edge.
+
+       **terminal_name** : :class:`python:str`, :obj:`optional`
+           Name of the terminal. The default is ``None``, in which case the
+           default name is assigned.
+
+       **is_ref** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a reference terminal. The default is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`Edb.Cell.Terminal.EdgeTerminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

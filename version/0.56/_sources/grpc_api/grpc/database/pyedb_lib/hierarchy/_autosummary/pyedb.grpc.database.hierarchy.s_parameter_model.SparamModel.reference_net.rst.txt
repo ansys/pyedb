@@ -1,0 +1,6 @@
+reference\_net
+==============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.s_parameter_model
+
+.. autoproperty:: SparamModel.reference_net

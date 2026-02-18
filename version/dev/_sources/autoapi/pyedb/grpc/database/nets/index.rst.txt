@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``nets.py`` module
+======================
+
+.. py:module:: pyedb.grpc.database.nets
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: nets
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.nets.Nets`
+            - Manages EDB methods for nets management accessible from `Edb.nets` property.
+
+
+          * - :py:obj:`~pyedb.grpc.database.nets.NetClasses`
+            - Net classes management.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Nets</autoapi/pyedb/grpc/database/nets/Nets>
+    <span class="nf nf-cod-symbol_class"></span> NetClasses</autoapi/pyedb/grpc/database/nets/NetClasses>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

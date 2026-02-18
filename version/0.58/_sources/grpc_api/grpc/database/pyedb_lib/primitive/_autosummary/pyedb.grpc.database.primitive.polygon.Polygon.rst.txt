@@ -1,0 +1,175 @@
+﻿Polygon
+=======
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoclass:: Polygon
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Polygon.add_void
+      
+      
+      Polygon.area
+      
+      
+      Polygon.cast
+      
+      
+      Polygon.clone
+      
+      
+      Polygon.convert_to_polygon
+      
+      
+      Polygon.create
+      
+      
+      Polygon.create_3d_comp
+      
+      
+      Polygon.create_hfss
+      
+      
+      Polygon.create_stride
+      
+      
+      Polygon.delete
+      
+      
+      Polygon.duplicate_across_layers
+      
+      
+      Polygon.expand
+      
+      
+      Polygon.find_by_id
+      
+      
+      Polygon.fix_self_intersections
+      
+      
+      Polygon.get_closest_arc_midpoint
+      
+      
+      Polygon.get_closest_point
+      
+      
+      Polygon.get_connected_object_id_set
+      
+      
+      Polygon.get_connected_objects
+      
+      
+      Polygon.get_hfss_prop
+      
+      
+      Polygon.get_product_property
+      
+      
+      Polygon.get_product_property_ids
+      
+      
+      Polygon.in_polygon
+      
+      
+      Polygon.intersect
+      
+      
+      Polygon.intersection_type
+      
+      
+      Polygon.is_intersecting
+      
+      
+      Polygon.make_zone_primitive
+      
+      
+      Polygon.move
+      
+      
+      Polygon.move_layer
+      
+      
+      Polygon.plot
+      
+      
+      Polygon.points
+      
+      
+      Polygon.remove_hfss_prop
+      
+      
+      Polygon.rotate
+      
+      
+      Polygon.scale
+      
+      
+      Polygon.set_hfss_prop
+      
+      
+      Polygon.set_product_property
+      
+      
+      Polygon.subtract
+      
+      
+      Polygon.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Polygon.aedt_name
+      Polygon.arcs
+      Polygon.bbox
+      Polygon.can_be_zone_primitive
+      Polygon.center
+      Polygon.component
+      Polygon.edb_uid
+      Polygon.group
+      Polygon.has_self_intersections
+      Polygon.has_voids
+      Polygon.id
+      Polygon.is_mcad
+      Polygon.is_mcad_3d_comp
+      Polygon.is_mcad_hfss
+      Polygon.is_mcad_stride
+      Polygon.is_negative
+      Polygon.is_null
+      Polygon.is_parameterized
+      Polygon.is_void
+      Polygon.is_zone_primitive
+      Polygon.layer
+      Polygon.layer_name
+      Polygon.layout
+      Polygon.layout_obj_type
+      Polygon.longest_arc
+      Polygon.msg
+      Polygon.net
+      Polygon.net_name
+      Polygon.obj_type
+      Polygon.object_instance
+      Polygon.owner
+      Polygon.points_raw
+      Polygon.polygon_data
+      Polygon.primitive_type
+      Polygon.shortest_arc
+      Polygon.type
+      Polygon.voids
+   
+   

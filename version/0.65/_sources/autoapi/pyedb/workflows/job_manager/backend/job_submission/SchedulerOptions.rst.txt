@@ -1,0 +1,281 @@
+
+
+
+
+
+
+:class:`SchedulerOptions`
+=========================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.job_submission.SchedulerOptions(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Resource requirements and scheduler-specific directives.
+
+   All attributes are validated by :meth:`validate`, which is automatically
+   called after instantiation.
+
+   :Parameters:
+
+       **queue** : :class:`python:str`, :obj:`optional`
+           Partition or queue name.  Defaults to ``"default"``.
+
+       **time** : :class:`python:str`, :obj:`optional`
+           Wall-time limit in ``HH:MM:SS`` or ``D.HH:MM:SS``.  Defaults to
+           ``"24:00:00"``.
+
+       **nodes** : :class:`python:int`, :obj:`optional`
+           Number of compute nodes.  Defaults to ``1``.
+
+       **tasks_per_node** : :class:`python:int`, :obj:`optional`
+           Processes per node.  Defaults to ``1``.
+
+       **memory** : :class:`python:str`, :obj:`optional`
+           Memory per node, e.g. ``"4GB"``.  Defaults to ``"4GB"``.
+
+       **account** : :class:`python:str`, :obj:`optional`
+           Account / project to charge.
+
+       **reservation** : :class:`python:str`, :obj:`optional`
+           Advance reservation name.
+
+       **qos** : :class:`python:str`, :obj:`optional`
+           Quality-of-service level.
+
+       **constraints** : :class:`python:str`, :obj:`optional`
+           Node features, e.g. ``"gpu"``.
+
+       **exclusive** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Request whole nodes.  Defaults to ``False``.
+
+       **gpus** : :class:`python:int`, :obj:`optional`
+           Number of GPUs.  Defaults to ``0``.
+
+       **gpu_type** : :class:`python:str`, :obj:`optional`
+           GPU model, e.g. ``"a100"``.
+
+       **priority** : :class:`python:str`, :obj:`optional`
+           Job priority: ``Low``, ``BelowNormal``, ``Normal``, ``AboveNormal``,
+           ``High``.  Defaults to ``"Normal"``.
+
+       **email_notification** : :class:`python:str`, :obj:`optional`
+           Address for status mails.
+
+       **run_as_administrator** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Elevated privileges (Windows HPC only).  Defaults to ``False``.
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           On any validation failure.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SchedulerOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~validate_fields`
+            - Validate all scheduler options for correctness and consistency.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~queue`
+            - 
+          * - :py:attr:`~time`
+            - 
+          * - :py:attr:`~nodes`
+            - 
+          * - :py:attr:`~tasks_per_node`
+            - 
+          * - :py:attr:`~cores_per_node`
+            - 
+          * - :py:attr:`~memory`
+            - 
+          * - :py:attr:`~account`
+            - 
+          * - :py:attr:`~reservation`
+            - 
+          * - :py:attr:`~qos`
+            - 
+          * - :py:attr:`~constraints`
+            - 
+          * - :py:attr:`~exclusive`
+            - 
+          * - :py:attr:`~gpus`
+            - 
+          * - :py:attr:`~gpu_type`
+            - 
+          * - :py:attr:`~priority`
+            - 
+          * - :py:attr:`~email_notification`
+            - 
+          * - :py:attr:`~run_as_administrator`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.job_submission import SchedulerOptions
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: queue
+   :type:  str
+   :value: 'default'
+
+
+.. py:attribute:: time
+   :type:  str
+   :value: '24:00:00'
+
+
+.. py:attribute:: nodes
+   :type:  int
+   :value: 1
+
+
+.. py:attribute:: tasks_per_node
+   :type:  int
+   :value: 1
+
+
+.. py:attribute:: cores_per_node
+   :type:  int
+   :value: 0
+
+
+.. py:attribute:: memory
+   :type:  str
+   :value: '4GB'
+
+
+.. py:attribute:: account
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: reservation
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: qos
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: constraints
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: exclusive
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: gpus
+   :type:  int
+   :value: 0
+
+
+.. py:attribute:: gpu_type
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: priority
+   :type:  str
+   :value: 'Normal'
+
+
+.. py:attribute:: email_notification
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: run_as_administrator
+   :type:  bool
+   :value: False
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: validate_fields() -> None
+
+   
+   Validate all scheduler options for correctness and consistency.
+
+
+
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If any parameter is invalid or out of range.
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

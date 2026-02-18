@@ -1,0 +1,6 @@
+model\_type
+===========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.model_type

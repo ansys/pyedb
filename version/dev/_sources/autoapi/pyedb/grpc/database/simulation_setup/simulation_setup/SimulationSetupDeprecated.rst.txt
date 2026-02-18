@@ -1,0 +1,59 @@
+
+
+
+
+
+
+:class:`SimulationSetupDeprecated`
+==================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetupDeprecated
+
+
+.. py:currentmodule:: SimulationSetupDeprecated
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~sweeps`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetupDeprecated
+
+Property detail
+---------------
+
+.. py:property:: type
+
+.. py:property:: sweeps
+
+
+
+
+
+

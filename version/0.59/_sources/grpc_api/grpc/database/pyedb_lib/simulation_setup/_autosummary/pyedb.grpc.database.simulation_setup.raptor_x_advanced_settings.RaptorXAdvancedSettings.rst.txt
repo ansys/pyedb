@@ -1,0 +1,47 @@
+﻿RaptorXAdvancedSettings
+=======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoclass:: RaptorXAdvancedSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RaptorXAdvancedSettings.advanced_options
+      RaptorXAdvancedSettings.auto_removal_sliver_poly
+      RaptorXAdvancedSettings.cells_per_wavelength
+      RaptorXAdvancedSettings.edge_mesh
+      RaptorXAdvancedSettings.eliminate_slit_per_holes
+      RaptorXAdvancedSettings.mesh_frequency
+      RaptorXAdvancedSettings.msg
+      RaptorXAdvancedSettings.net_settings_options
+      RaptorXAdvancedSettings.override_shrink_factor
+      RaptorXAdvancedSettings.plane_projection_factor
+      RaptorXAdvancedSettings.use_accelerate_via_extraction
+      RaptorXAdvancedSettings.use_auto_removal_sliver_poly
+      RaptorXAdvancedSettings.use_cells_per_wavelength
+      RaptorXAdvancedSettings.use_edge_mesh
+      RaptorXAdvancedSettings.use_eliminate_slit_per_holes
+      RaptorXAdvancedSettings.use_enable_advanced_cap_effects
+      RaptorXAdvancedSettings.use_enable_etch_transform
+      RaptorXAdvancedSettings.use_enable_hybrid_extraction
+      RaptorXAdvancedSettings.use_enable_substrate_network_extraction
+      RaptorXAdvancedSettings.use_extract_floating_metals_dummy
+      RaptorXAdvancedSettings.use_extract_floating_metals_floating
+      RaptorXAdvancedSettings.use_lde
+      RaptorXAdvancedSettings.use_mesh_frequency
+      RaptorXAdvancedSettings.use_override_shrink_factor
+      RaptorXAdvancedSettings.use_plane_projection_factor
+      RaptorXAdvancedSettings.use_relaxed_z_axis
+   
+   

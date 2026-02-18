@@ -1,0 +1,6 @@
+mesh\_for\_via\_plating
+=======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings
+
+.. autoproperty:: HFSSAdvancedSettings.mesh_for_via_plating

@@ -1,0 +1,6 @@
+export\_properties
+==================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgCoordianteTerminalInfo.export_properties

@@ -1,0 +1,6 @@
+shunt\_rlc
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.nets_data
+
+.. autoproperty:: EDBExtendedNetData.shunt_rlc

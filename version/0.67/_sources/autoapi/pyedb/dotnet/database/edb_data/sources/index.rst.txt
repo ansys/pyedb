@@ -1,0 +1,122 @@
+
+
+
+
+
+
+The ``sources.py`` module
+=========================
+
+.. py:module:: pyedb.dotnet.database.edb_data.sources
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: sources
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.Node`
+            - Provides for handling nodes for Siwave sources.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.Source`
+            - Provides for handling Siwave sources.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.PinGroup`
+            - Manages pin groups.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.CircuitPort`
+            - Manages a circuit port.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.VoltageSource`
+            - Manages a voltage source.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.CurrentSource`
+            - Manages a current source.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.DCTerminal`
+            - Manages a dc terminal source.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.sources.ResistorSource`
+            - Manages a resistor source.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Node</autoapi/pyedb/dotnet/database/edb_data/sources/Node>
+    <span class="nf nf-cod-symbol_class"></span> Source</autoapi/pyedb/dotnet/database/edb_data/sources/Source>
+    <span class="nf nf-cod-symbol_class"></span> PinGroup</autoapi/pyedb/dotnet/database/edb_data/sources/PinGroup>
+    <span class="nf nf-cod-symbol_class"></span> CircuitPort</autoapi/pyedb/dotnet/database/edb_data/sources/CircuitPort>
+    <span class="nf nf-cod-symbol_class"></span> VoltageSource</autoapi/pyedb/dotnet/database/edb_data/sources/VoltageSource>
+    <span class="nf nf-cod-symbol_class"></span> CurrentSource</autoapi/pyedb/dotnet/database/edb_data/sources/CurrentSource>
+    <span class="nf nf-cod-symbol_class"></span> DCTerminal</autoapi/pyedb/dotnet/database/edb_data/sources/DCTerminal>
+    <span class="nf nf-cod-symbol_class"></span> ResistorSource</autoapi/pyedb/dotnet/database/edb_data/sources/ResistorSource>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

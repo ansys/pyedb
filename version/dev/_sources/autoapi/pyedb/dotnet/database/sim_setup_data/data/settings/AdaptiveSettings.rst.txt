@@ -1,0 +1,616 @@
+
+
+
+
+
+
+:class:`AdaptiveSettings`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.AdaptiveSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for adaptive settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AdaptiveSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~clean_adaptive_frequency_data_list`
+            - Clean all adaptive frequency data from the list.
+          * - :py:attr:`~add_adaptive_frequency_data`
+            - Add a setup for frequency data.
+          * - :py:attr:`~add_broadband_adaptive_frequency_data`
+            - Add a setup for frequency data.
+          * - :py:attr:`~add_multi_frequency_adaptive_setup`
+            - Add a setup for frequency data.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adaptive_settings`
+            - Adaptive EDB settings.
+          * - :py:attr:`~adaptive_frequency_data_list`
+            - List of all adaptive frequency data.
+          * - :py:attr:`~adapt_type`
+            - Adaptive type.
+          * - :py:attr:`~basic`
+            - Whether if turn on basic adaptive.
+          * - :py:attr:`~do_adaptive`
+            - Whether if adaptive mesh is on.
+          * - :py:attr:`~max_refinement`
+            - Maximum number of mesh elements to be added per pass.
+          * - :py:attr:`~max_refine_per_pass`
+            - Maximum number of mesh elementat that can be added during an adaptive pass.
+          * - :py:attr:`~min_passes`
+            - Minimum number of passes.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum number of converged passes.
+          * - :py:attr:`~save_fields`
+            - Whether to turn on save fields.
+          * - :py:attr:`~save_rad_field_only`
+            - Flag indicating if the saving of only radiated fields is turned on.
+          * - :py:attr:`~use_convergence_matrix`
+            - Whether to turn on the convergence matrix.
+          * - :py:attr:`~use_max_refinement`
+            - Whether to turn on maximum refinement.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import AdaptiveSettings
+
+Property detail
+---------------
+
+.. py:property:: adaptive_settings
+
+   
+   Adaptive EDB settings.
+
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_frequency_data_list
+
+   
+   List of all adaptive frequency data.
+
+
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.hfss_simulation_setup_data.AdaptiveFrequencyData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adapt_type
+
+   
+   Adaptive type.
+   Options:
+   1- ``kSingle``.
+   2- ``kMultiFrequencies``.
+   3- ``kBroadband``.
+   4- ``kNumAdaptTypes``.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: basic
+
+   
+   Whether if turn on basic adaptive.
+
+
+
+
+
+   :Returns:
+
+       ``True`` :obj:`if` :obj:`basic` :obj:`adaptive` :obj:`is` :obj:`used`, ``False`` otherwise.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_adaptive
+
+   
+   Whether if adaptive mesh is on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if adaptive is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refinement
+
+   
+   Maximum number of mesh elements to be added per pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refine_per_pass
+
+   
+   Maximum number of mesh elementat that can be added during an adaptive pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+
+   
+   Minimum number of passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+
+   
+   Minimum number of converged passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_fields
+
+   
+   Whether to turn on save fields.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if save fields is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_rad_field_only
+
+   
+   Flag indicating if the saving of only radiated fields is turned on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if save radiated field only is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_convergence_matrix
+
+   
+   Whether to turn on the convergence matrix.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if convergence matrix is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_max_refinement
+
+   
+   Whether to turn on maximum refinement.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if maximum refinement is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: clean_adaptive_frequency_data_list()
+
+   
+   Clean all adaptive frequency data from the list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_adaptive_frequency_data(frequency=0, max_num_passes=10, max_delta_s=0.02)
+
+   
+   Add a setup for frequency data.
+
+
+   :Parameters:
+
+       **frequency** : :class:`python:str`, :class:`python:float`
+           Frequency with units or float frequency (in Hz).
+
+       **max_num_passes** : :class:`python:int`, :obj:`optional`
+           Maximum number of passes. The default is ``10``.
+
+       **max_delta_s** : :class:`python:float`, :obj:`optional`
+           Maximum delta S. The default is ``0.02``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if method is successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_broadband_adaptive_frequency_data(low_frequency=0, high_frequency=10000000000.0, max_num_passes=10, max_delta_s=0.02)
+
+   
+   Add a setup for frequency data.
+
+
+   :Parameters:
+
+       **low_frequency** : :class:`python:str`, :class:`python:float`
+           Frequency with units or float frequency (in Hz).
+
+       **high_frequency** : :class:`python:str`, :class:`python:float`
+           Frequency with units or float frequency (in Hz).
+
+       **max_num_passes** : :class:`python:int`, :obj:`optional`
+           Maximum number of passes. The default is ``10``.
+
+       **max_delta_s** : :class:`python:float`, :obj:`optional`
+           Maximum delta S. The default is ``0.02``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if method is successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_multi_frequency_adaptive_setup(freq_list, max_num_passes=10, max_delta_s=0.02)
+
+   
+   Add a setup for frequency data.
+
+
+   :Parameters:
+
+       **low_frequency** : :class:`python:str`, :class:`python:float`
+           Frequency with units or float frequency (in Hz).
+
+       **high_frequency** : :class:`python:str`, :class:`python:float`
+           Frequency with units or float frequency (in Hz).
+
+       **max_num_passes** : :class:`python:int`, :obj:`optional`
+           Maximum number of passes. The default is ``10``.
+
+       **max_delta_s** : :class:`python:float`, :obj:`optional`
+           Maximum delta S. The default is ``0.02``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if method is successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

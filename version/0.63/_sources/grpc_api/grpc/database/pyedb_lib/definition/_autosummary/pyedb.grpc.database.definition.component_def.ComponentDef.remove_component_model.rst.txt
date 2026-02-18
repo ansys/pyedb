@@ -1,0 +1,6 @@
+remove\_component\_model
+========================
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. automethod:: ComponentDef.remove_component_model

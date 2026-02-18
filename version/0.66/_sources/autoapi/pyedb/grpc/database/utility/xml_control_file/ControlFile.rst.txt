@@ -1,0 +1,254 @@
+
+
+
+
+
+
+:class:`ControlFile`
+====================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFile(xml_input=None, tecnhology=None, layer_map=None)
+
+   
+   Control File Class. It helps the creation and modification of edb xml control files.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFile
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse_technology`
+            - Parse technology files using Helic and convert it to xml file.
+          * - :py:attr:`~parse_layer_map`
+            - Parse layer map and adds info to the stackup info.
+          * - :py:attr:`~parse_xml`
+            - Parse an xml and populate the class with materials and Stackup only.
+          * - :py:attr:`~write_xml`
+            - Write xml to output file
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~stackup`
+            - 
+          * - :py:attr:`~boundaries`
+            - 
+          * - :py:attr:`~remove_holes`
+            - 
+          * - :py:attr:`~remove_holes_area_minimum`
+            - 
+          * - :py:attr:`~remove_holes_units`
+            - 
+          * - :py:attr:`~setups`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~import_options`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFile
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: stackup
+
+.. py:attribute:: boundaries
+
+.. py:attribute:: remove_holes
+   :value: False
+
+
+.. py:attribute:: remove_holes_area_minimum
+   :value: 30
+
+
+.. py:attribute:: remove_holes_units
+   :value: 'um'
+
+
+.. py:attribute:: setups
+
+.. py:attribute:: components
+
+.. py:attribute:: import_options
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse_technology(tecnhology, edbversion=None)
+
+   
+   Parse technology files using Helic and convert it to xml file.
+
+
+   :Parameters:
+
+       **layer_map** : :class:`python:str`
+           Full path to technology file.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parse_layer_map(layer_map)
+
+   
+   Parse layer map and adds info to the stackup info.
+   This operation must be performed after a tech file is imported.
+
+
+   :Parameters:
+
+       **layer_map** : :class:`python:str`
+           Full path to `".map"` file.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parse_xml(xml_input)
+
+   
+   Parse an xml and populate the class with materials and Stackup only.
+
+
+   :Parameters:
+
+       **xml_input** : :class:`python:str`
+           Full path to xml.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: write_xml(xml_output)
+
+   
+   Write xml to output file
+
+
+   :Parameters:
+
+       **xml_output** : :class:`python:str`
+           Path to the output xml file.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+rectangles
+==========
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. autoproperty:: Modeler.rectangles

@@ -1,0 +1,114 @@
+﻿BundleWavePort
+==============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: BundleWavePort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      BundleWavePort.cast
+      
+      
+      BundleWavePort.create
+      
+      
+      BundleWavePort.create_3d_comp
+      
+      
+      BundleWavePort.create_hfss
+      
+      
+      BundleWavePort.create_stride
+      
+      
+      BundleWavePort.decouple
+      
+      
+      BundleWavePort.delete
+      
+      
+      BundleWavePort.find
+      
+      
+      BundleWavePort.find_by_id
+      
+      
+      BundleWavePort.get_product_property
+      
+      
+      BundleWavePort.get_product_property_ids
+      
+      
+      BundleWavePort.product_solver_names
+      
+      
+      BundleWavePort.product_solver_option
+      
+      
+      BundleWavePort.set_product_property
+      
+      
+      BundleWavePort.set_product_solver_option
+      
+      
+      BundleWavePort.ungroup
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BundleWavePort.boundary_type
+      BundleWavePort.bundle_terminal
+      BundleWavePort.component
+      BundleWavePort.deembed
+      BundleWavePort.deembed_length
+      BundleWavePort.edb_uid
+      BundleWavePort.group
+      BundleWavePort.hfss_pi_type
+      BundleWavePort.horizontal_extent_factor
+      BundleWavePort.id
+      BundleWavePort.impedance
+      BundleWavePort.is_auto_port
+      BundleWavePort.is_circuit_port
+      BundleWavePort.is_interface_terminal
+      BundleWavePort.is_mcad
+      BundleWavePort.is_mcad_3d_comp
+      BundleWavePort.is_mcad_hfss
+      BundleWavePort.is_mcad_stride
+      BundleWavePort.is_null
+      BundleWavePort.is_reference_terminal
+      BundleWavePort.layout
+      BundleWavePort.layout_obj_type
+      BundleWavePort.model
+      BundleWavePort.msg
+      BundleWavePort.name
+      BundleWavePort.net
+      BundleWavePort.obj_type
+      BundleWavePort.pec_launch_width
+      BundleWavePort.port_post_processing_prop
+      BundleWavePort.reference_layer
+      BundleWavePort.reference_terminal
+      BundleWavePort.rlc_boundary_parameters
+      BundleWavePort.source_amplitude
+      BundleWavePort.source_phase
+      BundleWavePort.term_to_ground
+      BundleWavePort.terminals
+      BundleWavePort.type
+      BundleWavePort.use_reference_from_hierarchy
+      BundleWavePort.vertical_extent_factor
+   
+   

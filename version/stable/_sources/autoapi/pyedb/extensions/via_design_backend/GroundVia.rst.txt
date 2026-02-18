@@ -1,0 +1,167 @@
+
+
+
+
+
+
+:class:`GroundVia`
+==================
+
+
+.. py:class:: pyedb.extensions.via_design_backend.GroundVia(p_signal, name, net_name, padstack_def, start_layer, stop_layer, base_x, base_y, dx, dy, flip_dx, flip_dy, connection_trace: Union[dict, Trace], with_solder_ball, backdrill_parameters, conductor_layers: list, **kwargs)
+
+
+.. py:currentmodule:: GroundVia
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~populate_config`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~x`
+            - 
+          * - :py:attr:`~y`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~p_signal`
+            - 
+          * - :py:attr:`~variables`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~padstack_def`
+            - 
+          * - :py:attr:`~start_layer`
+            - 
+          * - :py:attr:`~stop_layer`
+            - 
+          * - :py:attr:`~base_x`
+            - 
+          * - :py:attr:`~base_y`
+            - 
+          * - :py:attr:`~flip_dx`
+            - 
+          * - :py:attr:`~flip_dy`
+            - 
+          * - :py:attr:`~dx`
+            - 
+          * - :py:attr:`~dy`
+            - 
+          * - :py:attr:`~with_solder_ball`
+            - 
+          * - :py:attr:`~backdrill_parameters`
+            - 
+          * - :py:attr:`~conductor_layers`
+            - 
+          * - :py:attr:`~traces`
+            - 
+          * - :py:attr:`~fanout_traces`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import GroundVia
+
+Property detail
+---------------
+
+.. py:property:: x
+
+.. py:property:: y
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: p_signal
+
+.. py:attribute:: variables
+   :value: []
+
+
+.. py:attribute:: name
+
+.. py:attribute:: net_name
+
+.. py:attribute:: padstack_def
+
+.. py:attribute:: start_layer
+
+.. py:attribute:: stop_layer
+
+.. py:attribute:: base_x
+
+.. py:attribute:: base_y
+
+.. py:attribute:: flip_dx
+
+.. py:attribute:: flip_dy
+
+.. py:attribute:: dx
+   :value: 'Uninferable_dx'
+
+
+.. py:attribute:: dy
+   :value: 'Uninferable_dy'
+
+
+.. py:attribute:: with_solder_ball
+
+.. py:attribute:: backdrill_parameters
+
+.. py:attribute:: conductor_layers
+
+.. py:attribute:: traces
+   :value: []
+
+
+.. py:attribute:: fanout_traces
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: populate_config(cfg)
+
+
+
+

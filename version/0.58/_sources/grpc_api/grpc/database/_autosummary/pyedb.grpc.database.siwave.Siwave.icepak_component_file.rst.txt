@@ -1,0 +1,6 @@
+icepak\_component\_file
+=======================
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. autoproperty:: Siwave.icepak_component_file

@@ -1,0 +1,274 @@
+
+
+
+
+
+
+:class:`GapPort`
+================
+
+
+.. py:class:: pyedb.grpc.database.ports.ports.GapPort(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal`
+
+
+   
+   Manages gap port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal`
+           Edge terminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   This example shows how to access the ``GapPort`` class.
+   >>> from pyedb import Edb
+   >>> edb = Edb("myaedb.aedb")
+   >>> gap_port = edb.ports["gap_port"]
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: GapPort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~magnitude`
+            - Magnitude.
+          * - :py:attr:`~phase`
+            - Phase.
+          * - :py:attr:`~renormalize`
+            - Whether renormalize is active.
+          * - :py:attr:`~deembed`
+            - Deembed gap port.
+          * - :py:attr:`~renormalize_z0`
+            - Renormalize Z0 value (real, imag).
+          * - :py:attr:`~terminal_type`
+            - Returns terminal type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.ports.ports import GapPort
+
+Property detail
+---------------
+
+.. py:property:: magnitude
+   :type: float
+
+
+   
+   Magnitude.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Magnitude value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+   :type: float
+
+
+   
+   Phase.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Phase value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: renormalize
+   :type: bool
+
+
+   
+   Whether renormalize is active.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: deembed
+   :type: bool
+
+
+   
+   Deembed gap port.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: renormalize_z0
+   :type: tuple[float, float]
+
+
+   
+   Renormalize Z0 value (real, imag).
+
+
+
+   :Returns:
+
+       :obj:`Tuple`\(:class:`python:float`, :class:`python:float`)
+           (Real value, Imaginary value).
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+   :type: str
+
+
+   
+   Returns terminal type.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

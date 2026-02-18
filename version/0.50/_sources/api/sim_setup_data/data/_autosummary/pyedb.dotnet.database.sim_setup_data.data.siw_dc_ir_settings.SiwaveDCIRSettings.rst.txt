@@ -1,0 +1,32 @@
+﻿SiwaveDCIRSettings
+==================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings
+
+.. autoclass:: SiwaveDCIRSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SiwaveDCIRSettings.dc_report_config_file
+      SiwaveDCIRSettings.dc_report_show_active_devices
+      SiwaveDCIRSettings.export_dc_thermal_data
+      SiwaveDCIRSettings.full_dc_report_path
+      SiwaveDCIRSettings.icepak_temp_file
+      SiwaveDCIRSettings.import_thermal_data
+      SiwaveDCIRSettings.per_pin_res_path
+      SiwaveDCIRSettings.per_pin_use_pin_format
+      SiwaveDCIRSettings.source_terms_to_ground
+      SiwaveDCIRSettings.use_loop_res_for_per_pin
+      SiwaveDCIRSettings.via_report_path
+   
+   

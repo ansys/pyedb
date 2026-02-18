@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`BoundaryTypeMapper`
+===========================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/BoundaryTypeMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/BoundaryTypeMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.BoundaryTypeMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import BoundaryTypeMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.BoundaryTypeMapper.GRPC
+    pyedb.generic.constants.BoundaryTypeMapper.DOTNET
+
+
+
+

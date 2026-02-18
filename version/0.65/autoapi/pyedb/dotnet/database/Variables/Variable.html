@@ -1,0 +1,1523 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Variable &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=0045fa0a"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/Variables/Variable';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.65';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+    <link rel="next" title="DataSet" href="DataSet.html" />
+    <link rel="prev" title="VariableManager" href="VariableManager.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.65.2" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/Variables/Variable.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../workflows/index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.65/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../workflows/index.html">
+    Workflows
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.65/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../../../dotnet_api/index.html">API reference</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html">The <code class="docutils literal notranslate"><span class="pre">dotnet</span></code> package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../../../dotnet_api/dotnet/SiWave.html">SIwave manager</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../archive.html" class="nav-link">Legacy DotNet API (Archived)</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../dotnet_api/index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">dotnet</span></code> package</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">pyedb.dotnet.database</span></code> library</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">Variables.py</span></code> module</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="variable">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">Variable</span></code><a class="headerlink" href="#variable" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.Variables.Variable">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.Variables.</span></span><span class="sig-name descname"><span class="pre">Variable</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">expression</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">units</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">si_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">full_variables</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">app</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">readonly</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hidden</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">description</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">postprocessing</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circuit_parameter</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.Variables.Variable" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Stores design properties and project variables and provides operations to perform on them.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Numerical value of the variable in SI units.</p>
+</dd>
+<dt><strong>units</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Units for the value.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+</pre></div>
+</div>
+<p>Define a variable using a string value consistent with the AEDT properties.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;45mm&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Define an unitless variable with a value of 3.0.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mf">3.0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Define a variable defined by a numeric result and a unit string.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mf">3.0</span> <span class="o">*</span> <span class="mf">4.5</span><span class="p">,</span> <span class="n">units</span><span class="o">=</span><span class="s2">&quot;mm&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">=</span> <span class="mf">13.5</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">units</span> <span class="o">=</span> <span class="s2">&quot;mm&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.decompose" title="Variable.decompose"><code class="xref py py-attr docutils literal notranslate"><span class="pre">decompose</span></code></a></p></td>
+<td><p>Decompose a variable value to a floating with its unit.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.rescale_to" title="Variable.rescale_to"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rescale_to</span></code></a></p></td>
+<td><p>Rescale the expression to a new unit within the current unit system.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.format" title="Variable.format"><code class="xref py py-attr docutils literal notranslate"><span class="pre">format</span></code></a></p></td>
+<td><p>Retrieve the string value with the specified numerical formatting.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="../edb_data/variables/Variable.html#Variable.name" title="Variable.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Variable name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.is_optimization_enabled" title="Variable.is_optimization_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_optimization_enabled</span></code></a></p></td>
+<td><p>“Check if optimization is enabled.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.optimization_min_value" title="Variable.optimization_min_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">optimization_min_value</span></code></a></p></td>
+<td><p>“Optimization min value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.optimization_max_value" title="Variable.optimization_max_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">optimization_max_value</span></code></a></p></td>
+<td><p>“Optimization max value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.is_sensitivity_enabled" title="Variable.is_sensitivity_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_sensitivity_enabled</span></code></a></p></td>
+<td><p>Check if Sensitivity is enabled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.sensitivity_min_value" title="Variable.sensitivity_min_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sensitivity_min_value</span></code></a></p></td>
+<td><p>“Sensitivity min value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.sensitivity_max_value" title="Variable.sensitivity_max_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sensitivity_max_value</span></code></a></p></td>
+<td><p>“Sensitivity max value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.sensitivity_initial_disp" title="Variable.sensitivity_initial_disp"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sensitivity_initial_disp</span></code></a></p></td>
+<td><p>“Sensitivity initial value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.is_tuning_enabled" title="Variable.is_tuning_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_tuning_enabled</span></code></a></p></td>
+<td><p>Check if tuning is enabled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.tuning_min_value" title="Variable.tuning_min_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tuning_min_value</span></code></a></p></td>
+<td><p>“Tuning min value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.tuning_max_value" title="Variable.tuning_max_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tuning_max_value</span></code></a></p></td>
+<td><p>“Tuning max value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.tuning_step_value" title="Variable.tuning_step_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">tuning_step_value</span></code></a></p></td>
+<td><p>“Tuning Step value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.is_statistical_enabled" title="Variable.is_statistical_enabled"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_statistical_enabled</span></code></a></p></td>
+<td><p>Check if statistical is enabled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.read_only" title="Variable.read_only"><code class="xref py py-attr docutils literal notranslate"><span class="pre">read_only</span></code></a></p></td>
+<td><p>Read-only flag value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.hidden" title="Variable.hidden"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hidden</span></code></a></p></td>
+<td><p>Hidden flag value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="../edb_data/variables/Variable.html#Variable.description" title="Variable.description"><code class="xref py py-attr docutils literal notranslate"><span class="pre">description</span></code></a></p></td>
+<td><p>Description value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.post_processing" title="Variable.post_processing"><code class="xref py py-attr docutils literal notranslate"><span class="pre">post_processing</span></code></a></p></td>
+<td><p>Postprocessing flag value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.circuit_parameter" title="Variable.circuit_parameter"><code class="xref py py-attr docutils literal notranslate"><span class="pre">circuit_parameter</span></code></a></p></td>
+<td><p>Circuit parameter flag value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.expression" title="Variable.expression"><code class="xref py py-attr docutils literal notranslate"><span class="pre">expression</span></code></a></p></td>
+<td><p>Expression.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.numeric_value" title="Variable.numeric_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">numeric_value</span></code></a></p></td>
+<td><p>Numeric part of the expression as a float value.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.unit_system" title="Variable.unit_system"><code class="xref py py-attr docutils literal notranslate"><span class="pre">unit_system</span></code></a></p></td>
+<td><p>Unit system of the expression as a string.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.units" title="Variable.units"><code class="xref py py-attr docutils literal notranslate"><span class="pre">units</span></code></a></p></td>
+<td><p>Units.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="../edb_data/variables/Variable.html#Variable.value" title="Variable.value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">value</span></code></a></p></td>
+<td><p>Value.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.evaluated_value" title="Variable.evaluated_value"><code class="xref py py-attr docutils literal notranslate"><span class="pre">evaluated_value</span></code></a></p></td>
+<td><p>String value.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Attributes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.__rmul__" title="Variable.__rmul__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__rmul__</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-3">
+Special methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.__mul__" title="Variable.__mul__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__mul__</span></code></a></p></td>
+<td><p>Multiply the variable with a number or another variable and return a new object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.__add__" title="Variable.__add__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__add__</span></code></a></p></td>
+<td><p>Add the variable to another variable to return a new object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.__sub__" title="Variable.__sub__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__sub__</span></code></a></p></td>
+<td><p>Subtract another variable from the variable to return a new object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.__truediv__" title="Variable.__truediv__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__truediv__</span></code></a></p></td>
+<td><p>Divide the variable by a number or another variable to return a new object.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#Variable.__div__" title="Variable.__div__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__div__</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#Variable.__rtruediv__" title="Variable.__rtruediv__"><code class="xref py py-attr docutils literal notranslate"><span class="pre">__rtruediv__</span></code></a></p></td>
+<td><p>Divide another object by this object.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#Variable.name" title="Link to this definition">#</a></dt>
+<dd><p>Variable name.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.is_optimization_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">is_optimization_enabled</span></span><a class="headerlink" href="#Variable.is_optimization_enabled" title="Link to this definition">#</a></dt>
+<dd><p>“Check if optimization is enabled.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.optimization_min_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">optimization_min_value</span></span><a class="headerlink" href="#Variable.optimization_min_value" title="Link to this definition">#</a></dt>
+<dd><p>“Optimization min value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.optimization_max_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">optimization_max_value</span></span><a class="headerlink" href="#Variable.optimization_max_value" title="Link to this definition">#</a></dt>
+<dd><p>“Optimization max value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.is_sensitivity_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">is_sensitivity_enabled</span></span><a class="headerlink" href="#Variable.is_sensitivity_enabled" title="Link to this definition">#</a></dt>
+<dd><p>Check if Sensitivity is enabled.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.sensitivity_min_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">sensitivity_min_value</span></span><a class="headerlink" href="#Variable.sensitivity_min_value" title="Link to this definition">#</a></dt>
+<dd><p>“Sensitivity min value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.sensitivity_max_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">sensitivity_max_value</span></span><a class="headerlink" href="#Variable.sensitivity_max_value" title="Link to this definition">#</a></dt>
+<dd><p>“Sensitivity max value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.sensitivity_initial_disp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">sensitivity_initial_disp</span></span><a class="headerlink" href="#Variable.sensitivity_initial_disp" title="Link to this definition">#</a></dt>
+<dd><p>“Sensitivity initial value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.is_tuning_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">is_tuning_enabled</span></span><a class="headerlink" href="#Variable.is_tuning_enabled" title="Link to this definition">#</a></dt>
+<dd><p>Check if tuning is enabled.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.tuning_min_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">tuning_min_value</span></span><a class="headerlink" href="#Variable.tuning_min_value" title="Link to this definition">#</a></dt>
+<dd><p>“Tuning min value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.tuning_max_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">tuning_max_value</span></span><a class="headerlink" href="#Variable.tuning_max_value" title="Link to this definition">#</a></dt>
+<dd><p>“Tuning max value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.tuning_step_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">tuning_step_value</span></span><a class="headerlink" href="#Variable.tuning_step_value" title="Link to this definition">#</a></dt>
+<dd><p>“Tuning Step value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.is_statistical_enabled">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">is_statistical_enabled</span></span><a class="headerlink" href="#Variable.is_statistical_enabled" title="Link to this definition">#</a></dt>
+<dd><p>Check if statistical is enabled.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.read_only">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">read_only</span></span><a class="headerlink" href="#Variable.read_only" title="Link to this definition">#</a></dt>
+<dd><p>Read-only flag value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.hidden">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">hidden</span></span><a class="headerlink" href="#Variable.hidden" title="Link to this definition">#</a></dt>
+<dd><p>Hidden flag value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.description">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">description</span></span><a class="headerlink" href="#Variable.description" title="Link to this definition">#</a></dt>
+<dd><p>Description value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.post_processing">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">post_processing</span></span><a class="headerlink" href="#Variable.post_processing" title="Link to this definition">#</a></dt>
+<dd><p>Postprocessing flag value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.circuit_parameter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">circuit_parameter</span></span><a class="headerlink" href="#Variable.circuit_parameter" title="Link to this definition">#</a></dt>
+<dd><p>Circuit parameter flag value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.expression">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">expression</span></span><a class="headerlink" href="#Variable.expression" title="Link to this definition">#</a></dt>
+<dd><p>Expression.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.numeric_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">numeric_value</span></span><a class="headerlink" href="#Variable.numeric_value" title="Link to this definition">#</a></dt>
+<dd><p>Numeric part of the expression as a float value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.unit_system">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">unit_system</span></span><a class="headerlink" href="#Variable.unit_system" title="Link to this definition">#</a></dt>
+<dd><p>Unit system of the expression as a string.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.units">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">units</span></span><a class="headerlink" href="#Variable.units" title="Link to this definition">#</a></dt>
+<dd><p>Units.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">value</span></span><a class="headerlink" href="#Variable.value" title="Link to this definition">#</a></dt>
+<dd><p>Value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="Variable.evaluated_value">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">evaluated_value</span></span><a class="headerlink" href="#Variable.evaluated_value" title="Link to this definition">#</a></dt>
+<dd><p>String value.</p>
+<p>The numeric value with the unit is concatenated and returned as a string. The numeric display
+in the modeler and the string value can differ. For example, you might see <code class="docutils literal notranslate"><span class="pre">10mm</span></code> in the
+modeler and see <code class="docutils literal notranslate"><span class="pre">10.0mm</span></code> returned as the string value.</p>
+</dd></dl>
+
+</section>
+<section id="attribute-detail">
+<h2>Attribute detail<a class="headerlink" href="#attribute-detail" title="Link to this heading">#</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="Variable.__rmul__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__rmul__</span></span><a class="headerlink" href="#Variable.__rmul__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.decompose">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">decompose</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Variable.decompose" title="Link to this definition">#</a></dt>
+<dd><p>Decompose a variable value to a floating with its unit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>The float value of the variable and the units exposed as a string.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">hfss</span> <span class="o">=</span> <span class="n">Hfss</span><span class="p">()</span>
+<span class="gp">>>> </span><span class="n">hfss</span><span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;3N&quot;</span>
+<span class="gp">>>> </span><span class="nb">print</span><span class="p">(</span><span class="n">hfss</span><span class="o">.</span><span class="n">variable_manager</span><span class="p">[</span><span class="s2">&quot;v1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">decompose</span><span class="p">(</span><span class="s2">&quot;v1&quot;</span><span class="p">))</span>
+<span class="gp">>>> </span><span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="s2">&quot;N&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.rescale_to">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">rescale_to</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">units</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.rescale_to" title="Link to this definition">#</a></dt>
+<dd><p>Rescale the expression to a new unit within the current unit system.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>units</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Units to rescale to.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;10W&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mi">10</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;W&quot;</span>
+<span class="gp">>>> </span><span class="n">v</span><span class="o">.</span><span class="n">rescale_to</span><span class="p">(</span><span class="s2">&quot;kW&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mf">0.01</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;kW&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.format">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">format</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">format</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.format" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the string value with the specified numerical formatting.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>format</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Format for the numeric value of the string. For example, <code class="docutils literal notranslate"><span class="pre">'06.2f'</span></code>. For
+more information, see the <a class="reference external" href="https://pyformat.info/">PyFormat documentation</a>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>String value with the specified numerical formatting.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;10W&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;f&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;10.000000W&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;06.2f&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot;010.00W&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">v</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s2">&quot;6.2f&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="s2">&quot; 10.00W&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.__mul__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__mul__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.__mul__" title="Link to this definition">#</a></dt>
+<dd><p>Multiply the variable with a number or another variable and return a new object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>other</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numbers.Number</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">variable</span></code></span></dt><dd><p>Object to be multiplied.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></dt><dd><p>Variable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+</pre></div>
+</div>
+<p>Multiply <code class="docutils literal notranslate"><span class="pre">'Length1'</span></code> by unitless <code class="docutils literal notranslate"><span class="pre">'None'`</span></code> to obtain <code class="docutils literal notranslate"><span class="pre">'Length'</span></code>.
+A numerical value is also considered to be unitless.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.aedt.core.generic.constants</span>
+<span class="gp">>>> </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;10mm&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">result_1</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">*</span> <span class="n">v2</span>
+<span class="gp">>>> </span><span class="n">result_2</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">*</span> <span class="mi">3</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_1</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mf">30.0</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_1</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Length&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_2</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="n">result_1</span><span class="o">.</span><span class="n">numeric_value</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_2</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Length&quot;</span>
+</pre></div>
+</div>
+<p>Multiply voltage times current to obtain power.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.aedt.core.generic.constants</span>
+<span class="gp">>>> </span><span class="n">v3</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;3mA&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">v4</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;40V&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">result_3</span> <span class="o">=</span> <span class="n">v3</span> <span class="o">*</span> <span class="n">v4</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_3</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mf">0.12</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_3</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;W&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_3</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Power&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.__add__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__add__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.__add__" title="Link to this definition">#</a></dt>
+<dd><p>Add the variable to another variable to return a new object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>other</strong><span class="classifier">class:<cite>pyedb.dotnet.database.Variables.Variable</cite></span></dt><dd><p>Object to be multiplied.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></dt><dd><p>Variable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+<span class="gp">>>> </span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.aedt.core.generic.constants</span>
+<span class="gp">>>> </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;3mA&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;10A&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">result</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">+</span> <span class="n">v2</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mf">10.003</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Current&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.__sub__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__sub__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.__sub__" title="Link to this definition">#</a></dt>
+<dd><p>Subtract another variable from the variable to return a new object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>other</strong><span class="classifier">class:<cite>pyedb.dotnet.database.Variables.Variable</cite></span></dt><dd><p>Object to be subtracted.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></dt><dd><p>Variable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.aedt.core.generic.constants</span>
+<span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+<span class="gp">>>> </span><span class="n">v3</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;3mA&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">v4</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;10A&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">result_2</span> <span class="o">=</span> <span class="n">v3</span> <span class="o">-</span> <span class="n">v4</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_2</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="o">-</span><span class="mf">9.997</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_2</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_2</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Current&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.__truediv__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__truediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.__truediv__" title="Link to this definition">#</a></dt>
+<dd><p>Divide the variable by a number or another variable to return a new object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>other</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numbers.Number</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">variable</span></code></span></dt><dd><p>Object by which to divide.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></dt><dd><p>Variable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Divide a variable with units <code class="docutils literal notranslate"><span class="pre">&quot;W&quot;</span></code> by a variable with units <code class="docutils literal notranslate"><span class="pre">&quot;V&quot;</span></code> and automatically
+resolve the new units to <code class="docutils literal notranslate"><span class="pre">&quot;A&quot;</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+<span class="gp">>>> </span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.aedt.core.generic.constants</span>
+<span class="gp">>>> </span><span class="n">v1</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;10W&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">v2</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;40V&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">result</span> <span class="o">=</span> <span class="n">v1</span> <span class="o">/</span> <span class="n">v2</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_1</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mf">0.25</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_1</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;A&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result_1</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Current&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.__div__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__div__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.__div__" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="Variable.__rtruediv__">
+<span class="sig-prename descclassname"><span class="pre">Variable.</span></span><span class="sig-name descname"><span class="pre">__rtruediv__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Variable.__rtruediv__" title="Link to this definition">#</a></dt>
+<dd><p>Divide another object by this object.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>other</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/numbers.html#numbers.Number" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">numbers.Number</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">variable</span></code></span></dt><dd><p>Object to divide by.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#type" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">type</span></code></a></dt><dd><p>Variable.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<p>Divide a number by a variable with units <code class="docutils literal notranslate"><span class="pre">&quot;s&quot;</span></code> and automatically determine that
+the result is in <code class="docutils literal notranslate"><span class="pre">&quot;Hz&quot;</span></code>.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">import</span><span class="w"> </span><span class="nn">ansys.aedt.core.generic.constants</span>
+<span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.Variables</span><span class="w"> </span><span class="kn">import</span> <span class="n">Variable</span>
+<span class="gp">>>> </span><span class="n">v</span> <span class="o">=</span> <span class="n">Variable</span><span class="p">(</span><span class="s2">&quot;1s&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">result</span> <span class="o">=</span> <span class="mf">3.0</span> <span class="o">/</span> <span class="n">v</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">numeric_value</span> <span class="o">==</span> <span class="mf">3.0</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">units</span> <span class="o">==</span> <span class="s2">&quot;Hz&quot;</span>
+<span class="gp">>>> </span><span class="k">assert</span> <span class="n">result</span><span class="o">.</span><span class="n">unit_system</span> <span class="o">==</span> <span class="s2">&quot;Freq&quot;</span>
+</pre></div>
+</div>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.Variables.Variable"><code class="docutils literal notranslate"><span class="pre">Variable</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.name"><code class="docutils literal notranslate"><span class="pre">name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.is_optimization_enabled"><code class="docutils literal notranslate"><span class="pre">is_optimization_enabled</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.optimization_min_value"><code class="docutils literal notranslate"><span class="pre">optimization_min_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.optimization_max_value"><code class="docutils literal notranslate"><span class="pre">optimization_max_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.is_sensitivity_enabled"><code class="docutils literal notranslate"><span class="pre">is_sensitivity_enabled</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.sensitivity_min_value"><code class="docutils literal notranslate"><span class="pre">sensitivity_min_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.sensitivity_max_value"><code class="docutils literal notranslate"><span class="pre">sensitivity_max_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.sensitivity_initial_disp"><code class="docutils literal notranslate"><span class="pre">sensitivity_initial_disp</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.is_tuning_enabled"><code class="docutils literal notranslate"><span class="pre">is_tuning_enabled</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.tuning_min_value"><code class="docutils literal notranslate"><span class="pre">tuning_min_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.tuning_max_value"><code class="docutils literal notranslate"><span class="pre">tuning_max_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.tuning_step_value"><code class="docutils literal notranslate"><span class="pre">tuning_step_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.is_statistical_enabled"><code class="docutils literal notranslate"><span class="pre">is_statistical_enabled</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.read_only"><code class="docutils literal notranslate"><span class="pre">read_only</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.hidden"><code class="docutils literal notranslate"><span class="pre">hidden</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.description"><code class="docutils literal notranslate"><span class="pre">description</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.post_processing"><code class="docutils literal notranslate"><span class="pre">post_processing</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.circuit_parameter"><code class="docutils literal notranslate"><span class="pre">circuit_parameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.expression"><code class="docutils literal notranslate"><span class="pre">expression</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.numeric_value"><code class="docutils literal notranslate"><span class="pre">numeric_value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.unit_system"><code class="docutils literal notranslate"><span class="pre">unit_system</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.units"><code class="docutils literal notranslate"><span class="pre">units</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.value"><code class="docutils literal notranslate"><span class="pre">value</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.evaluated_value"><code class="docutils literal notranslate"><span class="pre">evaluated_value</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-detail">Attribute detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__rmul__"><code class="docutils literal notranslate"><span class="pre">__rmul__</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.decompose"><code class="docutils literal notranslate"><span class="pre">decompose()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.rescale_to"><code class="docutils literal notranslate"><span class="pre">rescale_to()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.format"><code class="docutils literal notranslate"><span class="pre">format()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__mul__"><code class="docutils literal notranslate"><span class="pre">__mul__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__add__"><code class="docutils literal notranslate"><span class="pre">__add__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__sub__"><code class="docutils literal notranslate"><span class="pre">__sub__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__truediv__"><code class="docutils literal notranslate"><span class="pre">__truediv__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__div__"><code class="docutils literal notranslate"><span class="pre">__div__()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#Variable.__rtruediv__"><code class="docutils literal notranslate"><span class="pre">__rtruediv__()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/Variables/Variable.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/dotnet/database/Variables/Variable.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.3. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

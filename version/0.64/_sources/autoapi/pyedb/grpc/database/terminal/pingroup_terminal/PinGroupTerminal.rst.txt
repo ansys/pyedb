@@ -1,0 +1,378 @@
+
+
+
+
+
+
+:class:`PinGroupTerminal`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.terminal.pingroup_terminal.PinGroupTerminal(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.terminal.pin_group_terminal.PinGroupTerminal`
+
+
+   
+   Manages pin group terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PinGroupTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~is_port`
+            - 
+          * - :py:attr:`~magnitude`
+            - Source magnitude.
+          * - :py:attr:`~phase`
+            - Source phase.
+          * - :py:attr:`~source_amplitude`
+            - Source amplitude.
+          * - :py:attr:`~source_phase`
+            - Source phase.
+          * - :py:attr:`~impedance`
+            - Terminal impedance.
+          * - :py:attr:`~net`
+            - Terminal net.
+          * - :py:attr:`~pin_group`
+            - Pingroup.
+          * - :py:attr:`~terminal_type`
+            - 
+          * - :py:attr:`~ref_terminal`
+            - Property keeping DotNet compatibility
+          * - :py:attr:`~hfss_type`
+            - 
+          * - :py:attr:`~is_current_source`
+            - 
+          * - :py:attr:`~is_voltage_source`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
+
+Property detail
+---------------
+
+.. py:property:: boundary_type
+   :type: str
+
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_port
+   :type: bool
+
+
+.. py:property:: magnitude
+   :type: float
+
+
+   
+   Source magnitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`magnitude` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+   :type: float
+
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **float** : :obj:`phase` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_amplitude
+   :type: float
+
+
+   
+   Source amplitude.
+
+
+
+   :Returns:
+
+       **float** : :obj:`source` magnitude.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_phase
+   :type: float
+
+
+   
+   Source phase.
+
+
+
+   :Returns:
+
+       **foat** : :obj:`source` phase.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+   :type: float
+
+
+   
+   Terminal impedance.
+
+
+
+   :Returns:
+
+       **float** : :obj:`terminal` impedance.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+   :type: pyedb.grpc.database.net.net.Net
+
+
+   
+   Terminal net.
+
+
+
+   :Returns:
+
+       :class:`Net <pyedb.grpc.database.net.net.Net>`
+           Terminal Net object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_group
+   :type: any
+
+
+   
+   Pingroup.
+
+
+
+   :Returns:
+
+       :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+           Terminal pingroup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminal_type
+   :type: str
+
+
+.. py:property:: ref_terminal
+
+   
+   Property keeping DotNet compatibility
+
+   ..deprecated:: 0.43.0
+      Use: func:`reference_terminal` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hfss_type
+   :type: str
+
+
+.. py:property:: is_current_source
+   :type: bool
+
+
+.. py:property:: is_voltage_source
+
+
+
+
+
+

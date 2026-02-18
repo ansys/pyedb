@@ -1,0 +1,142 @@
+
+
+
+
+
+
+:class:`CfgPadstackInstance`
+============================
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgPadstackInstance(pedb, pyedb_obj, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+   
+   Instance data class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPadstackInstance
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameters_to_edb`
+            - 
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pyedb_obj`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~is_pin`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~layer_range`
+            - 
+          * - :py:attr:`~definition`
+            - 
+          * - :py:attr:`~backdrill_parameters`
+            - 
+          * - :py:attr:`~position`
+            - 
+          * - :py:attr:`~rotation`
+            - 
+          * - :py:attr:`~hole_override_enabled`
+            - 
+          * - :py:attr:`~hole_override_diameter`
+            - 
+          * - :py:attr:`~solder_ball_layer`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks import CfgPadstackInstance
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pyedb_obj
+
+.. py:attribute:: name
+
+.. py:attribute:: is_pin
+
+.. py:attribute:: net_name
+
+.. py:attribute:: layer_range
+
+.. py:attribute:: definition
+
+.. py:attribute:: backdrill_parameters
+
+.. py:attribute:: position
+
+.. py:attribute:: rotation
+
+.. py:attribute:: hole_override_enabled
+
+.. py:attribute:: hole_override_diameter
+
+.. py:attribute:: solder_ball_layer
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameters_to_edb()
+
+.. py:method:: retrieve_parameters_from_edb()
+
+
+
+

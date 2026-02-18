@@ -1,0 +1,6 @@
+is\_mcad\_hfss
+==============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoproperty:: PinGroup.is_mcad_hfss

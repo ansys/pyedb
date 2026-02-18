@@ -1,0 +1,163 @@
+﻿Rectangle
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoclass:: Rectangle
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Rectangle.add_void
+      
+      
+      Rectangle.area
+      
+      
+      Rectangle.cast
+      
+      
+      Rectangle.convert_to_polygon
+      
+      
+      Rectangle.create
+      
+      
+      Rectangle.create_3d_comp
+      
+      
+      Rectangle.create_hfss
+      
+      
+      Rectangle.create_stride
+      
+      
+      Rectangle.delete
+      
+      
+      Rectangle.expand
+      
+      
+      Rectangle.find_by_id
+      
+      
+      Rectangle.get_closest_arc_midpoint
+      
+      
+      Rectangle.get_closest_point
+      
+      
+      Rectangle.get_connected_object_id_set
+      
+      
+      Rectangle.get_connected_objects
+      
+      
+      Rectangle.get_hfss_prop
+      
+      
+      Rectangle.get_parameters
+      
+      
+      Rectangle.get_product_property
+      
+      
+      Rectangle.get_product_property_ids
+      
+      
+      Rectangle.intersect
+      
+      
+      Rectangle.intersection_type
+      
+      
+      Rectangle.is_intersecting
+      
+      
+      Rectangle.make_zone_primitive
+      
+      
+      Rectangle.plot
+      
+      
+      Rectangle.points
+      
+      
+      Rectangle.remove_hfss_prop
+      
+      
+      Rectangle.render
+      
+      
+      Rectangle.scale
+      
+      
+      Rectangle.set_hfss_prop
+      
+      
+      Rectangle.set_parameters
+      
+      
+      Rectangle.set_product_property
+      
+      
+      Rectangle.subtract
+      
+      
+      Rectangle.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Rectangle.aedt_name
+      Rectangle.arcs
+      Rectangle.bbox
+      Rectangle.can_be_zone_primitive
+      Rectangle.center
+      Rectangle.component
+      Rectangle.edb_uid
+      Rectangle.group
+      Rectangle.has_voids
+      Rectangle.id
+      Rectangle.is_mcad
+      Rectangle.is_mcad_3d_comp
+      Rectangle.is_mcad_hfss
+      Rectangle.is_mcad_stride
+      Rectangle.is_negative
+      Rectangle.is_null
+      Rectangle.is_parameterized
+      Rectangle.is_void
+      Rectangle.is_zone_primitive
+      Rectangle.layer
+      Rectangle.layer_name
+      Rectangle.layout
+      Rectangle.layout_obj_type
+      Rectangle.longest_arc
+      Rectangle.msg
+      Rectangle.net
+      Rectangle.net_name
+      Rectangle.obj_type
+      Rectangle.object_instance
+      Rectangle.owner
+      Rectangle.points_raw
+      Rectangle.polygon_data
+      Rectangle.primitive_type
+      Rectangle.representation_type
+      Rectangle.shortest_arc
+      Rectangle.type
+      Rectangle.voids
+   
+   

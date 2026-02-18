@@ -1,0 +1,127 @@
+﻿Terminal
+========
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoclass:: Terminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Terminal.cast
+      
+      
+      Terminal.create_3d_comp
+      
+      
+      Terminal.create_hfss
+      
+      
+      Terminal.create_stride
+      
+      
+      Terminal.delete
+      
+      
+      Terminal.find
+      
+      
+      Terminal.find_by_id
+      
+      
+      Terminal.get_edge_terminal_reference_primitive
+      
+      
+      Terminal.get_pad_edge_terminal_reference_pin
+      
+      
+      Terminal.get_padstack_terminal_reference_pin
+      
+      
+      Terminal.get_pin_group_terminal_reference_pin
+      
+      
+      Terminal.get_point_terminal_reference_primitive
+      
+      
+      Terminal.get_product_property
+      
+      
+      Terminal.get_product_property_ids
+      
+      
+      Terminal.product_solver_names
+      
+      
+      Terminal.product_solver_option
+      
+      
+      Terminal.set_product_property
+      
+      
+      Terminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Terminal.boundary_type
+      Terminal.bundle_terminal
+      Terminal.component
+      Terminal.do_renormalize
+      Terminal.edb_uid
+      Terminal.group
+      Terminal.hfss_pi_type
+      Terminal.hfss_type
+      Terminal.id
+      Terminal.impedance
+      Terminal.is_auto_port
+      Terminal.is_circuit_port
+      Terminal.is_current_source
+      Terminal.is_interface_terminal
+      Terminal.is_mcad
+      Terminal.is_mcad_3d_comp
+      Terminal.is_mcad_hfss
+      Terminal.is_mcad_stride
+      Terminal.is_null
+      Terminal.is_port
+      Terminal.is_reference_terminal
+      Terminal.is_voltage_source
+      Terminal.layer
+      Terminal.layout
+      Terminal.layout_obj_type
+      Terminal.magnitude
+      Terminal.model
+      Terminal.msg
+      Terminal.name
+      Terminal.net
+      Terminal.net_name
+      Terminal.obj_type
+      Terminal.phase
+      Terminal.port_post_processing_prop
+      Terminal.ref_terminal
+      Terminal.reference_layer
+      Terminal.reference_net_name
+      Terminal.reference_object
+      Terminal.reference_terminal
+      Terminal.rlc_boundary_parameters
+      Terminal.source_amplitude
+      Terminal.source_phase
+      Terminal.term_to_ground
+      Terminal.terminal_type
+      Terminal.type
+      Terminal.use_reference_from_hierarchy
+   
+   

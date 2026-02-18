@@ -1,0 +1,6 @@
+max\_triangles\_for\_wave\_port
+===============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+.. autoproperty:: HFSSSolverSettings.max_triangles_for_wave_port

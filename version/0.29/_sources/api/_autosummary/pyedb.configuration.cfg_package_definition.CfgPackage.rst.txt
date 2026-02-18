@@ -1,0 +1,35 @@
+﻿CfgPackage
+==========
+
+.. currentmodule:: pyedb.configuration.cfg_package_definition
+
+.. autoclass:: CfgPackage
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgPackage.get_attributes
+      
+      
+      CfgPackage.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgPackage.heatsink
+      CfgPackage.protected_attributes
+   
+   

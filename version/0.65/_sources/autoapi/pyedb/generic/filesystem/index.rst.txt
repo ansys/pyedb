@@ -1,0 +1,163 @@
+
+
+
+
+
+
+The ``pyedb.generic.filesystem`` library
+========================================
+
+.. py:module:: pyedb.generic.filesystem
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: filesystem
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.generic.filesystem.Scratch`
+            - 
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~search_files`
+            - Search for files inside a directory given a specific pattern.
+
+
+          * - :py:obj:`~my_location`
+            - 
+
+
+          * - :py:obj:`~get_json_files`
+            - Get the absolute path to all *.json files in start_folder.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Scratch</autoapi/pyedb/generic/filesystem/Scratch>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: search_files(dirname, pattern='*')
+
+   
+   Search for files inside a directory given a specific pattern.
+
+
+   :Parameters:
+
+       **dirname** : :class:`python:str`
+           ..
+
+       **pattern :str, optional**
+           ..
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: my_location()
+
+.. py:function:: get_json_files(start_folder)
+
+   
+   Get the absolute path to all *.json files in start_folder.
+
+
+   :Parameters:
+
+       **start_folder, str**
+           Path to the folder where the json files are located.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

@@ -1,0 +1,6 @@
+conduction\_per\_error
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: DcrSettings.conduction_per_error

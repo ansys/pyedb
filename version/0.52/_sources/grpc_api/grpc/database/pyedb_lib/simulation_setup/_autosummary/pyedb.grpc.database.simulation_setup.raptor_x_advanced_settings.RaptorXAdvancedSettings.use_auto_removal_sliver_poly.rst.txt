@@ -1,0 +1,6 @@
+use\_auto\_removal\_sliver\_poly
+================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_auto_removal_sliver_poly

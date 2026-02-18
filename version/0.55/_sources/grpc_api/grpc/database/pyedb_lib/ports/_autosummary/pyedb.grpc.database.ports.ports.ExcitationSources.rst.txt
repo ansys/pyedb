@@ -1,0 +1,76 @@
+﻿ExcitationSources
+=================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: ExcitationSources
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      ExcitationSources.delete
+      
+      
+      ExcitationSources.get_connected_object_id_set
+      
+      
+      ExcitationSources.get_connected_objects
+      
+      
+      ExcitationSources.get_edge_terminal_reference_primitive
+      
+      
+      ExcitationSources.get_pad_edge_terminal_reference_pin
+      
+      
+      ExcitationSources.get_padstack_terminal_reference_pin
+      
+      
+      ExcitationSources.get_pin_group_terminal_reference_pin
+      
+      
+      ExcitationSources.get_point_terminal_reference_primitive
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ExcitationSources.boundary_type
+      ExcitationSources.component
+      ExcitationSources.component_name
+      ExcitationSources.do_renormalize
+      ExcitationSources.hfss_type
+      ExcitationSources.id
+      ExcitationSources.impedance
+      ExcitationSources.is_circuit_port
+      ExcitationSources.is_current_source
+      ExcitationSources.is_null
+      ExcitationSources.is_port
+      ExcitationSources.is_reference_terminal
+      ExcitationSources.is_voltage_source
+      ExcitationSources.layer
+      ExcitationSources.magnitude
+      ExcitationSources.name
+      ExcitationSources.net
+      ExcitationSources.net_name
+      ExcitationSources.phase
+      ExcitationSources.ref_terminal
+      ExcitationSources.reference_net_name
+      ExcitationSources.reference_object
+      ExcitationSources.reference_terminal
+      ExcitationSources.terminal_type
+      ExcitationSources.type
+   
+   

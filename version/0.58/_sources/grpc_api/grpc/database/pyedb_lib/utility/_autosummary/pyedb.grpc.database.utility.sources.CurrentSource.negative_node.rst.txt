@@ -1,0 +1,6 @@
+negative\_node
+==============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: CurrentSource.negative_node

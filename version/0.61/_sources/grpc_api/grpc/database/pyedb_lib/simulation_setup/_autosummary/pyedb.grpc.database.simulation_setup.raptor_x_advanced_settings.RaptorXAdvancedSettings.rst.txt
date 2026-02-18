@@ -1,0 +1,15 @@
+﻿RaptorXAdvancedSettings
+=======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoclass:: RaptorXAdvancedSettings
+
+   
+
+   
+   
+
+   
+   
+   

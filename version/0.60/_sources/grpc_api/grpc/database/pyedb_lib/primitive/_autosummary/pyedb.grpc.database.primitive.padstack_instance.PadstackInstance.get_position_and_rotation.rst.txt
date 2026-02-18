@@ -1,0 +1,6 @@
+get\_position\_and\_rotation
+============================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.get_position_and_rotation

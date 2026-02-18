@@ -1,0 +1,6 @@
+via\_stop\_layer
+================
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadstackDef.via_stop_layer

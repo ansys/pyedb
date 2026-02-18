@@ -1,0 +1,258 @@
+
+
+
+
+
+
+:class:`Meander`
+================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.Meander(edb_cell: pyedb.Edb, pitch: Union[str, float] = 0.001, trace_width: Union[str, float] = 0.0003, amplitude: Union[str, float] = 0.005, num_turns: int = 8, layer: str = 'TOP', net: str = 'SIG')
+
+   
+   Fully-parametric micro-strip meander line.
+
+
+   :Parameters:
+
+       **pitch** : :class:`python:float`, :obj:`default` 1 :obj:`mm`
+           Vertical spacing between successive meander rows [m].
+
+       **trace_width** : :class:`python:float`, :obj:`default` 0.3 :obj:`mm`
+           Width of the micro-strip [m].
+
+       **amplitude** : :class:`python:float`, :obj:`default` 5 :obj:`mm`
+           Horizontal excursion of each U-turn [m].
+
+       **num_turns** : :class:`python:int`, :obj:`default` 8
+           Number of 180° bends.
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP"
+           EDB metal layer.
+
+       **net** : :class:`python:str`, :obj:`default` "SIG"
+           Net name assigned to the trace.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> m = Meander(pitch=0.2e-3, trace_width=0.15e-3, amplitude=2e-3, num_turns=4)
+   >>> edb = Edb("meander.aedb")
+   >>> m._pedb = edb
+   >>> m.create()
+   >>> f"{m.analytical_z0:.1f} Ω"
+   '50.1 Ω'
+   >>> m.electrical_length_deg(1e9)
+   59.8
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Meander
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~electrical_length_deg`
+            - Electrical length of the meander at the specified frequency.
+          * - :py:attr:`~create`
+            - Draw the meander in the attached EDB cell and calculate its
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~analytical_z0`
+            - Micro-strip characteristic impedance using the Hammerstad & Jensen
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pitch`
+            - 
+          * - :py:attr:`~trace_width`
+            - 
+          * - :py:attr:`~amplitude`
+            - 
+          * - :py:attr:`~num_turns`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+          * - :py:attr:`~length`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import Meander
+
+Property detail
+---------------
+
+.. py:property:: analytical_z0
+   :type: float
+
+
+   
+   Micro-strip characteristic impedance using the Hammerstad & Jensen
+   closed-form expression.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Z0 in Ohm.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pitch
+
+.. py:attribute:: trace_width
+
+.. py:attribute:: amplitude
+
+.. py:attribute:: num_turns
+   :value: 8
+
+
+.. py:attribute:: layer
+   :value: 'TOP'
+
+
+.. py:attribute:: net
+   :value: 'SIG'
+
+
+.. py:attribute:: substrate
+
+.. py:attribute:: length
+   :value: 0.0
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: electrical_length_deg(freq: float) -> float
+
+   
+   Electrical length of the meander at the specified frequency.
+
+
+   :Parameters:
+
+       **freq** : :class:`python:float`
+           Frequency in Hz.
+
+   :Returns:
+
+       :class:`python:float`
+           Phase shift in degrees.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create() -> bool
+
+   
+   Draw the meander in the attached EDB cell and calculate its
+   physical length.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True on success.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,293 @@
+
+
+
+
+
+
+The ``submit_batch_jobs.py`` module
+===================================
+
+.. py:module:: pyedb.workflows.job_manager.backend.submit_batch_jobs
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: submit_batch_jobs
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~scan_projects`
+            - Scan a directory for AEDB folders and AEDT files.
+
+
+          * - :py:obj:`~submit_single_job`
+            - Submit a single job to the job manager.
+
+
+          * - :py:obj:`~submit_batch_jobs`
+            - Submit multiple jobs asynchronously to the job manager.
+
+
+          * - :py:obj:`~parse_cli`
+            - Parse command-line arguments.
+
+
+          * - :py:obj:`~main`
+            - Main entry point for the batch job submission script.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Submit multiple HFSS jobs to the local job-manager service by scanning a directory.
+Job submissions are done via REST API asynchronously.
+The service must be running locally (default: localhost:8080) prior to executing this script.
+To start the service, run this command in another terminal:
+    python -m pyedb.workflows.job_manager.backend.job_manager_handler
+
+Usage examples
+--------------
+# Get help
+python submit_batch_jobs.py --help
+
+# Submit all projects in a directory with explicit values
+python submit_batch_jobs.py     --host 127.0.0.1     --port 8080     --root-dir "D:\Temp\test_jobs"     --num-cores 8
+
+# Use defaults (localhost:8080, 8 cores)
+python submit_batch_jobs.py --root-dir "D:\Temp\test_jobs"
+
+# Recursive scan
+python submit_batch_jobs.py --root-dir "D:\Temp\test_jobs" --recursive
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: scan_projects(root_dir: pathlib.Path, recursive: bool = False) -> List[pathlib.Path]
+
+   
+   Scan a directory for AEDB folders and AEDT files.
+
+   For each AEDB folder found, check if a corresponding AEDT file exists.
+   If it does, use the AEDT file; otherwise, use the AEDB folder.
+
+   :Parameters:
+
+       **root_dir** : :obj:`Path`
+           Root directory to scan for projects.
+
+       **recursive** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           If True, scan subdirectories recursively. Default is False.
+
+   :Returns:
+
+       :obj:`List`\[:obj:`Path`]
+           List of project paths (either .aedt files or .aedb folders) to submit.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: submit_single_job(session: aiohttp.ClientSession, backend_url: str, project_path: pathlib.Path, num_cores: int, priority: int = 0) -> tuple[pathlib.Path, bool, Any]
+   :async:
+
+
+   
+   Submit a single job to the job manager.
+
+
+   :Parameters:
+
+       **session** : :obj:`aiohttp.ClientSession`
+           Async HTTP session for making requests.
+
+       **backend_url** : :class:`python:str`
+           Base URL of the job manager service.
+
+       **project_path** : :obj:`Path`
+           Path to the project file or folder.
+
+       **num_cores** : :class:`python:int`
+           Number of CPU cores to allocate.
+
+       **priority** : :class:`python:int`, :obj:`optional`
+           Job priority (default: 0).
+
+   :Returns:
+
+       :class:`python:tuple`\[:obj:`Path`, :ref:`bool <python:bltin-boolean-values>`, :obj:`Any`]
+           Tuple of (project_path, success_flag, response_data).
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: submit_batch_jobs(*, host: str, port: int, projects: List[pathlib.Path], num_cores: int, max_concurrent: int = 5, delay_ms: int = 100) -> None
+   :async:
+
+
+   
+   Submit multiple jobs asynchronously to the job manager.
+
+
+   :Parameters:
+
+       **host** : :class:`python:str`
+           Job manager host address.
+
+       **port** : :class:`python:int`
+           Job manager port.
+
+       **projects** : :obj:`List`\[:obj:`Path`]
+           List of project paths to submit.
+
+       **num_cores** : :class:`python:int`
+           Number of CPU cores to allocate per job.
+
+       **max_concurrent** : :class:`python:int`, :obj:`optional`
+           Maximum number of concurrent submissions (default: 5).
+
+       **delay_ms** : :class:`python:int`, :obj:`optional`
+           Delay in milliseconds between job submissions (default: 100).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: parse_cli() -> argparse.Namespace
+
+   
+   Parse command-line arguments.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: main() -> None
+
+   
+   Main entry point for the batch job submission script.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: logger
+
+
+

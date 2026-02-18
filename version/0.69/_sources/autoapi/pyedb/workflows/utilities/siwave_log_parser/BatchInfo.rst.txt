@@ -1,0 +1,88 @@
+
+
+
+
+
+
+:class:`BatchInfo`
+==================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.BatchInfo
+
+
+.. py:currentmodule:: BatchInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~started`
+            - 
+          * - :py:attr:`~stopped`
+            - 
+          * - :py:attr:`~run_by`
+            - 
+          * - :py:attr:`~temp_dir`
+            - 
+          * - :py:attr:`~project_dir`
+            - 
+          * - :py:attr:`~status`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import BatchInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: path
+   :type:  str
+
+.. py:attribute:: started
+   :type:  datetime.datetime
+
+.. py:attribute:: stopped
+   :type:  datetime.datetime
+
+.. py:attribute:: run_by
+   :type:  str
+
+.. py:attribute:: temp_dir
+   :type:  str
+
+.. py:attribute:: project_dir
+   :type:  str
+
+.. py:attribute:: status
+   :type:  str
+   :value: ''
+
+
+
+
+
+

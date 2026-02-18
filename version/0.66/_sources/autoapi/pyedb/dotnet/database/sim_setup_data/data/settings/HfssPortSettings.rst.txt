@@ -1,0 +1,191 @@
+
+
+
+
+
+
+:class:`HfssPortSettings`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.HfssPortSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for HFSS port settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HfssPortSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~max_delta_z0`
+            - Maximum change to Z0 in successive passes.
+          * - :py:attr:`~max_triangles_wave_port`
+            - Maximum number of triangles allowed for wave ports.
+          * - :py:attr:`~min_triangles_wave_port`
+            - Minimum number of triangles allowed for wave ports.
+          * - :py:attr:`~enable_set_triangles_wave_port`
+            - Whether to enable setting of minimum and maximum mesh limits for wave ports.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import HfssPortSettings
+
+Property detail
+---------------
+
+.. py:property:: max_delta_z0
+
+   
+   Maximum change to Z0 in successive passes.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_triangles_wave_port
+
+   
+   Maximum number of triangles allowed for wave ports.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_triangles_wave_port
+
+   
+   Minimum number of triangles allowed for wave ports.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enable_set_triangles_wave_port
+
+   
+   Whether to enable setting of minimum and maximum mesh limits for wave ports.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if triangles wave port  is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

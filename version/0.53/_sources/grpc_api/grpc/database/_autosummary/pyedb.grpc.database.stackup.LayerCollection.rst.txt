@@ -1,0 +1,116 @@
+﻿LayerCollection
+===============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoclass:: LayerCollection
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      LayerCollection.add_document_layer
+      
+      
+      LayerCollection.add_layer_above
+      
+      
+      LayerCollection.add_layer_below
+      
+      
+      LayerCollection.add_layer_bottom
+      
+      
+      LayerCollection.add_layer_top
+      
+      
+      LayerCollection.add_layers
+      
+      
+      LayerCollection.add_stackup_layer_at_elevation
+      
+      
+      LayerCollection.add_via_layer
+      
+      
+      LayerCollection.add_zone_to_layer
+      
+      
+      LayerCollection.clone
+      
+      
+      LayerCollection.create
+      
+      
+      LayerCollection.find_by_name
+      
+      
+      LayerCollection.get_layers
+      
+      
+      LayerCollection.get_product_property
+      
+      
+      LayerCollection.get_product_property_ids
+      
+      
+      LayerCollection.get_top_bottom_stackup_layers
+      
+      
+      LayerCollection.get_zone_name
+      
+      
+      LayerCollection.import_from_control_file
+      
+      
+      LayerCollection.insert_zone
+      
+      
+      LayerCollection.is_valid
+      
+      
+      LayerCollection.merge_dielectrics
+      
+      
+      LayerCollection.remove_zone
+      
+      
+      LayerCollection.set_product_property
+      
+      
+      LayerCollection.set_zone_name
+      
+      
+      LayerCollection.simplify_dielectrics_for_phi
+      
+      
+      LayerCollection.update_layout
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      LayerCollection.all_layers
+      LayerCollection.dielectric_layers
+      LayerCollection.id
+      LayerCollection.is_null
+      LayerCollection.layers
+      LayerCollection.layers_by_id
+      LayerCollection.mode
+      LayerCollection.msg
+      LayerCollection.non_stackup_layers
+      LayerCollection.signal_layers
+      LayerCollection.zone_ids
+   
+   

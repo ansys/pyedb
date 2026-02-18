@@ -1,0 +1,127 @@
+
+
+
+
+
+
+:class:`MinLineWidth`
+=====================
+
+
+.. py:class:: pyedb.workflows.drc.drc.MinLineWidth(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Minimum-line-width rule.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MinLineWidth
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Rule identifier (human readable).
+          * - :py:attr:`~value`
+            - Minimum width with unit, e.g. ``"3.5mil"``.
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import MinLineWidth
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+   
+   Rule identifier (human readable).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:attribute:: value
+   :type:  str
+
+   
+   Minimum width with unit, e.g. ``"3.5mil"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+

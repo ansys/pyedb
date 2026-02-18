@@ -1,0 +1,463 @@
+
+
+
+
+
+
+:class:`HFSSSettingsOptions`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions(_pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSSettingsOptions)
+
+   
+   PyEDB-core HFSS settings options class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSSettingsOptions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~do_lambda_refine`
+            - Flag to enable/disable lambda refinement.
+          * - :py:attr:`~enhanced_low_frequency_accuracy`
+            - Flag to enable/disable enhanced low frequency accuracy.
+          * - :py:attr:`~lambda_target`
+            - Lambda target value.
+          * - :py:attr:`~max_refinement_per_pass`
+            - Maximum refinement per pass.
+          * - :py:attr:`~mesh_size_factor`
+            - Mesh size factor.
+          * - :py:attr:`~min_converged_passes`
+            - Minimum converged passes.
+          * - :py:attr:`~min_passes`
+            - Minimum passes.
+          * - :py:attr:`~order_basis`
+            - Order basis name.
+          * - :py:attr:`~relative_residual`
+            - Relative residual value that the HFSS iterative solver is to use.
+          * - :py:attr:`~solver_type`
+            - 
+          * - :py:attr:`~use_default_lambda_value`
+            - Flag to indicate whether to use the default lambda value.
+          * - :py:attr:`~use_max_refinement`
+            - Flag to indicate whether to use maximum refinement.
+          * - :py:attr:`~use_shell_elements`
+            - Flag to indicate whether to use shell elements.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_settings_options import HFSSSettingsOptions
+
+Property detail
+---------------
+
+.. py:property:: do_lambda_refine
+   :type: bool
+
+
+   
+   Flag to enable/disable lambda refinement.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if lambda refinement is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enhanced_low_frequency_accuracy
+   :type: bool
+
+
+   
+   Flag to enable/disable enhanced low frequency accuracy.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if enhanced low frequency accuracy is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: lambda_target
+   :type: float
+
+
+   
+   Lambda target value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Lambda target value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_refinement_per_pass
+   :type: int
+
+
+   
+   Maximum refinement per pass.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum refinement per pass.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_size_factor
+   :type: float
+
+
+   
+   Mesh size factor.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Mesh size factor.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_converged_passes
+   :type: int
+
+
+   
+   Minimum converged passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum converged passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_passes
+   :type: int
+
+
+   
+   Minimum passes.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Minimum passes.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: order_basis
+   :type: str
+
+
+   
+   Order basis name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Order basis name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_residual
+   :type: float
+
+
+   
+   Relative residual value that the HFSS iterative solver is to use.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Relative residual value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver_type
+
+.. py:property:: use_default_lambda_value
+   :type: bool
+
+
+   
+   Flag to indicate whether to use the default lambda value.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if using the default lambda value, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_max_refinement
+   :type: float
+
+
+   
+   Flag to indicate whether to use maximum refinement.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if using maximum refinement, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_shell_elements
+   :type: bool
+
+
+   
+   Flag to indicate whether to use shell elements.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if using shell elements, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

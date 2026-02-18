@@ -1,0 +1,35 @@
+﻿SkinDepthMeshOperation
+======================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+.. autoclass:: SkinDepthMeshOperation
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SkinDepthMeshOperation.enabled
+      SkinDepthMeshOperation.max_elements
+      SkinDepthMeshOperation.mesh_operation_type
+      SkinDepthMeshOperation.mesh_region
+      SkinDepthMeshOperation.name
+      SkinDepthMeshOperation.net_layer_info
+      SkinDepthMeshOperation.nets_layers_list
+      SkinDepthMeshOperation.number_of_layer_elements
+      SkinDepthMeshOperation.number_of_layers
+      SkinDepthMeshOperation.refine_inside
+      SkinDepthMeshOperation.restrict_max_elements
+      SkinDepthMeshOperation.skin_depth
+      SkinDepthMeshOperation.surface_triangle_length
+      SkinDepthMeshOperation.type
+   
+   

@@ -1,0 +1,6 @@
+layer\_range\_names
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.layer_range_names

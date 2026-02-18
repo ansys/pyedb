@@ -1,0 +1,136 @@
+
+
+
+
+
+
+:class:`SimSetupInfo`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.sim_setup_info.SimSetupInfo(pedb, sim_setup, edb_object=None, setup_type: str = None, name: str = None)
+
+
+.. py:currentmodule:: SimSetupInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_sweep_data`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~position`
+            - 
+          * - :py:attr:`~sim_setup_type`
+            - "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
+          * - :py:attr:`~simulation_settings`
+            - 
+          * - :py:attr:`~sweep_data_list`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sim_setup`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
+
+Property detail
+---------------
+
+.. py:property:: name
+
+.. py:property:: position
+
+.. py:property:: sim_setup_type
+
+   
+   "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
+   "kPEM": None,
+   "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
+   "kLNA": None,
+   "kTransient": None,
+   "kQEye": None,
+   "kVEye": None,
+   "kAMI": None,
+   "kAnalysisOption": None,
+   "kSIwaveDCIR": self._pedb.simsetupdata.SIwave.SIWDCIRSimulationSettings,
+   "kSIwaveEMI": None,
+   "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+   "kDDRwizard": None,
+   "kQ3D": None,
+   "kNumSetupTypes": None,
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: simulation_settings
+
+.. py:property:: sweep_data_list
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: sim_setup
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_sweep_data(sweep_data)
+
+
+
+

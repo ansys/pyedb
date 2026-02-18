@@ -1,0 +1,258 @@
+
+
+
+
+
+
+:class:`EdbExtendedNets`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.net_class.EdbExtendedNets(p_edb)
+
+   Bases: :py:obj:`EdbCommon`, :py:obj:`object`
+
+
+   
+   Manages EDB methods for managing nets accessible from the ``Edb.extended_nets`` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_nets = edbapp.extended_nets
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EdbExtendedNets
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new Extended net.
+          * - :py:attr:`~auto_identify_signal`
+            - Get extended signal net and associated components.
+          * - :py:attr:`~auto_identify_power`
+            - Get all extended power nets and their associated components.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~items`
+            - Extended nets.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.net_class import EdbExtendedNets
+
+Property detail
+---------------
+
+.. py:property:: items
+
+   
+   Extended nets.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`]
+           Dictionary of extended nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name: str, net: str | list) -> pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetData
+
+   
+   Create a new Extended net.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the extended net.
+
+       **net** : :class:`python:str`, :class:`python:list`
+           Name of the nets to be added into this extended net.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_identify_signal(resistor_below: int | float = 10, inductor_below: int | float = 1, capacitor_above: int | float = 1e-09, exception_list: list = None) -> list
+
+   
+   Get extended signal net and associated components.
+
+
+   :Parameters:
+
+       **resistor_below** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold for the resistor value. Search the extended net across resistors that
+           have a value lower than the threshold.
+
+       **inductor_below** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold for the inductor value. Search the extended net across inductances
+           that have a value lower than the threshold.
+
+       **capacitor_above** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold for the capacitor value. Search the extended net across capacitors
+           that have a value higher than the threshold.
+
+       **exception_list** : :class:`python:list`, :obj:`optional`
+           List of components to bypass when performing threshold checks. Components
+           in the list are considered as serial components. The default is ``None``.
+
+   :Returns:
+
+       :class:`python:list`
+           List of all extended nets.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> app = Edb()
+   >>> app.extended_nets.auto_identify_signal()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_identify_power(resistor_below: int | float = 10, inductor_below: int | float = 1, capacitor_above: int | float = 1, exception_list: list = None) -> list
+
+   
+   Get all extended power nets and their associated components.
+
+
+   :Parameters:
+
+       **resistor_below** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold for the resistor value. Search the extended net across resistors that
+           have a value lower than the threshold.
+
+       **inductor_below** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold for the inductor value. Search the extended net across inductances that
+           have a value lower than the threshold.
+
+       **capacitor_above** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold for the capacitor value. Search the extended net across capacitors that
+           have a value higher than the threshold.
+
+       **exception_list** : :class:`python:list`, :obj:`optional`
+           List of components to bypass when performing threshold checks. Components
+           in the list are considered as serial components. The default is ``None``.
+
+   :Returns:
+
+       :class:`python:list`
+           List of all extended nets and their associated components.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> app = Edb()
+   >>> app.extended_nets.auto_identify_power()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

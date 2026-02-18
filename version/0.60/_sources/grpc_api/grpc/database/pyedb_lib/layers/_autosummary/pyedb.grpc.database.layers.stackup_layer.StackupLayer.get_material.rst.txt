@@ -1,0 +1,6 @@
+get\_material
+=============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. automethod:: StackupLayer.get_material

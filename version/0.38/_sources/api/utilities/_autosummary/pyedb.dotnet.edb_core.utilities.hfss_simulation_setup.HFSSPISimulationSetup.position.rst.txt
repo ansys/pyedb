@@ -1,0 +1,6 @@
+position
+========
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.hfss_simulation_setup
+
+.. autoproperty:: HFSSPISimulationSetup.position

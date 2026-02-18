@@ -1,0 +1,343 @@
+
+
+
+
+
+
+:class:`PathDotNet`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.PathDotNet(api, prim_obj=None)
+
+   Bases: :py:obj:`PrimitiveDotNet`
+
+
+   
+   Class representing a path object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PathDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a path.
+          * - :py:attr:`~expand`
+            - Expand the polygon shape by an absolute value in all direction.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~center_line`
+            - :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Center line for this Path.
+          * - :py:attr:`~get_clip_info`
+            - Get data used to clip the path.
+          * - :py:attr:`~corner_style`
+            - :class:`PathCornerType`: Path's corner style.
+          * - :py:attr:`~width`
+            - :class:`Value <ansys.edb.utility.Value>`: Path width.
+          * - :py:attr:`~miter_ratio`
+            - :class:`Value <ansys.edb.utility.Value>`: Miter ratio.
+          * - :py:attr:`~can_be_zone_primitive`
+            - :obj:`bool`: If a path can be a zone.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import PathDotNet
+
+Property detail
+---------------
+
+.. py:property:: center_line
+
+   
+   :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Center line for this Path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: get_clip_info
+
+   
+   Get data used to clip the path.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`PolygonData <ansys.edb.geometry.PolygonData>`, :ref:`bool <python:bltin-boolean-values>`]
+           Returns a tuple of the following format:
+           
+           **(clipping_poly, keep_inside)**
+           
+           **clipping_poly** : PolygonData used to clip the path.
+           
+           **keep_inside** : Indicates whether the part of the path inside the polygon is preserved.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: corner_style
+
+   
+   :class:`PathCornerType`: Path's corner style.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: width
+
+   
+   :class:`Value <ansys.edb.utility.Value>`: Path width.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: miter_ratio
+
+   
+   :class:`Value <ansys.edb.utility.Value>`: Miter ratio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: can_be_zone_primitive
+
+   
+   :obj:`bool`: If a path can be a zone.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer, net, width, end_cap1, end_cap2, corner_style, points)
+
+   
+   Create a path.
+
+
+   :Parameters:
+
+       **layout** : :class:`Layout <ansys.edb.layout.Layout>`
+           Layout this Path will be in.
+
+       **layer** : :class:`python:str` or :class:`Layer <ansys.edb.layer.Layer>`
+           Layer this Path will be on.
+
+       **net** : :class:`python:str` or :class:`Net <ansys.edb.net.Net>` or :data:`python:None`
+           Net this Path will have.
+
+       **width: :class:`Value <ansys.edb.utility.Value>`**
+           Path width.
+
+       **end_cap1: :class:`PathEndCapType`**
+           End cap style of path start end cap.
+
+       **end_cap2: :class:`PathEndCapType`**
+           End cap style of path end end cap.
+
+       **corner_style: :class:`PathCornerType`**
+           Corner style.
+
+       **points** : :class:`PolygonData <ansys.edb.geometry.PolygonData>` or :obj:`center` :obj:`line` :obj:`point` list.
+           Centerline polygonData to set.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.primitive.PathDotNet`
+           Path object created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: expand(offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001)
+
+   
+   Expand the polygon shape by an absolute value in all direction.
+   Offset can be negative for negative expansion.
+
+
+   :Parameters:
+
+       **offset** : :class:`python:float`, :obj:`optional`
+           Offset value in meters.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters. Ignored for Circle and Path.
+
+       **round_corners** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to round corners or not.
+           If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+            Ignored for Circle and Path.
+
+       **maximum_corner_extension** : :class:`python:float`, :obj:`optional`
+           The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+            Ignored for Circle and Path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

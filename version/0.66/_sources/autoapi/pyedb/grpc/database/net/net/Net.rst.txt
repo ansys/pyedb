@@ -1,0 +1,554 @@
+
+
+
+
+
+
+:class:`Net`
+============
+
+
+.. py:class:: pyedb.grpc.database.net.net.Net(pedb, raw_net)
+
+   
+   Manages EDB functionalities for net objects and their primitives.
+
+   Inherits properties from EDB objects and provides additional functionality
+   specific to nets.
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.Edb`
+           Main EDB object.
+
+       **raw_net**
+           Raw net object from gRPC.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2021.2")
+   >>> edb_net = edb.nets["GND"]
+   >>> edb_net.name
+   'GND'
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: Net
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new net in the EDB database.
+          * - :py:attr:`~find_by_name`
+            - Find a net by name in a given layout.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_dc_short`
+            - Find DC-shorted nets connected to this net.
+          * - :py:attr:`~plot`
+            - Plot the net using Matplotlib.
+          * - :py:attr:`~get_smallest_trace_width`
+            - Get the minimum trace width from path primitives in this net.
+          * - :py:attr:`~delete`
+            - Delete the net from the EDB database.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Name of the net.
+          * - :py:attr:`~is_null`
+            - Check if the net is a null net.
+          * - :py:attr:`~is_power_ground`
+            - Check if the net is a power or ground net.
+          * - :py:attr:`~primitives`
+            - All primitives belonging to this net.
+          * - :py:attr:`~padstack_instances`
+            - All padstack instances belonging to this net.
+          * - :py:attr:`~components`
+            - Components connected to this net.
+          * - :py:attr:`~extended_net`
+            - Extended net associated with this net.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.net.net import Net
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Name of the net.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the net is a null net.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the net is a null net, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_power_ground
+
+   
+   Check if the net is a power or ground net.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the net is a power or ground net, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives
+   :type: list[Union[pyedb.grpc.database.primitive.path.Path, pyedb.grpc.database.primitive.polygon.Polygon, pyedb.grpc.database.primitive.circle.Circle, pyedb.grpc.database.primitive.rectangle.Rectangle, pyedb.grpc.database.primitive.bondwire.Bondwire]]
+
+
+   
+   All primitives belonging to this net.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of primitive objects which can be one of:
+           - :class:`Path <pyedb.grpc.database.primitive.path.Path>`
+           - :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+           - :class:`Circle <pyedb.grpc.database.primitive.circle.Circle>`
+           - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
+           - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: padstack_instances
+   :type: list[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   All padstack instances belonging to this net.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+           Padstack instances associated with the net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+   :type: dict[str, any]
+
+
+   
+   Components connected to this net.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of components keyed by component name, with values as
+           :class:`Component <pyedb.grpc.database.hierarchy.component.Component>` objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: extended_net
+
+   
+   Extended net associated with this net.
+
+
+
+   :Returns:
+
+       :class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>` or :data:`python:None`
+           Extended net object if exists, otherwise ``None``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb.nets["BST_V3P3_S5"].extended_net
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, name: str)
+   :classmethod:
+
+
+   
+   Create a new net in the EDB database.
+   Parameters
+   ----------
+   layout : :class:`pyedb.grpc.database.layout.layout.Layout`
+       Layout to create the net in.
+   name : str
+       Name of the new net.
+
+
+
+   :Returns:
+
+       :class:`Net <pyedb.grpc.database.net.net.Net>`
+           Newly created net object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_dc_short(fix=False) -> list[list[str, str]]
+
+   
+   Find DC-shorted nets connected to this net.
+
+
+   :Parameters:
+
+       **fix** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to automatically rename nets to resolve shorts.
+           Default: ``False`` (only report shorts).
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:list`\[:class:`python:str`]]
+           List of shorted net pairs in the format [[net_name1, net_name2], ...].
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: plot(layers=None, show_legend=True, save_plot=None, outline=None, size=(2000, 1000), show=True, title=None)
+
+   
+   Plot the net using Matplotlib.
+
+
+   :Parameters:
+
+       **layers** : :class:`python:str` or :class:`python:list`\[:class:`python:str`], :obj:`optional`
+           Layer name(s) to include. If ``None``, uses all signal layers.
+
+       **show_legend** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Enable legend display. Default: ``True``.
+
+       **save_plot** : :class:`python:str`, :obj:`optional`
+           Full path to save the plot image. If specified, overrides ``show``.
+
+       **outline** : :class:`python:list`, :obj:`optional`
+           Outline points for plot boundary.
+
+       **size** : :class:`python:tuple`, :obj:`optional`
+           Image dimensions in pixels (width, height). Default: (2000, 1000).
+
+       **show** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Display the plot. Default: ``True``.
+
+       **title** : :class:`python:str`, :obj:`optional`
+           Plot title. Uses net name if ``None``. Default: ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_smallest_trace_width() -> float
+
+   
+   Get the minimum trace width from path primitives in this net.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Smallest width found in database units. Returns 1e10 if no paths exist.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete the net from the EDB database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_by_name(layout, name)
+   :classmethod:
+
+
+   
+   Find a net by name in a given layout.
+
+
+   :Parameters:
+
+       **layout** : :class:`.Layout`
+           Layout to search for the net.
+
+       **name** : :class:`python:str`
+           Name of net.
+
+   :Returns:
+
+       :obj:`Net`
+           Net found. Check the :obj:`is_null <.Net.is_null>` property
+           of the returned net to see if it exists.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

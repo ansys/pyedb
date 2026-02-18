@@ -1,0 +1,110 @@
+
+
+
+
+
+
+:class:`CfgCircuitElement`
+==========================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgCircuitElement(pedb, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+
+.. py:currentmodule:: CfgCircuitElement
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_terminals`
+            - Create step 1. Collect positive and negative terminals.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~impedance`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~distributed`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgCircuitElement
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: type
+
+.. py:attribute:: impedance
+
+.. py:attribute:: reference_designator
+
+.. py:attribute:: distributed
+
+
+
+Method detail
+-------------
+
+.. py:method:: create_terminals()
+
+   
+   Create step 1. Collect positive and negative terminals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

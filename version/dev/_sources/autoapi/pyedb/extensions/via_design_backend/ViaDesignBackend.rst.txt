@@ -1,0 +1,76 @@
+
+
+
+
+
+
+:class:`ViaDesignBackend`
+=========================
+
+
+.. py:class:: pyedb.extensions.via_design_backend.ViaDesignBackend(cfg)
+
+
+.. py:currentmodule:: ViaDesignBackend
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~output_dir`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~version`
+            - 
+          * - :py:attr:`~app`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.extensions.via_design_backend import ViaDesignBackend
+
+Property detail
+---------------
+
+.. py:property:: output_dir
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: version
+
+.. py:attribute:: app
+   :value: None
+
+
+
+
+
+

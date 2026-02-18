@@ -1,0 +1,1097 @@
+
+
+
+
+
+
+:class:`Variable`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.Variables.Variable(expression, units=None, si_value=None, full_variables=None, name=None, app=None, readonly=False, hidden=False, description=None, postprocessing=False, circuit_parameter=True)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Stores design properties and project variables and provides operations to perform on them.
+
+
+   :Parameters:
+
+       **value** : :class:`python:float`, :class:`python:str`
+           Numerical value of the variable in SI units.
+
+       **units** : :class:`python:str`
+           Units for the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.dotnet.database.Variables import Variable
+
+   Define a variable using a string value consistent with the AEDT properties.
+
+   >>> v = Variable("45mm")
+
+   Define an unitless variable with a value of 3.0.
+
+   >>> v = Variable(3.0)
+
+   Define a variable defined by a numeric result and a unit string.
+
+   >>> v = Variable(3.0 * 4.5, units="mm")
+   >>> assert v.numeric_value = 13.5
+   >>> assert v.units = "mm"
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+.. py:currentmodule:: Variable
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~decompose`
+            - Decompose a variable value to a floating with its unit.
+          * - :py:attr:`~rescale_to`
+            - Rescale the expression to a new unit within the current unit system.
+          * - :py:attr:`~format`
+            - Retrieve the string value with the specified numerical formatting.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Variable name.
+          * - :py:attr:`~is_optimization_enabled`
+            - "Check if optimization is enabled.
+          * - :py:attr:`~optimization_min_value`
+            - "Optimization min value.
+          * - :py:attr:`~optimization_max_value`
+            - "Optimization max value.
+          * - :py:attr:`~is_sensitivity_enabled`
+            - Check if Sensitivity is enabled.
+          * - :py:attr:`~sensitivity_min_value`
+            - "Sensitivity min value.
+          * - :py:attr:`~sensitivity_max_value`
+            - "Sensitivity max value.
+          * - :py:attr:`~sensitivity_initial_disp`
+            - "Sensitivity initial value.
+          * - :py:attr:`~is_tuning_enabled`
+            - Check if tuning is enabled.
+          * - :py:attr:`~tuning_min_value`
+            - "Tuning min value.
+          * - :py:attr:`~tuning_max_value`
+            - "Tuning max value.
+          * - :py:attr:`~tuning_step_value`
+            - "Tuning Step value.
+          * - :py:attr:`~is_statistical_enabled`
+            - Check if statistical is enabled.
+          * - :py:attr:`~read_only`
+            - Read-only flag value.
+          * - :py:attr:`~hidden`
+            - Hidden flag value.
+          * - :py:attr:`~description`
+            - Description value.
+          * - :py:attr:`~post_processing`
+            - Postprocessing flag value.
+          * - :py:attr:`~circuit_parameter`
+            - Circuit parameter flag value.
+          * - :py:attr:`~expression`
+            - Expression.
+          * - :py:attr:`~numeric_value`
+            - Numeric part of the expression as a float value.
+          * - :py:attr:`~unit_system`
+            - Unit system of the expression as a string.
+          * - :py:attr:`~units`
+            - Units.
+          * - :py:attr:`~value`
+            - Value.
+          * - :py:attr:`~evaluated_value`
+            - String value.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__rmul__`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__mul__`
+            - Multiply the variable with a number or another variable and return a new object.
+          * - :py:attr:`~__add__`
+            - Add the variable to another variable to return a new object.
+          * - :py:attr:`~__sub__`
+            - Subtract another variable from the variable to return a new object.
+          * - :py:attr:`~__truediv__`
+            - Divide the variable by a number or another variable to return a new object.
+          * - :py:attr:`~__div__`
+            - 
+          * - :py:attr:`~__rtruediv__`
+            - Divide another object by this object.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.Variables import Variable
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Variable name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_optimization_enabled
+
+   
+   "Check if optimization is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: optimization_min_value
+
+   
+   "Optimization min value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: optimization_max_value
+
+   
+   "Optimization max value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_sensitivity_enabled
+
+   
+   Check if Sensitivity is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sensitivity_min_value
+
+   
+   "Sensitivity min value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sensitivity_max_value
+
+   
+   "Sensitivity max value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sensitivity_initial_disp
+
+   
+   "Sensitivity initial value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_tuning_enabled
+
+   
+   Check if tuning is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: tuning_min_value
+
+   
+   "Tuning min value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: tuning_max_value
+
+   
+   "Tuning max value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: tuning_step_value
+
+   
+   "Tuning Step value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_statistical_enabled
+
+   
+   Check if statistical is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: read_only
+
+   
+   Read-only flag value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hidden
+
+   
+   Hidden flag value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: description
+
+   
+   Description value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: post_processing
+
+   
+   Postprocessing flag value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: circuit_parameter
+
+   
+   Circuit parameter flag value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: expression
+
+   
+   Expression.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: numeric_value
+
+   
+   Numeric part of the expression as a float value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: unit_system
+
+   
+   Unit system of the expression as a string.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: units
+
+   
+   Units.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: value
+
+   
+   Value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: evaluated_value
+
+   
+   String value.
+
+   The numeric value with the unit is concatenated and returned as a string. The numeric display
+   in the modeler and the string value can differ. For example, you might see ``10mm`` in the
+   modeler and see ``10.0mm`` returned as the string value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: __rmul__
+
+
+
+Method detail
+-------------
+
+.. py:method:: decompose()
+
+   
+   Decompose a variable value to a floating with its unit.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The float value of the variable and the units exposed as a string.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> hfss = Hfss()
+   >>> hfss["v1"] = "3N"
+   >>> print(hfss.variable_manager["v1"].decompose("v1"))
+   >>> (3.0, "N")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rescale_to(units)
+
+   
+   Rescale the expression to a new unit within the current unit system.
+
+
+   :Parameters:
+
+       **units** : :class:`python:str`
+           Units to rescale to.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.dotnet.database.Variables import Variable
+
+   >>> v = Variable("10W")
+   >>> assert v.numeric_value == 10
+   >>> assert v.units == "W"
+   >>> v.rescale_to("kW")
+   >>> assert v.numeric_value == 0.01
+   >>> assert v.units == "kW"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: format(format)
+
+   
+   Retrieve the string value with the specified numerical formatting.
+
+
+   :Parameters:
+
+       **format** : :class:`python:str`
+           Format for the numeric value of the string. For example, ``'06.2f'``. For
+           more information, see the `PyFormat documentation <https://pyformat.info/>`_.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           String value with the specified numerical formatting.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.dotnet.database.Variables import Variable
+
+   >>> v = Variable("10W")
+   >>> assert v.format("f") == "10.000000W"
+   >>> assert v.format("06.2f") == "010.00W"
+   >>> assert v.format("6.2f") == " 10.00W"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __mul__(other)
+
+   
+   Multiply the variable with a number or another variable and return a new object.
+
+
+   :Parameters:
+
+       **other** : :obj:`numbers.Number` or :obj:`variable`
+           Object to be multiplied.
+
+
+
+   :Returns:
+
+       :obj:`type`
+           Variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.dotnet.database.Variables import Variable
+
+   Multiply ``'Length1'`` by unitless ``'None'``` to obtain ``'Length'``.
+   A numerical value is also considered to be unitless.
+
+   >>> import ansys.aedt.core.generic.constants
+   >>> v1 = Variable("10mm")
+   >>> v2 = Variable(3)
+   >>> result_1 = v1 * v2
+   >>> result_2 = v1 * 3
+   >>> assert result_1.numeric_value == 30.0
+   >>> assert result_1.unit_system == "Length"
+   >>> assert result_2.numeric_value == result_1.numeric_value
+   >>> assert result_2.unit_system == "Length"
+
+   Multiply voltage times current to obtain power.
+
+   >>> import ansys.aedt.core.generic.constants
+   >>> v3 = Variable("3mA")
+   >>> v4 = Variable("40V")
+   >>> result_3 = v3 * v4
+   >>> assert result_3.numeric_value == 0.12
+   >>> assert result_3.units == "W"
+   >>> assert result_3.unit_system == "Power"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __add__(other)
+
+   
+   Add the variable to another variable to return a new object.
+
+
+   :Parameters:
+
+       **other** : class:`pyedb.dotnet.database.Variables.Variable`
+           Object to be multiplied.
+
+
+
+   :Returns:
+
+       :obj:`type`
+           Variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.dotnet.database.Variables import Variable
+   >>> import ansys.aedt.core.generic.constants
+   >>> v1 = Variable("3mA")
+   >>> v2 = Variable("10A")
+   >>> result = v1 + v2
+   >>> assert result.numeric_value == 10.003
+   >>> assert result.units == "A"
+   >>> assert result.unit_system == "Current"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __sub__(other)
+
+   
+   Subtract another variable from the variable to return a new object.
+
+
+   :Parameters:
+
+       **other** : class:`pyedb.dotnet.database.Variables.Variable`
+           Object to be subtracted.
+
+
+
+   :Returns:
+
+       :obj:`type`
+           Variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> import ansys.aedt.core.generic.constants
+   >>> from pyedb.dotnet.database.Variables import Variable
+   >>> v3 = Variable("3mA")
+   >>> v4 = Variable("10A")
+   >>> result_2 = v3 - v4
+   >>> assert result_2.numeric_value == -9.997
+   >>> assert result_2.units == "A"
+   >>> assert result_2.unit_system == "Current"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __truediv__(other)
+
+   
+   Divide the variable by a number or another variable to return a new object.
+
+
+   :Parameters:
+
+       **other** : :obj:`numbers.Number` or :obj:`variable`
+           Object by which to divide.
+
+
+
+   :Returns:
+
+       :obj:`type`
+           Variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Divide a variable with units ``"W"`` by a variable with units ``"V"`` and automatically
+   resolve the new units to ``"A"``.
+
+   >>> from pyedb.dotnet.database.Variables import Variable
+   >>> import ansys.aedt.core.generic.constants
+   >>> v1 = Variable("10W")
+   >>> v2 = Variable("40V")
+   >>> result = v1 / v2
+   >>> assert result_1.numeric_value == 0.25
+   >>> assert result_1.units == "A"
+   >>> assert result_1.unit_system == "Current"
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __div__(other)
+
+.. py:method:: __rtruediv__(other)
+
+   
+   Divide another object by this object.
+
+
+   :Parameters:
+
+       **other** : :obj:`numbers.Number` or :obj:`variable`
+           Object to divide by.
+
+
+
+   :Returns:
+
+       :obj:`type`
+           Variable.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Divide a number by a variable with units ``"s"`` and automatically determine that
+   the result is in ``"Hz"``.
+
+   >>> import ansys.aedt.core.generic.constants
+   >>> from pyedb.dotnet.database.Variables import Variable
+   >>> v = Variable("1s")
+   >>> result = 3.0 / v
+   >>> assert result.numeric_value == 3.0
+   >>> assert result.units == "Hz"
+   >>> assert result.unit_system == "Freq"
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,203 @@
+
+
+
+
+
+
+:class:`HierarchyDotNet`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.HierarchyDotNet(app)
+
+   
+   Hierarchy.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: HierarchyDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+          * - :py:attr:`~component`
+            - Edb Dotnet Api Database `Edb.Cell.Hierarchy.Component`.
+          * - :py:attr:`~cell_instance`
+            - Edb Dotnet Api Database `Edb.Cell.Hierarchy.CellInstance`.
+          * - :py:attr:`~pin_group`
+            - Edb Dotnet Api Database `Edb.Cell.Hierarchy.PinGroup`.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import HierarchyDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component
+
+   
+   Edb Dotnet Api Database `Edb.Cell.Hierarchy.Component`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cell_instance
+
+   
+   Edb Dotnet Api Database `Edb.Cell.Hierarchy.CellInstance`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_group
+
+   
+   Edb Dotnet Api Database `Edb.Cell.Hierarchy.PinGroup`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(key)
+
+
+
+

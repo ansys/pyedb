@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`RadiationBoxType`
+=========================
+
+
+.. py:class:: pyedb.generic.constants.RadiationBoxType
+
+   Bases: :py:obj:`object`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import RadiationBoxType
+
+
+
+
+

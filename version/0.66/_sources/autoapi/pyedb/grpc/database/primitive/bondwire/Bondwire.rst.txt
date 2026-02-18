@@ -1,0 +1,452 @@
+
+
+
+
+
+
+:class:`Bondwire`
+=================
+
+
+.. py:class:: pyedb.grpc.database.primitive.bondwire.Bondwire(_pedb, edb_object)
+
+   
+   Class representing a bond-wire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Bondwire
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a bondwire object.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_material`
+            - Get the bondwire material.
+          * - :py:attr:`~set_material`
+            - Set the bondwire material.
+          * - :py:attr:`~get_definition_name`
+            - Get the bondwire definition name.
+          * - :py:attr:`~set_definition_name`
+            - Set the bondwire definition name.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~edb_uid`
+            - 
+          * - :py:attr:`~material`
+            - Bondwire material
+          * - :py:attr:`~type`
+            - str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
+          * - :py:attr:`~cross_section_type`
+            - str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
+          * - :py:attr:`~cross_section_height`
+            - float: Bondwire-cross-section height of a bondwire object.
+          * - :py:attr:`~width`
+            - :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.bondwire import Bondwire
+
+Property detail
+---------------
+
+.. py:property:: id
+
+.. py:property:: edb_uid
+
+.. py:property:: material
+
+   
+   Bondwire material
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+   
+   str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
+   `"num_of_type"`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_section_type
+
+   
+   str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
+   `"rectangle"`
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           cross section type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cross_section_height
+
+   
+   float: Bondwire-cross-section height of a bondwire object.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Cross section height.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: width
+
+   
+   :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Width value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, definition_name: str, placement_layer: str, start_layer_name: str, start_x: float, start_y: float, end_layer_name: str, end_x: float, end_y: float, net: str, material: str = 'copper', bondwire_type: str = 'jedec4', width=3e-05, start_cell_inst=None, end_cell_inst=None) -> Bondwire
+   :classmethod:
+
+
+   
+   Create a bondwire object.
+
+
+   :Parameters:
+
+       **layout** : :class: <Layout `pyedb.grpc.database.layout.layout.Layout`>
+           Layout object associated with the bondwire.
+
+       **bondwire_type** : :class:`python:str`, :obj:`optional`
+           Type of bondwire. Supported values are `"jedec4"`, `"jedec5"`, and `"apd"`. Default is `"jedec4"`.
+
+       **definition_name** : :class:`python:str`
+           Definition name of the bondwire. Default is an empty string.
+
+       **placement_layer** : :class:`python:str`
+           Placement layer name of the bondwire.
+
+       **width** : :class:`python:float`, :obj:`optional`
+           Width of the bondwire. Default is 30um.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Material of the bondwire. Default is "copper".
+
+       **start_layer_name** : :class:`python:str`, :obj:`optional`
+           Start layer name of the bondwire. Default is None.
+
+       **start_x** : :class:`python:float`, :obj:`optional`
+           X-coordinate of the start point of the bondwire. Default is 0.0.
+
+       **start_y** : :class:`python:float`, :obj:`optional`
+           Y-coordinate of the start point of the bondwire. Default is 0.0.
+
+       **end_layer_name** : :class:`python:str`, :obj:`optional`
+           End layer name of the bondwire. Default is None.
+
+       **end_x** : :class:`python:float`, :obj:`optional`
+           X-coordinate of the end point of the bondwire. Default is 0.0.
+
+       **end_y** : :class:`python:float`, :obj:`optional`
+           Y-coordinate of the end point of the bondwire. Default is 0.0.
+
+       **net** : :class: <Net `pyedb.grpc.database.net.net.Net`>,
+           Net object associated with the bondwire. Default is None.
+
+       **start_cell_inst** : :class: <Component `pyedb.grpc.database.hierarchy.component
+           .Component`>, optional
+           Start cell instance context for the bondwire. Default is None.
+
+       **end_cell_inst** : :class: <Component
+           `pyedb.grpc.database.hierarchy.component.Component`>, optional
+           End cell instance context for the bondwire. Default is None.
+
+   :Returns:
+
+       :obj:`Bondwire`
+           The created bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_material()
+
+   
+   Get the bondwire material.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_material(material)
+
+   
+   Set the bondwire material.
+
+
+   :Parameters:
+
+       **material** : :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_definition_name() -> str
+
+   
+   Get the bondwire definition name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Definition name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_definition_name(definition_name)
+
+   
+   Set the bondwire definition name.
+
+
+   :Parameters:
+
+       **definition_name** : :class:`python:str`
+           Definition name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

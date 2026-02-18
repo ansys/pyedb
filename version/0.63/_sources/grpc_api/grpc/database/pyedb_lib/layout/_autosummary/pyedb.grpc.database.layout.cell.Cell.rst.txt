@@ -1,0 +1,91 @@
+﻿Cell
+====
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoclass:: Cell
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Cell.add_menu_variable
+      
+      
+      Cell.add_variable
+      
+      
+      Cell.create
+      
+      
+      Cell.create_value
+      
+      
+      Cell.cutout
+      
+      
+      Cell.delete
+      
+      
+      Cell.delete_simulation_setup
+      
+      
+      Cell.delete_variable
+      
+      
+      Cell.find
+      
+      
+      Cell.generate_auto_hfss_regions
+      
+      
+      Cell.generate_via_smart_box
+      
+      
+      Cell.get_all_variable_names
+      
+      
+      Cell.get_product_property
+      
+      
+      Cell.get_product_property_ids
+      
+      
+      Cell.get_variable_desc
+      
+      
+      Cell.get_variable_value
+      
+      
+      Cell.is_parameter
+      
+      
+      Cell.set_hfss_extent_info
+      
+      
+      Cell.set_product_property
+      
+      
+      Cell.set_variable_desc
+      
+      
+      Cell.set_variable_value
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Cell.layout_obj_type
+   
+   

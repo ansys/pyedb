@@ -1,0 +1,40 @@
+﻿CfgCutout
+=========
+
+.. currentmodule:: pyedb.configuration.cfg_operations
+
+.. autoclass:: CfgCutout
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgCutout.export_properties
+      
+      
+      CfgCutout.get_attributes
+      
+      
+      CfgCutout.get_data_from_db
+      
+      
+      CfgCutout.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgCutout.protected_attributes
+   
+   

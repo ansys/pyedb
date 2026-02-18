@@ -1,0 +1,6 @@
+delete\_batch\_primitives
+=========================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.delete_batch_primitives

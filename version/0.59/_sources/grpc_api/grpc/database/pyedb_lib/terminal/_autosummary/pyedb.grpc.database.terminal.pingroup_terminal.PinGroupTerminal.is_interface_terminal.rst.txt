@@ -1,0 +1,6 @@
+is\_interface\_terminal
+=======================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.is_interface_terminal

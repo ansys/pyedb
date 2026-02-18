@@ -1,0 +1,6 @@
+int\_to\_pad\_type
+==================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. automethod:: EDBPadProperties.int_to_pad_type

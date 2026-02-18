@@ -1,0 +1,6 @@
+is\_void
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoproperty:: Bondwire.is_void

@@ -1,0 +1,6 @@
+reference\_net\_name
+====================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.reference_net_name

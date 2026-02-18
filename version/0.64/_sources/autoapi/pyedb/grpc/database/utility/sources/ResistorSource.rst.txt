@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`ResistorSource`
+=======================
+
+
+.. py:class:: pyedb.grpc.database.utility.sources.ResistorSource
+
+   Bases: :py:obj:`Source`
+
+
+   
+   Manages a resistor source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ResistorSource
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~rvalue`
+            - Resistance value.
+          * - :py:attr:`~source_type`
+            - Source type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.sources import ResistorSource
+
+Property detail
+---------------
+
+.. py:property:: rvalue
+
+   
+   Resistance value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   Source type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+model\_computed\_fields
+=======================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.model_computed_fields

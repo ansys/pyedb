@@ -1,0 +1,6 @@
+logger
+======
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.logger

@@ -1,0 +1,25 @@
+﻿ICDieProperty
+=============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoclass:: ICDieProperty
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      ICDieProperty.die_orientation
+      ICDieProperty.die_type
+      ICDieProperty.height
+      ICDieProperty.is_null
+   
+   

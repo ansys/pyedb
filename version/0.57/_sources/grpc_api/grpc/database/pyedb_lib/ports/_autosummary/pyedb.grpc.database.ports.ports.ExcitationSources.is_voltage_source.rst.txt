@@ -1,0 +1,6 @@
+is\_voltage\_source
+===================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.is_voltage_source

@@ -1,0 +1,6 @@
+max\_delta
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.adaptive_frequency_data
+
+.. autoproperty:: AdaptiveFrequencyData.max_delta

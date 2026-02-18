@@ -1,0 +1,87 @@
+
+
+
+
+
+
+:class:`ControlFileLayer`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileLayer(name, properties)
+
+   
+   Represents a general layer in the control file.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Layer name.
+
+       **properties** : :class:`python:dict`
+           Layer properties dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileLayer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileLayer
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: properties
+
+
+
+
+

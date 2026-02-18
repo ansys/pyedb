@@ -1,0 +1,115 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_setup`` library
+=============================================
+
+.. py:module:: pyedb.configuration.cfg_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgFrequencies`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgFrequencySweep`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSetupDC`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSetupAC`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgSIwaveDCSetup`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_setup.CfgHFSSSetup`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgFrequencies</autoapi/pyedb/configuration/cfg_setup/CfgFrequencies>
+    <span class="nf nf-cod-symbol_class"></span> CfgFrequencySweep</autoapi/pyedb/configuration/cfg_setup/CfgFrequencySweep>
+    <span class="nf nf-cod-symbol_class"></span> CfgSetupDC</autoapi/pyedb/configuration/cfg_setup/CfgSetupDC>
+    <span class="nf nf-cod-symbol_class"></span> CfgSetupAC</autoapi/pyedb/configuration/cfg_setup/CfgSetupAC>
+    <span class="nf nf-cod-symbol_class"></span> CfgSIwaveACSetup</autoapi/pyedb/configuration/cfg_setup/CfgSIwaveACSetup>
+    <span class="nf nf-cod-symbol_class"></span> CfgSIwaveDCSetup</autoapi/pyedb/configuration/cfg_setup/CfgSIwaveDCSetup>
+    <span class="nf nf-cod-symbol_class"></span> CfgHFSSSetup</autoapi/pyedb/configuration/cfg_setup/CfgHFSSSetup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

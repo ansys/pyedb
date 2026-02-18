@@ -1,0 +1,6 @@
+definitions
+===========
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. autoproperty:: Components.definitions

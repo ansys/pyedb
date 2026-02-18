@@ -1,0 +1,6 @@
+adaptive\_solution\_type
+========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_general_settings
+
+.. autoproperty:: HFSSGeneralSettings.adaptive_solution_type

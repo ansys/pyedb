@@ -1,0 +1,6 @@
+padstack\_definition
+====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoproperty:: PadstackInstance.padstack_definition

@@ -1,0 +1,6 @@
+check\_and\_fix\_via\_plating
+=============================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.check_and_fix_via_plating

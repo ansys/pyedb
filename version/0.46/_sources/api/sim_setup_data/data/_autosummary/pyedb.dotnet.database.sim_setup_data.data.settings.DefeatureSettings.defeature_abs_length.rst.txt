@@ -1,0 +1,6 @@
+defeature\_abs\_length
+======================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: DefeatureSettings.defeature_abs_length

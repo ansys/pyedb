@@ -1,0 +1,6 @@
+set\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. automethod:: CfgPortProperties.set_attributes

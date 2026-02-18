@@ -1,0 +1,6 @@
+primitive\_type
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.primitive_type

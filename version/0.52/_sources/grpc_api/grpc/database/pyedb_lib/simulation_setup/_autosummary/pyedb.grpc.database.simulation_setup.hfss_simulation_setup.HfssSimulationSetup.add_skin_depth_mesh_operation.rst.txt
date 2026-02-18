@@ -1,0 +1,6 @@
+add\_skin\_depth\_mesh\_operation
+=================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.add_skin_depth_mesh_operation

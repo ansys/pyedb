@@ -1,0 +1,6 @@
+default\_conductor\_property\_values
+====================================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: Materials.default_conductor_property_values

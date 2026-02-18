@@ -1,0 +1,285 @@
+
+
+
+
+
+
+:class:`PointTerminal`
+======================
+
+
+.. py:class:: pyedb.grpc.database.terminal.point_terminal.PointTerminal(pedb, core)
+
+   Bases: :py:obj:`pyedb.grpc.database.terminal.terminal.Terminal`
+
+
+   
+   Manages point terminal properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PointTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a point terminal.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_reference_terminal`
+            - Whether the terminal is a reference terminal.
+          * - :py:attr:`~point`
+            - Terminal point.
+          * - :py:attr:`~location`
+            - Terminal position.
+          * - :py:attr:`~reference_layer`
+            - Reference layer of the terminal.
+          * - :py:attr:`~layer`
+            - Layer that the point terminal is placed on.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.point_terminal import PointTerminal
+
+Property detail
+---------------
+
+.. py:property:: is_reference_terminal
+   :type: bool
+
+
+   
+   Whether the terminal is a reference terminal.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the terminal is a reference terminal, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: point
+   :type: tuple[float, float]
+
+
+   
+   Terminal point.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`python:float`, :class:`python:float`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: tuple[float, float]
+
+
+   
+   Terminal position.
+
+
+
+
+
+   :Returns:
+
+       **tuple[float, float]** : (x,y])
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_layer
+
+   
+   Reference layer of the terminal.
+
+
+
+
+
+   :Returns:
+
+       :class:`Layer <pyedb.grpc.database.layer.layer.Layer>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+
+   
+   Layer that the point terminal is placed on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, net, layer, name, point)
+   :classmethod:
+
+
+   
+   Create a point terminal.
+
+
+   :Parameters:
+
+       **layout** : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
+           Layout object associated with the terminal.
+
+       **net** : :obj:`Net`
+           :class: `Net` <pyedb.grpc.database.net.net.Net> object associated with the terminal.
+
+       **name** : :class:`python:str`
+           Terminal name.
+
+       **point** : [:class:`python:float`, :class:`python:float`]
+           [x,y] location of the terminal.
+
+       **layer** : :class:`python:str`
+           Layer name.
+
+       **net** : :class: <``Net` pyedb.grpc.database.net.net.Net>, optional
+           Net object associated with the terminal. If None, the terminal will be
+           associated with the ground net.
+
+
+
+   :Returns:
+
+       :obj:`PointTerminal`
+           Point terminal object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

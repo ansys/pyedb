@@ -1,0 +1,80 @@
+
+
+
+
+
+
+:class:`CfgSetups`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_setup.CfgSetups(pedb, setups_data)
+
+
+.. py:currentmodule:: CfgSetups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+          * - :py:attr:`~apply`
+            - 
+          * - :py:attr:`~to_dict`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_setup import CfgSetups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: setups
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: retrieve_parameters_from_edb()
+
+.. py:method:: apply()
+
+.. py:method:: to_dict()
+
+
+
+

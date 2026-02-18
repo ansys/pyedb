@@ -1,0 +1,6 @@
+primitives
+==========
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.primitives

@@ -1,0 +1,6 @@
+scale
+=====
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.scale

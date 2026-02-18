@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.msg

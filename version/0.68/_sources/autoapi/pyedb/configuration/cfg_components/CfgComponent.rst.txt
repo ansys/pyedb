@@ -1,0 +1,133 @@
+
+
+
+
+
+
+:class:`CfgComponent`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_components.CfgComponent(_pedb, pedb_object, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+
+.. py:currentmodule:: CfgComponent
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~retrieve_model_properties_from_edb`
+            - 
+          * - :py:attr:`~set_parameters_to_edb`
+            - 
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pyedb_obj`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~definition`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~placement_layer`
+            - 
+          * - :py:attr:`~pins`
+            - 
+          * - :py:attr:`~port_properties`
+            - 
+          * - :py:attr:`~solder_ball_properties`
+            - 
+          * - :py:attr:`~ic_die_properties`
+            - 
+          * - :py:attr:`~pin_pair_model`
+            - 
+          * - :py:attr:`~spice_model`
+            - 
+          * - :py:attr:`~s_parameter_model`
+            - 
+          * - :py:attr:`~netlist_model`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_components import CfgComponent
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pyedb_obj
+
+.. py:attribute:: enabled
+
+.. py:attribute:: reference_designator
+
+.. py:attribute:: definition
+
+.. py:attribute:: type
+
+.. py:attribute:: placement_layer
+
+.. py:attribute:: pins
+
+.. py:attribute:: port_properties
+
+.. py:attribute:: solder_ball_properties
+
+.. py:attribute:: ic_die_properties
+
+.. py:attribute:: pin_pair_model
+
+.. py:attribute:: spice_model
+
+.. py:attribute:: s_parameter_model
+
+.. py:attribute:: netlist_model
+
+
+
+Method detail
+-------------
+
+.. py:method:: retrieve_model_properties_from_edb()
+
+.. py:method:: set_parameters_to_edb()
+
+.. py:method:: retrieve_parameters_from_edb()
+
+
+
+

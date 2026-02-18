@@ -1,0 +1,6 @@
+bounding\_box
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.bounding_box

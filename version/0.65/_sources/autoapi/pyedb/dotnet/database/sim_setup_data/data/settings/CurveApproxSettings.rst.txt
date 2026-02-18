@@ -1,0 +1,220 @@
+
+
+
+
+
+
+:class:`CurveApproxSettings`
+============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.CurveApproxSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for curve approximate settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CurveApproxSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~arc_angle`
+            - Step-size to be used for arc faceting.
+          * - :py:attr:`~arc_to_chord_error`
+            - Maximum tolerated error between straight edge (chord) and faceted arc.
+          * - :py:attr:`~max_arc_points`
+            - Maximum number of mesh points for arc segments.
+          * - :py:attr:`~start_azimuth`
+            - Azimuth angle for first mesh point of the arc.
+          * - :py:attr:`~use_arc_to_chord_error`
+            - Whether to turn on the arc-to-chord error setting for arc faceting.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import CurveApproxSettings
+
+Property detail
+---------------
+
+.. py:property:: arc_angle
+
+   
+   Step-size to be used for arc faceting.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_to_chord_error
+
+   
+   Maximum tolerated error between straight edge (chord) and faceted arc.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_arc_points
+
+   
+   Maximum number of mesh points for arc segments.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: start_azimuth
+
+   
+   Azimuth angle for first mesh point of the arc.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_arc_to_chord_error
+
+   
+   Whether to turn on the arc-to-chord error setting for arc faceting.
+
+
+
+   :Returns:
+
+       ``True`` :obj:`if` arc-to-chord :obj:`error` :obj:`is` :obj:`used`, ``False`` otherwise.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+convert\_primitives\_to\_vias
+=============================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.convert_primitives_to_vias

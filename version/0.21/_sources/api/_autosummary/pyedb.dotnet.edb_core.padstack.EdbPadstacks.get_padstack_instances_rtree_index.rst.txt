@@ -1,0 +1,6 @@
+get\_padstack\_instances\_rtree\_index
+======================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.padstack
+
+.. automethod:: EdbPadstacks.get_padstack_instances_rtree_index

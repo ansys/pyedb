@@ -1,0 +1,67 @@
+﻿DifferentialPair
+================
+
+.. currentmodule:: pyedb.grpc.database.net.differential_pair
+
+.. autoclass:: DifferentialPair
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DifferentialPair.add_net
+      
+      
+      DifferentialPair.contains_net
+      
+      
+      DifferentialPair.create
+      
+      
+      DifferentialPair.delete
+      
+      
+      DifferentialPair.find_by_name
+      
+      
+      DifferentialPair.get_product_property
+      
+      
+      DifferentialPair.get_product_property_ids
+      
+      
+      DifferentialPair.remove_net
+      
+      
+      DifferentialPair.set_product_property
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DifferentialPair.description
+      DifferentialPair.differential_pair
+      DifferentialPair.id
+      DifferentialPair.is_null
+      DifferentialPair.is_power_ground
+      DifferentialPair.layout
+      DifferentialPair.layout_obj_type
+      DifferentialPair.msg
+      DifferentialPair.name
+      DifferentialPair.negative_net
+      DifferentialPair.nets
+      DifferentialPair.obj_type
+      DifferentialPair.positive_net
+   
+   

@@ -1,0 +1,6 @@
+is\_mcad
+========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.is_mcad

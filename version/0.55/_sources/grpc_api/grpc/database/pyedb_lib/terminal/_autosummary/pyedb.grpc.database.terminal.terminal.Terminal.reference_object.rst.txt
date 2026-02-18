@@ -1,0 +1,6 @@
+reference\_object
+=================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.reference_object

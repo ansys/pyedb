@@ -1,0 +1,27 @@
+﻿CfgNets
+=======
+
+.. currentmodule:: pyedb.configuration.cfg_nets
+
+.. autoclass:: CfgNets
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgNets.apply
+      
+      
+      CfgNets.get_data_from_db
+      
+   
+   
+
+   
+   
+   

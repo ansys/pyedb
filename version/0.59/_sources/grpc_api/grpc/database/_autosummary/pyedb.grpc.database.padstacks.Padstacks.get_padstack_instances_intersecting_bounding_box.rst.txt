@@ -1,0 +1,6 @@
+get\_padstack\_instances\_intersecting\_bounding\_box
+=====================================================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_padstack_instances_intersecting_bounding_box

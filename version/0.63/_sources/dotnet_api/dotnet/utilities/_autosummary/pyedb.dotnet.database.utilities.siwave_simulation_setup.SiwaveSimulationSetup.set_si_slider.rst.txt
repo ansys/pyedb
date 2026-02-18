@@ -1,0 +1,6 @@
+set\_si\_slider
+===============
+
+.. currentmodule:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+.. automethod:: SiwaveSimulationSetup.set_si_slider

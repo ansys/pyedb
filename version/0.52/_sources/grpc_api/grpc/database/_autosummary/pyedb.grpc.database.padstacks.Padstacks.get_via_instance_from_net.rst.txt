@@ -1,0 +1,6 @@
+get\_via\_instance\_from\_net
+=============================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_via_instance_from_net

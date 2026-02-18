@@ -1,0 +1,6 @@
+rlc\_boundary\_parameters
+=========================
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.rlc_boundary_parameters

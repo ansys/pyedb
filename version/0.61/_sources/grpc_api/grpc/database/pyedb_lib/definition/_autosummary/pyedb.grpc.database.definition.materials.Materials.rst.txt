@@ -1,0 +1,80 @@
+﻿Materials
+=========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoclass:: Materials
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Materials.add_conductor_material
+      
+      
+      Materials.add_debye_material
+      
+      
+      Materials.add_dielectric_material
+      
+      
+      Materials.add_djordjevicsarkar_dielectric
+      
+      
+      Materials.add_material
+      
+      
+      Materials.add_multipole_debye_material
+      
+      
+      Materials.delete
+      
+      
+      Materials.delete_material
+      
+      
+      Materials.duplicate
+      
+      
+      Materials.iterate_materials_in_amat
+      
+      
+      Materials.load_amat
+      
+      
+      Materials.load_material
+      
+      
+      Materials.material_property_to_id
+      
+      
+      Materials.read_materials
+      
+      
+      Materials.read_syslib_material
+      
+      
+      Materials.update_material
+      
+      
+      Materials.update_materials_from_sys_library
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Materials.default_conductor_property_values
+      Materials.default_dielectric_property_values
+   
+   

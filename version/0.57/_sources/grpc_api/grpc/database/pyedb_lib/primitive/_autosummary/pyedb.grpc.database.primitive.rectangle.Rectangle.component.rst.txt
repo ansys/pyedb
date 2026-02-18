@@ -1,0 +1,6 @@
+component
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.component

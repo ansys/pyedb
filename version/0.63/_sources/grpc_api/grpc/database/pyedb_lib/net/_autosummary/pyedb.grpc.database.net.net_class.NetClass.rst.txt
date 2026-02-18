@@ -1,0 +1,55 @@
+﻿NetClass
+========
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. autoclass:: NetClass
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      NetClass.add_net
+      
+      
+      NetClass.contains_net
+      
+      
+      NetClass.create
+      
+      
+      NetClass.delete
+      
+      
+      NetClass.find_by_name
+      
+      
+      NetClass.get_product_property
+      
+      
+      NetClass.get_product_property_ids
+      
+      
+      NetClass.remove_net
+      
+      
+      NetClass.set_product_property
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      NetClass.layout_obj_type
+   
+   

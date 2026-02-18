@@ -1,0 +1,6 @@
+is\_auto\_port
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoproperty:: EdgeTerminal.is_auto_port

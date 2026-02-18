@@ -1,0 +1,6 @@
+layers
+======
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoproperty:: ControlFileStackup.layers

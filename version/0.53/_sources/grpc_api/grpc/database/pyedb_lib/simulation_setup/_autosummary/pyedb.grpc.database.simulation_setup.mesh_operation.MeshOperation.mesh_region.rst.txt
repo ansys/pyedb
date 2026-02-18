@@ -1,0 +1,6 @@
+mesh\_region
+============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+.. autoproperty:: MeshOperation.mesh_region

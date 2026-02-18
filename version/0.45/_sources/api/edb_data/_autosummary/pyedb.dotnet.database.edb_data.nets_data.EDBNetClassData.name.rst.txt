@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
+
+.. autoproperty:: EDBNetClassData.name

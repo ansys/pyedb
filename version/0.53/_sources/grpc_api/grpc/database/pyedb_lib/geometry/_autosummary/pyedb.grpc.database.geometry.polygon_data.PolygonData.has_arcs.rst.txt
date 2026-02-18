@@ -1,0 +1,6 @@
+has\_arcs
+=========
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. automethod:: PolygonData.has_arcs

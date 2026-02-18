@@ -1,0 +1,205 @@
+
+
+
+
+
+
+The ``Variables.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.Variables
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: Variables
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.Variables.CSVDataset`
+            - Reads in a CSV file and extracts data, which can be augmented with constant values.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.Variables.VariableManager`
+            - Manages design properties and project variables.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.Variables.Variable`
+            - Stores design properties and project variables and provides operations to perform on them.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.Variables.DataSet`
+            - Manages datasets.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~decompose_variable_value`
+            - Decompose a variable value.
+
+
+          * - :py:obj:`~generate_validation_errors`
+            - From the given property names, expected settings and actual settings, return a list of validation errors.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CSVDataset</autoapi/pyedb/dotnet/database/Variables/CSVDataset>
+    <span class="nf nf-cod-symbol_class"></span> VariableManager</autoapi/pyedb/dotnet/database/Variables/VariableManager>
+    <span class="nf nf-cod-symbol_class"></span> Variable</autoapi/pyedb/dotnet/database/Variables/Variable>
+    <span class="nf nf-cod-symbol_class"></span> DataSet</autoapi/pyedb/dotnet/database/Variables/DataSet>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains these classes: `CSVDataset`, `DataSet`, `Expression`, `Variable`, and `VariableManager`.
+
+This module is used to create and edit design and project variables in the 3D tools.
+
+Examples
+--------
+>>> from ansys.aedt.core import Hfss
+>>> hfss = Hfss()
+>>> hfss["$d"] = "5mm"
+>>> hfss["d"] = "5mm"
+>>> hfss["postd"] = "1W"
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: decompose_variable_value(variable_value, full_variables={})
+
+   
+   Decompose a variable value.
+
+
+   :Parameters:
+
+       **variable_value** : :class:`python:str`
+           ..
+
+       **full_variables** : :class:`python:dict`
+           ..
+
+
+
+   :Returns:
+
+       :obj:`tuples`
+           Tuples made of the float value of the variable and the units exposed as a string.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: generate_validation_errors(property_names, expected_settings, actual_settings)
+
+   
+   From the given property names, expected settings and actual settings, return a list of validation errors.
+   If no errors are found, an empty list is returned. The validation of values such as "10mm"
+   ensures that they are close to within a relative tolerance.
+   For example an expected setting of "10mm", and actual of "10.000000001mm" will not yield a validation error.
+   For values with no numerical value, an equivalence check is made.
+
+
+   :Parameters:
+
+       **property_names** : :obj:`List`\[:class:`python:str`]
+           List of property names.
+
+       **expected_settings** : :obj:`List`\[:class:`python:str`]
+           List of the expected settings.
+
+       **actual_settings** : :obj:`List`\[:class:`python:str`]
+           List of actual settings.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:str`]
+           A list of validation errors for the given settings.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

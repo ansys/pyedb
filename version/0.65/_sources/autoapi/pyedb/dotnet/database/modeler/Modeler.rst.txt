@@ -1,0 +1,1364 @@
+
+
+
+
+
+
+:class:`Modeler`
+================
+
+.. toctree::
+   :hidden:
+
+    Shape</autoapi/pyedb/dotnet/database/modeler/Modeler.Shape>
+
+
+.. py:class:: pyedb.dotnet.database.modeler.Modeler(p_edb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for primitives management accessible from `Edb.modeler` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_layout = edbapp.modeler
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Modeler
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_primitive`
+            - Retrieve primitive from give id.
+          * - :py:attr:`~get_polygons_by_layer`
+            - Retrieve polygons by a layer.
+          * - :py:attr:`~get_primitive_by_layer_and_point`
+            - Return primitive given coordinate point [x, y], layer name and nets.
+          * - :py:attr:`~get_polygon_bounding_box`
+            - Retrieve a polygon bounding box.
+          * - :py:attr:`~get_polygon_points`
+            - Retrieve polygon points.
+          * - :py:attr:`~parametrize_polygon`
+            - Parametrize pieces of a polygon based on another polygon.
+          * - :py:attr:`~create_trace`
+            - Create a trace based on a list of points.
+          * - :py:attr:`~create_polygon`
+            - Create a polygon based on a list of points and voids.
+          * - :py:attr:`~create_polygon_from_points`
+            - Create a new polygon from a point list.
+          * - :py:attr:`~create_rectangle`
+            - Create rectangle.
+          * - :py:attr:`~create_circle`
+            - Create a circle on a specified layer.
+          * - :py:attr:`~delete_primitives`
+            - Delete primitives by net names.
+          * - :py:attr:`~get_primitives`
+            - Get primitives by conditions.
+          * - :py:attr:`~fix_circle_void_for_clipping`
+            - Fix issues when circle void are clipped due to a bug in EDB.
+          * - :py:attr:`~add_void`
+            - Add a void into a shape.
+          * - :py:attr:`~shape_to_polygon_data`
+            - Convert a shape to polygon data.
+          * - :py:attr:`~parametrize_trace_width`
+            - Parametrize a Trace on specific layer or all stackup.
+          * - :py:attr:`~unite_polygons_on_layer`
+            - Try to unite all Polygons on specified layer.
+          * - :py:attr:`~defeature_polygon`
+            - Defeature the polygon based on the maximum surface deviation criteria.
+          * - :py:attr:`~get_layout_statistics`
+            - Return EDBStatistics object from a layout.
+          * - :py:attr:`~create_bondwire`
+            - Create a bondwire object.
+          * - :py:attr:`~create_pin_group`
+            - Create a PinGroup.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~db`
+            - Db object.
+          * - :py:attr:`~layers`
+            - Dictionary of layers.
+          * - :py:attr:`~primitives`
+            - Primitives.
+          * - :py:attr:`~polygons_by_layer`
+            - Primitives with layer names as keys.
+          * - :py:attr:`~primitives_by_net`
+            - Primitives with net names as keys.
+          * - :py:attr:`~primitives_by_layer`
+            - Primitives with layer names as keys.
+          * - :py:attr:`~rectangles`
+            - Rectangles.
+          * - :py:attr:`~circles`
+            - Circles.
+          * - :py:attr:`~paths`
+            - Paths.
+          * - :py:attr:`~polygons`
+            - Polygons.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get  a layout instance from the Edb project.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.modeler import Modeler
+
+Property detail
+---------------
+
+.. py:property:: db
+
+   
+   Db object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers
+
+   
+   Dictionary of layers.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives
+
+   
+   Primitives.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygons_by_layer
+
+   
+   Primitives with layer names as keys.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of primitives with layer names as keys.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives_by_net
+
+   
+   Primitives with net names as keys.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of primitives with nat names as keys.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives_by_layer
+
+   
+   Primitives with layer names as keys.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of primitives with layer names as keys.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rectangles
+
+   
+   Rectangles.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of rectangles.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: circles
+
+   
+   Circles.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of circles.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: paths
+
+   
+   Paths.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of paths.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygons
+
+   
+   Polygons.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of polygons.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name)
+
+   
+   Get  a layout instance from the Edb project.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :class:`python:int`
+           ..
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitive(primitive_id)
+
+   
+   Retrieve primitive from give id.
+
+
+   :Parameters:
+
+       **primitive_id** : :class:`python:int`
+           Primitive id.
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygons_by_layer(layer_name, net_list=None)
+
+   
+   Retrieve polygons by a layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Name of the layer.
+
+       **net_list** : :class:`python:list`, :obj:`optional`
+           List of net names.
+
+   :Returns:
+
+       :class:`python:list`
+           List of primitive objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitive_by_layer_and_point(point=None, layer=None, nets=None)
+
+   
+   Return primitive given coordinate point [x, y], layer name and nets.
+
+
+   :Parameters:
+
+       **point** : :class:`python:list`
+           Coordinate [x, y]
+
+       **layer** : :class:`python:list` or :class:`python:str`, :obj:`optional`
+           list of layer name or layer name applied on filter.
+
+       **nets** : :class:`python:list` or :class:`python:str`, :obj:`optional`
+           list of net name or single net name applied on filter
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           List of primitives, polygons, paths and rectangles.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygon_bounding_box(polygon)
+
+   
+   Retrieve a polygon bounding box.
+
+
+   :Parameters:
+
+       **polygon**
+           Name of the polygon.
+
+   :Returns:
+
+       :class:`python:list`
+           List of bounding box coordinates in the format ``[-x, -y, +x, +y]``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> poly = database.modeler.get_polygons_by_layer("GND")
+   >>> bounding = database.modeler.get_polygon_bounding_box(poly[0])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygon_points(polygon)
+
+   
+   Retrieve polygon points.
+
+   .. note::
+      For arcs, one point is returned.
+
+   :Parameters:
+
+       **polygon**
+           class: `dotnet.database.edb_data.primitives_data.Primitive`
+
+   :Returns:
+
+       :class:`python:list`
+           List of tuples. Each tuple provides x, y point coordinate. If the length of two consecutives tuples
+            from the list equals 2, a segment is defined. The first tuple defines the starting point while the second
+            tuple the ending one. If the length of one tuple equals one, that means a polyline is defined and the value
+            is giving the arc height. Therefore to polyline is defined as starting point for the tuple
+            before in the list, the current one the arc height and the tuple after the polyline ending point.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> poly = database.modeler.get_polygons_by_layer("GND")
+   >>> points = database.modeler.get_polygon_points(poly[0])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parametrize_polygon(polygon, selection_polygon, offset_name='offsetx', origin=None)
+
+   
+   Parametrize pieces of a polygon based on another polygon.
+
+
+   :Parameters:
+
+       **polygon**
+           Name of the polygon.
+
+       **selection_polygon**
+           Polygon to use as a filter.
+
+       **offset_name** : :class:`python:str`, :obj:`optional`
+           Name of the offset to create.  The default is ``"offsetx"``.
+
+       **origin** : :class:`python:list`, :obj:`optional`
+           List of the X and Y origins, which impacts the vector
+           computation and is needed to determine expansion direction.
+           The default is ``None``, in which case the vector is
+           computed from the polygon's center.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_trace(path_list, layer_name, width=1, net_name='', start_cap_style='Round', end_cap_style='Round', corner_style='Round')
+
+   
+   Create a trace based on a list of points.
+
+
+   :Parameters:
+
+       **path_list** : :class:`python:list`
+           List of points.
+
+       **layer_name** : :class:`python:str`
+           Name of the layer on which to create the path.
+
+       **width** : :class:`python:float`, :obj:`optional`
+           Width of the path. The default is ``1``.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Name of the net. The default is ``""``.
+
+       **start_cap_style** : :class:`python:str`, :obj:`optional`
+           Style of the cap at its start. Options are ``"Round"``,
+           ``"Extended",`` and ``"Flat"``. The default is
+           ``"Round"``.
+
+       **end_cap_style** : :class:`python:str`, :obj:`optional`
+           Style of the cap at its end. Options are ``"Round"``,
+           ``"Extended",`` and ``"Flat"``. The default is
+           ``"Round"``.
+
+       **corner_style** : :class:`python:str`, :obj:`optional`
+           Style of the corner. Options are ``"Round"``,
+           ``"Sharp"`` and ``"Mitered"``. The default is ``"Round"``.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_polygon(main_shape=None, layer_name='', voids=[], net_name='', points=None)
+
+   
+   Create a polygon based on a list of points and voids.
+
+
+   :Parameters:
+
+       **main_shape** : :class:`python:list` :obj:`of` :obj:`points` or :obj:`PolygonData` or ``modeler.Shape``
+           Shape or point lists of the main object. Point list can be in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+           Each point can be:
+           - [x, y] coordinate
+           - [x, y, height] for an arc with specific height (between previous point and actual point)
+           - [x, y, rotation, xc, yc] for an arc given a point, rotation and center.
+
+       **layer_name** : :class:`python:str`
+           Name of the layer on which to create the polygon.
+
+       **voids** : :class:`python:list`, :obj:`optional`
+           List of shape objects for voids or points that creates the shapes. The default is``[]``.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Name of the net. The default is ``""``.
+
+       **points** : :class:`python:list`, :obj:`optional`
+           Added for compatibility with grpc.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`, :class:`dotnet.database.edb_data.primitives.Primitive`
+           Polygon when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_polygon_from_points(point_list, layer_name, net_name='')
+
+   
+   Create a new polygon from a point list.
+
+   .. deprecated:: 0.6.73
+   Use :func:`create_polygon` method instead. It now supports point lists as arguments.
+
+   :Parameters:
+
+       **point_list** : :class:`python:list`
+           Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+           Each point can be:
+           - [x,y] coordinate
+           - [x,y, height] for an arc with specific height (between previous point and actual point)
+           - [x,y, rotation, xc,yc] for an arc given a point, rotation and center.
+
+       **layer_name** : :class:`python:str`
+           Name of layer on which create the polygon.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Name of the net on which create the polygon.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rectangle(layer_name, net_name='', lower_left_point='', upper_right_point='', center_point='', width='', height='', representation_type='LowerLeftUpperRight', corner_radius='0mm', rotation='0deg')
+
+   
+   Create rectangle.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Name of the layer on which to create the rectangle.
+
+       **net_name** : :class:`python:str`
+           Name of the net. The default is ``""``.
+
+       **lower_left_point** : :class:`python:list`
+           Lower left point when ``representation_type="LowerLeftUpperRight"``. The default is ``""``.
+
+       **upper_right_point** : :class:`python:list`
+           Upper right point when ``representation_type="LowerLeftUpperRight"``. The default is ``""``.
+
+       **center_point** : :class:`python:list`
+           Center point when ``representation_type="CenterWidthHeight"``. The default is ``""``.
+
+       **width** : :class:`python:str`
+           Width of the rectangle when ``representation_type="CenterWidthHeight"``. The default is ``""``.
+
+       **height** : :class:`python:str`
+           Height of the rectangle when ``representation_type="CenterWidthHeight"``. The default is ``""``.
+
+       **representation_type** : :class:`python:str`, :obj:`optional`
+           Type of the rectangle representation. The default is ``LowerLeftUpperRight``. Options are
+           ``"LowerLeftUpperRight"`` and ``"CenterWidthHeight"``.
+
+       **corner_radius** : :class:`python:str`, :obj:`optional`
+           Radius of the rectangle corner. The default is ``"0mm"``.
+
+       **rotation** : :class:`python:str`, :obj:`optional`
+           Rotation of the rectangle. The default is ``"0deg"``.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Rectangle when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circle(layer_name, x, y, radius, net_name='')
+
+   
+   Create a circle on a specified layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Name of the layer.
+
+       **x** : :class:`python:float`
+           Position on the X axis.
+
+       **y** : :class:`python:float`
+           Position on the Y axis.
+
+       **radius** : :class:`python:float`
+           Radius of the circle.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Name of the net. The default is ``None``, in which case the
+           default name is assigned.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+           Objects of the circle created when successful.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_primitives(net_names)
+
+   
+   Delete primitives by net names.
+
+
+   :Parameters:
+
+       **net_names** : :class:`python:str`, :class:`python:list`
+           Names of the nets to delete.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> Edb.modeler.delete_primitives(net_names=["GND"])
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitives(net_name=None, layer_name=None, prim_type=None, is_void=False)
+
+   
+   Get primitives by conditions.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Set filter on net_name. Default is `None`.
+
+       **layer_name** : :class:`python:str`, :obj:`optional`
+           Set filter on layer_name. Default is `None`.
+
+       **prim_type** :  :class:`python:str`, :obj:`optional`
+           Set filter on primitive type. Default is `None`.
+
+       **is_void** : :ref:`bool <python:bltin-boolean-values>`
+           Set filter on is_void. Default is 'False'
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **list**
+           List of filtered primitives
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: fix_circle_void_for_clipping()
+
+   
+   Fix issues when circle void are clipped due to a bug in EDB.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when no changes were applied.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_void(shape, void_shape)
+
+   
+   Add a void into a shape.
+
+
+   :Parameters:
+
+       **shape** : :obj:`Polygon`
+           Shape of the main object.
+
+       **void_shape** : :class:`python:list`, :obj:`Path`
+           Shape of the voids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: shape_to_polygon_data(shape)
+
+   
+   Convert a shape to polygon data.
+
+
+   :Parameters:
+
+       **shape** : :class:`pyedb.dotnet.database.modeler.Modeler.Shape`
+           Type of the shape to convert. Options are ``"rectangle"`` and ``"polygon"``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: parametrize_trace_width(nets_name, layers_name=None, parameter_name='trace_width', variable_value=None)
+
+   
+   Parametrize a Trace on specific layer or all stackup.
+
+
+   :Parameters:
+
+       **nets_name** : :class:`python:str`, :class:`python:list`
+           name of the net or list of nets to parametrize.
+
+       **layers_name** : :class:`python:str`, :obj:`optional`
+           name of the layer or list of layers to which the net to parametrize has to be included.
+
+       **parameter_name** : :class:`python:str`, :obj:`optional`
+           name of the parameter to create.
+
+       **variable_value** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           value with units of parameter to create.
+           If None, the first trace width of Net will be used as parameter value.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: unite_polygons_on_layer(layer_name=None, delete_padstack_gemometries=False, net_names_list=None)
+
+   
+   Try to unite all Polygons on specified layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`, :obj:`optional`
+           Name of layer name to unite objects on. The default is ``None``, in which case all layers are taken.
+
+       **delete_padstack_gemometries** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to delete all padstack geometries. The default is ``False``.
+
+       **net_names_list** : :class:`python:list`\[:class:`python:str`] : :obj:`optional`
+           Net names list filter. The default is ``[]``, in which case all nets are taken.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` is successful.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: defeature_polygon(poly, tolerance=0.001)
+
+   
+   Defeature the polygon based on the maximum surface deviation criteria.
+
+
+   :Parameters:
+
+       **maximum_surface_deviation** : :class:`python:float`
+           ..
+
+       **poly** : :obj:`Edb` :obj:`Polygon` :obj:`primitive`
+           Polygon to defeature.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Maximum tolerance criteria. The default is ``0.001``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_layout_statistics(evaluate_area=False, net_list=None)
+
+   
+   Return EDBStatistics object from a layout.
+
+
+   :Parameters:
+
+       **evaluate_area** : :obj:`optional` :ref:`bool <python:bltin-boolean-values>`
+           When True evaluates the layout metal surface, can take time-consuming,
+           avoid using this option on large design.
+
+   :Returns:
+
+       :obj:`EDBStatistics` object.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_bondwire(definition_name, placement_layer, width, material, start_layer_name, start_x, start_y, end_layer_name, end_x, end_y, net, bondwire_type='jedec4', start_cell_instance_name=None)
+
+   
+   Create a bondwire object.
+
+
+   :Parameters:
+
+       **bondwire_type** : :class:`BondwireType`
+           Type of bondwire: kAPDBondWire or kJDECBondWire types.
+
+       **definition_name** : :class:`python:str`
+           Bondwire definition name.
+
+       **placement_layer** : :class:`python:str`
+           Layer name this bondwire will be on.
+
+       **width** : :class:`Value <ansys.edb.utility.Value>`
+           Bondwire width.
+
+       **material** : :class:`python:str`
+           Bondwire material name.
+
+       **start_layer_name** : :class:`python:str`
+           Name of start layer.
+
+       **start_x** : :class:`Value <ansys.edb.utility.Value>`
+           X value of start point.
+
+       **start_y** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of start point.
+
+       **end_layer_name** : :class:`python:str`
+           Name of end layer.
+
+       **end_x** : :class:`Value <ansys.edb.utility.Value>`
+           X value of end point.
+
+       **end_y** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of end point.
+
+       **net** : :class:`python:str` or :class:`Net <ansys.edb.net.Net>` or :data:`python:None`
+           Net of the Bondwire.
+
+       **start_cell_instance_name** : :data:`python:None`
+           Added for grpc compatibility.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
+           Bondwire object created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pin_group(name: str, pins_by_id=None, pins_by_aedt_name=None, pins_by_name=None)
+
+   
+   Create a PinGroup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the PinGroup.
+
+       **pins_by_id** : :class:`python:list`\[:class:`python:int`] :obj:`or` :data:`python:None`
+           List of pins by ID.
+
+       **pins_by_aedt_name** : :class:`python:list`\[:class:`python:str`] :obj:`or` :data:`python:None`
+           List of pins by AEDT name.
+
+       **pins_by_name** : :class:`python:list`\[:class:`python:str`] :obj:`or` :data:`python:None`
+           List of pins by name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.dotnet.database.modeler.Modeler.Shape
+
+
+
+

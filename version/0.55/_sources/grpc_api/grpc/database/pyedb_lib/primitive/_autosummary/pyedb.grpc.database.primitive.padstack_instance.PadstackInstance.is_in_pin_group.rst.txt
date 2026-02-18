@@ -1,0 +1,6 @@
+is\_in\_pin\_group
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.is_in_pin_group

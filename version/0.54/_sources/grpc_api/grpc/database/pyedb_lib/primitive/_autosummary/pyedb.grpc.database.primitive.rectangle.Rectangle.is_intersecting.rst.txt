@@ -1,0 +1,6 @@
+is\_intersecting
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. automethod:: Rectangle.is_intersecting

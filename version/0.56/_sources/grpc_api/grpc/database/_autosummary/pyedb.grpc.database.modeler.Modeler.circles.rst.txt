@@ -1,0 +1,6 @@
+circles
+=======
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. autoproperty:: Modeler.circles

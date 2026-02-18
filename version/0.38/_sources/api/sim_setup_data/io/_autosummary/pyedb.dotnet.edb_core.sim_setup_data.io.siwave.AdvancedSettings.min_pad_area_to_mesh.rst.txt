@@ -1,0 +1,6 @@
+min\_pad\_area\_to\_mesh
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: AdvancedSettings.min_pad_area_to_mesh

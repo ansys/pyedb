@@ -1,0 +1,108 @@
+
+
+
+
+
+
+The ``ports.py`` module
+=======================
+
+.. py:module:: pyedb.dotnet.database.edb_data.ports
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: ports
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports.GapPort`
+            - Manages gap port properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports.CircuitPort`
+            - Manages gap port properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports.WavePort`
+            - Manages wave port properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports.ExcitationSources`
+            - Manage sources properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports.BundleWavePort`
+            - Manages bundle wave port properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.ports.CoaxPort`
+            - Manages bundle wave port properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> GapPort</autoapi/pyedb/dotnet/database/edb_data/ports/GapPort>
+    <span class="nf nf-cod-symbol_class"></span> CircuitPort</autoapi/pyedb/dotnet/database/edb_data/ports/CircuitPort>
+    <span class="nf nf-cod-symbol_class"></span> WavePort</autoapi/pyedb/dotnet/database/edb_data/ports/WavePort>
+    <span class="nf nf-cod-symbol_class"></span> ExcitationSources</autoapi/pyedb/dotnet/database/edb_data/ports/ExcitationSources>
+    <span class="nf nf-cod-symbol_class"></span> BundleWavePort</autoapi/pyedb/dotnet/database/edb_data/ports/BundleWavePort>
+    <span class="nf nf-cod-symbol_class"></span> CoaxPort</autoapi/pyedb/dotnet/database/edb_data/ports/CoaxPort>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

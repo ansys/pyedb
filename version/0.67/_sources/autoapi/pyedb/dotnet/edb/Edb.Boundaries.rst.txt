@@ -1,0 +1,50 @@
+
+
+
+
+
+
+:class:`Boundaries`
+===================
+
+
+.. py:class:: pyedb.dotnet.edb.Edb.Boundaries
+
+   
+   Boundaries Enumerator.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.edb.Edb import Boundaries
+
+
+
+
+

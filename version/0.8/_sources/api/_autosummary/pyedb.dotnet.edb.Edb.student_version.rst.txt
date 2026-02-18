@@ -1,0 +1,6 @@
+student\_version
+================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.student_version

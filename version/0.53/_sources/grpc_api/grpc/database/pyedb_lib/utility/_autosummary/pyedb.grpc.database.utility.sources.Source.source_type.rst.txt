@@ -1,0 +1,6 @@
+source\_type
+============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: Source.source_type

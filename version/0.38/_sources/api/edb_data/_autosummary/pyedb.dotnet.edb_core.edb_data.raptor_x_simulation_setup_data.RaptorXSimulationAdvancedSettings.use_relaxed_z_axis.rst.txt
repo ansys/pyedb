@@ -1,0 +1,6 @@
+use\_relaxed\_z\_axis
+=====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.use_relaxed_z_axis

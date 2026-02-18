@@ -1,0 +1,6 @@
+unite\_polygons\_on\_layer
+==========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
+
+.. automethod:: Modeler.unite_polygons_on_layer

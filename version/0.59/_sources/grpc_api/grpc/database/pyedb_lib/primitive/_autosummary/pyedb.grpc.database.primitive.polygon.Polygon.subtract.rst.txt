@@ -1,0 +1,6 @@
+subtract
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.subtract

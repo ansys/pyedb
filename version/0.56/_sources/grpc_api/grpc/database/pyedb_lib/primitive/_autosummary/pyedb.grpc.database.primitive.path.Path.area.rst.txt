@@ -1,0 +1,6 @@
+area
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.area

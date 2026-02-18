@@ -1,0 +1,6 @@
+positive\_net
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.nets_data
+
+.. autoproperty:: EDBDifferentialPairData.positive_net

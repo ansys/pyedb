@@ -1,0 +1,369 @@
+
+
+
+
+
+
+:class:`HFSSSimulationSettings`
+===============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings)
+
+   
+   PyEDB-core HFSS simulation settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - HFSS Advanced settings class.
+          * - :py:attr:`~advanced_meshing`
+            - Advanced meshing class.
+          * - :py:attr:`~dcr`
+            - Dcr.
+          * - :py:attr:`~general`
+            - General settings class.
+          * - :py:attr:`~options`
+            - HFSS option class.
+          * - :py:attr:`~solver`
+            - HFSS solver settings class.
+          * - :py:attr:`~enhanced_low_frequency_accuracy`
+            - Enhanced low frequency accuracy flag.
+          * - :py:attr:`~relative_residual`
+            - Relative residual value.
+          * - :py:attr:`~use_shell_elements`
+            - Use shell elements flag.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+   :type: pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings
+
+
+   
+   HFSS Advanced settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSAdvancedSettings <pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: advanced_meshing
+   :type: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings
+
+
+   
+   Advanced meshing class.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSAdvancedMeshingSettings <pyedb.grpc.database.simulation_setup.
+           ..
+
+       hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dcr
+   :type: pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings
+
+
+   
+   Dcr.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSDCRSettings <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: general
+   :type: pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings
+
+
+   
+   General settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSGeneralSettings <pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: options
+   :type: pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions
+
+
+   
+   HFSS option class.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSSettingsOptions <pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver
+   :type: pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings
+
+
+   
+   HFSS solver settings class.
+
+
+
+
+
+   :Returns:
+
+       :class:`HFSSSolverSettings <pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enhanced_low_frequency_accuracy
+   :type: bool
+
+
+   
+   Enhanced low frequency accuracy flag.
+
+   .. deprecated:: 0.67.0
+       This property is deprecated. Please use :attr:`options.enhanced_low_frequency_accuracy`
+       instead.
+       This attribute was added for dotnet compatibility and will be removed in future releases.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_residual
+   :type: float
+
+
+   
+   Relative residual value.
+
+   .. deprecated:: 0.67.0
+       This property is deprecated. Please use :attr:`options.relative_residual`
+       instead.
+       This attribute was added for dotnet compatibility and will be removed in future releases.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_shell_elements
+   :type: bool
+
+
+   
+   Use shell elements flag.
+
+   .. deprecated:: 0.67.0
+       This property is deprecated. Please use :attr:`options.use_shell_elements`
+       instead.
+       This attribute was added for dotnet compatibility and will be removed in future releases.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

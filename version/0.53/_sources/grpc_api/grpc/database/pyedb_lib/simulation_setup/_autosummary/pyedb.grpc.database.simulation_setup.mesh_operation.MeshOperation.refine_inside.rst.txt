@@ -1,0 +1,6 @@
+refine\_inside
+==============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+.. autoproperty:: MeshOperation.refine_inside

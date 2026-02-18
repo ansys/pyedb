@@ -1,0 +1,286 @@
+
+
+
+
+
+
+:class:`RectangularPatch`
+=========================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.planar_antennas.RectangularPatch(edb_cell=None, target_frequency: Union[str, float] = '2.4Ghz', length_feeding_line: Union[str, float] = 0, layer: str = 'TOP_METAL', bottom_layer: str = 'BOT_METAL', add_port: bool = True, permittivity: float = None)
+
+   
+   Rectangular microstrip patch antenna (optionally inset-fed).
+
+   The class automatically determines the physical dimensions for a
+   desired resonance frequency, creates the patch, ground plane and
+   either an inset microstrip feed or a coaxial probe feed, and
+   optionally sets up an HFSS simulation.
+
+   :Parameters:
+
+       **edb_cell** : :obj:`pyedb.Edb`, :obj:`optional`
+           EDB project/cell in which the antenna will be built.
+
+       **freq** : :class:`python:str` or :class:`python:float`, :obj:`default` "2.4GHz"
+           Target resonance frequency of the patch.  A string such as
+           ``"2.4GHz"`` or a numeric value in Hz can be given.
+
+       **inset** : :class:`python:str` or :class:`python:float`, :obj:`default` 0
+           Inset depth for a 50 Ω microstrip feed.  A value of 0 selects
+           a probe (via) feed instead.
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP_METAL"
+           Metallization layer on which the patch polygon is drawn.
+
+       **bottom_layer** : :class:`python:str`, :obj:`default` "BOT_METAL"
+           Metallization layer on which the ground polygon is drawn.
+
+       **add_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`default` :data:`python:True`
+           If True, create a wave port (inset feed) or lumped port
+           (probe feed) and add an HFSS setup with a frequency sweep.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   Build a 5.8 GHz patch on a 0.787 mm Rogers RO4350B substrate:
+
+   >>> edb = pyedb.Edb()
+   >>> patch = RectangularPatch(edb_cell=edb, freq="5.8GHz", inset="4.2mm", layer="TOP", bottom_layer="GND")
+   >>> patch.substrate.er = 3.66
+   >>> patch.substrate.tand = 0.0037
+   >>> patch.substrate.h = 0.000787
+   >>> patch.create()
+   >>> edb.save_as("patch_5p8GHz.aedb")
+
+   Probe-fed 2.4 GHz patch (no inset):
+
+   >>> edb = pyedb.Edb()
+   >>> RectangularPatch(edb, freq=2.4e9, inset=0).create()
+   >>> edb.save_as("probe_patch_2p4GHz.aedb")
+
+   :Attributes:
+
+       **substrate** : :obj:`Substrate`
+           Substrate definition (``er``, ``tand``, ``h``) used for all
+           analytical calculations.
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RectangularPatch
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Draw the patch, ground plane and feed geometry in EDB.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~estimated_frequency`
+            - Analytical resonance frequency (GHz) computed from the cavity model.
+          * - :py:attr:`~width`
+            - Patch width (m) derived for the target frequency.
+          * - :py:attr:`~length`
+            - Patch length (m) accounting for fringing fields.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~target_frequency`
+            - 
+          * - :py:attr:`~length_feeding_line`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~bottom_layer`
+            - 
+          * - :py:attr:`~add_port`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.planar_antennas import RectangularPatch
+
+Property detail
+---------------
+
+.. py:property:: estimated_frequency
+   :type: float
+
+
+   
+   Analytical resonance frequency (GHz) computed from the cavity model.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resonant frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: width
+   :type: float
+
+
+   
+   Patch width (m) derived for the target frequency.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: length
+   :type: float
+
+
+   
+   Patch length (m) accounting for fringing fields.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: target_frequency
+
+.. py:attribute:: length_feeding_line
+
+.. py:attribute:: layer
+   :value: 'TOP_METAL'
+
+
+.. py:attribute:: bottom_layer
+   :value: 'BOT_METAL'
+
+
+.. py:attribute:: add_port
+   :value: True
+
+
+.. py:attribute:: substrate
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Draw the patch, ground plane and feed geometry in EDB.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True when the geometry has been successfully created.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

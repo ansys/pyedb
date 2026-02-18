@@ -1,0 +1,6 @@
+conduction\_min\_converged\_passes
+==================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: DcrSettings.conduction_min_converged_passes

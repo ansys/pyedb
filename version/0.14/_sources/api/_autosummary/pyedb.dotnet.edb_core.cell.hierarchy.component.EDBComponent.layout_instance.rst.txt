@@ -1,0 +1,6 @@
+layout\_instance
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.layout_instance

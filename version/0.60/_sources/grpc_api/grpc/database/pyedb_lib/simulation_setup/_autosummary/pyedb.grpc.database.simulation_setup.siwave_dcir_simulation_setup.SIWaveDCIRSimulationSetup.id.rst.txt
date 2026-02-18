@@ -1,0 +1,6 @@
+id
+==
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup
+
+.. autoproperty:: SIWaveDCIRSimulationSetup.id

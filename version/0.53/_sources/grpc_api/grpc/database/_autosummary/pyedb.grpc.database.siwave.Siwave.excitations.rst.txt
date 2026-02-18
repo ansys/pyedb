@@ -1,0 +1,6 @@
+excitations
+===========
+
+.. currentmodule:: pyedb.grpc.database.siwave
+
+.. autoproperty:: Siwave.excitations

@@ -1,0 +1,6 @@
+layout
+======
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. autoproperty:: PointTerminal.layout

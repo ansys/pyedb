@@ -1,0 +1,240 @@
+
+
+
+
+
+
+:class:`CellDotNet`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.CellDotNet(app)
+
+   
+   Cell Dot net.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: CellDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~definition`
+            - Edb Dotnet Api Definition.
+          * - :py:attr:`~database`
+            - Edb Dotnet Api Database.
+          * - :py:attr:`~cell`
+            - Edb Dotnet Api Database `Edb.Cell`.
+          * - :py:attr:`~utility`
+            - Utility class.
+          * - :py:attr:`~geometry`
+            - Geometry class.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import CellDotNet
+
+Property detail
+---------------
+
+.. py:property:: definition
+
+   
+   Edb Dotnet Api Definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: database
+
+   
+   Edb Dotnet Api Database.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cell
+
+   
+   Edb Dotnet Api Database `Edb.Cell`.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.database.CellClassDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: utility
+
+   
+   Utility class.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.database.UtilityDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: geometry
+
+   
+   Geometry class.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.database.GeometryDotNet`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(key)
+
+
+
+

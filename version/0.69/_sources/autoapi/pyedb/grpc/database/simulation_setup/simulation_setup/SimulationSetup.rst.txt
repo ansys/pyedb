@@ -1,0 +1,346 @@
+
+
+
+
+
+
+:class:`SimulationSetup`
+========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup(pedb, core: ansys.edb.core.simulation_setup.simulation_setup.SimulationSetup)
+
+
+.. py:currentmodule:: SimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cast`
+            - Cast a core SimulationSetup to PyEDB SimulationSetup.
+          * - :py:attr:`~add_sweep`
+            - Add a HFSS frequency sweep.
+          * - :py:attr:`~clear_sweeps`
+            - Clear all frequency sweeps from the simulation setup.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Unique ID of the EDB object.
+          * - :py:attr:`~is_null`
+            - Check if the simulation setup is null.
+          * - :py:attr:`~name`
+            - Get or set the name of the simulation setup.
+          * - :py:attr:`~position`
+            - Get or set the position of the simulation setup.
+          * - :py:attr:`~sweep_data`
+            - Get the sweep data associated with the simulation setup.
+          * - :py:attr:`~setup_type`
+            - Get the type of the simulation setup.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: id
+   :type: int
+
+
+   
+   Unique ID of the EDB object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Simulation setup ID.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+   :type: bool
+
+
+   
+   Check if the simulation setup is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the simulation setup is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Get or set the name of the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Simulation setup name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: position
+   :type: int
+
+
+   
+   Get or set the position of the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Simulation setup position.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweep_data
+   :type: list[pyedb.grpc.database.simulation_setup.sweep_data.SweepData]
+
+
+   
+   Get the sweep data associated with the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`SweepData`]
+           List of sweep data objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: setup_type
+   :type: str
+
+
+   
+   Get the type of the simulation setup.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Simulation setup type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: cast()
+
+   
+   Cast a core SimulationSetup to PyEDB SimulationSetup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_sweep(name=None, distribution='linear', start_freq='0GHz', stop_freq='20GHz', step='10MHz', discrete=False, frequency_set=None) -> Union[pyedb.grpc.database.simulation_setup.sweep_data.SweepData, None]
+
+   
+   Add a HFSS frequency sweep.
+
+   This method was refactored to reduce complexity. The behaviour is compatible
+   with the previous implementation: it accepts either a legacy `frequency_set`
+   or single-sweep parameters.
+
+
+
+
+   :Returns:
+
+       :obj:`SweepData` | :data:`python:None`
+           The newly added sweep when single sweep parameters are used, or None when
+           `frequency_set` is provided (legacy multi-sweep behavior).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clear_sweeps()
+
+   
+   Clear all frequency sweeps from the simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

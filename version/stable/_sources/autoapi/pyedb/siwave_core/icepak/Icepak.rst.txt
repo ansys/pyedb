@@ -1,0 +1,275 @@
+
+
+
+
+
+
+:class:`Icepak`
+===============
+
+
+.. py:class:: pyedb.siwave_core.icepak.Icepak(psiw)
+
+   
+   SIwave Icepak.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Icepak
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~run`
+            - Run Icepak analysis.
+          * - :py:attr:`~set_meshing_detail`
+            - Sets the meshing detail level for Icepak simulations.
+          * - :py:attr:`~set_board_outline_fidelity`
+            - Specifies the minimum edge length when modifying the board outline for export to Icepak. This
+          * - :py:attr:`~set_thermal_environment`
+            - Sets the thermal environment settings to use for Icepak simulations.
+          * - :py:attr:`~export_report`
+            - Export Icepak simulation report to a file.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.siwave_core.icepak import Icepak
+
+
+
+Method detail
+-------------
+
+.. py:method:: run(name, dc_simulation_name)
+
+   
+   Run Icepak analysis.
+
+
+   :Parameters:
+
+       **name** : str,
+           Name of the Icepak simulation.
+
+       **dc_simulation_name: str**
+           Name of the dc simulation.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_meshing_detail(mesh_level=0)
+
+   
+   Sets the meshing detail level for Icepak simulations.
+
+
+   :Parameters:
+
+       **mesh_level** : :class:`python:int`, :obj:`optional`
+           Meshing level.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_board_outline_fidelity(fidelity=2)
+
+   
+   Specifies the minimum edge length when modifying the board outline for export to Icepak. This
+   minimum edge length is used when indiscretion arcs into a series of straight lines and when
+   simplifying the outline to remove very small edges.
+
+
+   :Parameters:
+
+       **fidelity** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Fidelity level in mm.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_thermal_environment(convection=True, force_air=True, top_or_ambient_temperature=22, top_or_overall_flow_direction='+X', top_or_overall_flow_speed=2, bottom_temperature=22, bottom_flow_direction='+X', bottom_flow_speed=2, gravity_vector_x=0, gravity_vector_y=0, gravity_vector_z=9.8)
+
+   
+   Sets the thermal environment settings to use for Icepak simulations.
+
+
+   :Parameters:
+
+       **convection** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ..
+
+       **force_air** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ..
+
+       **top_or_ambient_temperature: int, float, optional**
+           Temperature above PCB in degrees Celsius.
+
+       **top_or_overall_flow_direction** : :class:`python:str`, :obj:`optional`
+           Flow direction above PCB.
+
+       **top_or_overall_flow_speed** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Flow speed above PCB.
+
+       **bottom_temperature** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Temperature below PCB in degrees Celsius.
+
+       **bottom_flow_direction** : :class:`python:str`, :obj:`optional`
+           Flow direction below PCB.
+
+       **bottom_flow_speed** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Flow speed below PCB.
+
+       **gravity_vector_x** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Gravity vector x for natural convection.
+
+       **gravity_vector_y** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Gravity vector y for natural convection.
+
+       **gravity_vector_z** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Gravity vector z for natural convection.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_report(simulation_name, file_path)
+
+   
+   Export Icepak simulation report to a file.
+
+
+   :Parameters:
+
+       **simulation_name** : :class:`python:str`
+           Name of the Icepak simulation.
+
+       **file_path** : :class:`python:str`
+           Path to the report file.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,59 @@
+
+
+
+
+
+
+:class:`ControlProperty`
+========================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlProperty(property_name, value)
+
+
+.. py:currentmodule:: ControlProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~value`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: value
+
+
+
+
+

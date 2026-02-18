@@ -1,0 +1,6 @@
+set\_sim\_setup\_info
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. automethod:: RaptorXSimulationSetup.set_sim_setup_info

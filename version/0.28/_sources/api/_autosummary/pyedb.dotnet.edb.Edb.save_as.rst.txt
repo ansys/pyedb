@@ -1,0 +1,6 @@
+save\_as
+========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.save_as

@@ -1,0 +1,961 @@
+
+
+
+
+
+
+:class:`SweepData`
+==================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.sweep_data.SweepData(pedb, edb_object=None, name: str = None, sim_setup=None)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for a frequency sweep.
+
+
+   :Parameters:
+
+       **sim_setup** : :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+           ..
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep.
+
+       **edb_object** : :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`, :obj:`optional`
+           EDB object. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SweepData
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_frequencies_linear_scale`
+            - Set a linear scale frequency sweep.
+          * - :py:attr:`~set_frequencies_linear_count`
+            - Set a linear count frequency sweep.
+          * - :py:attr:`~set_frequencies_log_scale`
+            - Set a log-count frequency sweep.
+          * - :py:attr:`~set_frequencies`
+            - Set frequency list to the sweep frequencies.
+          * - :py:attr:`~add`
+            - 
+          * - :py:attr:`~add_frequencies`
+            - 
+          * - :py:attr:`~clear`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Name of the sweep.
+          * - :py:attr:`~frequencies`
+            - List of frequency points.
+          * - :py:attr:`~adaptive_sampling`
+            - Flag indicating if adaptive sampling is turned on.
+          * - :py:attr:`~adv_dc_extrapolation`
+            - Flag indicating if advanced DC extrapolation is turned on.
+          * - :py:attr:`~compute_dc_point`
+            - Flag indicating if computing the exact DC point is turned on.
+          * - :py:attr:`~auto_s_mat_only_solve`
+            - Flag indicating if Auto SMatrix only solve is turned on.
+          * - :py:attr:`~enforce_causality`
+            - Flag indicating if causality is enforced.
+          * - :py:attr:`~enforce_dc_and_causality`
+            - Flag indicating if DC point and causality are enforced.
+          * - :py:attr:`~enforce_passivity`
+            - Flag indicating if passivity is enforced.
+          * - :py:attr:`~freq_sweep_type`
+            - Sweep type.
+          * - :py:attr:`~type`
+            - Sweep type.
+          * - :py:attr:`~interpolation_use_full_basis`
+            - Flag indicating if full-basis elements is used.
+          * - :py:attr:`~interpolation_use_port_impedance`
+            - Flag indicating if port impedance interpolation is turned on.
+          * - :py:attr:`~interpolation_use_prop_const`
+            - Flag indicating if propagation constants are used.
+          * - :py:attr:`~interpolation_use_s_matrix`
+            - Flag indicating if the S matrix is used.
+          * - :py:attr:`~max_solutions`
+            - Number of maximum solutions.
+          * - :py:attr:`~min_freq_s_mat_only_solve`
+            - Minimum frequency SMatrix only solve.
+          * - :py:attr:`~min_solved_freq`
+            - Minimum solved frequency with units.
+          * - :py:attr:`~passivity_tolerance`
+            - Tolerance for passivity enforcement.
+          * - :py:attr:`~relative_s_error`
+            - S-parameter error tolerance.
+          * - :py:attr:`~save_fields`
+            - Flag indicating if the extraction of surface current data is turned on.
+          * - :py:attr:`~save_rad_fields_only`
+            - Flag indicating if the saving of only radiated fields is turned on.
+          * - :py:attr:`~use_q3d_for_dc`
+            - Flag indicating if the Q3D solver is used for DC point extraction.
+          * - :py:attr:`~frequency_string`
+            - A string describing the frequency sweep. Below is an example.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sim_setup`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Name of the sweep.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: frequencies
+
+   
+   List of frequency points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_sampling
+
+   
+   Flag indicating if adaptive sampling is turned on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if adaptive sampling is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adv_dc_extrapolation
+
+   
+   Flag indicating if advanced DC extrapolation is turned on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if advanced DC Extrapolation is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: compute_dc_point
+
+   
+   Flag indicating if computing the exact DC point is turned on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: auto_s_mat_only_solve
+
+   
+   Flag indicating if Auto SMatrix only solve is turned on.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_causality
+
+   
+   Flag indicating if causality is enforced.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if enforce causality is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_dc_and_causality
+
+   
+   Flag indicating if DC point and causality are enforced.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if enforce dc point and causality is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_passivity
+
+   
+   Flag indicating if passivity is enforced.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if enforce passivity is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: freq_sweep_type
+
+   
+   Sweep type.
+
+   Options are:
+   - ``"kInterpolatingSweep"``
+   - ``"kDiscreteSweep"``
+   - ``"kBroadbandFastSweep"``
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Sweep type.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+   
+   Sweep type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: interpolation_use_full_basis
+
+   
+   Flag indicating if full-basis elements is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if full basis interpolation is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: interpolation_use_port_impedance
+
+   
+   Flag indicating if port impedance interpolation is turned on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if port impedance is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: interpolation_use_prop_const
+
+   
+   Flag indicating if propagation constants are used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if propagation constants are used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: interpolation_use_s_matrix
+
+   
+   Flag indicating if the S matrix is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if S matrix are used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_solutions
+
+   
+   Number of maximum solutions.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_freq_s_mat_only_solve
+
+   
+   Minimum frequency SMatrix only solve.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Frequency with units.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_solved_freq
+
+   
+   Minimum solved frequency with units.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Frequency with units.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: passivity_tolerance
+
+   
+   Tolerance for passivity enforcement.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_s_error
+
+   
+   S-parameter error tolerance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_fields
+
+   
+   Flag indicating if the extraction of surface current data is turned on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if save fields is enabled, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: save_rad_fields_only
+
+   
+   Flag indicating if the saving of only radiated fields is turned on.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if save radiated field only is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_q3d_for_dc
+
+   
+   Flag indicating if the Q3D solver is used for DC point extraction.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if Q3d for DC point is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: frequency_string
+
+   
+   A string describing the frequency sweep. Below is an example.
+   ['LIN 0GHz 20GHz 0.05GHz', 'LINC 20GHz 30GHz 10', 'DEC 40GHz 50GHz 10']
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: sim_setup
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_frequencies_linear_scale(start='0.1GHz', stop='20GHz', step='50MHz')
+
+   
+   Set a linear scale frequency sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Start frequency. The default is ``"0.1GHz"``.
+
+       **stop** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stop frequency. The default is ``"20GHz"``.
+
+       **step** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Step frequency. The default is ``"50MHz"``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if correctly executed, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_frequencies_linear_count(start='1kHz', stop='0.1GHz', count=10)
+
+   
+   Set a linear count frequency sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Start frequency. The default is ``"1kHz"``.
+
+       **stop** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stop frequency. The default is ``"0.1GHz"``.
+
+       **count** : :class:`python:int`, :obj:`optional`
+           Step frequency. The default is ``10``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if correctly executed, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_frequencies_log_scale(start='1kHz', stop='0.1GHz', samples=10)
+
+   
+   Set a log-count frequency sweep.
+
+
+   :Parameters:
+
+       **start** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Start frequency. The default is ``"1kHz"``.
+
+       **stop** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stop frequency. The default is ``"0.1GHz"``.
+
+       **samples** : :class:`python:int`, :obj:`optional`
+           Step frequency. The default is ``10``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if correctly executed, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_frequencies(frequency_list=None, update=True)
+
+   
+   Set frequency list to the sweep frequencies.
+
+
+   :Parameters:
+
+       **frequency_list** : :class:`python:list`, :obj:`optional`
+           List of lists with four elements. The default is ``None``. If provided, each list must contain:
+            1 - frequency type (``"linear count"``, ``"log scale"``, or ``"linear scale"``)
+            2 - start frequency
+            3 - stop frequency
+            4 - step frequency or count
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **bool**
+           ``True`` if correctly executed, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add(sweep_type, start, stop, increment)
+
+.. py:method:: add_frequencies(frequencies)
+
+.. py:method:: clear()
+
+
+
+

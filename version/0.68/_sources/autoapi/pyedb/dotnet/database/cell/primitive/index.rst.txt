@@ -1,0 +1,98 @@
+
+
+
+
+
+
+The ``primitive`` package
+=============================
+
+.. py:module:: pyedb.dotnet.database.cell.primitive
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitive
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.primitive.bondwire`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.primitive.path`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.primitive.primitive`
+            - 
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~workdir`
+            - 
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> bondwire</autoapi/pyedb/dotnet/database/cell/primitive/bondwire/index>
+    <span class="nf nf-fa-file"></span> path</autoapi/pyedb/dotnet/database/cell/primitive/path/index>
+    <span class="nf nf-fa-file"></span> primitive</autoapi/pyedb/dotnet/database/cell/primitive/primitive/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: workdir
+
+
+

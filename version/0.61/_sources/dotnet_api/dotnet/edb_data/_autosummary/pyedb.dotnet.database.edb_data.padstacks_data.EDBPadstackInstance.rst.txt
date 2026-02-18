@@ -1,0 +1,75 @@
+﻿EDBPadstackInstance
+===================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoclass:: EDBPadstackInstance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EDBPadstackInstance.convert_hole_to_conical_shape
+      
+      
+      EDBPadstackInstance.create_coax_port
+      
+      
+      EDBPadstackInstance.create_port
+      
+      
+      EDBPadstackInstance.create_rectangle_in_pad
+      
+      
+      EDBPadstackInstance.create_terminal
+      
+      
+      EDBPadstackInstance.delete
+      
+      
+      EDBPadstackInstance.get_back_drill_by_layer
+      
+      
+      EDBPadstackInstance.get_connected_object_id_set
+      
+      
+      EDBPadstackInstance.get_connected_objects
+      
+      
+      EDBPadstackInstance.get_reference_pins
+      
+      
+      EDBPadstackInstance.get_terminal
+      
+      
+      EDBPadstackInstance.in_polygon
+      
+      
+      EDBPadstackInstance.in_voids
+      
+      
+      EDBPadstackInstance.parametrize_position
+      
+      
+      EDBPadstackInstance.set_back_drill_by_layer
+      
+      
+      EDBPadstackInstance.set_backdrill_bottom
+      
+      
+      EDBPadstackInstance.set_backdrill_top
+      
+      
+      EDBPadstackInstance.split
+      
+   
+   
+
+   
+   
+   

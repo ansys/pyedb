@@ -1,0 +1,6 @@
+polygon\_data
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. autoproperty:: EdbPolygon.polygon_data

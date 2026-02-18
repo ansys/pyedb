@@ -1,0 +1,6 @@
+add\_variable
+=============
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.add_variable

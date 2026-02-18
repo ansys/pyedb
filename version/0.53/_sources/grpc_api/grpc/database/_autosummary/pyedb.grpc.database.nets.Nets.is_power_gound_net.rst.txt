@@ -1,0 +1,6 @@
+is\_power\_gound\_net
+=====================
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. automethod:: Nets.is_power_gound_net

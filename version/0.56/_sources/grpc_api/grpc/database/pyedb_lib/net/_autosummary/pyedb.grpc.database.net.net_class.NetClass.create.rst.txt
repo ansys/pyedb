@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. automethod:: NetClass.create

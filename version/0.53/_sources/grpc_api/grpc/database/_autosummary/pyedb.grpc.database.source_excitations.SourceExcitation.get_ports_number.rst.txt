@@ -1,0 +1,6 @@
+get\_ports\_number
+==================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.get_ports_number

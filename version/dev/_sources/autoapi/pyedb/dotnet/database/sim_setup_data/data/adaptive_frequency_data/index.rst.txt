@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``adaptive_frequency_data.py`` module
+=========================================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: adaptive_frequency_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data.AdaptiveFrequencyData`
+            - Manages EDB methods for adaptive frequency data.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AdaptiveFrequencyData</autoapi/pyedb/dotnet/database/sim_setup_data/data/adaptive_frequency_data/AdaptiveFrequencyData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

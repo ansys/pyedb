@@ -1,0 +1,6 @@
+duplicate
+=========
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.duplicate

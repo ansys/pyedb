@@ -1,0 +1,450 @@
+
+
+
+
+
+
+:class:`DataSet`
+================
+
+
+.. py:class:: pyedb.dotnet.database.Variables.DataSet(app, name, x, y, z=None, v=None, xunit='', yunit='', zunit='', vunit='')
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages datasets.
+
+
+   :Parameters:
+
+       **app**
+           ..
+
+       **name** : :class:`python:str`
+           Name of the app.
+
+       **x** : :class:`python:list`
+           List of X-axis values for the dataset.
+
+       **y** : :class:`python:list`
+           List of Y-axis values for the dataset.
+
+       **z** : :class:`python:list`, :obj:`optional`
+           List of Z-axis values for a 3D dataset only. The default is ``None``.
+
+       **v** : :class:`python:list`, :obj:`optional`
+           List of V-axis values for a 3D dataset only. The default is ``None``.
+
+       **xunit** : :class:`python:str`, :obj:`optional`
+           Units for the X axis. The default is ``""``.
+
+       **yunit** : :class:`python:str`, :obj:`optional`
+           Units for the Y axis. The default is ``""``.
+
+       **zunit** : :class:`python:str`, :obj:`optional`
+           Units for the Z axis for a 3D dataset only. The default is ``""``.
+
+       **vunit** : :class:`python:str`, :obj:`optional`
+           Units for the V axis for a 3D dataset only. The default is ``""``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DataSet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a dataset.
+          * - :py:attr:`~add_point`
+            - Add a point to the dataset.
+          * - :py:attr:`~remove_point_from_x`
+            - Remove a point from an X-axis value.
+          * - :py:attr:`~remove_point_from_index`
+            - Remove a point from an index.
+          * - :py:attr:`~update`
+            - Update the dataset.
+          * - :py:attr:`~delete`
+            - Delete the dataset.
+          * - :py:attr:`~export`
+            - Export the dataset.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~x`
+            - 
+          * - :py:attr:`~y`
+            - 
+          * - :py:attr:`~z`
+            - 
+          * - :py:attr:`~v`
+            - 
+          * - :py:attr:`~xunit`
+            - 
+          * - :py:attr:`~yunit`
+            - 
+          * - :py:attr:`~zunit`
+            - 
+          * - :py:attr:`~vunit`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.Variables import DataSet
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: x
+
+.. py:attribute:: y
+
+.. py:attribute:: z
+   :value: None
+
+
+.. py:attribute:: v
+   :value: None
+
+
+.. py:attribute:: xunit
+   :value: ''
+
+
+.. py:attribute:: yunit
+   :value: ''
+
+
+.. py:attribute:: zunit
+   :value: ''
+
+
+.. py:attribute:: vunit
+   :value: ''
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create()
+
+   
+   Create a dataset.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.AddDataset
+   >>> oDesign.AddDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_point(x, y, z=None, v=None)
+
+   
+   Add a point to the dataset.
+
+
+   :Parameters:
+
+       **x** : :class:`python:float`
+           X coordinate of the point.
+
+       **y** : :class:`python:float`
+           Y coordinate of the point.
+
+       **z** : :class:`python:float`, :obj:`optional`
+           The default is ``None``.
+
+       **v** : :class:`python:float`, :obj:`optional`
+           The default is ``None``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.EditDataset
+   >>> oDesign.EditDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_point_from_x(x)
+
+   
+   Remove a point from an X-axis value.
+
+
+   :Parameters:
+
+       **x** : :class:`python:float`
+           ..
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.EditDataset
+   >>> oDesign.EditDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_point_from_index(id_to_remove)
+
+   
+   Remove a point from an index.
+
+
+   :Parameters:
+
+       **id_to_remove** : :class:`python:int`
+           ID of the index.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.EditDataset
+   >>> oDesign.EditDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update()
+
+   
+   Update the dataset.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.EditDataset
+   >>> oDesign.EditDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete the dataset.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.DeleteDataset
+   >>> oDesign.DeleteDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export(dataset_path=None)
+
+   
+   Export the dataset.
+
+
+   :Parameters:
+
+       **dataset_path** : :class:`python:str`, :obj:`optional`
+           Path to export the dataset to. The default is ``None``, in which
+           case the dataset is exported to the working_directory path.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+   .. rubric:: References
+
+   >>> oProject.ExportDataset
+   >>> oDesign.ExportDataset
+
+   .. only:: latex
+
+      
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+create\_value
+=============
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.create_value

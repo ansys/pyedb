@@ -1,0 +1,144 @@
+
+
+
+
+
+
+:class:`PinPairModel`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.model.PinPairModel(pedb, edb_object=None)
+
+   Bases: :py:obj:`Model`
+
+
+   
+   Manages pin pair model class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PinPairModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete_pin_pair_rlc`
+            - Delete a pin pair definition.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pin_pairs`
+            - List of pin pair definitions.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel
+
+Property detail
+---------------
+
+.. py:property:: pin_pairs
+
+   
+   List of pin pair definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete_pin_pair_rlc(pin_pair)
+
+   
+   Delete a pin pair definition.
+
+
+   :Parameters:
+
+       **pin_pair: Ansys.Ansoft.Edb.Utility.PinPair**
+           ..
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

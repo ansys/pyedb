@@ -1,0 +1,6 @@
+mass\_density
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.mass_density

@@ -1,0 +1,6 @@
+cast
+====
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. automethod:: Layer.cast

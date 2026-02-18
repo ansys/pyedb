@@ -1,0 +1,6 @@
+grpc
+====
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.grpc

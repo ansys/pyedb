@@ -1,0 +1,6 @@
+adaptive\_settings
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: AdaptiveSettings.adaptive_settings

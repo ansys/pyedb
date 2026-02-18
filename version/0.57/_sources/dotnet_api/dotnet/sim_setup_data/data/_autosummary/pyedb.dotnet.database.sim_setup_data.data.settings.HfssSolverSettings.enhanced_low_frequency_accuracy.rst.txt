@@ -1,0 +1,6 @@
+enhanced\_low\_frequency\_accuracy
+==================================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: HfssSolverSettings.enhanced_low_frequency_accuracy

@@ -1,0 +1,6 @@
+is\_intersecting
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.is_intersecting

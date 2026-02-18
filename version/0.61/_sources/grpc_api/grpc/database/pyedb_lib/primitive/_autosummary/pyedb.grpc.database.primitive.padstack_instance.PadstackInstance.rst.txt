@@ -1,0 +1,142 @@
+﻿PadstackInstance
+================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. autoclass:: PadstackInstance
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PadstackInstance.cast
+      
+      
+      PadstackInstance.convert_hole_to_conical_shape
+      
+      
+      PadstackInstance.create
+      
+      
+      PadstackInstance.create_3d_comp
+      
+      
+      PadstackInstance.create_coax_port
+      
+      
+      PadstackInstance.create_hfss
+      
+      
+      PadstackInstance.create_port
+      
+      
+      PadstackInstance.create_rectangle_in_pad
+      
+      
+      PadstackInstance.create_stride
+      
+      
+      PadstackInstance.create_terminal
+      
+      
+      PadstackInstance.delete
+      
+      
+      PadstackInstance.find_by_id
+      
+      
+      PadstackInstance.get_back_drill_by_depth
+      
+      
+      PadstackInstance.get_back_drill_by_layer
+      
+      
+      PadstackInstance.get_back_drill_type
+      
+      
+      PadstackInstance.get_backdrill_type
+      
+      
+      PadstackInstance.get_connected_objects
+      
+      
+      PadstackInstance.get_hole_overrides
+      
+      
+      PadstackInstance.get_layer_range
+      
+      
+      PadstackInstance.get_padstack_instance_terminal
+      
+      
+      PadstackInstance.get_position_and_rotation
+      
+      
+      PadstackInstance.get_product_property
+      
+      
+      PadstackInstance.get_product_property_ids
+      
+      
+      PadstackInstance.get_reference_pins
+      
+      
+      PadstackInstance.get_terminal
+      
+      
+      PadstackInstance.in_polygon
+      
+      
+      PadstackInstance.in_voids
+      
+      
+      PadstackInstance.is_in_pin_group
+      
+      
+      PadstackInstance.parametrize_position
+      
+      
+      PadstackInstance.set_back_drill_by_depth
+      
+      
+      PadstackInstance.set_back_drill_by_layer
+      
+      
+      PadstackInstance.set_backdrill_bottom
+      
+      
+      PadstackInstance.set_backdrill_top
+      
+      
+      PadstackInstance.set_hole_overrides
+      
+      
+      PadstackInstance.set_layer_range
+      
+      
+      PadstackInstance.set_position_and_rotation
+      
+      
+      PadstackInstance.set_product_property
+      
+      
+      PadstackInstance.split
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PadstackInstance.layout_obj_type
+   
+   

@@ -1,0 +1,6 @@
+layers
+======
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. autoproperty:: Modeler.layers

@@ -1,0 +1,6 @@
+import\_from\_control\_file
+===========================
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.import_from_control_file

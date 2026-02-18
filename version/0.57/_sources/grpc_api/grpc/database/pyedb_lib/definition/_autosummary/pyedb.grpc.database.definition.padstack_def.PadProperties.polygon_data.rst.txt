@@ -1,0 +1,6 @@
+polygon\_data
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadProperties.polygon_data

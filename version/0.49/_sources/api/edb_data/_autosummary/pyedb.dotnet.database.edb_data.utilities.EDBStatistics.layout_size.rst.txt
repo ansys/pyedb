@@ -1,0 +1,6 @@
+layout\_size
+============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.utilities
+
+.. autoproperty:: EDBStatistics.layout_size

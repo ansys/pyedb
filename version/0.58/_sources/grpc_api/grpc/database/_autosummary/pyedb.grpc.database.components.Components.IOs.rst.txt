@@ -1,0 +1,6 @@
+IOs
+===
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. autoproperty:: Components.IOs

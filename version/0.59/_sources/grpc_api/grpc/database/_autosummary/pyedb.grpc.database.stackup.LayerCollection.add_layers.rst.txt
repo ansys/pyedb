@@ -1,0 +1,6 @@
+add\_layers
+===========
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.add_layers

@@ -1,0 +1,180 @@
+
+
+
+
+
+
+:class:`SingleEndedNet`
+=======================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.net.SingleEndedNet
+
+   
+   Single ended net class handler.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SingleEndedNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extend_xml`
+            - Write XMl object section.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~nominal_impedance`
+            - 
+          * - :py:attr:`~warning_threshold`
+            - 
+          * - :py:attr:`~violation_threshold`
+            - 
+          * - :py:attr:`~fext_warning_threshold`
+            - 
+          * - :py:attr:`~fext_violation_threshold`
+            - 
+          * - :py:attr:`~next_warning_threshold`
+            - 
+          * - :py:attr:`~next_violation_threshold`
+            - 
+          * - :py:attr:`~driver_rise_time`
+            - 
+          * - :py:attr:`~voltage`
+            - 
+          * - :py:attr:`~driver_impedance`
+            - 
+          * - :py:attr:`~termination_impedance`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :value: None
+
+
+.. py:attribute:: nominal_impedance
+   :value: None
+
+
+.. py:attribute:: warning_threshold
+   :value: None
+
+
+.. py:attribute:: violation_threshold
+   :value: None
+
+
+.. py:attribute:: fext_warning_threshold
+   :value: None
+
+
+.. py:attribute:: fext_violation_threshold
+   :value: None
+
+
+.. py:attribute:: next_warning_threshold
+   :value: None
+
+
+.. py:attribute:: next_violation_threshold
+   :value: None
+
+
+.. py:attribute:: driver_rise_time
+   :value: None
+
+
+.. py:attribute:: voltage
+   :value: None
+
+
+.. py:attribute:: driver_impedance
+   :value: None
+
+
+.. py:attribute:: termination_impedance
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: extend_xml(parent)
+
+   
+   Write XMl object section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

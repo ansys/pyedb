@@ -1,0 +1,211 @@
+
+
+
+
+
+
+:class:`EdbDifferentialPairs`
+=============================
+
+
+.. py:class:: pyedb.dotnet.database.net_class.EdbDifferentialPairs(p_edb)
+
+   Bases: :py:obj:`EdbCommon`, :py:obj:`object`
+
+
+   
+   Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_nets = edbapp.differential_pairs.items
+   >>> edb_nets = edbapp.differential_pairs["DQ4"]
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EdbDifferentialPairs
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - :Parameters:
+          * - :py:attr:`~auto_identify`
+            - Auto identify differential pairs by naming conversion.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~items`
+            - Extended nets.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.net_class import EdbDifferentialPairs
+
+Property detail
+---------------
+
+.. py:property:: items
+
+   
+   Extended nets.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
+           Dictionary of extended nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name: str, net_p: str, net_n: str) -> pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData
+
+   
+
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the differential pair.
+
+       **net_p** : :class:`python:str`
+           Name of the positive net.
+
+       **net_n** : :class:`python:str`
+           Name of the negative net.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: auto_identify(positive_differentiator='_P', negative_differentiator='_N')
+
+   
+   Auto identify differential pairs by naming conversion.
+
+
+   :Parameters:
+
+       **positive_differentiator: str, optional**
+           Differentiator of the positive net. The default is ``"_P"``.
+
+       **negative_differentiator: str, optional**
+           Differentiator of the negative net. The default is ``"_N"``.
+
+   :Returns:
+
+       :class:`python:list`
+           A list containing identified differential pair names.
+
+       :obj:`Examples`
+           ..
+
+       --------
+           ..
+
+       >>> :obj:`from` :obj:`pyedb` :obj:`import` :obj:`Edb`
+           ..
+
+       >>> :obj:`edbapp` = :obj:`Edb`\("myaedbfolder", edbversion="2023.1")
+           ..
+
+       >>> :obj:`edb_nets` = :obj:`edbapp.differential_pairs.auto_identify`\()
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

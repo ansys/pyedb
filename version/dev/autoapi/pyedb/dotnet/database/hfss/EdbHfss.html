@@ -1,0 +1,1738 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>EdbHfss &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../_static/documentation_options.js?v=4a0ff1d5"></script>
+    <script src="../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/dotnet/database/hfss/EdbHfss';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = 'dev';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../search.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.70.dev0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/dotnet/database/hfss/EdbHfss.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/dev/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/dev/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../cell/index.html"> <span class="nf nf-md-package"></span> cell</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../dotnet/index.html"> <span class="nf nf-md-package"></span> dotnet</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../edb_data/index.html"> <span class="nf nf-md-package"></span> edb_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../sim_setup_data/index.html"> <span class="nf nf-md-package"></span> sim_setup_data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../utilities/index.html"> <span class="nf nf-md-package"></span> utilities</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../Variables/index.html"> <span class="nf nf-fa-file"></span> Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> hfss</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3 current active"><a class="current reference internal" href="#"> <span class="nf nf-cod-symbol_class"></span> EdbHfss</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_obj_instance/index.html"> <span class="nf nf-fa-file"></span> layout_obj_instance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../materials/index.html"> <span class="nf nf-fa-file"></span> materials</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../net_class/index.html"> <span class="nf nf-fa-file"></span> net_class</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../padstack/index.html"> <span class="nf nf-fa-file"></span> padstack</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../simulation_setups/index.html"> <span class="nf nf-fa-file"></span> simulation_setups</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+</ul>
+<ul class="nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="../../clr_module/index.html"> <span class="nf nf-fa-file"></span> clr_module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">EdbHfss</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="edbhfss">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">EdbHfss</span></code><a class="headerlink" href="#edbhfss" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.dotnet.database.hfss.EdbHfss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.dotnet.database.hfss.</span></span><span class="sig-name descname"><span class="pre">EdbHfss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_edb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.dotnet.database.hfss.EdbHfss" title="Link to this definition">#</a></dt>
+<dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></p>
+<p>Manages EDB method to configure Hfss setup accessible from <cite>Edb.hfss</cite> property.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb_hfss</span> <span class="o">=</span> <span class="n">edb_3dedbapp</span><span class="o">.</span><span class="n">hfss</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.get_trace_width_for_traces_with_ports" title="EdbHfss.get_trace_width_for_traces_with_ports"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_trace_width_for_traces_with_ports</span></code></a></p></td>
+<td><p>Retrieve the trace width for traces with ports.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_circuit_port_on_pin" title="EdbHfss.create_circuit_port_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_circuit_port_on_pin</span></code></a></p></td>
+<td><p>Create Circuit Port on Pin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_voltage_source_on_pin" title="EdbHfss.create_voltage_source_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_voltage_source_on_pin</span></code></a></p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_current_source_on_pin" title="EdbHfss.create_current_source_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_current_source_on_pin</span></code></a></p></td>
+<td><p>Create a current source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_resistor_on_pin" title="EdbHfss.create_resistor_on_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_resistor_on_pin</span></code></a></p></td>
+<td><p>Create a Resistor boundary between two given pins.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_circuit_port_on_net" title="EdbHfss.create_circuit_port_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_circuit_port_on_net</span></code></a></p></td>
+<td><p>Create a circuit port on a NET.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_voltage_source_on_net" title="EdbHfss.create_voltage_source_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_voltage_source_on_net</span></code></a></p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_current_source_on_net" title="EdbHfss.create_current_source_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_current_source_on_net</span></code></a></p></td>
+<td><p>Create a current source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_coax_port_on_component" title="EdbHfss.create_coax_port_on_component"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_coax_port_on_component</span></code></a></p></td>
+<td><p>Create a coaxial port on a component or component list on a net or net list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_differential_wave_port" title="EdbHfss.create_differential_wave_port"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_differential_wave_port</span></code></a></p></td>
+<td><p>Create a differential wave port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_bundle_wave_port" title="EdbHfss.create_bundle_wave_port"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_bundle_wave_port</span></code></a></p></td>
+<td><p>Create a bundle wave port.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_hfss_ports_on_padstack" title="EdbHfss.create_hfss_ports_on_padstack"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_hfss_ports_on_padstack</span></code></a></p></td>
+<td><p>Create an HFSS port on a padstack.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_edge_port_on_polygon" title="EdbHfss.create_edge_port_on_polygon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_edge_port_on_polygon</span></code></a></p></td>
+<td><p>Create lumped port between two edges from two different polygons. Can also create a vertical port when</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_wave_port" title="EdbHfss.create_wave_port"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_wave_port</span></code></a></p></td>
+<td><p>Create a wave port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_edge_port_vertical" title="EdbHfss.create_edge_port_vertical"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_edge_port_vertical</span></code></a></p></td>
+<td><p>Create a vertical edge port.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_edge_port_horizontal" title="EdbHfss.create_edge_port_horizontal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_edge_port_horizontal</span></code></a></p></td>
+<td><p>Create a horizontal edge port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_lumped_port_on_net" title="EdbHfss.create_lumped_port_on_net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_lumped_port_on_net</span></code></a></p></td>
+<td><p>Create an edge port on nets. This command looks for traces and polygons on the</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.create_vertical_circuit_port_on_clipped_traces" title="EdbHfss.create_vertical_circuit_port_on_clipped_traces"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_vertical_circuit_port_on_clipped_traces</span></code></a></p></td>
+<td><p>Create an edge port on clipped signal traces.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.get_layout_bounding_box" title="EdbHfss.get_layout_bounding_box"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_layout_bounding_box</span></code></a></p></td>
+<td><p>Evaluate the layout bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.configure_hfss_extents" title="EdbHfss.configure_hfss_extents"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_hfss_extents</span></code></a></p></td>
+<td><p>Configure the HFSS extent box.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.add_setup" title="EdbHfss.add_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">add_setup</span></code></a></p></td>
+<td><p>Adding method for grpc compatibility</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.configure_hfss_analysis_setup" title="EdbHfss.configure_hfss_analysis_setup"><code class="xref py py-attr docutils literal notranslate"><span class="pre">configure_hfss_analysis_setup</span></code></a></p></td>
+<td><p>Configure HFSS analysis setup.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.trim_component_reference_size" title="EdbHfss.trim_component_reference_size"><code class="xref py py-attr docutils literal notranslate"><span class="pre">trim_component_reference_size</span></code></a></p></td>
+<td><p>Trim the common component reference to the minimally acceptable size.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.set_coax_port_attributes" title="EdbHfss.set_coax_port_attributes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_coax_port_attributes</span></code></a></p></td>
+<td><p>Set coaxial port attribute with forcing default impedance to 50 Ohms and adjusting the coaxial extent radius.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.get_ports_number" title="EdbHfss.get_ports_number"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_ports_number</span></code></a></p></td>
+<td><p>Return the total number of excitation ports in a layout.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.layout_defeaturing" title="EdbHfss.layout_defeaturing"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layout_defeaturing</span></code></a></p></td>
+<td><p>Defeature the layout by reducing the number of points for polygons based on surface deviation criteria.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.create_rlc_boundary_on_pins" title="EdbHfss.create_rlc_boundary_on_pins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_rlc_boundary_on_pins</span></code></a></p></td>
+<td><p>Create hfss rlc boundary on pins.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.generate_auto_hfss_regions" title="EdbHfss.generate_auto_hfss_regions"><code class="xref py py-attr docutils literal notranslate"><span class="pre">generate_auto_hfss_regions</span></code></a></p></td>
+<td><p>Generate auto HFSS regions.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.hfss_extent_info" title="EdbHfss.hfss_extent_info"><code class="xref py py-attr docutils literal notranslate"><span class="pre">hfss_extent_info</span></code></a></p></td>
+<td><p>HFSS extent information.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.excitations" title="EdbHfss.excitations"><code class="xref py py-attr docutils literal notranslate"><span class="pre">excitations</span></code></a></p></td>
+<td><p>Get all excitations.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#EdbHfss.sources" title="EdbHfss.sources"><code class="xref py py-attr docutils literal notranslate"><span class="pre">sources</span></code></a></p></td>
+<td><p>Get all sources.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#EdbHfss.probes" title="EdbHfss.probes"><code class="xref py py-attr docutils literal notranslate"><span class="pre">probes</span></code></a></p></td>
+<td><p>Get all probes.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.dotnet.database.hfss</span><span class="w"> </span><span class="kn">import</span> <span class="n">EdbHfss</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbHfss.hfss_extent_info">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">hfss_extent_info</span></span><a class="headerlink" href="#EdbHfss.hfss_extent_info" title="Link to this definition">#</a></dt>
+<dd><p>HFSS extent information.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbHfss.excitations">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">excitations</span></span><a class="headerlink" href="#EdbHfss.excitations" title="Link to this definition">#</a></dt>
+<dd><p>Get all excitations.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbHfss.sources">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">sources</span></span><a class="headerlink" href="#EdbHfss.sources" title="Link to this definition">#</a></dt>
+<dd><p>Get all sources.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="EdbHfss.probes">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">probes</span></span><a class="headerlink" href="#EdbHfss.probes" title="Link to this definition">#</a></dt>
+<dd><p>Get all probes.</p>
+</dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.get_trace_width_for_traces_with_ports">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">get_trace_width_for_traces_with_ports</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.get_trace_width_for_traces_with_ports" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the trace width for traces with ports.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">dict</span></code></a></dt><dd><p>Dictionary of trace width data.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_circuit_port_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_circuit_port_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_circuit_port_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create Circuit Port on Pin.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Edb Pin</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Edb Pin</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Port Impedance</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Port Name</p>
+</dd>
+<dt><strong>>>> from pyedb import Edb</strong></dt><dd></dd>
+<dt><strong>>>> edbapp = Edb(“myaedbfolder”, “project name”, “release version”)</strong></dt><dd></dd>
+<dt><strong>>>> pins = edbapp.components.get_pin_from_component(“U2A5”)</strong></dt><dd></dd>
+<dt><strong>>>> edbapp.hfss.create_circuit_port_on_pin(pins[0], pins[1], 50, “port_name”)</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Port Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_voltage_source_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_voltage_source_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_voltage_source_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a voltage source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Positive Pin.</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Negative Pin.</p>
+</dd>
+<dt><strong>voltage_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the voltage. The default is <code class="docutils literal notranslate"><span class="pre">3.3</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Source Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_voltage_source_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_current_source_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_current_source_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_current_source_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a current source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Positive Pin.</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Negative Pin.</p>
+</dd>
+<dt><strong>current_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the current. The default is <code class="docutils literal notranslate"><span class="pre">0.1</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Source Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_current_source_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_resistor_on_pin">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_resistor_on_pin</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">neg_pin</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resistor_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_resistor_on_pin" title="Link to this definition">#</a></dt>
+<dd><p>Create a Resistor boundary between two given pins.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pos_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Positive Pin.</p>
+</dd>
+<dt><strong>neg_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd><p>Negative Pin.</p>
+</dd>
+<dt><strong>rvalue</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Resistance value. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.</p>
+</dd>
+<dt><strong>resistor_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the resistor. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the Resistor.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pins</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">get_pin_from_component</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_resistor_on_pin</span><span class="p">(</span><span class="n">pins</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">pins</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;res_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_circuit_port_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_circuit_port_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GND'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_circuit_port_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create a circuit port on a NET.
+It groups all pins belonging to the specified net and then applies the port on PinGroups.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>negative_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative component. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the name of
+the positive net is assigned.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative net name. The default is <code class="docutils literal notranslate"><span class="pre">&quot;GND&quot;</span></code>.</p>
+</dd>
+<dt><strong>impedance_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Port impedance value. The default is <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>The name of the port.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_circuit_port_on_net</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;port_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_voltage_source_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_voltage_source_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GND'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voltage_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3.3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_voltage_source_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create a voltage source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>negative_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative component. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the name of
+the positive net is assigned.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative net. The default is <code class="docutils literal notranslate"><span class="pre">&quot;GND&quot;</span></code>.</p>
+</dd>
+<dt><strong>voltage_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the voltage. The default is <code class="docutils literal notranslate"><span class="pre">3.3</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Source Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_voltage_source_on_net</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_current_source_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_current_source_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_component_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_net_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_component_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GND'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">current_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">phase_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_current_source_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create a current source.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive component.</p>
+</dd>
+<dt><strong>positive_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the positive net.</p>
+</dd>
+<dt><strong>negative_component_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative component. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case the name of
+the positive net is assigned.</p>
+</dd>
+<dt><strong>negative_net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the negative net. The default is <code class="docutils literal notranslate"><span class="pre">&quot;GND&quot;</span></code>.</p>
+</dd>
+<dt><strong>current_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the current. The default is <code class="docutils literal notranslate"><span class="pre">0.1</span></code>.</p>
+</dd>
+<dt><strong>phase_value</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Value for the phase. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>source_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the source. The default is <code class="docutils literal notranslate"><span class="pre">&quot;&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Source Name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_current_source_on_net</span><span class="p">(</span><span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;V1P5_S3&quot;</span><span class="p">,</span> <span class="s2">&quot;U2A5&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;source_name&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_coax_port_on_component">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_coax_port_on_component</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ref_des_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">net_list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">delete_existing_terminal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_coax_port_on_component" title="Link to this definition">#</a></dt>
+<dd><dl class="simple">
+<dt>Create a coaxial port on a component or component list on a net or net list.</dt><dd><p>The name of the new coaxial port is automatically assigned.</p>
+</dd>
+</dl>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>ref_des_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>List of one or more reference designators.</p>
+</dd>
+<dt><strong>net_list</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>List of one or more nets.</p>
+</dd>
+<dt><strong>delete_existing_terminal</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><p>Only active with grpc version. This argument is added only to ensure compatibility between DotNet and grpc.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_differential_wave_port">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_differential_wave_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_primitive_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">positive_points_on_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_primitive_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_points_on_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pec_launch_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.01mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_differential_wave_port" title="Link to this definition">#</a></dt>
+<dd><p>Create a differential wave port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_primitive_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">EDBPrimitives</span></code></span></dt><dd><p>Primitive ID of the positive terminal.</p>
+</dd>
+<dt><strong>positive_points_on_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate of the point to define the edge terminal.
+The point must be close to the target edge but not on the two
+ends of the edge.</p>
+</dd>
+<dt><strong>negative_primitive_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">EDBPrimitives</span></code></span></dt><dd><p>Primitive ID of the negative terminal.</p>
+</dd>
+<dt><strong>negative_points_on_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate of the point to define the edge terminal.
+The point must be close to the target edge but not on the two
+ends of the edge.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>horizontal_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Horizontal extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p>
+</dd>
+<dt><strong>vertical_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Vertical extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
+</dd>
+<dt><strong>pec_launch_width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Launch Width of PEC. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;0.01mm&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>The tuple contains: (port_name, pyedb.dotnet.database.edb_data.sources.ExcitationDifferential).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_differential_wave_port</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-50mm&quot;</span><span class="p">,</span> <span class="s2">&quot;-0mm&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-50mm&quot;</span><span class="p">,</span> <span class="s2">&quot;-0.2mm&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_bundle_wave_port">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_bundle_wave_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">primitives_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points_on_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pec_launch_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.01mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_bundle_wave_port" title="Link to this definition">#</a></dt>
+<dd><p>Create a bundle wave port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>primitives_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Primitive ID of the positive terminal.</p>
+</dd>
+<dt><strong>points_on_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate of the point to define the edge terminal.
+The point must be close to the target edge but not on the two
+ends of the edge.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>horizontal_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Horizontal extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p>
+</dd>
+<dt><strong>vertical_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Vertical extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
+</dd>
+<dt><strong>pec_launch_width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Launch Width of PEC. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;0.01mm&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>The tuple contains: (port_name, pyedb.egacy.database.edb_data.sources.ExcitationDifferential).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_bundle_wave_port</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-50mm&quot;</span><span class="p">,</span> <span class="s2">&quot;-0mm&quot;</span><span class="p">],</span> <span class="mi">1</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-50mm&quot;</span><span class="p">,</span> <span class="s2">&quot;-0.2mm&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_hfss_ports_on_padstack">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_hfss_ports_on_padstack</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pinpos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">portname</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_hfss_ports_on_padstack" title="Link to this definition">#</a></dt>
+<dd><p>Create an HFSS port on a padstack.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>pinpos</strong></dt><dd><p>Position of the pin.</p>
+</dd>
+<dt><strong>portname</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_edge_port_on_polygon">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_edge_port_on_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_polygon</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">terminal_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_point</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">force_circuit_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_edge_port_on_polygon" title="Link to this definition">#</a></dt>
+<dd><p>Create lumped port between two edges from two different polygons. Can also create a vertical port when
+the reference layer name is only provided. When a port is created between two edge from two polygons which don’t
+belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
+port instead of lumped,use the boolean force_circuit_port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>polygon</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">EDB</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">polygon</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">used</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">assign</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> port.</span></dt><dd><p>Edb.Cell.Primitive.Polygon object.</p>
+</dd>
+<dt><strong>reference_polygon</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">EDB</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">polygon</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">used</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">define</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span></code> reference.</span></dt><dd><p>Edb.Cell.Primitive.Polygon object.</p>
+</dd>
+<dt><strong>terminal_point</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">The</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">coordinate</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">point</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">define</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">edge</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">terminal</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> port. <code class="xref py py-obj docutils literal notranslate"><span class="pre">This</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">point</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">must</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">be</span></code></span></dt><dd></dd>
+<dt><strong>located on the edge of the polygon where the port has to be placed. For instance taking the middle point</strong></dt><dd></dd>
+<dt><strong>of an edge is a good practice but any point of the edge should be valid. Taking a corner might cause unwanted</strong></dt><dd></dd>
+<dt><strong>port location.</strong></dt><dd><p>list[float, float] with values provided in meter.</p>
+</dd>
+<dt><strong>reference_point</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">same</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">as</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">terminal_point</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">but</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">used</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">for</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">defining</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">reference</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">location</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">on</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> edge.</span></dt><dd><p>list[float, float] with values provided in meter.</p>
+</dd>
+<dt><strong>reference_layer</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Name</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">used</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">to</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">define</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">reference</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">for</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">vertical</span></code> ports.</span></dt><dd><p>str the layer name.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Name</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">the</span></code> port.</span></dt><dd><p>str.</p>
+</dd>
+<dt><strong>port_impedance</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">port</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">impedance</span></code> value. <code class="xref py py-obj docutils literal notranslate"><span class="pre">Default</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">is</span></code> 50 Ohms.</span></dt><dd><p>float, impedance value.</p>
+</dd>
+<dt><strong>force_circuit_port ; used to force circuit port creation instead of lumped. Works for vertical and coplanar</strong></dt><dd></dd>
+<dt><strong>ports.</strong></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edb_path</span> <span class="o">=</span> <span class="n">path_to_edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edb_path</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">poly_list</span> <span class="o">=</span> <span class="p">[</span><span class="n">poly</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">primitives</span><span class="p">)</span> <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">GetPrimitiveType</span><span class="p">()</span> <span class="o">==</span> <span class="mi">2</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">port_poly</span> <span class="o">=</span> <span class="p">[</span><span class="n">poly</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="n">poly_list</span> <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="o">==</span> <span class="mi">17</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">ref_poly</span> <span class="o">=</span> <span class="p">[</span><span class="n">poly</span> <span class="k">for</span> <span class="n">poly</span> <span class="ow">in</span> <span class="n">poly_list</span> <span class="k">if</span> <span class="n">poly</span><span class="o">.</span><span class="n">GetId</span><span class="p">()</span> <span class="o">==</span> <span class="mi">19</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">port_location</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">65e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">13e-3</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">ref_location</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">63e-3</span><span class="p">,</span> <span class="o">-</span><span class="mf">13e-3</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_edge_port_on_polygon</span><span class="p">(</span><span class="n">polygon</span><span class="o">=</span><span class="n">port_poly</span><span class="p">,</span> <span class="n">reference_polygon</span><span class="o">=</span><span class="n">ref_poly</span><span class="p">,</span>
+<span class="gp">>>> </span><span class="n">terminal_point</span><span class="o">=</span><span class="n">port_location</span><span class="p">,</span> <span class="n">reference_point</span><span class="o">=</span><span class="n">ref_location</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_wave_port">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_wave_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prim_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_on_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pec_launch_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.01mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_wave_port" title="Link to this definition">#</a></dt>
+<dd><p>Create a wave port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>prim_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Primitive</span></code></span></dt><dd><p>Primitive ID.</p>
+</dd>
+<dt><strong>point_on_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate of the point to define the edge terminal.
+The point must be on the target edge but not on the two
+ends of the edge.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Impedance of the port. The default value is <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
+</dd>
+<dt><strong>horizontal_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Horizontal extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p>
+</dd>
+<dt><strong>vertical_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Vertical extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
+</dd>
+<dt><strong>pec_launch_width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Launch Width of PEC. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;0.01mm&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>The tuple contains: (Port name, pyedb.dotnet.database.edb_data.sources.Excitation).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edb</span><span class="o">.</span><span class="n">hfss</span><span class="o">.</span><span class="n">create_wave_port</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;-50mm&quot;</span><span class="p">,</span> <span class="s2">&quot;-0mm&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_edge_port_vertical">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_edge_port_vertical</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prim_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_on_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hfss_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Gap'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">horizontal_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">vertical_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pec_launch_width</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'0.01mm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_edge_port_vertical" title="Link to this definition">#</a></dt>
+<dd><p>Create a vertical edge port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>prim_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Primitive ID.</p>
+</dd>
+<dt><strong>point_on_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate of the point to define the edge terminal.
+The point must be on the target edge but not on the two
+ends of the edge.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Impedance of the port. The default value is <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
+</dd>
+<dt><strong>reference_layer</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Reference layer of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>hfss_type</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Type of the port. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;Gap&quot;</span></code>. Options are <code class="docutils literal notranslate"><span class="pre">&quot;Gap&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Wave&quot;</span></code>.</p>
+</dd>
+<dt><strong>horizontal_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Horizontal extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">5</span></code>.</p>
+</dd>
+<dt><strong>vertical_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Vertical extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">3</span></code>.</p>
+</dd>
+<dt><strong>radial_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Radial extent factor. The default value is <code class="docutils literal notranslate"><span class="pre">0</span></code>.</p>
+</dd>
+<dt><strong>pec_launch_width</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Launch Width of PEC. The default value is <code class="docutils literal notranslate"><span class="pre">&quot;0.01mm&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Port name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_edge_port_horizontal">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_edge_port_horizontal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prim_id</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_on_edge</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_prim_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_on_ref_edge</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">port_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">impedance</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_alignment</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Upper'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_edge_port_horizontal" title="Link to this definition">#</a></dt>
+<dd><p>Create a horizontal edge port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>prim_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></span></dt><dd><p>Primitive ID.</p>
+</dd>
+<dt><strong>point_on_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></span></dt><dd><p>Coordinate of the point to define the edge terminal.
+The point must be on the target edge but not on the two
+ends of the edge.</p>
+</dd>
+<dt><strong>ref_prim_id</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Reference primitive ID. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>point_on_ref_edge</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Coordinate of the point to define the reference edge
+terminal. The point must be on the target edge but not
+on the two ends of the edge. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>port_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>impedance</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Impedance of the port. The default value is <code class="docutils literal notranslate"><span class="pre">50</span></code>.</p>
+</dd>
+<dt><strong>layer_alignment</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Layer alignment. The default value is <code class="docutils literal notranslate"><span class="pre">Upper</span></code>. Options are <code class="docutils literal notranslate"><span class="pre">&quot;Upper&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;Lower&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the port.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_lumped_port_on_net">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_lumped_port_on_net</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_layer</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_points_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digit_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">at_bounding_box</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_lumped_port_on_net" title="Link to this definition">#</a></dt>
+<dd><p>Create an edge port on nets. This command looks for traces and polygons on the
+nets and tries to assign vertical lumped port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>List of nets, str or Edb net.</p>
+</dd>
+<dt><strong>reference_layer</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Edb</span></code> layer.</span></dt><dd><p>Name or Edb layer object.</p>
+</dd>
+<dt><strong>return_points_only</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Use this boolean when you want to return only the points from the edges and not creating ports. Default
+value is <code class="docutils literal notranslate"><span class="pre">False</span></code>.</p>
+</dd>
+<dt><strong>digit_resolution</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>The number of digits carried for the edge location accuracy. The default value is <code class="docutils literal notranslate"><span class="pre">6</span></code>.</p>
+</dd>
+<dt><strong>at_bounding_box</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></span></dt><dd><dl class="simple">
+<dt>When <code class="docutils literal notranslate"><span class="pre">True</span></code> will keep the edges from traces at the layout bounding box location. This is recommended when</dt><dd><p>a cutout has been performed before and lumped ports have to be created on ending traces. Default value is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_vertical_circuit_port_on_clipped_traces">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_vertical_circuit_port_on_clipped_traces</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">nets</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference_net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">user_defined_extent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_vertical_circuit_port_on_clipped_traces" title="Link to this definition">#</a></dt>
+<dd><p>Create an edge port on clipped signal traces.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>nets</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>String of one net or EDB net or a list of multiple nets or EDB nets.</p>
+</dd>
+<dt><strong>reference_net</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Edb</span></code> net.</span></dt><dd><p>Name or EDB reference net.</p>
+</dd>
+<dt><strong>user_defined_extent</strong><span class="classifier">[<code class="xref py py-obj docutils literal notranslate"><span class="pre">x</span></code>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">y</span></code>], <code class="xref py py-obj docutils literal notranslate"><span class="pre">EDB</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">PolygonData</span></code></span></dt><dd><p>Use this point list or PolygonData object to check if ports are at this polygon border.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>[[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]]</dt><dd><p>Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
+and terminal name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.get_layout_bounding_box">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">get_layout_bounding_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">digit_resolution</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">6</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.get_layout_bounding_box" title="Link to this definition">#</a></dt>
+<dd><p>Evaluate the layout bounding box.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layout</strong></dt><dd><p>Edb layout.</p>
+</dd>
+<dt><strong>digit_resolution</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Digit Resolution. The default value is <code class="docutils literal notranslate"><span class="pre">6</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>[lower left corner X, lower left corner, upper right corner X, upper right corner Y].</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.configure_hfss_extents">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">configure_hfss_extents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.configure_hfss_extents" title="Link to this definition">#</a></dt>
+<dd><p>Configure the HFSS extent box.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>simulation_setup</strong></dt><dd><p>Edb_DATA.SimulationConfiguration object</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True when succeeded, False when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.add_setup">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">add_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.add_setup" title="Link to this definition">#</a></dt>
+<dd><p>Adding method for grpc compatibility</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.configure_hfss_analysis_setup">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">configure_hfss_analysis_setup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.configure_hfss_analysis_setup" title="Link to this definition">#</a></dt>
+<dd><p>Configure HFSS analysis setup.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>simulation_setup</strong></dt><dd><p>Edb_DATA.SimulationConfiguration object</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True when succeeded, False when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.trim_component_reference_size">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">trim_component_reference_size</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trim_to_terminals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.trim_component_reference_size" title="Link to this definition">#</a></dt>
+<dd><p>Trim the common component reference to the minimally acceptable size.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>simulation_setup</strong></dt><dd><p>Edb_DATA.SimulationConfiguration object</p>
+</dd>
+<dt><strong>trim_to_terminals</strong></dt><dd><dl class="simple">
+<dt>bool.</dt><dd><p>True, reduce the reference to a box covering only the active terminals (i.e. those with</p>
+</dd>
+</dl>
+</dd>
+<dt><strong>ports).</strong></dt><dd><p>False, reduce the reference to the minimal size needed to cover all pins</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True when succeeded, False when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.set_coax_port_attributes">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">set_coax_port_attributes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.set_coax_port_attributes" title="Link to this definition">#</a></dt>
+<dd><p>Set coaxial port attribute with forcing default impedance to 50 Ohms and adjusting the coaxial extent radius.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>simulation_setup</strong></dt><dd><p>Edb_DATA.SimulationConfiguration object.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True when succeeded, False when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.get_ports_number">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">get_ports_number</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.get_ports_number" title="Link to this definition">#</a></dt>
+<dd><p>Return the total number of excitation ports in a layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>None</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd><p>Number of ports.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.layout_defeaturing">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">layout_defeaturing</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_setup</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.layout_defeaturing" title="Link to this definition">#</a></dt>
+<dd><p>Defeature the layout by reducing the number of points for polygons based on surface deviation criteria.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>simulation_setup</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Edb_DATA.SimulationConfiguration</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.14)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">object</span></code></a></span></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.create_rlc_boundary_on_pins">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">create_rlc_boundary_on_pins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">positive_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">negative_pin</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cvalue</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.create_rlc_boundary_on_pins" title="Link to this definition">#</a></dt>
+<dd><p>Create hfss rlc boundary on pins.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>positive_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Positive</span></code> pin.</span></dt><dd><p>Edb.Cell.Primitive.PadstackInstance</p>
+</dd>
+<dt><strong>negative_pin</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Negative</span></code> pin.</span></dt><dd><p>Edb.Cell.Primitive.PadstackInstance</p>
+</dd>
+<dt><strong>rvalue</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Resistance</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></span></dt><dd></dd>
+<dt><strong>lvalue</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">Inductance</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">value</span></code></span></dt><dd></dd>
+<dt><strong>cvalue . Capacitance value.</strong></dt><dd></dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="EdbHfss.generate_auto_hfss_regions">
+<span class="sig-prename descclassname"><span class="pre">EdbHfss.</span></span><span class="sig-name descname"><span class="pre">generate_auto_hfss_regions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#EdbHfss.generate_auto_hfss_regions" title="Link to this definition">#</a></dt>
+<dd><p>Generate auto HFSS regions.</p>
+<p>This method automatically identifies areas for use as HFSS regions in SIwave simulations.</p>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.dotnet.database.hfss.EdbHfss"><code class="docutils literal notranslate"><span class="pre">EdbHfss</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.hfss_extent_info"><code class="docutils literal notranslate"><span class="pre">hfss_extent_info</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.excitations"><code class="docutils literal notranslate"><span class="pre">excitations</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.sources"><code class="docutils literal notranslate"><span class="pre">sources</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.probes"><code class="docutils literal notranslate"><span class="pre">probes</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.get_trace_width_for_traces_with_ports"><code class="docutils literal notranslate"><span class="pre">get_trace_width_for_traces_with_ports()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_circuit_port_on_pin"><code class="docutils literal notranslate"><span class="pre">create_circuit_port_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_voltage_source_on_pin"><code class="docutils literal notranslate"><span class="pre">create_voltage_source_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_current_source_on_pin"><code class="docutils literal notranslate"><span class="pre">create_current_source_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_resistor_on_pin"><code class="docutils literal notranslate"><span class="pre">create_resistor_on_pin()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_circuit_port_on_net"><code class="docutils literal notranslate"><span class="pre">create_circuit_port_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_voltage_source_on_net"><code class="docutils literal notranslate"><span class="pre">create_voltage_source_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_current_source_on_net"><code class="docutils literal notranslate"><span class="pre">create_current_source_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_coax_port_on_component"><code class="docutils literal notranslate"><span class="pre">create_coax_port_on_component()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_differential_wave_port"><code class="docutils literal notranslate"><span class="pre">create_differential_wave_port()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_bundle_wave_port"><code class="docutils literal notranslate"><span class="pre">create_bundle_wave_port()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_hfss_ports_on_padstack"><code class="docutils literal notranslate"><span class="pre">create_hfss_ports_on_padstack()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_edge_port_on_polygon"><code class="docutils literal notranslate"><span class="pre">create_edge_port_on_polygon()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_wave_port"><code class="docutils literal notranslate"><span class="pre">create_wave_port()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_edge_port_vertical"><code class="docutils literal notranslate"><span class="pre">create_edge_port_vertical()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_edge_port_horizontal"><code class="docutils literal notranslate"><span class="pre">create_edge_port_horizontal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_lumped_port_on_net"><code class="docutils literal notranslate"><span class="pre">create_lumped_port_on_net()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_vertical_circuit_port_on_clipped_traces"><code class="docutils literal notranslate"><span class="pre">create_vertical_circuit_port_on_clipped_traces()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.get_layout_bounding_box"><code class="docutils literal notranslate"><span class="pre">get_layout_bounding_box()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.configure_hfss_extents"><code class="docutils literal notranslate"><span class="pre">configure_hfss_extents()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.add_setup"><code class="docutils literal notranslate"><span class="pre">add_setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.configure_hfss_analysis_setup"><code class="docutils literal notranslate"><span class="pre">configure_hfss_analysis_setup()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.trim_component_reference_size"><code class="docutils literal notranslate"><span class="pre">trim_component_reference_size()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.set_coax_port_attributes"><code class="docutils literal notranslate"><span class="pre">set_coax_port_attributes()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.get_ports_number"><code class="docutils literal notranslate"><span class="pre">get_ports_number()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.layout_defeaturing"><code class="docutils literal notranslate"><span class="pre">layout_defeaturing()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.create_rlc_boundary_on_pins"><code class="docutils literal notranslate"><span class="pre">create_rlc_boundary_on_pins()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#EdbHfss.generate_auto_hfss_regions"><code class="docutils literal notranslate"><span class="pre">generate_auto_hfss_regions()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/dotnet/database/hfss/EdbHfss.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../_sources/autoapi/pyedb/dotnet/database/hfss/EdbHfss.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

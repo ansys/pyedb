@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`MethodNotSupportedError`
+================================
+
+
+.. py:exception:: pyedb.generic.general_methods.MethodNotSupportedError
+
+   Bases: :py:obj:`Exception`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.general_methods import MethodNotSupportedError
+
+
+
+
+

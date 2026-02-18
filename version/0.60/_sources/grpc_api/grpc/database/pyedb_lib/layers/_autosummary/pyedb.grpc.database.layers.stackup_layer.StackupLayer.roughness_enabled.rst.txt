@@ -1,0 +1,6 @@
+roughness\_enabled
+==================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.roughness_enabled

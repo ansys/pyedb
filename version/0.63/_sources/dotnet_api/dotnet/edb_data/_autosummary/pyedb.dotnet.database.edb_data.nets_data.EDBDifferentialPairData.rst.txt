@@ -1,0 +1,33 @@
+﻿EDBDifferentialPairData
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
+
+.. autoclass:: EDBDifferentialPairData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EDBDifferentialPairData.add_net
+      
+      
+      EDBDifferentialPairData.api_create
+      
+      
+      EDBDifferentialPairData.delete
+      
+      
+      EDBDifferentialPairData.find_by_name
+      
+   
+   
+
+   
+   
+   

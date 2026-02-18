@@ -1,0 +1,6 @@
+design\_mode
+============
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.design_mode

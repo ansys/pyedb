@@ -1,0 +1,6 @@
+energy\_error
+=============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.io.siwave
+
+.. autoproperty:: DCAdvancedSettings.energy_error

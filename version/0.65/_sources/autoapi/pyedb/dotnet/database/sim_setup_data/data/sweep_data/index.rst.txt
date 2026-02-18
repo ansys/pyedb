@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``sweep_data.py`` module
+============================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: sweep_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.sweep_data.SweepData`
+            - Manages EDB methods for a frequency sweep.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SweepData</autoapi/pyedb/dotnet/database/sim_setup_data/data/sweep_data/SweepData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

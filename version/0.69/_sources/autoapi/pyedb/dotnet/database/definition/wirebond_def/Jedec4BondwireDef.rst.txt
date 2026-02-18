@@ -1,0 +1,68 @@
+
+
+
+
+
+
+:class:`Jedec4BondwireDef`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.definition.wirebond_def.Jedec4BondwireDef(pedb, edb_object)
+
+   Bases: :py:obj:`WirebondDef`
+
+
+
+
+
+.. py:currentmodule:: Jedec4BondwireDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_by_name`
+            - 
+          * - :py:attr:`~create`
+            - 
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.wirebond_def import Jedec4BondwireDef
+
+
+
+Method detail
+-------------
+
+.. py:method:: find_by_name(edb, name: str)
+   :classmethod:
+
+
+.. py:method:: create(edb, name: str, top_to_die_distance: float = 3e-05)
+   :classmethod:
+
+
+
+
+

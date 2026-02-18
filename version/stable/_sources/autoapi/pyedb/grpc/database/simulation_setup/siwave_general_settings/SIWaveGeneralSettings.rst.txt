@@ -1,0 +1,190 @@
+
+
+
+
+
+
+:class:`SIWaveGeneralSettings`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_general_settings.SIWaveGeneralSettings(pedb, core: ansys.edb.core.simulation_setup.siwave_simulation_settings.SIWaveGeneralSettings)
+
+
+.. py:currentmodule:: SIWaveGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pi_slider_pos`
+            - Position of the PI slider.
+          * - :py:attr:`~si_slider_pos`
+            - Position of the SI slider.
+          * - :py:attr:`~use_custom_settings`
+            - Flag to indicate if custom settings are used.
+          * - :py:attr:`~use_si_settings`
+            - Flag to indicate if SI settings are used.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_general_settings import SIWaveGeneralSettings
+
+Property detail
+---------------
+
+.. py:property:: pi_slider_pos
+   :type: int
+
+
+   
+   Position of the PI slider.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Position value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: si_slider_pos
+   :type: int
+
+
+   
+   Position of the SI slider.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Position value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_custom_settings
+   :type: bool
+
+
+   
+   Flag to indicate if custom settings are used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if custom settings are used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_si_settings
+   :type: bool
+
+
+   
+   Flag to indicate if SI settings are used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if SI settings are used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

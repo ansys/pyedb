@@ -1,0 +1,139 @@
+
+
+
+
+
+
+The ``pyedb.extensions.via_design_backend`` library
+===================================================
+
+.. py:module:: pyedb.extensions.via_design_backend
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: via_design_backend
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.StitchingVias`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.Trace`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.GroundVia`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.Via`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.Signal`
+            - vias and traces.
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.DiffSignal`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.Board`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions.via_design_backend.ViaDesignBackend`
+            - 
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~create_variable`
+            - 
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> StitchingVias</autoapi/pyedb/extensions/via_design_backend/StitchingVias>
+    <span class="nf nf-cod-symbol_class"></span> Trace</autoapi/pyedb/extensions/via_design_backend/Trace>
+    <span class="nf nf-cod-symbol_class"></span> GroundVia</autoapi/pyedb/extensions/via_design_backend/GroundVia>
+    <span class="nf nf-cod-symbol_class"></span> Via</autoapi/pyedb/extensions/via_design_backend/Via>
+    <span class="nf nf-cod-symbol_class"></span> Signal</autoapi/pyedb/extensions/via_design_backend/Signal>
+    <span class="nf nf-cod-symbol_class"></span> DiffSignal</autoapi/pyedb/extensions/via_design_backend/DiffSignal>
+    <span class="nf nf-cod-symbol_class"></span> Board</autoapi/pyedb/extensions/via_design_backend/Board>
+    <span class="nf nf-cod-symbol_class"></span> ViaDesignBackend</autoapi/pyedb/extensions/via_design_backend/ViaDesignBackend>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: create_variable(obj, name_suffix, value)
+
+
+

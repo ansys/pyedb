@@ -1,0 +1,6 @@
+fix\_self\_intersections
+========================
+
+.. currentmodule:: pyedb.grpc.database.layout_validation
+
+.. automethod:: LayoutValidation.fix_self_intersections

@@ -1,0 +1,6 @@
+offset\_y
+=========
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoproperty:: PadProperties.offset_y

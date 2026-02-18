@@ -1,0 +1,6 @@
+use\_max\_refinement
+====================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: AdaptiveSettings.use_max_refinement

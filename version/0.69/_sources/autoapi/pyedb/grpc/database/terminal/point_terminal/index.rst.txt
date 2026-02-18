@@ -1,0 +1,90 @@
+
+
+
+
+
+
+The ``point_terminal.py`` module
+================================
+
+.. py:module:: pyedb.grpc.database.terminal.point_terminal
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: point_terminal
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.terminal.point_terminal.PointTerminal`
+            - Manages point terminal properties.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~mapping_boundary_type`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PointTerminal</autoapi/pyedb/grpc/database/terminal/point_terminal/PointTerminal>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: mapping_boundary_type
+
+
+

@@ -1,0 +1,166 @@
+﻿Stackup
+=======
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoclass:: Stackup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Stackup.add_document_layer
+      
+      
+      Stackup.add_layer
+      
+      
+      Stackup.add_layer_above
+      
+      
+      Stackup.add_layer_below
+      
+      
+      Stackup.add_layer_bottom
+      
+      
+      Stackup.add_layer_top
+      
+      
+      Stackup.add_layers
+      
+      
+      Stackup.add_outline_layer
+      
+      
+      Stackup.add_stackup_layer_at_elevation
+      
+      
+      Stackup.add_via_layer
+      
+      
+      Stackup.add_zone_to_layer
+      
+      
+      Stackup.adjust_solder_dielectrics
+      
+      
+      Stackup.clone
+      
+      
+      Stackup.create
+      
+      
+      Stackup.create_symmetric_stackup
+      
+      
+      Stackup.export
+      
+      
+      Stackup.find_by_name
+      
+      
+      Stackup.flip_design
+      
+      
+      Stackup.get_layers
+      
+      
+      Stackup.get_layout_thickness
+      
+      
+      Stackup.get_product_property
+      
+      
+      Stackup.get_product_property_ids
+      
+      
+      Stackup.get_top_bottom_stackup_layers
+      
+      
+      Stackup.get_zone_name
+      
+      
+      Stackup.import_from_control_file
+      
+      
+      Stackup.insert_zone
+      
+      
+      Stackup.is_valid
+      
+      
+      Stackup.limits
+      
+      
+      Stackup.load
+      
+      
+      Stackup.merge_dielectrics
+      
+      
+      Stackup.place_a3dcomp_3d_placement
+      
+      
+      Stackup.place_in_layout
+      
+      
+      Stackup.place_in_layout_3d_placement
+      
+      
+      Stackup.place_instance
+      
+      
+      Stackup.plot
+      
+      
+      Stackup.remove_layer
+      
+      
+      Stackup.remove_zone
+      
+      
+      Stackup.residual_copper_area_per_layer
+      
+      
+      Stackup.set_product_property
+      
+      
+      Stackup.set_zone_name
+      
+      
+      Stackup.simplify_dielectrics_for_phi
+      
+      
+      Stackup.update_layout
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Stackup.all_layers
+      Stackup.dielectric_layers
+      Stackup.id
+      Stackup.is_null
+      Stackup.layers
+      Stackup.layers_by_id
+      Stackup.mode
+      Stackup.msg
+      Stackup.non_stackup_layers
+      Stackup.num_layers
+      Stackup.signal_layers
+      Stackup.thickness
+      Stackup.zone_ids
+   
+   

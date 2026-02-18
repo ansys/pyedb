@@ -1,0 +1,6 @@
+do\_renormalize
+===============
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. autoproperty:: Terminal.do_renormalize

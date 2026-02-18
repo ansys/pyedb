@@ -1,0 +1,69 @@
+
+
+
+
+
+
+The ``io`` package
+======================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.io
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: io
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.io.siwave`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> siwave</autoapi/pyedb/dotnet/database/sim_setup_data/io/siwave/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

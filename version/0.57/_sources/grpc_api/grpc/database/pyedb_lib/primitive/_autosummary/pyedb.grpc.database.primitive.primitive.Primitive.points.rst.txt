@@ -1,0 +1,6 @@
+points
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.points

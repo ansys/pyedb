@@ -1,0 +1,6 @@
+get\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: CircuitPort.get_type

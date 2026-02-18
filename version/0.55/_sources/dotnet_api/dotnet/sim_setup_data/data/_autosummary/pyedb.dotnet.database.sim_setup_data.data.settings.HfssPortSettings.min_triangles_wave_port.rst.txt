@@ -1,0 +1,6 @@
+min\_triangles\_wave\_port
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: HfssPortSettings.min_triangles_wave_port

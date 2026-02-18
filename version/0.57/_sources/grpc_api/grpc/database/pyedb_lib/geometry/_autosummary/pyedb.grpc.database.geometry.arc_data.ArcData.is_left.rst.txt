@@ -1,0 +1,6 @@
+is\_left
+========
+
+.. currentmodule:: pyedb.grpc.database.geometry.arc_data
+
+.. automethod:: ArcData.is_left

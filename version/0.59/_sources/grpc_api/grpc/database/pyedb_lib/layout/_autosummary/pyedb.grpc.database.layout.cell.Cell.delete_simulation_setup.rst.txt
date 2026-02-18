@@ -1,0 +1,6 @@
+delete\_simulation\_setup
+=========================
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.delete_simulation_setup

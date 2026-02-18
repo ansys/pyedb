@@ -1,0 +1,6 @@
+parse\_raw
+==========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.parse_raw

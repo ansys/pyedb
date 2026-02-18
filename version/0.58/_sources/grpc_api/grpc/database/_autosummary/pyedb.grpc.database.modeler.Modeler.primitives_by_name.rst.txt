@@ -1,0 +1,6 @@
+primitives\_by\_name
+====================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. autoproperty:: Modeler.primitives_by_name

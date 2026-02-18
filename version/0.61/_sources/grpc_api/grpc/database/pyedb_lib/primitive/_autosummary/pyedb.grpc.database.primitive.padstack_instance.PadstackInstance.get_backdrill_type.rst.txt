@@ -1,0 +1,6 @@
+get\_backdrill\_type
+====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.get_backdrill_type

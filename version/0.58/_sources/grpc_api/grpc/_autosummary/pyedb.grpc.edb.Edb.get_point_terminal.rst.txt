@@ -1,0 +1,6 @@
+get\_point\_terminal
+====================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.get_point_terminal

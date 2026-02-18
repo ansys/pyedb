@@ -1,0 +1,159 @@
+
+
+
+
+
+
+The ``helpers.py`` module
+=========================
+
+.. py:module:: pyedb.workflows.utilities.helpers
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: helpers
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~format_time`
+            - Helper to format time in seconds into a human-readable string with hours, minutes and seconds.
+
+
+          * - :py:obj:`~print_progress`
+            - Helper to print progress in terminal with rate and ETA. Caller can choose how often to call this function based
+
+
+          * - :py:obj:`~finish_progress`
+            - helper to end a progress line cleanly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: format_time(seconds)
+
+   
+   Helper to format time in seconds into a human-readable string with hours, minutes and seconds.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: print_progress(current, total, start_time, prefix_desc='Progress')
+
+   
+   Helper to print progress in terminal with rate and ETA. Caller can choose how often to call this function based
+   on their needs, e.g. every N iterations or every M seconds
+
+
+   :Parameters:
+
+       **current** : :class:`python:int`
+           Current progress count
+
+       **total** : :class:`python:int`
+           Total count for completion, can be 0 or negative if unknown
+
+       **start_time** : :class:`python:float`
+           Start time in seconds (e.g. from time.time()) to compute elapsed time and rate
+
+       **prefix_desc** : :class:`python:str`, :obj:`optional`
+           Description prefix to show before progress info, by default "Progress"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: finish_progress()
+
+   
+   helper to end a progress line cleanly
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

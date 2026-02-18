@@ -1,0 +1,6 @@
+create\_3d\_comp
+================
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. automethod:: BundleTerminal.create_3d_comp

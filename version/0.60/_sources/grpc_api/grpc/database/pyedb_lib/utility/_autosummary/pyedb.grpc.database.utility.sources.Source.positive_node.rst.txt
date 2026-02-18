@@ -1,0 +1,6 @@
+positive\_node
+==============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: Source.positive_node

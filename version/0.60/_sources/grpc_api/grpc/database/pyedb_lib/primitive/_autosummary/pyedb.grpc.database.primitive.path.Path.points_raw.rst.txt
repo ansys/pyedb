@@ -1,0 +1,6 @@
+points\_raw
+===========
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.points_raw

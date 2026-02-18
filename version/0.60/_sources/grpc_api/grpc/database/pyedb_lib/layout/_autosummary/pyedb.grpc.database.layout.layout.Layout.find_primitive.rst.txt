@@ -1,0 +1,6 @@
+find\_primitive
+===============
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.find_primitive

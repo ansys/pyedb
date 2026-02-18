@@ -1,0 +1,6 @@
+find\_by\_name
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.find_by_name

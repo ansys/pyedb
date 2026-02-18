@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoattribute:: Component.layout_obj_type

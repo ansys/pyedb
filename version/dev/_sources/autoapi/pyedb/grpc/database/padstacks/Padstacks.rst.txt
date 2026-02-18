@@ -1,0 +1,1920 @@
+
+
+
+
+
+
+:class:`Padstacks`
+==================
+
+
+.. py:class:: pyedb.grpc.database.padstacks.Padstacks(p_edb: Any)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for padstacks accessible from `Edb.padstacks` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2024.2")
+   >>> edb_padstacks = edbapp.padstacks
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: Padstacks
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~clear_instances_cache`
+            - Clear the cached padstack instances.
+          * - :py:attr:`~find_instance_by_id`
+            - Find a padstack instance by database ID.
+          * - :py:attr:`~create_dielectric_filled_backdrills`
+            - Create dielectric-filled back-drills for through-hole vias.
+          * - :py:attr:`~create_circular_padstack`
+            - Create a circular padstack.
+          * - :py:attr:`~delete_batch_instances`
+            - 
+          * - :py:attr:`~delete_padstack_instances`
+            - Delete padstack instances by net names.
+          * - :py:attr:`~set_solderball`
+            - Set solderball for the given PadstackInstance.
+          * - :py:attr:`~create_coax_port`
+            - Create HFSS 3Dlayout coaxial lumped port on a pastack
+          * - :py:attr:`~get_pin_from_component_and_net`
+            - Retrieve pins by component reference designator and net name.
+          * - :py:attr:`~get_pinlist_from_component_and_net`
+            - Retrieve pins given a component's reference designator and net name.
+          * - :py:attr:`~get_pad_parameters`
+            - Get pad parameters for a pin on a specific layer.
+          * - :py:attr:`~set_all_antipad_value`
+            - Set anti-pad value for all padstack definitions.
+          * - :py:attr:`~check_and_fix_via_plating`
+            - Check and fix via plating ratios below a minimum value.
+          * - :py:attr:`~get_via_instance_from_net`
+            - Get via instances by net names.
+          * - :py:attr:`~layers_between`
+            - Return the sub-list of *layers* that lies between *start_layer*
+          * - :py:attr:`~create`
+            - Create a padstack definition.
+          * - :py:attr:`~duplicate`
+            - Duplicate a padstack definition.
+          * - :py:attr:`~place`
+            - Place a padstack instance.
+          * - :py:attr:`~remove_pads_from_padstack`
+            - Remove pads from a padstack definition on specified layers.
+          * - :py:attr:`~set_pad_property`
+            - Set pad and anti-pad properties for a padstack definition.
+          * - :py:attr:`~get_padstack_instance_by_net_name`
+            - Get padstack instances by net name.
+          * - :py:attr:`~get_instances`
+            - Get padstack instances by search criteria.
+          * - :py:attr:`~get_reference_pins`
+            - Find reference pins near a specified pin.
+          * - :py:attr:`~get_padstack_instances_rtree_index`
+            - Returns padstack instances Rtree index.
+          * - :py:attr:`~get_padstack_instances_id_intersecting_polygon`
+            - Returns the list of padstack instances ID intersecting a given bounding box and nets.
+          * - :py:attr:`~get_padstack_instances_intersecting_bounding_box`
+            - Returns the list of padstack instances ID intersecting a given bounding box and nets.
+          * - :py:attr:`~merge_via_along_lines`
+            - Replace padstack instances along lines into a single polygon.
+          * - :py:attr:`~merge_via`
+            - Evaluate pad-stack instances included on the provided point list and replace all by single instance.
+          * - :py:attr:`~reduce_via_in_bounding_box`
+            - reduce the number of vias intersecting bounding box and nets by x and y samples.
+          * - :py:attr:`~reduce_via_by_density`
+            - Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~db`
+            - Db object.
+          * - :py:attr:`~definitions`
+            - Padstack definitions.
+          * - :py:attr:`~instances`
+            - All padstack instances (vias and pins) in the layout.
+          * - :py:attr:`~instances_by_net`
+            - 
+          * - :py:attr:`~instances_by_name`
+            - All padstack instances (vias and pins) indexed by name.
+          * - :py:attr:`~pins`
+            - All pin instances belonging to components.
+          * - :py:attr:`~vias`
+            - All via instances not belonging to components.
+          * - :py:attr:`~pingroups`
+            - All Layout Pin groups.
+          * - :py:attr:`~pad_type`
+            - Return a PadType Enumerator.
+
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~int_to_pad_type`
+            - Convert an integer to an EDB.PadGeometryType.
+          * - :py:attr:`~int_to_geometry_type`
+            - Convert an integer to an EDB.PadGeometryType.
+          * - :py:attr:`~dbscan`
+            - density based spatial clustering for padstack instances
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get a padstack definition or instance from the EDB project.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.padstacks import Padstacks
+
+Property detail
+---------------
+
+.. py:property:: db
+   :type: Any
+
+
+   
+   Db object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: definitions
+   :type: Dict[str, pyedb.grpc.database.definition.padstack_def.PadstackDef]
+
+
+   
+   Padstack definitions.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.definition.padstack_def.PadstackDef`]
+           Dictionary of padstack definitions with definition names as keys.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> all_definitions = edb.padstacks.definitions
+   >>> for name, definition in all_definitions.items():
+   ...     print(f"Padstack: {name}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: instances
+   :type: Dict[int, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   All padstack instances (vias and pins) in the layout.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:int`, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           Dictionary of padstack instances with database IDs as keys.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> all_instances = edb.padstacks.instances
+   >>> for inst_id, instance in all_instances.items():
+   ...     print(f"Instance {inst_id}: {instance.name}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: instances_by_net
+   :type: Dict[Any, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+.. py:property:: instances_by_name
+   :type: Dict[str, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   All padstack instances (vias and pins) indexed by name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           Dictionary of padstack instances with names as keys.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> named_instances = edb.padstacks.instances_by_name
+   >>> for name, instance in named_instances.items():
+   ...     print(f"Instance named {name}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pins
+   :type: Dict[int, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   All pin instances belonging to components.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:int`, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           Dictionary of pin instances with database IDs as keys.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> all_pins = edb.padstacks.pins
+   >>> for pin_id, pin in all_pins.items():
+   ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: vias
+   :type: Dict[int, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+
+   
+   All via instances not belonging to components.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:int`, :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           Dictionary of via instances with database IDs as keys.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> all_vias = edb.padstacks.vias
+   >>> for via_id, via in all_vias.items():
+   ...     print(f"Via {via_id} on net {via.net_name}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pingroups
+   :type: List[Any]
+
+
+   
+   All Layout Pin groups.
+
+   . deprecated:: pyedb 0.28.0
+   Use :func:`pyedb.grpc.core.layout.pin_groups` instead.
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of all layout pin groups.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> groups = edb.padstacks._layout.pin_groups  # New way
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pad_type
+   :type: ansys.edb.core.definition.padstack_def_data.PadType
+
+
+   
+   Return a PadType Enumerator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name)
+
+   
+   Get a padstack definition or instance from the EDB project.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :class:`python:int`
+           Name or ID of the padstack definition or instance.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.definition.padstack_def.PadstackDef` :obj:`or`
+           ..
+
+       :class:`pyedb.dotnet.database.primitive.padstack_instance.PadstackInstance`
+           ..
+
+       :obj:`Requested` :obj:`padstack` :obj:`definition` or instance. :obj:`Returns` ``None`` :obj:`if` :obj:`not` found.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: clear_instances_cache()
+
+   
+   Clear the cached padstack instances.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: int_to_pad_type(val=0) -> ansys.edb.core.definition.padstack_def_data.PadType
+   :staticmethod:
+
+
+   
+   Convert an integer to an EDB.PadGeometryType.
+
+
+   :Parameters:
+
+       **val** : :class:`python:int`
+           ..
+
+
+
+   :Returns:
+
+       :obj:`object`
+           EDB.PadType enumerator value.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> pad_type = edb.padstacks.int_to_pad_type(0)  # Returns REGULAR_PAD
+   >>> pad_type2 = edb.padstacks.int_to_pad_type(1)  # Returns ANTI_PAD
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: int_to_geometry_type(val: int = 0) -> ansys.edb.core.definition.padstack_def_data.PadGeometryType
+   :staticmethod:
+
+
+   
+   Convert an integer to an EDB.PadGeometryType.
+
+
+   :Parameters:
+
+       **val** : :class:`python:int`
+           ..
+
+
+
+   :Returns:
+
+       :obj:`object`
+           EDB.PadGeometryType enumerator value.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb()
+   >>> geom_type = edb.padstacks.int_to_geometry_type(1)  # Returns CIRCLE
+   >>> geom_type2 = edb.padstacks.int_to_geometry_type(2)  # Returns SQUARE
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_instance_by_id(value: int) -> Optional[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+   
+   Find a padstack instance by database ID.
+
+
+   :Parameters:
+
+       **value** : :class:`python:int`
+           Database ID of the padstack instance.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or :data:`python:None`
+           Padstack instance if found, otherwise ``None``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> via = edb.padstacks.find_instance_by_id(123)
+   >>> if via:
+   ...     print(f"Found via: {via.name}")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_dielectric_filled_backdrills(layer: str, diameter: Union[float, str], material: str, permittivity: float, padstack_instances: Optional[List[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]] = None, padstack_definition: Optional[Union[str, List[str]]] = None, dielectric_loss_tangent: Optional[float] = None, nets: Optional[Union[str, List[str]]] = None) -> bool
+
+   
+   Create dielectric-filled back-drills for through-hole vias.
+
+   Back-drilling (a.k.a. controlled-depth drilling) is used to remove the
+   unused via stub that acts as an unterminated transmission-line segment,
+   thereby improving signal-integrity at high frequencies.  This routine
+   goes one step further: after the stub is removed the resulting cylindrical
+   cavity is **completely filled** with a user-specified dielectric.  The
+   fill material restores mechanical rigidity, prevents solder-wicking, and
+   keeps the original via’s electrical characteristics intact on the
+   remaining, still-plated, portion.
+
+   :Parameters:
+
+       **layer** : :class:`str`
+           Signal layer name up to which the back-drill is performed (inclusive).
+           The drill always starts on the bottom-most signal layer of the stack-up.
+
+       **diameter** : :class:`float` or :class:`str`
+           Finished hole diameter for the back-drill.  A numeric value is
+           interpreted in the database length unit; a string such as
+           ``"0.3mm"`` is evaluated with units.
+
+       **material** : :class:`str`
+           Name of the dielectric material that fills the drilled cavity.  If the
+           material does not yet exist in the central material library it is
+           created on the fly.
+
+       **permittivity** : :class:`float`
+           Relative permittivity :math:`\varepsilon_{\mathrm{r}}` used when the
+           material has to be created.  Must be positive.
+
+       **padstack_instances** : :class:`list` [:class:`PadstackInstance` ], :obj:`optional`
+           Explicit list of via instances to process.  When provided,
+           ``padstack_definition`` and ``nets`` are ignored for filtering.
+
+       **padstack_definition** : :class:`str` or :class:`list` [:class:`str` ], :obj:`optional`
+           Pad-stack definition(s) to process.  If omitted, **all** through-hole
+           definitions are considered.
+
+       **dielectric_loss_tangent** : :class:`float`, :obj:`optional`
+           Loss tangent :math:`\tan\delta` used when the material has to be
+           created.  Defaults to ``0.0``.
+
+       **nets** : :class:`str` or :class:`list` [:class:`str` ], :obj:`optional`
+           Net name(s) used to filter vias.  If omitted, vias belonging to
+           **any** net are processed.
+
+
+
+   :Returns:
+
+       :class:`bool`
+           ``True`` when at least one back-drill was successfully created.
+           ``False`` if no suitable via was found or any error occurred.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If ``material`` is empty or if ``permittivity`` is non-positive when a
+           new material must be created.
+
+
+
+
+   .. rubric:: Notes
+
+   * The routine is safe to call repeatedly: existing back-drills are **not**
+     duplicated because the ``*_BD`` definition name is deterministic.
+   * The original via keeps its pad-stack definition and net assignment; only
+     its unused stub is removed.
+   * The back-drill is **not** subtracted from anti-pads or plane clearances;
+     the filling material is assumed to be electrically invisible at the
+     frequencies of interest.
+
+
+   .. rubric:: Examples
+
+   Create back-drills on all vias belonging to two specific pad-stack
+   definitions and two DDR4 nets:
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> edb.padstacks.create_dielectric_filled_backdrills(
+   ...     layer="L3",
+   ...     diameter="0.25mm",
+   ...     material="EPON_827",
+   ...     permittivity=3.8,
+   ...     dielectric_loss_tangent=0.015,
+   ...     padstack_definition=["VIA_10MIL", "VIA_16MIL"],
+   ...     nets=["DDR4_DQ0", "DDR4_DQ1"],
+   ... )
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circular_padstack(padstackname: Optional[str] = None, holediam: str = '300um', paddiam: str = '400um', antipaddiam: str = '600um', startlayer: Optional[str] = None, endlayer: Optional[str] = None) -> str
+
+   
+   Create a circular padstack.
+
+
+   :Parameters:
+
+       **padstackname** : :class:`python:str`, :obj:`optional`
+           Name of the padstack. The default is ``None``.
+
+       **holediam** : :class:`python:str`, :obj:`optional`
+           Diameter of the hole with units. The default is ``"300um"``.
+
+       **paddiam** : :class:`python:str`, :obj:`optional`
+           Diameter of the pad with units. The default is ``"400um"``.
+
+       **antipaddiam** : :class:`python:str`, :obj:`optional`
+           Diameter of the antipad with units. The default is ``"600um"``.
+
+       **startlayer** : :class:`python:str`, :obj:`optional`
+           Starting layer. The default is ``None``, in which case the top
+           is the starting layer.
+
+       **endlayer** : :class:`python:str`, :obj:`optional`
+           Ending layer. The default is ``None``, in which case the bottom
+           is the ending layer.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the padstack if the operation is successful.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> via_name = edb.padstacks.create_circular_padstack(
+   ...     padstackname="VIA1", holediam="200um", paddiam="400um", antipaddiam="600um"
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_batch_instances(instances_to_delete)
+
+.. py:method:: delete_padstack_instances(net_names: Union[str, List[str]]) -> bool
+
+   
+   Delete padstack instances by net names.
+
+
+   :Parameters:
+
+       **net_names** : :class:`python:str`, :class:`python:list`
+           Names of the nets whose padstack instances should be deleted.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> success = edb.padstacks.delete_padstack_instances("GND")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_solderball(padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=0.0001)
+
+   
+   Set solderball for the given PadstackInstance.
+
+
+   :Parameters:
+
+       **padstack_instance** : :obj:`Edb.Cell.Primitive.PadstackInstance` or :class:`python:int`
+           Padstack instance id or object.
+
+       **solder_ball_layer** : str,
+           Name of the layer where the solder ball is placed. No default values.
+
+       **top_placed** : :ref:`bool <python:bltin-boolean-values>`, optional.
+           Boolean triggering is the solder ball is placed on Top or Bottom of the layer stackup.
+
+       **solder_ball_diameter** : :obj:`double`, optional,
+           Solder ball diameter value.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_coax_port(padstackinstance, use_dot_separator=True, name=None)
+
+   
+   Create HFSS 3Dlayout coaxial lumped port on a pastack
+   Requires to have solder ball defined before calling this method.
+
+   . deprecated:: pyedb 0.28.0
+   Use :func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
+
+   :Parameters:
+
+       **padstackinstance** : `Edb.Cell.Primitive.PadstackInstance` or :class:`python:int`
+           Padstack instance object.
+
+       **use_dot_separator** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use ``.`` as the separator for the naming convention, which
+           is ``[component][net][pin]``. The default is ``True``. If ``False``, ``_`` is
+           used as the separator instead.
+
+       **name** : :class:`python:str`
+           Port name for overwriting the default port-naming convention,
+           which is ``[component][net][pin]``. The port name must be unique.
+           If a port with the specified name already exists, the
+           default naming convention is used so that port creation does
+           not fail.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Terminal name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pin_from_component_and_net(refdes: Optional[str] = None, netname: Optional[str] = None) -> List[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+   
+   Retrieve pins by component reference designator and net name.
+
+
+   :Parameters:
+
+       **refdes** : :class:`python:str`, :obj:`optional`
+           Component reference designator.
+
+       **netname** : :class:`python:str`, :obj:`optional`
+           Net name.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           List of matching pin instances.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> pins = edb.padstacks.get_pin_from_component_and_net(refdes="U1", netname="VCC")
+   >>> pins2 = edb.padstacks.get_pin_from_component_and_net(netname="GND")  # All GND pins
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pinlist_from_component_and_net(refdes=None, netname=None)
+
+   
+   Retrieve pins given a component's reference designator and net name.
+
+   . deprecated:: pyedb 0.28.0
+   Use :func:`get_pin_from_component_and_net` instead.
+
+   :Parameters:
+
+       **refdes** : :class:`python:str`, :obj:`optional`
+           Reference designator of the component. The default is ``None``.
+
+       **netname** : :class:`python:str` :obj:`optional`
+           Name of the net. The default is ``None``.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of pins if the operation is successful.
+           ``False`` is returned if the net does not belong to the component.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> pins = edb.padstacks.get_pin_from_component_and_net(refdes="U1", netname="CLK")  # New way
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pad_parameters(pin: pyedb.grpc.database.primitive.padstack_instance.PadstackInstance, layername: str, pad_type: str = 'regular_pad') -> Tuple[str, Union[List[float], List[List[float]]], float, float, float]
+
+   
+   Get pad parameters for a pin on a specific layer.
+
+
+   :Parameters:
+
+       **pin** : :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+           Padstack instance.
+
+       **layername** : :class:`python:str`
+           Layer name.
+
+       **pad_type** : :class:`python:str`, :obj:`optional`
+           Pad type ("regular_pad", "anti_pad", "thermal_pad"). Default is ``"regular_pad"``.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           (geometry_type, parameters, offset_x, offset_y, rotation) where:
+           - geometry_type : str
+           - parameters : list[float] or list[list[float]]
+           - offset_x : float
+           - offset_y : float
+           - rotation : float
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> via = edb.padstacks.instances[123]
+   >>> geom_type, params, x, y, rot = edb.padstacks.get_pad_parameters(via, "TOP", "regular_pad")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_all_antipad_value(value: Union[float, str]) -> bool
+
+   
+   Set anti-pad value for all padstack definitions.
+
+
+   :Parameters:
+
+       **value** : :class:`python:float` or :class:`python:str`
+           Anti-pad value with units (e.g., "0.2mm").
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> success = edb.padstacks.set_all_antipad_value("0.3mm")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: check_and_fix_via_plating(minimum_value_to_replace: float = 0.0, default_plating_ratio: float = 0.2) -> bool
+
+   
+   Check and fix via plating ratios below a minimum value.
+
+
+   :Parameters:
+
+       **minimum_value_to_replace** : :class:`python:float`, :obj:`optional`
+           Minimum plating ratio threshold. Default is ``0.0``.
+
+       **default_plating_ratio** : :class:`python:float`, :obj:`optional`
+           Default plating ratio to apply. Default is ``0.2``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> success = edb.padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_via_instance_from_net(net_list: Optional[Union[str, List[str]]] = None) -> List[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+   
+   Get via instances by net names.
+
+
+   :Parameters:
+
+       **net_list** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Net name(s) for filtering. Returns all vias if ``None``.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           List of via instances.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("my_design.edb")
+   >>> vias = edb.padstacks.get_via_instance_from_net(["GND", "PWR"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: layers_between(layers, start_layer=None, stop_layer=None)
+
+   
+   Return the sub-list of *layers* that lies between *start_layer*
+   (inclusive) and *stop_layer* (inclusive).  Works no matter which
+   of the two is nearer the top of the stack.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(padstackname: Optional[str] = None, holediam: str = '300um', paddiam: str = '400um', antipaddiam: str = '600um', pad_shape: str = 'Circle', antipad_shape: str = 'Circle', x_size: str = '600um', y_size: str = '600um', corner_radius: str = '300um', offset_x: str = '0.0', offset_y: str = '0.0', rotation: str = '0.0', has_hole: bool = True, pad_offset_x: str = '0.0', pad_offset_y: str = '0.0', pad_rotation: str = '0.0', pad_polygon: Optional[Any] = None, antipad_polygon: Optional[Any] = None, polygon_hole: Optional[Any] = None, start_layer: Optional[str] = None, stop_layer: Optional[str] = None, add_default_layer: bool = False, anti_pad_x_size: str = '600um', anti_pad_y_size: str = '600um', hole_range: str = 'upper_pad_to_lower_pad')
+
+   
+   Create a padstack definition.
+
+
+   :Parameters:
+
+       **padstackname** : :class:`python:str`, :obj:`optional`
+           Name of the padstack definition.
+
+       **holediam** : :class:`python:str`, :obj:`optional`
+           Hole diameter with units. Default is ``"300um"``.
+
+       **paddiam** : :class:`python:str`, :obj:`optional`
+           Pad diameter with units. Default is ``"400um"``.
+
+       **antipaddiam** : :class:`python:str`, :obj:`optional`
+           Anti-pad diameter with units. Default is ``"600um"``.
+
+       **pad_shape** : :class:`python:str`, :obj:`optional`
+           Pad geometry type ("Circle", "Rectangle", "Polygon"). Default is ``"Circle"``.
+
+       **antipad_shape** : :class:`python:str`, :obj:`optional`
+           Anti-pad geometry type ("Circle", "Rectangle", "Bullet", "Polygon"). Default is ``"Circle"``.
+
+       **x_size** : :class:`python:str`, :obj:`optional`
+           X-size for rectangular/bullet shapes. Default is ``"600um"``.
+
+       **y_size** : :class:`python:str`, :obj:`optional`
+           Y-size for rectangular/bullet shapes. Default is ``"600um"``.
+
+       **corner_radius** : :class:`python:str`, :obj:`optional`
+           Corner radius for bullet shapes. Default is ``"300um"``.
+
+       **offset_x** : :class:`python:str`, :obj:`optional`
+           X-offset for anti-pad. Default is ``"0.0"``.
+
+       **offset_y** : :class:`python:str`, :obj:`optional`
+           Y-offset for anti-pad. Default is ``"0.0"``.
+
+       **rotation** : :class:`python:str`, :obj:`optional`
+           Rotation for anti-pad in degrees. Default is ``"0.0"``.
+
+       **has_hole** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the padstack has a hole. Default is ``True``.
+
+       **pad_offset_x** : :class:`python:str`, :obj:`optional`
+           X-offset for pad. Default is ``"0.0"``.
+
+       **pad_offset_y** : :class:`python:str`, :obj:`optional`
+           Y-offset for pad. Default is ``"0.0"``.
+
+       **pad_rotation** : :class:`python:str`, :obj:`optional`
+           Rotation for pad in degrees. Default is ``"0.0"``.
+
+       **pad_polygon** : :class:`python:list` or :class:`ansys.edb.core.geometry.PolygonData`, :obj:`optional`
+           Polygon points for custom pad shape.
+
+       **antipad_polygon** : :class:`python:list` or :class:`ansys.edb.core.geometry.PolygonData`, :obj:`optional`
+           Polygon points for custom anti-pad shape.
+
+       **polygon_hole** : :class:`python:list` or :class:`ansys.edb.core.geometry.PolygonData`, :obj:`optional`
+           Polygon points for custom hole shape.
+
+       **start_layer** : :class:`python:str`, :obj:`optional`
+           Starting layer name.
+
+       **stop_layer** : :class:`python:str`, :obj:`optional`
+           Ending layer name.
+
+       **add_default_layer** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to add "Default" layer. Default is ``False``.
+
+       **anti_pad_x_size** : :class:`python:str`, :obj:`optional`
+           Anti-pad X-size. Default is ``"600um"``.
+
+       **anti_pad_y_size** : :class:`python:str`, :obj:`optional`
+           Anti-pad Y-size. Default is ``"600um"``.
+
+       **hole_range** : :class:`python:str`, :obj:`optional`
+           Hole range type ("through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad").
+           Default is ``"upper_pad_to_lower_pad"``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the created padstack definition.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: duplicate(target_padstack_name: str, new_padstack_name: str = '') -> str
+
+   
+   Duplicate a padstack definition.
+
+
+   :Parameters:
+
+       **target_padstack_name** : :class:`python:str`
+           Name of the padstack definition to duplicate.
+
+       **new_padstack_name** : :class:`python:str`, :obj:`optional`
+           Name for the new padstack definition.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the new padstack definition.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: place(position: List[float], definition_name: str, net_name: str = '', via_name: str = '', rotation: float = 0.0, from_layer: Optional[str] = None, to_layer: Optional[str] = None, solder_ball_layer: Optional[str] = None, is_pin: bool = False, layer_map: str = 'two_way') -> pyedb.grpc.database.primitive.padstack_instance.PadstackInstance
+
+   
+   Place a padstack instance.
+
+
+   :Parameters:
+
+       **position** : :class:`python:list`\[:class:`python:float`, :class:`python:float`]
+           [x, y] position for placement.
+
+       **definition_name** : :class:`python:str`
+           Padstack definition name.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Net name. Default is ``""``.
+
+       **via_name** : :class:`python:str`, :obj:`optional`
+           Instance name. Default is ``""``.
+
+       **rotation** : :class:`python:float`, :obj:`optional`
+           Rotation in degrees. Default is ``0.0``.
+
+       **from_layer** : :class:`python:str`, :obj:`optional`
+           Starting layer name.
+
+       **to_layer** : :class:`python:str`, :obj:`optional`
+           Ending layer name.
+
+       **solder_ball_layer** : :class:`python:str`, :obj:`optional`
+           Solder ball layer name.
+
+       **is_pin** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the instance is a pin. Default is ``False``.
+
+       **layer_map** : :class:`python:str`, :obj:`optional`
+           Layer mapping information. Valid input is ``"two_way"``, ``"backward"``, or ``"forward"``.
+           Default is ``two_way``.
+
+
+
+   :Returns:
+
+       :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or :ref:`bool <python:bltin-boolean-values>`
+           Created padstack instance or ``False`` if failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_pads_from_padstack(padstack_name: str, layer_name: Optional[str] = None)
+
+   
+   Remove pads from a padstack definition on specified layers.
+
+
+   :Parameters:
+
+       **padstack_name** : :class:`python:str`
+           Padstack definition name.
+
+       **layer_name** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Layer name(s). Applies to all layers if ``None``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_pad_property(padstack_name: str, layer_name: Optional[str] = None, pad_shape: str = 'Circle', pad_params: Union[float, List[float]] = 0, pad_x_offset: float = 0, pad_y_offset: float = 0, pad_rotation: float = 0, antipad_shape: str = 'Circle', antipad_params: Union[float, List[float]] = 0, antipad_x_offset: float = 0, antipad_y_offset: float = 0, antipad_rotation: float = 0)
+
+   
+   Set pad and anti-pad properties for a padstack definition.
+
+
+   :Parameters:
+
+       **padstack_name** : :class:`python:str`
+           Padstack definition name.
+
+       **layer_name** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Layer name(s). Applies to all layers if ``None``.
+
+       **pad_shape** : :class:`python:str`, :obj:`optional`
+           Pad geometry type ("Circle", "Square", "Rectangle", "Oval", "Bullet"). Default is ``"Circle"``.
+
+       **pad_params** : :class:`python:float` or :class:`python:list`, :obj:`optional`
+           Pad dimension(s). Default is ``0``.
+
+       **pad_x_offset** : :class:`python:float`, :obj:`optional`
+           Pad X-offset. Default is ``0``.
+
+       **pad_y_offset** : :class:`python:float`, :obj:`optional`
+           Pad Y-offset. Default is ``0``.
+
+       **pad_rotation** : :class:`python:float`, :obj:`optional`
+           Pad rotation in degrees. Default is ``0``.
+
+       **antipad_shape** : :class:`python:str`, :obj:`optional`
+           Anti-pad geometry type ("Circle", "Square", "Rectangle", "Oval", "Bullet"). Default is ``"Circle"``.
+
+       **antipad_params** : :class:`python:float` or :class:`python:list`, :obj:`optional`
+           Anti-pad dimension(s). Default is ``0``.
+
+       **antipad_x_offset** : :class:`python:float`, :obj:`optional`
+           Anti-pad X-offset. Default is ``0``.
+
+       **antipad_y_offset** : :class:`python:float`, :obj:`optional`
+           Anti-pad Y-offset. Default is ``0``.
+
+       **antipad_rotation** : :class:`python:float`, :obj:`optional`
+           Anti-pad rotation in degrees. Default is ``0``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_padstack_instance_by_net_name(net: str)
+
+   
+   Get padstack instances by net name.
+
+   .. deprecated:: 0.55.0
+   Use: :func:`get_instances` with `net_name` parameter instead.
+
+   :Parameters:
+
+       **net** : :class:`python:str`
+           Net name to filter padstack instances.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           List of padstack instances associated with the specified net.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_instances(name: Optional[str] = None, pid: Optional[int] = None, definition_name: Optional[str] = None, net_name: Optional[Union[str, List[str]]] = None, component_reference_designator: Optional[str] = None, component_pin: Optional[str] = None) -> List[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+   
+   Get padstack instances by search criteria.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Instance name.
+
+       **pid** : :class:`python:int`, :obj:`optional`
+           Database ID.
+
+       **definition_name** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Padstack definition name(s).
+
+       **net_name** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Net name(s).
+
+       **component_reference_designator** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Component reference designator(s).
+
+       **component_pin** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           Component pin number(s).
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           List of matching padstack instances.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_reference_pins(positive_pin: Union[int, str, pyedb.grpc.database.primitive.padstack_instance.PadstackInstance], reference_net: str = 'gnd', search_radius: float = 0.005, max_limit: int = 0, component_only: bool = True) -> List[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+   
+   Find reference pins near a specified pin.
+
+
+   :Parameters:
+
+       **positive_pin** : :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
+           Target pin.
+
+       **reference_net** : :class:`python:str`, :obj:`optional`
+           Reference net name. Default is ``"gnd"``.
+
+       **search_radius** : :class:`python:float`, :obj:`optional`
+           Search radius in meters. Default is ``5e-3`` (5 mm).
+
+       **max_limit** : :class:`python:int`, :obj:`optional`
+           Maximum number of pins to return. Default is ``0`` (no limit).
+
+       **component_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to search only in component pins. Default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
+           List of reference pins.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_padstack_instances_rtree_index(nets: Optional[Union[str, List[str]]] = None) -> rtree.index.Index
+
+   
+   Returns padstack instances Rtree index.
+
+
+   :Parameters:
+
+       **nets** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+           all instances are included in the index. Default value is ``None``.
+
+
+
+   :Returns:
+
+       :obj:`Rtree` :obj:`index` object.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_padstack_instances_id_intersecting_polygon(points: List[Tuple[float, float]], nets: Optional[Union[str, List[str]]] = None, padstack_instances_index: Optional[Dict[int, Tuple[float, float]]] = None) -> List[int]
+
+   
+   Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
+
+   :Parameters:
+
+       **points** : :class:`python:tuple` or list.
+           bounding box, [x1, y1, x2, y2]
+
+       **nets** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           net name of list of nets name applying filtering on padstack instances selection. If ``None`` is provided
+           all instances are included in the index. Default value is ``None``.
+
+       **padstack_instances_index** : :obj:`optional`, :obj:`Rtree` object.
+           Can be provided optionally to prevent computing padstack instances Rtree index again.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:int`]
+           List of padstack instances ID intersecting the bounding box.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_padstack_instances_intersecting_bounding_box(bounding_box: List[float], nets: Optional[Union[str, List[str]]] = None, padstack_instances_index: Optional[rtree.index.Index] = None) -> List[int]
+
+   
+   Returns the list of padstack instances ID intersecting a given bounding box and nets.
+   Parameters
+   ----------
+   bounding_box : tuple or list.
+       bounding box, [x1, y1, x2, y2]
+   nets : str or list, optional
+       net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
+       all instances are included in the index. Default value is ``None``.
+   padstack_instances_index : optional, Rtree object.
+       Can be provided optionally to prevent computing padstack instances Rtree index again.
+   Returns
+   -------
+   List of padstack instances ID intersecting the bounding box.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: merge_via_along_lines(net_name: str = 'GND', distance_threshold: float = 0.005, minimum_via_number: int = 6, selected_angles: Optional[List[float]] = None, padstack_instances_id: Optional[List[int]] = None) -> List[str]
+
+   
+   Replace padstack instances along lines into a single polygon.
+
+   Detect all pad-stack instances that are placed along lines and replace them by a single polygon based one
+   forming a wall shape. This method is designed to simplify meshing on via fence usually added to shield RF traces
+   on PCB.
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`
+           Net name used for detected pad-stack instances. Default value is ``"GND"``.
+
+       **distance_threshold** : :class:`python:float`, :data:`python:None`, :obj:`optional`
+           If two points in a line are separated by a distance larger than `distance_threshold`,
+           the line is divided in two parts. Default is ``5e-3`` (5mm), in which case the control is not performed.
+
+       **minimum_via_number** : :class:`python:int`, :obj:`optional`
+           The minimum number of points that a line must contain. Default is ``6``.
+
+       **selected_angles** : :class:`python:list`\[:class:`python:int`, :class:`python:float`]
+           Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
+           Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
+           is `None`.
+
+       **padstack_instances_id** : :obj:`List`\[:class:`python:int`]
+           List of pad-stack instances ID's to include. If `None`, the algorithm will scan all pad-stack
+           instances belonging to the specified net. Default value is `None`.
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:int`], :class:`python:list` :obj:`of` :obj:`created` pad-stack :obj:`instances` id.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: merge_via(contour_boxes: List[List[float]], net_filter: Optional[Union[str, List[str]]] = None, start_layer: Optional[str] = None, stop_layer: Optional[str] = None) -> List[pyedb.grpc.database.primitive.padstack_instance.PadstackInstance]
+
+   
+   Evaluate pad-stack instances included on the provided point list and replace all by single instance.
+
+
+   :Parameters:
+
+       **contour_boxes** : :obj:`List`\[:obj:`List`\[:obj:`List`\[:class:`python:float`, :class:`python:float`]]]
+           Nested list of polygon with points [x,y].
+
+       **net_filter** : :obj:`optional`
+           List[str: net_name] apply a net filter, nets included in the filter are excluded from the via merge.
+
+       **start_layer** : :obj:`optional`, :class:`python:str`
+           Pad-stack instance start layer, if `None` the top layer is selected.
+
+       **stop_layer** : :obj:`optional`, :class:`python:str`
+           Pad-stack instance stop layer, if `None` the bottom layer is selected.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: reduce_via_in_bounding_box(bounding_box: List[float], x_samples: int, y_samples: int, nets: Optional[Union[str, List[str]]] = None) -> bool
+
+   
+   reduce the number of vias intersecting bounding box and nets by x and y samples.
+
+
+   :Parameters:
+
+       **bounding_box** : :class:`python:tuple` or list.
+           bounding box, [x1, y1, x2, y2]
+
+       **x_samples** : :class:`python:int`
+           ..
+
+       **y_samples** : :class:`python:int`
+           ..
+
+       **nets** : :class:`python:str` or :class:`python:list`, :obj:`optional`
+           net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
+           all instances are included in the index. Default value is ``None``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when succeeded ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: dbscan(padstack: Dict[int, List[float]], max_distance: float = 0.001, min_samples: int = 5) -> Dict[int, List[int]]
+   :staticmethod:
+
+
+   
+   density based spatial clustering for padstack instances
+
+
+   :Parameters:
+
+       **padstack** : dict.
+           padstack id: [x, y]
+
+       **max_distance: float**
+           maximum distance between two points to be included in one cluster
+
+       **min_samples: int**
+           minimum number of points that a cluster must have
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           clusters {cluster label: [padstack ids]} <
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: reduce_via_by_density(padstacks: List[int], cell_size_x: float = 0.001, cell_size_y: float = 0.001, delete: bool = False) -> tuple[List[int], List[List[List[float]]]]
+
+   
+   Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
+   are automatically populated based on the input vias.
+
+
+   :Parameters:
+
+       **padstacks: List[int]**
+           List of padstack ids to be reduced.
+
+       **cell_size_x** : :class:`python:float`
+           Width of each grid cell (default is 1e-3).
+
+       **cell_size_y** : :class:`python:float`
+           Height of each grid cell (default is 1e-3).
+
+       **delete: bool**
+           If True, delete vias that are not kept (default is False).
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:int`]
+           IDs of vias kept after reduction.
+
+       :obj:`List`\[:obj:`List`\[:class:`python:float`]]
+           coordinates for grid lines (for plotting).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

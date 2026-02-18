@@ -1,0 +1,6 @@
+circle\_start\_azimuth
+======================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings
+
+.. autoproperty:: HFSSAdvancedMeshingSettings.circle_start_azimuth

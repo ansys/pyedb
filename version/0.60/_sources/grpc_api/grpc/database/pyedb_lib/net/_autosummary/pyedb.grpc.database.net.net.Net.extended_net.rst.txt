@@ -1,0 +1,6 @@
+extended\_net
+=============
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.extended_net

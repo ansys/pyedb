@@ -1,0 +1,69 @@
+﻿Material
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoclass:: Material
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Material.create
+      
+      
+      Material.delete
+      
+      
+      Material.find_by_name
+      
+      
+      Material.get_anisotropic_thermal_modifier
+      
+      
+      Material.get_dimensions
+      
+      
+      Material.get_property
+      
+      
+      Material.get_thermal_modifier
+      
+      
+      Material.remove_property
+      
+      
+      Material.set_anisotropic_thermal_modifier
+      
+      
+      Material.set_debye_model
+      
+      
+      Material.set_djordjecvic_sarkar_model
+      
+      
+      Material.set_multipole_debye_model
+      
+      
+      Material.set_property
+      
+      
+      Material.set_thermal_modifier
+      
+      
+      Material.to_dict
+      
+      
+      Material.update
+      
+   
+   
+
+   
+   
+   

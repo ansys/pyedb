@@ -1,0 +1,1098 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <meta property="og:site_name" content="PyAnsys" />
+    <title>SourceExcitation &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/styles/ansys-sphinx-theme.css?v=fbf3eb5d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../_static/documentation_options.js?v=472524e5"></script>
+    <script src="../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'grpc_api/grpc/database/_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.57';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../search.html" />
+    <link rel="next" title="add_port_on_rlc_component" href="pyedb.grpc.database.source_excitations.SourceExcitation.add_port_on_rlc_component.html" />
+    <link rel="prev" title="Sources excitations" href="../source_excitations.html" />
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.57.0" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/grpc_api/grpc/database/_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="../../../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav></div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+        <div class="navbar-item navbar-persistent--container">
+          
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+        </div>
+      
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.57/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+    <div class="navbar-persistent--mobile">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div>
+    </div>
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../why_pyedb.html">
+    Why PyEDB?
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../installation.html">
+    Installation
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../user_guide/index.html">
+    User Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../migration_guide.html">
+    Migration Guide: DotNet to gRPC
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../glossary.html">
+    Glossary
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../troubleshooting.html">
+    Troubleshooting
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../contribution_guide.html">
+    Contribution Guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../archive.html">
+    Legacy DotNet API (Archived)
+  </a>
+</li>
+
+  </ul>
+</nav></div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.57/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../index.html">PyEDB</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../edb.html">Edb gRPC main class</a></li>
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../index.html">Database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../components.html">Components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../control_file.html">Control file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../definitions.html">Definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../hfss.html">HFSS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../layout_validation.html">Layout validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../modeler.html">Modeler &amp; primitives</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../nets.html">Sources and excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../padstacks.html">Padstacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../siwave.html">Siwave</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../source_excitations.html">Sources excitations</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4 current active"><a class="current reference internal" href="#">SourceExcitation</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../stackup.html">Stackup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../pyedb_lib/index.html">EDB lib</a></li>
+</ul>
+</details></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">PyEDB</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">Database</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../source_excitations.html" class="nav-link">Sources excitations</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">SourceExcitation</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="sourceexcitation">
+<h1>SourceExcitation<a class="headerlink" href="#sourceexcitation" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.grpc.database.source_excitations.SourceExcitation">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.grpc.database.source_excitations.</span></span><span class="sig-name descname"><span class="pre">SourceExcitation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pedb</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.grpc.database.source_excitations.SourceExcitation" title="Link to this definition">#</a></dt>
+<dd><p>Manage sources and excitations.</p>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Initialize EDB session</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbpath</span><span class="o">=</span><span class="s2">&quot;path/to/your/edb&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Access SourceExcitation class</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_excitations</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">source_excitation</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 1. create_source_on_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create voltage source on component pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.grpc.database.utility.sources</span><span class="w"> </span><span class="kn">import</span> <span class="n">Source</span><span class="p">,</span> <span class="n">SourceType</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source</span> <span class="o">=</span> <span class="n">Source</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">source_type</span><span class="o">=</span><span class="n">SourceType</span><span class="o">.</span><span class="n">Vsource</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">name</span><span class="o">=</span><span class="s2">&quot;V1&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">positive_node</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;VCC&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">negative_node</span><span class="o">=</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">amplitude</span><span class="o">=</span><span class="s2">&quot;1V&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">phase</span><span class="o">=</span><span class="s2">&quot;0deg&quot;</span><span class="p">,</span>
+<span class="gp">... </span>    <span class="n">impedance</span><span class="o">=</span><span class="s2">&quot;50ohm&quot;</span><span class="p">,</span>
+<span class="gp">... </span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_excitations</span><span class="o">.</span><span class="n">create_source_on_component</span><span class="p">([</span><span class="n">source</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 2. create_port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create port between two terminals</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos_terminal</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">terminals</span><span class="p">[</span><span class="s2">&quot;MyTerminal&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ref_terminal</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">terminals</span><span class="p">[</span><span class="s2">&quot;MyRefTerminal&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_port</span><span class="p">(</span><span class="n">pos_terminal</span><span class="p">,</span> <span class="n">ref_terminal</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 3. create_port_on_pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create circuit port between component pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_term</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_port_on_pins</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">refdes</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">pins</span><span class="o">=</span><span class="s2">&quot;Pin1&quot;</span><span class="p">,</span> <span class="n">reference_pins</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;GND_Pin1&quot;</span><span class="p">,</span> <span class="s2">&quot;GND_Pin2&quot;</span><span class="p">],</span> <span class="n">impedance</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">port_name</span><span class="o">=</span><span class="s2">&quot;Port1&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 4. create_port_on_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coaxial ports on component nets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_excitations</span><span class="o">.</span><span class="n">create_port_on_component</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">component</span><span class="o">=</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="n">net_list</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;PCIe_RX0&quot;</span><span class="p">,</span> <span class="s2">&quot;PCIe_RX1&quot;</span><span class="p">],</span> <span class="n">port_type</span><span class="o">=</span><span class="n">SourceType</span><span class="o">.</span><span class="n">CoaxPort</span><span class="p">,</span> <span class="n">reference_net</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 5. add_port_on_rlc_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Replace RLC component with circuit port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_excitations</span><span class="o">.</span><span class="n">add_port_on_rlc_component</span><span class="p">(</span><span class="s2">&quot;R1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 6. _create_terminal (Internal method - typically not called directly)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 7. _create_pin_group_terminal (Internal method)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 8. create_coax_port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coaxial port on padstack</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pin</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s2">&quot;U1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s2">&quot;Pin1&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_coax_port</span><span class="p">(</span><span class="n">pin</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 9. create_circuit_port_on_pin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create circuit port between two pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pin1</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s2">&quot;U1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s2">&quot;Pin1&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pin2</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s2">&quot;U1&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s2">&quot;Pin2&quot;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_circuit_port_on_pin</span><span class="p">(</span><span class="n">pin1</span><span class="p">,</span> <span class="n">pin2</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;Port1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 10. create_voltage_source_on_pin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create voltage source between pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_voltage_source_on_pin</span><span class="p">(</span><span class="n">pin1</span><span class="p">,</span> <span class="n">pin2</span><span class="p">,</span> <span class="mf">3.3</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;V1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 11. create_current_source_on_pin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create current source between pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_current_source_on_pin</span><span class="p">(</span><span class="n">pin1</span><span class="p">,</span> <span class="n">pin2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;I1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 12. create_resistor_on_pin</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create resistor between pins</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">res_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_resistor_on_pin</span><span class="p">(</span><span class="n">pin1</span><span class="p">,</span> <span class="n">pin2</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="s2">&quot;R1&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 13. create_circuit_port_on_net</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create port between component nets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_circuit_port_on_net</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;SignalNet&quot;</span><span class="p">,</span> <span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="s2">&quot;Port1&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 14. create_voltage_source_on_net</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create voltage source between nets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_voltage_source_on_net</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;VCC&quot;</span><span class="p">,</span> <span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;VCC_Source&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 15. create_current_source_on_net</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create current source between nets</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_name</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_current_source_on_net</span><span class="p">(</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;InputNet&quot;</span><span class="p">,</span> <span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;InputCurrent&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 16. create_coax_port_on_component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create coaxial ports on component</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ports</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_coax_port_on_component</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;U2&quot;</span><span class="p">],</span> <span class="p">[</span><span class="s2">&quot;PCIe_RX0&quot;</span><span class="p">,</span> <span class="s2">&quot;PCIe_TX0&quot;</span><span class="p">],</span> <span class="n">delete_existing_terminal</span><span class="o">=</span><span class="kc">True</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 17. create_differential_wave_port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create differential wave port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">pos_prim</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">primitives</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">neg_prim</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">modeler</span><span class="o">.</span><span class="n">primitives</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_name</span><span class="p">,</span> <span class="n">diff_port</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_differential_wave_port</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="n">pos_prim</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">neg_prim</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">],</span> <span class="s2">&quot;DiffPort&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 18. create_wave_port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create wave port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_name</span><span class="p">,</span> <span class="n">wave_port</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_wave_port</span><span class="p">(</span><span class="n">pos_prim</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;WavePort&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 19. create_bundle_wave_port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create bundle wave port</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">port_name</span><span class="p">,</span> <span class="n">bundle_port</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_bundle_wave_port</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="p">[</span><span class="n">pos_prim</span><span class="o">.</span><span class="n">id</span><span class="p">,</span> <span class="n">neg_prim</span><span class="o">.</span><span class="n">id</span><span class="p">],</span> <span class="p">[[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.2</span><span class="p">]],</span> <span class="s2">&quot;BundlePort&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 20. create_dc_terminal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create DC terminal</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_excitations</span><span class="o">.</span><span class="n">create_dc_terminal</span><span class="p">(</span><span class="s2">&quot;U1&quot;</span><span class="p">,</span> <span class="s2">&quot;VCC&quot;</span><span class="p">,</span> <span class="s2">&quot;VCC_Terminal&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 21. create_voltage_probe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Create voltage probe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">probe</span> <span class="o">=</span> <span class="n">source_excitations</span><span class="o">.</span><span class="n">create_voltage_probe</span><span class="p">(</span><span class="n">term1</span><span class="p">,</span> <span class="n">term2</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># 22. place_voltage_probe</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># Place voltage probe between points</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">source_excitations</span><span class="o">.</span><span class="n">place_voltage_probe</span><span class="p">(</span>
+<span class="gp">... </span>    <span class="s2">&quot;Probe1&quot;</span><span class="p">,</span> <span class="s2">&quot;SignalNet&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;TopLayer&quot;</span><span class="p">,</span> <span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mf">0.1</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">],</span> <span class="s2">&quot;BottomLayer&quot;</span>
+<span class="gp">... </span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="c1"># Save and close EDB</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edb</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p class="rubric">Methods</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.add_port_on_rlc_component.html#pyedb.grpc.database.source_excitations.SourceExcitation.add_port_on_rlc_component" title="pyedb.grpc.database.source_excitations.SourceExcitation.add_port_on_rlc_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.add_port_on_rlc_component</span></code></a>([...])</p></td>
+<td><p>Deactivate RLC component and replace it with a circuit port.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.add_rlc_boundary.html#pyedb.grpc.database.source_excitations.SourceExcitation.add_rlc_boundary" title="pyedb.grpc.database.source_excitations.SourceExcitation.add_rlc_boundary"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.add_rlc_boundary</span></code></a>([...])</p></td>
+<td><p>Add RLC gap boundary on component and replace it with a circuit port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.check_before_terminal_assignement.html#pyedb.grpc.database.source_excitations.SourceExcitation.check_before_terminal_assignement" title="pyedb.grpc.database.source_excitations.SourceExcitation.check_before_terminal_assignement"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.check_before_terminal_assignement</span></code></a>(...)</p></td>
+<td><p></p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_bundle_wave_port.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_bundle_wave_port" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_bundle_wave_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_bundle_wave_port</span></code></a>(...)</p></td>
+<td><p>Create a bundle wave port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_net.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_net" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_circuit_port_on_net</span></code></a>(...)</p></td>
+<td><p>Create a circuit port on a NET.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_circuit_port_on_pin</span></code></a>(...)</p></td>
+<td><p>Create a circuit port on a pin.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin_group.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin_group" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_circuit_port_on_pin_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_circuit_port_on_pin_group</span></code></a>(...)</p></td>
+<td><p>Create a port between two pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_coax_port</span></code></a>(...[, ...])</p></td>
+<td><p>Create HFSS 3Dlayout coaxial lumped port on a pastack Requires to have solder ball defined before calling this method.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port_on_component.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port_on_component" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_coax_port_on_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_coax_port_on_component</span></code></a>(...)</p></td>
+<td><p>Create a coaxial port on a component or component list on a net or net list.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_current_source</span></code></a>(...)</p></td>
+<td><p>Create a current source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_net.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_net" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_current_source_on_net</span></code></a>(...)</p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_current_source_on_pin</span></code></a>(...)</p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin_group.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin_group" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_current_source_on_pin_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_current_source_on_pin_group</span></code></a>(...)</p></td>
+<td><p>Create current source between two pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_dc_terminal.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_dc_terminal" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_dc_terminal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_dc_terminal</span></code></a>(...[, ...])</p></td>
+<td><p>Create a dc terminal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_differential_wave_port.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_differential_wave_port" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_differential_wave_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_differential_wave_port</span></code></a>(...)</p></td>
+<td><p>Create a differential wave port.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_horizontal.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_horizontal" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_horizontal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_edge_port_horizontal</span></code></a>(...)</p></td>
+<td><p>Create a horizontal edge port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_on_polygon.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_on_polygon" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_on_polygon"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_edge_port_on_polygon</span></code></a>([...])</p></td>
+<td><p>Create lumped port between two edges from two different polygons.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_vertical.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_vertical" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_edge_port_vertical"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_edge_port_vertical</span></code></a>(...)</p></td>
+<td><p>Create a vertical edge port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_hfss_ports_on_padstack.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_hfss_ports_on_padstack" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_hfss_ports_on_padstack"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_hfss_ports_on_padstack</span></code></a>(pinpos)</p></td>
+<td><p>Create an HFSS port on a padstack.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_lumped_port_on_net.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_lumped_port_on_net" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_lumped_port_on_net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_lumped_port_on_net</span></code></a>([...])</p></td>
+<td><p>Create an edge port on nets.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_pin_group_terminal.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_pin_group_terminal" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_pin_group_terminal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_pin_group_terminal</span></code></a>(...)</p></td>
+<td><p>Create a pin group terminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_port.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_port" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_port</span></code></a>(terminal[, ...])</p></td>
+<td><p>Create a port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_port_between_pin_and_layer.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_port_between_pin_and_layer" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_port_between_pin_and_layer"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_port_between_pin_and_layer</span></code></a>([...])</p></td>
+<td><p>Create circuit port between pin and a reference layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_component.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_component" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_port_on_component</span></code></a>(...)</p></td>
+<td><p>Create ports on a component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_pins.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_pins" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_port_on_pins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_port_on_pins</span></code></a>(refdes, ...)</p></td>
+<td><p>Create circuit port between pins and reference ones.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_resistor_on_pin.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_resistor_on_pin" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_resistor_on_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_resistor_on_pin</span></code></a>(...)</p></td>
+<td><p>Create a Resistor boundary between two given pins..</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_rlc_boundary_on_pins.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_rlc_boundary_on_pins" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_rlc_boundary_on_pins"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_rlc_boundary_on_pins</span></code></a>([...])</p></td>
+<td><p>Create hfss rlc boundary on pins.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_source_on_component.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_source_on_component" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_source_on_component"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_source_on_component</span></code></a>([...])</p></td>
+<td><p>Create voltage, current source, or resistor on component.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_vertical_circuit_port_on_clipped_traces.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_vertical_circuit_port_on_clipped_traces" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_vertical_circuit_port_on_clipped_traces"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_vertical_circuit_port_on_clipped_traces</span></code></a>([...])</p></td>
+<td><p>Create an edge port on clipped signal traces.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_voltage_probe</span></code></a>(...)</p></td>
+<td><p>Create a voltage probe.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe_on_pin_group.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe_on_pin_group" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_probe_on_pin_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_voltage_probe_on_pin_group</span></code></a>(...)</p></td>
+<td><p>Create voltage probe between two pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_voltage_source</span></code></a>(...)</p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_net.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_net" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_voltage_source_on_net</span></code></a>(...)</p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_voltage_source_on_pin</span></code></a>(...)</p></td>
+<td><p>Create a voltage source.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin_group.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin_group" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_voltage_source_on_pin_group"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_voltage_source_on_pin_group</span></code></a>(...)</p></td>
+<td><p>Create voltage source between two pin groups.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.create_wave_port.html#pyedb.grpc.database.source_excitations.SourceExcitation.create_wave_port" title="pyedb.grpc.database.source_excitations.SourceExcitation.create_wave_port"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.create_wave_port</span></code></a>(prim_id, ...)</p></td>
+<td><p>Create a wave port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.get_point_terminal.html#pyedb.grpc.database.source_excitations.SourceExcitation.get_point_terminal" title="pyedb.grpc.database.source_excitations.SourceExcitation.get_point_terminal"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.get_point_terminal</span></code></a>(name, ...)</p></td>
+<td><p>Place terminal between two points.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.get_ports_number.html#pyedb.grpc.database.source_excitations.SourceExcitation.get_ports_number" title="pyedb.grpc.database.source_excitations.SourceExcitation.get_ports_number"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.get_ports_number</span></code></a>()</p></td>
+<td><p>Return the total number of excitation ports in a layout.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.place_voltage_probe.html#pyedb.grpc.database.source_excitations.SourceExcitation.place_voltage_probe" title="pyedb.grpc.database.source_excitations.SourceExcitation.place_voltage_probe"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.place_voltage_probe</span></code></a>(name, ...)</p></td>
+<td><p>Place a voltage probe between two points.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p class="rubric">Attributes</p>
+<div class="pst-scrollable-table-container"><table class="autosummary longtable table autosummary">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.excitations.html#pyedb.grpc.database.source_excitations.SourceExcitation.excitations" title="pyedb.grpc.database.source_excitations.SourceExcitation.excitations"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.excitations</span></code></a></p></td>
+<td><p>Get all excitations.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.probes.html#pyedb.grpc.database.source_excitations.SourceExcitation.probes" title="pyedb.grpc.database.source_excitations.SourceExcitation.probes"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.probes</span></code></a></p></td>
+<td><p>Get all probes.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="pyedb.grpc.database.source_excitations.SourceExcitation.sources.html#pyedb.grpc.database.source_excitations.SourceExcitation.sources" title="pyedb.grpc.database.source_excitations.SourceExcitation.sources"><code class="xref py py-obj docutils literal notranslate"><span class="pre">SourceExcitation.sources</span></code></a></p></td>
+<td><p>Get all sources.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</dd></dl>
+
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.grpc.database.source_excitations.SourceExcitation"><code class="docutils literal notranslate"><span class="pre">SourceExcitation</span></code></a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="None">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../_sources/grpc_api/grpc/database/_autosummary/pyedb.grpc.database.source_excitations.SourceExcitation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../_static/search.json";
+</script>
+
+
+<script src="../../../../_static/js/search.js"></script>
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2025 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.4.5. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

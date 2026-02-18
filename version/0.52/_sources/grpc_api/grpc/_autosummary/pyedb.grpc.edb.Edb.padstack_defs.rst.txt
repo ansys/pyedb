@@ -1,0 +1,6 @@
+padstack\_defs
+==============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.padstack_defs

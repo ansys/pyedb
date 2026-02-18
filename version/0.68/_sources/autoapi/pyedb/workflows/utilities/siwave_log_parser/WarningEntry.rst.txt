@@ -1,0 +1,91 @@
+
+
+
+
+
+
+:class:`WarningEntry`
+=====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.WarningEntry
+
+
+.. py:currentmodule:: WarningEntry
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~timestamp`
+            - 
+          * - :py:attr:`~category`
+            - 
+          * - :py:attr:`~net1`
+            - 
+          * - :py:attr:`~net2`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~x`
+            - 
+          * - :py:attr:`~y`
+            - 
+          * - :py:attr:`~message`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import WarningEntry
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: timestamp
+   :type:  datetime.datetime
+
+.. py:attribute:: category
+   :type:  str
+
+.. py:attribute:: net1
+   :type:  str
+
+.. py:attribute:: net2
+   :type:  str
+
+.. py:attribute:: layer
+   :type:  str
+
+.. py:attribute:: x
+   :type:  float
+
+.. py:attribute:: y
+   :type:  float
+
+.. py:attribute:: message
+   :type:  str
+
+
+
+
+

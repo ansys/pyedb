@@ -1,0 +1,28 @@
+﻿HFSSAdvancedMeshingSettings
+===========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings
+
+.. autoclass:: HFSSAdvancedMeshingSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSAdvancedMeshingSettings.arc_step_size
+      HFSSAdvancedMeshingSettings.arc_to_chord_error
+      HFSSAdvancedMeshingSettings.circle_start_azimuth
+      HFSSAdvancedMeshingSettings.layer_snap_tol
+      HFSSAdvancedMeshingSettings.max_num_arc_points
+      HFSSAdvancedMeshingSettings.msg
+      HFSSAdvancedMeshingSettings.use_arc_chord_error_approx
+   
+   

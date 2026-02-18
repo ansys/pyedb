@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`AdaptiveBlockParser`
+============================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.AdaptiveBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Build a list of :class:`AdaptivePass` objects from the adaptive section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AdaptiveBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse every adaptive pass and determine which one triggered convergence.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import AdaptiveBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> List[AdaptivePass]
+
+   
+   Parse every adaptive pass and determine which one triggered convergence.
+
+   :return: Ordered list of passes (pass_nr always increases).
+   :rtype: list[AdaptivePass]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

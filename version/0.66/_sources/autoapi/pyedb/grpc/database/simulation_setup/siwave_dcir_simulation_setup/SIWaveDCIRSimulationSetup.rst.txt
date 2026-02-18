@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SIWaveDCIRSimulationSetup`
+==================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup`
+
+
+   
+   Siwave Dcir simulation setup class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
+
+
+
+
+

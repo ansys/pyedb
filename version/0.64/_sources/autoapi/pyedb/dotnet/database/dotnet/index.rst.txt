@@ -1,0 +1,74 @@
+
+
+
+
+
+
+The ``dotnet`` package
+==========================
+
+.. py:module:: pyedb.dotnet.database.dotnet
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: dotnet
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.database`
+            - Database.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.dotnet.primitive`
+            - Primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> database</autoapi/pyedb/dotnet/database/dotnet/database/index>
+    <span class="nf nf-fa-file"></span> primitive</autoapi/pyedb/dotnet/database/dotnet/primitive/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+use\_accelerate\_via\_extraction
+================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings
+
+.. autoproperty:: RaptorXAdvancedSettings.use_accelerate_via_extraction

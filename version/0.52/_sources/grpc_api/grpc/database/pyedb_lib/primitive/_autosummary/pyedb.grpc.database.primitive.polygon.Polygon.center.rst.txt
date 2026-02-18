@@ -1,0 +1,6 @@
+center
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.center

@@ -1,0 +1,6 @@
+heatsink
+========
+
+.. currentmodule:: pyedb.configuration.cfg_package_definition
+
+.. autoproperty:: CfgPackage.heatsink

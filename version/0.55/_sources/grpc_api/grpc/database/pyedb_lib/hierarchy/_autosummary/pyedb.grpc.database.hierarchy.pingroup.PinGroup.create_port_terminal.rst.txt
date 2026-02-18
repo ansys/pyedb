@@ -1,0 +1,6 @@
+create\_port\_terminal
+======================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. automethod:: PinGroup.create_port_terminal

@@ -1,0 +1,6 @@
+is\_parameter
+=============
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. automethod:: Cell.is_parameter

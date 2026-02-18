@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. automethod:: Terminal.find_by_id

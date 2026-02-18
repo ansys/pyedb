@@ -1,0 +1,108 @@
+
+
+
+
+
+
+:class:`SpiceModel`
+===================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.spice_model.SpiceModel(edb_object=None, name=None, file_path=None, sub_circuit=None)
+
+   Bases: :py:obj:`ansys.edb.core.hierarchy.spice_model.SPICEModel`
+
+
+   
+   Manage :class:`SpiceModel <ansys.edb.core.hierarchy.spice_model.SpiceModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SpiceModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Model name.
+          * - :py:attr:`~spice_file_path`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Model name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Model name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: spice_file_path
+
+
+
+
+
+

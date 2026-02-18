@@ -1,0 +1,6 @@
+net\_layer\_info
+================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+.. autoproperty:: MeshOperation.net_layer_info

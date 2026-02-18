@@ -1,0 +1,159 @@
+
+
+
+
+
+
+The ``drc.py`` module
+=====================
+
+.. py:module:: pyedb.workflows.drc.drc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: drc
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.MinLineWidth`
+            - Minimum-line-width rule.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.MinClearance`
+            - Minimum clearance between two nets.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.MinAnnularRing`
+            - Minimum annular ring for drilled holes.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.DiffPair`
+            - Differential-pair definition.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.DiffPairLengthMatch`
+            - Length-matching rule for differential pairs.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.BackDrillStubLength`
+            - Maximum allowed back-drill stub length.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.CopperBalance`
+            - Copper-density balance rule.
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.Rules`
+            - Centralised, serialisable container for **all** design-rule categories
+
+
+          * - :py:obj:`~pyedb.workflows.drc.drc.Drc`
+            - Lightweight, high-accuracy DRC engine that runs **inside** an open PyEDB session.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> MinLineWidth</autoapi/pyedb/workflows/drc/drc/MinLineWidth>
+    <span class="nf nf-cod-symbol_class"></span> MinClearance</autoapi/pyedb/workflows/drc/drc/MinClearance>
+    <span class="nf nf-cod-symbol_class"></span> MinAnnularRing</autoapi/pyedb/workflows/drc/drc/MinAnnularRing>
+    <span class="nf nf-cod-symbol_class"></span> DiffPair</autoapi/pyedb/workflows/drc/drc/DiffPair>
+    <span class="nf nf-cod-symbol_class"></span> DiffPairLengthMatch</autoapi/pyedb/workflows/drc/drc/DiffPairLengthMatch>
+    <span class="nf nf-cod-symbol_class"></span> BackDrillStubLength</autoapi/pyedb/workflows/drc/drc/BackDrillStubLength>
+    <span class="nf nf-cod-symbol_class"></span> CopperBalance</autoapi/pyedb/workflows/drc/drc/CopperBalance>
+    <span class="nf nf-cod-symbol_class"></span> Rules</autoapi/pyedb/workflows/drc/drc/Rules>
+    <span class="nf nf-cod-symbol_class"></span> Drc</autoapi/pyedb/workflows/drc/drc/Drc>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+"
+Self-contained DRC engine for PyEDB.
+
+This module provides a high-performance, multi-threaded design-rule checker
+that runs **inside** an open PyEDB session and validates 50+ industry-standard
+rules (geometry, spacing, manufacturing, high-speed, test).
+
+Features
+--------
+* Impedance checks via improved analytical formulas (Wheeler, Cohn, Hammerstad-Jensen).
+* Copper-balance by layer or by arbitrary zone polygons.
+* Back-drill stub / depth verification.
+* R-tree spatial index for fast geometry queries.
+
+
+Examples
+--------
+>>> import pyedb
+>>> from pyedb.workflows.drc.drc import Drc, Rules
+>>> edb = pyedb.Edb(edbpath="my_board.aedb")
+>>> rules = Rules.parse_file("rules.json")  # or Rules.parse_obj(python_dict)
+>>> drc = Drc(edb)
+>>> violations = drc.check(rules)
+>>> drc.to_ipc356a("fab_review.ipc")
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

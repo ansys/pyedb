@@ -1,0 +1,6 @@
+model\_extra
+============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: MaterialProperties.model_extra

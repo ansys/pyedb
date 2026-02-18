@@ -1,0 +1,256 @@
+
+
+
+
+
+
+:class:`Connectable`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.connectable.Connectable(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.layout_obj.LayoutObj`
+
+
+   
+   Manages EDB functionalities for a connectable object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Connectable
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_connected_objects`
+            - Get connected objects.
+          * - :py:attr:`~get_connected_object_id_set`
+            - Produce a list of all geometries physically connected to a given layout object.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~net`
+            - Net Object.
+          * - :py:attr:`~net_name`
+            - Get the primitive layer name.
+          * - :py:attr:`~component`
+            - Component connected to this object.
+          * - :py:attr:`~component_name`
+            - Get the name of the component connected to this object.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.connectable import Connectable
+
+Property detail
+---------------
+
+.. py:property:: net
+
+   
+   Net Object.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_name
+
+   
+   Get the primitive layer name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component
+
+   
+   Component connected to this object.
+
+
+
+   :Returns:
+
+       :class:`dotnet.database.edb_data.nets_data.EDBComponent`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: component_name
+
+   
+   Get the name of the component connected to this object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_connected_objects()
+
+   
+   Get connected objects.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_connected_object_id_set()
+
+   
+   Produce a list of all geometries physically connected to a given layout object.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           Found connected objects IDs with Layout object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

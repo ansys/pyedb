@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. automethod:: BundleTerminal.find_by_id

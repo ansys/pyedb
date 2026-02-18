@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoattribute:: Polygon.layout_obj_type

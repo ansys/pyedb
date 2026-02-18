@@ -1,0 +1,6 @@
+sim\_setup\_info
+================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoproperty:: SimulationSetup.sim_setup_info

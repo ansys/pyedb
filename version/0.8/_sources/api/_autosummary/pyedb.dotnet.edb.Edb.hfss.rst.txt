@@ -1,0 +1,6 @@
+hfss
+====
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.hfss

@@ -1,0 +1,6 @@
+set\_solution\_multi\_frequencies
+=================================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.set_solution_multi_frequencies

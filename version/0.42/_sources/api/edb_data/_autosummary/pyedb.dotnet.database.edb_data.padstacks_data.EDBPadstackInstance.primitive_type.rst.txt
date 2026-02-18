@@ -1,0 +1,6 @@
+primitive\_type
+===============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.padstacks_data
+
+.. autoproperty:: EDBPadstackInstance.primitive_type

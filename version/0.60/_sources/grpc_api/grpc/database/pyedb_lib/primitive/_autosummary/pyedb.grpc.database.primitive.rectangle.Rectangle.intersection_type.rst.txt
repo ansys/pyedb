@@ -1,0 +1,6 @@
+intersection\_type
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. automethod:: Rectangle.intersection_type

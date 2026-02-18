@@ -1,0 +1,84 @@
+
+
+
+
+
+
+:class:`BBox`
+=============
+
+
+.. py:class:: pyedb.dotnet.database.utilities.obj_base.BBox(pedb, edb_object=None, point_1=None, point_2=None)
+
+   
+   Bounding box.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: BBox
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~point_1`
+            - 
+          * - :py:attr:`~point_2`
+            - 
+          * - :py:attr:`~corner_points`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.obj_base import BBox
+
+Property detail
+---------------
+
+.. py:property:: point_1
+
+.. py:property:: point_2
+
+.. py:property:: corner_points
+
+
+
+
+
+

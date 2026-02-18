@@ -1,0 +1,6 @@
+get\_pins
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.components
+
+.. automethod:: Components.get_pins

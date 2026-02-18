@@ -1,0 +1,79 @@
+
+
+
+
+
+
+:class:`Tag`
+============
+
+
+.. py:class:: pyedb.misc.siw_feature_config.emc.tag_library.Tag(element)
+
+   Bases: :py:obj:`pyedb.misc.siw_feature_config.emc.xml_generic.XmlGeneric`
+
+
+   
+   Manages tag.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Tag
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CLS_MAPPING`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.emc.tag_library import Tag
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CLS_MAPPING
+
+
+
+
+

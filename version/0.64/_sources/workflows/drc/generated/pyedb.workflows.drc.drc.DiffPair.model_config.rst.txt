@@ -1,0 +1,6 @@
+model\_config
+=============
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: DiffPair.model_config

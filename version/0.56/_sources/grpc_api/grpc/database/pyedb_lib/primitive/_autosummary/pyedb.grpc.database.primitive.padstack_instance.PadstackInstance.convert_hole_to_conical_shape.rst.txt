@@ -1,0 +1,6 @@
+convert\_hole\_to\_conical\_shape
+=================================
+
+.. currentmodule:: pyedb.grpc.database.primitive.padstack_instance
+
+.. automethod:: PadstackInstance.convert_hole_to_conical_shape

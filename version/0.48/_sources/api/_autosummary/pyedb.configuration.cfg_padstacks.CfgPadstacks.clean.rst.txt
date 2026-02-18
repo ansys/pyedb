@@ -1,0 +1,6 @@
+clean
+=====
+
+.. currentmodule:: pyedb.configuration.cfg_padstacks
+
+.. automethod:: CfgPadstacks.clean

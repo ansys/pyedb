@@ -1,0 +1,193 @@
+
+
+
+
+
+
+:class:`RaptorXSimulationSetup`
+===============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSetup(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.raptor_x_simulation_setup.RaptorXSimulationSetup`
+
+
+   
+   RaptorX simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RaptorXSimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_frequency_sweep`
+            - Add frequency sweep.
+          * - :py:attr:`~add_sweep`
+            - Add a HFSS frequency sweep.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~frequency_sweeps`
+            - Returns Frequency sweeps
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import RaptorXSimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: frequency_sweeps
+
+   
+   Returns Frequency sweeps
+   . deprecated:: use sweep_data instead
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_frequency_sweep(name=None, distribution='linear', start_freq='0GHz', stop_freq='20GHz', step='10MHz', discrete=False)
+
+   
+   Add frequency sweep.
+
+   . deprecated:: pyedb 0.31.0
+   Use :func:`add sweep` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_sweep(name=None, distribution='linear', start_freq='0GHz', stop_freq='20GHz', step='10MHz', discrete=False) -> bool
+
+   
+   Add a HFSS frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Sweep name.
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Type of the sweep. The default is `"linear"`. Options are:
+           - `"linear"`
+           - `"linear_count"`
+           - `"decade_count"`
+           - `"octave_count"`
+           - `"exponential"`
+
+       **start_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Starting frequency. The default is ``1``.
+
+       **stop_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stopping frequency. The default is ``1e9``.
+
+       **step** : :class:`python:str`, :class:`python:float`, :class:`python:int`, :obj:`optional`
+           Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
+           distribution. Must be integer in that case.
+
+       **discrete** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the sweep is discrete. The default is ``False``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

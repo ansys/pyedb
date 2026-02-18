@@ -1,0 +1,6 @@
+clone
+=====
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.model
+
+.. automethod:: Model.clone

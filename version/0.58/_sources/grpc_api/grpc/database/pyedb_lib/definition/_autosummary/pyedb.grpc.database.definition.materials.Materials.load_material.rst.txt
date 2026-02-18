@@ -1,0 +1,6 @@
+load\_material
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.load_material

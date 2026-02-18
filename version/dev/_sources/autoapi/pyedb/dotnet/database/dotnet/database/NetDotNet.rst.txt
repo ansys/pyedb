@@ -1,0 +1,308 @@
+
+
+
+
+
+
+:class:`NetDotNet`
+==================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.NetDotNet(app, net_obj=None)
+
+   
+   Net Objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: NetDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_by_name`
+            - Edb Dotnet Api Database `Edb.Net.FindByName`.
+          * - :py:attr:`~create`
+            - Edb Dotnet Api Database `Edb.Net.Create`.
+          * - :py:attr:`~delete`
+            - Edb Dotnet Api Database `Edb.Net.Delete`.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+          * - :py:attr:`~api_object`
+            - Return Ansys.Ansoft.Edb object.
+          * - :py:attr:`~name`
+            - Edb Dotnet Api Database `net.name` and  `Net.SetName()`.
+          * - :py:attr:`~is_null`
+            - Edb Dotnet Api Database `Net.IsNull()`.
+          * - :py:attr:`~is_power_ground`
+            - Edb Dotnet Api Database `Net.IsPowerGround()` and  `Net.SetIsPowerGround()`.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~core`
+            - 
+          * - :py:attr:`~net_obj`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import NetDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: api_object
+
+   
+   Return Ansys.Ansoft.Edb object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Edb Dotnet Api Database `net.name` and  `Net.SetName()`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+
+   
+   Edb Dotnet Api Database `Net.IsNull()`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_power_ground
+
+   
+   Edb Dotnet Api Database `Net.IsPowerGround()` and  `Net.SetIsPowerGround()`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: net
+
+.. py:attribute:: core
+
+.. py:attribute:: net_obj
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: find_by_name(layout, net)
+
+   
+   Edb Dotnet Api Database `Edb.Net.FindByName`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(layout, name)
+
+   
+   Edb Dotnet Api Database `Edb.Net.Create`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Edb Dotnet Api Database `Edb.Net.Delete`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

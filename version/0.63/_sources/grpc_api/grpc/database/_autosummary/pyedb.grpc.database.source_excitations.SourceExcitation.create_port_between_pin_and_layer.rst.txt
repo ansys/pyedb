@@ -1,0 +1,6 @@
+create\_port\_between\_pin\_and\_layer
+======================================
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. automethod:: SourceExcitation.create_port_between_pin_and_layer

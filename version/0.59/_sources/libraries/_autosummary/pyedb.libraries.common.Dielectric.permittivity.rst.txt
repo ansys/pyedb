@@ -1,0 +1,6 @@
+permittivity
+============
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoproperty:: Dielectric.permittivity

@@ -1,0 +1,107 @@
+
+
+
+
+
+
+The ``mesh_operation.py`` module
+================================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: mesh_operation
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.mesh_operation.MeshOperation`
+            - Mesh Operation Class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.mesh_operation.LengthMeshOperation`
+            - Mesh operation Length class.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.mesh_operation.SkinDepthMeshOperation`
+            - Mesh operation Skin Depth class.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.mesh_operation.MeshOpType`
+            - Generic enumeration.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> MeshOperation</autoapi/pyedb/dotnet/database/sim_setup_data/data/mesh_operation/MeshOperation>
+    <span class="nf nf-cod-symbol_class"></span> LengthMeshOperation</autoapi/pyedb/dotnet/database/sim_setup_data/data/mesh_operation/LengthMeshOperation>
+    <span class="nf nf-cod-symbol_class"></span> SkinDepthMeshOperation</autoapi/pyedb/dotnet/database/sim_setup_data/data/mesh_operation/SkinDepthMeshOperation>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_enum"></span> MeshOpType</autoapi/pyedb/dotnet/database/sim_setup_data/data/mesh_operation/MeshOpType>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

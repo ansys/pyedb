@@ -1,0 +1,6 @@
+radius
+======
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.primitives_data
+
+.. autoproperty:: EDBArcs.radius

@@ -1,0 +1,6 @@
+tan
+===
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.tan

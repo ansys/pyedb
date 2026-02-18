@@ -1,0 +1,6 @@
+source\_phase
+=============
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoproperty:: BundleTerminal.source_phase

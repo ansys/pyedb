@@ -1,0 +1,6 @@
+deactivate\_rlc\_component
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.deactivate_rlc_component

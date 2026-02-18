@@ -1,0 +1,6 @@
+add\_menu\_variable
+===================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.add_menu_variable

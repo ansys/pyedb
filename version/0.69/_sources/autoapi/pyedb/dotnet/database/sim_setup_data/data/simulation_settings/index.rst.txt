@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``simulation_settings.py`` module
+=====================================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: simulation_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.simulation_settings.BaseSimulationSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.simulation_settings.SimulationSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.simulation_settings.HFSSSimulationSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.simulation_settings.HFSSPISimulationSettings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BaseSimulationSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/simulation_settings/BaseSimulationSettings>
+    <span class="nf nf-cod-symbol_class"></span> SimulationSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/simulation_settings/SimulationSettings>
+    <span class="nf nf-cod-symbol_class"></span> HFSSSimulationSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/simulation_settings/HFSSSimulationSettings>
+    <span class="nf nf-cod-symbol_class"></span> HFSSPISimulationSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/simulation_settings/HFSSPISimulationSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

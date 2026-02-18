@@ -1,0 +1,36 @@
+﻿PadstackDef
+===========
+
+.. currentmodule:: pyedb.grpc.database.definition.padstack_def
+
+.. autoclass:: PadstackDef
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PadstackDef.convert_to_3d_microvias
+      
+      
+      PadstackDef.create
+      
+      
+      PadstackDef.delete
+      
+      
+      PadstackDef.find_by_name
+      
+      
+      PadstackDef.split_to_microvias
+      
+   
+   
+
+   
+   
+   

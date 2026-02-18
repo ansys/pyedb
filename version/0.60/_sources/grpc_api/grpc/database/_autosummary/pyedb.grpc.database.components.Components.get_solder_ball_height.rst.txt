@@ -1,0 +1,6 @@
+get\_solder\_ball\_height
+=========================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.get_solder_ball_height

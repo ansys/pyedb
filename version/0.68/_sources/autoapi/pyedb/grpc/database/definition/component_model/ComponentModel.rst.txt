@@ -1,0 +1,174 @@
+
+
+
+
+
+
+:class:`ComponentModel`
+=======================
+
+
+.. py:class:: pyedb.grpc.database.definition.component_model.ComponentModel(core)
+
+   
+   Class managing :class:`ComponentModel <pyedb.grpc.database.definition.component_model.ComponentModel>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ComponentModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_null`
+            - Check if the component model is null.
+          * - :py:attr:`~name`
+            - Get the name of the component model.
+          * - :py:attr:`~reference_file`
+            - Get the reference file of the component model.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.component_model import ComponentModel
+
+Property detail
+---------------
+
+.. py:property:: is_null
+
+   
+   Check if the component model is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the component model is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Get the name of the component model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the component model.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_file
+
+   
+   Get the reference file of the component model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The reference file of the component model.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

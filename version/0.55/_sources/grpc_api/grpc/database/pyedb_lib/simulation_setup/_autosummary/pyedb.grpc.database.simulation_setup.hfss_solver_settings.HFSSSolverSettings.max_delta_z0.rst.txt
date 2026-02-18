@@ -1,0 +1,6 @@
+max\_delta\_z0
+==============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+.. autoproperty:: HFSSSolverSettings.max_delta_z0

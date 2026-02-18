@@ -1,0 +1,6 @@
+variables
+=========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.variables

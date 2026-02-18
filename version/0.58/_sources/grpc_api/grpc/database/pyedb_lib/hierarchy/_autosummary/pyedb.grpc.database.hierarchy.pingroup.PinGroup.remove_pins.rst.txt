@@ -1,0 +1,6 @@
+remove\_pins
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. automethod:: PinGroup.remove_pins

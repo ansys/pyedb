@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``connectable.py`` module
+=============================
+
+.. py:module:: pyedb.dotnet.database.cell.connectable
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: connectable
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.connectable.Connectable`
+            - Manages EDB functionalities for a connectable object.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Connectable</autoapi/pyedb/dotnet/database/cell/connectable/Connectable>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

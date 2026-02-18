@@ -1,0 +1,6 @@
+set\_sim\_setup\_info
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. automethod:: HfssSimulationSetup.set_sim_setup_info

@@ -1,0 +1,105 @@
+
+
+
+
+
+
+:class:`SchedulerType`
+======================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.job_submission.SchedulerType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Supported enterprise job schedulers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SchedulerType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~NONE`
+            - 
+          * - :py:attr:`~LSF`
+            - 
+          * - :py:attr:`~SLURM`
+            - 
+          * - :py:attr:`~PBS`
+            - 
+          * - :py:attr:`~WINDOWS_HPC`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.job_submission import SchedulerType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: NONE
+   :value: 'none'
+
+
+.. py:attribute:: LSF
+   :value: 'lsf'
+
+
+.. py:attribute:: SLURM
+   :value: 'slurm'
+
+
+.. py:attribute:: PBS
+   :value: 'pbs'
+
+
+.. py:attribute:: WINDOWS_HPC
+   :value: 'windows_hpc'
+
+
+
+
+
+

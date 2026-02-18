@@ -1,0 +1,6 @@
+parse\_obj
+==========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.parse_obj

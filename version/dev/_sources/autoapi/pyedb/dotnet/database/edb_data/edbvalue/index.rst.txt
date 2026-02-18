@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``edbvalue.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.edb_data.edbvalue
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: edbvalue
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
+            - Class defining Edb Value properties.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbValue</autoapi/pyedb/dotnet/database/edb_data/edbvalue/EdbValue>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,2289 @@
+
+
+
+
+
+
+:class:`Components`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.components.Components(p_edb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB components and related method accessible from `Edb.components` property.
+
+
+   :Parameters:
+
+       **edb_class** : :class:`pyedb.dotnet.edb.Edb`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Components
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~import_definition`
+            - Import component definition from json file.
+          * - :py:attr:`~export_definition`
+            - Export component definitions to json file.
+          * - :py:attr:`~refresh_components`
+            - Refresh the component dictionary.
+          * - :py:attr:`~get_component_by_name`
+            - Retrieve a component by name.
+          * - :py:attr:`~get_components_from_nets`
+            - Retrieve components from a net list.
+          * - :py:attr:`~get_component_placement_vector`
+            - Get the placement vector between 2 components.
+          * - :py:attr:`~get_solder_ball_height`
+            - Get component solder ball height.
+          * - :py:attr:`~get_vendor_libraries`
+            - Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
+          * - :py:attr:`~create_source_on_component`
+            - Create voltage, current source, or resistor on component.
+          * - :py:attr:`~create_port_on_pins`
+            - Create circuit port between pins and reference ones.
+          * - :py:attr:`~create_port_on_component`
+            - Create ports on a component.
+          * - :py:attr:`~replace_rlc_by_gap_boundaries`
+            - Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
+          * - :py:attr:`~deactivate_rlc_component`
+            - Deactivate RLC component with a possibility to convert it to a circuit port.
+          * - :py:attr:`~add_port_on_rlc_component`
+            - Deactivate RLC component and replace it with a circuit port.
+          * - :py:attr:`~add_rlc_boundary`
+            - Add RLC gap boundary on component and replace it with a circuit port.
+          * - :py:attr:`~create_rlc_component`
+            - Create physical Rlc component.
+          * - :py:attr:`~create`
+            - Create a component from pins.
+          * - :py:attr:`~create_component_from_pins`
+            - Create a component from pins.
+          * - :py:attr:`~set_component_model`
+            - Assign a Spice or Touchstone model to a component.
+          * - :py:attr:`~create_pingroup_from_pins`
+            - Create a pin group on a component.
+          * - :py:attr:`~delete_single_pin_rlc`
+            - Delete all RLC components with a single pin.
+          * - :py:attr:`~delete_component`
+            - Delete a component.
+          * - :py:attr:`~delete`
+            - Delete a component.
+          * - :py:attr:`~disable_rlc_component`
+            - Disable a RLC component.
+          * - :py:attr:`~set_solder_ball`
+            - Set cylindrical solder balls on a given component.
+          * - :py:attr:`~set_component_rlc`
+            - Update values for an RLC component.
+          * - :py:attr:`~update_rlc_from_bom`
+            - Update the EDC core component values (RLCs) with values coming from a BOM file.
+          * - :py:attr:`~import_bom`
+            - Load external BOM file.
+          * - :py:attr:`~export_bom`
+            - Export Bom file from layout.
+          * - :py:attr:`~find_by_reference_designator`
+            - Find a component.
+          * - :py:attr:`~get_pin_from_component`
+            - Retrieve the pins of a component.
+          * - :py:attr:`~get_aedt_pin_name`
+            - Retrieve the pin name that is shown in AEDT.
+          * - :py:attr:`~get_pins`
+            - Get component pins.
+          * - :py:attr:`~get_pin_position`
+            - Retrieve the pin position in meters.
+          * - :py:attr:`~get_pins_name_from_net`
+            - Retrieve pins belonging to a net.
+          * - :py:attr:`~get_nets_from_pin_list`
+            - Retrieve nets with one or more pins.
+          * - :py:attr:`~get_component_net_connection_info`
+            - Retrieve net connection information.
+          * - :py:attr:`~get_rats`
+            - Retrieve a list of dictionaries of the reference designator, pin names, and net names.
+          * - :py:attr:`~get_through_resistor_list`
+            - Retrieve through resistors.
+          * - :py:attr:`~short_component_pins`
+            - Short pins of component with a trace.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~components`
+            - Component setup information.
+          * - :py:attr:`~instances`
+            - All Cell components objects.
+          * - :py:attr:`~definitions`
+            - Retrieve component definition list.
+          * - :py:attr:`~nport_comp_definition`
+            - Retrieve Nport component definition list.
+          * - :py:attr:`~resistors`
+            - Resistors.
+          * - :py:attr:`~capacitors`
+            - Capacitors.
+          * - :py:attr:`~inductors`
+            - Inductors.
+          * - :py:attr:`~ICs`
+            - Integrated circuits.
+          * - :py:attr:`~IOs`
+            - Circuit inupts and outputs.
+          * - :py:attr:`~Others`
+            - Other core components.
+          * - :py:attr:`~components_by_partname`
+            - Components by part name.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get  a component or component definition from the Edb project.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.components import Components
+
+Property detail
+---------------
+
+.. py:property:: components
+
+   
+   Component setup information.
+
+   .. deprecated:: 0.6.62
+      Use new property :func:`instances` instead.
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Default dictionary for the EDB component.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.components
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: instances
+
+   
+   All Cell components objects.
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Default dictionary for the EDB component.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.instances
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: definitions
+
+   
+   Retrieve component definition list.
+
+
+
+   :Returns:
+
+       :class:`python:dict` :obj:`of` :class:`EDBComponentDef`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nport_comp_definition
+
+   
+   Retrieve Nport component definition list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: resistors
+
+   
+   Resistors.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Dictionary of resistors.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.resistors
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: capacitors
+
+   
+   Capacitors.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Dictionary of capacitors.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.capacitors
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: inductors
+
+   
+   Inductors.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Dictionary of inductors.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.inductors
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ICs
+
+   
+   Integrated circuits.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Dictionary of integrated circuits.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.ICs
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: IOs
+
+   
+   Circuit inupts and outputs.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Dictionary of circuit inputs and outputs.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.IOs
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: Others
+
+   
+   Other core components.
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+           Dictionary of other core components.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.others
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components_by_partname
+
+   
+   Components by part name.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of components by part name.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.components_by_partname
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name)
+
+   
+   Get  a component or component definition from the Edb project.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           ..
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_definition(file_path)
+
+   
+   Import component definition from json file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of json file.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_definition(file_path)
+
+   
+   Export component definitions to json file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of json file.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: refresh_components()
+
+   
+   Refresh the component dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_component_by_name(name)
+
+   
+   Retrieve a component by name.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the component.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_components_from_nets(netlist=None)
+
+   
+   Retrieve components from a net list.
+
+
+   :Parameters:
+
+       **netlist** : :class:`python:str`, :obj:`optional`
+           Name of the net list. The default is ``None``.
+
+   :Returns:
+
+       :class:`python:list`
+           List of components that belong to the signal nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_component_placement_vector(mounted_component, hosting_component, mounted_component_pin1, mounted_component_pin2, hosting_component_pin1, hosting_component_pin2, flipped=False)
+
+   
+   Get the placement vector between 2 components.
+
+
+   :Parameters:
+
+       **mounted_component** : `edb.cell.hierarchy._hierarchy.Component`
+           Mounted component name.
+
+       **hosting_component** : `edb.cell.hierarchy._hierarchy.Component`
+           Hosting component name.
+
+       **mounted_component_pin1** : :class:`python:str`
+           Mounted component Pin 1 name.
+
+       **mounted_component_pin2** : :class:`python:str`
+           Mounted component Pin 2 name.
+
+       **hosting_component_pin1** : :class:`python:str`
+           Hosted component Pin 1 name.
+
+       **hosting_component_pin2** : :class:`python:str`
+           Hosted component Pin 2 name.
+
+       **flipped** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if the mounted component will be flipped or not.
+
+   :Returns:
+
+       :class:`python:tuple`
+           Tuple of Vector offset, rotation and solder height.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
+   >>> hosting_cmp = edb1.components.get_component_by_name("U100")
+   >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
+   >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
+   ...     mounted_component=mounted_cmp,
+   ...     hosting_component=hosting_cmp,
+   ...     mounted_component_pin1="A12",
+   ...     mounted_component_pin2="A14",
+   ...     hosting_component_pin1="A12",
+   ...     hosting_component_pin2="A14",
+   ... )
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_solder_ball_height(cmp)
+
+   
+   Get component solder ball height.
+
+
+   :Parameters:
+
+       **cmp** : :class:`python:str` or  :obj:`self._pedb.component`
+           EDB component or str component name.
+
+   :Returns:
+
+       :obj:`double`, :ref:`bool <python:bltin-boolean-values>`
+           Salder ball height vale, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_vendor_libraries()
+
+   
+   Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
+
+
+
+   :Returns:
+
+       :obj:`ComponentLib` :obj:`object` :obj:`contains` :obj:`nested` :obj:`dictionaries` :obj:`to` :obj:`navigate` :obj:`through` [:obj:`component` :obj:`type`][:obj:`vendors`][:obj:`series`]
+           ..
+
+       :class: `pyedb.component_libraries.ansys_components.ComponentPart`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = Edb()
+   >>> comp_lib = edbapp.components.get_vendor_libraries()
+   >>> network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
+   >>> network.write_touchstone(os.path.join(edbapp.directory, "test_export.s2p"))
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_source_on_component(sources=None)
+
+   
+   Create voltage, current source, or resistor on component.
+
+
+   :Parameters:
+
+       **sources** : :class:`python:list`\[:obj:`Source`]
+           List of ``edb_data.sources.Source`` objects.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_on_pins(refdes, pins, reference_pins, impedance=50.0, port_name=None, pec_boundary=False, pingroup_on_single_pin=False)
+
+   
+   Create circuit port between pins and reference ones.
+
+
+   :Parameters:
+
+       **refdes** : :obj:`Component` :obj:`reference` :obj:`designator`
+           str or EDBComponent object.
+
+       **pins** : :obj:`pin` :obj:`specifier`\(:obj:`s`) :obj:`or` :obj:`instance`\(:obj:`s`) :obj:`where` :obj:`the` :obj:`port` :obj:`terminal` :obj:`is` :obj:`to` :obj:`be` created. :obj:`Single` :obj:`pin` :obj:`name` or :obj:`a` :class:`python:list` :obj:`of`
+           ..
+
+       **several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the**
+           ..
+
+       **global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances**
+           ..
+
+       **can be provided as ``EDBPadstackInstance`` objects.**
+           ..
+
+       **For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with**
+           ..
+
+       **``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be**
+           ..
+
+       **provided.**
+           Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+
+       **reference_pins** : :obj:`reference` :obj:`pin` :obj:`specifier`\(:obj:`s`) :obj:`or` :obj:`instance`\(:obj:`s`) :obj:`for` :obj:`the` :obj:`port` :obj:`reference` terminal. :obj:`Allowed` :obj:`values` :obj:`are`
+           ..
+
+       **the same as for the ``pins`` parameter.**
+           Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+
+       **impedance** : :obj:`Port` :obj:`impedance`
+           str, float
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name. The default is ``None``, in which case a name is automatically assigned.
+
+       **pec_boundary** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ..
+
+       **Whether to define the PEC boundary, The default is ``False``. If set to ``True``,**
+           ..
+
+       **a perfect short is created between the pin and impedance is ignored. This**
+           ..
+
+       **parameter is only supported on a port created between two pins, such as**
+           ..
+
+       **when there is no pin group.**
+           ..
+
+       **pingroup_on_single_pin** : :ref:`bool <python:bltin-boolean-values>`
+           If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
+           ``False`` the port is created at the pad edge. Default value is ``False``.
+
+   :Returns:
+
+       :obj:`EDB` :obj:`terminal` :obj:`created`, :obj:`or` :data:`python:False` :obj:`if` :obj:`failed` :obj:`to` create.
+           ..
+
+       Example:
+           ..
+
+       >>> :obj:`from` :obj:`pyedb` :obj:`import` :obj:`Edb`
+           ..
+
+       >>> :obj:`edb` = :obj:`Edb`\(:obj:`path_to_edb_file`)
+           ..
+
+       >>> :obj:`pin` = "AJ6"
+           ..
+
+       >>> :obj:`ref_pins` = ["AM7", "AM4"]
+           ..
+
+       :obj:`Or` :obj:`to` :obj:`take` :obj:`all` :obj:`reference` :obj:`pins`
+           ..
+
+       >>> :obj:`ref_pins` = [:obj:`pin` :obj:`for` :obj:`pin` :obj:`in` :class:`python:list`\(:obj:`edb.components`\["U2A5"]:obj:`.pins.values`\()) :obj:`if` :obj:`pin.net_name` == "GND"]
+           ..
+
+       >>> :obj:`edb.components.create_port_on_pins`\(refdes="U2A5", pins=pin, reference_pins=ref_pins)
+           ..
+
+       >>> :obj:`edb.save_edb`\()
+           ..
+
+       >>> :obj:`edb.close_edb`\()
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_on_component(component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net='gnd', port_name=None, solder_balls_height=None, solder_balls_size=None, solder_balls_mid_size=None, extend_reference_pins_outside_component=False)
+
+   
+   Create ports on a component.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str` or  :obj:`self._pedb.component`
+           EDB component or str component name.
+
+       **net_list** : :class:`python:str` or :class:`python:list` :obj:`of` string.
+           List of nets where ports must be created on the component.
+           If the net is not part of the component, this parameter is skipped.
+
+       **port_type** : :obj:`SourceType` :obj:`enumerator`, :obj:`CoaxPort` or :obj:`CircuitPort`
+           Type of port to create. ``CoaxPort`` generates solder balls.
+           ``CircuitPort`` generates circuit ports on pins belonging to the net list.
+
+       **do_pingroup** : :ref:`bool <python:bltin-boolean-values>`
+           True activate pingroup during port creation (only used with combination of CircPort),
+           False will take the closest reference pin and generate one port per signal pin.
+
+       **refnet** : :class:`python:str` or :class:`python:list` :obj:`of` string.
+           list of the reference net.
+
+       **port_name** : :class:`python:str`
+           Port name for overwriting the default port-naming convention,
+           which is ``[component][net][pin]``. The port name must be unique.
+           If a port with the specified name already exists, the
+           default naming convention is used so that port creation does
+           not fail.
+
+       **solder_balls_height** : :class:`python:float`, :obj:`optional`
+           Solder balls height used for the component. When provided default value is overwritten and must be
+           provided in meter.
+
+       **solder_balls_size** : :class:`python:float`, :obj:`optional`
+           Solder balls diameter. When provided auto evaluation based on padstack size will be disabled.
+
+       **solder_balls_mid_size** : :class:`python:float`, :obj:`optional`
+           Solder balls mid-diameter. When provided if value is different than solder balls size, spheroid shape will
+           be switched.
+
+       **extend_reference_pins_outside_component** : :ref:`bool <python:bltin-boolean-values>`
+           When no reference pins are found on the component extend the pins search with taking the closest one. If
+           `do_pingroup` is `True` will be set to `False`. Default value is `False`.
+
+   :Returns:
+
+       :obj:`double`, :ref:`bool <python:bltin-boolean-values>`
+           Salder ball height vale, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
+   >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
+   >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: replace_rlc_by_gap_boundaries(component=None)
+
+   
+   Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
+   Only 2 pins RLC components are supported in this command.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str`
+           Reference designator of the RLC component.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`succeed`, ``False`` :obj:`if` :obj:`it` failed.
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(edb_file)
+   >>>  for refdes, cmp in edb.components.capacitors.items():
+   >>>     edb.components.replace_rlc_by_gap_boundaries(refdes)
+   >>> edb.save_edb()
+   >>> edb.close_edb()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: deactivate_rlc_component(component=None, create_circuit_port=False, pec_boundary=False)
+
+   
+   Deactivate RLC component with a possibility to convert it to a circuit port.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str`
+           Reference designator of the RLC component.
+
+       **create_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to replace the deactivated RLC component with a circuit port. The default
+           is ``False``.
+
+       **pec_boundary** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+           a perfect short is created between the pin and impedance is ignored. This
+           parameter is only supported on a port created between two pins, such as
+           when there is no pin group.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb_file = r"C:\my_edb_file.aedb"
+   >>> edb = Edb(edb_file)
+   >>> for cmp in list(edb.components.instances.keys()):
+   >>>     edb.components.deactivate_rlc_component(component=cmp, create_circuit_port=False)
+   >>> edb.save_edb()
+   >>> edb.close_edb()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_port_on_rlc_component(component=None, circuit_ports=True, pec_boundary=False)
+
+   
+   Deactivate RLC component and replace it with a circuit port.
+   The circuit port supports only two-pin components.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str`
+           Reference designator of the RLC component.
+
+       **circuit_ports** : :ref:`bool <python:bltin-boolean-values>`
+           ``True`` will replace RLC component by circuit ports, ``False`` gap ports compatible with HFSS 3D modeler
+           export.
+
+       **pec_boundary** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+           a perfect short is created between the pin and impedance is ignored. This
+           parameter is only supported on a port created between two pins, such as
+           when there is no pin group.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_rlc_boundary(component=None, circuit_type=True)
+
+   
+   Add RLC gap boundary on component and replace it with a circuit port.
+   The circuit port supports only 2-pin components.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str`
+           Reference designator of the RLC component.
+
+       **circuit_type** : :ref:`bool <python:bltin-boolean-values>`
+           When ``True`` circuit type are defined, if ``False`` gap type will be used instead (compatible with HFSS 3D
+           modeler). Default value is ``True``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rlc_component(pins, component_name='', r_value=None, c_value=None, l_value=None, is_parallel=False)
+
+   
+   Create physical Rlc component.
+
+
+   :Parameters:
+
+       **pins** : :class:`python:list`
+           List of EDB pins, length must be 2, since only 2 pins component are currently supported.
+           It can be an `dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` object or
+           an Edb Padstack Instance object.
+
+       **component_name** : :class:`python:str`
+           Component definition name.
+
+       **r_value** : :class:`python:float`
+           Resistor value.
+
+       **c_value** : :class:`python:float`
+           Capacitance value.
+
+       **l_value** : :class:`python:float`
+           Inductor value.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`
+           Using parallel model when ``True``, series when ``False``.
+
+   :Returns:
+
+       :obj:`Component`
+           Created EDB component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(pins, component_name=None, placement_layer=None, component_part_name=None, is_rlc=False, r_value=None, c_value=None, l_value=None, is_parallel=False)
+
+   
+   Create a component from pins.
+
+
+   :Parameters:
+
+       **pins** : :class:`python:list`
+           List of EDB core pins.
+
+       **component_name** : :class:`python:str`
+           Name of the reference designator for the component.
+
+       **placement_layer** : :class:`python:str`, :obj:`optional`
+           Name of the layer used for placing the component.
+
+       **component_part_name** : :class:`python:str`, :obj:`optional`
+           Part name of the component.
+
+       **is_rlc** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if the new component will be an RLC or not.
+
+       **r_value** : :class:`python:float`
+           Resistor value.
+
+       **c_value** : :class:`python:float`
+           Capacitance value.
+
+       **l_value** : :class:`python:float`
+           Inductor value.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`
+           Using parallel model when ``True``, series when ``False``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> pins = edbapp.components.get_pin_from_component("A1")
+   >>> edbapp.components.create(pins, "A1New")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_component_from_pins(pins, component_name, placement_layer=None, component_part_name=None)
+
+   
+   Create a component from pins.
+
+   .. deprecated:: 0.6.62
+      Use :func:`create` method instead.
+
+   :Parameters:
+
+       **pins** : :class:`python:list`
+           List of EDB core pins.
+
+       **component_name** : :class:`python:str`
+           Name of the reference designator for the component.
+
+       **placement_layer** : :class:`python:str`, :obj:`optional`
+           Name of the layer used for placing the component.
+
+       **component_part_name** : :class:`python:str`, :obj:`optional`
+           Part name of the component. It's created a new definition if doesn't exists.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> pins = edbapp.components.get_pin_from_component("A1")
+   >>> edbapp.components.create(pins, "A1New")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_component_model(componentname, model_type='Spice', modelpath=None, modelname=None)
+
+   
+   Assign a Spice or Touchstone model to a component.
+
+
+   :Parameters:
+
+       **componentname** : :class:`python:str`
+           Name of the component.
+
+       **model_type** : :class:`python:str`, :obj:`optional`
+           Type of the model. Options are ``"Spice"`` and
+           ``"Touchstone"``.  The default is ``"Spice"``.
+
+       **modelpath** : :class:`python:str`, :obj:`optional`
+           Full path to the model file. The default is ``None``.
+
+       **modelname** : :class:`python:str`, :obj:`optional`
+           Name of the model. The default is ``None``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.set_component_model(
+   ...     "A1", model_type="Spice", modelpath="pathtospfile", modelname="spicemodelname"
+   ... )
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pingroup_from_pins(pins, group_name=None)
+
+   
+   Create a pin group on a component.
+
+
+   :Parameters:
+
+       **pins** : :class:`python:list`
+           List of EDB pins.
+
+       **group_name** : :class:`python:str`, :obj:`optional`
+           Name for the group. The default is ``None``, in which case
+           a default name is assigned as follows: ``[component Name] [NetName]``.
+
+   :Returns:
+
+       :class:`python:tuple`
+           The tuple is structured as: (bool, pingroup).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.create_pingroup_from_pins(gndpinlist, "MyGNDPingroup")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_single_pin_rlc(deactivate_only: bool = False) -> list
+
+   
+   Delete all RLC components with a single pin.
+   Single pin component model type will be reverted to ``"RLC"``.
+
+
+   :Parameters:
+
+       **deactivate_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to only deactivate RLC components with a single point rather than
+           delete them. The default is ``False``, in which case they are deleted.
+
+   :Returns:
+
+       :class:`python:list`
+           List of deleted RLC components.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> list_of_deleted_rlcs = edbapp.components.delete_single_pin_rlc()
+   >>> print(list_of_deleted_rlcs)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_component(component_name)
+
+   
+   Delete a component.
+
+   .. deprecated:: 0.6.62
+      Use :func:`delete` method instead.
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the component.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.delete("A1")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete(component_name)
+
+   
+   Delete a component.
+
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the component.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.delete("A1")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: disable_rlc_component(component_name)
+
+   
+   Disable a RLC component.
+
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the RLC component.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.disable_rlc_component("A1")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_solder_ball(component='', sball_diam=None, sball_height=None, shape='Cylinder', sball_mid_diam=None, chip_orientation='chip_down', auto_reference_size=True, reference_size_x=0, reference_size_y=0, reference_height=0)
+
+   
+   Set cylindrical solder balls on a given component.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str` or :obj:`EDB` :obj:`component`, :obj:`optional`
+           Name of the discrete component.
+
+       **sball_diam** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Diameter of the solder ball.
+
+       **sball_height** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Height of the solder ball.
+
+       **shape** : :class:`python:str`, :obj:`optional`
+           Shape of solder ball. Options are ``"Cylinder"``,
+           ``"Spheroid"``. The default is ``"Cylinder"``.
+
+       **sball_mid_diam** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Mid diameter of the solder ball.
+
+       **chip_orientation** : :class:`python:str`, :obj:`optional`
+           Give the chip orientation, ``"chip_down"`` or ``"chip_up"``. Default is ``"chip_down"``. Only applicable on
+           IC model.
+
+       **auto_reference_size** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to automatically set reference size.
+
+       **reference_size_x** : :class:`python:int`, :class:`python:str`, :class:`python:float`, :obj:`optional`
+           X size of the reference. Applicable when auto_reference_size is False.
+
+       **reference_size_y** : :class:`python:int`, :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Y size of the reference. Applicable when auto_reference_size is False.
+
+       **reference_height** : :class:`python:int`, :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Height of the reference. Applicable when auto_reference_size is False.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.set_solder_ball("A1")
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_component_rlc(componentname, res_value=None, ind_value=None, cap_value=None, isparallel=False)
+
+   
+   Update values for an RLC component.
+
+
+   :Parameters:
+
+       **componentname**
+           Name of the RLC component.
+
+       **res_value** : :class:`python:float`, :obj:`optional`
+           Resistance value. The default is ``None``.
+
+       **ind_value** : :class:`python:float`, :obj:`optional`
+           Inductor value.  The default is ``None``.
+
+       **cap_value** : :class:`python:float` :obj:`optional`
+           Capacitor value.  The default is ``None``.
+
+       **isparallel** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the RLC component is parallel. The default is ``False``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.set_component_rlc("R1", res_value=50, ind_value=1e-9, cap_value=1e-12, isparallel=False)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update_rlc_from_bom(bom_file, delimiter=';', valuefield='Func des', comptype='Prod name', refdes='Pos / Place')
+
+   
+   Update the EDC core component values (RLCs) with values coming from a BOM file.
+
+
+   :Parameters:
+
+       **bom_file** : :class:`python:str`
+           Full path to the BOM file, which is a delimited text file.
+           Header values needed inside the BOM reader must
+           be explicitly set if different from the defaults.
+
+       **delimiter** : :class:`python:str`, :obj:`optional`
+           Value to use for the delimiter. The default is ``";"``.
+
+       **valuefield** : :class:`python:str`, :obj:`optional`
+           Field header containing the value of the component. The default is ``"Func des"``.
+           The value for this parameter must being with the value of the component
+           followed by a space and then the rest of the value. For example, ``"22pF"``.
+
+       **comptype** : :class:`python:str`, :obj:`optional`
+           Field header containing the type of component. The default is ``"Prod name"``. For
+           example, you might enter ``"Inductor"``.
+
+       **refdes** : :class:`python:str`, :obj:`optional`
+           Field header containing the reference designator of the component. The default is
+           ``"Pos / Place"``. For example, you might enter ``"C100"``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the file contains the header and it is correctly parsed. ``True`` is
+           returned even if no values are assigned.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_bom(bom_file, delimiter=',', refdes_col=0, part_name_col=1, comp_type_col=2, value_col=3)
+
+   
+   Load external BOM file.
+
+
+   :Parameters:
+
+       **bom_file** : :class:`python:str`
+           Full path to the BOM file, which is a delimited text file.
+
+       **delimiter** : :class:`python:str`, :obj:`optional`
+           Value to use for the delimiter. The default is ``","``.
+
+       **refdes_col** : :class:`python:int`, :obj:`optional`
+           Column index of reference designator. The default is ``"0"``.
+
+       **part_name_col** : :class:`python:int`, :obj:`optional`
+           Column index of part name. The default is ``"1"``. Set to ``None`` if
+           the column does not exist.
+
+       **comp_type_col** : :class:`python:int`, :obj:`optional`
+           Column index of component type. The default is ``"2"``.
+
+       **value_col** : :class:`python:int`, :obj:`optional`
+           Column index of value. The default is ``"3"``. Set to ``None``
+           if the column does not exist.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_bom(bom_file, delimiter=',')
+
+   
+   Export Bom file from layout.
+
+
+   :Parameters:
+
+       **bom_file** : :class:`python:str`
+           Full path to the BOM file, which is a delimited text file.
+
+       **delimiter** : :class:`python:str`, :obj:`optional`
+           Value to use for the delimiter. The default is ``","``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_by_reference_designator(reference_designator)
+
+   
+   Find a component.
+
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           Reference designator of the component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pin_from_component(component, netName=None, pinName=None, net_name=None, pin_name=None)
+
+   
+   Retrieve the pins of a component.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str` or :obj:`EDB` :obj:`component`
+           Name of the component or the EDB component object.
+
+       **netName** : :class:`python:str`, :obj:`optional`
+           Filter on the net name as an alternative to
+           ``pinName``. The default is ``None``.
+
+       **pinName** : :class:`python:str`, :obj:`optional`
+           Filter on the pin name an alternative to
+           ``netName``. The default is ``None``.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Filter on the net name as an alternative to
+           ``pin_name``. The default is ``None``. This parameter is added to add compatibility with grpc and is
+           recommended using it rather than `netName`.
+
+       **pin_name** : :class:`python:str`, :obj:`optional`
+           Filter on the pin name an alternative to
+           ``netName``. The default is ``None``. This parameter is added to add compatibility with grpc and is
+           recommended using it rather than `pinName`.
+
+   :Returns:
+
+       :class:`python:list`
+           List of pins when the component is found or ``[]`` otherwise.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_pin_from_component("R1", refdes)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_aedt_pin_name(pin)
+
+   
+   Retrieve the pin name that is shown in AEDT.
+
+   .. note::
+      To obtain the EDB core pin name, use `pin.GetName()`.
+
+   :Parameters:
+
+       **pin** : :class:`python:str`
+           Name of the pin in EDB core.
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the pin in AEDT.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_aedt_pin_name(pin)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pins(reference_designator, net_name=None, pin_name=None)
+
+   
+   Get component pins.
+
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           Reference designator of the component.
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Name of the net.
+
+       **pin_name** : :class:`python:str`, :obj:`optional`
+           Name of the pin.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pin_position(pin)
+
+   
+   Retrieve the pin position in meters.
+
+
+   :Parameters:
+
+       **pin** : :class:`python:str`
+           Name of the pin.
+
+   :Returns:
+
+       :class:`python:list`
+           Pin position as a list of float values in the form ``[x, y]``.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_pin_position(pin)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_pins_name_from_net(net_name, pin_list=None)
+
+   
+   Retrieve pins belonging to a net.
+
+
+   :Parameters:
+
+       **pin_list** : :class:`python:list` :obj:`of` :obj:`EDBPadstackInstance`, :obj:`optional`
+           List of pins to check. The default is ``None``, in which case all pins are checked
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`python:str` names:
+           Pins belonging to the net.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_pins_name_from_net(pin_list, net_name)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_nets_from_pin_list(PinList)
+
+   
+   Retrieve nets with one or more pins.
+
+
+   :Parameters:
+
+       **PinList** : :class:`python:list`
+           List of pins.
+
+   :Returns:
+
+       :class:`python:list`
+           List of nets with one or more pins.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_nets_from_pin_list(pinlist)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_component_net_connection_info(refdes)
+
+   
+   Retrieve net connection information.
+
+
+   :Parameters:
+
+       **refdes**
+           Reference designator for the net.
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of the net connection information for the reference designator.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_component_net_connection_info(refdes)
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_rats()
+
+   
+   Retrieve a list of dictionaries of the reference designator, pin names, and net names.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of dictionaries of the reference designator, pin names,
+           and net names.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_rats()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_through_resistor_list(threshold=1)
+
+   
+   Retrieve through resistors.
+
+
+   :Parameters:
+
+       **threshold** : :class:`python:int`, :obj:`optional`
+           Threshold value. The default is ``1``.
+
+   :Returns:
+
+       :class:`python:list`
+           List of through resistors.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.components.get_through_resistor_list()
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: short_component_pins(component_name, pins_to_short=None, width=0.001)
+
+   
+   Short pins of component with a trace.
+
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the component.
+
+       **pins_to_short** : :class:`python:list`, :obj:`optional`
+           List of pins to short. If `None`, all pins will be shorted.
+
+       **width** : :class:`python:float`, :obj:`optional`
+           Short Trace width. It will be used in trace computation algorithm
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.short_component_pins("J4A2", ["G4", "9", "3"])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

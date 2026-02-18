@@ -1,0 +1,101 @@
+﻿DiffPair
+========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoclass:: DiffPair
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      DiffPair.construct
+      
+      
+      DiffPair.copy
+      
+      
+      DiffPair.dict
+      
+      
+      DiffPair.from_orm
+      
+      
+      DiffPair.json
+      
+      
+      DiffPair.model_construct
+      
+      
+      DiffPair.model_copy
+      
+      
+      DiffPair.model_dump
+      
+      
+      DiffPair.model_dump_json
+      
+      
+      DiffPair.model_json_schema
+      
+      
+      DiffPair.model_parametrized_name
+      
+      
+      DiffPair.model_post_init
+      
+      
+      DiffPair.model_rebuild
+      
+      
+      DiffPair.model_validate
+      
+      
+      DiffPair.model_validate_json
+      
+      
+      DiffPair.model_validate_strings
+      
+      
+      DiffPair.parse_file
+      
+      
+      DiffPair.parse_obj
+      
+      
+      DiffPair.parse_raw
+      
+      
+      DiffPair.schema
+      
+      
+      DiffPair.schema_json
+      
+      
+      DiffPair.update_forward_refs
+      
+      
+      DiffPair.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DiffPair.model_computed_fields
+      DiffPair.model_config
+      DiffPair.model_fields
+      DiffPair.positive
+      DiffPair.negative
+   
+   

@@ -1,0 +1,6 @@
+etch\_factor
+============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.etch_factor

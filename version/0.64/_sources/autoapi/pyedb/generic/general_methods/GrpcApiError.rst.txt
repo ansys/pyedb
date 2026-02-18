@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`GrpcApiError`
+=====================
+
+
+.. py:exception:: pyedb.generic.general_methods.GrpcApiError
+
+   Bases: :py:obj:`Exception`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.general_methods import GrpcApiError
+
+
+
+
+

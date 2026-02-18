@@ -1,0 +1,47 @@
+
+
+
+
+
+
+:class:`TerminalTypeMapper`
+===========================
+
+.. toctree::
+   :hidden:
+
+    GRPC</autoapi/pyedb/generic/constants/TerminalTypeMapper.GRPC>
+    DOTNET</autoapi/pyedb/generic/constants/TerminalTypeMapper.DOTNET>
+
+
+.. py:class:: pyedb.generic.constants.TerminalTypeMapper
+
+   Bases: :py:obj:`CommonMapper`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import TerminalTypeMapper
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.TerminalTypeMapper.GRPC
+    pyedb.generic.constants.TerminalTypeMapper.DOTNET
+
+
+
+

@@ -1,0 +1,100 @@
+﻿Material
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoclass:: Material
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Material.create
+      
+      
+      Material.delete
+      
+      
+      Material.find_by_name
+      
+      
+      Material.get_anisotropic_thermal_modifier
+      
+      
+      Material.get_dimensions
+      
+      
+      Material.get_property
+      
+      
+      Material.get_thermal_modifier
+      
+      
+      Material.remove_property
+      
+      
+      Material.set_anisotropic_thermal_modifier
+      
+      
+      Material.set_debye_model
+      
+      
+      Material.set_djordjecvic_sarkar_model
+      
+      
+      Material.set_multipole_debye_model
+      
+      
+      Material.set_property
+      
+      
+      Material.set_thermal_modifier
+      
+      
+      Material.to_dict
+      
+      
+      Material.update
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Material.all_properties
+      Material.conductivity
+      Material.dc_conductivity
+      Material.dc_model
+      Material.dc_permittivity
+      Material.definition_type
+      Material.dielectric_loss_tangent
+      Material.dielectric_material_model
+      Material.dielectric_model_frequency
+      Material.id
+      Material.is_null
+      Material.loss_tangent
+      Material.loss_tangent_at_frequency
+      Material.magnetic_loss_tangent
+      Material.mass_density
+      Material.msg
+      Material.name
+      Material.permeability
+      Material.permittivity
+      Material.permittivity_at_frequency
+      Material.poisson_ratio
+      Material.specific_heat
+      Material.thermal_conductivity
+      Material.thermal_expansion_coefficient
+      Material.youngs_modulus
+   
+   

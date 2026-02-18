@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`HeaderBlockParser`
+==========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.HeaderBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract AEDT version information from the log header.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HeaderBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse the stored lines and return an AEDTVersion instance.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import HeaderBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> AEDTVersion
+
+   
+   Parse the stored lines and return an AEDTVersion instance.
+
+   :return: Populated data object.
+   :rtype: AEDTVersion
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

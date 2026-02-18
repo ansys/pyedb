@@ -1,0 +1,6 @@
+core
+====
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.core

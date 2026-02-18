@@ -1,0 +1,270 @@
+
+
+
+
+
+
+:class:`ControlFileSetup`
+=========================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFileSetup(name)
+
+   
+   Setup Class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_sweep`
+            - Add a new sweep.
+          * - :py:attr:`~add_mesh_operation`
+            - Add mesh operations.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+          * - :py:attr:`~save_fields`
+            - 
+          * - :py:attr:`~save_rad_fields`
+            - 
+          * - :py:attr:`~frequency`
+            - 
+          * - :py:attr:`~maxpasses`
+            - 
+          * - :py:attr:`~max_delta`
+            - 
+          * - :py:attr:`~union_polygons`
+            - 
+          * - :py:attr:`~small_voids_area`
+            - 
+          * - :py:attr:`~mode_type`
+            - 
+          * - :py:attr:`~ic_model_resolution`
+            - 
+          * - :py:attr:`~order_basis`
+            - 
+          * - :py:attr:`~solver_type`
+            - 
+          * - :py:attr:`~low_freq_accuracy`
+            - 
+          * - :py:attr:`~mesh_operations`
+            - 
+          * - :py:attr:`~sweeps`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFileSetup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: enabled
+   :value: True
+
+
+.. py:attribute:: save_fields
+   :value: False
+
+
+.. py:attribute:: save_rad_fields
+   :value: False
+
+
+.. py:attribute:: frequency
+   :value: '1GHz'
+
+
+.. py:attribute:: maxpasses
+   :value: 10
+
+
+.. py:attribute:: max_delta
+   :value: 0.02
+
+
+.. py:attribute:: union_polygons
+   :value: True
+
+
+.. py:attribute:: small_voids_area
+   :value: 0
+
+
+.. py:attribute:: mode_type
+   :value: 'IC'
+
+
+.. py:attribute:: ic_model_resolution
+   :value: 'Auto'
+
+
+.. py:attribute:: order_basis
+   :value: 'FirstOrder'
+
+
+.. py:attribute:: solver_type
+   :value: 'Auto'
+
+
+.. py:attribute:: low_freq_accuracy
+   :value: False
+
+
+.. py:attribute:: mesh_operations
+   :value: []
+
+
+.. py:attribute:: sweeps
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_sweep(name, start, stop, step, sweep_type='Interpolating', step_type='LinearStep', use_q3d=True)
+
+   
+   Add a new sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Sweep name.
+
+       **start** : :class:`python:str`
+           Frequency start.
+
+       **stop** : :class:`python:str`
+           Frequency stop.
+
+       **step** : :class:`python:str`
+           Frequency step or count.
+
+       **sweep_type** : :class:`python:str`
+           Sweep type. It can be `"Discrete"` or  `"Interpolating"`.
+
+       **step_type** : :class:`python:str`
+           Sweep type. It can be `"LinearStep"`, `"DecadeCount"` or  `"LinearCount"`.
+
+       **use_q3d**
+           ..
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileSweep`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_mesh_operation(name, region, type, nets_layers)
+
+   
+   Add mesh operations.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Mesh name.
+
+       **region** : :class:`python:str`
+           Region to apply mesh operation.
+
+       **type** : :class:`python:str`
+           Mesh operation type. It can be `"MeshOperationLength"` or  `"MeshOperationSkinDepth"`.
+
+       **nets_layers** : :class:`python:dict`
+           Dictionary containing nets and layers on which apply mesh.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.control_file.ControlFileMeshOp`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

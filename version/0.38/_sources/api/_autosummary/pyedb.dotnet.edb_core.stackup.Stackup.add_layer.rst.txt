@@ -1,0 +1,6 @@
+add\_layer
+==========
+
+.. currentmodule:: pyedb.dotnet.edb_core.stackup
+
+.. automethod:: Stackup.add_layer

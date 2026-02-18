@@ -1,0 +1,6 @@
+model\_post\_init
+=================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: MaterialProperties.model_post_init

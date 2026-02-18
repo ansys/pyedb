@@ -1,0 +1,6 @@
+get\_dcconnected\_net\_list
+===========================
+
+.. currentmodule:: pyedb.grpc.database.nets
+
+.. automethod:: Nets.get_dcconnected_net_list

@@ -1,0 +1,6 @@
+get\_reference\_pins
+====================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_reference_pins

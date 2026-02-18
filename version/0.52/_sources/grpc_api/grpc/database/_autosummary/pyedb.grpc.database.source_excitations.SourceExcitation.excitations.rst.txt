@@ -1,0 +1,6 @@
+excitations
+===========
+
+.. currentmodule:: pyedb.grpc.database.source_excitations
+
+.. autoproperty:: SourceExcitation.excitations

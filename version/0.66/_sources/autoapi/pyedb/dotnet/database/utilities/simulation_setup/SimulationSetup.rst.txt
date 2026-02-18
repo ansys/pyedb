@@ -1,0 +1,463 @@
+
+
+
+
+
+
+:class:`SimulationSetup`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup(pedb, edb_object=None)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provide base simulation setup.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.dotnet.edb.Edb`
+           Inherited object.
+
+       **edb_object** : :class:`Ansys.Ansoft.Edb.Utility.SIWaveSimulationSetup`,
+           ..
+
+       **:class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`,**
+           ..
+
+       **:class:`Ansys.Ansoft.Edb.Utility.HFSSSimulationSettings`**
+           EDB object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_sim_setup_info`
+            - 
+          * - :py:attr:`~get_simulation_settings`
+            - 
+          * - :py:attr:`~set_simulation_settings`
+            - 
+          * - :py:attr:`~add_sweep`
+            - Add frequency sweep.
+          * - :py:attr:`~delete`
+            - Delete current simulation setup.
+          * - :py:attr:`~delete_frequency_sweep`
+            - Delete a frequency sweep.
+          * - :py:attr:`~add_frequency_sweep`
+            - Add frequency sweep.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sim_setup_info`
+            - 
+          * - :py:attr:`~get_sim_setup_info`
+            - Get simulation setup information.
+          * - :py:attr:`~is_null`
+            - Adding this property for compatibility with grpc.
+          * - :py:attr:`~setup_type`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~mesh_operations`
+            - 
+          * - :py:attr:`~enabled`
+            - Flag indicating if the setup is enabled.
+          * - :py:attr:`~name`
+            - Name of the setup.
+          * - :py:attr:`~position`
+            - Position in the setup list.
+          * - :py:attr:`~frequency_sweeps`
+            - 
+          * - :py:attr:`~sweeps`
+            - List of frequency sweeps.
+          * - :py:attr:`~sweep_data`
+            - Adding property for compatibility with grpc.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: sim_setup_info
+
+.. py:property:: get_sim_setup_info
+
+   
+   Get simulation setup information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+
+   
+   Adding this property for compatibility with grpc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: setup_type
+
+.. py:property:: type
+
+.. py:property:: mesh_operations
+
+.. py:property:: enabled
+
+   
+   Flag indicating if the setup is enabled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Name of the setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: position
+
+   
+   Position in the setup list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: frequency_sweeps
+
+.. py:property:: sweeps
+
+   
+   List of frequency sweeps.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweep_data
+
+   
+   Adding property for compatibility with grpc.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_sim_setup_info(sim_setup_info)
+
+.. py:method:: get_simulation_settings()
+
+.. py:method:: set_simulation_settings(sim_settings: dict)
+
+.. py:method:: add_sweep(name: str = None, distribution: str = None, start_freq: str = None, stop_freq: str = None, step=None, frequency_set: list = None, sweep_type: str = 'interpolation', **kwargs)
+
+   
+   Add frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep. The default is ``None``.
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Added for grpc compatibility.
+
+       **start_freq** : :class:`python:str`, :obj:`optional`
+           Added for rpc compatibility.
+
+       **stop_freq** : :class:`python:str`, :obj:`optional`
+           Added for grpc compatibility.
+
+       **step** : :obj:`optional`
+           Added for grpc compatibility.
+
+       **frequency_set** : :class:`python:list`, :obj:`optional`
+           List of frequency points. The default is ``None``.
+
+       **sweep_type** : :class:`python:str`, :obj:`optional`
+           Sweep type. The default is ``"interpolation"``. Options are ``"discrete"``,"discrete"``.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+   >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete current simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_frequency_sweep(sweep_data)
+
+   
+   Delete a frequency sweep.
+
+
+   :Parameters:
+
+       **sweep_data** : EdbFrequencySweep.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_frequency_sweep(name=None, frequency_sweep=None)
+
+   
+   Add frequency sweep.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the frequency sweep. The default is ``None``.
+
+       **frequency_sweep** : :class:`python:list`, :obj:`optional`
+           List of frequency points. The default is ``None``.
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.simulation_setup_data.EdbFrequencySweep`
+           ..
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+   >>> setup1.add_frequency_sweep(
+   ...     frequency_sweep=[
+   ...         ["linear count", "0", "1kHz", 1],
+   ...         ["log scale", "1kHz", "0.1GHz", 10],
+   ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+   ...     ]
+   ... )
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

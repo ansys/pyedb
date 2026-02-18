@@ -1,0 +1,150 @@
+﻿Primitive
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoclass:: Primitive
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Primitive.add_void
+      
+      
+      Primitive.area
+      
+      
+      Primitive.cast
+      
+      
+      Primitive.convert_to_polygon
+      
+      
+      Primitive.create_3d_comp
+      
+      
+      Primitive.create_hfss
+      
+      
+      Primitive.create_stride
+      
+      
+      Primitive.delete
+      
+      
+      Primitive.expand
+      
+      
+      Primitive.find_by_id
+      
+      
+      Primitive.get_closest_arc_midpoint
+      
+      
+      Primitive.get_closest_point
+      
+      
+      Primitive.get_connected_object_id_set
+      
+      
+      Primitive.get_connected_objects
+      
+      
+      Primitive.get_hfss_prop
+      
+      
+      Primitive.get_product_property
+      
+      
+      Primitive.get_product_property_ids
+      
+      
+      Primitive.intersect
+      
+      
+      Primitive.intersection_type
+      
+      
+      Primitive.is_intersecting
+      
+      
+      Primitive.make_zone_primitive
+      
+      
+      Primitive.plot
+      
+      
+      Primitive.points
+      
+      
+      Primitive.remove_hfss_prop
+      
+      
+      Primitive.scale
+      
+      
+      Primitive.set_hfss_prop
+      
+      
+      Primitive.set_product_property
+      
+      
+      Primitive.subtract
+      
+      
+      Primitive.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Primitive.aedt_name
+      Primitive.arcs
+      Primitive.bbox
+      Primitive.can_be_zone_primitive
+      Primitive.center
+      Primitive.component
+      Primitive.edb_uid
+      Primitive.group
+      Primitive.has_voids
+      Primitive.id
+      Primitive.is_mcad
+      Primitive.is_mcad_3d_comp
+      Primitive.is_mcad_hfss
+      Primitive.is_mcad_stride
+      Primitive.is_negative
+      Primitive.is_null
+      Primitive.is_parameterized
+      Primitive.is_void
+      Primitive.is_zone_primitive
+      Primitive.layer
+      Primitive.layer_name
+      Primitive.layout
+      Primitive.layout_obj_type
+      Primitive.longest_arc
+      Primitive.msg
+      Primitive.net
+      Primitive.net_name
+      Primitive.obj_type
+      Primitive.object_instance
+      Primitive.owner
+      Primitive.points_raw
+      Primitive.polygon_data
+      Primitive.primitive_type
+      Primitive.shortest_arc
+      Primitive.type
+      Primitive.voids
+   
+   

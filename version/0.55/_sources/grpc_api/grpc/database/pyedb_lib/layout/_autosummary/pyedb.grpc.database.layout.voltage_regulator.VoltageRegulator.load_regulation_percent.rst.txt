@@ -1,0 +1,6 @@
+load\_regulation\_percent
+=========================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoproperty:: VoltageRegulator.load_regulation_percent

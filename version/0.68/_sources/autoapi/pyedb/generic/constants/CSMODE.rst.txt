@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`CSMODE`
+===============
+
+
+.. py:class:: pyedb.generic.constants.CSMODE
+
+   Bases: :py:obj:`object`
+
+
+   
+   COORDINATE SYSTEM MODE Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import CSMODE
+
+
+
+
+

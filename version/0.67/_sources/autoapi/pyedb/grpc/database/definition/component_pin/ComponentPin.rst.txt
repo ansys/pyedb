@@ -1,0 +1,145 @@
+
+
+
+
+
+
+:class:`ComponentPin`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.definition.component_pin.ComponentPin(core)
+
+   
+   Class managing :class:`ComponentPin <ansys.edb.core.definition.component_pin.ComponentPin>`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: ComponentPin
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a component pin.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_null`
+            - 
+          * - :py:attr:`~name`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.component_pin import ComponentPin
+
+Property detail
+---------------
+
+.. py:property:: is_null
+
+.. py:property:: name
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(component_def, name)
+   :classmethod:
+
+
+   
+   Create a component pin.
+
+
+   :Parameters:
+
+       **component_def** : :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+           Component definition object.
+
+       **name** : :class:`python:str`
+           Name of the component pin.
+
+
+
+   :Returns:
+
+       :class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`
+           The created component pin object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

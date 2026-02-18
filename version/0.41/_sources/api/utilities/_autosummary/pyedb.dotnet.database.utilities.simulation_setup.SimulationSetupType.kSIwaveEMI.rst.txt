@@ -1,0 +1,6 @@
+kSIwaveEMI
+==========
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoattribute:: SimulationSetupType.kSIwaveEMI

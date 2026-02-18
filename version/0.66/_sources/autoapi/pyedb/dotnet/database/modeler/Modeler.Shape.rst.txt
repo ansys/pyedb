@@ -1,0 +1,138 @@
+
+
+
+
+
+
+:class:`Shape`
+==============
+
+
+.. py:class:: pyedb.dotnet.database.modeler.Modeler.Shape(type='unknown', pointA=None, pointB=None, centerPoint=None, radius=None, points=None, properties={})
+
+   Bases: :py:obj:`object`
+
+
+   
+   Shape class.
+
+
+   :Parameters:
+
+       **type** : :class:`python:str`, :obj:`optional`
+           Type of the shape. Options are ``"circle"``, ``"rectangle"``, and ``"polygon"``.
+           The default is ``"unknown``.
+
+       **pointA** : :obj:`optional`
+           Lower-left corner when ``type="rectangle"``. The default is ``None``.
+
+       **pointB** : :obj:`optional`
+           Upper-right corner when ``type="rectangle"``. The default is ``None``.
+
+       **centerPoint** : :obj:`optional`
+           Center point when ``type="circle"``. The default is ``None``.
+
+       **radius** : :obj:`optional`
+           Radius when ``type="circle"``. The default is ``None``.
+
+       **points** : :class:`python:list`, :obj:`optional`
+           List of points when ``type="polygon"``. The default is ``None``.
+
+       **properties** : :class:`python:dict`, :obj:`optional`
+           Dictionary of properties associated with the shape. The default is ``{}``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Shape
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~pointA`
+            - 
+          * - :py:attr:`~pointB`
+            - 
+          * - :py:attr:`~centerPoint`
+            - 
+          * - :py:attr:`~radius`
+            - 
+          * - :py:attr:`~points`
+            - 
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.modeler.Modeler import Shape
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :value: 'unknown'
+
+
+.. py:attribute:: pointA
+   :value: None
+
+
+.. py:attribute:: pointB
+   :value: None
+
+
+.. py:attribute:: centerPoint
+   :value: None
+
+
+.. py:attribute:: radius
+   :value: None
+
+
+.. py:attribute:: points
+   :value: None
+
+
+.. py:attribute:: properties
+
+
+
+
+

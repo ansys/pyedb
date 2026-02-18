@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``hierarchy_obj.py`` module
+===============================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.hierarchy_obj
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hierarchy_obj
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.HierarchyObj`
+            - Manages EDB functionalities for a connectable object.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.hierarchy_obj.Group`
+            - Manages EDB functionalities for a connectable object.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> HierarchyObj</autoapi/pyedb/dotnet/database/cell/hierarchy/hierarchy_obj/HierarchyObj>
+    <span class="nf nf-cod-symbol_class"></span> Group</autoapi/pyedb/dotnet/database/cell/hierarchy/hierarchy_obj/Group>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

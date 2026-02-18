@@ -1,0 +1,24 @@
+﻿CfgBoundaries
+=============
+
+.. currentmodule:: pyedb.configuration.cfg_boundaries
+
+.. autoclass:: CfgBoundaries
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgBoundaries.apply
+      
+   
+   
+
+   
+   
+   

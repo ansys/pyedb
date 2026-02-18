@@ -1,0 +1,179 @@
+
+
+
+
+
+
+:class:`JobInfo`
+================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.JobInfo
+
+   
+   **Mutable** state container for a single simulation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   :Attributes:
+
+       **config** : :obj:`HFSSSimulationConfig`
+           Immutable configuration.
+
+       **status** : :obj:`JobStatus`
+           Current life-cycle state.
+
+       **start_time** : :obj:`datetime` or :data:`python:None`
+           When the job entered ``RUNNING``.
+
+       **end_time** : :obj:`datetime` or :data:`python:None`
+           When the job reached a terminal state.
+
+       **return_code** : :class:`python:int` or :data:`python:None`
+           Exit code of the solver or scheduler.
+
+       **output** : :class:`python:str`
+           Stdout captured (local runs only).
+
+       **error** : :class:`python:str`
+           Stderr captured (local runs only).
+
+       **process** : :obj:`asyncio.subprocess.Process` or :data:`python:None`
+           Handle for local cancellation.
+
+       **scheduler_job_id** : :class:`python:str` or :data:`python:None`
+           External identifier (SLURM, LSF, …).
+
+       **local_resources** : :class:`python:dict` or :data:`python:None`
+           Snapshot of host telemetry at start time.
+
+       **priority** : :class:`python:int`
+           Higher numbers are de-queued first.
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: JobInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~config`
+            - 
+          * - :py:attr:`~status`
+            - 
+          * - :py:attr:`~start_time`
+            - 
+          * - :py:attr:`~end_time`
+            - 
+          * - :py:attr:`~return_code`
+            - 
+          * - :py:attr:`~output`
+            - 
+          * - :py:attr:`~error`
+            - 
+          * - :py:attr:`~process`
+            - 
+          * - :py:attr:`~scheduler_job_id`
+            - 
+          * - :py:attr:`~local_resources`
+            - 
+          * - :py:attr:`~priority`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import JobInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: config
+   :type:  pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig
+
+.. py:attribute:: status
+   :type:  JobStatus
+
+.. py:attribute:: start_time
+   :type:  Optional[datetime.datetime]
+   :value: None
+
+
+.. py:attribute:: end_time
+   :type:  Optional[datetime.datetime]
+   :value: None
+
+
+.. py:attribute:: return_code
+   :type:  Optional[int]
+   :value: None
+
+
+.. py:attribute:: output
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: error
+   :type:  str
+   :value: ''
+
+
+.. py:attribute:: process
+   :type:  Optional[Any]
+   :value: None
+
+
+.. py:attribute:: scheduler_job_id
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: local_resources
+   :type:  Optional[Dict[str, Any]]
+   :value: None
+
+
+.. py:attribute:: priority
+   :type:  int
+   :value: 0
+
+
+
+
+
+

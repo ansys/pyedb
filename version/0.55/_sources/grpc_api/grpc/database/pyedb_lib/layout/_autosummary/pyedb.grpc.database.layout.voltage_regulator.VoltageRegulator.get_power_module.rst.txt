@@ -1,0 +1,6 @@
+get\_power\_module
+==================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. automethod:: VoltageRegulator.get_power_module

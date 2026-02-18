@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.net.net_class
+
+.. autoattribute:: NetClass.layout_obj_type

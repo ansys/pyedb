@@ -1,0 +1,281 @@
+
+
+
+
+
+
+:class:`HFSSAdvancedMeshingSettings`
+====================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSAdvancedMeshingSettings)
+
+
+.. py:currentmodule:: HFSSAdvancedMeshingSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~arc_step_size`
+            - Get or set the arc step size.
+          * - :py:attr:`~arc_to_chord_error`
+            - Get or set the arc to chord error.
+          * - :py:attr:`~circle_start_azimuth`
+            - Get or set the circle start azimuth.
+          * - :py:attr:`~layer_snap_tol`
+            - Get or set the layer snap tolerance.
+          * - :py:attr:`~max_arc_points`
+            - Get or set the maximum number of arc points.
+          * - :py:attr:`~max_num_arc_points`
+            - Get or set the maximum number of arc points.
+          * - :py:attr:`~use_arc_chord_error_approx`
+            - Get or set whether to use arc chord error approximation.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings import HFSSAdvancedMeshingSettings
+
+Property detail
+---------------
+
+.. py:property:: arc_step_size
+   :type: str
+
+
+   
+   Get or set the arc step size.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc step size.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_to_chord_error
+   :type: str
+
+
+   
+   Get or set the arc to chord error.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc to chord error.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: circle_start_azimuth
+   :type: str
+
+
+   
+   Get or set the circle start azimuth.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Circle start azimuth.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_snap_tol
+   :type: str
+
+
+   
+   Get or set the layer snap tolerance.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Layer snap tolerance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_arc_points
+   :type: int
+
+
+   
+   Get or set the maximum number of arc points.
+
+   .. deprecated:: 0.77.3
+       Use :attr:`max_num_arc_points` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_arc_points
+   :type: int
+
+
+   
+   Get or set the maximum number of arc points.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Maximum number of arc points.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_arc_chord_error_approx
+   :type: bool
+
+
+   
+   Get or set whether to use arc chord error approximation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if using arc chord error approximation, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,6 @@
+fromhex
+=======
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.fromhex

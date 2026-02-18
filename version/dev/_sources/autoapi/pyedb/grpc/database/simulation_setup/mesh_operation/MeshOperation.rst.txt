@@ -1,0 +1,70 @@
+
+
+
+
+
+
+:class:`MeshOperation`
+======================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.mesh_operation.MeshOperation(core)
+
+
+.. py:currentmodule:: MeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~mesh_operation_type`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.mesh_operation import MeshOperation
+
+Property detail
+---------------
+
+.. py:property:: mesh_operation_type
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

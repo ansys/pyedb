@@ -1,0 +1,6 @@
+can\_be\_zone\_primitive
+========================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. autoproperty:: EdbPolygon.can_be_zone_primitive

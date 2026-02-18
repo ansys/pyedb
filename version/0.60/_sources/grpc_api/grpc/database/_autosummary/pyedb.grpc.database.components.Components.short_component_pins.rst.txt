@@ -1,0 +1,6 @@
+short\_component\_pins
+======================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.short_component_pins

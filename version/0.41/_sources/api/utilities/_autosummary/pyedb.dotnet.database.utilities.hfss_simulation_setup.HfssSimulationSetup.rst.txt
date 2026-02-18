@@ -1,0 +1,80 @@
+﻿HfssSimulationSetup
+===================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoclass:: HfssSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HfssSimulationSetup.add_frequency_sweep
+      
+      
+      HfssSimulationSetup.add_length_mesh_operation
+      
+      
+      HfssSimulationSetup.add_skin_depth_mesh_operation
+      
+      
+      HfssSimulationSetup.add_sweep
+      
+      
+      HfssSimulationSetup.delete_frequency_sweep
+      
+      
+      HfssSimulationSetup.get_simulation_settings
+      
+      
+      HfssSimulationSetup.set_sim_setup_info
+      
+      
+      HfssSimulationSetup.set_simulation_settings
+      
+      
+      HfssSimulationSetup.set_solution_broadband
+      
+      
+      HfssSimulationSetup.set_solution_multi_frequencies
+      
+      
+      HfssSimulationSetup.set_solution_single_frequency
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HfssSimulationSetup.adaptive_settings
+      HfssSimulationSetup.advanced_mesh_settings
+      HfssSimulationSetup.curve_approx_settings
+      HfssSimulationSetup.dcr_settings
+      HfssSimulationSetup.defeature_settings
+      HfssSimulationSetup.enabled
+      HfssSimulationSetup.frequency_sweeps
+      HfssSimulationSetup.get_sim_setup_info
+      HfssSimulationSetup.hfss_port_settings
+      HfssSimulationSetup.hfss_solver_settings
+      HfssSimulationSetup.is_auto_setup
+      HfssSimulationSetup.mesh_operations
+      HfssSimulationSetup.name
+      HfssSimulationSetup.position
+      HfssSimulationSetup.setup_type
+      HfssSimulationSetup.sim_setup_info
+      HfssSimulationSetup.solver_slider_type
+      HfssSimulationSetup.sweeps
+      HfssSimulationSetup.type
+      HfssSimulationSetup.via_settings
+   
+   

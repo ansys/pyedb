@@ -1,0 +1,6 @@
+bbox
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.bbox

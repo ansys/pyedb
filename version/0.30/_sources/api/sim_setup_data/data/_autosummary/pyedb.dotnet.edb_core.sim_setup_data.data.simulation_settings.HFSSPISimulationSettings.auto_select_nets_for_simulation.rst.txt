@@ -1,0 +1,6 @@
+auto\_select\_nets\_for\_simulation
+===================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.auto_select_nets_for_simulation

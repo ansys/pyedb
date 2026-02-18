@@ -1,0 +1,6 @@
+assign\_spice\_model
+====================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. automethod:: Component.assign_spice_model

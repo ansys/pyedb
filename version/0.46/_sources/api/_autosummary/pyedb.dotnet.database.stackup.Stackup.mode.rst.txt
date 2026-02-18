@@ -1,0 +1,6 @@
+mode
+====
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. autoproperty:: Stackup.mode

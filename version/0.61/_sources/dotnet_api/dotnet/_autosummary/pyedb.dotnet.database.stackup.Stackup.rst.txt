@@ -1,0 +1,99 @@
+﻿Stackup
+=======
+
+.. currentmodule:: pyedb.dotnet.database.stackup
+
+.. autoclass:: Stackup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Stackup.add_document_layer
+      
+      
+      Stackup.add_layer
+      
+      
+      Stackup.add_layer_above
+      
+      
+      Stackup.add_layer_below
+      
+      
+      Stackup.add_layer_bottom
+      
+      
+      Stackup.add_layer_top
+      
+      
+      Stackup.add_outline_layer
+      
+      
+      Stackup.adjust_solder_dielectrics
+      
+      
+      Stackup.create_symmetric_stackup
+      
+      
+      Stackup.export
+      
+      
+      Stackup.find_layer_by_name
+      
+      
+      Stackup.flip_design
+      
+      
+      Stackup.get_layout_thickness
+      
+      
+      Stackup.limits
+      
+      
+      Stackup.load
+      
+      
+      Stackup.load_from_xml
+      
+      
+      Stackup.place_a3dcomp_3d_placement
+      
+      
+      Stackup.place_in_layout
+      
+      
+      Stackup.place_in_layout_3d_placement
+      
+      
+      Stackup.place_instance
+      
+      
+      Stackup.plot
+      
+      
+      Stackup.refresh_layer_collection
+      
+      
+      Stackup.remove_layer
+      
+      
+      Stackup.residual_copper_area_per_layer
+      
+      
+      Stackup.set_layer_clone
+      
+      
+      Stackup.update_layout
+      
+   
+   
+
+   
+   
+   

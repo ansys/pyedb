@@ -1,0 +1,6 @@
+remove\_pads\_from\_padstack
+============================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.remove_pads_from_padstack

@@ -1,0 +1,6 @@
+export\_definition
+==================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.export_definition

@@ -1,0 +1,64 @@
+﻿RaptorXSimulationSetup
+======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoclass:: RaptorXSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      RaptorXSimulationSetup.add_frequency_sweep
+      
+      
+      RaptorXSimulationSetup.add_sweep
+      
+      
+      RaptorXSimulationSetup.create
+      
+      
+      RaptorXSimulationSetup.delete
+      
+      
+      RaptorXSimulationSetup.delete_frequency_sweep
+      
+      
+      RaptorXSimulationSetup.get_simulation_settings
+      
+      
+      RaptorXSimulationSetup.set_sim_setup_info
+      
+      
+      RaptorXSimulationSetup.set_simulation_settings
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      RaptorXSimulationSetup.enabled
+      RaptorXSimulationSetup.frequency_sweeps
+      RaptorXSimulationSetup.get_sim_setup_info
+      RaptorXSimulationSetup.is_null
+      RaptorXSimulationSetup.mesh_operations
+      RaptorXSimulationSetup.name
+      RaptorXSimulationSetup.position
+      RaptorXSimulationSetup.settings
+      RaptorXSimulationSetup.setup_type
+      RaptorXSimulationSetup.sim_setup_info
+      RaptorXSimulationSetup.sweep_data
+      RaptorXSimulationSetup.sweeps
+      RaptorXSimulationSetup.type
+   
+   

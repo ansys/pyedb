@@ -1,0 +1,6 @@
+is\_wave\_port
+==============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.is_wave_port

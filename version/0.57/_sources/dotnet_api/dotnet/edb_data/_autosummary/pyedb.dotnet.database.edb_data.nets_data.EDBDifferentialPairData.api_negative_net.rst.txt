@@ -1,0 +1,6 @@
+api\_negative\_net
+==================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.nets_data
+
+.. autoproperty:: EDBDifferentialPairData.api_negative_net

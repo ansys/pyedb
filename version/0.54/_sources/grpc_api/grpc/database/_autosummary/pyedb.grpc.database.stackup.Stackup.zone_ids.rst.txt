@@ -1,0 +1,6 @@
+zone\_ids
+=========
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. autoproperty:: Stackup.zone_ids

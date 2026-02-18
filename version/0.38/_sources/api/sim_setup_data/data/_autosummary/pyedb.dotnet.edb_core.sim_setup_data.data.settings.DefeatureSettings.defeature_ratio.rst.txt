@@ -1,0 +1,6 @@
+defeature\_ratio
+================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoproperty:: DefeatureSettings.defeature_ratio

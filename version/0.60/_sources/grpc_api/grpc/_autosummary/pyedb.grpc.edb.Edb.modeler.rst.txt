@@ -1,0 +1,6 @@
+modeler
+=======
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.modeler

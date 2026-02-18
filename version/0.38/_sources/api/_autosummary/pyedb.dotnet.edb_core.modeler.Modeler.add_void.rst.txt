@@ -1,0 +1,6 @@
+add\_void
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.modeler
+
+.. automethod:: Modeler.add_void

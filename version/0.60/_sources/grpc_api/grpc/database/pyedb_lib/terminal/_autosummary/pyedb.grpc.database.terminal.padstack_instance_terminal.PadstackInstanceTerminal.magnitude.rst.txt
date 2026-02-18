@@ -1,0 +1,6 @@
+magnitude
+=========
+
+.. currentmodule:: pyedb.grpc.database.terminal.padstack_instance_terminal
+
+.. autoproperty:: PadstackInstanceTerminal.magnitude

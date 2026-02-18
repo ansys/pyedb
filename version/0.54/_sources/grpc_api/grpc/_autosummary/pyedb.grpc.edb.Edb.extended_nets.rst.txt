@@ -1,0 +1,6 @@
+extended\_nets
+==============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.extended_nets

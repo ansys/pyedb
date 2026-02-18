@@ -1,0 +1,15 @@
+﻿HFSSDCRSettings
+===============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings
+
+.. autoclass:: HFSSDCRSettings
+
+   
+
+   
+   
+
+   
+   
+   

@@ -1,0 +1,6 @@
+dc\_slider\_position
+====================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCSettings.dc_slider_position

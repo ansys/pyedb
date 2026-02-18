@@ -1,0 +1,97 @@
+
+
+
+
+
+
+The ``layer_data.py`` module
+============================
+
+.. py:module:: pyedb.dotnet.database.edb_data.layer_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layer_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.layer_data.LayerEdbClass`
+            - Manages Edb Layers. Replaces EDBLayer.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.edb_data.layer_data.StackupLayerEdbClass`
+            - Manages Edb Layers. Replaces EDBLayer.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~layer_cast`
+            - 
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> LayerEdbClass</autoapi/pyedb/dotnet/database/edb_data/layer_data/LayerEdbClass>
+    <span class="nf nf-cod-symbol_class"></span> StackupLayerEdbClass</autoapi/pyedb/dotnet/database/edb_data/layer_data/StackupLayerEdbClass>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: layer_cast(pedb, edb_object)
+
+
+

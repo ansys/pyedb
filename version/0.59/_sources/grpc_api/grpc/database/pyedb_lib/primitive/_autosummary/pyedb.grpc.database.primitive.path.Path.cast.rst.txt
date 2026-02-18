@@ -1,0 +1,6 @@
+cast
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.cast

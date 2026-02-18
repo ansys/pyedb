@@ -1,0 +1,454 @@
+
+
+
+
+
+
+:class:`Rectangle`
+==================
+
+
+.. py:class:: pyedb.grpc.database.primitive.rectangle.Rectangle(pedb, core=None)
+
+   Bases: :py:obj:`pyedb.grpc.database.primitive.primitive.Primitive`
+
+
+   
+   Class representing a rectangle object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: Rectangle
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a rectangle primitive in the specified layout, layer, and net with the given parameters.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_parameters`
+            - Get coordinates parameters.
+          * - :py:attr:`~set_parameters`
+            - Set coordinates parameters.
+          * - :py:attr:`~duplicate_across_layers`
+            - Duplicate across layer a primitive object.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~representation_type`
+            - Representation type.
+          * - :py:attr:`~corner_radius`
+            - Get corner radius.
+          * - :py:attr:`~rotation`
+            - Get rotation.
+          * - :py:attr:`~width`
+            - Get rectangle width.
+          * - :py:attr:`~height`
+            - Get rectangle height.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.rectangle import Rectangle
+
+Property detail
+---------------
+
+.. py:property:: representation_type
+   :type: str
+
+
+   
+   Representation type.
+
+
+
+
+
+   :Returns:
+
+       str.
+           ``"center_width_height"`` or ``"lower_left_upper_right"``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: corner_radius
+
+   
+   Get corner radius.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Corner radius.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rotation
+
+   
+   Get rotation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Rotation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: width
+
+   
+   Get rectangle width.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Rectangle width.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+
+   
+   Get rectangle height.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Rectangle height.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer: Union[str, pyedb.grpc.database.layers.layer.Layer] = None, net: Union[str, Net] = None, rep_type: str = 'center_width_height', param1: float = None, param2: float = None, param3: float = None, param4: float = None, corner_rad: float = 0.0, rotation: float = 0.0)
+   :classmethod:
+
+
+   
+   Create a rectangle primitive in the specified layout, layer, and net with the given parameters.
+
+
+   :Parameters:
+
+       **layout** : :obj:`Layout`
+           The layout in which the rectangle will be created. If not provided, the active layout of the `pedb` instance
+           will be used.
+
+       **layer** : :obj:`Union`\[:class:`python:str`, :obj:`Layer`], :obj:`optional`
+           The layer in which the rectangle will be created. This parameter is required and must be specified.
+
+       **net** : :obj:`Union`\[:class:`python:str`, :obj:`Net`], :obj:`optional`
+           The net to which the rectangle will belong. This parameter is required and must be specified.
+
+       **rep_type** : :class:`python:str`, :obj:`optional`
+           The representation type of the rectangle. Options are `"center_width_height"` or `"lower_left_upper_right"`.
+           The default value is `"center_width_height"`.
+
+       **param1** : :class:`python:float`, :obj:`optional`
+           The first parameter defining the rectangle. Its meaning depends on the `rep_type`.
+
+       **param2** : :class:`python:float`, :obj:`optional`
+           The second parameter defining the rectangle. Its meaning depends on the `rep_type`.
+
+       **param3** : :class:`python:float`, :obj:`optional`
+           The third parameter defining the rectangle. Its meaning depends on the `rep_type`.
+
+       **param4** : :class:`python:float`, :obj:`optional`
+           The fourth parameter defining the rectangle. Its meaning depends on the `rep_type`.
+
+       **corner_rad** : :class:`python:float`, :obj:`optional`
+           The corner radius of the rectangle. The default value is `0.0`.
+
+       **rotation** : :class:`python:float`, :obj:`optional`
+           The rotation angle of the rectangle in degrees. The default value is `0.0`.
+
+
+
+   :Returns:
+
+       :obj:`Rectangle`
+           The created rectangle primitive.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If the `layer` parameter is not provided.
+
+       :obj:`ValueError`
+           If the `net` parameter is not provided.
+
+
+
+
+   .. rubric:: Notes
+
+   - The created rectangle is added to the modeler primitives of the `pedb` instance.
+   - The `rep_type` determines how the parameters are interpreted:
+       - `"center_width_height"`: `param1` and `param2` represent the center coordinates, while `param3` and
+       `param4` represent the width and height.
+       - `"lower_left_upper_right"`: `param1` and `param2` represent the lower-left corner coordinates, while
+       `param3` and `param4` represent the upper-right corner coordinates.
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_parameters()
+
+   
+   Get coordinates parameters.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           str,
+           float,
+           float,
+           float,
+           float,
+           float,
+           float`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(representation_type, parameter1, parameter2, parameter3, parameter4, corner_radius, rotation)**
+           
+           **representation_type** : Type that defines given parameters meaning.
+           
+           **parameter1** : X value of lower left point or center point.
+           
+           **parameter2** : Y value of lower left point or center point.
+           
+           **parameter3** : X value of upper right point or width.
+           
+           **parameter4** : Y value of upper right point or height.
+           
+           **corner_radius** : Corner radius.
+           
+           **rotation** : Rotation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_parameters(rep_type, param1, param2, param3, param4, corner_rad, rotation)
+
+   
+   Set coordinates parameters.
+
+
+   :Parameters:
+
+       **rep_type** : :class:`RectangleRepresentationType`
+           Type that defines given parameters meaning.
+
+       **param1** : :class:`Value <ansys.edb.utility.Value>`
+           X value of lower left point or center point.
+
+       **param2** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of lower left point or center point.
+
+       **param3** : :class:`Value <ansys.edb.utility.Value>`
+           X value of upper right point or width.
+
+       **param4** : :class:`Value <ansys.edb.utility.Value>`
+           Y value of upper right point or height.
+
+       **corner_rad** : :class:`Value <ansys.edb.utility.Value>`
+           Corner radius.
+
+       **rotation** : :class:`Value <ansys.edb.utility.Value>`
+           Rotation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: duplicate_across_layers(layers) -> bool
+
+   
+   Duplicate across layer a primitive object.
+
+   Parameters:
+
+   layers: list
+       list of str, with layer names
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

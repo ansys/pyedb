@@ -1,0 +1,6 @@
+get\_data\_from\_db
+===================
+
+.. currentmodule:: pyedb.configuration.cfg_ports_sources
+
+.. automethod:: CfgPorts.get_data_from_db

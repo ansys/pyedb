@@ -1,0 +1,6 @@
+set\_hfss\_prop
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.set_hfss_prop

@@ -1,0 +1,174 @@
+
+
+
+
+
+
+:class:`CfgNets`
+================
+
+
+.. py:class:: pyedb.configuration.cfg_nets.CfgNets(pedb, signal_nets=None, power_nets=None)
+
+   
+   Manage configuration net class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgNets
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_parameter_to_edb`
+            - 
+          * - :py:attr:`~get_parameter_from_edb`
+            - Get net information.
+          * - :py:attr:`~apply`
+            - Apply net on layout.
+          * - :py:attr:`~get_data_from_db`
+            - Get net information.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~signal_nets`
+            - 
+          * - :py:attr:`~power_nets`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_nets import CfgNets
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: signal_nets
+   :value: []
+
+
+.. py:attribute:: power_nets
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_parameter_to_edb()
+
+.. py:method:: get_parameter_from_edb()
+
+   
+   Get net information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: apply()
+
+   
+   Apply net on layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_data_from_db()
+
+   
+   Get net information.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,130 @@
+﻿Circle
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoclass:: Circle
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Circle.add_void
+      
+      
+      Circle.area
+      
+      
+      Circle.can_be_zone_primitive
+      
+      
+      Circle.cast
+      
+      
+      Circle.convert_to_polygon
+      
+      
+      Circle.create
+      
+      
+      Circle.create_3d_comp
+      
+      
+      Circle.create_hfss
+      
+      
+      Circle.create_stride
+      
+      
+      Circle.delete
+      
+      
+      Circle.expand
+      
+      
+      Circle.find_by_id
+      
+      
+      Circle.get_closest_arc_midpoint
+      
+      
+      Circle.get_closest_point
+      
+      
+      Circle.get_connected_object_id_set
+      
+      
+      Circle.get_connected_objects
+      
+      
+      Circle.get_hfss_prop
+      
+      
+      Circle.get_parameters
+      
+      
+      Circle.get_product_property
+      
+      
+      Circle.get_product_property_ids
+      
+      
+      Circle.intersect
+      
+      
+      Circle.intersection_type
+      
+      
+      Circle.is_intersecting
+      
+      
+      Circle.make_zone_primitive
+      
+      
+      Circle.plot
+      
+      
+      Circle.points
+      
+      
+      Circle.remove_hfss_prop
+      
+      
+      Circle.render
+      
+      
+      Circle.scale
+      
+      
+      Circle.set_hfss_prop
+      
+      
+      Circle.set_parameters
+      
+      
+      Circle.set_product_property
+      
+      
+      Circle.subtract
+      
+      
+      Circle.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Circle.layout_obj_type
+   
+   

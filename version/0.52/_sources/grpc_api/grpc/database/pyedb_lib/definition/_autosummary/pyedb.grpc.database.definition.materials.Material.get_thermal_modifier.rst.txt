@@ -1,0 +1,6 @@
+get\_thermal\_modifier
+======================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.get_thermal_modifier

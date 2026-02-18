@@ -1,0 +1,126 @@
+
+
+
+
+
+
+:class:`ReceiverPin`
+====================
+
+
+.. py:class:: pyedb.misc.siw_feature_config.xtalk_scan.pins.ReceiverPin
+
+   
+   Receiver pin class handler.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ReceiverPin
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~extend_xml`
+            - Write object to xml section.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~ref_des`
+            - 
+          * - :py:attr:`~receiver_impedance`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.misc.siw_feature_config.xtalk_scan.pins import ReceiverPin
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :value: None
+
+
+.. py:attribute:: ref_des
+   :value: None
+
+
+.. py:attribute:: receiver_impedance
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: extend_xml(parent)
+
+   
+   Write object to xml section.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+pin\_group\_terminal
+====================
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. autoproperty:: PinGroup.pin_group_terminal

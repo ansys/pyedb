@@ -1,0 +1,6 @@
+edb\_exception
+==============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.edb_exception

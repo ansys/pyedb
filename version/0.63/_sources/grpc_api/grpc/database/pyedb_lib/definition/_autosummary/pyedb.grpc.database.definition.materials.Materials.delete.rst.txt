@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.delete

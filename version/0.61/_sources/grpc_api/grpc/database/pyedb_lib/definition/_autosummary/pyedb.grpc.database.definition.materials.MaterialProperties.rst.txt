@@ -1,0 +1,115 @@
+﻿MaterialProperties
+==================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoclass:: MaterialProperties
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      MaterialProperties.construct
+      
+      
+      MaterialProperties.copy
+      
+      
+      MaterialProperties.dict
+      
+      
+      MaterialProperties.from_orm
+      
+      
+      MaterialProperties.json
+      
+      
+      MaterialProperties.model_construct
+      
+      
+      MaterialProperties.model_copy
+      
+      
+      MaterialProperties.model_dump
+      
+      
+      MaterialProperties.model_dump_json
+      
+      
+      MaterialProperties.model_json_schema
+      
+      
+      MaterialProperties.model_parametrized_name
+      
+      
+      MaterialProperties.model_post_init
+      
+      
+      MaterialProperties.model_rebuild
+      
+      
+      MaterialProperties.model_validate
+      
+      
+      MaterialProperties.model_validate_json
+      
+      
+      MaterialProperties.model_validate_strings
+      
+      
+      MaterialProperties.parse_file
+      
+      
+      MaterialProperties.parse_obj
+      
+      
+      MaterialProperties.parse_raw
+      
+      
+      MaterialProperties.schema
+      
+      
+      MaterialProperties.schema_json
+      
+      
+      MaterialProperties.update_forward_refs
+      
+      
+      MaterialProperties.validate
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MaterialProperties.model_computed_fields
+      MaterialProperties.model_config
+      MaterialProperties.model_fields
+      MaterialProperties.conductivity
+      MaterialProperties.dielectric_loss_tangent
+      MaterialProperties.magnetic_loss_tangent
+      MaterialProperties.mass_density
+      MaterialProperties.permittivity
+      MaterialProperties.permeability
+      MaterialProperties.poisson_ratio
+      MaterialProperties.specific_heat
+      MaterialProperties.thermal_conductivity
+      MaterialProperties.youngs_modulus
+      MaterialProperties.thermal_expansion_coefficient
+      MaterialProperties.dc_conductivity
+      MaterialProperties.dc_permittivity
+      MaterialProperties.dielectric_model_frequency
+      MaterialProperties.loss_tangent_at_frequency
+      MaterialProperties.permittivity_at_frequency
+   
+   

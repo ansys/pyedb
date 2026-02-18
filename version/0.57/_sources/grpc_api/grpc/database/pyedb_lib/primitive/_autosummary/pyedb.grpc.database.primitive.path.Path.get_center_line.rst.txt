@@ -1,0 +1,6 @@
+get\_center\_line
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.get_center_line

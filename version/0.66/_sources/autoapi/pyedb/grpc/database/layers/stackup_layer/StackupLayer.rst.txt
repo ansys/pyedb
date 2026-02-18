@@ -1,0 +1,982 @@
+
+
+
+
+
+
+:class:`StackupLayer`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.layers.stackup_layer.StackupLayer(pedb, edb_object=None)
+
+
+
+.. py:currentmodule:: StackupLayer
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - 
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update`
+            - 
+          * - :py:attr:`~assign_roughness_model`
+            - Assign roughness model on this layer.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - Layer ID.
+          * - :py:attr:`~type`
+            - Layer type.
+          * - :py:attr:`~lower_elevation`
+            - Lower elevation.
+          * - :py:attr:`~fill_material`
+            - The layer's fill material.
+          * - :py:attr:`~upper_elevation`
+            - Upper elevation.
+          * - :py:attr:`~is_negative`
+            - Determine whether this layer is a negative layer.
+          * - :py:attr:`~name`
+            - Layer name.
+          * - :py:attr:`~is_stackup_layer`
+            - Testing if layer is stackup layer.
+          * - :py:attr:`~material`
+            - Material.
+          * - :py:attr:`~conductivity`
+            - Material conductivity.
+          * - :py:attr:`~permittivity`
+            - Material permittivity.
+          * - :py:attr:`~loss_tangent`
+            - Material loss_tangent.
+          * - :py:attr:`~dielectric_fill`
+            - Material name of the layer dielectric fill.
+          * - :py:attr:`~thickness`
+            - Layer thickness.
+          * - :py:attr:`~etch_factor`
+            - Layer etching factor.
+          * - :py:attr:`~top_hallhuray_nodule_radius`
+            - Huray model nodule radius on layer top.
+          * - :py:attr:`~top_hallhuray_surface_ratio`
+            - Huray model surface ratio on layer top.
+          * - :py:attr:`~bottom_hallhuray_nodule_radius`
+            - Huray model nodule radius on layer bottom.
+          * - :py:attr:`~bottom_hallhuray_surface_ratio`
+            - Huray model surface ratio on layer bottom.
+          * - :py:attr:`~side_hallhuray_nodule_radius`
+            - Huray model nodule radius on layer sides.
+          * - :py:attr:`~side_hallhuray_surface_ratio`
+            - Huray model surface ratio on layer sides.
+          * - :py:attr:`~top_groisse_roughness`
+            - Groisse model on layer top.
+          * - :py:attr:`~bottom_groisse_roughness`
+            - Groisse model on layer bottom.
+          * - :py:attr:`~side_groisse_roughness`
+            - Groisse model on layer bottom.
+          * - :py:attr:`~color`
+            - Layer color.
+          * - :py:attr:`~transparency`
+            - Layer transparency.
+          * - :py:attr:`~roughness_enabled`
+            - Roughness model enabled status.
+          * - :py:attr:`~properties`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layers.stackup_layer import StackupLayer
+
+Property detail
+---------------
+
+.. py:property:: id
+
+   
+   Layer ID.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Layer ID.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Layer type.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Layer name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: lower_elevation
+   :type: float
+
+
+   
+   Lower elevation.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Lower elevation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: fill_material
+   :type: Union[str, None]
+
+
+   
+   The layer's fill material.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: upper_elevation
+   :type: float
+
+
+   
+   Upper elevation.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Upper elevation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_negative
+   :type: bool
+
+
+   
+   Determine whether this layer is a negative layer.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if this layer is a negative layer, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Layer name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Layer name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_stackup_layer
+   :type: bool
+
+
+   
+   Testing if layer is stackup layer.
+
+
+
+   :Returns:
+
+       `True` :obj:`if` :obj:`layer` :obj:`type` :obj:`is` "signal" or "dielectric".
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material
+   :type: str
+
+
+   
+   Material.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conductivity
+   :type: float
+
+
+   
+   Material conductivity.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material conductivity value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity
+   :type: float
+
+
+   
+   Material permittivity.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material permittivity value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: loss_tangent
+   :type: float
+
+
+   
+   Material loss_tangent.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material loss tangent value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_fill
+   :type: str
+
+
+   
+   Material name of the layer dielectric fill.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thickness
+   :type: float
+
+
+   
+   Layer thickness.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Layer thickness.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: etch_factor
+   :type: float
+
+
+   
+   Layer etching factor.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Etching factor value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_hallhuray_nodule_radius
+   :type: float
+
+
+   
+   Huray model nodule radius on layer top.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Nodule radius value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_hallhuray_surface_ratio
+   :type: float
+
+
+   
+   Huray model surface ratio on layer top.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Surface ratio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bottom_hallhuray_nodule_radius
+   :type: float
+
+
+   
+   Huray model nodule radius on layer bottom.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Nodule radius.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bottom_hallhuray_surface_ratio
+   :type: float
+
+
+   
+   Huray model surface ratio on layer bottom.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Surface ratio value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: side_hallhuray_nodule_radius
+   :type: float
+
+
+   
+   Huray model nodule radius on layer sides.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Nodule radius value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: side_hallhuray_surface_ratio
+   :type: float
+
+
+   
+   Huray model surface ratio on layer sides.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           surface ratio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_groisse_roughness
+   :type: float
+
+
+   
+   Groisse model on layer top.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Roughness value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bottom_groisse_roughness
+   :type: float
+
+
+   
+   Groisse model on layer bottom.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Roughness value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: side_groisse_roughness
+   :type: float
+
+
+   
+   Groisse model on layer bottom.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Roughness value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: color
+   :type: tuple[int, int, int]
+
+
+   
+   Layer color.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Layer color in hex format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: transparency
+   :type: int
+
+
+   
+   Layer transparency.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Layer transparency value between 0 and 100.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: roughness_enabled
+   :type: bool
+
+
+   
+   Roughness model enabled status.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if roughness model is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: properties
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout: pyedb.grpc.database.layout.layout.Layout, name: str, layer_type: str = 'signal', thickness: Union[str, float] = '17um', elevation: Union[str, float] = 0.0, material: str = 'copper') -> StackupLayer
+   :classmethod:
+
+
+.. py:method:: update(**kwargs)
+
+.. py:method:: assign_roughness_model(model_type='huray', huray_radius='0.5um', huray_surface_ratio='2.9', groisse_roughness='1um', apply_on_surface='all') -> bool
+
+   
+   Assign roughness model on this layer.
+
+
+   :Parameters:
+
+       **model_type** : :class:`python:str`, :obj:`optional`
+           Type of roughness model. The default is ``"huray"``. Options are ``"huray"``, ``"groisse"``.
+
+       **huray_radius** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Radius of huray model. The default is ``"0.5um"``.
+
+       **huray_surface_ratio** : :class:`python:str`, :class:`python:float`, optional.
+           Surface ratio of huray model. The default is ``"2.9"``.
+
+       **groisse_roughness** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Roughness of groisse model. The default is ``"1um"``.
+
+       **apply_on_surface** : :class:`python:str`, optional.
+           Where to assign roughness model. The default is ``"all"``. Options are ``"top"``, ``"bottom"``,
+            ``"side"``.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

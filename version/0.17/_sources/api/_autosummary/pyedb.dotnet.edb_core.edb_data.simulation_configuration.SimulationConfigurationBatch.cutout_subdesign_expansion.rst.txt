@@ -1,0 +1,6 @@
+cutout\_subdesign\_expansion
+============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationBatch.cutout_subdesign_expansion

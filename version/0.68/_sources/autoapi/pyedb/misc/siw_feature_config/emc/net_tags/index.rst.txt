@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``net_tags.py`` module
+==========================
+
+.. py:module:: pyedb.misc.siw_feature_config.emc.net_tags
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: net_tags
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.net_tags.Net`
+            - Manages net.
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.emc.net_tags.NetTags`
+            - Manages net tag.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Net</autoapi/pyedb/misc/siw_feature_config/emc/net_tags/Net>
+    <span class="nf nf-cod-symbol_class"></span> NetTags</autoapi/pyedb/misc/siw_feature_config/emc/net_tags/NetTags>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+add\_component
+==============
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. automethod:: ControlFileComponents.add_component

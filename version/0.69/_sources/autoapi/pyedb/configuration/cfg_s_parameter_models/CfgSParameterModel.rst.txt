@@ -1,0 +1,83 @@
+
+
+
+
+
+
+:class:`CfgSParameterModel`
+===========================
+
+
+.. py:class:: pyedb.configuration.cfg_s_parameter_models.CfgSParameterModel(**kwargs)
+
+
+.. py:currentmodule:: CfgSParameterModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~component_definition`
+            - 
+          * - :py:attr:`~file_path`
+            - 
+          * - :py:attr:`~apply_to_all`
+            - 
+          * - :py:attr:`~components`
+            - 
+          * - :py:attr:`~reference_net`
+            - 
+          * - :py:attr:`~reference_net_per_component`
+            - 
+          * - :py:attr:`~pin_order`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_s_parameter_models import CfgSParameterModel
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: component_definition
+
+.. py:attribute:: file_path
+
+.. py:attribute:: apply_to_all
+
+.. py:attribute:: components
+
+.. py:attribute:: reference_net
+
+.. py:attribute:: reference_net_per_component
+
+.. py:attribute:: pin_order
+
+
+
+
+

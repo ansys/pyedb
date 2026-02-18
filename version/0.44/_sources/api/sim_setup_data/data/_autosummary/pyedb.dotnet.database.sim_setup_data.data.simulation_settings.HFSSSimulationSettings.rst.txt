@@ -1,0 +1,23 @@
+﻿HFSSSimulationSettings
+======================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoclass:: HFSSSimulationSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSSimulationSettings.enabled
+      HFSSSimulationSettings.mesh_operations
+   
+   

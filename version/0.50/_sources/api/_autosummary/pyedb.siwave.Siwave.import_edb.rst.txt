@@ -1,0 +1,6 @@
+import\_edb
+===========
+
+.. currentmodule:: pyedb.siwave
+
+.. automethod:: Siwave.import_edb

@@ -1,0 +1,6 @@
+duplicate\_across\_layers
+=========================
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.duplicate_across_layers

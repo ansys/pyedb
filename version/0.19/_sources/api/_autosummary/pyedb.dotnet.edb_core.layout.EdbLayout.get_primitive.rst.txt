@@ -1,0 +1,6 @@
+get\_primitive
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.layout
+
+.. automethod:: EdbLayout.get_primitive

@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``bondwire.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.cell.primitive.bondwire
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: bondwire
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.primitive.bondwire.Bondwire`
+            - Class representing a bondwire object.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Bondwire</autoapi/pyedb/dotnet/database/cell/primitive/bondwire/Bondwire>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+conductivity
+============
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoproperty:: Conductor.conductivity

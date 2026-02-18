@@ -1,0 +1,6 @@
+add\_djordjevicsarkar\_dielectric
+=================================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Materials.add_djordjevicsarkar_dielectric

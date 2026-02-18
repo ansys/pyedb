@@ -1,0 +1,139 @@
+﻿Polygon
+=======
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoclass:: Polygon
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Polygon.add_void
+      
+      
+      Polygon.area
+      
+      
+      Polygon.cast
+      
+      
+      Polygon.clone
+      
+      
+      Polygon.convert_to_polygon
+      
+      
+      Polygon.create
+      
+      
+      Polygon.create_3d_comp
+      
+      
+      Polygon.create_hfss
+      
+      
+      Polygon.create_stride
+      
+      
+      Polygon.delete
+      
+      
+      Polygon.duplicate_across_layers
+      
+      
+      Polygon.expand
+      
+      
+      Polygon.find_by_id
+      
+      
+      Polygon.fix_self_intersections
+      
+      
+      Polygon.get_closest_arc_midpoint
+      
+      
+      Polygon.get_closest_point
+      
+      
+      Polygon.get_connected_object_id_set
+      
+      
+      Polygon.get_connected_objects
+      
+      
+      Polygon.get_hfss_prop
+      
+      
+      Polygon.get_product_property
+      
+      
+      Polygon.get_product_property_ids
+      
+      
+      Polygon.in_polygon
+      
+      
+      Polygon.intersect
+      
+      
+      Polygon.intersection_type
+      
+      
+      Polygon.is_intersecting
+      
+      
+      Polygon.make_zone_primitive
+      
+      
+      Polygon.move
+      
+      
+      Polygon.move_layer
+      
+      
+      Polygon.plot
+      
+      
+      Polygon.points
+      
+      
+      Polygon.remove_hfss_prop
+      
+      
+      Polygon.rotate
+      
+      
+      Polygon.scale
+      
+      
+      Polygon.set_hfss_prop
+      
+      
+      Polygon.set_product_property
+      
+      
+      Polygon.subtract
+      
+      
+      Polygon.unite
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Polygon.layout_obj_type
+   
+   

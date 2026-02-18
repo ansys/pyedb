@@ -1,0 +1,15 @@
+﻿CfgSetup
+========
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgSetup
+
+   
+
+   
+   
+
+   
+   
+   

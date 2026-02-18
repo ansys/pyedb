@@ -1,0 +1,6 @@
+layout\_obj\_type
+=================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoattribute:: WavePort.layout_obj_type

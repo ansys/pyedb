@@ -1,0 +1,6 @@
+add\_setup
+==========
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.add_setup

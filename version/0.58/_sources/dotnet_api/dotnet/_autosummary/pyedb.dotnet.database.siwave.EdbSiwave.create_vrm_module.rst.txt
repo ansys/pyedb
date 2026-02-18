@@ -1,0 +1,6 @@
+create\_vrm\_module
+===================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.create_vrm_module

@@ -1,0 +1,445 @@
+
+
+
+
+
+
+:class:`PackageDef`
+===================
+
+
+.. py:class:: pyedb.grpc.database.definition.package_def.PackageDef(pedb, edb_object=None, name=None, component_part_name=None, extent_bounding_box=None)
+
+   
+   Manages EDB package definitions.
+
+
+   :Parameters:
+
+       **pedb** : :class:`Edb <pyedb.grpc.edb.Edb>`
+           Edb object.
+
+       **edb_object** : :obj:`object`
+           ..
+
+       **Edb PackageDef Object**
+           component_part_name : str, optional
+           Part name of the component.
+
+       **extent_bounding_box** : :class:`python:list`, :obj:`optional`
+           Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"]].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PackageDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_heatsink`
+            - Set Heat sink.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~exterior_boundary`
+            - Get the exterior boundary of a package definition.
+          * - :py:attr:`~maximum_power`
+            - Maximum power of the package.
+          * - :py:attr:`~thermal_conductivity`
+            - Thermal conductivity of the package.
+          * - :py:attr:`~theta_jb`
+            - Theta Junction-to-Board of the package.
+          * - :py:attr:`~theta_jc`
+            - Theta Junction-to-Case of the package.
+          * - :py:attr:`~height`
+            - Height of the package.
+          * - :py:attr:`~heat_sink`
+            - Package heat sink.
+          * - :py:attr:`~heatsink`
+            - Property added for .NET compatibility.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+   .. tab-item:: Static methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a package definition.
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.package_def import PackageDef
+
+Property detail
+---------------
+
+.. py:property:: name
+
+.. py:property:: exterior_boundary
+   :type: ansys.edb.core.geometry.polygon_data.PolygonData
+
+
+   
+   Get the exterior boundary of a package definition.
+
+
+
+   :Returns:
+
+       :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: maximum_power
+   :type: float
+
+
+   
+   Maximum power of the package.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           maximum power value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_conductivity
+   :type: float
+
+
+   
+   Thermal conductivity of the package.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Thermal conductivity value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: theta_jb
+   :type: float
+
+
+   
+   Theta Junction-to-Board of the package.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Theta jb value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: theta_jc
+   :type: float
+
+
+   
+   Theta Junction-to-Case of the package.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Theta jc value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: height
+   :type: float
+
+
+   
+   Height of the package.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Height value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: heat_sink
+   :type: pyedb.grpc.database.utility.heat_sink.HeatSink
+
+
+   
+   Package heat sink.
+
+
+
+   :Returns:
+
+       :class:`HeatSink <pyedb.grpc.database.utility.heat_sink.HeatSink>`
+           HeatSink object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: heatsink
+
+   
+   Property added for .NET compatibility.
+   . deprecated:: pyedb 0.43.0
+   Use :func:`heat_sink` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb, name: str) -> PackageDef
+   :staticmethod:
+
+
+   
+   Create a package definition.
+
+
+   :Parameters:
+
+       **edb** : :class:`Edb <pyedb.grpc.edb.Edb>`
+           Edb object.
+
+       **name: str**
+           Name of the package definition.
+
+   :Returns:
+
+       :class:`PackageDef <pyedb.grpc.database.definition.package_def.PackageDef>`
+           PackageDef object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_heatsink(fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> pyedb.grpc.database.utility.heat_sink.HeatSink
+
+   
+   Set Heat sink.
+   Parameters
+   ----------
+   fin_base_height : str, float
+       Fin base height.
+   fin_height : str, float
+       Fin height.
+   fin_orientation : str
+       Fin orientation. Supported values, `x_oriented`, `y_oriented`.
+   fin_spacing : str, float
+       Fin spacing.
+   fin_thickness : str, float
+       Fin thickness.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

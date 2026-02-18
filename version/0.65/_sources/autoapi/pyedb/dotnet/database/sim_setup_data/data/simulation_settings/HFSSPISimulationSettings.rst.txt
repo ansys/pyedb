@@ -1,0 +1,564 @@
+
+
+
+
+
+
+:class:`HFSSPISimulationSettings`
+=================================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings.HFSSPISimulationSettings(pedb, sim_setup, edb_object)
+
+   Bases: :py:obj:`SimulationSettings`
+
+
+
+.. py:currentmodule:: HFSSPISimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_select_nets_for_simulation`
+            - Auto select nets for simulation.
+          * - :py:attr:`~ignore_dummy_nets_for_selected_nets`
+            - Auto select Nets for simulation
+          * - :py:attr:`~ignore_small_holes`
+            - Ignore small holes choice.
+          * - :py:attr:`~ignore_small_holes_min_diameter`
+            - Min diameter to ignore small holes.
+          * - :py:attr:`~improved_loss_model`
+            - Improved Loss Model on power ground nets option.
+          * - :py:attr:`~include_enhanced_bond_wire_modeling`
+            - Enhance Bond wire modeling.
+          * - :py:attr:`~include_nets`
+            - Add Additional Nets for simulation.
+          * - :py:attr:`~min_plane_area_to_mesh`
+            - The minimum area below which geometry is ignored.
+          * - :py:attr:`~min_void_area_to_mesh`
+            - The minimum area below which voids are ignored.
+          * - :py:attr:`~model_type`
+            - Model Type setting.
+          * - :py:attr:`~perform_erc`
+            - Perform ERC
+          * - :py:attr:`~pi_slider_pos`
+            - The Simulation Preference Slider setting
+          * - :py:attr:`~rms_surface_roughness`
+            - RMS Surface Roughness setting
+          * - :py:attr:`~signal_nets_conductor_modeling`
+            - Conductor Modeling.
+          * - :py:attr:`~signal_nets_error_tolerance`
+            - Error Tolerance
+          * - :py:attr:`~signal_nets_include_improved_dielectric_fill_refinement`
+            - 
+          * - :py:attr:`~signal_nets_include_improved_loss_handling`
+            - Improved Dielectric Fill Refinement choice.
+          * - :py:attr:`~snap_length_threshold`
+            - 
+          * - :py:attr:`~surface_roughness_model`
+            - Chosen Model setting
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.simulation_settings import HFSSPISimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: auto_select_nets_for_simulation
+
+   
+   Auto select nets for simulation.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_dummy_nets_for_selected_nets
+
+   
+   Auto select Nets for simulation
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_small_holes
+
+   
+   Ignore small holes choice.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_small_holes_min_diameter
+
+   
+   Min diameter to ignore small holes.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: improved_loss_model
+
+   
+   Improved Loss Model on power ground nets option.
+   1: Level 1
+   2: Level 2
+   3: Level 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_enhanced_bond_wire_modeling
+
+   
+   Enhance Bond wire modeling.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_nets
+
+   
+   Add Additional Nets for simulation.
+
+
+
+   :Returns:
+
+       [:class:`python:str`]
+           ..
+
+       :obj:`List` :obj:`of` :obj:`net` name.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_plane_area_to_mesh
+
+   
+   The minimum area below which geometry is ignored.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_void_area_to_mesh
+
+   
+   The minimum area below which voids are ignored.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+
+   
+   Model Type setting.
+
+   0: RDL,
+   1: Package
+   2: PCB
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: perform_erc
+
+   
+   Perform ERC
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pi_slider_pos
+
+   
+   The Simulation Preference Slider setting
+   Model type: ``0``= balanced, ``1``=Accuracy.
+   Returns
+   -------
+       int
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rms_surface_roughness
+
+   
+   RMS Surface Roughness setting
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_nets_conductor_modeling
+   :type: int
+
+
+   
+   Conductor Modeling.
+   0: MeshInside,
+   1: ImpedanceBoundary
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_nets_error_tolerance
+
+   
+   Error Tolerance
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`Value` :obj:`between` 0.02 :obj:`and` 1.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_nets_include_improved_dielectric_fill_refinement
+
+.. py:property:: signal_nets_include_improved_loss_handling
+
+   
+   Improved Dielectric Fill Refinement choice.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: snap_length_threshold
+
+.. py:property:: surface_roughness_model
+
+   
+   Chosen Model setting
+   Model allowed, ``"None"``, ``"Exponential"`` or ``"Hammerstad"``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

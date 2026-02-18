@@ -1,0 +1,6 @@
+top\_circuit\_cells
+===================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.top_circuit_cells

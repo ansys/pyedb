@@ -1,0 +1,112 @@
+
+
+
+
+
+
+The ``cell`` package
+========================
+
+.. py:module:: pyedb.dotnet.database.cell
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cell
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.primitive`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.terminal`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.connectable`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.layout`
+            - This module contains these classes: `EdbLayout` and `Shape`.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.layout_obj`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.voltage_regulator`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> hierarchy</autoapi/pyedb/dotnet/database/cell/hierarchy/index>
+    <span class="nf nf-md-package"></span> primitive</autoapi/pyedb/dotnet/database/cell/primitive/index>
+    <span class="nf nf-md-package"></span> terminal</autoapi/pyedb/dotnet/database/cell/terminal/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> connectable</autoapi/pyedb/dotnet/database/cell/connectable/index>
+    <span class="nf nf-fa-file"></span> layout</autoapi/pyedb/dotnet/database/cell/layout/index>
+    <span class="nf nf-fa-file"></span> layout_obj</autoapi/pyedb/dotnet/database/cell/layout_obj/index>
+    <span class="nf nf-fa-file"></span> voltage_regulator</autoapi/pyedb/dotnet/database/cell/voltage_regulator/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

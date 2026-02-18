@@ -1,0 +1,304 @@
+
+
+
+
+
+
+:class:`NPortComponentModel`
+============================
+
+
+.. py:class:: pyedb.grpc.database.definition.component_model.NPortComponentModel(core)
+
+   
+   Class managing :class:`NPortComponentModel <pyedb.grpc.database.definition.component_model.ComponentModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+.. py:currentmodule:: NPortComponentModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create an N-Port component model.
+          * - :py:attr:`~find_by_id`
+            - Find an N-Port component model by IO count in a given component definition.
+          * - :py:attr:`~find_by_name`
+            - Find an N-Port component model by name in a given component definition.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~is_null`
+            - Check if the N-Port component model is null.
+          * - :py:attr:`~name`
+            - Get the name of the N-Port component model.
+          * - :py:attr:`~reference_file`
+            - Get the reference file of the N-Port component model.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.component_model import NPortComponentModel
+
+Property detail
+---------------
+
+.. py:property:: is_null
+
+   
+   Check if the N-Port component model is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the N-Port component model is null, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+
+   
+   Get the name of the N-Port component model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the N-Port component model.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_file
+
+   
+   Get the reference file of the N-Port component model.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The reference file of the N-Port component model.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name: str) -> NPortComponentModel
+   :classmethod:
+
+
+   
+   Create an N-Port component model.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the N-Port component model.
+
+
+
+   :Returns:
+
+       :obj:`NPortComponentModel`
+           The created N-Port component model object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_by_id(component_definition, id: int) -> Union[None, NPortComponentModel]
+   :classmethod:
+
+
+   
+   Find an N-Port component model by IO count in a given component definition.
+
+
+   :Parameters:
+
+       **component_definition** : :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+           Component definition to search for the N-Port component model.
+
+       **id** : :class:`python:int`
+           IO count of the N-Port component model.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **NPortComponentModel**
+           N-Port component model that is found, ``None`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_by_name(component_definition, name: str) -> Union[None, NPortComponentModel]
+   :classmethod:
+
+
+   
+   Find an N-Port component model by name in a given component definition.
+
+
+   :Parameters:
+
+       **component_definition** : :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+           Component definition to search for the N-Port component model.
+
+       **name** : :class:`python:str`
+           Name of the N-Port component model.
+
+
+
+   :Returns:
+
+       :obj:`NPortComponentModel`
+           N-Port component model that is found, ``None`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+visibility\_mask
+================
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoproperty:: Layer.visibility_mask

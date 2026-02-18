@@ -1,0 +1,6 @@
+components\_by\_partname
+========================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. autoproperty:: Components.components_by_partname

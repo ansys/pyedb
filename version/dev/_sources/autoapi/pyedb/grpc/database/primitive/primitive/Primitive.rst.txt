@@ -1,0 +1,1434 @@
+
+
+
+
+
+
+:class:`Primitive`
+==================
+
+
+.. py:class:: pyedb.grpc.database.primitive.primitive.Primitive(pedb, core)
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb(myedb, edbversion="2025.2", grpc=True)
+   >>> edb_prim = edb.modeler.primitives[0]
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Primitive
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_connected_objects`
+            - Get connected objects.
+          * - :py:attr:`~area`
+            - Return the total area.
+          * - :py:attr:`~get_connected_object_id_set`
+            - Produce a list of all geometries physically connected to a given layout object.
+          * - :py:attr:`~convert_to_polygon`
+            - Convert path to polygon.
+          * - :py:attr:`~intersection_type`
+            - Get intersection type between actual primitive and another primitive or polygon data.
+          * - :py:attr:`~is_intersecting`
+            - Check if actual primitive and another primitive or polygon data intesects.
+          * - :py:attr:`~get_closest_point`
+            - Get the closest point of the primitive to the input data.
+          * - :py:attr:`~rotate`
+            - Rotate polygon around a center point by an angle.
+          * - :py:attr:`~move`
+            - Move polygon along a vector.
+          * - :py:attr:`~scale`
+            - Scales the polygon relative to a center point by a factor.
+          * - :py:attr:`~subtract`
+            - Subtract active primitive with one or more primitives.
+          * - :py:attr:`~intersect`
+            - Intersect active primitive with one or more primitives.
+          * - :py:attr:`~unite`
+            - Unite active primitive with one or more primitives.
+          * - :py:attr:`~get_closest_arc_midpoint`
+            - Get the closest arc midpoint of the primitive to the input data.
+          * - :py:attr:`~add_void`
+            - Add a void to current primitive.
+          * - :py:attr:`~points`
+            - Return the list of points with arcs converted to segments.
+          * - :py:attr:`~points_raw`
+            - Return a list of Edb points.
+          * - :py:attr:`~expand`
+            - Expand the polygon shape by an absolute value in all direction.
+          * - :py:attr:`~plot`
+            - Plot the current polygon on matplotlib.
+          * - :py:attr:`~delete`
+            - Delete the primitive.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - Type of the primitive.
+          * - :py:attr:`~layout`
+            - Layout object.
+          * - :py:attr:`~polygon_data`
+            - Polygon data.
+          * - :py:attr:`~object_instance`
+            - Layout object instance.
+          * - :py:attr:`~net_name`
+            - Net name.
+          * - :py:attr:`~layer_name`
+            - Layer name.
+          * - :py:attr:`~voids`
+            - Primitive voids.
+          * - :py:attr:`~has_voids`
+            - Check if primitive has voids.
+          * - :py:attr:`~is_negative`
+            - Check if primitive is negative.
+          * - :py:attr:`~is_parameterized`
+            - Check if any primitive is parameterized.
+          * - :py:attr:`~is_zone_primitive`
+            - Check if primitive is a zone primitive.
+          * - :py:attr:`~can_be_zone_primitive`
+            - Check if primitive can be a zone primitive.
+          * - :py:attr:`~aedt_name`
+            - Name to be visualized in AEDT.
+          * - :py:attr:`~center`
+            - Return the primitive bounding box center coordinate.
+          * - :py:attr:`~bbox`
+            - Return the primitive bounding box points. Lower left corner, upper right corner.
+          * - :py:attr:`~arcs`
+            - Get the Primitive Arc Data.
+          * - :py:attr:`~longest_arc`
+            - Longest arc.
+          * - :py:attr:`~shortest_arc`
+            - Longest arc.
+          * - :py:attr:`~id`
+            - 
+          * - :py:attr:`~edb_uid`
+            - 
+          * - :py:attr:`~primitive_type`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~is_void`
+            - Check if the primitive is a void.
+          * - :py:attr:`~is_null`
+            - Check if the primitive is null.
+          * - :py:attr:`~layer`
+            - Get the layer object of the primitive.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.primitive.primitive import Primitive
+
+Property detail
+---------------
+
+.. py:property:: type
+   :type: str
+
+
+   
+   Type of the primitive.
+
+   Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout
+
+   
+   Layout object.
+
+
+
+
+
+   :Returns:
+
+       :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygon_data
+
+   
+   Polygon data.
+
+
+
+
+
+   :Returns:
+
+       :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: object_instance
+
+   
+   Layout object instance.
+
+
+
+
+
+   :Returns:
+
+       :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_name
+   :type: str
+
+
+   
+   Net name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Net name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_name
+   :type: str
+
+
+   
+   Layer name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Layer name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voids
+   :type: list[Any]
+
+
+   
+   Primitive voids.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: has_voids
+
+   
+   Check if primitive has voids.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_negative
+   :type: bool
+
+
+   
+   Check if primitive is negative.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_parameterized
+   :type: bool
+
+
+   
+   Check if any primitive is parameterized.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if any primitive is parameterized, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_zone_primitive
+   :type: bool
+
+
+   
+   Check if primitive is a zone primitive.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if primitive is a zone primitive, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: can_be_zone_primitive
+
+   
+   Check if primitive can be a zone primitive.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if primitive can be a zone primitive, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: aedt_name
+   :type: str
+
+
+   
+   Name to be visualized in AEDT.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: center
+   :type: tuple[float, float]
+
+
+   
+   Return the primitive bounding box center coordinate.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`, :class:`python:float`]
+           [x, y]
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bbox
+   :type: list[float]
+
+
+   
+   Return the primitive bounding box points. Lower left corner, upper right corner.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`, :class:`python:float`, :class:`python:float`, :class:`python:float`]
+           [lower_left x, lower_left y, upper right x, upper right y]
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arcs
+
+   
+   Get the Primitive Arc Data.
+
+
+
+
+
+   :Returns:
+
+       :class:`ArcData <ansys.edb.core.geometry.arc_data.ArcData>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: longest_arc
+   :type: float
+
+
+   
+   Longest arc.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc length.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: shortest_arc
+   :type: float
+
+
+   
+   Longest arc.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Arc length.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: id
+
+.. py:property:: edb_uid
+
+.. py:property:: primitive_type
+
+.. py:property:: net
+
+.. py:property:: is_void
+
+   
+   Check if the primitive is a void.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the primitive is a void, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+
+   
+   Check if the primitive is null.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the primitive is null, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer
+
+   
+   Get the layer object of the primitive.
+
+
+
+
+
+   :Returns:
+
+       :class:`Layer <pyedb.grpc.database.stackup.layer.Layer>`
+           Layer object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_connected_objects()
+
+   
+   Get connected objects.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: area(include_voids=True) -> float
+
+   
+   Return the total area.
+
+
+   :Parameters:
+
+       **include_voids** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if the voids have to be included in computation.
+           The default value is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_connected_object_id_set() -> list[int]
+
+   
+   Produce a list of all geometries physically connected to a given layout object.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:int`]
+           Found connected objects IDs with Layout object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: convert_to_polygon()
+
+   
+   Convert path to polygon.
+
+
+
+
+
+   :Returns:
+
+       :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+           Polygon when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: intersection_type(primitive)
+
+   
+   Get intersection type between actual primitive and another primitive or polygon data.
+
+
+   :Parameters:
+
+       **primitive** : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>>` or `PolygonData`
+           ..
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Intersection type:
+           0 - objects do not intersect,
+           1 - this object fully inside other (no common contour points),
+           2 - other object fully inside this,
+           3 - common contour points,
+           4 - undefined intersection.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_intersecting(primitive) -> bool
+
+   
+   Check if actual primitive and another primitive or polygon data intesects.
+
+
+   :Parameters:
+
+       **primitive** : :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>>` or `PolygonData`
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_closest_point(point) -> list[float]
+
+   
+   Get the closest point of the primitive to the input data.
+
+
+   :Parameters:
+
+       **point** : :class:`python:list` :obj:`of` :class:`python:float` or :obj:`PointData`
+           ..
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`, :class:`python:float`]
+           [x, y].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rotate(angle, center=None) -> bool
+
+   
+   Rotate polygon around a center point by an angle.
+
+
+   :Parameters:
+
+       **angle** : :class:`python:float`
+           Value of the rotation angle in degree.
+
+       **center** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y], :obj:`optional`
+           If None rotation is done from polygon center.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move(vector) -> bool
+
+   
+   Move polygon along a vector.
+
+
+   :Parameters:
+
+       **vector** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y].
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
+   >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
+   >>> for polygon in top_layer_polygon:
+   >>>     polygon.move(vector=["2mm", "100um"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: scale(factor, center=None) -> bool
+
+   
+   Scales the polygon relative to a center point by a factor.
+
+
+   :Parameters:
+
+       **factor** : :class:`python:float`
+           Scaling factor.
+
+       **center** : :obj:`List` :obj:`of` :class:`python:float` or :class:`python:str` [x,y], :obj:`optional`
+           If None scaling is done from polygon center.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: subtract(primitives) -> list[Any]
+
+   
+   Subtract active primitive with one or more primitives.
+
+
+   :Parameters:
+
+       **primitives** : :class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`
+           or: List[:class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`]
+           or: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+           List of Primitive objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: intersect(primitives) -> list[Any]
+
+   
+   Intersect active primitive with one or more primitives.
+
+
+   :Parameters:
+
+       **primitives :class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`**
+           ..
+
+       **or: List[:class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`]**
+           ..
+
+       **or: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`**
+           ..
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+           List of Primitive objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: unite(primitives) -> list[Any]
+
+   
+   Unite active primitive with one or more primitives.
+
+
+   :Parameters:
+
+       **primitives** : :class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`
+           ..
+
+       **or: List[:class:`Primitives <pyedb.grpc.database.primitive.primitive.Primitive>`]**
+           ..
+
+       **or: class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`**
+           ..
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+           List of Primitive objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_closest_arc_midpoint(point) -> list[float]
+
+   
+   Get the closest arc midpoint of the primitive to the input data.
+
+
+   :Parameters:
+
+       **point** : :obj:`List`\[:class:`python:float`] :obj:`or` :obj:`List`\[:class:`PointData <ansys.edb.core.geometry.point_data.PointData>`]
+           ..
+
+
+
+   :Returns:
+
+       :obj:`LIst`\[:class:`python:float`, :class:`python:float`]
+           [x, y].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_void(point_list) -> bool
+
+   
+   Add a void to current primitive.
+
+
+   :Parameters:
+
+       **point_list** : :class:`python:list` or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`             or :obj:`point` :class:`python:list` :obj:`in` :obj:`the` :obj:`format` :obj:`of` `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if successful, either  ``False``.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: points(arc_segments=6) -> tuple[float, float]
+
+   
+   Return the list of points with arcs converted to segments.
+
+
+   :Parameters:
+
+       **arc_segments** : :class:`python:int`
+           Number of facets to convert an arc. Default is `6`.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\(:class:`python:float`, :class:`python:float`)
+           (X, Y).
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: points_raw()
+
+   
+   Return a list of Edb points.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`PointData <ansys.edb.core.geometry.point_data.PointData>`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: expand(offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[Any]
+
+   
+   Expand the polygon shape by an absolute value in all direction.
+   Offset can be negative for negative expansion.
+
+
+   :Parameters:
+
+       **offset** : :class:`python:float`, :obj:`optional`
+           Offset value in meters.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters.
+
+       **round_corners** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to round corners or not.
+           If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+
+       **maximum_corner_extension** : :class:`python:float`, :obj:`optional`
+           The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: plot(plot_net=False, show=True, save_plot=None)
+
+   
+   Plot the current polygon on matplotlib.
+
+
+   :Parameters:
+
+       **plot_net** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if plot the entire net or only the selected polygon. Default is ``False``.
+
+       **show** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if show the plot or not. Default is ``True``.
+
+       **save_plot** : :class:`python:str`, :obj:`optional`
+           Save the plot path.
+
+
+
+   :Returns:
+
+       (:obj:`ax`, :obj:`fig`)
+           Matplotlib ax and figures.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   Delete the primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

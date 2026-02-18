@@ -1,0 +1,1339 @@
+
+
+
+
+
+
+:class:`Siwave`
+===============
+
+
+.. py:class:: pyedb.grpc.database.siwave.Siwave(p_edb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods related to Siwave Setup accessible from `Edb.siwave` property.
+
+
+   :Parameters:
+
+       **edb_class** : :class:`pyedb.edb.Edb`
+           Inherited parent object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_siwave = edbapp.siwave
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Siwave
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_circuit_port_on_pin`
+            - Create a circuit port on a pin.
+          * - :py:attr:`~create_port_between_pin_and_layer`
+            - Create circuit port between pin and a reference layer.
+          * - :py:attr:`~create_voltage_source_on_pin`
+            - Create a voltage source.
+          * - :py:attr:`~create_current_source_on_pin`
+            - Create a current source.
+          * - :py:attr:`~create_resistor_on_pin`
+            - Create a resistor boundary between two given pins.
+          * - :py:attr:`~create_circuit_port_on_net`
+            - Create a circuit port on a net.
+          * - :py:attr:`~create_voltage_source_on_net`
+            - Create a voltage source on a net.
+          * - :py:attr:`~create_current_source_on_net`
+            - Create a current source on a net.
+          * - :py:attr:`~create_dc_terminal`
+            - Create a DC terminal.
+          * - :py:attr:`~create_exec_file`
+            - Create an executable file.
+          * - :py:attr:`~add_cpa_analysis`
+            - Add a SIwave CPA analysis to EDB.
+          * - :py:attr:`~add_siwave_syz_analysis`
+            - Add a SIwave AC analysis to EDB.
+          * - :py:attr:`~add_siwave_dc_analysis`
+            - Add a Siwave DC analysis in EDB.
+          * - :py:attr:`~create_pin_group_terminal`
+            - Create a pin group terminal.
+          * - :py:attr:`~create_rlc_component`
+            - Create physical RLC component.
+          * - :py:attr:`~create_pin_group`
+            - Create pin group on the component.
+          * - :py:attr:`~create_pin_group_on_net`
+            - Create pin group on component by net name.
+          * - :py:attr:`~create_current_source_on_pin_group`
+            - Create current source between two pin groups.
+          * - :py:attr:`~create_voltage_source_on_pin_group`
+            - Create voltage source between two pin groups.
+          * - :py:attr:`~create_voltage_probe_on_pin_group`
+            - Create voltage probe between two pin groups.
+          * - :py:attr:`~create_circuit_port_on_pin_group`
+            - Create a port between two pin groups.
+          * - :py:attr:`~place_voltage_probe`
+            - Place a voltage probe between two points.
+          * - :py:attr:`~create_impedance_crosstalk_scan`
+            - Create Siwave crosstalk scan object.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~excitations`
+            - Excitation sources in the layout.
+          * - :py:attr:`~sources`
+            - All sources in the layout.
+          * - :py:attr:`~probes`
+            - All probes in the layout.
+          * - :py:attr:`~pin_groups`
+            - All layout pin groups.
+          * - :py:attr:`~icepak_use_minimal_comp_defaults`
+            - Icepak default setting.
+          * - :py:attr:`~icepak_component_file`
+            - Icepak component file path.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.siwave import Siwave
+
+Property detail
+---------------
+
+.. py:property:: excitations
+   :type: Dict[str, Any]
+
+
+   
+   Excitation sources in the layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> excitations = edbapp.siwave.excitations
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sources
+   :type: Dict[str, Any]
+
+
+   
+   All sources in the layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> sources = edbapp.siwave.sources
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: probes
+   :type: Dict[str, Any]
+
+
+   
+   All probes in the layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> probes = edbapp.siwave.probes
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: pin_groups
+   :type: Dict[str, Any]
+
+
+   
+   All layout pin groups.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of pin groups with names as keys and pin group objects as values.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> pin_groups = edbapp.siwave.pin_groups
+   >>> for name, group in pin_groups.items():
+   ...     print(f"Pin group {name} has {len(group.pins)} pins")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_use_minimal_comp_defaults
+   :type: bool
+
+
+   
+   Icepak default setting.
+
+   If ``True``, only resistors are active in Icepak simulation and power dissipation
+   is calculated from DC results.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_component_file
+   :type: str
+
+
+   
+   Icepak component file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create_circuit_port_on_pin(pos_pin, neg_pin, impedance=50, port_name=None)
+
+   
+   Create a circuit port on a pin.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Edb Pin
+
+       **neg_pin** : :obj:`Object`
+           Edb Pin
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Port Impedance. Default is ``50``.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port Name
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port Name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_between_pin_and_layer(component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0)
+
+   
+   Create circuit port between pin and a reference layer.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Component name.
+
+       **pins_name** : :class:`python:str`
+           Pin name or list of pin names.
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **reference_net** : :class:`python:str`
+           Reference net name.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Port impedance. Default is ``50.0`` ohms.
+
+
+
+   :Returns:
+
+       :obj:`PadstackInstanceTerminal`
+           Created terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_pin(pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name='')
+
+   
+   Create a voltage source.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Positive Pin.
+
+       **neg_pin** : :obj:`Object`
+           Negative Pin.
+
+       **voltage_value** : :class:`python:float`, :obj:`optional`
+           Value for the voltage. Default is ``3.3``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. Default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source Name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_pin(pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name='')
+
+   
+   Create a current source.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Positive pin.
+
+       **neg_pin** : :obj:`Object`
+           Negative pin.
+
+       **current_value** : :class:`python:float`, :obj:`optional`
+           Value for the current. Default is ``0.1``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. Default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source Name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_resistor_on_pin(pos_pin, neg_pin, rvalue=1, resistor_name='')
+
+   
+   Create a resistor boundary between two given pins.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Positive Pin.
+
+       **neg_pin** : :obj:`Object`
+           Negative Pin.
+
+       **rvalue** : :class:`python:float`, :obj:`optional`
+           Resistance value. Default is ``1``.
+
+       **resistor_name** : :class:`python:str`, :obj:`optional`
+           Name of the resistor. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the resistor.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circuit_port_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name=None, impedance_value=50, port_name='')
+
+   
+   Create a circuit port on a net.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_net` instead.
+
+   Groups all pins belonging to the specified net and applies the port on PinGroups.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative component. Default is ``None``.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative net name. Default is ``None`` (searches for GND nets).
+
+       **impedance_value** : :class:`python:float`, :obj:`optional`
+           Port impedance value. Default is ``50``.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the port.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name=None, voltage_value=3.3, phase_value=0, source_name='')
+
+   
+   Create a voltage source on a net.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative component. Default is ``None``.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative net name. Default is ``None`` (searches for GND nets).
+
+       **voltage_value** : :class:`python:float`, :obj:`optional`
+           Value for the voltage. Default is ``3.3``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. Default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the source.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name=None, current_value=0.1, phase_value=0, source_name='')
+
+   
+   Create a current source on a net.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_current_source_on_net` instead.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative component. Default is ``None``.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative net name. Default is ``None`` (searches for GND nets).
+
+       **current_value** : :class:`python:float`, :obj:`optional`
+           Value for the current. Default is ``0.1``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. Default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the source.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_dc_terminal(component_name, net_name, source_name='')
+
+   
+   Create a DC terminal.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_dc_terminal` instead.
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. Default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the source.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_exec_file(add_dc: bool = False, add_ac: bool = False, add_syz: bool = False, export_touchstone: bool = False, touchstone_file_path: str = '') -> str
+
+   
+   Create an executable file.
+
+
+   :Parameters:
+
+       **add_dc** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to add the DC option in the EXE file. Default is ``False``.
+
+       **add_ac** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to add the AC option in the EXE file. Default is ``False``.
+
+       **add_syz** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to add the SYZ option in the EXE file. Default is ``False``.
+
+       **export_touchstone** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Add the Touchstone file export option in the EXE file. Default is ``False``.
+
+       **touchstone_file_path** : :class:`python:str`, :obj:`optional`
+           File path for the Touchstone file. Default is ``""``. When no path is
+           specified and ``export_touchstone=True``, the project path is used.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Path to the created exec file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> # Create exec file with AC and SYZ options
+   >>> success = edbapp.siwave.create_exec_file(add_ac=True, add_syz=True)
+   >>> # Create exec file with Touchstone export
+   >>> success = edbapp.siwave.create_exec_file(
+   ...     add_ac=True, export_touchstone=True, touchstone_file_path="C:/temp/my_touchstone.s2p"
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_cpa_analysis(name=None, siwave_cpa_setup_class=None)
+
+   
+   Add a SIwave CPA analysis to EDB.
+
+   .. deprecated:: pyedb 0.77.3
+       Use :func:`pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SiwaveCPASimulationSetup.create`
+       instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_siwave_syz_analysis(accuracy_level: int = 1, distribution: str = 'linear', start_freq: Union[str, float] = 1, stop_freq: Union[str, float] = 1000000000.0, step_freq: Union[str, float, int] = 1000000.0, discrete_sweep: bool = False) -> pyedb.grpc.database.simulation_setup.siwave_simulation_setup.SiwaveSimulationSetup
+
+   
+   Add a SIwave AC analysis to EDB.
+
+
+   :Parameters:
+
+       **accuracy_level** : :class:`python:int`, :obj:`optional`
+           Level of accuracy of SI slider. Default is ``1``.
+
+       **distribution** : :class:`python:str`, :obj:`optional`
+           Type of the sweep. Default is ``"linear"``. Options are:
+           - ``"linear"``
+           - ``"linear_count"``
+           - ``"decade_count"``
+           - ``"octave_count"``
+           - ``"exponential"``
+
+       **start_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Starting frequency. Default is ``1``.
+
+       **stop_freq** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Stopping frequency. Default is ``1e9``.
+
+       **step_freq** : :class:`python:str`, :class:`python:float`, :class:`python:int`, :obj:`optional`
+           Frequency step. Default is ``1e6``. Used for ``"decade_count"``, ``"linear_count"``, ``"octave_count"``
+           distribution. Must be integer in that case.
+
+       **discrete_sweep** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the sweep is discrete. Default is ``False``.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+           Setup object class.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> # Add SYZ analysis with linear sweep from 1kHz to 10GHz
+   >>> setup = edbapp.siwave.add_siwave_syz_analysis(start_freq=1e3, stop_freq=10e9, distribution="linear")
+   >>> # Add SYZ analysis with decade sweep
+   >>> setup = edbapp.siwave.add_siwave_syz_analysis(
+   ...     start_freq=1e3,
+   ...     stop_freq=10e9,
+   ...     distribution="decade_count",
+   ...     step_freq=10,  # 10 points per decade
+   ... )
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_siwave_dc_analysis(name: Optional[str] = None) -> Any
+
+   
+   Add a Siwave DC analysis in EDB.
+
+   .. note::
+      Source Reference to Ground settings works only from 2021.2
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Setup name.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCSimulationSetup`
+           Setup object class.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("pathtoaedb", edbversion="2021.2")
+   >>> edb.siwave.add_siwave_ac_analysis()
+   >>> edb.siwave.add_siwave_dc_analysis2("my_setup")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pin_group_terminal(source)
+
+   
+   Create a pin group terminal.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_pin_group_terminal` instead.
+
+   :Parameters:
+
+       **source** : :obj:`VoltageSource`, :obj:`CircuitPort`, :obj:`CurrentSource`, :obj:`DCTerminal` or :obj:`ResistorSource`
+           Name of the source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rlc_component(pins, component_name='', r_value=1.0, c_value=1e-09, l_value=1e-09, is_parallel=False)
+
+   
+   Create physical RLC component.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.components.create_rlc_component` instead.
+
+   :Parameters:
+
+       **pins** : :class:`python:list`\[:obj:`Edb.Cell.Primitive.PadstackInstance`]
+           List of EDB pins.
+
+       **component_name** : :class:`python:str`
+           Component name.
+
+       **r_value** : :class:`python:float`
+           Resistor value.
+
+       **c_value** : :class:`python:float`
+           Capacitance value.
+
+       **l_value** : :class:`python:float`
+           Inductor value.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`
+           Use parallel model when ``True``, series when ``False``.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.components.Components`
+           Created EDB component.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pin_group(reference_designator, pin_numbers, group_name=None)
+
+   
+   Create pin group on the component.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.components.create_pin_group` instead.
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           References designator of the component.
+
+       **pin_numbers** : :class:`python:int`, :class:`python:str`, :class:`python:list`
+           List of pin names.
+
+       **group_name** : :class:`python:str`, :obj:`optional`
+           Name of the pin group.
+
+
+
+   :Returns:
+
+       :obj:`PinGroup`
+           Pin group object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pin_group_on_net(reference_designator, net_name, group_name=None)
+
+   
+   Create pin group on component by net name.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.components.create_pin_group_on_net` instead.
+
+   :Parameters:
+
+       **reference_designator** : :class:`python:str`
+           References designator of the component.
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+       **group_name** : :class:`python:str`, :obj:`optional`
+           Name of the pin group.
+
+
+
+   :Returns:
+
+       :obj:`PinGroup`
+           Pin group object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_pin_group(pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None)
+
+   
+   Create current source between two pin groups.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_current_source_on_pin_group` instead.
+
+   :Parameters:
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **magnitude** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Magnitude of the source. Default is ``1``.
+
+       **phase** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Phase of the source. Default is ``0``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Source name.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_pin_group(pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001)
+
+   
+   Create voltage source between two pin groups.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group` instead.
+
+   :Parameters:
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **magnitude** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Magnitude of the source. Default is ``1``.
+
+       **phase** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Phase of the source. Default is ``0``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Source name.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Source impedance. Default is ``0.001``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_probe_on_pin_group(probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000.0)
+
+   
+   Create voltage probe between two pin groups.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group` instead.
+
+   :Parameters:
+
+       **probe_name** : :class:`python:str`
+           Name of the probe.
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Probe impedance. Default is ``1e6``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circuit_port_on_pin_group(pos_pin_group_name, neg_pin_group_name, impedance=50, name=None)
+
+   
+   Create a port between two pin groups.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group` instead.
+
+   :Parameters:
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Impedance of the port. Default is ``50``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: place_voltage_probe(name, positive_net_name, positive_location, positive_layer, negative_net_name, negative_location, negative_layer)
+
+   
+   Place a voltage probe between two points.
+
+   .. deprecated:: pyedb 0.28.0
+       Use :func:`pyedb.grpc.core.excitations.place_voltage_probe` instead.
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the probe.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **positive_location** : :class:`python:list`
+           Location of the positive terminal.
+
+       **positive_layer** : :class:`python:str`
+           Layer of the positive terminal.
+
+       **negative_net_name** : :class:`python:str`
+           Name of the negative net.
+
+       **negative_location** : :class:`python:list`
+           Location of the negative terminal.
+
+       **negative_layer** : :class:`python:str`
+           Layer of the negative terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_impedance_crosstalk_scan(scan_type: str = 'impedance') -> pyedb.misc.siw_feature_config.xtalk_scan.scan_config.SiwaveScanConfig
+
+   
+   Create Siwave crosstalk scan object.
+
+
+   :Parameters:
+
+       **scan_type** : :class:`python:str`, :obj:`optional`
+           Scan type to be analyzed. Options are:
+           - ``"impedance"`` for frequency impedance scan
+           - ``"frequency_xtalk"`` for frequency domain crosstalk
+           - ``"time_xtalk"`` for time domain crosstalk
+           Default is ``"impedance"``.
+
+
+
+   :Returns:
+
+       :obj:`SiwaveScanConfig`
+           Scan configuration object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

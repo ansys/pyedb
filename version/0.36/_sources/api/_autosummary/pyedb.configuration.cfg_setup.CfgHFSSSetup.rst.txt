@@ -1,0 +1,37 @@
+﻿CfgHFSSSetup
+============
+
+.. currentmodule:: pyedb.configuration.cfg_setup
+
+.. autoclass:: CfgHFSSSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgHFSSSetup.apply
+      
+      
+      CfgHFSSSetup.get_attributes
+      
+      
+      CfgHFSSSetup.set_attributes
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CfgHFSSSetup.protected_attributes
+   
+   

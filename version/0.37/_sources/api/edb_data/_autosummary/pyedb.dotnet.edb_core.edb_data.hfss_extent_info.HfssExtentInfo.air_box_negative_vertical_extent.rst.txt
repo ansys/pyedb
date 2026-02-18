@@ -1,0 +1,6 @@
+air\_box\_negative\_vertical\_extent
+====================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.air_box_negative_vertical_extent

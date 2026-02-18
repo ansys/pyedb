@@ -1,0 +1,51 @@
+﻿PinPairModel
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pin_pair_model
+
+.. autoclass:: PinPairModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PinPairModel.clone
+      
+      
+      PinPairModel.create
+      
+      
+      PinPairModel.delete_rlc
+      
+      
+      PinPairModel.pin_pairs
+      
+      
+      PinPairModel.set_rlc
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      PinPairModel.capacitance
+      PinPairModel.id
+      PinPairModel.inductance
+      PinPairModel.is_null
+      PinPairModel.msg
+      PinPairModel.resistance
+      PinPairModel.rlc
+      PinPairModel.rlc_enable
+      PinPairModel.rlc_values
+   
+   

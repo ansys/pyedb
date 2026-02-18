@@ -1,0 +1,6 @@
+points
+======
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.points

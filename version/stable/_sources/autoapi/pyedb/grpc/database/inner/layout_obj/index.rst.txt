@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``layout_obj.py`` module
+============================
+
+.. py:module:: pyedb.grpc.database.inner.layout_obj
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layout_obj
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.inner.layout_obj.LayoutObj`
+            - Represents a layout object.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> LayoutObj</autoapi/pyedb/grpc/database/inner/layout_obj/LayoutObj>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

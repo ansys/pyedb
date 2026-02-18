@@ -1,0 +1,6 @@
+get\_pin\_group\_terminal\_reference\_pin
+=========================================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. automethod:: Terminal.get_pin_group_terminal_reference_pin

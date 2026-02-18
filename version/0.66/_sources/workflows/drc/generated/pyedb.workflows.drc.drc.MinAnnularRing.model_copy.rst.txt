@@ -1,0 +1,6 @@
+model\_copy
+===========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. automethod:: MinAnnularRing.model_copy

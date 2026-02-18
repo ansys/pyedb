@@ -1,0 +1,6 @@
+get\_parameters
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. automethod:: Circle.get_parameters

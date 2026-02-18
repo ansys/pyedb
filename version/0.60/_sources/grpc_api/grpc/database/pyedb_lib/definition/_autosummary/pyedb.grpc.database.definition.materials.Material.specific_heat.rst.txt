@@ -1,0 +1,6 @@
+specific\_heat
+==============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: Material.specific_heat

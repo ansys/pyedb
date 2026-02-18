@@ -1,0 +1,255 @@
+
+
+
+
+
+
+:class:`RatRace`
+================
+
+
+.. py:class:: pyedb.libraries.rf_libraries.base_functions.RatRace(edb_cell: Optional[pyedb.Edb] = None, z0: Union[float, str] = 50, freq: Union[float, str] = 10000000000.0, layer: str = 'TOP', bottom_layer: Optional[str] = None, net: str = 'RR', width: Union[float, str] = 0.0002, nr_segments: int = 32)
+
+   
+   180° rat-race (ring) hybrid coupler.
+
+
+   :Parameters:
+
+       **z0** : :class:`python:float`, :obj:`default` 50 Ω
+           Characteristic impedance of the ring.
+
+       **freq** : :class:`python:float`, :obj:`default` 10 :obj:`GHz`
+           Centre frequency.
+
+       **layer** : :class:`python:str`, :obj:`default` "TOP"
+           Layer on which the ring is drawn.
+
+       **bottom_layer** : :class:`python:str` | :data:`python:None`
+           Layer for the ground plane (if None, no ground is drawn).
+
+       **net** : :class:`python:str`, :obj:`default` "RR"
+           Net name.
+
+       **width** : :class:`python:float`, :obj:`default` 0.2 :obj:`mm`
+           Micro-strip width for the ring and port stubs.
+
+       **nr_segments** : :class:`python:int`, :obj:`default` 32
+           Number of straight segments per 90° arc.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> rr = RatRace(freq=5e9)
+   >>> edb = Edb("ratrace.aedb")
+   >>> rr._pedb = edb
+   >>> rr.create()
+   >>> f"{rr.circumference * 1e3:.2f} mm"
+   '45.00 mm'
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RatRace
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Draw the discretised ring and four 50 Ω port stubs.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~circumference`
+            - Physical circumference of the ring.
+          * - :py:attr:`~radius`
+            - Mean radius of the ring.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~z0`
+            - 
+          * - :py:attr:`~freq`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~bottom_layer`
+            - 
+          * - :py:attr:`~net`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~nr_segments`
+            - 
+          * - :py:attr:`~substrate`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.rf_libraries.base_functions import RatRace
+
+Property detail
+---------------
+
+.. py:property:: circumference
+   :type: float
+
+
+   
+   Physical circumference of the ring.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Circumference in metres (1.5 guided wavelengths).
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: radius
+   :type: float
+
+
+   
+   Mean radius of the ring.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Radius in metres.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: z0
+
+.. py:attribute:: freq
+
+.. py:attribute:: layer
+   :value: 'TOP'
+
+
+.. py:attribute:: bottom_layer
+   :value: None
+
+
+.. py:attribute:: net
+   :value: 'RR'
+
+
+.. py:attribute:: width
+
+.. py:attribute:: nr_segments
+   :value: 32
+
+
+.. py:attribute:: substrate
+
+
+
+Method detail
+-------------
+
+.. py:method:: create() -> bool
+
+   
+   Draw the discretised ring and four 50 Ω port stubs.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True on success.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

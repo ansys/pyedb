@@ -1,0 +1,192 @@
+
+
+
+
+
+
+The ``pyedb.grpc.database`` library
+===================================
+
+.. py:module:: pyedb.grpc.database
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: database
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.definition`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.geometry`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.hierarchy`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.layers`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.net`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.ports`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.terminal`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.utility`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.components`
+            - This module contains the `Components` class.
+
+
+          * - :py:obj:`~pyedb.grpc.database.control_file`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.definitions`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.general`
+            - This module contains EDB general methods and related methods.
+
+
+          * - :py:obj:`~pyedb.grpc.database.hfss`
+            - This module contains the ``EdbHfss`` class.
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout_validation`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.modeler`
+            - This module contains these classes: `EdbLayout` and `Shape`.
+
+
+          * - :py:obj:`~pyedb.grpc.database.nets`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.padstacks`
+            - This module contains the `EdbPadstacks` class.
+
+
+          * - :py:obj:`~pyedb.grpc.database.siwave`
+            - This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
+
+
+          * - :py:obj:`~pyedb.grpc.database.source_excitations`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.stackup`
+            - This module contains the `EdbStackup` class.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> definition</autoapi/pyedb/grpc/database/definition/index>
+    <span class="nf nf-md-package"></span> geometry</autoapi/pyedb/grpc/database/geometry/index>
+    <span class="nf nf-md-package"></span> hierarchy</autoapi/pyedb/grpc/database/hierarchy/index>
+    <span class="nf nf-md-package"></span> layers</autoapi/pyedb/grpc/database/layers/index>
+    <span class="nf nf-md-package"></span> layout</autoapi/pyedb/grpc/database/layout/index>
+    <span class="nf nf-md-package"></span> net</autoapi/pyedb/grpc/database/net/index>
+    <span class="nf nf-md-package"></span> ports</autoapi/pyedb/grpc/database/ports/index>
+    <span class="nf nf-md-package"></span> primitive</autoapi/pyedb/grpc/database/primitive/index>
+    <span class="nf nf-md-package"></span> simulation_setup</autoapi/pyedb/grpc/database/simulation_setup/index>
+    <span class="nf nf-md-package"></span> terminal</autoapi/pyedb/grpc/database/terminal/index>
+    <span class="nf nf-md-package"></span> utility</autoapi/pyedb/grpc/database/utility/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> components</autoapi/pyedb/grpc/database/components/index>
+    <span class="nf nf-fa-file"></span> control_file</autoapi/pyedb/grpc/database/control_file/index>
+    <span class="nf nf-fa-file"></span> definitions</autoapi/pyedb/grpc/database/definitions/index>
+    <span class="nf nf-fa-file"></span> general</autoapi/pyedb/grpc/database/general/index>
+    <span class="nf nf-fa-file"></span> hfss</autoapi/pyedb/grpc/database/hfss/index>
+    <span class="nf nf-fa-file"></span> layout_validation</autoapi/pyedb/grpc/database/layout_validation/index>
+    <span class="nf nf-fa-file"></span> modeler</autoapi/pyedb/grpc/database/modeler/index>
+    <span class="nf nf-fa-file"></span> nets</autoapi/pyedb/grpc/database/nets/index>
+    <span class="nf nf-fa-file"></span> padstacks</autoapi/pyedb/grpc/database/padstacks/index>
+    <span class="nf nf-fa-file"></span> siwave</autoapi/pyedb/grpc/database/siwave/index>
+    <span class="nf nf-fa-file"></span> source_excitations</autoapi/pyedb/grpc/database/source_excitations/index>
+    <span class="nf nf-fa-file"></span> stackup</autoapi/pyedb/grpc/database/stackup/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

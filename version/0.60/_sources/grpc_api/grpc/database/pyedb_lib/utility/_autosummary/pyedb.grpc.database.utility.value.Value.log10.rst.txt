@@ -1,0 +1,6 @@
+log10
+=====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. automethod:: Value.log10

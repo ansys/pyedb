@@ -1,0 +1,60 @@
+﻿HfssSimulationSetup
+===================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoclass:: HfssSimulationSetup
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HfssSimulationSetup.add_frequency_sweep
+      
+      
+      HfssSimulationSetup.add_length_mesh_operation
+      
+      
+      HfssSimulationSetup.add_skin_depth_mesh_operation
+      
+      
+      HfssSimulationSetup.add_sweep
+      
+      
+      HfssSimulationSetup.auto_mesh_operation
+      
+      
+      HfssSimulationSetup.delete
+      
+      
+      HfssSimulationSetup.delete_frequency_sweep
+      
+      
+      HfssSimulationSetup.get_simulation_settings
+      
+      
+      HfssSimulationSetup.set_sim_setup_info
+      
+      
+      HfssSimulationSetup.set_simulation_settings
+      
+      
+      HfssSimulationSetup.set_solution_broadband
+      
+      
+      HfssSimulationSetup.set_solution_multi_frequencies
+      
+      
+      HfssSimulationSetup.set_solution_single_frequency
+      
+   
+   
+
+   
+   
+   

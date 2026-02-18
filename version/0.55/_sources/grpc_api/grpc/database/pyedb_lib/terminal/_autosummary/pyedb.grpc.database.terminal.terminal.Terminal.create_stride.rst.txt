@@ -1,0 +1,6 @@
+create\_stride
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. automethod:: Terminal.create_stride

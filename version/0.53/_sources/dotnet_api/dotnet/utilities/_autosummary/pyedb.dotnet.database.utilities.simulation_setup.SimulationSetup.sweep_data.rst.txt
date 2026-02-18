@@ -1,0 +1,6 @@
+sweep\_data
+===========
+
+.. currentmodule:: pyedb.dotnet.database.utilities.simulation_setup
+
+.. autoproperty:: SimulationSetup.sweep_data

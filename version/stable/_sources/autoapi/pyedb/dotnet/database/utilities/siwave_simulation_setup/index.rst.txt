@@ -1,0 +1,118 @@
+
+
+
+
+
+
+The ``siwave_simulation_setup.py`` module
+=========================================
+
+.. py:module:: pyedb.dotnet.database.utilities.siwave_simulation_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_simulation_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_simulation_setup.SiwaveSimulationSetup`
+            - Manages EDB methods for SIwave simulation setup.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_simulation_setup.SiwaveDCSimulationSetup`
+            - Manages EDB methods for SIwave DC simulation setup.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_simulation_setup.General`
+            - Class to manage global settings for the Siwave simulation setup module.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_simulation_setup.SIwaveSParameterSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.utilities.siwave_simulation_setup.Settings`
+            - Class to manage global settings for the Siwave simulation setup module.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~clone_edb_sim_setup_info`
+            - 
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SiwaveSimulationSetup</autoapi/pyedb/dotnet/database/utilities/siwave_simulation_setup/SiwaveSimulationSetup>
+    <span class="nf nf-cod-symbol_class"></span> SiwaveDCSimulationSetup</autoapi/pyedb/dotnet/database/utilities/siwave_simulation_setup/SiwaveDCSimulationSetup>
+    <span class="nf nf-cod-symbol_class"></span> General</autoapi/pyedb/dotnet/database/utilities/siwave_simulation_setup/General>
+    <span class="nf nf-cod-symbol_class"></span> SIwaveSParameterSettings</autoapi/pyedb/dotnet/database/utilities/siwave_simulation_setup/SIwaveSParameterSettings>
+    <span class="nf nf-cod-symbol_class"></span> Settings</autoapi/pyedb/dotnet/database/utilities/siwave_simulation_setup/Settings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: clone_edb_sim_setup_info(source, target)
+
+
+

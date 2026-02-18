@@ -1,0 +1,6 @@
+value
+=====
+
+.. currentmodule:: pyedb.grpc.database.utility.value
+
+.. autoproperty:: Value.value

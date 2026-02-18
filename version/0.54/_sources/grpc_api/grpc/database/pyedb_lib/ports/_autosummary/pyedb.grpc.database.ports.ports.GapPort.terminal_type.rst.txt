@@ -1,0 +1,6 @@
+terminal\_type
+==============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.terminal_type

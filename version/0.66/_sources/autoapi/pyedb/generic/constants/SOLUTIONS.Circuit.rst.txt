@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`Circuit`
+================
+
+
+.. py:class:: pyedb.generic.constants.SOLUTIONS.Circuit
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides Circuit solution types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants.SOLUTIONS import Circuit
+
+
+
+
+

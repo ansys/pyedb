@@ -1,0 +1,6 @@
+use\_dc\_custom\_settings
+=========================
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.io.siwave
+
+.. autoproperty:: DCSettings.use_dc_custom_settings

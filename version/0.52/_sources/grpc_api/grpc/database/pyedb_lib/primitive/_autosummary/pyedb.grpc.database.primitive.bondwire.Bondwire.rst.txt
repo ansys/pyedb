@@ -1,0 +1,131 @@
+﻿Bondwire
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. autoclass:: Bondwire
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Bondwire.add_void
+      
+      
+      Bondwire.cast
+      
+      
+      Bondwire.create
+      
+      
+      Bondwire.create_3d_comp
+      
+      
+      Bondwire.create_hfss
+      
+      
+      Bondwire.create_stride
+      
+      
+      Bondwire.delete
+      
+      
+      Bondwire.find_by_id
+      
+      
+      Bondwire.get_definition_name
+      
+      
+      Bondwire.get_end_elevation
+      
+      
+      Bondwire.get_hfss_prop
+      
+      
+      Bondwire.get_material
+      
+      
+      Bondwire.get_product_property
+      
+      
+      Bondwire.get_product_property_ids
+      
+      
+      Bondwire.get_start_elevation
+      
+      
+      Bondwire.get_traj
+      
+      
+      Bondwire.make_zone_primitive
+      
+      
+      Bondwire.remove_hfss_prop
+      
+      
+      Bondwire.set_definition_name
+      
+      
+      Bondwire.set_end_elevation
+      
+      
+      Bondwire.set_hfss_prop
+      
+      
+      Bondwire.set_material
+      
+      
+      Bondwire.set_product_property
+      
+      
+      Bondwire.set_start_elevation
+      
+      
+      Bondwire.set_traj
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      Bondwire.can_be_zone_primitive
+      Bondwire.component
+      Bondwire.cross_section_height
+      Bondwire.cross_section_type
+      Bondwire.edb_uid
+      Bondwire.group
+      Bondwire.has_voids
+      Bondwire.id
+      Bondwire.is_mcad
+      Bondwire.is_mcad_3d_comp
+      Bondwire.is_mcad_hfss
+      Bondwire.is_mcad_stride
+      Bondwire.is_negative
+      Bondwire.is_null
+      Bondwire.is_parameterized
+      Bondwire.is_void
+      Bondwire.is_zone_primitive
+      Bondwire.layer
+      Bondwire.layout
+      Bondwire.layout_obj_type
+      Bondwire.material
+      Bondwire.msg
+      Bondwire.net
+      Bondwire.obj_type
+      Bondwire.owner
+      Bondwire.primitive_type
+      Bondwire.type
+      Bondwire.voids
+      Bondwire.width
+   
+   

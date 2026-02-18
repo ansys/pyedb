@@ -1,0 +1,6 @@
+insert\_zone
+============
+
+.. currentmodule:: pyedb.grpc.database.stackup
+
+.. automethod:: LayerCollection.insert_zone

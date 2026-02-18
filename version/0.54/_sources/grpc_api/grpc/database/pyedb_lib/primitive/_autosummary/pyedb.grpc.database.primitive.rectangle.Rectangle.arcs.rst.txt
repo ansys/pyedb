@@ -1,0 +1,6 @@
+arcs
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.arcs

@@ -1,0 +1,181 @@
+
+
+
+
+
+
+The ``pyedb.misc.misc`` library
+===============================
+
+.. py:module:: pyedb.misc.misc
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: misc
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~list_installed_ansysem`
+            - Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
+
+
+          * - :py:obj:`~installed_versions`
+            - Get the installed AEDT versions.
+
+
+          * - :py:obj:`~current_version`
+            - Get the current AEDT version.
+
+
+          * - :py:obj:`~current_student_version`
+            - Get the current AEDT student version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Miscellaneous Methods for PyEDB.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: list_installed_ansysem()
+
+   
+   Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: installed_versions()
+
+   
+   Get the installed AEDT versions.
+
+   This method returns a dictionary, with version as the key and installation path
+   as the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: current_version()
+
+   
+   Get the current AEDT version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: current_student_version()
+
+   
+   Get the current AEDT student version.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

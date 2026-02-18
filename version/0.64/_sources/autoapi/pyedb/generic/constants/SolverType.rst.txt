@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SolverType`
+===================
+
+
+.. py:class:: pyedb.generic.constants.SolverType
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides solver type classes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SolverType
+
+
+
+
+

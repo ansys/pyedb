@@ -1,0 +1,6 @@
+cell\_per\_wave\_length
+=======================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.cell_per_wave_length

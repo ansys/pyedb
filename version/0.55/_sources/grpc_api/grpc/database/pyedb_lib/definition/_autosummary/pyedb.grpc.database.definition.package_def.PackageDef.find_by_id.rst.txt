@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. automethod:: PackageDef.find_by_id

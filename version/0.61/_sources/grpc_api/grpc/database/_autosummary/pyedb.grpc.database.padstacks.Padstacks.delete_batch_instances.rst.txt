@@ -1,0 +1,6 @@
+delete\_batch\_instances
+========================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.delete_batch_instances

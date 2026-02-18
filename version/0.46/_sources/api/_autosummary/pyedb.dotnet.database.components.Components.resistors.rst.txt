@@ -1,0 +1,6 @@
+resistors
+=========
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. autoproperty:: Components.resistors

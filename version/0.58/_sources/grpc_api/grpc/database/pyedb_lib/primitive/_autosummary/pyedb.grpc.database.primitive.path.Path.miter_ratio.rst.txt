@@ -1,0 +1,6 @@
+miter\_ratio
+============
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. autoproperty:: Path.miter_ratio

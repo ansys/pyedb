@@ -1,0 +1,6 @@
+parse\_layer\_map
+=================
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. automethod:: ControlFile.parse_layer_map

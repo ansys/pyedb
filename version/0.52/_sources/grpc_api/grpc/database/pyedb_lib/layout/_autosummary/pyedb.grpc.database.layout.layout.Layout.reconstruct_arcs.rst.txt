@@ -1,0 +1,6 @@
+reconstruct\_arcs
+=================
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. automethod:: Layout.reconstruct_arcs

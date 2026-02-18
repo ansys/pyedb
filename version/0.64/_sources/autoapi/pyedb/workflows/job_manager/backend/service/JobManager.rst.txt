@@ -1,0 +1,737 @@
+
+
+
+
+
+
+:class:`JobManager`
+===================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.JobManager(resource_limits: ResourceLimits = None, scheduler_type: pyedb.workflows.job_manager.backend.job_submission.SchedulerType = SchedulerType.NONE)
+
+   
+   **Async** job manager combining resource monitoring and job scheduling.
+
+   This class provides the core functionality for:
+
+   * Resource monitoring via :class:`ResourceMonitor`
+   * Job scheduling via :class:`JobPoolManager`
+   * REST/Socket.IO API via aiohttp web server
+   * Background task for continuous job processing
+
+   :Parameters:
+
+       **resource_limits** : :obj:`ResourceLimits`, :obj:`optional`
+           Host constraints. Creates default instance if None.
+
+       **scheduler_type** : :obj:`SchedulerType`, :obj:`optional`
+           Type of job scheduler to use. Default is ``SchedulerType.NONE``.
+
+
+
+
+
+
+
+
+
+
+
+
+   :Attributes:
+
+       **jobs** : :obj:`Dict`\[:class:`python:str`, :obj:`JobInfo`]
+           Dictionary of all managed jobs
+
+       **resource_limits** : :obj:`ResourceLimits`
+           Current resource constraints
+
+       **job_pool** : :obj:`JobPoolManager`
+           Priority-aware job queue manager
+
+       **resource_monitor** : :obj:`ResourceMonitor`
+           Host resource usage monitor
+
+       **ansys_path** : :class:`python:str` or :data:`python:None`
+           Path to ANSYS EDT executable
+
+       **sio** : :obj:`socketio.AsyncServer`
+           Socket.IO server for real-time updates
+
+       **app** : :obj:`web.Application`
+           aiohttp web application
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: JobManager
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~setup_routes`
+            - Internal method that wires aiohttp routes to class methods.
+          * - :py:attr:`~handle_get_system_status`
+            - Get system and scheduler status.
+          * - :py:attr:`~handle_get_partitions`
+            - Get scheduler partitions/queues.
+          * - :py:attr:`~handle_start_monitoring`
+            - Manually start resource monitoring.
+          * - :py:attr:`~handle_index`
+            - Serve the main web interface.
+          * - :py:attr:`~handle_submit_job`
+            - Submit a new job for execution.
+          * - :py:attr:`~handle_cancel_job`
+            - Cancel a running or queued job.
+          * - :py:attr:`~handle_get_jobs`
+            - Get list of all jobs.
+          * - :py:attr:`~handle_get_resources`
+            - Get current resource usage.
+          * - :py:attr:`~handle_get_queue`
+            - Get queue statistics.
+          * - :py:attr:`~handle_set_priority`
+            - Change job priority and re-queue.
+          * - :py:attr:`~handle_edit_concurrent_limits`
+            - Edit concurrent job limits.
+          * - :py:attr:`~wait_until_all_done`
+            - **Coroutine** that blocks until **every** job reaches a terminal state.
+          * - :py:attr:`~submit_job`
+            - **Async** entry point for job submission.
+          * - :py:attr:`~cancel_job`
+            - **Cancel** a queued or running job.
+          * - :py:attr:`~edit_concurrent_limits`
+            - Edit concurrent job limits in the pool.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~jobs`
+            - 
+          * - :py:attr:`~resource_limits`
+            - 
+          * - :py:attr:`~job_pool`
+            - 
+          * - :py:attr:`~resource_monitor`
+            - 
+          * - :py:attr:`~ansys_path`
+            - 
+          * - :py:attr:`~scheduler_type`
+            - 
+          * - :py:attr:`~sio`
+            - 
+          * - :py:attr:`~app`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import JobManager
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: jobs
+   :type:  Dict[str, JobInfo]
+
+.. py:attribute:: resource_limits
+   :value: None
+
+
+.. py:attribute:: job_pool
+
+.. py:attribute:: resource_monitor
+
+.. py:attribute:: ansys_path
+   :value: None
+
+
+.. py:attribute:: scheduler_type
+
+.. py:attribute:: sio
+
+.. py:attribute:: app
+
+
+
+Method detail
+-------------
+
+.. py:method:: setup_routes()
+
+   
+   Internal method that wires aiohttp routes to class methods.
+
+   Called once from __init__. Sets up all REST API endpoints.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_get_system_status(request)
+   :async:
+
+
+   
+   Get system and scheduler status.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with system status information
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_get_partitions(request)
+   :async:
+
+
+   
+   Get scheduler partitions/queues.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with partition information or error
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_start_monitoring(request)
+   :async:
+
+
+   
+   Manually start resource monitoring.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response indicating success or failure
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_index(request)
+   :async:
+
+
+   
+   Serve the main web interface.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.FileResponse`
+           Static HTML file
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_submit_job(request)
+   :async:
+
+
+   
+   Submit a new job for execution.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP POST request with JSON payload
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response with job ID or error
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Expected JSON payload:
+
+   .. code-block:: json
+
+       {
+           "config": {
+               "jobid": "job_123",
+               "project_path": "/path/to/project.aedt",
+               ... other HFSS config fields
+           },
+           "priority": 0
+       }
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_cancel_job(request)
+   :async:
+
+
+   
+   Cancel a running or queued job.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request with job_id in URL path
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response indicating success or failure
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_get_jobs(request)
+   :async:
+
+
+   
+   Get list of all jobs.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON array of job objects with status information
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_get_resources(request)
+   :async:
+
+
+   
+   Get current resource usage.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON with current host resource usage
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_get_queue(request)
+   :async:
+
+
+   
+   Get queue statistics.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP request object
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON with queue statistics for dashboard display
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_set_priority(request)
+   :async:
+
+
+   
+   Change job priority and re-queue.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP POST request with JSON payload
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response indicating success or failure
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: handle_edit_concurrent_limits(request)
+   :async:
+
+
+   
+   Edit concurrent job limits.
+
+
+   :Parameters:
+
+       **request** : :obj:`aiohttp.web.Request`
+           HTTP PUT request with JSON payload
+
+   :Returns:
+
+       :obj:`aiohttp.web.Response`
+           JSON response indicating success or failure
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: wait_until_all_done() -> None
+   :async:
+
+
+   
+   **Coroutine** that blocks until **every** job reaches a terminal state.
+
+   Safe to call from REST handlers or CLI scripts. Polls job status
+   until all jobs are completed, failed, or cancelled.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: submit_job(config: pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig, priority: int = 0) -> str
+   :async:
+
+
+   
+   **Async** entry point for job submission.
+
+
+   :Parameters:
+
+       **config** : :obj:`HFSSSimulationConfig`
+           Validated simulation configuration.
+
+       **priority** : :class:`python:int`, :obj:`optional`
+           Job priority. Default is ``0``.
+
+   :Returns:
+
+       :class:`python:str`
+           Unique job identifier (same as ``config.jobid``).
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   This method:
+   1. Creates a JobInfo object with QUEUED status
+   2. Adds the job to the appropriate queue
+   3. Notifies web clients via Socket.IO
+   4. Starts the processing loop if not already running
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: cancel_job(job_id: str) -> bool
+   :async:
+
+
+   
+   **Cancel** a queued or running job.
+
+
+   :Parameters:
+
+       **job_id** : :class:`python:str`
+           Identifier returned by :meth:`submit_job`.
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` → cancellation succeeded, ``False`` → job not found or
+           already terminal.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   For queued jobs: immediately removes from queue and marks as cancelled.
+   For running jobs: attempts to terminate the process and cleanup.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: edit_concurrent_limits(update_data: Dict[str, Any]) -> Optional[Dict[str, Any]]
+   :async:
+
+
+   
+   Edit concurrent job limits in the pool.
+
+
+   :Parameters:
+
+       **update_data** : :class:`python:dict`
+           Fields to update in resource limits. Valid fields:
+           - max_concurrent_jobs: Positive integer
+           - max_cpu_percent: Float between 0 and 100
+           - min_memory_gb: Non-negative float
+           - min_disk_gb: Non-negative float
+
+   :Returns:
+
+       :class:`python:dict` or :data:`python:None`
+           Updated limits data or None if update failed
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If any field validation fails
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

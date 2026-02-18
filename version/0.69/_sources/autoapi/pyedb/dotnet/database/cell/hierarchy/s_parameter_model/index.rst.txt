@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``s_parameter_model.py`` module
+===================================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.s_parameter_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: s_parameter_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.s_parameter_model.SParameterModel`
+            - Manages S-parameter model class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SParameterModel</autoapi/pyedb/dotnet/database/cell/hierarchy/s_parameter_model/SParameterModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+perform\_erc
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.perform_erc

@@ -1,0 +1,6 @@
+components
+==========
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.components

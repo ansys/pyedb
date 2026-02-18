@@ -1,0 +1,6 @@
+get\_polygon\_bounding\_box
+===========================
+
+.. currentmodule:: pyedb.dotnet.database.modeler
+
+.. automethod:: Modeler.get_polygon_bounding_box

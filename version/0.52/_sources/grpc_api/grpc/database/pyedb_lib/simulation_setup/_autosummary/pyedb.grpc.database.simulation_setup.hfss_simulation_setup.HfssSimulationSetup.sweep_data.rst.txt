@@ -1,0 +1,6 @@
+sweep\_data
+===========
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.sweep_data

@@ -1,0 +1,6 @@
+calculate\_initial\_extent
+==========================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.calculate_initial_extent

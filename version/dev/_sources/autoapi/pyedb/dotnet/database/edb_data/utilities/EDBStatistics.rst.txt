@@ -1,0 +1,144 @@
+
+
+
+
+
+
+:class:`EDBStatistics`
+======================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.utilities.EDBStatistics
+
+   Bases: :py:obj:`object`
+
+
+   
+   Statistics object
+
+   Object properties example.
+   >>> stat_model = EDBStatistics()
+   >>> stat_model.num_capacitors
+   >>> stat_model.num_resistors
+   >>> stat_model.num_inductors
+   >>> stat_model.layout_size
+   >>> stat_model.num_discrete_components
+   >>> stat_model.num_inductors
+   >>> stat_model.num_resistors
+   >>> stat_model.num_capacitors
+   >>> stat_model.num_nets
+   >>> stat_model.num_traces
+   >>> stat_model.num_polygons
+   >>> stat_model.num_vias
+   >>> stat_model.stackup_thickness
+   >>> stat_model.occupying_surface
+   >>> stat_model.occupying_ratio
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBStatistics
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~num_layers`
+            - 
+          * - :py:attr:`~stackup_thickness`
+            - 
+          * - :py:attr:`~num_vias`
+            - 
+          * - :py:attr:`~occupying_ratio`
+            - 
+          * - :py:attr:`~occupying_surface`
+            - 
+          * - :py:attr:`~layout_size`
+            - 
+          * - :py:attr:`~num_polygons`
+            - 
+          * - :py:attr:`~num_traces`
+            - 
+          * - :py:attr:`~num_nets`
+            - 
+          * - :py:attr:`~num_discrete_components`
+            - 
+          * - :py:attr:`~num_inductors`
+            - 
+          * - :py:attr:`~num_capacitors`
+            - 
+          * - :py:attr:`~num_resistors`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
+
+Property detail
+---------------
+
+.. py:property:: num_layers
+
+.. py:property:: stackup_thickness
+
+.. py:property:: num_vias
+
+.. py:property:: occupying_ratio
+
+.. py:property:: occupying_surface
+
+.. py:property:: layout_size
+
+.. py:property:: num_polygons
+
+.. py:property:: num_traces
+
+.. py:property:: num_nets
+
+.. py:property:: num_discrete_components
+
+.. py:property:: num_inductors
+
+.. py:property:: num_capacitors
+
+.. py:property:: num_resistors
+
+
+
+
+
+

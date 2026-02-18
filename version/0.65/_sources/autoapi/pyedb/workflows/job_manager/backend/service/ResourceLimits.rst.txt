@@ -1,0 +1,115 @@
+
+
+
+
+
+
+:class:`ResourceLimits`
+=======================
+
+
+.. py:class:: pyedb.workflows.job_manager.backend.service.ResourceLimits
+
+   
+   Host-level resource constraints enforced by the manager.
+
+   All attributes are **checked** before starting a new job; if any limit is
+   exceeded the job remains in the queue.
+
+   :Parameters:
+
+       **max_concurrent_jobs** : :class:`python:int`, :obj:`optional`
+           Simultaneous local jobs. Default is ``1``.
+
+       **max_cpu_percent** : :class:`python:float`, :obj:`optional`
+           CPU utilisation threshold (0-100). Default is ``80.0``.
+
+       **min_memory_gb** : :class:`python:float`, :obj:`optional`
+           Free RAM required to start (GB). Default is ``2.0``.
+
+       **min_disk_gb** : :class:`python:float`, :obj:`optional`
+           Free disk space required to start (GB). Default is ``10.0``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ResourceLimits
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~max_concurrent_jobs`
+            - 
+          * - :py:attr:`~max_cpu_percent`
+            - 
+          * - :py:attr:`~min_memory_gb`
+            - 
+          * - :py:attr:`~min_disk_gb`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.backend.service import ResourceLimits
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: max_concurrent_jobs
+   :type:  int
+   :value: 1
+
+
+.. py:attribute:: max_cpu_percent
+   :type:  float
+   :value: 80.0
+
+
+.. py:attribute:: min_memory_gb
+   :type:  float
+   :value: 2.0
+
+
+.. py:attribute:: min_disk_gb
+   :type:  float
+   :value: 2.0
+
+
+
+
+
+

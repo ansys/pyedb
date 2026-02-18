@@ -1,0 +1,6 @@
+r\_value
+========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoproperty:: VoltageSource.r_value

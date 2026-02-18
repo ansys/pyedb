@@ -1,0 +1,6 @@
+nets\_to\_process
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup
+
+.. autoproperty:: SIWaveCPASimulationSetup.nets_to_process

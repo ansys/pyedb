@@ -1,0 +1,6 @@
+vertical\_extent\_factor
+========================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: WavePort.vertical_extent_factor

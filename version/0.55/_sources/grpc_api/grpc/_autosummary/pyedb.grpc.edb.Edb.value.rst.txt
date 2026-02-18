@@ -1,0 +1,6 @@
+value
+=====
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.value

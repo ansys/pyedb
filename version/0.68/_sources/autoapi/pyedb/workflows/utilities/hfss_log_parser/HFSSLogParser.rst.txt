@@ -1,0 +1,127 @@
+
+
+
+
+
+
+:class:`HFSSLogParser`
+======================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.HFSSLogParser(log_path: str | pathlib.Path)
+
+   
+   High-level façade that orchestrates all block parsers.
+
+   Typical usage::
+
+       >>> log = HFSSLogParser("/tmp/project.aedt.batchinfo.1234/hfss.log")
+       >>> data = log.parse()
+       >>> data.is_converged()
+       True
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSLogParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Execute all sub-parsers and return a unified object.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~BLOCK_MAP`
+            - 
+          * - :py:attr:`~path`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: BLOCK_MAP
+   :type:  Dict[str, type[BlockParser]]
+
+.. py:attribute:: path
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> ParsedLog
+
+   
+   Execute all sub-parsers and return a unified object.
+
+   :return: Structured representation of the entire log.
+   :rtype: ParsedLog
+   :raises FileNotFoundError: If *log_path* does not exist.
+   :raises ValueError: If a mandatory block cannot be parsed.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

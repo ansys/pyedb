@@ -1,0 +1,6 @@
+save
+====
+
+.. currentmodule:: pyedb.siwave
+
+.. automethod:: Siwave.save

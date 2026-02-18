@@ -1,0 +1,6 @@
+vias
+====
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. autoproperty:: ControlFileStackup.vias

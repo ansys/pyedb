@@ -1,0 +1,6 @@
+is\_parameterized
+=================
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.is_parameterized

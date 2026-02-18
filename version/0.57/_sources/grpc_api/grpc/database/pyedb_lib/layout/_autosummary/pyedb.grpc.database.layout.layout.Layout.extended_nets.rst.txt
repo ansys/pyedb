@@ -1,0 +1,6 @@
+extended\_nets
+==============
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.extended_nets

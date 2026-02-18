@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`PLANE`
+==============
+
+
+.. py:class:: pyedb.generic.constants.PLANE
+
+   Bases: :py:obj:`object`
+
+
+   
+   CoordinateSystemPlane Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import PLANE
+
+
+
+
+

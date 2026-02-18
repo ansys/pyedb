@@ -1,0 +1,6 @@
+net\_name
+=========
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.net_name

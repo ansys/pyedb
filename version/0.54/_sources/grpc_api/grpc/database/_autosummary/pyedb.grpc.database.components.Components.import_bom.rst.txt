@@ -1,0 +1,6 @@
+import\_bom
+===========
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.import_bom

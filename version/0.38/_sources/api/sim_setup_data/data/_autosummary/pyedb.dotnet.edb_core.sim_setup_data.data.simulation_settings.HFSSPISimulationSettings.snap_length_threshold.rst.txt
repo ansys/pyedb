@@ -1,0 +1,6 @@
+snap\_length\_threshold
+=======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.snap_length_threshold

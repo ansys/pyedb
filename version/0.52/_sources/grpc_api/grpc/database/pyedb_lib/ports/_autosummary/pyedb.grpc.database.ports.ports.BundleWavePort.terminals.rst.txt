@@ -1,0 +1,6 @@
+terminals
+=========
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: BundleWavePort.terminals

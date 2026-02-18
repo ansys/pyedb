@@ -1,0 +1,6 @@
+Optional
+========
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoattribute:: DifferentialTLine.Optional

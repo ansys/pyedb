@@ -1,0 +1,89 @@
+
+
+
+
+
+
+:class:`ControlFileDielectric`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlFileDielectric(name: str, properties: Dict[str, Any])
+
+   
+   Represents a dielectric layer in the control file.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Layer name.
+
+       **properties** : :class:`python:dict`
+           Layer properties dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileDielectric
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlFileDielectric
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: properties
+   :type:  Dict[str, Any]
+
+
+
+
+

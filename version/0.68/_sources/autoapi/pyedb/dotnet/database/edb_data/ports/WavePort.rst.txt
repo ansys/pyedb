@@ -1,0 +1,63 @@
+
+
+
+
+
+
+:class:`WavePort`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.ports.WavePort(pedb, edb_terminal)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal`
+
+
+   
+   Manages wave port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal`
+           Edge terminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   This example shows how to access the ``WavePort`` class.
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("myaedb.aedb")
+   >>> exc = edb.ports
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.ports import WavePort
+
+
+
+
+

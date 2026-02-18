@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``primitive.py`` module
+===========================
+
+.. py:module:: pyedb.dotnet.database.cell.primitive.primitive
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: primitive
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.primitive.primitive.Primitive`
+            - Manages EDB functionalities for a primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Primitive</autoapi/pyedb/dotnet/database/cell/primitive/primitive/Primitive>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+dc\_shorts
+==========
+
+.. currentmodule:: pyedb.grpc.database.layout_validation
+
+.. automethod:: LayoutValidation.dc_shorts

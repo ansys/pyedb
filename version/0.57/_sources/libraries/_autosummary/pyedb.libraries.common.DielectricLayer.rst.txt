@@ -1,0 +1,24 @@
+﻿DielectricLayer
+===============
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: DielectricLayer
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DielectricLayer.material
+      DielectricLayer.name
+      DielectricLayer.thickness
+   
+   

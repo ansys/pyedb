@@ -1,0 +1,6 @@
+is\_parallel\_rlc
+=================
+
+.. currentmodule:: pyedb.dotnet.edb_core.cell.hierarchy.component
+
+.. autoproperty:: EDBComponent.is_parallel_rlc

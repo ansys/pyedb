@@ -1,0 +1,55 @@
+
+
+
+
+
+
+:class:`BaseSimulationSettings`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings.BaseSimulationSettings(pedb, sim_setup, edb_object)
+
+
+.. py:currentmodule:: BaseSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enabled`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.simulation_settings import BaseSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: enabled
+
+
+
+
+
+

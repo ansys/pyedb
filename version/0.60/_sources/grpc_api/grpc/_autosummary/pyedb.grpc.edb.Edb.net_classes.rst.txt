@@ -1,0 +1,6 @@
+net\_classes
+============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.net_classes

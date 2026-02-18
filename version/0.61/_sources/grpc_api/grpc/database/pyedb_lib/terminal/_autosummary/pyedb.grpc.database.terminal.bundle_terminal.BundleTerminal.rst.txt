@@ -1,0 +1,77 @@
+﻿BundleTerminal
+==============
+
+.. currentmodule:: pyedb.grpc.database.terminal.bundle_terminal
+
+.. autoclass:: BundleTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      BundleTerminal.cast
+      
+      
+      BundleTerminal.create
+      
+      
+      BundleTerminal.create_3d_comp
+      
+      
+      BundleTerminal.create_hfss
+      
+      
+      BundleTerminal.create_stride
+      
+      
+      BundleTerminal.decouple
+      
+      
+      BundleTerminal.delete
+      
+      
+      BundleTerminal.find
+      
+      
+      BundleTerminal.find_by_id
+      
+      
+      BundleTerminal.get_product_property
+      
+      
+      BundleTerminal.get_product_property_ids
+      
+      
+      BundleTerminal.product_solver_names
+      
+      
+      BundleTerminal.product_solver_option
+      
+      
+      BundleTerminal.set_product_property
+      
+      
+      BundleTerminal.set_product_solver_option
+      
+      
+      BundleTerminal.ungroup
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      BundleTerminal.layout_obj_type
+      BundleTerminal.type
+   
+   

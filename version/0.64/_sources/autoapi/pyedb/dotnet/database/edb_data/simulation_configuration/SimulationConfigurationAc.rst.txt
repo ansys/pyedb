@@ -1,0 +1,1442 @@
+
+
+
+
+
+
+:class:`SimulationConfigurationAc`
+==================================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationAc
+
+   Bases: :py:obj:`object`
+
+
+   
+   Contains all AC analysis settings.
+   The class is part of `SimulationConfiguration` class as a property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationConfigurationAc
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sweep_interpolating`
+            - Retrieve boolean to add a sweep interpolating sweep.
+          * - :py:attr:`~use_q3d_for_dc`
+            - Retrieve boolean to Q3D solver for DC point value computation.
+          * - :py:attr:`~relative_error`
+            - Retrieve relative error used for the interpolating sweep convergence.
+          * - :py:attr:`~use_error_z0`
+            - Retrieve value for the error on Z0 for the port.
+          * - :py:attr:`~percentage_error_z0`
+            - Retrieve boolean to perform the cutout during the project build.
+          * - :py:attr:`~enforce_causality`
+            - Retrieve boolean to enforce causality for the frequency sweep.
+          * - :py:attr:`~enforce_passivity`
+            - Retrieve boolean to enforce passivity for the frequency sweep.
+          * - :py:attr:`~passivity_tolerance`
+            - Retrieve the value for the passivity tolerance when used.
+          * - :py:attr:`~sweep_name`
+            - Retrieve frequency sweep name.
+          * - :py:attr:`~radiation_box`
+            - Retrieve RadiationBoxType object selection defined for the radiation box type.
+          * - :py:attr:`~start_freq`
+            - Starting frequency for the frequency sweep.
+          * - :py:attr:`~stop_freq`
+            - Retrieve stop frequency for the frequency sweep.
+          * - :py:attr:`~sweep_type`
+            - Retrieve SweepType object for the frequency sweep.
+          * - :py:attr:`~step_freq`
+            - Retrieve step frequency for the frequency sweep.
+          * - :py:attr:`~decade_count`
+            - Retrieve decade count number for the frequency sweep in case of a log sweep selected.
+          * - :py:attr:`~mesh_freq`
+            - Retrieve the meshing frequency for the HFSS adaptive convergence.
+          * - :py:attr:`~max_num_passes`
+            - Retrieve maximum of points for the HFSS adaptive meshing.
+          * - :py:attr:`~max_mag_delta_s`
+            - Retrieve the magnitude of the delta S convergence criteria for the interpolating sweep.
+          * - :py:attr:`~min_num_passes`
+            - Retrieve the minimum number of adaptive passes for HFSS convergence.
+          * - :py:attr:`~basis_order`
+            - Retrieve the BasisOrder object.
+          * - :py:attr:`~do_lambda_refinement`
+            - Retrieve boolean to activate the lambda refinement.
+          * - :py:attr:`~arc_angle`
+            - Retrieve the value for the HFSS meshing arc angle.
+          * - :py:attr:`~start_azimuth`
+            - Retrieve the value of the starting azimuth for the HFSS meshing.
+          * - :py:attr:`~max_arc_points`
+            - Retrieve the value of the maximum arc points number for the HFSS meshing.
+          * - :py:attr:`~use_arc_to_chord_error`
+            - Retrieve the boolean for activating the arc to chord for HFSS meshing.
+          * - :py:attr:`~arc_to_chord_error`
+            - Retrieve the value of arc to chord error for HFSS meshing.
+          * - :py:attr:`~defeature_abs_length`
+            - Retrieve the value of arc to chord for HFSS meshing.
+          * - :py:attr:`~defeature_layout`
+            - Retrieve the boolean to activate the layout defeaturing.This method has been developed to simplify polygons
+          * - :py:attr:`~minimum_void_surface`
+            - Retrieve the minimum void surface to be considered for the layout defeaturing.
+          * - :py:attr:`~max_suf_dev`
+            - Retrieve the value for the maximum surface deviation for the layout defeaturing.
+          * - :py:attr:`~process_padstack_definitions`
+            - Retrieve the boolean for activating the padstack definition processing.
+          * - :py:attr:`~return_current_distribution`
+            - Boolean to activate the current distribution return with Siwave.
+          * - :py:attr:`~ignore_non_functional_pads`
+            - Boolean to ignore nonfunctional pads with Siwave.
+          * - :py:attr:`~include_inter_plane_coupling`
+            - Boolean to activate the inter-plane coupling with Siwave.
+          * - :py:attr:`~xtalk_threshold`
+            - Return the value for Siwave cross talk threshold. THis value specifies the distance for the solver to
+          * - :py:attr:`~min_void_area`
+            - Retrieve the value of minimum void area to be considered by Siwave.
+          * - :py:attr:`~min_pad_area_to_mesh`
+            - Retrieve the value of minimum pad area to be meshed by Siwave.
+          * - :py:attr:`~snap_length_threshold`
+            - Retrieve the boolean to activate the snapping threshold feature.
+          * - :py:attr:`~min_plane_area_to_mesh`
+            - Retrieve the minimum plane area to be meshed by Siwave.
+          * - :py:attr:`~mesh_sizefactor`
+            - Retrieve the Mesh Size factor value.
+          * - :py:attr:`~adaptive_type`
+            - HFSS adaptive type.
+          * - :py:attr:`~adaptive_low_freq`
+            - HFSS broadband low frequency adaptive meshing.
+          * - :py:attr:`~adaptive_high_freq`
+            - HFSS broadband high frequency adaptive meshing.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.simulation_configuration import SimulationConfigurationAc
+
+Property detail
+---------------
+
+.. py:property:: sweep_interpolating
+
+   
+   Retrieve boolean to add a sweep interpolating sweep.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`a` :obj:`sweep` :obj:`interpolating` :obj:`is` :obj:`defined`, ``False`` :obj:`when` :obj:`a` :obj:`discrete` :obj:`one` :obj:`is` :obj:`defined` instead.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_q3d_for_dc
+
+   
+   Retrieve boolean to Q3D solver for DC point value computation.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`Q3D` :obj:`solver` :obj:`is` :obj:`used` ``False`` :obj:`when` :obj:`interpolating` :obj:`value` :obj:`is` :obj:`used` instead.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_error
+
+   
+   Retrieve relative error used for the interpolating sweep convergence.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`the` :obj:`error` :obj:`interpolating` :obj:`sweep` :obj:`to` :obj:`reach` :obj:`the` :obj:`convergence` criteria.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_error_z0
+
+   
+   Retrieve value for the error on Z0 for the port.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`Z0` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: percentage_error_z0
+
+   
+   Retrieve boolean to perform the cutout during the project build.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`clipping` :obj:`the` :obj:`design` :obj:`is` :obj:`applied` ``False`` :obj:`if` not.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_causality
+
+   
+   Retrieve boolean to enforce causality for the frequency sweep.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`causality` :obj:`is` :obj:`enforced` ``False`` :obj:`if` not.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enforce_passivity
+
+   
+   Retrieve boolean to enforce passivity for the frequency sweep.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`passivity` :obj:`is` :obj:`enforced` ``False`` :obj:`if` not.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: passivity_tolerance
+
+   
+   Retrieve the value for the passivity tolerance when used.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`passivity` :obj:`tolerance` :obj:`criteria` :obj:`for` :obj:`the` :obj:`frequency` sweep.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweep_name
+
+   
+   Retrieve frequency sweep name.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`The` :obj:`name` :obj:`of` :obj:`the` :obj:`frequency` :obj:`sweep` :obj:`defined` :obj:`in` :obj:`the` project.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: radiation_box
+
+   
+   Retrieve RadiationBoxType object selection defined for the radiation box type.
+
+
+
+   :Returns:
+
+       :obj:`RadiationBoxType` :obj:`object`
+           ..
+
+       3 :obj:`values` :obj:`can` :obj:`be` :obj:`chosen`, :obj:`Conformal`, :obj:`BoundingBox` or ConvexHull.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: start_freq
+
+   
+   Starting frequency for the frequency sweep.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Value of the frequency point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: stop_freq
+
+   
+   Retrieve stop frequency for the frequency sweep.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`the` :obj:`frequency` point.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: sweep_type
+
+   
+   Retrieve SweepType object for the frequency sweep.
+
+
+
+   :Returns:
+
+       :obj:`SweepType`
+           ..
+
+       :obj:`The` :obj:`SweepType` object,2 :obj:`selections` :obj:`are` :obj:`supported` :obj:`Linear` :obj:`and` LogCount.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: step_freq
+
+   
+   Retrieve step frequency for the frequency sweep.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`the` :obj:`frequency` point.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: decade_count
+
+   
+   Retrieve decade count number for the frequency sweep in case of a log sweep selected.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`the` :obj:`decade` :obj:`count` number.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_freq
+
+   
+   Retrieve the meshing frequency for the HFSS adaptive convergence.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`the` :obj:`frequency` point.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_num_passes
+
+   
+   Retrieve maximum of points for the HFSS adaptive meshing.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+       :obj:`The` :obj:`maximum` :obj:`number` :obj:`of` :obj:`adaptive` :obj:`passes` value.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_mag_delta_s
+
+   
+   Retrieve the magnitude of the delta S convergence criteria for the interpolating sweep.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`convergence` criteria.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_num_passes
+
+   
+   Retrieve the minimum number of adaptive passes for HFSS convergence.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+       :obj:`The` :obj:`value` :obj:`of` :obj:`minimum` :obj:`number` :obj:`of` :obj:`adaptive` passes.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: basis_order
+
+   
+   Retrieve the BasisOrder object.
+
+
+
+   :Returns:
+
+       :obj:`BasisOrder` :obj:`class`
+           ..
+
+       :obj:`This` :obj:`class` :obj:`supports` 4 :obj:`selections` :obj:`Mixed`, :obj:`Zero`, :obj:`single` :obj:`and` :obj:`Double` :obj:`for` :obj:`the` :obj:`HFSS` :obj:`order` matrix.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: do_lambda_refinement
+
+   
+   Retrieve boolean to activate the lambda refinement.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`Enable` :obj:`the` :obj:`lambda` :obj:`meshing` :obj:`refinement` :obj:`with` :obj:`HFSS`, ``False`` deactivate.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_angle
+
+   
+   Retrieve the value for the HFSS meshing arc angle.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` angle.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: start_azimuth
+
+   
+   Retrieve the value of the starting azimuth for the HFSS meshing.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`starting` azimuth.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_arc_points
+
+   
+   Retrieve the value of the maximum arc points number for the HFSS meshing.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`maximum` :obj:`arc` :obj:`point` number.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_arc_to_chord_error
+
+   
+   Retrieve the boolean for activating the arc to chord for HFSS meshing.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       :obj:`Activate` :obj:`when` ``True``, :obj:`deactivated` :obj:`when` ``False``.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arc_to_chord_error
+
+   
+   Retrieve the value of arc to chord error for HFSS meshing.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` :obj:`to` :obj:`chord` error.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defeature_abs_length
+
+   
+   Retrieve the value of arc to chord for HFSS meshing.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` :obj:`to` :obj:`chord` error.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defeature_layout
+
+   
+   Retrieve the boolean to activate the layout defeaturing.This method has been developed to simplify polygons
+   with reducing the number of points to simplify the meshing with controlling its surface deviation. This method
+   should be used at last resort when other methods failed.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated` 'False :obj:`when` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: minimum_void_surface
+
+   
+   Retrieve the minimum void surface to be considered for the layout defeaturing.
+   Voids below this value will be ignored.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`minimum` surface.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_suf_dev
+
+   
+   Retrieve the value for the maximum surface deviation for the layout defeaturing.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`maximum` :obj:`surface` deviation.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: process_padstack_definitions
+
+   
+   Retrieve the boolean for activating the padstack definition processing.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` :obj:`to` :obj:`chord` error.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: return_current_distribution
+
+   
+   Boolean to activate the current distribution return with Siwave.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` :obj:`to` :obj:`chord` error.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_non_functional_pads
+
+   
+   Boolean to ignore nonfunctional pads with Siwave.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` :obj:`to` :obj:`chord` error.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: include_inter_plane_coupling
+
+   
+   Boolean to activate the inter-plane coupling with Siwave.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`activated` ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: xtalk_threshold
+
+   
+   Return the value for Siwave cross talk threshold. THis value specifies the distance for the solver to
+   consider lines coupled during the cross-section computation. Decreasing the value below -60dB can
+   potentially cause solver failure.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` cross-talk threshold.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_void_area
+
+   
+   Retrieve the value of minimum void area to be considered by Siwave.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`arc` :obj:`to` :obj:`chord` error.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_pad_area_to_mesh
+
+   
+   Retrieve the value of minimum pad area to be meshed by Siwave.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`minimum` :obj:`pad` surface.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: snap_length_threshold
+
+   
+   Retrieve the boolean to activate the snapping threshold feature.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`activate` ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: min_plane_area_to_mesh
+
+   
+   Retrieve the minimum plane area to be meshed by Siwave.
+
+
+
+   :Returns:
+
+       :obj:`flot`
+           ..
+
+       :obj:`Value` :obj:`of` :obj:`the` :obj:`minimum` :obj:`plane` area.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_sizefactor
+
+   
+   Retrieve the Mesh Size factor value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_type
+
+   
+   HFSS adaptive type.
+
+
+
+   :Returns:
+
+       class: :obj:`pyedb.dotnet.database.edb_data.simulation_setup.AdaptiveType`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_low_freq
+
+   
+   HFSS broadband low frequency adaptive meshing.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: adaptive_high_freq
+
+   
+   HFSS broadband high frequency adaptive meshing.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

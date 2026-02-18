@@ -1,0 +1,108 @@
+
+
+
+
+
+
+The ``pyedb.xml_parser.xml_stackup`` library
+============================================
+
+.. py:module:: pyedb.xml_parser.xml_stackup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: xml_stackup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup.XmlMaterialProperty`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup.XmlMaterial`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup.XmlLayer`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup.XmlMaterials`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup.XmlLayers`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.xml_parser.xml_stackup.XmlStackup`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> XmlMaterialProperty</autoapi/pyedb/xml_parser/xml_stackup/XmlMaterialProperty>
+    <span class="nf nf-cod-symbol_class"></span> XmlMaterial</autoapi/pyedb/xml_parser/xml_stackup/XmlMaterial>
+    <span class="nf nf-cod-symbol_class"></span> XmlLayer</autoapi/pyedb/xml_parser/xml_stackup/XmlLayer>
+    <span class="nf nf-cod-symbol_class"></span> XmlMaterials</autoapi/pyedb/xml_parser/xml_stackup/XmlMaterials>
+    <span class="nf nf-cod-symbol_class"></span> XmlLayers</autoapi/pyedb/xml_parser/xml_stackup/XmlLayers>
+    <span class="nf nf-cod-symbol_class"></span> XmlStackup</autoapi/pyedb/xml_parser/xml_stackup/XmlStackup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

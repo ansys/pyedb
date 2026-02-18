@@ -1,0 +1,6 @@
+plot
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.plot

@@ -1,0 +1,283 @@
+
+
+
+
+
+
+:class:`NetClass`
+=================
+
+
+.. py:class:: pyedb.grpc.database.net.net_class.NetClass(pedb, core)
+
+   
+   Manages EDB functionalities for a primitives.
+   It inherits EDB Object properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> myedb = "path_to_your_edb_file.edb"
+   >>> edb = Edb(myedb, version="2025.1")
+   >>> edb.net_classes
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: NetClass
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_net`
+            - Add a net to the net class.
+          * - :py:attr:`~contains_net`
+            - Determine if a net exists in the net class.
+          * - :py:attr:`~remove_net`
+            - Remove net.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Net class name.
+          * - :py:attr:`~nets`
+            - Net list.
+          * - :py:attr:`~is_null`
+            - Check if the net class is a null net class.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.net.net_class import NetClass
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Net class name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the net class.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+
+   
+   Net list.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`Net <pyedb.grpc.database.net.net.Net>`].
+           List of Net object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_null
+
+   
+   Check if the net class is a null net class.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the net class is a null net class, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_net(net)
+
+   
+   Add a net to the net class.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: contains_net(net) -> bool
+
+   
+   Determine if a net exists in the net class.
+
+
+   :Parameters:
+
+       **net** : :class:`python:str` or :obj:`Net`
+           The net to check. This can be a string representing the net name or a `Net` object.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the net exists in the net class, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: remove_net(net)
+
+   
+   Remove net.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+rlc\_values
+===========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pin_pair_model
+
+.. autoproperty:: PinPairModel.rlc_values

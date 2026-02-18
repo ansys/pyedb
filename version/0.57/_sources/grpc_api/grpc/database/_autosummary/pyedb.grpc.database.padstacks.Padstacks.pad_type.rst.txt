@@ -1,0 +1,6 @@
+pad\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. autoproperty:: Padstacks.pad_type

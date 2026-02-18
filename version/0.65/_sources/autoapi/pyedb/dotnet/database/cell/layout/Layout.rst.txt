@@ -1,0 +1,733 @@
+
+
+
+
+
+
+:class:`Layout`
+===============
+
+
+.. py:class:: pyedb.dotnet.database.cell.layout.Layout(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Manages EDB functionalities for a base object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Layout
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~expanded_extent`
+            - Get an expanded polygon for the Nets collection.
+          * - :py:attr:`~convert_primitives_to_vias`
+            - Convert a list of primitives into vias or pins.
+          * - :py:attr:`~find_object_by_id`
+            - Find a layout object by Database ID.
+          * - :py:attr:`~find_net_by_name`
+            - Find a net object by name
+          * - :py:attr:`~find_component_by_name`
+            - Find a component object by name. Component name is the reference designator in layout.
+          * - :py:attr:`~find_primitive`
+            - Find a primitive objects by layer name.
+          * - :py:attr:`~find_padstack_instances`
+            - Finds padstack instances matching the specified criteria.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cell`
+            - :class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
+          * - :py:attr:`~layer_collection`
+            - :class:`LayerCollection <ansys.edb.layer.LayerCollection>` : Layer collection of this layout.
+          * - :py:attr:`~zone_primitives`
+            - :obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>` : List of all the primitives in         :term:`zones <Zone>`.
+          * - :py:attr:`~fixed_zone_primitive`
+            - :class:`Primitive <ansys.edb.primitive.Primitive>` : Fixed :term:`zones <Zone>` primitive.
+          * - :py:attr:`~terminals`
+            - Get terminals belonging to active layout.
+          * - :py:attr:`~cell_instances`
+            - :obj:`list` of :class:`CellInstance <ansys.edb.hierarchy.CellInstances>` : List of the cell instances in                 this layout.
+          * - :py:attr:`~layout_instance`
+            - :class:`LayoutInstance <ansys.edb.layout_instance.LayoutInstance>` : Layout instance of this layout.
+          * - :py:attr:`~nets`
+            - Nets.
+          * - :py:attr:`~primitives`
+            - List of primitives.Read-Only.
+          * - :py:attr:`~primitives_by_aedt_name`
+            - Primitives.
+          * - :py:attr:`~bondwires`
+            - Bondwires.
+          * - :py:attr:`~groups`
+            - 
+          * - :py:attr:`~pin_groups`
+            - 
+          * - :py:attr:`~net_classes`
+            - 
+          * - :py:attr:`~extended_nets`
+            - 
+          * - :py:attr:`~differential_pairs`
+            - 
+          * - :py:attr:`~padstack_instances`
+            - Get all padstack instances in a list.
+          * - :py:attr:`~voltage_regulators`
+            - 
+          * - :py:attr:`~port_reference_terminals_connected`
+            - :obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.layout import Layout
+
+Property detail
+---------------
+
+.. py:property:: cell
+
+   
+   :class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layer_collection
+
+   
+   :class:`LayerCollection <ansys.edb.layer.LayerCollection>` : Layer collection of this layout.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: zone_primitives
+
+   
+   :obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>` : List of all the primitives in         :term:`zones <Zone>`.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: fixed_zone_primitive
+
+   
+   :class:`Primitive <ansys.edb.primitive.Primitive>` : Fixed :term:`zones <Zone>` primitive.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: terminals
+
+   
+   Get terminals belonging to active layout.
+
+
+
+   :Returns:
+
+       **Terminal dictionary** : :obj:`Dict`\[:class:`python:str`, :obj:`pyedb.dotnet.database.edb_data.terminals.Terminal`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cell_instances
+
+   
+   :obj:`list` of :class:`CellInstance <ansys.edb.hierarchy.CellInstances>` : List of the cell instances in                 this layout.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layout_instance
+
+   
+   :class:`LayoutInstance <ansys.edb.layout_instance.LayoutInstance>` : Layout instance of this layout.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+
+   
+   Nets.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives
+
+   
+   List of primitives.Read-Only.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :class:`dotnet.database.dotnet.primitive.PrimitiveDotNet` :obj:`cast` objects.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives_by_aedt_name
+   :type: dict
+
+
+   
+   Primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bondwires
+
+   
+   Bondwires.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of bondwires.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: groups
+
+.. py:property:: pin_groups
+
+.. py:property:: net_classes
+
+.. py:property:: extended_nets
+
+.. py:property:: differential_pairs
+
+.. py:property:: padstack_instances
+
+   
+   Get all padstack instances in a list.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voltage_regulators
+
+.. py:property:: port_reference_terminals_connected
+
+   
+   :obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
+
+   True if they are connected, False otherwise.
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: expanded_extent(nets, extent, expansion_factor, expansion_unitless, use_round_corner, num_increments)
+
+   
+   Get an expanded polygon for the Nets collection.
+
+
+   :Parameters:
+
+       **nets** : :class:`python:list`\[:class:`Net <ansys.edb.net.Net>`]
+           A list of nets.
+
+       **extent** : :class:`ExtentType <ansys.edb.geometry.ExtentType>`
+           Geometry extent type for expansion.
+
+       **expansion_factor** : :class:`python:float`
+           Expansion factor for the polygon union. No expansion occurs if the `expansion_factor` is less than or             equal to 0.
+
+       **expansion_unitless** : :ref:`bool <python:bltin-boolean-values>`
+           When unitless, the distance by which the extent expands is the factor multiplied by the longer dimension            (X or Y distance) of the expanded object/net.
+
+       **use_round_corner** : :ref:`bool <python:bltin-boolean-values>`
+           Whether to use round or sharp corners.
+           For round corners, this returns a bounding box if its area is within 10% of the rounded expansion's area.
+
+       **num_increments** : :class:`python:int`
+           Number of iterations desired to reach the full expansion.
+
+   :Returns:
+
+       :class:`PolygonData <ansys.edb.geometry.PolygonData>`
+           ..
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Method returns the expansion of the contour, so any voids within expanded objects are ignored.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: convert_primitives_to_vias(primitives, is_pins=False)
+
+   
+   Convert a list of primitives into vias or pins.
+
+
+   :Parameters:
+
+       **primitives** : :class:`python:list`\[:class:`Primitive <ansys.edb.primitive.Primitive>`]
+           List of primitives to convert.
+
+       **is_pins** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           True for pins, false for vias (default).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_object_by_id(value: int)
+
+   
+   Find a layout object by Database ID.
+
+
+   :Parameters:
+
+       **value** : :class:`python:int`
+           ID of the object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_net_by_name(value: str)
+
+   
+   Find a net object by name
+
+
+   :Parameters:
+
+       **value** : :class:`python:str`
+           Name of the net.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_component_by_name(value: str)
+
+   
+   Find a component object by name. Component name is the reference designator in layout.
+
+
+   :Parameters:
+
+       **value** : :class:`python:str`
+           Name of the component.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_primitive(layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None) -> list
+
+   
+   Find a primitive objects by layer name.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the layer.
+
+       **name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the primitive
+
+       **net_name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the primitive
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **list**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_padstack_instances(aedt_name: Union[str, List[str]] = None, component_name: Union[str, List[str]] = None, component_pin_name: Union[str, List[str]] = None, net_name: Union[str, List[str]] = None, instance_id: Union[int, List[int]] = None) -> List
+
+   
+   Finds padstack instances matching the specified criteria.
+
+   This method filters the available padstack instances based on specified attributes such as
+   `aedt_name`, `component_name`, `component_pin_name`, `net_name`, or `instance_id`. Criteria
+   can be passed as individual values or as a list of values. If no padstack instances match
+   the criteria, an error is raised.
+
+   :Parameters:
+
+       **aedt_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the AEDT padstack instance(s) to filter.
+
+       **component_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the component(s) to filter padstack instances by.
+
+       **component_pin_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the component pin(s) to filter padstack instances by.
+
+       **net_name** : :obj:`Union`\[:class:`python:str`, :obj:`List`\[:class:`python:str`]], :obj:`optional`
+           Name(s) of the net(s) to filter padstack instances by.
+
+       **instance_id** : :obj:`Union`\[:class:`python:int`, :obj:`List`\[:class:`python:int`]], :obj:`optional`
+           ID(s) of the padstack instance(s) to filter.
+
+   :Returns:
+
+       :obj:`List`
+           A list of padstack instances matching the specified criteria.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+output\_variables
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.adaptive_frequency
+
+.. autoproperty:: AdaptiveFrequency.output_variables

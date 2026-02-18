@@ -1,0 +1,92 @@
+
+
+
+
+
+
+:class:`SourceExcitation`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.source_excitations.SourceExcitation(pedb)
+
+   
+   Manage sources and excitations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SourceExcitation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_padstack_instance_terminal`
+            - 
+          * - :py:attr:`~create_pin_group_terminal`
+            - 
+          * - :py:attr:`~create_point_terminal`
+            - 
+          * - :py:attr:`~create_edge_terminal`
+            - 
+          * - :py:attr:`~create_bundle_terminal`
+            - 
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.source_excitations import SourceExcitation
+
+
+
+Method detail
+-------------
+
+.. py:method:: create_padstack_instance_terminal(name='', padstack_instance_id=None, padstack_instance_name=None)
+
+.. py:method:: create_pin_group_terminal(pin_group, name='')
+
+.. py:method:: create_point_terminal(x, y, layer, net, name='')
+
+.. py:method:: create_edge_terminal(primitive_name, x, y, name='')
+
+.. py:method:: create_bundle_terminal(terminals, name='')
+
+
+
+

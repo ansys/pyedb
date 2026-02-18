@@ -1,0 +1,6 @@
+in\_polygon
+===========
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. automethod:: Polygon.in_polygon

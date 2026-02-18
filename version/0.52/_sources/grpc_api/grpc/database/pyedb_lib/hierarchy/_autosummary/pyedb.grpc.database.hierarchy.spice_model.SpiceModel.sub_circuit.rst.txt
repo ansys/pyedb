@@ -1,0 +1,6 @@
+sub\_circuit
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.spice_model
+
+.. autoproperty:: SpiceModel.sub_circuit

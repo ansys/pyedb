@@ -1,0 +1,6 @@
+set\_clip\_info
+===============
+
+.. currentmodule:: pyedb.grpc.database.primitive.path
+
+.. automethod:: Path.set_clip_info

@@ -1,0 +1,6 @@
+export\_config
+==============
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.hfss_extent_info
+
+.. automethod:: HfssExtentInfo.export_config

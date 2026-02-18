@@ -1,0 +1,90 @@
+
+
+
+
+
+
+:class:`DiffPairLengthMatch`
+============================
+
+
+.. py:class:: pyedb.workflows.drc.drc.DiffPairLengthMatch(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Length-matching rule for differential pairs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DiffPairLengthMatch
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~tolerance`
+            - 
+          * - :py:attr:`~pairs`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import DiffPairLengthMatch
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: tolerance
+   :type:  str
+
+.. py:attribute:: pairs
+   :type:  List[DiffPair]
+
+
+
+
+

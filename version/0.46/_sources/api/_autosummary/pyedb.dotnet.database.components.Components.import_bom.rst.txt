@@ -1,0 +1,6 @@
+import\_bom
+===========
+
+.. currentmodule:: pyedb.dotnet.database.components
+
+.. automethod:: Components.import_bom

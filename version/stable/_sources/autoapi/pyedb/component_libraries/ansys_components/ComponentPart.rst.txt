@@ -1,0 +1,262 @@
+
+
+
+
+
+
+:class:`ComponentPart`
+======================
+
+
+.. py:class:: pyedb.component_libraries.ansys_components.ComponentPart(name, index, sbin_file)
+
+   
+   Handle component part definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ComponentPart
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~s_parameters`
+            - Return a skrf.network.Network object.
+          * - :py:attr:`~esr`
+            - Return the equivalent serial resistor for capacitor only.
+          * - :py:attr:`~f0`
+            - Return the capacitor self resonant frequency in Hz.
+          * - :py:attr:`~esl`
+            - Return the equivalent serial inductor for capacitor only.
+          * - :py:attr:`~cap_value`
+            - Returns the capacitance value.
+          * - :py:attr:`~ind_value`
+            - Return the inductance value.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~nb_ports`
+            - 
+          * - :py:attr:`~nb_freq`
+            - 
+          * - :py:attr:`~ref_impedance`
+            - 
+          * - :py:attr:`~type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.component_libraries.ansys_components import ComponentPart
+
+Property detail
+---------------
+
+.. py:property:: s_parameters
+
+   
+   Return a skrf.network.Network object.
+
+   See `scikit-rf documentation <https://scikit-rf.readthedocs.io/en/latest/api/network.html#network-class>`_.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: esr
+
+   
+   Return the equivalent serial resistor for capacitor only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: f0
+
+   
+   Return the capacitor self resonant frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: esl
+
+   
+   Return the equivalent serial inductor for capacitor only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cap_value
+
+   
+   Returns the capacitance value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ind_value
+
+   
+   Return the inductance value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+
+.. py:attribute:: nb_ports
+   :value: 2
+
+
+.. py:attribute:: nb_freq
+   :value: 0
+
+
+.. py:attribute:: ref_impedance
+   :value: 50.0
+
+
+.. py:attribute:: type
+   :value: ''
+
+
+
+
+
+

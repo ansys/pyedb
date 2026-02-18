@@ -1,0 +1,6 @@
+get\_point\_terminal\_reference\_primitive
+==========================================
+
+.. currentmodule:: pyedb.grpc.database.terminal.terminal
+
+.. automethod:: Terminal.get_point_terminal_reference_primitive

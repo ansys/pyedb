@@ -1,0 +1,6 @@
+solve\_inside
+=============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+.. autoproperty:: MeshOperation.solve_inside

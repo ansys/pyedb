@@ -1,0 +1,24 @@
+﻿Variable
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.variables
+
+.. autoclass:: Variable
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      Variable.delete
+      
+   
+   
+
+   
+   
+   

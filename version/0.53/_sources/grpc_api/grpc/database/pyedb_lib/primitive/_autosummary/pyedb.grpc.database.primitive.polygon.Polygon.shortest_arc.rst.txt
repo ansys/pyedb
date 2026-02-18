@@ -1,0 +1,6 @@
+shortest\_arc
+=============
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.shortest_arc

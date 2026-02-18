@@ -1,0 +1,6 @@
+dielectric\_extent\_size\_enabled
+=================================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.dielectric_extent_size_enabled

@@ -1,0 +1,6 @@
+length
+======
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.primitives_data
+
+.. autoproperty:: EDBArcs.length

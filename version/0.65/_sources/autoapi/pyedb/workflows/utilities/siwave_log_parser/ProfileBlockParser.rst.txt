@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`ProfileBlockParser`
+===========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.ProfileBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract profile entries from the log.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProfileBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse profile entries showing task timing and resource usage.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import ProfileBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> List[ProfileEntry]
+
+   
+   Parse profile entries showing task timing and resource usage.
+
+   :return: List of profile entries.
+   :rtype: list[ProfileEntry]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

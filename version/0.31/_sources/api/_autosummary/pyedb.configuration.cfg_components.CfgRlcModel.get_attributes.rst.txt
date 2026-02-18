@@ -1,0 +1,6 @@
+get\_attributes
+===============
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. automethod:: CfgRlcModel.get_attributes

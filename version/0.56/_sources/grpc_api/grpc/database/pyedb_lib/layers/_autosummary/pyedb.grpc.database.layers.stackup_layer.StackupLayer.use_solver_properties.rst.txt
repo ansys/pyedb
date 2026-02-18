@@ -1,0 +1,6 @@
+use\_solver\_properties
+=======================
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.use_solver_properties

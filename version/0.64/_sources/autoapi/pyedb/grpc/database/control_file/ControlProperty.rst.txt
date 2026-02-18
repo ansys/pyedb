@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`ControlProperty`
+========================
+
+
+.. py:class:: pyedb.grpc.database.control_file.ControlProperty(property_name: str, value: Union[str, float, list])
+
+   
+   Represents a property in the control file with name, value, and type.
+
+
+   :Parameters:
+
+       **property_name** : :class:`python:str`
+           Name of the property.
+
+       **value** : :class:`python:str`, :class:`python:float`, :obj:`or` :class:`python:list`
+           Value of the property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~value`
+            - 
+          * - :py:attr:`~type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.control_file import ControlProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: value
+   :type:  Union[str, float, list]
+
+.. py:attribute:: type
+   :type:  int
+   :value: 1
+
+
+
+
+
+

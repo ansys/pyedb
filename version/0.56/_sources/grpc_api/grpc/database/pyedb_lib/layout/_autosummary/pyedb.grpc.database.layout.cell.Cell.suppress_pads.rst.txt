@@ -1,0 +1,6 @@
+suppress\_pads
+==============
+
+.. currentmodule:: pyedb.grpc.database.layout.cell
+
+.. autoproperty:: Cell.suppress_pads

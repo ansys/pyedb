@@ -1,0 +1,6 @@
+kNumMeshOpTypes
+===============
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.mesh_operation
+
+.. autoattribute:: MeshOpType.kNumMeshOpTypes

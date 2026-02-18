@@ -1,0 +1,6 @@
+advanced\_mesh\_settings
+========================
+
+.. currentmodule:: pyedb.dotnet.database.utilities.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.advanced_mesh_settings

@@ -1,0 +1,6 @@
+dc\_refine\_bondwires
+=====================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. autoproperty:: SimulationConfigurationDc.dc_refine_bondwires

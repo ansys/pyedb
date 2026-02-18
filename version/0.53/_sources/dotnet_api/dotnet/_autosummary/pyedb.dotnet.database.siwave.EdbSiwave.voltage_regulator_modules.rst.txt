@@ -1,0 +1,6 @@
+voltage\_regulator\_modules
+===========================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. autoproperty:: EdbSiwave.voltage_regulator_modules

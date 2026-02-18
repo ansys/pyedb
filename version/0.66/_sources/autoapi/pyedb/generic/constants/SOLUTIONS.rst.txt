@@ -1,0 +1,76 @@
+
+
+
+
+
+
+:class:`SOLUTIONS`
+==================
+
+.. toctree::
+   :hidden:
+
+    Hfss</autoapi/pyedb/generic/constants/SOLUTIONS.Hfss>
+    Maxwell3d</autoapi/pyedb/generic/constants/SOLUTIONS.Maxwell3d>
+    Maxwell2d</autoapi/pyedb/generic/constants/SOLUTIONS.Maxwell2d>
+    Icepak</autoapi/pyedb/generic/constants/SOLUTIONS.Icepak>
+    Circuit</autoapi/pyedb/generic/constants/SOLUTIONS.Circuit>
+    Mechanical</autoapi/pyedb/generic/constants/SOLUTIONS.Mechanical>
+
+
+.. py:class:: pyedb.generic.constants.SOLUTIONS
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides the names of default solution types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SOLUTIONS
+
+
+
+
+
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+    pyedb.generic.constants.SOLUTIONS.Hfss
+    pyedb.generic.constants.SOLUTIONS.Maxwell3d
+    pyedb.generic.constants.SOLUTIONS.Maxwell2d
+    pyedb.generic.constants.SOLUTIONS.Icepak
+    pyedb.generic.constants.SOLUTIONS.Circuit
+    pyedb.generic.constants.SOLUTIONS.Mechanical
+
+
+
+

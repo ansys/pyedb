@@ -1,0 +1,6 @@
+delete
+======
+
+.. currentmodule:: pyedb.grpc.database.terminal.point_terminal
+
+.. automethod:: PointTerminal.delete

@@ -1,0 +1,6 @@
+aedt\_name
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.rectangle
+
+.. autoproperty:: Rectangle.aedt_name

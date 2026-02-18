@@ -1,0 +1,6 @@
+honor\_user\_dielectric
+=======================
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.honor_user_dielectric

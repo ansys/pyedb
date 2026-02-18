@@ -1,0 +1,6 @@
+create\_impedance\_crosstalk\_scan
+==================================
+
+.. currentmodule:: pyedb.dotnet.database.siwave
+
+.. automethod:: EdbSiwave.create_impedance_crosstalk_scan

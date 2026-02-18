@@ -1,0 +1,42 @@
+﻿SweepData
+=========
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sweep_data
+
+.. autoclass:: SweepData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SweepData.add
+      
+      
+      SweepData.add_frequencies
+      
+      
+      SweepData.clear
+      
+      
+      SweepData.set_frequencies
+      
+      
+      SweepData.set_frequencies_linear_count
+      
+      
+      SweepData.set_frequencies_linear_scale
+      
+      
+      SweepData.set_frequencies_log_scale
+      
+   
+   
+
+   
+   
+   

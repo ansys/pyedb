@@ -1,0 +1,144 @@
+
+
+
+
+
+
+:class:`SettingsBase`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.io.siwave.SettingsBase(parent)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provide base settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SettingsBase
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_configurations`
+            - Get all attributes.
+          * - :py:attr:`~restore_default`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sim_setup_info`
+            - EDB internal simulation setup object.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.io.siwave import SettingsBase
+
+Property detail
+---------------
+
+.. py:property:: sim_setup_info
+
+   
+   EDB internal simulation setup object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_configurations()
+
+   
+   Get all attributes.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: restore_default()
+
+
+
+

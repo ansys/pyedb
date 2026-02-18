@@ -1,0 +1,6 @@
+padstack\_instances
+===================
+
+.. currentmodule:: pyedb.grpc.database.net.net
+
+.. autoproperty:: Net.padstack_instances

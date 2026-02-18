@@ -1,0 +1,6 @@
+interpolation\_use\_s\_matrix
+=============================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.sweep_data
+
+.. autoproperty:: SweepData.interpolation_use_s_matrix

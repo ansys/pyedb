@@ -1,0 +1,6 @@
+refresh\_components
+===================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.refresh_components

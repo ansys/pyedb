@@ -1,0 +1,6 @@
+protected\_attributes
+=====================
+
+.. currentmodule:: pyedb.configuration.cfg_components
+
+.. autoattribute:: CfgSolderBallsProperties.protected_attributes

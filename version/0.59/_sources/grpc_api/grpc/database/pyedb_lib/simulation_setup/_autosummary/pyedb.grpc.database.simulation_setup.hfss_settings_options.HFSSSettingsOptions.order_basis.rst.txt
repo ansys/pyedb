@@ -1,0 +1,6 @@
+order\_basis
+============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.order_basis

@@ -1,0 +1,6 @@
+get\_padstack\_instances\_rtree\_index
+======================================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_padstack_instances_rtree_index

@@ -1,0 +1,15 @@
+﻿EdbValue
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.edbvalue
+
+.. autoclass:: EdbValue
+
+   
+
+   
+   
+
+   
+   
+   

@@ -1,0 +1,151 @@
+
+
+
+
+
+
+:class:`Definitions`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.definition.definitions.Definitions(pedb)
+
+
+.. py:currentmodule:: Definitions
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_package_def`
+            - Add a package definition.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component`
+            - Component definitions
+          * - :py:attr:`~package`
+            - Package definitions.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.definitions import Definitions
+
+Property detail
+---------------
+
+.. py:property:: component
+
+   
+   Component definitions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: package
+
+   
+   Package definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_package_def(name, component_part_name=None, boundary_points=None)
+
+   
+   Add a package definition.
+
+
+   :Parameters:
+
+       **name: str**
+           Name of the package definition.
+
+       **component_part_name** : :class:`python:str`, :obj:`optional`
+           Part name of the component.
+
+       **boundary_points** : :class:`python:list`, :obj:`optional`
+           Boundary points which define the shape of the package.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

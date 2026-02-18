@@ -1,0 +1,6 @@
+create\_polygon
+===============
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.create_polygon

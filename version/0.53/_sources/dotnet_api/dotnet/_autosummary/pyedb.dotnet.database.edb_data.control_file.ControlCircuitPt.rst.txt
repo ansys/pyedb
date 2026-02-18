@@ -1,0 +1,15 @@
+﻿ControlCircuitPt
+================
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.control_file
+
+.. autoclass:: ControlCircuitPt
+
+   
+
+   
+   
+
+   
+   
+   

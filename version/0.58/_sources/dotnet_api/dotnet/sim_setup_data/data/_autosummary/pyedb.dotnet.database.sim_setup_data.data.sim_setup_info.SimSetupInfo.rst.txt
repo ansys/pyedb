@@ -1,0 +1,35 @@
+﻿SimSetupInfo
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.sim_setup_info
+
+.. autoclass:: SimSetupInfo
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      SimSetupInfo.add_sweep_data
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SimSetupInfo.name
+      SimSetupInfo.position
+      SimSetupInfo.sim_setup_type
+      SimSetupInfo.simulation_settings
+      SimSetupInfo.sweep_data_list
+   
+   

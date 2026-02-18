@@ -1,0 +1,6 @@
+is\_pml\_visible
+================
+
+.. currentmodule:: pyedb.grpc.database.utility.hfss_extent_info
+
+.. autoproperty:: HfssExtentInfo.is_pml_visible

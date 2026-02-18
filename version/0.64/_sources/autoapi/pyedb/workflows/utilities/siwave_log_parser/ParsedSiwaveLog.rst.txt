@@ -1,0 +1,251 @@
+
+
+
+
+
+
+:class:`ParsedSiwaveLog`
+========================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.ParsedSiwaveLog
+
+   
+   Root container returned by SiwaveLogParser.parse().
+
+   :ivar AEDTVersion aedt: AEDT version information.
+   :ivar BatchInfo batch: Batch run metadata.
+   :ivar SimSettings settings: Simulation settings.
+   :ivar list[WarningEntry] warnings: Warning entries from the log.
+   :ivar list[ProfileEntry] profile: Profile/timing entries.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ParsedSiwaveLog
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~summary`
+            - Print a summary of the parsed log.
+          * - :py:attr:`~is_completed`
+            - Check if the simulation completed normally.
+          * - :py:attr:`~is_aborted`
+            - Check if the simulation was aborted.
+          * - :py:attr:`~to_json`
+            - Serialise to JSON (datetime→ISO).
+          * - :py:attr:`~to_dict`
+            - Deep-convert the entire object to JSON-serialisable primitives.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~aedt`
+            - 
+          * - :py:attr:`~batch`
+            - 
+          * - :py:attr:`~settings`
+            - 
+          * - :py:attr:`~warnings`
+            - 
+          * - :py:attr:`~profile`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import ParsedSiwaveLog
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: aedt
+   :type:  AEDTVersion
+
+.. py:attribute:: batch
+   :type:  BatchInfo
+
+.. py:attribute:: settings
+   :type:  SimSettings
+
+.. py:attribute:: warnings
+   :type:  List[WarningEntry]
+   :value: []
+
+
+.. py:attribute:: profile
+   :type:  List[ProfileEntry]
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: summary() -> None
+
+   
+   Print a summary of the parsed log.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_completed() -> bool
+
+   
+   Check if the simulation completed normally.
+
+   :return: True if status is "Normal Completion", False otherwise.
+   :rtype: bool
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_aborted() -> bool
+
+   
+   Check if the simulation was aborted.
+
+   :return: True if simulation did not complete normally, False otherwise.
+   :rtype: bool
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_json(fp: str, **kw) -> None
+
+   
+   Serialise to JSON (datetime→ISO).
+
+   :param fp: File path to write JSON to.
+   :type fp: str
+   :param kw: Additional keyword arguments for json.dumps.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Deep-convert the entire object to JSON-serialisable primitives.
+
+   :return: Plain dict / list / scalar structure.
+   :rtype: dict[str, Any]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

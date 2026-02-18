@@ -1,0 +1,6 @@
+value
+=====
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.edbvalue
+
+.. autoproperty:: EdbValue.value

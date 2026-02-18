@@ -1,0 +1,70 @@
+
+
+
+
+
+
+:class:`CfgProbes`
+==================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgProbes(pedb, data)
+
+
+.. py:currentmodule:: CfgProbes
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~apply`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~probes`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgProbes
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: probes
+
+
+
+Method detail
+-------------
+
+.. py:method:: apply()
+
+
+
+

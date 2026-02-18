@@ -1,0 +1,6 @@
+duplicate
+=========
+
+.. currentmodule:: pyedb.dotnet.edb_core.materials
+
+.. automethod:: Materials.duplicate

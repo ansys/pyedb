@@ -1,0 +1,81 @@
+
+
+
+
+
+
+:class:`RaptorXSimulationSettings`
+==================================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSettings(edb_setup_info, pedb)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: RaptorXSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~general_settings`
+            - 
+          * - :py:attr:`~advanced_settings`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: general_settings
+
+.. py:property:: advanced_settings
+
+.. py:property:: enabled
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: logger
+
+
+
+
+

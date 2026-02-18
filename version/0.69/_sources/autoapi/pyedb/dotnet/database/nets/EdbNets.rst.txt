@@ -1,0 +1,911 @@
+
+
+
+
+
+
+:class:`EdbNets`
+================
+
+
+.. py:class:: pyedb.dotnet.database.nets.EdbNets(p_edb)
+
+   Bases: :py:obj:`pyedb.common.nets.CommonNets`
+
+
+   
+   Manages EDB methods for nets management accessible from `Edb.nets` property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+   >>> edb_nets = edbapp.nets
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: EdbNets
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~eligible_power_nets`
+            - Return a list of nets calculated by area to be eligible for PWR/Ground net classification.
+          * - :py:attr:`~generate_extended_nets`
+            - Get extended net and associated components.
+          * - :py:attr:`~classify_nets`
+            - Reassign power/ground or signal nets based on list of nets.
+          * - :py:attr:`~is_power_gound_net`
+            - Determine if one of the  nets in a list is power or ground.
+          * - :py:attr:`~get_dcconnected_net_list`
+            - Get the nets connected to the direct current through inductors.
+          * - :py:attr:`~get_powertree`
+            - Retrieve the power tree.
+          * - :py:attr:`~get_net_by_name`
+            - Find a net by name.
+          * - :py:attr:`~delete_nets`
+            - Delete one or more nets from EDB.
+          * - :py:attr:`~delete`
+            - Delete one or more nets from EDB.
+          * - :py:attr:`~find_or_create_net`
+            - Find or create the net with the given name in the layout.
+          * - :py:attr:`~is_net_in_component`
+            - Check if a net belongs to a component.
+          * - :py:attr:`~find_and_fix_disjoint_nets`
+            - Find and fix disjoint nets from a given netlist.
+          * - :py:attr:`~merge_nets_polygons`
+            - Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~db`
+            - Db object.
+          * - :py:attr:`~nets`
+            - Nets.
+          * - :py:attr:`~netlist`
+            - Return the cell netlist.
+          * - :py:attr:`~signal_nets`
+            - Signal nets.
+          * - :py:attr:`~power_nets`
+            - Power nets.
+          * - :py:attr:`~signal`
+            - Signal nets.
+          * - :py:attr:`~power`
+            - Power nets.
+          * - :py:attr:`~nets_by_components`
+            - Get all nets for each component instance.
+          * - :py:attr:`~components_by_nets`
+            - Get all component instances grouped by nets.
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getitem__`
+            - Get  a net from the Edb project.
+          * - :py:attr:`~__contains__`
+            - Determine if a net is named ``name`` or not.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.nets import EdbNets
+
+Property detail
+---------------
+
+.. py:property:: db
+
+   
+   Db object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets
+
+   
+   Nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`]
+           Dictionary of nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: netlist
+
+   
+   Return the cell netlist.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           Net names.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal_nets
+
+   
+   Signal nets.
+
+   .. deprecated:: 0.6.62
+      Use :func:`signal` instead.
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.EDBNetsData`]
+           Dictionary of signal nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: power_nets
+
+   
+   Power nets.
+
+   .. deprecated:: 0.6.62
+      Use :func:`power` instead.
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.EDBNetsData`]
+           Dictionary of power nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: signal
+
+   
+   Signal nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.EDBNetsData`]
+           Dictionary of signal nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: power
+
+   
+   Power nets.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.EDBNetsData`]
+           Dictionary of power nets.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets_by_components
+   :type: dict
+
+
+   
+   Get all nets for each component instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components_by_nets
+   :type: dict
+
+
+   
+   Get all component instances grouped by nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getitem__(name)
+
+   
+   Get  a net from the Edb project.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`, :class:`python:int`
+           ..
+
+
+
+   :Returns:
+
+       :class:` :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __contains__(name)
+
+   
+   Determine if a net is named ``name`` or not.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when one of the net is named ``name``, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: eligible_power_nets(threshold=0.3)
+
+   
+   Return a list of nets calculated by area to be eligible for PWR/Ground net classification.
+       It uses the same algorithm implemented in SIwave.
+
+
+   :Parameters:
+
+       **threshold** : :class:`python:float`, :obj:`optional`
+           Area ratio used by the ``get_power_ground_nets`` method.
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of`  :class:`pyedb.dotnet.database.edb_data.EDBNetsData`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: generate_extended_nets(resistor_below: int | float = 10, inductor_below: int | float = 1, capacitor_above: int | float = 1, exception_list: list = None, include_signal: bool = True, include_power: bool = True) -> list
+
+   
+   Get extended net and associated components.
+
+
+   :Parameters:
+
+       **resistor_below** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold of resistor value. Search extended net across resistors which has value lower than the threshold.
+
+       **inductor_below** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold of inductor value. Search extended net across inductances which has value lower than the
+           threshold.
+
+       **capacitor_above** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Threshold of capacitor value. Search extended net across capacitors which has value higher than the
+           threshold.
+
+       **exception_list** : :class:`python:list`, :obj:`optional`
+           List of components to bypass when performing threshold checks. Components
+           in the list are considered as serial components. The default is ``None``.
+
+       **include_signal** : :class:`python:str`, :obj:`optional`
+           Whether to generate extended signal nets. The default is ``True``.
+
+       **include_power** : :class:`python:str`, :obj:`optional`
+           Whether to generate extended power nets. The default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of all extended nets.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> app = Edb()
+   >>> app.nets.get_extended_nets()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: classify_nets(power_nets=None, signal_nets=None)
+
+   
+   Reassign power/ground or signal nets based on list of nets.
+
+
+   :Parameters:
+
+       **power_nets** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           List of power nets to assign. Default is `None`.
+
+       **signal_nets** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           List of signal nets to assign. Default is `None`.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_power_gound_net(netname_list)
+
+   
+   Determine if one of the  nets in a list is power or ground.
+
+
+   :Parameters:
+
+       **netname_list** : :class:`python:list`
+           List of net names.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when one of the net names is ``"power"`` or ``"ground"``, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_dcconnected_net_list(ground_nets=['GND'], res_value=0.001)
+
+   
+   Get the nets connected to the direct current through inductors.
+
+   .. note::
+      Only inductors are considered.
+
+   :Parameters:
+
+       **ground_nets** : :class:`python:list`, :obj:`optional`
+           List of ground nets. The default is ``["GND"]``.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of nets connected to DC through inductors.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_powertree(power_net_name, ground_nets)
+
+   
+   Retrieve the power tree.
+
+
+   :Parameters:
+
+       **power_net_name** : :class:`python:str`
+           Name of the power net.
+
+       **ground_nets**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_net_by_name(net_name)
+
+   
+   Find a net by name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_nets(netlist)
+
+   
+   Delete one or more nets from EDB.
+
+   .. deprecated:: 0.6.62
+      Use :func:`delete` method instead.
+
+   :Parameters:
+
+       **netlist** : :class:`python:str` or :class:`python:list`
+           One or more nets to delete.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of nets that were deleted.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete(netlist)
+
+   
+   Delete one or more nets from EDB.
+
+
+   :Parameters:
+
+       **netlist** : :class:`python:str` or :class:`python:list`
+           One or more nets to delete.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of nets that were deleted.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_or_create_net(net_name='', start_with='', contain='', end_with='')
+
+   
+   Find or create the net with the given name in the layout.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Name of the net to find or create. The default is ``""``.
+
+       **start_with** : :class:`python:str`, :obj:`optional`
+           All net name starting with the string. Not case-sensitive.
+
+       **contain** : :class:`python:str`, :obj:`optional`
+           All net name containing the string. Not case-sensitive.
+
+       **end_with** : :class:`python:str`, :obj:`optional`
+           All net name ending with the string. Not case-sensitive.
+
+
+
+   :Returns:
+
+       :obj:`object`
+           Net Object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_net_in_component(component_name, net_name)
+
+   
+   Check if a net belongs to a component.
+
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Name of the component.
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if the net is found in component pins.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_and_fix_disjoint_nets(net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False)
+
+   
+   Find and fix disjoint nets from a given netlist.
+
+   .. deprecated::
+      Use new property :func:`edb.layout_validation.disjoint_nets` instead.
+
+   :Parameters:
+
+       **net_list** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           List of nets on which check disjoints. If `None` is provided then the algorithm will loop on all nets.
+
+       **keep_only_main_net** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Remove all secondary nets other than principal one (the one with more objects in it). Default is `False`.
+
+       **clean_disjoints_less_than** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Clean all disjoint nets with area less than specified area in square meters. Default is `0.0` to disable it.
+
+       **order_by_area** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if the naming order has to be by number of objects (fastest) or area (slowest but more accurate).
+           Default is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`List`
+           New nets created.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> renamed_nets = database.nets.find_and_fix_disjoint_nets(["GND", "Net2"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: merge_nets_polygons(net_names_list)
+
+   
+   Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
+
+
+   :Parameters:
+
+       **net_names_list** : :class:`python:str` or :class:`python:list`\[:class:`python:str`]
+           Net name of list of net name.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

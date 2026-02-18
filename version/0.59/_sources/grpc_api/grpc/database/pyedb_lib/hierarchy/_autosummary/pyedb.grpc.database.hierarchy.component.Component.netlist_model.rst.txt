@@ -1,0 +1,6 @@
+netlist\_model
+==============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: Component.netlist_model

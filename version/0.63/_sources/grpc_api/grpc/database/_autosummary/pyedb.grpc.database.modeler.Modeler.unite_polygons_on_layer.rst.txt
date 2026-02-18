@@ -1,0 +1,6 @@
+unite\_polygons\_on\_layer
+==========================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.unite_polygons_on_layer

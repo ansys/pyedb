@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``siwave_cpa_simulation_setup.py`` module
+=============================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_cpa_simulation_setup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.ChannelSetup`
+            - Represents the setup configuration for a channel in SIwave CPA simulations.
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SolverOptions`
+            - Represents solver options configuration for SIwave CPA simulations.
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SIWaveCPASimulationSetup`
+            - Represents the setup configuration for SIwave CPA simulations.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ChannelSetup</autoapi/pyedb/grpc/database/simulation_setup/siwave_cpa_simulation_setup/ChannelSetup>
+    <span class="nf nf-cod-symbol_class"></span> SolverOptions</autoapi/pyedb/grpc/database/simulation_setup/siwave_cpa_simulation_setup/SolverOptions>
+    <span class="nf nf-cod-symbol_class"></span> SIWaveCPASimulationSetup</autoapi/pyedb/grpc/database/simulation_setup/siwave_cpa_simulation_setup/SIWaveCPASimulationSetup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

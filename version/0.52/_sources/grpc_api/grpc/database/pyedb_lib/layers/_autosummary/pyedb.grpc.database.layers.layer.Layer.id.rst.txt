@@ -1,0 +1,6 @@
+id
+==
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoproperty:: Layer.id

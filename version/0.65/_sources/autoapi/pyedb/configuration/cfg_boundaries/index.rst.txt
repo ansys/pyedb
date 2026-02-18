@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_boundaries`` library
+==================================================
+
+.. py:module:: pyedb.configuration.cfg_boundaries
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_boundaries
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_boundaries.CfgBase`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_boundaries.PaddingData`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_boundaries.CfgBoundaries`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgBase</autoapi/pyedb/configuration/cfg_boundaries/CfgBase>
+    <span class="nf nf-cod-symbol_class"></span> PaddingData</autoapi/pyedb/configuration/cfg_boundaries/PaddingData>
+    <span class="nf nf-cod-symbol_class"></span> CfgBoundaries</autoapi/pyedb/configuration/cfg_boundaries/CfgBoundaries>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

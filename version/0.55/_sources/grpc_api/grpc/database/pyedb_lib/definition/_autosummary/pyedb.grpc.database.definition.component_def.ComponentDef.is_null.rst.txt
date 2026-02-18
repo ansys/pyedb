@@ -1,0 +1,6 @@
+is\_null
+========
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. autoproperty:: ComponentDef.is_null

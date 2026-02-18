@@ -1,0 +1,6 @@
+reference\_object
+=================
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: ExcitationSources.reference_object

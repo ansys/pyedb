@@ -1,0 +1,54 @@
+﻿HfssExtentInfo
+==============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.hfss_extent_info
+
+.. autoclass:: HfssExtentInfo
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HfssExtentInfo.export_config
+      
+      
+      HfssExtentInfo.load_config
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HfssExtentInfo.air_box_horizontal_extent
+      HfssExtentInfo.air_box_horizontal_extent_enabled
+      HfssExtentInfo.air_box_negative_vertical_extent
+      HfssExtentInfo.air_box_negative_vertical_extent_enabled
+      HfssExtentInfo.air_box_positive_vertical_extent
+      HfssExtentInfo.air_box_positive_vertical_extent_enabled
+      HfssExtentInfo.base_polygon
+      HfssExtentInfo.dielectric_base_polygon
+      HfssExtentInfo.dielectric_extent_size
+      HfssExtentInfo.dielectric_extent_size_enabled
+      HfssExtentInfo.dielectric_extent_type
+      HfssExtentInfo.extent_type
+      HfssExtentInfo.honor_user_dielectric
+      HfssExtentInfo.is_pml_visible
+      HfssExtentInfo.open_region_type
+      HfssExtentInfo.operating_freq
+      HfssExtentInfo.radiation_level
+      HfssExtentInfo.sync_air_box_vertical_extent
+      HfssExtentInfo.truncate_air_box_at_ground
+      HfssExtentInfo.use_open_region
+      HfssExtentInfo.use_xy_data_extent_for_vertical_expansion
+   
+   

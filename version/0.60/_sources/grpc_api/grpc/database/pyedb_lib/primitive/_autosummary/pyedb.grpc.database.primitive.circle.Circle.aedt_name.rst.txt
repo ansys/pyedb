@@ -1,0 +1,6 @@
+aedt\_name
+==========
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.aedt_name

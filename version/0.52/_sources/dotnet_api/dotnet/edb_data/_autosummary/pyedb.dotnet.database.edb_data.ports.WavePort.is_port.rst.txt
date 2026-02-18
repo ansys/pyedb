@@ -1,0 +1,6 @@
+is\_port
+========
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.ports
+
+.. autoproperty:: WavePort.is_port

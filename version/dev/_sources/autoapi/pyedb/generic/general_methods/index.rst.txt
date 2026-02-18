@@ -1,0 +1,138 @@
+
+
+
+
+
+
+The ``pyedb.generic.general_methods`` library
+=============================================
+
+.. py:module:: pyedb.generic.general_methods
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: general_methods
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~deprecate_argument_name`
+            - Decorator to deprecate certain argument names in favor of new ones.
+
+
+          * - :py:obj:`~execution_timer`
+            - 
+
+
+          * - :py:obj:`~installed_ansys_em_versions`
+            - Scan environment variables and return a dict
+
+
+          * - :py:obj:`~get_filename_without_extension`
+            - Get the filename without its extension.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+
+
+.. py:function:: installed_ansys_em_versions() -> Dict[str, str]
+
+   
+   Scan environment variables and return a dict
+   {version: installation_path} for every ANSYS EM release found.
+   Versions are ordered from oldest → latest (latest appears last).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: get_filename_without_extension(path)
+
+   
+   Get the filename without its extension.
+
+
+   :Parameters:
+
+       **path** : :class:`python:str`
+           Path for the file.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name for the file, excluding its extension.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

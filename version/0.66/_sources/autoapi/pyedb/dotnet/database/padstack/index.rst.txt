@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``padstack.py`` module
+==========================
+
+.. py:module:: pyedb.dotnet.database.padstack
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: padstack
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.padstack.EdbPadstacks`
+            - Manages EDB methods for nets management accessible from `Edb.padstacks` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbPadstacks</autoapi/pyedb/dotnet/database/padstack/EdbPadstacks>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the `EdbPadstacks` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

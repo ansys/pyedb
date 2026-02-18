@@ -1,0 +1,33 @@
+﻿VoltageSource
+=============
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoclass:: VoltageSource
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      VoltageSource.amplitude
+      VoltageSource.c_value
+      VoltageSource.create_physical_resistor
+      VoltageSource.impedance
+      VoltageSource.l_value
+      VoltageSource.magnitude
+      VoltageSource.name
+      VoltageSource.negative_node
+      VoltageSource.phase
+      VoltageSource.positive_node
+      VoltageSource.r_value
+      VoltageSource.source_type
+   
+   

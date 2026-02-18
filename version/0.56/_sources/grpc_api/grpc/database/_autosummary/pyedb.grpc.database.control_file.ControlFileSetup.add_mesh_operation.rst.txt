@@ -1,0 +1,6 @@
+add\_mesh\_operation
+====================
+
+.. currentmodule:: pyedb.grpc.database.control_file
+
+.. automethod:: ControlFileSetup.add_mesh_operation

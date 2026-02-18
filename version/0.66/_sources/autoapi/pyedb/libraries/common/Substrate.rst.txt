@@ -1,0 +1,129 @@
+
+
+
+
+
+
+:class:`Substrate`
+==================
+
+
+.. py:class:: pyedb.libraries.common.Substrate
+
+   
+   Small helper that groups the four basic substrate parameters used
+   throughout the library.
+
+
+   :Parameters:
+
+       **h** : :class:`python:float`, :obj:`default` 100 µm
+           Substrate height in metres.
+
+       **er** : :class:`python:float`, :obj:`default` 4.4
+           Relative permittivity.
+
+       **tan_d** : :class:`python:float`, :obj:`default` 0
+           Loss tangent.
+
+       **name** : :class:`python:str`, :obj:`default` "SUB"
+           Logical name used for layer creation.
+
+       **size** : :class:`python:tuple`\[:class:`python:float`, :class:`python:float`], :obj:`default` (1 :obj:`mm`, 1 :obj:`mm`)
+           (width, length) of the surrounding ground plane in metres.
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> sub = Substrate(h=1.6e-3, er=4.4, tan_d=0.02, name="FR4", size=(10e-3, 15e-3))
+   >>> sub.h
+   0.0016
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Substrate
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~h`
+            - 
+          * - :py:attr:`~er`
+            - 
+          * - :py:attr:`~tan_d`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~size`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.libraries.common import Substrate
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: h
+   :type:  float
+   :value: 0.0001
+
+
+.. py:attribute:: er
+   :type:  float
+   :value: 4.4
+
+
+.. py:attribute:: tan_d
+   :type:  float
+   :value: 0
+
+
+.. py:attribute:: name
+   :type:  str
+   :value: 'SUB'
+
+
+.. py:attribute:: size
+   :type:  Tuple[float, float]
+   :value: (0.001, 0.001)
+
+
+
+
+
+

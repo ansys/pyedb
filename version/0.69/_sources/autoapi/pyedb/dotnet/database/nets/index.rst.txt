@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``nets.py`` module
+======================
+
+.. py:module:: pyedb.dotnet.database.nets
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: nets
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.nets.EdbNets`
+            - Manages EDB methods for nets management accessible from `Edb.nets` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbNets</autoapi/pyedb/dotnet/database/nets/EdbNets>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

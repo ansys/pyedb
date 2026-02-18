@@ -1,0 +1,85 @@
+
+
+
+
+
+
+:class:`CfgCoordinateTerminalInfo`
+==================================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgCoordinateTerminalInfo(pedb, **kwargs)
+
+   Bases: :py:obj:`CfgTerminalInfo`
+
+
+
+.. py:currentmodule:: CfgCoordinateTerminalInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~export_properties`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~point_x`
+            - 
+          * - :py:attr:`~point_y`
+            - 
+          * - :py:attr:`~net`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgCoordinateTerminalInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: layer
+
+.. py:attribute:: point_x
+
+.. py:attribute:: point_y
+
+.. py:attribute:: net
+
+
+
+Method detail
+-------------
+
+.. py:method:: export_properties()
+
+
+
+

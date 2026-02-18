@@ -1,0 +1,316 @@
+
+
+
+
+
+
+:class:`EDBComponentDef`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.definition.component_def.EDBComponentDef(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Manages EDB functionalities for component definitions.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.edb`
+           Inherited AEDT object.
+
+       **edb_object** : :obj:`object`
+           Edb ComponentDef Object
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EDBComponentDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~assign_rlc_model`
+            - Assign RLC to all components under this part name.
+          * - :py:attr:`~assign_s_param_model`
+            - Assign S-parameter to all components under this part name.
+          * - :py:attr:`~assign_spice_model`
+            - Assign Spice model to all components under this part name.
+          * - :py:attr:`~add_n_port_model`
+            - 
+          * - :py:attr:`~create`
+            - 
+          * - :py:attr:`~get_properties`
+            - 
+          * - :py:attr:`~set_properties`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~part_name`
+            - Retrieve component definition name.
+          * - :py:attr:`~type`
+            - Retrieve the component definition type.
+          * - :py:attr:`~components`
+            - Get the list of components belonging to this component definition.
+          * - :py:attr:`~reference_file`
+            - 
+          * - :py:attr:`~component_models`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.component_def import EDBComponentDef
+
+Property detail
+---------------
+
+.. py:property:: part_name
+
+   
+   Retrieve component definition name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: type
+
+   
+   Retrieve the component definition type.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: components
+
+   
+   Get the list of components belonging to this component definition.
+
+
+
+   :Returns:
+
+       :class:`python:dict` :obj:`of` :class:`EDBComponent`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: reference_file
+
+.. py:property:: component_models
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: assign_rlc_model(res=None, ind=None, cap=None, is_parallel=False)
+
+   
+   Assign RLC to all components under this part name.
+
+
+   :Parameters:
+
+       **res** : :class:`python:int`, :class:`python:float`
+           Resistance. Default is ``None``.
+
+       **ind** : :class:`python:int`, :class:`python:float`
+           Inductance. Default is ``None``.
+
+       **cap** : :class:`python:int`, :class:`python:float`
+           Capacitance. Default is ``None``.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is parallel or series RLC component.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_s_param_model(file_path, model_name=None, reference_net=None)
+
+   
+   Assign S-parameter to all components under this part name.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of the S-parameter model.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name of the S-parameter model.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_spice_model(file_path, model_name=None, sub_circuit_name=None, terminal_pairs=None)
+
+   
+   Assign Spice model to all components under this part name.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str`
+           File path of the Spice model.
+
+       **model_name** : :class:`python:str`, :obj:`optional`
+           Name of the Spice model.
+
+       **sub_circuit_name** : :class:`python:str`, :obj:`optional`
+           Name of the sub circuit.
+
+       **terminal_pairs** : :class:`python:list`, :obj:`optional`
+           list of terminal pairs.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_n_port_model(fpath, name=None)
+
+.. py:method:: create(name)
+
+.. py:method:: get_properties()
+
+.. py:method:: set_properties(**kwargs)
+
+
+
+

@@ -1,0 +1,29 @@
+﻿HFSSSolverSettings
+==================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_solver_settings
+
+.. autoclass:: HFSSSolverSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HFSSSolverSettings.enable_intra_plane_coupling
+      HFSSSolverSettings.max_delta_z0
+      HFSSSolverSettings.max_triangles_for_wave_port
+      HFSSSolverSettings.min_triangles_for_wave_port
+      HFSSSolverSettings.msg
+      HFSSSolverSettings.set_triangles_for_wave_port
+      HFSSSolverSettings.thin_dielectric_layer_threshold
+      HFSSSolverSettings.thin_signal_layer_threshold
+   
+   

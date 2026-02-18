@@ -1,0 +1,663 @@
+
+
+
+
+
+
+:class:`Material`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.materials.Material(edb: pyedb.Edb, material_def)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manage EDB methods for material property management.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Material
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_dict`
+            - Convert material into dictionary.
+          * - :py:attr:`~update`
+            - 
+          * - :py:attr:`~set_thermal_modifier`
+            - Sets the material property thermal modifier of a given material property.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Material name.
+          * - :py:attr:`~dc_model`
+            - Material dielectric model.
+          * - :py:attr:`~conductivity`
+            - Get material conductivity.
+          * - :py:attr:`~permittivity`
+            - Get material permittivity.
+          * - :py:attr:`~permeability`
+            - Get material permeability.
+          * - :py:attr:`~loss_tangent`
+            - Get material loss tangent.
+          * - :py:attr:`~dielectric_loss_tangent`
+            - Get material loss tangent.
+          * - :py:attr:`~dc_conductivity`
+            - Get material dielectric conductivity.
+          * - :py:attr:`~dc_permittivity`
+            - Get material dielectric relative permittivity
+          * - :py:attr:`~dielectric_model_frequency`
+            - Get material frequency in GHz.
+          * - :py:attr:`~loss_tangent_at_frequency`
+            - Get material loss tangeat at frequency.
+          * - :py:attr:`~permittivity_at_frequency`
+            - Get material relative permittivity at frequency.
+          * - :py:attr:`~magnetic_loss_tangent`
+            - Get material magnetic loss tangent.
+          * - :py:attr:`~thermal_conductivity`
+            - Get material thermal conductivity.
+          * - :py:attr:`~mass_density`
+            - Get material mass density.
+          * - :py:attr:`~youngs_modulus`
+            - Get material youngs modulus.
+          * - :py:attr:`~specific_heat`
+            - Get material specific heat.
+          * - :py:attr:`~poisson_ratio`
+            - Get material poisson ratio.
+          * - :py:attr:`~thermal_expansion_coefficient`
+            - Get material thermal coefficient.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~material_property_id_mapping`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.materials import Material
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Material name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_model
+
+   
+   Material dielectric model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conductivity
+
+   
+   Get material conductivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity
+
+   
+   Get material permittivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permeability
+
+   
+   Get material permeability.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: loss_tangent
+
+   
+   Get material loss tangent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_loss_tangent
+
+   
+   Get material loss tangent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_conductivity
+
+   
+   Get material dielectric conductivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_permittivity
+
+   
+   Get material dielectric relative permittivity
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_model_frequency
+
+   
+   Get material frequency in GHz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: loss_tangent_at_frequency
+
+   
+   Get material loss tangeat at frequency.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity_at_frequency
+
+   
+   Get material relative permittivity at frequency.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: magnetic_loss_tangent
+
+   
+   Get material magnetic loss tangent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_conductivity
+
+   
+   Get material thermal conductivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mass_density
+
+   
+   Get material mass density.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: youngs_modulus
+
+   
+   Get material youngs modulus.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: specific_heat
+
+   
+   Get material specific heat.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: poisson_ratio
+
+   
+   Get material poisson ratio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_expansion_coefficient
+
+   
+   Get material thermal coefficient.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: material_property_id_mapping
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_dict()
+
+   
+   Convert material into dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update(input_dict: dict)
+
+.. py:method:: set_thermal_modifier(property_name: str, basic_quadratic_temperature_reference: float = 21, basic_quadratic_c1: float = 0.1, basic_quadratic_c2: float = 0.1, advanced_quadratic_lower_limit: float = -270, advanced_quadratic_upper_limit: float = 1001, advanced_quadratic_auto_calculate: bool = False, advanced_quadratic_lower_constant: float = 1.1, advanced_quadratic_upper_constant: float = 1.1)
+
+   
+   Sets the material property thermal modifier of a given material property.
+
+
+   :Parameters:
+
+       **property_name** : :class:`python:str`
+           Name of the property to modify.
+
+       **basic_quadratic_temperature_reference** : :class:`python:float`, :obj:`optional`
+           The TempRef value in the quadratic model.
+
+       **basic_quadratic_c1** : :class:`python:float`, :obj:`optional`
+           The C1 value in the quadratic model.
+
+       **basic_quadratic_c2** : :class:`python:float`, :obj:`optional`
+           The C2 value in the quadratic model.
+
+       **advanced_quadratic_lower_limit** : :class:`python:float`, :obj:`optional`
+           The lower temperature limit where the quadratic model is valid.
+
+       **advanced_quadratic_upper_limit** : :class:`python:float`, :obj:`optional`
+           The upper temperature limit where the quadratic model is valid.
+
+       **advanced_quadratic_auto_calculate** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           The flag indicating whether or the LowerConstantThermalModifierVal and UpperConstantThermalModifierVal
+           values should be auto calculated.
+
+       **advanced_quadratic_lower_constant** : :class:`python:float`, :obj:`optional`
+           The constant thermal modifier value for temperatures lower than LowerConstantThermalModifierVal.
+
+       **advanced_quadratic_upper_constant** : :class:`python:float`, :obj:`optional`
+           The constant thermal modifier value for temperatures greater than UpperConstantThermalModifierVal.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+model
+=====
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: GapPort.model

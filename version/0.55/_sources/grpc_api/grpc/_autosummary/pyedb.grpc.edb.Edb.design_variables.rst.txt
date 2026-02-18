@@ -1,0 +1,6 @@
+design\_variables
+=================
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.design_variables

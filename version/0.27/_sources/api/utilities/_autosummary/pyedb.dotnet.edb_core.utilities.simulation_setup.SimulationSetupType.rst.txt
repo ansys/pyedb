@@ -1,0 +1,35 @@
+﻿SimulationSetupType
+===================
+
+.. currentmodule:: pyedb.dotnet.edb_core.utilities.simulation_setup
+
+.. autoclass:: SimulationSetupType
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      SimulationSetupType.kHFSS
+      SimulationSetupType.kPEM
+      SimulationSetupType.kSIwave
+      SimulationSetupType.kLNA
+      SimulationSetupType.kTransient
+      SimulationSetupType.kQEye
+      SimulationSetupType.kVEye
+      SimulationSetupType.kAMI
+      SimulationSetupType.kAnalysisOption
+      SimulationSetupType.kSIwaveDCIR
+      SimulationSetupType.kSIwaveEMI
+      SimulationSetupType.kHFSSPI
+      SimulationSetupType.kDDRwizard
+      SimulationSetupType.kQ3D
+   
+   

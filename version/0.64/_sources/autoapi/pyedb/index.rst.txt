@@ -1,0 +1,226 @@
+
+
+
+
+
+
+The ``pyedb`` package
+=========================
+
+.. py:module:: pyedb
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: pyedb
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.common`
+            - 
+
+
+          * - :py:obj:`~pyedb.configuration`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet`
+            - 
+
+
+          * - :py:obj:`~pyedb.extensions`
+            - 
+
+
+          * - :py:obj:`~pyedb.generic`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc`
+            - 
+
+
+          * - :py:obj:`~pyedb.misc`
+            - 
+
+
+          * - :py:obj:`~pyedb.siwave_core`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.edb_logger`
+            - 
+
+
+          * - :py:obj:`~pyedb.exceptions`
+            - 
+
+
+          * - :py:obj:`~pyedb.siwave`
+            - This module contains the ``Siwave`` class.
+
+
+          * - :py:obj:`~pyedb.workflow`
+            - 
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~deprecation_warning`
+            - Warning message informing users that some Python versions are deprecated in PyEDB.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb_path`
+            - 
+
+
+          * - :py:obj:`~__version__`
+            - 
+
+
+          * - :py:obj:`~version`
+            - 
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~LATEST_DEPRECATED_PYTHON_VERSION`
+            - 
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> common</autoapi/pyedb/common/index>
+    <span class="nf nf-md-package"></span> configuration</autoapi/pyedb/configuration/index>
+    <span class="nf nf-md-package"></span> dotnet</autoapi/pyedb/dotnet/index>
+    <span class="nf nf-md-package"></span> extensions</autoapi/pyedb/extensions/index>
+    <span class="nf nf-md-package"></span> generic</autoapi/pyedb/generic/index>
+    <span class="nf nf-md-package"></span> grpc</autoapi/pyedb/grpc/index>
+    <span class="nf nf-md-package"></span> misc</autoapi/pyedb/misc/index>
+    <span class="nf nf-md-package"></span> siwave_core</autoapi/pyedb/siwave_core/index>
+    <span class="nf nf-md-package"></span> workflows</autoapi/pyedb/workflows/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> edb_logger</autoapi/pyedb/edb_logger/index>
+    <span class="nf nf-fa-file"></span> exceptions</autoapi/pyedb/exceptions/index>
+    <span class="nf nf-fa-file"></span> siwave</autoapi/pyedb/siwave/index>
+    <span class="nf nf-fa-file"></span> workflow</autoapi/pyedb/workflow/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: deprecation_warning()
+
+   
+   Warning message informing users that some Python versions are deprecated in PyEDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: LATEST_DEPRECATED_PYTHON_VERSION
+   :value: (3, 7)
+
+
+.. py:data:: pyedb_path
+
+.. py:data:: __version__
+   :value: '0.64.1'
+
+
+.. py:data:: version
+   :value: '0.64.1'
+
+
+
+

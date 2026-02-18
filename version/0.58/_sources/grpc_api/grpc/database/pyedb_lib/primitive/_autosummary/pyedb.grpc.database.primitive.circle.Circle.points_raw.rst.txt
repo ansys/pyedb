@@ -1,0 +1,6 @@
+points\_raw
+===========
+
+.. currentmodule:: pyedb.grpc.database.primitive.circle
+
+.. autoproperty:: Circle.points_raw

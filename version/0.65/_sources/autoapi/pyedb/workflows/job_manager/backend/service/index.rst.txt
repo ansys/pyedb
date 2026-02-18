@@ -1,0 +1,279 @@
+
+
+
+
+
+
+The ``service.py`` module
+=========================
+
+.. py:module:: pyedb.workflows.job_manager.backend.service
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: service
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.ResourceLimits`
+            - Host-level resource constraints enforced by the manager.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.JobInfo`
+            - **Mutable** state container for a single simulation.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.ResourceMonitor`
+            - **Async** background task that samples host telemetry every *N* seconds.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.JobPoolManager`
+            - **Priority-aware** FIFO queues plus running-set tracker.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.JobManager`
+            - **Async** job manager combining resource monitoring and job scheduling.
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.SchedulerManager`
+            - Thin async wrapper around cluster scheduler commands.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend.service.JobStatus`
+            - Terminal and non-terminal job states used internally and exposed via REST.
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~submit_job_to_manager`
+            - **Helper** coroutine that submits a job to a **remote** Job Manager.
+
+
+          * - :py:obj:`~main`
+            - Example usage of the JobManager class.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ResourceLimits</autoapi/pyedb/workflows/job_manager/backend/service/ResourceLimits>
+    <span class="nf nf-cod-symbol_class"></span> JobInfo</autoapi/pyedb/workflows/job_manager/backend/service/JobInfo>
+    <span class="nf nf-cod-symbol_class"></span> ResourceMonitor</autoapi/pyedb/workflows/job_manager/backend/service/ResourceMonitor>
+    <span class="nf nf-cod-symbol_class"></span> JobPoolManager</autoapi/pyedb/workflows/job_manager/backend/service/JobPoolManager>
+    <span class="nf nf-cod-symbol_class"></span> JobManager</autoapi/pyedb/workflows/job_manager/backend/service/JobManager>
+    <span class="nf nf-cod-symbol_class"></span> SchedulerManager</autoapi/pyedb/workflows/job_manager/backend/service/SchedulerManager>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_enum"></span> JobStatus</autoapi/pyedb/workflows/job_manager/backend/service/JobStatus>
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Async job manager with pool scheduling and REST/WebSocket API.
+
+The module implements a **fully asynchronous** multi-tenant job manager that:
+
+* enforces **host resource limits** (CPU, memory, disk, concurrency),
+* maintains **priority queues** (negative → low, zero → normal, positive → high),
+* exposes **REST** and **Socket.IO** endpoints for integration,
+* supports **external schedulers** (SLURM, LSF, PBS, Windows-HPC) **and**
+  local subprocess execution,
+* guarantees **exactly-once** execution and **graceful draining** on shutdown.
+
+It is designed to be **embedded** inside a PyEDB process or **deployed** as a
+stand-alone micro-service (Docker, systemd, Kubernetes).
+
+Examples
+--------
+Stand-alone REST server:
+
+.. code-block:: bash
+
+    python -m pyedb.workflows.job_manager.service
+
+Embedded inside PyEDB:
+
+.. code-block:: python
+
+    from pyedb.workflows.job_manager.service import JobManager, ResourceLimits
+
+    manager = JobManager(ResourceLimits(max_concurrent_jobs=4))
+    await manager.submit_job(config, priority=10)
+
+The REST API is **self-documenting** at runtime:
+
+.. code-block:: bash
+
+    curl http://localhost:8080/resources
+    curl http://localhost:8080/queue
+    curl -X POST http://localhost:8080/jobs/submit -d @cfg.json
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: submit_job_to_manager(config: pyedb.workflows.job_manager.backend.job_submission.HFSSSimulationConfig, priority: int = 0, manager_url: str = 'http://localhost:8080') -> str
+   :async:
+
+
+   
+   **Helper** coroutine that submits a job to a **remote** Job Manager.
+
+   Falls back to **local** execution if the HTTP call fails (offline mode).
+
+   :Parameters:
+
+       **config** : :obj:`HFSSSimulationConfig`
+           Validated configuration.
+
+       **priority** : :class:`python:int`, :obj:`optional`
+           Job priority. Default is ``0``.
+
+       **manager_url** : :class:`python:str`, :obj:`optional`
+           Base URL of the manager. Default is ``"http://localhost:8080"``.
+
+   :Returns:
+
+       :class:`python:str`
+           Job identifier (local or remote).
+
+
+
+
+   :Raises:
+
+       :obj:`Exception`
+           If **both** remote and local execution fail.
+
+
+
+
+   .. rubric:: Notes
+
+   This function is useful for clients that want to submit jobs to a
+   remote manager but maintain offline capability.
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: main()
+   :async:
+
+
+   
+   Example usage of the JobManager class.
+
+   This demonstrates how to create a job manager with custom resource
+   limits and submit jobs with different priorities.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: logger
+
+
+

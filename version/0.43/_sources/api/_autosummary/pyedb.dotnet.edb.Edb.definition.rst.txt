@@ -1,0 +1,6 @@
+definition
+==========
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.definition

@@ -1,0 +1,6 @@
+couple\_ports
+=============
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. automethod:: CircuitPort.couple_ports

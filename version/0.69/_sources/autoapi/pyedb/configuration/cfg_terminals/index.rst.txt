@@ -1,0 +1,122 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_terminals`` library
+=================================================
+
+.. py:module:: pyedb.configuration.cfg_terminals
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_terminals
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgBase`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgTerminal`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgPadstackInstanceTerminal`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgPinGroupTerminal`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgPointTerminal`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgEdgeTerminal`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgBundleTerminal`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_terminals.CfgTerminals`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgBase</autoapi/pyedb/configuration/cfg_terminals/CfgBase>
+    <span class="nf nf-cod-symbol_class"></span> CfgTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackInstanceTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgPadstackInstanceTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgPinGroupTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgPinGroupTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgPointTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgPointTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgEdgeTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgEdgeTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgBundleTerminal</autoapi/pyedb/configuration/cfg_terminals/CfgBundleTerminal>
+    <span class="nf nf-cod-symbol_class"></span> CfgTerminals</autoapi/pyedb/configuration/cfg_terminals/CfgTerminals>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
