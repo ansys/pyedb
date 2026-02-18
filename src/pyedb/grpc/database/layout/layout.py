@@ -210,12 +210,12 @@ class Layout:
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self) -> list[PadstackInstance]:
+    def padstack_instances(self) -> dict[int, PadstackInstance]:
         """Get all padstack instances in a list."""
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
         pad_stack_inst = self.core.padstack_instances
-        self.__padstack_instances = [PadstackInstance(self._pedb, i) for i in pad_stack_inst]
+        self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
         return self.__padstack_instances
 
     @property

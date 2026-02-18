@@ -499,7 +499,7 @@ class EDBPadstack(object):
     @property
     def instances(self):
         """Definitions Instances."""
-        return [inst for inst in self._ppadstack.instances if inst.padstack_definition == self.name]
+        return [inst for inst in self._ppadstack.instances.values() if inst.padstack_definition == self.name]
 
     @property
     def name(self):
@@ -799,7 +799,9 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return [via for via in self._ppadstack.instances if via.padstack_definition == self.name]
+        return {
+            via_id: via for via_id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name
+        }
 
     @property
     def hole_range(self):
@@ -855,7 +857,7 @@ class EDBPadstack(object):
         layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
         i = 0
-        for via in self.padstack_instances:
+        for via in self.padstack_instances.values():
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
                 pos = via.position
                 started = False
@@ -1054,7 +1056,7 @@ class EDBPadstack(object):
             if self.via_stop_layer == stop:
                 break
         i = 0
-        for via in self.padstack_instances:
+        for via in self.padstack_instances.values():
             for inst in new_instances:
                 instance = inst.edb_padstack
                 from_layer = [
