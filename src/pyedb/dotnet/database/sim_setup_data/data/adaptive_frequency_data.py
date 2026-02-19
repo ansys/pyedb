@@ -39,7 +39,7 @@ class AdaptiveFrequencyData(object):
         return self._adaptive_frequency_data.AdaptiveFrequency
 
     @adaptive_frequency.setter
-    def adaptive_frequency(self, value):
+    def adaptive_frequency(self, value):        
         self._adaptive_frequency_data.AdaptiveFrequency = value
 
     @property

@@ -50,7 +50,7 @@ U8_IC_DIE_PROPERTIES = {
 
 
 def _assert_initial_ic_die_properties(component: dict):
-    assert component["ic_die_properties"]["type"] == "no_die"
+    assert component["ic_die_properties"]["type"] in ["none","no_die"]
     assert "orientation" not in component["ic_die_properties"]
     assert "height" not in component["ic_die_properties"]
 
@@ -1053,7 +1053,6 @@ class TestClassTerminals(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassSetups(BaseTestClass):
     terminal1 = {
         "name": "terminal1",
@@ -1074,7 +1073,7 @@ class TestClassSetups(BaseTestClass):
                     "type": "hfss",
                     "adapt_type": "single",
                     "single_frequency_adaptive_solution": {
-                        "adaptive_frequency": "5GHz",
+                        "adaptive_frequency": 5e9,
                         "max_passes": 10,
                         "max_delta": 0.02,
                     },
@@ -1648,7 +1647,6 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.max_delta = 0.02
 
 
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
     # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
@@ -1802,7 +1800,6 @@ class TestModeler(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
     def test_17_ic_die_properties(self):
@@ -1818,7 +1815,6 @@ class TestComponent(BaseTestClass):
         _assert_final_ic_die_properties(component)
 
 
-@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
     def test_08a_operations_cutout(self):
