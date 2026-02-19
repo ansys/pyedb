@@ -1348,7 +1348,7 @@ class Edb(EdbInit):
                         temp.append(Polygon(self, i.layout_obj))
                     else:
                         continue
-        except (AttributeError, RuntimeError, TypeError) as exc:
+        except (AttributeError, RuntimeError, TypeError, ansys.edb.core.inner.exceptions.InvalidArgumentException) as exc:
             # Be explicit about expected failure modes and include the exception in the log for easier debugging
             obj_id = getattr(getattr(layout_object_instance, "layout_obj", None), "id", "<unknown>")
             self.logger.warning(

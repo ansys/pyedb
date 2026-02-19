@@ -3923,7 +3923,7 @@ class Edb:
             return False
         version = self.version.split(".")
         if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = RaptorXSimulationSetup(self).create(name)
+            setup = RaptorXSimulationSetup.create(self, name=name)
             return setup
         else:
             self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")

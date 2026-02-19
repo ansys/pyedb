@@ -124,22 +124,21 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Test slow on windows with grpc")
     def test_nets_dc_shorts(self):
         # TODO get_connected_object return empty list.
         edbapp = self.edb_examples.get_si_verse()
-        # dc_shorts = edbapp.layout_validation.dc_shorts()
-        # assert dc_shorts
-        # edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
-        # edbapp.layout_validation.illegal_net_names(True)
-        # edbapp.layout_validation.illegal_rlc_values(True)
-        #
-        # # assert len(dc_shorts) == 20
-        # assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
-        # assert ["VDD_DDR", "GND"] in dc_shorts
-        # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
-        # edbapp.nets["DDR4_DM3"].find_dc_short(True)
-        # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
+        dc_shorts = edbapp.layout_validation.dc_shorts()
+        assert dc_shorts
+        edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
+        edbapp.layout_validation.illegal_net_names(True)
+        edbapp.layout_validation.illegal_rlc_values(True)
+        
+        # assert len(dc_shorts) == 20
+        assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
+        assert ["VDD_DDR", "GND"] in dc_shorts
+        assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
+        edbapp.nets["DDR4_DM3"].find_dc_short(True)
+        assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
         edbapp.close(terminate_rpc_session=False)
 
     def test_nets_eligible_power_nets(self):
