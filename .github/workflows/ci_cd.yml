@@ -738,7 +738,7 @@ jobs:
       - name: Install PyAEDT main branch version with its test dependencies
         run: |
           . .venv\Scripts\Activate.ps1
-          pip install --no-cache-dir external/pyaedt[tests]
+          pip install --no-cache-dir --group tests external/pyaedt
 
       - name: Install PyEDB
         run: |
@@ -841,7 +841,7 @@ jobs:
           ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
         run: |
           . .venv/bin/activate
-          pip install --no-cache-dir external/pyaedt[tests]
+          pip install --no-cache-dir --group tests external/pyaedt
 
       - name: Install PyEDB
         env:
