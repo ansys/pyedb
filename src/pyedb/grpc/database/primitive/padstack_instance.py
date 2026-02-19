@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import TYPE_CHECKING, Union, Literal, overload
+from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
 if TYPE_CHECKING:
@@ -1138,26 +1138,19 @@ class PadstackInstance:
 
         """
         return self.core.get_back_drill_type(from_bottom).name.lower()
-        
 
     @overload
     def get_back_drill_by_layer(
-        self, 
-        from_bottom: bool, 
-        include_fill_material: Literal[False] = False
+        self, from_bottom: bool, include_fill_material: Literal[False] = False
     ) -> tuple[Layer, Value, Value]: ...
 
     @overload
     def get_back_drill_by_layer(
-        self, 
-        from_bottom: bool, 
-        include_fill_material: Literal[True]
+        self, from_bottom: bool, include_fill_material: Literal[True]
     ) -> tuple[Layer, Value, Value, str]: ...
 
     def get_back_drill_by_layer(
-        self, 
-        from_bottom: bool, 
-        include_fill_material: bool = False
+        self, from_bottom: bool, include_fill_material: bool = False
     ) -> tuple[Layer, Value, Value] | tuple[Layer, Value, Value, str]:
         """Get the back drill type by the layer.
 
@@ -1178,7 +1171,7 @@ class PadstackInstance:
             - **offset** : Layer offset (or depth if layer is empty).
             - **diameter** : Drilling diameter.
             - **fill_material** : Fill material name (empty string if no fill). Returned only when include_fill_material is true.
-           
+
         """
         back_drill = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
         layer = back_drill[0].name
@@ -1192,23 +1185,17 @@ class PadstackInstance:
 
     @overload
     def get_back_drill_by_depth(
-        self, 
-        from_bottom: bool, 
-        include_fill_material: Literal[False] = False
+        self, from_bottom: bool, include_fill_material: Literal[False] = False
     ) -> tuple[Value, Value]: ...
 
     @overload
     def get_back_drill_by_depth(
-        self, 
-        from_bottom: bool, 
-        include_fill_material: Literal[True]
+        self, from_bottom: bool, include_fill_material: Literal[True]
     ) -> tuple[Value, Value, str]: ...
 
     def get_back_drill_by_depth(
-        self, 
-        from_bottom: bool, 
-        include_fill_material: bool = False
-    ) -> tuple[Value, Value] | tuple[Value, Value, str]:    
+        self, from_bottom: bool, include_fill_material: bool = False
+    ) -> tuple[Value, Value] | tuple[Value, Value, str]:
         """Get the back drill type by depth.
 
         Parameters
@@ -1248,10 +1235,13 @@ class PadstackInstance:
             drill diameter
         from_bottom : bool, optional
             Default value is `True`.
-        fill_material : str, optional   
+        fill_material : str, optional
         """
         self.core.set_back_drill_by_depth(
-            drill_depth=Value(drill_depth), diameter=Value(diameter), from_bottom=from_bottom, fill_material=fill_material
+            drill_depth=Value(drill_depth),
+            diameter=Value(diameter),
+            from_bottom=from_bottom,
+            fill_material=fill_material,
         )
 
     def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom=True, fill_material=""):
