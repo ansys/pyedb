@@ -330,7 +330,7 @@ class CfgCircuitElement(CfgBase):
 
         elif pos_type == "padstack":
             flag = False
-            for pds in self._pedb.layout.padstack_instances.values():
+            for pds in self._pedb.padstacks.padstack_instances.values():
                 if pds.aedt_name == pos_value:
                     pos_objs.update({pos_value: pds})
                     flag = True
@@ -436,7 +436,7 @@ class CfgCircuitElement(CfgBase):
                     # create pin group
                     neg_obj = self._create_pin_group(pins, self.negative_terminal_info.reference_designator, True)
                 elif neg_type == "padstack":
-                    for pds in self._pedb.layout.padstack_instances.values():
+                    for pds in self._pedb.padstacks.padstack_instances.values():
                         if pds.aedt_name == neg_value:
                             neg_obj = {neg_value: pds}
                             break

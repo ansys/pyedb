@@ -419,7 +419,7 @@ class TestClass(BaseTestClass):
         # Done
         edbapp = self.edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
-        assert edbapp["$H"] == 1.651e-5
+        assert edbapp["$H"].value == 1.651e-5
         edbapp["$S_D"] = "10.65mil"
         edbapp["$T"] = "21.3mil"
         edbapp["$Antipad_R"] = "24mil"

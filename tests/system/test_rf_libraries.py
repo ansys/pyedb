@@ -84,8 +84,8 @@ class TestClass(BaseTestClass):
         assert len(edb.modeler.rectangles) == 4
         assert edb.modeler.rectangles[0].net.name == "SIG"
         assert edb.modeler.rectangles[0].bbox == [-5e-06, 0.0, 5e-06, 0.001]
-        assert edb.variables["g"] == 5e-06
-        assert edb.variables["w"] == 1e-05
+        assert edb.variables["g"].value == 5e-06
+        assert edb.variables["w"].value == 1e-05
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")

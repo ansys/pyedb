@@ -524,8 +524,7 @@ class Component:
             cmp_property = self.core.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.height = Value(value)
-            cmp_property.solder_ball_property = solder_ball_prop
-            self.core.component_property = cmp_property
+
 
     @property
     def solder_ball_shape(self) -> str:
@@ -602,8 +601,8 @@ class Component:
         """Solderball material name."""
         return self.component_property.solder_ball_property.material_name
 
-    @solder_ball_diameter.setter
-    def solder_ball_diameter(self, value):
+    @solder_ball_material.setter
+    def solder_ball_material(self, value):
         self.component_property.solder_ball_property.material_name = value
 
     @property
@@ -1541,7 +1540,7 @@ class ICDieProperty:
         Returns
         -------
         str
-            Die type, ``noine``, ``flipchip``, ``wirebond``.
+            Die type, ``none``, ``flipchip``, ``wirebond``.
 
         """
         return self._die_property.die_type.name.lower()

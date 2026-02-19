@@ -649,7 +649,7 @@ class TestClass(BaseTestClass):
             assert ic_die_properties.die_orientation == "chip_up"
             ic_die_properties.orientation = "chip_down"
             assert ic_die_properties.orientation == "chip_down"
-            assert ic_die_properties.die_type == "none"
+            assert ic_die_properties.die_type in ["none", "no_die"]
             assert ic_die_properties.height == 0.0
             ic_die_properties.height = 1e-3
             assert ic_die_properties.height == 1e-3

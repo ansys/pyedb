@@ -87,7 +87,7 @@ class CfgComponent(CfgBase):
         reference_size_y = self.port_properties.get("reference_size_y", 0)
         port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
         cp.SetPortProperty(port_prop)
-        self.component_property = cp
+        self.pyedb_obj.component_property = cp
 
     def _set_model_properties_to_edb(self):
         c_p = self.pyedb_obj.component_property.core
@@ -175,7 +175,7 @@ class CfgComponent(CfgBase):
         solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
         solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
         cp.SetSolderBallProperty(solder_ball_prop)
-        self.component_property = cp
+        self.pyedb_obj.component_property = cp
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()

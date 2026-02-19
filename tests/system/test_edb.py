@@ -203,7 +203,7 @@ class TestClass(BaseTestClass):
             edbapp.add_design_variable("my_parameter", "2mm", True)
         assert "my_parameter" in edbapp.get_all_variable_names()
         variable_value = edbapp.get_variable_value("my_parameter")
-        assert variable_value == 2e-3
+        assert variable_value.value == 2e-3
         if edbapp.grpc:
             assert not edbapp.add_design_variable("my_parameter", "2mm", "test description")
         else:
@@ -214,7 +214,7 @@ class TestClass(BaseTestClass):
             assert edbapp.db.get_variable_value("$my_project_variable") == 3e-3
         else:
             # grpc implementation is very different.
-            assert edbapp.get_variable_value("$my_project_variable") == 3e-3
+            assert edbapp.get_variable_value("$my_project_variable").value == 3e-3
         if edbapp.grpc:
             assert not edbapp.add_project_variable("$my_project_variable", "3mm")
         else:

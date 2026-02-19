@@ -69,20 +69,20 @@ class TestClass:
         edb.add_design_variable(variable_name="var3", variable_value=0.03, description="test description")
         edb.add_project_variable(variable_name="var4", variable_value="1mm", description="Project variable.")
         edb.add_project_variable(variable_name="$var5", variable_value=0.1)
-        assert edb["var1"] == 0.01
-        assert check_numeric_equivalence(edb["var2"], 1.0e-5)
-        assert edb["var3"] == 0.03
+        assert edb["var1"].value == 0.01
+        assert check_numeric_equivalence(edb["var2"].value, 1.0e-5)
+        assert edb["var3"].value == 0.03
         var3 = edb.get_variable("var3")
         if edb.grpc:
             assert edb.active_layout.get_variable_desc("var3") == "test description"
         else:
             assert var3.description == "test description"
-        assert edb["$var4"] == 0.001
+        assert edb["$var4"].value == 0.001
         if edb.grpc:
             assert edb.active_db.get_variable_desc("$var4") == "Project variable."
         else:
             assert edb.get_variable("$var4").description == "Project variable."
-        assert edb["$var5"] == 0.1
+        assert edb["$var5"].value == 0.1
         if edb.grpc:
             edb.active_cell.delete_variable("$var5")
             assert "$var5" not in edb.active_cell.get_all_variable_names()
@@ -124,7 +124,7 @@ class TestClass:
             assert edb.variable_exists("ant_length")
         else:
             assert edb.variable_exists("ant_length")[0]
-        assert edb["ant_length"] == 0.01
+        assert edb["ant_length"].value == 0.01
 
     def test_change_design_variable_value(self):
         """Change a variable value."""
@@ -161,9 +161,9 @@ class TestClass:
             edbversion=desktop_version,
         )
         edb.add_design_variable("ant_length", "1cm")
-        assert edb["ant_length"] == 0.01
+        assert edb["ant_length"].value == 0.01
         edb["ant_length"] = "2cm"
-        assert edb["ant_length"] == 0.02
+        assert edb["ant_length"].value == 0.02
 
     def test_create_padstack_instance(self):
         """Create padstack instances."""
