@@ -22,8 +22,53 @@
 
 from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation as CoreLengthMeshOperation
 
+from pyedb.generic.constants import MeshOperationTypeMapper
+from pyedb.generic.settings import settings
 
-class LengthMeshOperation:
+
+class LengthMeshOperationDeprecated:
+    """PyEDB Length Mesh Operation class."""
+
+    @property
+    def restrict_length(self):
+        return self.restrict_max_length
+
+    @restrict_length.setter
+    def restrict_length(self, value):
+        self.restrict_max_length = value
+
+    @property
+    def nets_layers_list(self):
+        nets_layers = {}
+        for i in self.net_layer_info:
+            net, layer, flag = i
+            if not flag:
+                continue
+            if net not in nets_layers:
+                nets_layers[net] = [layer]
+            else:
+                nets_layers[net].append(layer)
+        return nets_layers
+
+    @nets_layers_list.setter
+    def nets_layers_list(self, value):
+        temp = []
+        for net, layers in value.items():
+            for layer in layers:
+                temp.append([net, layer, True])
+        self.net_layer_info = temp
+
+
+class MeshOperation:
+    def __init__(self, core):
+        self.core = core
+
+    @property
+    def mesh_operation_type(self):
+        return MeshOperationTypeMapper.get(type(self).__name__, as_grpc=settings.is_grpc)
+
+
+class LengthMeshOperation(MeshOperation, LengthMeshOperationDeprecated):
     """PyEDB Length Mesh Operation class."""
 
     def __init__(

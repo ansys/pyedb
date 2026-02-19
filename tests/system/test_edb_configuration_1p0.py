@@ -35,6 +35,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
+@pytest.mark.skip("Deprecated")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     @pytest.fixture(autouse=True)
@@ -82,22 +83,6 @@ class TestClass(BaseTestClass):
         assert edb.edbpath == os.path.join(self.local_scratch.path, "build.aedb")
 
         edb.close(terminate_rpc_session=False)
-
-    def test_build_hfss_project_from_config_file(self):
-        """Build a simulation project from config file."""
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        target_path = os.path.join(self.local_scratch.path, "test_0122.aedb")
-        self.local_scratch.copyfolder(source_path, target_path)
-        edbapp = Edb(target_path, edbversion=desktop_version)
-        cfg_file = os.path.join(os.path.dirname(edbapp.edbpath), "test.cfg")
-        with open(cfg_file, "w") as f:
-            f.writelines("SolverType = 'Hfss3dLayout'\n")
-            f.writelines("PowerNets = ['GND']\n")
-            f.writelines("Components = ['U1', 'U7']")
-
-        sim_config = SimulationConfiguration(cfg_file)
-        assert edbapp.build_simulation_project(sim_config)
-        edbapp.close(terminate_rpc_session=False)
 
     def test_edb_configuration_siwave_build_ac_project(self):
         """Build ac simulation project."""

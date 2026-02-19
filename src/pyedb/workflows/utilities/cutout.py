@@ -190,10 +190,8 @@ class GrpcCutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self._edb.padstacks.instances
-            for i in _pins_to_preserve:
-                p = insts[i].position
-
+            for inst in _pins_to_preserve:
+                p = inst.position
                 pos_1 = [i - 10e-6 for i in p]
                 pos_3 = [i + 10e-6 for i in p]
                 pos_4 = [pos_1[0], pos_3[1]]
@@ -342,7 +340,7 @@ class GrpcCutout:
             for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
-                        _pins_to_preserve.append(pin.id)
+                        _pins_to_preserve.append(pin)
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):
@@ -513,7 +511,7 @@ class GrpcCutout:
         # ------------------------------------------------------------------
         _t = time.time()
         all_nets = {net.name: net for net in self._edb.nets.nets.values()}
-        all_padstack_instances = list(self._edb.padstacks.instances.values())
+        all_padstack_instances = self._edb.padstacks.instances
         all_primitives = list(self._edb.modeler.primitives)
         all_components = list(self._edb.components.instances.values())
         nets_num = len(all_nets)
@@ -554,8 +552,8 @@ class GrpcCutout:
 
         # padstacks
         pins_to_delete, reference_pinsts = [], []
-        for p in all_padstack_instances:
-            if p.id in pins_to_preserve:
+        for pid, p in all_padstack_instances.items():
+            if pid in pins_to_preserve:
                 continue
             if p.net_name not in full_list:
                 pins_to_delete.append(p)
@@ -639,7 +637,6 @@ class GrpcCutout:
         # primitives
         total_primitive_to_delete = prim_to_delete + prims_to_clip + [v for prim in prims_to_clip for v in prim.voids]
         _t1 = time.time()
-        self._edb.modeler.delete_batch_primitives(total_primitive_to_delete)
         self.logger.info(f"{len(total_primitive_to_delete)} primitives deleted in {time.time() - _t1:.3f} s")
 
         # new polygons
@@ -871,9 +868,8 @@ class DotNetCutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self._edb.padstacks.instances
-            for i in _pins_to_preserve:
-                p = insts[i].position
+            for inst in _pins_to_preserve:
+                p = inst.position
                 pos_1 = [i - 1e-12 for i in p]
                 pos_2 = [i + 1e-12 for i in p]
                 plane = self._edb.modeler.Shape("rectangle", pointA=pos_1, pointB=pos_2)
@@ -1019,7 +1015,7 @@ class DotNetCutout:
             for pingroup in self._edb.padstacks.pingroups:
                 for pin in pingroup.pins.values():
                     if pin.net_name in self.references:
-                        _pins_to_preserve.append(pin.id)
+                        _pins_to_preserve.append(pin)
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self):

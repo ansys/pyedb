@@ -30,8 +30,8 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    def test_find(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_find(self):
+        edbapp = self.edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
         assert edbapp.layout.find_padstack_instances(aedt_name="U7-T7")[0].aedt_name == "U7-T7"
         assert len(edbapp.layout.find_padstack_instances(component_name="U7"))
@@ -47,14 +47,14 @@ class TestClass(BaseTestClass):
             assert edbapp.layout.find_padstack_instances(instance_id=4294967296)[0].id == 4294967296
         edbapp.close(terminate_rpc_session=False)
 
-    def test_primitives(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_primitives(self):
+        edbapp = self.edb_examples.get_si_verse()
         prim = edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])[0]
         assert prim.polygon_data.is_inside(["111.4mm", 44.7e-3])
         edbapp.close(terminate_rpc_session=False)
 
-    def test_primitive_path(self, edb_examples):
-        edbapp = edb_examples.get_si_verse()
+    def test_primitive_path(self):
+        edbapp = self.edb_examples.get_si_verse()
         if not edbapp.grpc:
             # TODO check if center line setter defined in grpc.
             path_obj = edbapp.layout.find_primitive(name="line_272")[0]

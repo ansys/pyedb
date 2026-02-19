@@ -36,7 +36,7 @@ class SpiceModel:  # pragma: no cover
             self.core = edb_object
 
     @property
-    def name(self):
+    def model_name(self):
         """Model name.
 
         Returns

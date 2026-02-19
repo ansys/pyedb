@@ -720,6 +720,8 @@ class Modeler(object):
             if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
                 self._logger.error("Failed to create void polygon data")
                 return False
+            if isinstance(polygonData, PolygonData):
+                polygonData = polygonData._edb_object
             polygonData.AddHole(voidPolygonData)
         if isinstance(polygonData, PolygonData):
             polygonData = polygonData._edb_object

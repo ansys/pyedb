@@ -22,17 +22,10 @@
 
 from typing import List, Literal, Optional, Union
 
-from pydantic import BaseModel
+from pyedb.configuration.cfg_common import CfgBaseModel
 
 
-class CfgBase(BaseModel):
-    model_config = {
-        "populate_by_name": True,
-        "extra": "forbid",
-    }
-
-
-class CfgTerminal(CfgBase):
+class CfgTerminal(CfgBaseModel):
     name: str
     impedance: Union[float, int, str]
     is_circuit_port: bool
@@ -96,13 +89,13 @@ class CfgEdgeTerminal(CfgTerminal):
     pec_launch_width: Union[int, str]
 
 
-class CfgBundleTerminal(CfgBase):
+class CfgBundleTerminal(CfgBaseModel):
     terminal_type: str = "bundle"
     terminals: List[str]
     name: str
 
 
-class CfgTerminals(CfgBase):
+class CfgTerminals(CfgBaseModel):
     terminals: List[
         Union[
             CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal, CfgBundleTerminal, dict

@@ -246,6 +246,7 @@ def Edb(
 
     """
     settings.is_student_version = student_version
+    settings.is_grpc = grpc
     if grpc is False and settings.edb_dll_path is not None:
         # Check if the user specified a .dll path
         settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")

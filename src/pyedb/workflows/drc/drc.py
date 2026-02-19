@@ -58,7 +58,14 @@ from queue import Queue
 from typing import Any, Dict, List, Optional, Set
 
 from pydantic import BaseModel
-from rtree import index as rtree_index
+
+try:
+    from rtree import index as rtree_index
+except ImportError:
+    raise ImportError(
+        "Rtree library is required for spatial indexing. "
+        "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+    )
 
 import pyedb
 from pyedb.modeler.geometry_operators import GeometryOperators

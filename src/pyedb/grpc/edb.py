@@ -73,6 +73,7 @@ import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 if TYPE_CHECKING:
+    from pyedb import Edb
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 import warnings
 from zipfile import ZipFile as Zpf
@@ -84,7 +85,6 @@ from ansys.edb.core.hierarchy.layout_component import (
 import ansys.edb.core.layout.cell
 from ansys.edb.core.layout.cell import DesignMode as CoreDesignMode
 from ansys.edb.core.utility.value import Value as CoreValue
-import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
@@ -105,7 +105,6 @@ from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
-from pyedb.grpc.database.nets import NetClasses, Nets
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
@@ -140,10 +139,12 @@ from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.misc.decorators import deprecate_argument_name
 from pyedb.modeler.geometry_operators import GeometryOperators
-from pyedb.workflow import Workflow
 from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.nets import NetClasses, Nets
 
 
 class Edb(EdbInit):
@@ -998,6 +999,17 @@ class Edb(EdbInit):
         return ipc_path
 
     @property
+    def layout_bounding_box(self) -> list[float]:
+        """Get the bounding box of the active layout.
+
+        Returns
+        -------
+        list[float]
+            Bounding box coordinates as [xmin, ymin, xmax, ymax].
+        """
+        return self.hfss.get_layout_bounding_box(self.active_layout)
+
+    @property
     def configuration(self) -> Configuration:
         """Project configuration manager.
 
@@ -1170,7 +1182,7 @@ class Edb(EdbInit):
         return self._hfss
 
     @property
-    def nets(self) -> Nets:
+    def nets(self) -> "Nets":
         """Net management interface.
 
         Returns
@@ -1178,12 +1190,14 @@ class Edb(EdbInit):
         :class:`Nets <pyedb.grpc.database.nets.Nets>`
             Net manipulation tools.
         """
+        from pyedb.grpc.database.nets import Nets
+
         if not self._nets and self.active_db:
             self._nets = Nets(self)
         return self._nets
 
     @property
-    def net_classes(self) -> Optional[NetClasses]:
+    def net_classes(self) -> Optional["NetClasses"]:
         """Net class management.
 
         Returns
@@ -1191,6 +1205,8 @@ class Edb(EdbInit):
         :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
             Net classes objects.
         """
+        from pyedb.grpc.database.nets import NetClasses
+
         if self.active_db:
             return NetClasses(self)
         return None
@@ -1232,7 +1248,7 @@ class Edb(EdbInit):
         """
         if not self._modeler and self.active_db:
             self._modeler = Modeler(self)
-            self._modeler._reload_all()  # Reload primitives cache for the new active cell
+            self._modeler.clear_cache()  # Reload primitives cache for the new active cell
         return self._modeler
 
     @property
@@ -2343,7 +2359,7 @@ class Edb(EdbInit):
               Use :func:`self.simulation_setups.create` instead.
         """
 
-        return self.simulation_setups.create_raptorx_setup(name=name, start_freq=0.0, stop_freq=20e9)
+        return self.simulation_setups.create_raptor_x_setup(name=name, start_freq=0.0, stop_freq=20e9)
 
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
@@ -2958,6 +2974,14 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if not temp_directory:
             self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
             return False
@@ -2981,15 +3005,16 @@ class Edb(EdbInit):
             signal_nets = list(self.nets.signal.keys())
 
         used_padstack_defs = []
+        padstack_instances_dict = self.padstacks.instances
         padstack_instances_index = rtree.index.Index()
-        for padstack_inst in list(self.padstacks.instances.values()):
-            if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
-                padstack_inst.delete()
+        for _, inst in padstack_instances_dict.items():
+            if reference_layer not in [inst.start_layer, inst.stop_layer]:
+                inst.delete()
             else:
-                if padstack_inst.net.name in signal_nets:
-                    padstack_instances_index.insert(padstack_inst.edb_uid, padstack_inst.position)
-                    if not padstack_inst.padstack_def.name in used_padstack_defs:
-                        used_padstack_defs.append(padstack_inst.padstack_def.name)
+                if inst.net.name in signal_nets:
+                    padstack_instances_index.insert(inst.edb_uid, inst.position)
+                    if inst.padstack_def.name not in used_padstack_defs:
+                        used_padstack_defs.append(inst.padstack_def.name)
 
         polys = [
             poly
@@ -3007,7 +3032,7 @@ class Edb(EdbInit):
                 void_bbox = void.bbox
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
-                    void_padstacks.append((void, [self.padstacks.instances[edb_uid] for edb_uid in included_instances]))
+                    void_padstacks.append((void, [padstack_instances_dict[edb_uid] for edb_uid in included_instances]))
 
         if not void_padstacks:
             self.logger.error(
@@ -3096,6 +3121,8 @@ class Edb(EdbInit):
         :class:`Workflow <pyedb.workflow.Workflow>`
             Workflow automation tools.
         """
+        from pyedb.workflow import Workflow
+
         return Workflow(self)
 
     def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
@@ -3221,6 +3248,47 @@ class Edb(EdbInit):
             layout=self.active_layout.core, output_aedb_comp_path=component_path
         )
 
+    def physical_merge(
+        self,
+        merged_edb: Union[str, "Edb"],
+        on_top: bool = True,
+        vector: tuple = (0.0, 0.0),
+        prefix: str = "merged_",
+        show_progress: bool = True,
+    ):
+        """Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
+
+        Parameters
+        ----------
+        merged_edb : str, Edb
+            Edb folder path or The EDB that will be merged into the hosting_edb.
+        on_top : bool, optional
+            If True, the primitives from the merged_edb will be placed on top of the hosting_edb primitives.
+            If False, they will be placed below. Default is True.
+        vector : tuple, optional
+            A tuple (x, y) representing the offset to apply to the primitives from the merged. Default is (0.0, 0.0).
+        prefix : str, optional
+            A prefix to add to the layer names of the merged primitives to avoid name clashes. Default is "merged_."
+        show_progress : bool, optional
+            If True, print progress to stdout during long operations (primitives/padstacks merging). Default is True.
+
+        Returns
+        -------
+        bool
+            True if the merge was successful, False otherwise.
+
+        """
+        from pyedb.workflows.utilities.physical_merge import physical_merge
+
+        return physical_merge(
+            hosting_edb=self,
+            merged_edb=merged_edb,
+            on_top=on_top,
+            vector=vector,
+            prefix=prefix,
+            show_progress=show_progress,
+        )
+
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):
         """Copy Cells from another Edb Database into this Database."""
         edb2 = Edb(edbpath=edb_path, edbversion=self.version)
@@ -3235,6 +3303,8 @@ class Edb(EdbInit):
         high-level helper objects and stores them on the Edb instance so that
         subsequent property accesses return ready-to-use interfaces.
         """
+        from pyedb.grpc.database.nets import Nets
+
         # Core manager objects
         self._components = Components(self)
         layer_collection = self.active_cell.layout.layer_collection
@@ -3249,7 +3319,7 @@ class Edb(EdbInit):
         self._hfss = Hfss(self)
         self._nets = Nets(self)
         self._modeler = Modeler(self)
-        self._modeler._reload_all()  # Reload primitives cache for the new active cell
+        self._modeler.clear_cache()  # Reload primitives cache for the new active cell
         # Materials and source excitation
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)

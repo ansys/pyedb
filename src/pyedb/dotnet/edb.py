@@ -40,8 +40,6 @@ from typing import Union
 import warnings
 from zipfile import ZipFile as zpf
 
-import rtree
-
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
 from pyedb.dotnet.database.cell.layout import Layout
@@ -79,8 +77,8 @@ from pyedb.dotnet.database.net_class import (
     EdbExtendedNets,
     EdbNetClasses,
 )
-from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
+from pyedb.dotnet.database.simulation_setups import SimulationSetups
 from pyedb.dotnet.database.siwave import EdbSiwave
 from pyedb.dotnet.database.source_excitations import SourceExcitation
 from pyedb.dotnet.database.stackup import Stackup
@@ -101,7 +99,6 @@ from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
-from pyedb.workflow import Workflow
 from pyedb.workflows.utilities.cutout import Cutout
 
 
@@ -427,6 +424,9 @@ class Edb:
         self._source_excitation = None
 
     def _init_objects(self):
+        # NOTE: Adding import here to avoid making shapely a direct dependency of pyedb.
+        from pyedb.dotnet.database.nets import EdbNets
+
         self._components = Components(self)
         self._stackup = Stackup(self, self.layout.layer_collection)
         self._padstack = EdbPadstacks(self)
@@ -1273,10 +1273,6 @@ class Edb:
         >>> edbapp.nets.find_or_create_net("GND")
         >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
         """
-
-        if not self._nets and self._db:
-            raise Exception("")
-            self._nets = EdbNets(self)
         return self._nets
 
     @property
@@ -1396,6 +1392,17 @@ class Edb:
     def layout_instance(self):
         """Edb Layout Instance."""
         return self.layout._edb_object.GetLayoutInstance()
+
+    @property
+    def layout_bounding_box(self) -> list[float]:
+        """Get the bounding box of the active layout.
+
+        Returns
+        -------
+        list[float]
+            Bounding box coordinates as [xmin, ymin, xmax, ymax].
+        """
+        return self.hfss.get_layout_bounding_box(self.active_layout)
 
     def get_connected_objects(self, layout_object_instance):
         """Get connected objects.
@@ -1710,7 +1717,7 @@ class Edb:
         return self.save_as(path)
 
     @execution_timer("EDB file save")
-    def save_as(self, path):
+    def save_as(self, path: str | Path):
         """Save the EDB file as another file.
 
         Parameters
@@ -1724,6 +1731,8 @@ class Edb:
             ``True`` when successful, ``False`` when failed.
 
         """
+        path = str(path) if isinstance(path, Path) else path
+
         origin_name = "pyedb_" + os.path.splitext(os.path.split(self.edbpath)[-1])[0]
         self._db.SaveAs(path, "")
         self._wait_for_file_release()
@@ -3819,7 +3828,7 @@ class Edb:
         Dict[str, :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`]
 
         """
-        return {name: i for name, i in self.setups.items() if i.setup_type == "kHFSS"}
+        return {name: i for name, i in self.setups.items() if i.setup_type in ["kHFSS", "hfss"]}
 
     @property
     def siwave_dc_setups(self):
@@ -3865,7 +3874,7 @@ class Edb:
             return False
         elif not name:
             name = generate_unique_name("setup")
-        setup = HfssSimulationSetup(self, name=name)
+        setup = HfssSimulationSetup.create(self, name=name)
         setup.set_solution_single_frequency("1Ghz")
         return setup
 
@@ -4223,7 +4232,7 @@ class Edb:
 
         if ref_terminal:
             ref_terminal.boundary_type = "PortBoundary"
-            terminal.ref_terminal = ref_terminal
+            terminal.reference_terminal = ref_terminal
         if name:
             terminal.name = name
 
@@ -4265,7 +4274,7 @@ class Edb:
         ref_term = Terminal(self, ref_terminal._edb_object)
         ref_term.boundary_type = "kVoltageProbe"
 
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return self.probes[term.name]
 
     def create_voltage_source(self, terminal, ref_terminal):
@@ -4294,7 +4303,7 @@ class Edb:
         ref_term = Terminal(self, ref_terminal._edb_object)
         ref_term.boundary_type = "kVoltageSource"
 
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return self.sources[term.name]
 
     def create_current_source(self, terminal, ref_terminal):
@@ -4323,7 +4332,7 @@ class Edb:
         ref_term = Terminal(self, ref_terminal._edb_object)
         ref_term.boundary_type = "kCurrentSource"
 
-        term.ref_terminal = ref_terminal
+        term.reference_terminal = ref_terminal
         return self.sources[term.name]
 
     def get_point_terminal(self, name, net_name, location, layer):
@@ -4490,9 +4499,7 @@ class Edb:
                         padstack_defs[via.padstack_definition] = self.padstacks.definitions[via.padstack_definition]
             else:
                 used_padsatck_defs = list(
-                    set(
-                        [padstack_inst.padstack_definition for padstack_inst in list(self.padstacks.instances.values())]
-                    )
+                    set([padstack_inst.padstack_definition for padstack_inst in self.padstacks.instances.values()])
                 )
                 padstack_defs = {k: v for k, v in self.padstacks.definitions.items() if k in used_padsatck_defs}
         else:
@@ -4667,6 +4674,14 @@ class Edb:
         bool
             ``True`` when succeeded, ``False`` if failed.
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if not temp_directory:
             raise RuntimeWarning("Temp directory must be provided when creating model foe arbitrary wave port")
         if mounting_side not in ["top", "bottom"]:
@@ -4688,7 +4703,7 @@ class Edb:
 
         used_padstack_defs = []
         padstack_instances_index = rtree.index.Index()
-        for padstack_inst in list(self.padstacks.instances.values()):
+        for padstack_inst in self.padstacks.instances.values():
             if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
                 padstack_inst.delete()
             else:
@@ -4716,8 +4731,9 @@ class Edb:
                     void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
+                instances_dict = self.padstacks.instances
                 if included_instances:
-                    void_padstacks.append((void, [self.padstacks.instances[edb_id] for edb_id in included_instances]))
+                    void_padstacks.append((void, [instances_dict[edb_id] for edb_id in included_instances]))
 
         if not void_padstacks:
             raise RuntimeWarning(
@@ -4794,6 +4810,8 @@ class Edb:
     @property
     def workflow(self):
         """Workflow class."""
+        from pyedb.workflow import Workflow
+
         return Workflow(self)
 
     def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
@@ -4881,3 +4899,8 @@ class Edb:
             raise RuntimeError(
                 "EDBDiff.exe execution failed. Please check if the executable is present in the base path."
             ) from e
+
+    @property
+    def simulation_setups(self) -> SimulationSetups:
+        """Get all simulation setups object."""
+        return SimulationSetups(self)

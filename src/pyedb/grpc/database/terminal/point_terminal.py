@@ -45,7 +45,7 @@ class PointTerminal(Terminal):
         super().__init__(pedb, core)
 
     @classmethod
-    def create(cls, layout, net, layer, name, point):
+    def create(cls, layout, net, layer, name, point) -> "PointTerminal":
         """Create a point terminal.
 
         Parameters

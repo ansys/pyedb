@@ -219,12 +219,18 @@ def env_path(input_version):
     >>> env_path_student("2021.2")
     "C:/Program Files/ANSYSEM/ANSYSEM2021.2/Win64"
     """
-    return os.getenv(
-        "ANSYSEM_ROOT{0}{1}".format(
-            get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
-        ),
-        "",
-    )
+    try:
+        return os.getenv(
+            "ANSYSEM_ROOT{0}{1}".format(
+                get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
+            ),
+            "",
+        )
+    except TypeError as e:
+        raise Exception(
+            "The edb version is not provided and can't be inferred from the environment variables. "
+            "Please provide the version as an argument."
+        ) from e
 
 
 def get_version_and_release(input_version):
@@ -721,7 +727,13 @@ def read_csv_pandas(filename, encoding="utf-8"):  # pragma: no cover
     :class:`pandas.DataFrame`
 
     """
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError:
+        raise ImportError(
+            "Pandas library is required for workflow. "
+            "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+        )
 
     return pd.read_csv(filename, encoding=encoding, header=0, na_values=".")
 
@@ -757,7 +769,13 @@ def read_xlsx(filename):  # pragma: no cover
     list
 
     """
-    import pandas as pd
+    try:
+        import pandas as pd
+    except ImportError:
+        raise ImportError(
+            "Pandas library is required for workflow. "
+            "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+        )
 
     lines = pd.read_excel(filename)
     return lines

@@ -1,14 +1,8 @@
 ci:
-  autofix_commit_msg: 'MISC: Auto fixes from pre-commit.com hooks
-
-
-    For more information, see https://pre-commit.ci
-
-    '
-  autofix_prs: true
-  autoupdate_branch: maint/pre-commit-autoupdate
-  autoupdate_commit_msg: 'MISC: Pre-commit automatic update'
+  autofix_commit_msg: 'CHORE: Auto fixes from pre-commit hooks'
+  autoupdate_commit_msg: 'CHORE: Pre-commit automatic update'
   autoupdate_schedule: weekly
+
 repos:
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
@@ -18,21 +12,24 @@ repos:
   - id: ruff-format
 
 - repo: https://github.com/adamchainz/blacken-docs
-  rev: 1.19.1
+  rev: 1.20.0
   hooks:
   - id: blacken-docs
     additional_dependencies:
     - black==25.1.0
 
 - repo: https://github.com/codespell-project/codespell
-  rev: v2.3.0
+  rev: v2.4.1
   hooks:
   - id: codespell
-    args:
-    - --ignore-words
-    - doc/styles/config/vocabularies/ANSYS/accept.txt
+    args: ["--ignore-words", "doc/styles/config/vocabularies/ANSYS/accept.txt"]
     additional_dependencies:
     - tomli
+
+- repo: https://github.com/pre-commit-ci/pre-commit-ci-config
+  rev: v1.6.1
+  hooks:
+    - id: check-pre-commit-ci-config
 
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.5.0

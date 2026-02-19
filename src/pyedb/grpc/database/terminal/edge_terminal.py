@@ -126,7 +126,7 @@ class EdgeTerminal(Terminal):
         """Set product solver option."""
         self.core.set_product_solver_option(product_id, solver_name, option)
 
-    def couple_ports(self, port):
+    def couple_ports(self, port) -> BundleTerminal:
         """Create a bundle wave port.
 
         Parameters
