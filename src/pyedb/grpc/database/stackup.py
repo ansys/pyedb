@@ -289,33 +289,6 @@ class LayerCollection:
         )
         return self.core.add_layer_above(layer.core, base_layer_name)
 
-    def add_document_layer(self, name: str, layer_type: str = "user", **kwargs: Any) -> Optional["Layer"]:
-        """Add a document layer.
-
-        Parameters
-        ----------
-        name : str
-            Name of the layer.
-        layer_type : str, optional
-            Type of the layer. The default is ``"user"``. Options are ``"user"`` and ``"outline"``.
-        **kwargs : dict, optional
-            Additional keyword arguments.
-
-        Returns
-        -------
-        :class:`pyedb.grpc.database.layers.layer.Layer`
-            Layer object created.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb()
-        >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
-        """
-        added_layer = self.add_layer_top(name)
-        added_layer.type = CoreLayerType.USER_LAYER
-        return added_layer
-
     @property
     def stackup_layers(self):
         """Retrieve the dictionary of signal and dielectric layers.
@@ -882,6 +855,34 @@ class Stackup:
         >>> edb.stackup.add_outline_layer()
         """
         return self.add_layer(layer_name="Outline", layer_type="outline")
+
+    def add_document_layer(self, name: str, layer_type: str = "user", **kwargs: Any) -> Optional["Layer"]:
+        """Add a document layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type : str, optional
+            Type of the layer. The default is ``"user"``. Options are ``"user"`` and ``"outline"``.
+        **kwargs : dict, optional
+            Additional keyword arguments.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.layer.Layer`
+            Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
+        """
+        added_layer = self.add_layer_top(name)
+        added_layer.type = CoreLayerType.USER_LAYER
+        return added_layer
+
 
     @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(

@@ -30,6 +30,10 @@ class Value(float):
         temp._edb_obj = edb_obj
         return temp
 
+    @property
+    def value(self):
+        return float(round(self._edb_obj.ToDouble(), 9))
+
     def __str__(self):
         """Returns the string of the variable.
 

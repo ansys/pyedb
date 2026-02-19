@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
-
+from pyedb.generic.settings import settings
 
 class CfgPackage(CfgBase):
     """Configuration package class."""
@@ -33,7 +33,7 @@ class CfgPackage(CfgBase):
         self.name = kwargs.get("name", None)
         self.component_definition = kwargs.get("component_definition", None)
         self.maximum_power = kwargs.get("maximum_power", None)
-        self.therm_cond = kwargs.get("therm_cond", None)
+        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
         self.theta_jb = kwargs.get("theta_jb", None)
         self.theta_jc = kwargs.get("theta_jc", None)
         self.height = kwargs.get("height", None)
@@ -84,7 +84,10 @@ class CfgPackageDefinitions:
         return package_definitions
 
     def set_parameter_to_edb(self):
-        from pyedb.dotnet.database.definition.package_def import PackageDef
+        if settings.is_grpc:
+            from pyedb.grpc.database.definition.package_def import PackageDef
+        else:
+            from pyedb.dotnet.database.definition.package_def import PackageDef
 
         for pkg in self.packages:
             comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]

@@ -538,7 +538,7 @@ class TestClass(BaseTestClass):
                     "name": "package_1",
                     "component_definition": "SMTC-MECT-110-01-M-D-RA1_V",
                     "maximum_power": 1,
-                    "therm_cond": 2,
+                    "thermal_conductivity": 2,
                     "theta_jb": 3,
                     "theta_jc": 4,
                     "height": 5,
@@ -557,7 +557,7 @@ class TestClass(BaseTestClass):
                     "component_definition": "COIL-1008CS_V",
                     "extent_bounding_box": [["-1mm", "-1mm"], ["1mm", "1mm"]],
                     "maximum_power": 1,
-                    "therm_cond": 2,
+                    "thermal_conductivity": 2,
                     "theta_jb": 3,
                     "theta_jc": 4,
                     "height": 5,
@@ -592,7 +592,7 @@ class TestClass(BaseTestClass):
                     target_heatsink = target_pdef["heatsink"]
                     for hs_p, hs_value in target_heatsink.items():
                         if hs_p in ["fin_base_height", "fin_height", "fin_spacing", "fin_thickness"]:
-                            hs_value = edbapp.edb_value(hs_value).ToDouble()
+                            hs_value = edbapp.value(hs_value).value
                         assert hs_value == target_heatsink[hs_p]
                 else:
                     assert value == target_pdef[p]
