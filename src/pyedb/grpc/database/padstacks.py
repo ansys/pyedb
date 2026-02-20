@@ -229,7 +229,7 @@ class Padstacks(object):
         >>> for inst_id, instance in all_instances.items():
         ...     print(f"Instance {inst_id}: {instance.name}")
         """
-        return self._pedb.layout.padstack_instances
+        return {i.id: i for i in self._pedb.layout.padstack_instances}
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:

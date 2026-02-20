@@ -51,8 +51,10 @@ from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
+from pyedb.grpc.database.inner import conn_obj
 
-class PadstackInstance:
+
+class PadstackInstance(conn_obj.ConnObj):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -194,17 +196,6 @@ class PadstackInstance:
             Layout object.
         """
         return self._pedb.active_layout
-
-    @property
-    def is_null(self):
-        """Check if the padstack instance is null.
-
-        Returns
-        -------
-        bool
-            True if the padstack instance is null, False otherwise.
-        """
-        return self.core.is_null
 
     @property
     def definition(self) -> PadstackDef:

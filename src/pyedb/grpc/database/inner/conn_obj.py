@@ -21,8 +21,21 @@
 # SOFTWARE.
 
 from pyedb.grpc.database.inner.layout_obj import LayoutObj
+from pyedb.generic.product_property import EMProperties
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 
 class ConnObj(LayoutObj):
     def __init__(self, pedb, core):
         super().__init__(pedb, core)
+
+    def get_em_properties(self):
+        em_string = self.core.get_product_property(CoreProductIdType.DESIGNER, 18)
+        if em_string:
+            return EMProperties.from_em_string(em_string)
+        else:
+            return EMProperties()
+
+    def set_em_properties(self, em_properties: EMProperties):
+        em_string = em_properties.to_em_string()
+        self.core.set_product_property(CoreProductIdType.DESIGNER, 18, em_string)
