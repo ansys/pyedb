@@ -744,7 +744,8 @@ class Configuration:
             pdef_obj = self._pedb.padstacks.definitions[pdef.name]
             set_padstack_definition(pdef, pdef_obj)
 
-        insts_by_name = self._pedb.padstacks.instances_by_name
+        if padstacks.instances:
+            insts_by_name = self._pedb.padstacks.instances_by_name
         for inst in padstacks.instances:
             inst_obj = insts_by_name[inst.name]
             set_padstack_instance(inst, inst_obj)
