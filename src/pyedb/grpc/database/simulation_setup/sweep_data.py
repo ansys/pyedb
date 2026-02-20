@@ -77,6 +77,7 @@ class FrequencyData:
             )
         self._core.distribution = _mapping_distribution[value]
 
+
     @property
     def start_frequency(self) -> str:
         """Get the start frequency in Hz.
@@ -150,8 +151,10 @@ class SweepData:
         end_f=10e9,
         step=10e6,
         core: "GrpcSweepData" = None,
+        simsetup: "SimulationSetup" = None,
     ):
         self._pedb = pedb
+        self.simsetup = simsetup
         if core:
             self.core = core
         else:
@@ -180,6 +183,7 @@ class SweepData:
     def name(self, value: str):
         """Set the name of the frequency sweep data."""
         self.core.name = value
+        self._update_sweep()
 
     @property
     def frequency_data(self) -> CoreFrequencyData:
@@ -190,7 +194,41 @@ class SweepData:
         GrpcFrequencyData
             Frequency data object.
         """
-        return FrequencyData(self.core.frequency_data)
+        if isinstance(self.core.frequency_data, list):
+            # If frequency_data is a list, return the first element as default
+            return [FrequencyData(self.core.frequency_data[i]) for i in range(len(self.core.frequency_data))]
+        return [FrequencyData(self.core.frequency_data)]
+
+    def add_frequency_data(self, distribution: str, start_f: float, end_f: float, step: float):
+        """Add frequency data to the sweep.
+
+        Parameters
+        ----------
+        distribution : str
+            Distribution type of the frequency data. Supported types are: "lin", "dec", "estp", "linc", "oct".
+        start_f : float
+            Start frequency in Hz.
+        end_f : float
+            End frequency in Hz.
+        step : float
+            Frequency step in Hz.
+        """
+        if distribution not in _mapping_distribution:
+            raise ValueError(
+                f"Unsupported distribution type: {distribution}. Supported types are: {list(_mapping_distribution.keys())}"
+            )
+        distribution = _mapping_distribution[distribution]
+        frequency_data = CoreFrequencyData(
+            distribution=distribution,
+            start_f=str(self._pedb.value(start_f)),
+            end_f=str(self._pedb.value(end_f)),
+            step=str(self._pedb.value(step)),
+        )
+        if isinstance(self.core.frequency_data, list):
+            self.core.frequency_data.append(frequency_data)
+        else:
+            self.core.frequency_data = [self.core.frequency_data, frequency_data]
+        return True
 
     @property
     def enabled(self) -> bool:
@@ -206,6 +244,7 @@ class SweepData:
     @enabled.setter
     def enabled(self, value: bool):
         self.core.enabled = value
+        self._update_sweep()
 
     @property
     def type(self) -> str:
@@ -225,6 +264,7 @@ class SweepData:
                 f"Unsupported sweep type: {value}. Supported types are: {list(_mapping_sweep_type.keys())}"
             )
         self.core.type = _mapping_sweep_type[value]
+        self._update_sweep()
 
     @property
     def use_q3d_for_dc(self) -> bool:
@@ -240,6 +280,7 @@ class SweepData:
     @use_q3d_for_dc.setter
     def use_q3d_for_dc(self, value: bool):
         self.core.use_q3d_for_dc = value
+        self._update_sweep()
 
     @property
     def save_fields(self) -> bool:
@@ -255,6 +296,7 @@ class SweepData:
     @save_fields.setter
     def save_fields(self, value: bool):
         self.core.save_fields = value
+        self._update_sweep()
 
     @property
     def save_rad_fields_only(self) -> bool:
@@ -285,6 +327,8 @@ class SweepData:
     @compute_dc_point.setter
     def compute_dc_point(self, value: bool):
         self.core.compute_dc_point = value
+        self._update_sweep()
+
 
     @property
     def siwave_with_3dddm(self) -> bool:
@@ -300,6 +344,24 @@ class SweepData:
     @siwave_with_3dddm.setter
     def siwave_with_3dddm(self, value: bool):
         self.core.siwave_with_3dddm = value
+        self._update_sweep()
+
+    @property
+    def adv_dc_extrapolation(self) -> bool:
+        """Get the flag indicating if advanced DC extrapolation is used.
+
+        Returns
+        -------
+        bool
+            True if advanced DC extrapolation is used, False otherwise.
+        """
+        #to be implemented in edb core, currently does not exist in edb core
+        return  False
+
+    @adv_dc_extrapolation.setter
+    def adv_dc_extrapolation(self, value: bool):
+        #to be implemented in edb core, currently does not exist in edb core
+        pass
 
     @property
     def use_hfss_solver_regions(self) -> bool:
@@ -315,6 +377,7 @@ class SweepData:
     @use_hfss_solver_regions.setter
     def use_hfss_solver_regions(self, value: bool):
         self.core.use_hfss_solver_regions = value
+        self._update_sweep()
 
     @property
     def frequency_string(self) -> str:
@@ -326,6 +389,11 @@ class SweepData:
             Frequency sweep string.
         """
         return self.core.frequency_string.strip()
+    
+    @frequency_string.setter
+    def frequency_string(self, value: str):
+        self.core.frequency_string = value
+        self._update_sweep()
 
     @property
     def enforce_causality(self) -> bool:
@@ -341,6 +409,7 @@ class SweepData:
     @enforce_causality.setter
     def enforce_causality(self, value: bool):
         self.core.interpolation_data.enforce_causality = value
+        self._update_sweep()
 
     @property
     def enforce_passivity(self) -> bool:
@@ -356,6 +425,7 @@ class SweepData:
     @enforce_passivity.setter
     def enforce_passivity(self, value: bool):
         self.core.interpolation_data.enforce_passivity = value
+        self._update_sweep()
 
     @property
     def interpolation_data(self):
@@ -367,3 +437,16 @@ class SweepData:
             List of interpolation data points in Hz.
         """
         return self.core.interpolation_data
+
+    def _update_sweep(self):
+        """Update the sweep."""
+        sweepdata = self.simsetup.core.sweep_data
+        new_data = []
+        for i in sweepdata:
+            if i.name == self.name:
+                new_data.append(self.core)
+            else:
+                new_data.append(i)
+
+        self.simsetup.core.sweep_data = new_data
+        return

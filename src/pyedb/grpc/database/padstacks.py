@@ -1612,6 +1612,7 @@ class Padstacks(object):
         search_radius: float = 5e-3,
         max_limit: int = 0,
         component_only: bool = True,
+        pinlist_position: dict = None,
     ) -> List[PadstackInstance]:
         """Find reference pins near a specified pin.
 
@@ -1633,30 +1634,33 @@ class Padstacks(object):
         list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             List of reference pins.
         """
-        pinlist = []
-        if not positive_pin:
-            search_radius = 10e-2
-            component_only = True
-        if component_only:
-            references_pins = [
-                pin
-                for pin in list(positive_pin.component.pins.values())
-                if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
-            ]
-            references_pins = [pin for pin in references_pins if not pin.terminal]
-            if not references_pins:
-                return pinlist
-        else:
-            references_pins = self.get_instances(net_name=reference_net)
-            if not references_pins:
-                return pinlist
+        if not pinlist_position:
+            pinlist = []
+            if not positive_pin:
+                search_radius = 10e-2
+                component_only = True
+            if component_only:
+                references_pins = [
+                    pin
+                    for pin in list(positive_pin.component.pins.values())
+                    if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
+                ]
+                references_pins = [pin for pin in references_pins if not pin.terminal]
+                if not references_pins:
+                    return pinlist
+            else:
+                references_pins = self.get_instances(net_name=reference_net)
+                if not references_pins:
+                    return pinlist
+            pinlist_position = {p: p.position for p in references_pins}
+        pos_position= positive_pin.position
         pinlist = [
             p
-            for p in references_pins
-            if GeometryOperators.points_distance(positive_pin.position, p.position) <= search_radius
+            for p, pos in pinlist_position.items()
+            if GeometryOperators.points_distance(pos_position, pos) <= search_radius
         ]
         if max_limit and len(pinlist) > max_limit:
-            pin_dict = {GeometryOperators.points_distance(positive_pin.position, p.position): p for p in pinlist}
+            pin_dict = {GeometryOperators.points_distance(pos_position, p.position): p for p in pinlist}
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
 

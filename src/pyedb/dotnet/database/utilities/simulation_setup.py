@@ -289,7 +289,7 @@ class SimulationSetup(object):
         stop_freq: str = None,
         step=None,
         frequency_set: list = None,
-        sweep_type: str = "interpolation",
+        discrete=False,
         **kwargs,
     ):
         """Add frequency sweep.
@@ -318,6 +318,10 @@ class SimulationSetup(object):
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
         """
+        if "sweep_type" in kwargs:
+            self._pedb.logger("sweep_type parameter is deprecated. Use ``discrete`` parameter instead")
+            discrete = False if kwargs["sweep_type"] == "interpolation" else True
+
         name = generate_unique_name("sweep") if not name else name
         if name in self.sweeps:
             raise ValueError("Sweep {} already exists.".format(name))
@@ -343,7 +347,7 @@ class SimulationSetup(object):
         for k, v in kwargs.items():
             if k in dir(sweep_data):
                 setattr(sweep_data, k, v)
-        sweep_data.type = sweep_type
+        sweep_data.type = "interpolation" if not discrete else "discrete"
 
         return sweep_data
 

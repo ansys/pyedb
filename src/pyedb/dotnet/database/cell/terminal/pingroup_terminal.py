@@ -28,6 +28,7 @@ class PinGroupTerminal(Terminal):
 
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
+        self.core = self
 
     def create(self, name, net_name, pin_group_name, is_ref=False):
         """Create a pin group terminal.

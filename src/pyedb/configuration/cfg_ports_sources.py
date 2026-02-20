@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import copy
 
 import numpy as np
 
@@ -93,7 +94,7 @@ class CfgNearestPinTerminalInfo(CfgTerminalInfo):
 
 class CfgSources:
     def get_pin_group_name(self, src):
-        return src._edb_object.GetPinGroup().GetName()
+        return src.pin_group.name
 
     def __init__(self, pedb, sources_data):
         self._pedb = pedb
@@ -115,18 +116,18 @@ class CfgSources:
             refdes = ""
             pos_term_info = {}
             neg_term_info = {}
-            if src.terminal_type == "PinGroupTerminal":
+            if src.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 pg = self._pedb.siwave.pin_groups[self.get_pin_group_name(src)]
                 pos_term_info = {"pin_group": pg.name}
-            elif src.terminal_type == "PadstackInstanceTerminal":
+            elif src.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 refdes = src.component.refdes if src.component else ""
                 pos_term_info = {"padstack": src.padstack_instance.aedt_name}
 
             neg_term = self._pedb.terminals[src.reference_terminal.name]
-            if neg_term.terminal_type == "PinGroupTerminal":
+            if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 pg = self._pedb.siwave.pin_groups[self.get_pin_group_name(neg_term)]
                 neg_term_info = {"pin_group": pg.name}
-            elif neg_term.terminal_type == "PadstackInstanceTerminal":
+            elif neg_term.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
 
             cfg_src = CfgSource(
@@ -420,11 +421,16 @@ class CfgCircuitElement(CfgBase):
                 ref_net = neg_value.get("reference_net", "GND")
                 search_radius = neg_value.get("search_radius", "5e-3")
                 temp = dict()
+                references_pins = {
+                    pin:pin.position for pin in list(list(pos_objs.values())[0].component.pins.values()) if pin.net_name == ref_net
+                }
+
                 for i, j in pos_objs.items():
-                    temp[i] = self._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
+                    temp[i] = self._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1, pinlist_position=references_pins)[0]
                 self.neg_terminal = {
                     i: j.create_terminal(i + "_ref") if not j.terminal else j.terminal for i, j in temp.items()
                 }
+                pass
             else:
                 if neg_type == "pin_group":
                     neg_obj = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
@@ -480,7 +486,7 @@ class CfgCircuitElement(CfgBase):
         component = pin.component
         placement_layer = component.placement_layer
         pos_x, pos_y = pin.position
-        comp_rotation = self._pedb.edb_value(component.rotation).ToDouble() % 3.141592653589793
+        comp_rotation = self._pedb.value(component.rotation).value % 3.141592653589793
 
         pad = pin.definition.pad_by_layer[placement_layer]
         if pad.shape.lower() in ["rectangle", "oval"]:
@@ -520,7 +526,7 @@ class CfgCircuitElement(CfgBase):
             for x, y in [[1, 1], [-1, 1], [1, -1], [-1, -1]]:
                 positions.append([x_offset * x, y_offset * y])
 
-        pdef_name = f"{self.name}_{pin.pin_number}"
+        pdef_name = f"{self.name}_{pin.name}"
         self._pedb.padstacks.create(padstackname=pdef_name, has_hole=False, paddiam=radius * 2, antipaddiam=0)
         instances = {}
         for idx, xy in enumerate(positions):
@@ -605,6 +611,8 @@ class CfgSource(CfgCircuitElement):
         create_xxx_source = (
             self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
         )
+        terminals = self._pedb.terminals
+
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
                 elem = create_xxx_source(j, self.neg_terminal[name])
@@ -622,12 +630,14 @@ class CfgSource(CfgCircuitElement):
             else:
                 elem.name = name
                 elem.magnitude = self.magnitude / self._elem_num
-            elem = self._pedb.terminals[elem.name]
+            if elem.name not in terminals:
+                terminals = self._pedb.terminals
+            elem = terminals[elem.name]
             circuit_elements.append(elem)
 
         for terminal in circuit_elements:
             # Get reference terminal
-            terms = [terminal, terminal.reference_terminal] if terminal.reference_terminal else [terminal]
+            terms = [terminal, terminals[terminal.core.reference_terminal.name]] if terminal.core.reference_terminal else [terminal]
             for t in terms:
                 if not t.is_reference_terminal:
                     radius = self.positive_terminal_info.contact_radius
@@ -635,7 +645,7 @@ class CfgSource(CfgCircuitElement):
                 else:
                     radius = self.negative_terminal_info.contact_radius
                     contact_type = self.negative_terminal_info.contact_type
-                if t.terminal_type == "PointTerminal":
+                if t.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                     temp = [i for i in self._pedb.layout.terminals if i.name == t.name][0]
                     prim = self._pedb.modeler.create_circle(
                         temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name
@@ -644,12 +654,12 @@ class CfgSource(CfgCircuitElement):
                     continue
                 elif contact_type.lower() == "default":
                     continue
-                elif t.terminal_type == "PadstackInstanceTerminal":
+                elif t.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                     if contact_type.lower() in ["full", "quad", "inline"]:
                         t.padstack_instance._set_equipotential()
                     elif contact_type.lower() == "center":
                         t.padstack_instance._set_equipotential(contact_radius=radius)
-                elif t.terminal_type == "PinGroupTerminal":
+                elif t.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     name = t._edb_object.GetPinGroup().GetName()
                     pg = self._pedb.siwave.pin_groups[name]
                     pads = [i for _, i in pg.pins.items()]

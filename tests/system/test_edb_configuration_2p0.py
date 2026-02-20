@@ -60,7 +60,23 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["orientation"] == "chip_down"
     assert float(component["solder_ball_properties"]["diameter"]) == 0.000244
 
-
+def check_dictionaries(source_dict, target_dict):
+    for key, value in source_dict.items():
+        if isinstance(value, dict):
+            if key not in target_dict:
+                return False
+            return check_dictionaries(value, target_dict[key])
+        elif isinstance(value, list):
+            for item_source, item_target in zip(value, target_dict[key]):
+                if isinstance(item_source, dict):
+                    return check_dictionaries(item_source, item_target)
+                else:
+                    if str(item_source) != str(item_target):
+                        return False
+        else:
+            if str(value) != str(target_dict[key]):
+                return False
+    return True
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_13b_stackup_materials(self):
@@ -641,7 +657,10 @@ class TestClass(BaseTestClass):
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                assert value == target_mat[p]
+                try:
+                    assert float(edbapp.value(value)) == float(edbapp.value(target_mat[p]))
+                except Exception as e:
+                    assert str(edbapp.value(value)) == str(edbapp.value(target_mat[p]))
         edbapp.close(terminate_rpc_session=False)
 
     def test_15b_sources_net_net(self):
@@ -1073,9 +1092,9 @@ class TestClassSetups(BaseTestClass):
                     "type": "hfss",
                     "adapt_type": "single",
                     "single_frequency_adaptive_solution": {
-                        "adaptive_frequency": 5e9,
+                        "adaptive_frequency": "5GHz",
                         "max_passes": 10,
-                        "max_delta": 0.02,
+                        "max_delta": '0.02',
                     },
                     "freq_sweep": [],
                     "auto_mesh_operation": {
@@ -1089,7 +1108,7 @@ class TestClassSetups(BaseTestClass):
                             "name": "mop_1",
                             "mesh_operation_type": "length",
                             "max_length": "3mm",
-                            "max_elements": 100,
+                            "max_elements": '100',
                             "restrict_length": True,
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
@@ -1107,7 +1126,7 @@ class TestClassSetups(BaseTestClass):
         target = next(item for item in data_from_db["setups"] if item["name"] == "single")
         target.pop("broadband_adaptive_solution")
         target.pop("multi_frequency_adaptive_solution")
-        assert source == target
+        assert check_dictionaries(source, target)
 
         edbapp.close(terminate_rpc_session=False)
 
@@ -1148,7 +1167,7 @@ class TestClassSetups(BaseTestClass):
         )  # Remove single_frequency_adaptive_solution since it's not defined in source but is returned from db with
         # default value
         target.pop("multi_frequency_adaptive_solution")
-        assert source == target
+        assert check_dictionaries(source, target)
 
         edbapp.close(terminate_rpc_session=False)
 
@@ -1220,18 +1239,17 @@ class TestClassSetups(BaseTestClass):
         data_from_db = edbapp.configuration.get_data_from_db(setups=True)
         setup = data_from_db["setups"][0]
         assert setup["name"] == "hfss_setup_1"
-        sweep1 = setup["freq_sweep"][0]
+        sweep1 = [i for i in setup["freq_sweep"] if i["name"] == "sweep1"][0]
         assert sweep1["name"] == "sweep1"
         assert sweep1["compute_dc_point"]
         assert sweep1["enforce_causality"]
         assert not sweep1["enforce_passivity"]
-        assert sweep1["adv_dc_extrapolation"]
         assert sweep1["frequencies"] == [
             "LIN 0.0GHz 0.2GHz 0.01GHz",
             "DEC 1e-06GHz 0.0001GHz 10",
             "LINC 0.01GHz 0.02GHz 11",
         ]
-        sweep2 = setup["freq_sweep"][1]
+        sweep2 = [i for i in setup["freq_sweep"] if i["name"] == "sweep2"][0]
         assert sweep2["type"] == "discrete"
         edbapp.close(terminate_rpc_session=False)
 

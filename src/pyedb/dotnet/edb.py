@@ -444,8 +444,11 @@ class Edb:
 
     def value(self, val):
         """Convert a value into a pyedb value."""
-        val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
-        return Value(self, val_)
+        try:
+            val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
+            return Value(self, val_)
+        except Exception as e:
+            return val
 
     @property
     def grpc(self):

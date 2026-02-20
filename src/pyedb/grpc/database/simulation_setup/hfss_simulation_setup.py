@@ -230,32 +230,6 @@ class HfssSimulationSetup(SimulationSetup):
         )
         return self.settings.solver
 
-    @property
-    def sweep_data(self) -> list[SweepData]:
-        """List of HFSS sweep data.
-
-        Returns
-        -------
-        list[:class:`SweepData <pyedb.grpc.database.simulation_setup.sweep_data.SweepData>`]
-            List of sweep data.
-
-        """
-        return [SweepData(self, core=sweep) for sweep in self.core.sweep_data]
-
-    @sweep_data.setter
-    def sweep_data(self, value: list[SweepData]):
-        """Set the HFSS sweep data list.
-
-        Accepts a list of SweepData wrapper objects or raw core sweep objects. The underlying
-        core.sweep_data is updated with core objects extracted from the wrappers.
-        """
-        # Normalize incoming values to core objects
-        core_list = []
-        for item in value:
-            # If a wrapper with .core attribute is provided, use that; otherwise assume it's already a core object
-            core_list.append(item.core if hasattr(item, "core") else item)
-        self.core.sweep_data = core_list
-
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
         """Set HFSS single frequency solution.
         Parameters

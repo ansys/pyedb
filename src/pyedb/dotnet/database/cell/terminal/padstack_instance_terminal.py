@@ -30,6 +30,7 @@ class PadstackInstanceTerminal(Terminal):
 
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
+        self.core = self
 
     @property
     def position(self):

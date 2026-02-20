@@ -44,7 +44,7 @@ class CfgSetupDC(CfgBaseModel):
 class CfgSetupAC(CfgSetupDC):
     class CfgFrequencySweep(CfgBaseModel):
         name: str
-        type: Literal["discrete", "interpolation"]
+        type: Literal["discrete", "interpolation", "interpolating"]
         frequencies: list[CfgFrequencies | str] = Field(list(), description="List of frequency definitions or strings")
 
         use_q3d_for_dc: bool = Field(False, description="Use Q3D for DC analysis. Only applicable for HFSS setup.")

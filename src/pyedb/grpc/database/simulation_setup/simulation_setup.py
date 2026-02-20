@@ -27,9 +27,9 @@ if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
 from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as CoreSimulationSetupType
-
+from ansys.edb.core.simulation_setup.simulation_setup import FreqSweepType
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
-
+from ansys.edb.core.simulation_setup.simulation_setup import FrequencyData as CoreFrequencyData
 _mapping_simulation_types = {
     CoreSimulationSetupType.HFSS: "hfss",
     CoreSimulationSetupType.SI_WAVE: "siwave",
@@ -123,7 +123,7 @@ class SimulationSetup(SimulationSetupDeprecated):
             List of sweep data objects.
         """
 
-        return [SweepData(self._pedb, core=sweep) for sweep in self.core.sweep_data]
+        return [SweepData(self._pedb, core=sweep, simsetup=self) for sweep in self.core.sweep_data]
 
     @sweep_data.setter
     def sweep_data(self, sweeps: list[SweepData]):
@@ -168,7 +168,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         stop_freq_val = self._pedb.number_with_units(stop_freq, "Hz")
         step_val = str(step)
         sweep = SweepData(
-            self._pedb, name=name, distribution=distribution, start_f=start_freq_val, end_f=stop_freq_val, step=step_val
+            self._pedb, name=name, distribution=distribution, start_f=start_freq_val, end_f=stop_freq_val, step=step_val, simsetup=self
         )
         if discrete:
             # Use the string-based setter to avoid direct enum access
@@ -181,7 +181,8 @@ class SimulationSetup(SimulationSetupDeprecated):
         This function creates SweepData entries from the provided frequency_set and
         appends them to the existing core.sweep_data.
         """
-        new_sweeps = []
+        from pyedb.grpc.database.simulation_setup.sweep_data import _mapping_distribution
+        sw_data = None
         for sweep_item in frequency_set:
             # detect distribution token and map to internal code
             if "linear_scale" in sweep_item:
@@ -202,34 +203,31 @@ class SimulationSetup(SimulationSetupDeprecated):
             step = str(sweep_item[3])
             if not name:
                 name = f"sweep_{init_sweep_count + 1}"
-            new_sweeps.append(
-                SweepData(
-                    self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
+            if not sw_data:
+                sw_data = SweepData(
+                        self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step, simsetup=self
+                    )
+            else:
+                sw_data.add_frequency_data(
+                    distribution=distribution,
+                    start_f=start_freq,
+                    end_f=stop_freq,
+                    step=step
                 )
-            )
-            if discrete:
-                # Use the string-based setter
-                new_sweeps[-1].type = "discrete"
+        if discrete:
+            # Use the string-based setter
+            sw_data.type = "discrete" if discrete else "interpolating"
         # append existing core sweep data (preserve previous entries)
-        for s in self.core.sweep_data:
-            new_sweeps.append(s)
-        self.core.sweep_data = new_sweeps
+        self.core.sweep_data = self.core.sweep_data + [sw_data.core]
+        return sw_data
 
     def _add_single_sweep(self, sweep: SweepData) -> Union[SweepData, None]:
         """Insert a single sweep into core.sweep_data preserving existing sweeps.
 
         Returns the newly added SweepData on success, None otherwise.
         """
-        init_count = len(self.sweep_data)
-        # Prepend the new sweep keeping previous ones
-        sweep_list = [sweep]
-        for s in self.sweep_data:
-            sweep_list.append(s)
-        sweep_data = [sw.core for sw in sweep_list]
-        self.core.sweep_data = sweep_data
-        if len(self.sweep_data) == init_count + 1:
-            return self.sweep_data[-1]
-        return None
+        self.core.sweep_data = self.core.sweep_data + [sweep.core]
+        return self.sweep_data[-1]
 
     def add_sweep(
         self,
@@ -255,8 +253,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         """
         # Legacy batch mode
         if frequency_set:
-            self._add_sweeps_from_frequency_set(frequency_set, name, len(self.sweep_data), discrete)
-            return None
+            return self._add_sweeps_from_frequency_set(frequency_set, name, len(self.sweep_data), discrete)
 
         # Single-sweep mode delegated to helper to reduce complexity
         distribution_code = self._normalize_distribution(distribution)

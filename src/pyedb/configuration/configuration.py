@@ -234,12 +234,14 @@ class Configuration:
                             s_f_adapt.adaptive_frequency = setup.single_frequency_adaptive_solution.adaptive_frequency
                             s_f_adapt.max_passes = setup.single_frequency_adaptive_solution.max_passes
                             s_f_adapt.max_delta = setup.single_frequency_adaptive_solution.max_delta
+                            edb_setup.core.settings.general.single_frequency_adaptive_solution = s_f_adapt
                         elif setup.adapt_type == "broadband":
                             b_f_adapt = edb_setup.settings.general.broadband_adaptive_solution
                             b_f_adapt.low_frequency = setup.broadband_adaptive_solution.low_frequency
                             b_f_adapt.high_frequency = setup.broadband_adaptive_solution.high_frequency
                             b_f_adapt.max_delta = setup.broadband_adaptive_solution.max_delta
                             b_f_adapt.max_passes = setup.broadband_adaptive_solution.max_passes
+                            edb_setup.core.settings.general.broadband_adaptive_solution = b_f_adapt
                         else:
                             raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
@@ -280,10 +282,10 @@ class Configuration:
                         else:
                             f_set.append([f.distribution, f.start, f.stop, f.increment])
 
-                    sweep = edb_setup.add_sweep(sw.name, frequency_set=f_set, sweep_type=sw.type)
-                    if len(freq_string) > 0:
-                        sweep.frequency_string = freq_string
+                    sweep = edb_setup.add_sweep(sw.name, frequency_set=f_set, discrete=False if sw.type=="interpolation" else True)
 
+                    if len(freq_string) > 0 and not settings.is_grpc:
+                        sweep.frequency_string = freq_string
                     sweep.use_q3d_for_dc = sw.use_q3d_for_dc
                     sweep.compute_dc_point = sw.compute_dc_point
                     sweep.enforce_causality = sw.enforce_causality
@@ -373,14 +375,14 @@ class Configuration:
                         cfg_ac_setup.CfgFrequencySweep(
                             name=name,
                             type=sw.type,
-                            frequencies=sw.frequency_string,
+                            frequencies=sw.frequency_string if isinstance(sw.frequency_string, list) else sw.frequency_string.split("\t\n"),
                             compute_dc_point=sw.compute_dc_point,
                             enforce_causality=sw.enforce_causality,
                             enforce_passivity=sw.enforce_passivity,
-                            adv_dc_extrapolation=sw.adv_dc_extrapolation,
+                            adv_dc_extrapolation=sw.adv_dc_extrapolation if hasattr(sw, "adv_dc_extrapolation") else False,
                             use_hfss_solver_regions=sw.use_hfss_solver_regions,
-                            hfss_solver_region_setup_name=sw.hfss_solver_region_setup_name,
-                            hfss_solver_region_sweep_name=sw.hfss_solver_region_sweep_name,
+                            hfss_solver_region_setup_name=sw.hfss_solver_region_setup_name if hasattr(sw,"hfss_solver_region_setup_name") else None,
+                            hfss_solver_region_sweep_name=sw.hfss_solver_region_sweep_name if  hasattr(sw,"hfss_solver_region_sweep_name") else None,
                         )
                     )
 

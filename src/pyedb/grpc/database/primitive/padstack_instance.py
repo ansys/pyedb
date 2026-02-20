@@ -1605,7 +1605,7 @@ class PadstackInstance:
             return created_polygon
 
     def get_reference_pins(
-        self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True
+        self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True, pinlist_position=None
     ) -> list[any]:
         """Search for reference pins using given criteria.
 
@@ -1640,6 +1640,7 @@ class PadstackInstance:
             search_radius=search_radius,
             max_limit=max_limit,
             component_only=component_only,
+            pinlist_position=pinlist_position,
         )
 
     def get_connected_objects(self):

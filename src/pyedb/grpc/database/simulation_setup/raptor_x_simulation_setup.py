@@ -76,22 +76,3 @@ class RaptorXSimulationSetup(SimulationSetup):
         """
         return RaptorXSimulationSettings(self._pedb, self.core.settings)
 
-    @property
-    def sweep_data(self) -> list[SweepData]:
-        """Returns Frequency sweeps.
-
-        Returns
-        -------
-        list[SweepData]
-            List of SweepData objects.
-
-        """
-        sweeps = []
-        for sweep in self.core.sweep_data:
-            sweeps.append(SweepData(self._pedb, core=sweep))
-        return sweeps
-
-    @sweep_data.setter
-    def sweep_data(self, value: list[SweepData]):
-        sweep_data = [sweep.core for sweep in value]
-        self.core.sweep_data = sweep_data

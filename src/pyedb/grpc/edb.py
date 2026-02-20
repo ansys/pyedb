@@ -458,13 +458,16 @@ class Edb(EdbInit):
             return None
         return None
 
-    def value(self, val) -> float:
+    def value(self, val) -> Value:
         """Convert a value into a pyedb value."""
-        if isinstance(val, CoreValue):
-            return Value(val)
-        else:
-            context = self.active_cell if not str(val).startswith("$") else self.active_db
-            return Value(CoreValue(val, context), context)
+        try:
+            if isinstance(val, CoreValue):
+                return Value(val)
+            else:
+                context = self.active_cell if not str(val).startswith("$") else self.active_db
+                return Value(CoreValue(val, context), context)
+        except Exception as e:
+            return val
 
     @property
     def cell_names(self) -> List[str]:

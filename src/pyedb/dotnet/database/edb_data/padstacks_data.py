@@ -2411,7 +2411,8 @@ class EDBPadstackInstance(Connectable):
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
+    def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True, pinlist_position: dict = None,
+):
         """Search for reference pins using given criteria.
 
         Parameters
@@ -2446,6 +2447,8 @@ class EDBPadstackInstance(Connectable):
             search_radius=search_radius,
             max_limit=max_limit,
             component_only=component_only,
+            pinlist_position=pinlist_position,
+
         )
 
     def split(self) -> list:
