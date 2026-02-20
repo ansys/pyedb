@@ -116,7 +116,6 @@ class Connectable(LayoutObj):
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
     def get_em_properties(self):
-
         pid = self._pedb.core.ProductId.Designer
         flag, em_string = self._edb_object.GetProductProperty(pid, 18, "")
         if flag:

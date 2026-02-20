@@ -20,9 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.grpc.database.inner.layout_obj import LayoutObj
-from pyedb.generic.product_property import EMProperties
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
+
+from pyedb.generic.product_property import EMProperties
+from pyedb.grpc.database.inner.layout_obj import LayoutObj
 
 
 class ConnObj(LayoutObj):
