@@ -476,7 +476,6 @@ class PadstackInstance(conn_obj.ConnObj):
             negative_terminal.is_circuit_port = is_circuit_port
             return positive_terminal
 
-
     @property
     def object_instance(self):
         """Layout object instance.

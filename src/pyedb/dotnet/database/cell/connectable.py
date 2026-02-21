@@ -115,7 +115,7 @@ class Connectable(LayoutObj):
         layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
-    def get_em_properties(self)-> EMProperties:
+    def get_em_properties(self) -> EMProperties:
         pid = self._pedb.core.ProductId.Designer
         flag, em_string = self._edb_object.GetProductProperty(pid, 18, "")
         if flag:
@@ -132,7 +132,7 @@ class Connectable(LayoutObj):
         return self._edb_object.SetProductProperty(pid, 18, em_string)
 
     @property
-    def dcir_equipotential_region(self)-> bool:
+    def dcir_equipotential_region(self) -> bool:
         """Get or set whether this primitive or padstack instance has a DCIR equipotential region. If this padstack
         instance has pads on multiple layers, the region is set on top layer.
         """

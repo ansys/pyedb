@@ -30,7 +30,7 @@ class ConnObj(LayoutObj):
     def __init__(self, pedb, core):
         super().__init__(pedb, core)
 
-    def get_em_properties(self)-> EMProperties:
+    def get_em_properties(self) -> EMProperties:
         """Get EM properties."""
         em_string = self.core.get_product_property(CoreProductIdType.DESIGNER, 18)
         if em_string:
@@ -43,7 +43,7 @@ class ConnObj(LayoutObj):
         self.core.set_product_property(CoreProductIdType.DESIGNER, 18, em_string)
 
     @property
-    def dcir_equipotential_region(self)-> bool:
+    def dcir_equipotential_region(self) -> bool:
         """Get DCIR equipotential region property of a primitive or a padstack instance."""
         emp = self.get_em_properties()
         return emp.properties.dcir_equipotential_region
