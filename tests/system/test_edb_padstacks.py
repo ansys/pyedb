@@ -681,3 +681,22 @@ def _assert_inside(rect, pad):
     assert math.isclose(round(result[0].Area(), 4), round(rect.Area(), 4)), (
         f"{BASE_MESSAGE} area of intersection is not equal to rectangle area"
     )
+
+
+@pytest.mark.usefixtures("close_rpc_session")
+class TestEMProperties(BaseTestClass):
+    def test_em_properties(self):
+        edbapp = self.edb_examples.get_si_verse()
+        [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
+        oval.dcir_equipotential_region = True
+        circle.dcir_equipotential_region = True
+        rect.dcir_equipotential_region = True
+        edbapp.save()
+        edbapp.close(terminate_rpc_session=False)
+
+        edbapp = self.edb_examples.load_edb(edbapp.edbpath)
+        [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
+        assert oval.dcir_equipotential_region is True
+        assert circle.dcir_equipotential_region is True
+        assert rect.dcir_equipotential_region is True
+        edbapp.close(terminate_rpc_session=False)

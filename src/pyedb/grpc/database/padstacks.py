@@ -229,7 +229,7 @@ class Padstacks(object):
         >>> for inst_id, instance in all_instances.items():
         ...     print(f"Instance {inst_id}: {instance.name}")
         """
-        return self._pedb.layout.padstack_instances
+        return {i.id: i for i in self._pedb.layout.padstack_instances}
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
@@ -1021,7 +1021,7 @@ class Padstacks(object):
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
         via_list = []
-        for inst in self._layout.padstack_instances.values():
+        for inst in self.instances.values():
             pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:

@@ -42,6 +42,7 @@ from ansys.edb.core.terminal.pin_group_terminal import (
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
+from pyedb.grpc.database.inner import conn_obj
 from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -52,7 +53,7 @@ from pyedb.grpc.database.utility.value import Value
 from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class PadstackInstance:
+class PadstackInstance(conn_obj.ConnObj):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -194,17 +195,6 @@ class PadstackInstance:
             Layout object.
         """
         return self._pedb.active_layout
-
-    @property
-    def is_null(self):
-        """Check if the padstack instance is null.
-
-        Returns
-        -------
-        bool
-            True if the padstack instance is null, False otherwise.
-        """
-        return self.core.is_null
 
     @property
     def definition(self) -> PadstackDef:
@@ -485,71 +475,6 @@ class PadstackInstance:
             positive_terminal.is_circuit_port = is_circuit_port
             negative_terminal.is_circuit_port = is_circuit_port
             return positive_terminal
-
-    @property
-    def _em_properties(self):
-        """Get EM properties."""
-        from ansys.edb.core.database import ProductIdType
-
-        default = (
-            r"$begin 'EM properties'\n"
-            r"\tType('Mesh')\n"
-            r"\tDataId='EM properties1'\n"
-            r"\t$begin 'Properties'\n"
-            r"\t\tGeneral=''\n"
-            r"\t\tModeled='true'\n"
-            r"\t\tUnion='true'\n"
-            r"\t\t'Use Precedence'='false'\n"
-            r"\t\t'Precedence Value'='1'\n"
-            r"\t\tPlanarEM=''\n"
-            r"\t\tRefined='true'\n"
-            r"\t\tRefineFactor='1'\n"
-            r"\t\tNoEdgeMesh='false'\n"
-            r"\t\tHFSS=''\n"
-            r"\t\t'Solve Inside'='false'\n"
-            r"\t\tSIwave=''\n"
-            r"\t\t'DCIR Equipotential Region'='false'\n"
-            r"\t$end 'Properties'\n"
-            r"$end 'EM properties'\n"
-        )
-
-        p = self.core.get_product_property(ProductIdType.DESIGNER, 18)
-        if p:
-            return p
-        else:
-            return default
-
-    @_em_properties.setter
-    def _em_properties(self, em_prop):
-        """Set EM properties"""
-        pid = self._pedb.core.ProductId.Designer
-        self.core.set_product_property(pid, 18, em_prop)
-
-    @property
-    def dcir_equipotential_region(self) -> bool:
-        """Check whether dcir equipotential region is enabled.
-
-        Returns
-        -------
-        bool
-
-        """
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        em_pp = self._em_properties
-        result = re.search(pattern, em_pp).group(1)
-        if result == "true":
-            return True
-        else:
-            return False
-
-    @dcir_equipotential_region.setter
-    def dcir_equipotential_region(self, value):
-        """Set dcir equipotential region."""
-        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
-        em_pp = self._em_properties
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        new_em_pp = re.sub(pattern, pp, em_pp)
-        self._em_properties = new_em_pp
 
     @property
     def object_instance(self):

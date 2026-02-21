@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from pyedb.dotnet.database.cell.layout_obj import LayoutObj
+from pyedb.generic.product_property import EMProperties
 
 
 class Connectable(LayoutObj):
@@ -113,3 +114,33 @@ class Connectable(LayoutObj):
         layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
         layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
+
+    def get_em_properties(self) -> EMProperties:
+        pid = self._pedb.core.ProductId.Designer
+        flag, em_string = self._edb_object.GetProductProperty(pid, 18, "")
+        if flag:
+            if em_string:
+                return EMProperties.from_em_string(em_string)
+            else:
+                return EMProperties()
+        else:
+            raise RuntimeError("Failed to get EM properties for padstack instance {}.".format(self.name))
+
+    def set_em_properties(self, em_properties: EMProperties):
+        pid = self._pedb.core.ProductId.Designer
+        em_string = em_properties.to_em_string()
+        return self._edb_object.SetProductProperty(pid, 18, em_string)
+
+    @property
+    def dcir_equipotential_region(self) -> bool:
+        """Get or set whether this primitive or padstack instance has a DCIR equipotential region. If this padstack
+        instance has pads on multiple layers, the region is set on top layer.
+        """
+        emp = self.get_em_properties()
+        return emp.properties.dcir_equipotential_region
+
+    @dcir_equipotential_region.setter
+    def dcir_equipotential_region(self, value: bool):
+        emp = self.get_em_properties()
+        emp.properties.dcir_equipotential_region = value
+        self.set_em_properties(emp)
