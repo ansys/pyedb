@@ -115,7 +115,7 @@ class Connectable(LayoutObj):
         layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
         return [loi.GetLayoutObj().GetId() for loi in layoutInst.GetConnectedObjects(layoutObjInst).Items]
 
-    def get_em_properties(self):
+    def get_em_properties(self)-> EMProperties:
         pid = self._pedb.core.ProductId.Designer
         flag, em_string = self._edb_object.GetProductProperty(pid, 18, "")
         if flag:
@@ -129,4 +129,15 @@ class Connectable(LayoutObj):
     def set_em_properties(self, em_properties: EMProperties):
         pid = self._pedb.core.ProductId.Designer
         em_string = em_properties.to_em_string()
-        self._edb_object.SetProductProperty(pid, 18, em_string)
+        return self._edb_object.SetProductProperty(pid, 18, em_string)
+
+    @property
+    def dcir_equipotential_region(self)-> bool:
+        emp = self.get_em_properties()
+        return emp.properties.dcir_equipotential_region
+
+    @dcir_equipotential_region.setter
+    def dcir_equipotential_region(self, value: bool):
+        emp = self.get_em_properties()
+        emp.properties.dcir_equipotential_region = value
+        self.set_em_properties(emp)
