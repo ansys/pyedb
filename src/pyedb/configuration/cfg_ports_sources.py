@@ -648,18 +648,18 @@ class CfgSource(CfgCircuitElement):
                     continue
                 elif t.terminal_type == "PadstackInstanceTerminal":
                     if contact_type.lower() in ["full", "quad", "inline"]:
-                        t.padstack_instance._set_equipotential()
+                        t.padstack_instance.set_dcir_equipotential_advanced()
                     elif contact_type.lower() == "center":
-                        t.padstack_instance._set_equipotential(contact_radius=radius)
+                        t.padstack_instance.set_dcir_equipotential_advanced(contact_radius=radius)
                 elif t.terminal_type == "PinGroupTerminal":
                     name = t._edb_object.GetPinGroup().GetName()
                     pg = self._pedb.siwave.pin_groups[name]
                     pads = [i for _, i in pg.pins.items()]
                     for i in pads:
                         if contact_type.lower() in ["full", "quad", "inline"]:
-                            i._set_equipotential()
+                            i.set_dcir_equipotential_advanced()
                         elif contact_type.lower() == "center":
-                            i._set_equipotential(contact_radius=radius)
+                            i.set_dcir_equipotential_advanced(contact_radius=radius)
                         elif t.is_reference_terminal:
                             continue
                 else:

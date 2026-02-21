@@ -1534,45 +1534,52 @@ class EDBPadstackInstance(Connectable):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    def _set_equipotential(self, contact_radius=None):
-        """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
-        pad = self.definition.pad_by_layer[self.start_layer]
-
-        pos_x, pos_y = self.position
-
-        if contact_radius is not None:
-            prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
-            prim.dcir_equipotential_region = True
-            return
-
-        elif pad.shape.lower() == "circle":
-            ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
-            pos = self.position
-            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
-        elif pad.shape.lower() == "rectangle":
-            width, height = pad.parameters_values
-            prim = self._pedb.modeler.create_rectangle(
-                pad.layer_name,
-                self.net_name,
-                width=width,
-                height=height,
-                representation_type="CenterWidthHeight",
-                center_point=self.position,
-                rotation=self.component.rotation,
-            )
-        elif pad.shape.lower() == "oval":
-            width, height, _ = pad.parameters_values
-            prim = self._pedb.modeler.create_circle(
-                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
-            )
-        elif pad.polygon_data:
-            prim = self._pedb.modeler.create_polygon(
-                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
-            )
-            prim.move(self.position)
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
+        pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
+        """
+        layer_name = layer_name if layer_name else self.start_layer
+        if self.start_layer == self.stop_layer:
+            self.dcir_equipotential_region = True
         else:
-            return
-        prim.dcir_equipotential_region = True
+            pad = self.definition.pad_by_layer[layer_name]
+
+            pos_x, pos_y = self.position
+
+            if contact_radius is not None:
+                prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
+                prim.dcir_equipotential_region = True
+                return
+
+            elif pad.shape.lower() == "circle":
+                ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
+                pos = self.position
+                prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+            elif pad.shape.lower() == "rectangle":
+                width, height = pad.parameters_values
+                prim = self._pedb.modeler.create_rectangle(
+                    pad.layer_name,
+                    self.net_name,
+                    width=width,
+                    height=height,
+                    representation_type="CenterWidthHeight",
+                    center_point=self.position,
+                    rotation=self.component.rotation,
+                )
+            elif pad.shape.lower() == "oval":
+                width, height, _ = pad.parameters_values
+                prim = self._pedb.modeler.create_circle(
+                    pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+                )
+            elif pad.polygon_data:
+                prim = self._pedb.modeler.create_polygon(
+                    pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+                )
+                prim.move(self.position)
+            else:
+                return
+            prim.dcir_equipotential_region = True
 
     @property
     def object_instance(self):

@@ -133,6 +133,9 @@ class Connectable(LayoutObj):
 
     @property
     def dcir_equipotential_region(self)-> bool:
+        """Get or set whether this primitive or padstack instance has a DCIR equipotential region. If this padstack
+        instance has pads on multiple layers, the region is set on top layer.
+        """
         emp = self.get_em_properties()
         return emp.properties.dcir_equipotential_region
 

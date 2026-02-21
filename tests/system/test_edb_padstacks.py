@@ -686,16 +686,17 @@ def _assert_inside(rect, pad):
 @pytest.mark.usefixtures("close_rpc_session")
 class TestEMProperties(BaseTestClass):
     def test_em_properties(self):
-        edbapp = self.edb_examples.get_si_verse_sfp()
-        pin = next(i for i in edbapp.layout.padstack_instances if i.is_pin)
-        pin_aedt_name = pin.aedt_name
-        em_p = pin.get_em_properties()
-        em_p.properties.dcir_equipotential_region = True
-        pin.set_em_properties(em_p)
+        edbapp = self.edb_examples.get_si_verse()
+        [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
+        oval.dcir_equipotential_region = True
+        circle.dcir_equipotential_region = True
+        rect.dcir_equipotential_region = True
         edbapp.save()
         edbapp.close(terminate_rpc_session=False)
 
         edbapp = self.edb_examples.load_edb(edbapp.edbpath)
-        pin_ = edbapp.layout.find_padstack_instances(aedt_name=pin_aedt_name)[0]
-        assert pin_.get_em_properties().properties.dcir_equipotential_region is True
+        [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
+        assert oval.dcir_equipotential_region is True
+        assert circle.dcir_equipotential_region is True
+        assert rect.dcir_equipotential_region is True
         edbapp.close(terminate_rpc_session=False)
