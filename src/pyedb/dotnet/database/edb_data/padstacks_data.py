@@ -1677,7 +1677,7 @@ class EDBPadstackInstance(Connectable):
         return self.definition.name
 
     @property
-    def definition(self)->EDBPadstack:
+    def definition(self) -> EDBPadstack:
         """Padstack definition.
 
         Returns
