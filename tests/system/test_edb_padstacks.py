@@ -322,7 +322,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        reason="This is a bug deep in the code. This pass should never pass but it passes as try-else hides the bug."
+        reason="This is a bug deep in the code. This should never pass but it passes as try-else hides the bug."
     )
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
@@ -657,6 +657,33 @@ class TestClass(BaseTestClass):
         else:
             assert instance.backdrill_diameter == 0.0004
             assert instance.backdrill_layer == "Inner1(GND1)"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(config["use_grpc"], reason="Edb.edb_value doesn't exist in grpc.")
+    def test_set_dcir_equipotential_advanced(self):
+        edbapp = self.edb_examples.get_si_verse()
+        [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
+
+        prim = oval.set_dcir_equipotential_advanced(contact_radius=None, layer_name=None)
+        assert prim.layer_name == "1_Top"
+        assert prim.dcir_equipotential_region is True
+        assert prim.primitive_type == "circle"
+
+        prim = circle.set_dcir_equipotential_advanced(contact_radius=None, layer_name=None)
+        assert prim.layer_name == "1_Top"
+        assert prim.dcir_equipotential_region is True
+        assert prim.primitive_type == "circle"
+
+        prim = rect.set_dcir_equipotential_advanced(contact_radius=None, layer_name=None)
+        assert prim.layer_name == "16_Bottom"
+        assert prim.dcir_equipotential_region is True
+        assert prim.primitive_type == "rectangle"
+
+        prim = oval.set_dcir_equipotential_advanced(contact_radius="0.1mm", layer_name="16_Bottom")
+        assert prim.layer_name == "16_Bottom"
+        assert prim.dcir_equipotential_region is True
+        assert prim.polygon_data.arcs[0].radius == pytest.approx(0.0001)
+
         edbapp.close(terminate_rpc_session=False)
 
 
