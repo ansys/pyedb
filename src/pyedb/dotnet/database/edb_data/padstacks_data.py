@@ -1560,17 +1560,28 @@ class EDBPadstackInstance(Connectable):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    def _set_equipotential(self, contact_radius=None):
-        """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
-        pad = self.definition.pad_by_layer[self.start_layer]
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
+        pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
+
+        Parameters
+        ----------
+        contact_radius : float, optional
+            Radius of the contact circle. The default is ``None```, in which case the
+            method will use the pad size.
+        layer_name : str, optional
+            Layer name to set the equipotential region. The default is ``None``, in which case the method will use the
+            start layer of the padstack definition.
+        """
+        layer_name = layer_name if layer_name else self.start_layer
+        pad = self.definition.pad_by_layer[layer_name]
 
         pos_x, pos_y = self.position
 
         if contact_radius is not None:
             prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
             prim.dcir_equipotential_region = True
-            return
-
         elif pad.shape.lower() == "circle":
             ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
             pos = self.position
@@ -1597,8 +1608,10 @@ class EDBPadstackInstance(Connectable):
             )
             prim.move(self.position)
         else:
-            return
+            raise AttributeError(f"Unsupported pad shape {pad.shape} for DCIR equipotential region.")
+
         prim.dcir_equipotential_region = True
+        return prim
 
     @property
     def object_instance(self):
@@ -1690,7 +1703,7 @@ class EDBPadstackInstance(Connectable):
         return self.definition.name
 
     @property
-    def definition(self):
+    def definition(self) -> EDBPadstack:
         """Padstack definition.
 
         Returns
