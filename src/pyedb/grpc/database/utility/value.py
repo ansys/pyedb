@@ -19,93 +19,93 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import re
+from pydantic import BaseModel, Field, model_validator
 
-import ansys.edb.core.utility.value
-from ansys.edb.core.utility.value import Value as CoreValue
+from ansys.edb.core.utility import value
 
 
-class Value(float, CoreValue):
+class Value(float, value.Value):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        core = CoreValue(val, owner)
+        core =  val if isinstance(val, value.Value) else value.Value(val, owner.core if owner else None)
         inst = super().__new__(cls, core.value)
-        inst._edb_object = core
-        inst._context = owner
+        inst.core = core
         return inst
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_object)})+({str(other)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(self.core)})+({str(other)})")
+        return self.__class__(core)
 
     def __radd__(self, other):
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(other)})+({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(other)})+({str(self.core)})")
+        return self.__class__(core)
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_object)})-({str(other)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(self.core)})-({str(other)})")
+        return self.__class__(core)
 
     def __rsub__(self, other):
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(other)})-({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(other)})-({str(self.core)})")
+        return self.__class__(core)
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_object)})*({str(other)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(self.core)})*({str(other)})")
+        return self.__class__(core)
 
     def __rmul__(self, other):
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(other)})*({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(other)})*({str(self.core)})")
+        return self.__class__(core)
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_object)})/({str(other)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(self.core)})/({str(other)})")
+        return self.__class__(core)
 
     def __rtruediv__(self, other):
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(other)})/({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(other)})/({str(self.core)})")
+        return self.__class__(core)
 
     def sqrt(self):
         """Square root of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"({str(self._edb_object)})**0.5", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"({str(self.core)})**0.5")
+        return self.__class__(core)
 
     def log10(self):
         """Base-10 logarithm of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"log10({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"log10({str(self.core)})")
+        return self.__class__(core)
 
     def sin(self):
         """Sine of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"sin({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"sin({str(self.core)})")
+        return self.__class__(core)
 
     def cos(self):
         """Cosine of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"cos({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"cos({str(self.core)})")
+        return self.__class__(core)
 
     def asin(self):
         """Arcsine of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"asin({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"asin({str(self.core)})")
+        return self.__class__(core)
 
     def acos(self):
         """Arccosine of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"acos({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"acos({str(self.core)})")
+        return self.__class__(core)
 
     def tan(self):
         """Tangent of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"tan({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"tan({str(self.core)})")
+        return self.__class__(core)
 
     def atan(self):
         """Arctangent of the value."""
-        edb_object = ansys.edb.core.utility.value.Value(f"atan({str(self._edb_object)})", self._context)
-        return self.__class__(edb_object)
+        core = value.Value(f"atan({str(self.core)})")
+        return self.__class__(core)

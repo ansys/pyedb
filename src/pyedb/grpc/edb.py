@@ -87,7 +87,6 @@ from ansys.edb.core.hierarchy.layout_component import (
 )
 import ansys.edb.core.layout.cell
 from ansys.edb.core.layout.cell import DesignMode as CoreDesignMode
-from ansys.edb.core.utility.value import Value as CoreValue
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
@@ -458,16 +457,10 @@ class Edb(EdbInit):
             return None
         return None
 
-    def value(self, val) -> Value:
+    @staticmethod
+    def value(val) -> Value:
         """Convert a value into a pyedb value."""
-        try:
-            if isinstance(val, CoreValue):
-                return Value(val)
-            else:
-                context = self.active_cell if not str(val).startswith("$") else self.active_db
-                return Value(CoreValue(val, context), context)
-        except Exception as e:
-            return val
+        return Value(val)
 
     @property
     def cell_names(self) -> List[str]:

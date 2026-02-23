@@ -671,5 +671,16 @@ class TestValue(BaseTestClass):
     def test(self):
         edbapp = self.edb_examples.create_empty_edb()
         a = edbapp.value(1)
+        assert a == 1
         b = edbapp.value("1mm")
+        assert str(b) == "1mm"
+        assert b == 0.001
+
+        c = a + b
+        assert str(c) == '(1.0)+(1mm)'
+        assert c == 1.001
+
+        d = a * b
+        assert str(d) == '(1.0)*(1mm)'
+        assert d == 0.001
         edbapp.close(terminate_rpc_session=False)
