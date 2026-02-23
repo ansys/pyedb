@@ -240,8 +240,9 @@ class EdbPadstacks(object):
         """
         padstack_instances = {}
         for edb_padstack_instance in self.instances.values():
-            if edb_padstack_instance.aedt_name:
-                padstack_instances[edb_padstack_instance.aedt_name] = edb_padstack_instance
+            name = edb_padstack_instance.aedt_name
+            if name:
+                padstack_instances[name] = edb_padstack_instance
         return padstack_instances
 
     def find_instance_by_id(self, value: int):

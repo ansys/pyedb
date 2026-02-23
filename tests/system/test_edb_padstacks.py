@@ -598,7 +598,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_backdrill_dielectric_fill_via(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -623,7 +622,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_backdrill_dielectric_fill_via2(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -645,7 +643,6 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_create_backdrill_dielectric_fill_via3(self):
         edbapp = self.edb_examples.get_si_verse()
         instances = edbapp.padstacks.definitions["v40h20-1"].instances
