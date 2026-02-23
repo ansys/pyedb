@@ -665,3 +665,11 @@ class TestClass(BaseTestClass):
         polygons = edbapp.modeler.get_primitives(net_name="GND", prim_type="polygon")
         assert len(polygons) == 39
         edbapp.close(terminate_rpc_session=False)
+
+
+class TestValue(BaseTestClass):
+    def test(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        a = edbapp.value(1)
+        b = edbapp.value("1mm")
+        edbapp.close(terminate_rpc_session=False)
