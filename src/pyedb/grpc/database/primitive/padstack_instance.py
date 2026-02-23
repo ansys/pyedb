@@ -853,6 +853,50 @@ class PadstackInstance:
         """
         return Value(self.core.get_position_and_rotation()[-1])
 
+    @rotation.setter
+    def rotation(self, value):
+        pos = []
+        if isinstance(value, (float, int, str)):
+            pos.append(Value(value, self._pedb.active_cell))
+        else:
+            pos.append(value)
+        pos = self.position
+        point_data = CorePointData(pos[0], pos[1])
+        self.core.set_position_and_rotation(
+            x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
+        )
+
+    @property
+    def position_and_rotation(self) -> list[float]:
+        """Padstack instance position.
+
+        Returns
+        -------
+        list
+            List of ``[x, y,r]`` coordinates for the padstack instance position and rotation.
+        """
+        position = self.core.get_position_and_rotation()
+        if self.component:
+            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
+            _position_and_rotation = [out2.x.value, out2.y.value]
+            _position_and_rotation.append(Value(position[-1]).value)
+        else:
+            _position_and_rotation = [Value(pt).value for pt in position]
+        return _position_and_rotation
+
+    @position_and_rotation.setter
+    def position_and_rotation(self, value):
+        pos = []
+        for v in value:
+            if isinstance(v, (float, int, str)):
+                pos.append(Value(v, self._pedb.active_cell))
+            else:
+                pos.append(v)
+        point_data = CorePointData(pos[0], pos[1])
+        self.core.set_position_and_rotation(x=point_data.x, y=point_data.y,
+                                            rotation=Value(pos[2], self._pedb.active_cell))
+
+
     @property
     def name(self) -> str:
         """Padstack Instance Name.

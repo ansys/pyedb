@@ -715,8 +715,9 @@ class Configuration:
             )
 
         for obj in self._pedb.padstacks.instances.values():
-            position = obj.position
-            rotation = obj.rotation
+            result = obj.position_and_rotation
+            position = result[:2]
+            rotation = result[-1]
             hole_override_enabled, hole_override_diameter = obj.get_hole_overrides()
             try:
                 solderball_layer = obj.solderball_layer

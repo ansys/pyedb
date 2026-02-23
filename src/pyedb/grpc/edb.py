@@ -2926,9 +2926,13 @@ class Edb(EdbInit):
             var_y = "via_offset_y"
             if var_y not in self.variables:
                 self.add_design_variable(var_y, 0.0)
+            via_to_parametrize = {}
             for via in self.padstacks.instances.values():
                 if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
-                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
+                    via_to_parametrize[via] = via.position_and_rotation
+
+            for via, pos in via_to_parametrize.items():
+                via.position_and_rotation = [f"{pos[0]}+via_offset_x", f"{pos[1]}+via_offset_y", pos[2]]
 
         if expand_polygons_size:
             for poly in self.modeler.polygons:

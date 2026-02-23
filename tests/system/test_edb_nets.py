@@ -156,7 +156,6 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_0(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -174,7 +173,6 @@ class TestClass(BaseTestClass):
         assert "$TOP_value" in parameters
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_1(self):
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
@@ -183,7 +181,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_2(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -203,7 +200,6 @@ class TestClass(BaseTestClass):
         assert "$sigma_COPPER_delta" in edbapp.variables
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_3(self):
         # TODO check grpc test is slow.
         edbapp = self.edb_examples.get_package()
@@ -213,7 +209,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 18
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_4(self):
         # TODO check grpc test is slow.
         edbapp = self.edb_examples.get_package()
@@ -223,7 +218,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_5(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -233,7 +227,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Test slow on windows with grpc")
     def test_layout_auto_parametrization_6(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -243,7 +236,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_7(self):
         # Done
         edbapp = self.edb_examples.get_package()
