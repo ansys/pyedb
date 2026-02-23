@@ -19,8 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import re
-from pydantic import BaseModel, Field, model_validator
 
 from ansys.edb.core.utility import value
 
@@ -69,6 +67,10 @@ class Value(float, value.Value):
     def __rtruediv__(self, other):
         core = value.Value(f"({str(other)})/({str(self.core)})")
         return self.__class__(core)
+
+    @property
+    def expression(self):
+        return str(self)
 
     def sqrt(self):
         """Square root of the value."""
