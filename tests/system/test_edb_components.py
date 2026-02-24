@@ -219,7 +219,8 @@ class TestClass(BaseTestClass):
             ),
             modelname="GRM32ER72A225KA35_25C_0V",
         )
-        assert not edb.components.set_component_model(
+        try:
+            edb.components.set_component_model(
             "C100000",
             modelpath=os.path.join(
                 local_path,
@@ -228,6 +229,8 @@ class TestClass(BaseTestClass):
             ),
             modelname="GRM32ER72A225KA35_25C_0V",
         )
+        except ValueError as e:
+            assert str(e) == f"Component C100000 not found in the layout."
         edb.close(terminate_rpc_session=False)
 
     def test_modeler_parametrize_layout(self):

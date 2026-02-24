@@ -627,8 +627,8 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].defeature_settings.healing_option == 0
         edbapp.setups["setup1"].defeature_settings.remove_floating_geometry = True
         assert edbapp.setups["setup1"].defeature_settings.remove_floating_geometry
-        edbapp.setups["setup1"].defeature_settings.small_void_area = 0.1
-        assert edbapp.setups["setup1"].defeature_settings.small_void_area == "0.1"
+        edbapp.setups["setup1"].defeature_settings.small_void_area = "40000um2"
+        assert edbapp.setups["setup1"].defeature_settings.small_void_area == 4e-8
         edbapp.setups["setup1"].defeature_settings.union_polygons = False
         assert not edbapp.setups["setup1"].defeature_settings.union_polygons
         edbapp.setups["setup1"].defeature_settings.use_defeature = False
@@ -718,7 +718,7 @@ class TestClass(BaseTestClass):
         edbapp.setups["setup1"].defeature_settings.remove_floating_geometry = True
         assert edbapp.setups["setup1"].defeature_settings.remove_floating_geometry
         edbapp.setups["setup1"].defeature_settings.small_void_area = 0.1
-        assert edbapp.setups["setup1"].defeature_settings.small_void_area == "0.1"
+        assert edbapp.setups["setup1"].defeature_settings.small_void_area == 0.1
         edbapp.setups["setup1"].defeature_settings.union_polygons = False
         assert not edbapp.setups["setup1"].defeature_settings.union_polygons
         edbapp.setups["setup1"].defeature_settings.use_defeature = False

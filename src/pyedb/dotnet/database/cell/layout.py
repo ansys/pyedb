@@ -330,7 +330,7 @@ class Layout(ObjBase):
         else:
             return EDBNetsData(obj, self._pedb)
 
-    def find_component_by_name(self, value: str):
+    def find_component_by_name(self, value: str)->EDBComponent|None:
         """Find a component object by name. Component name is the reference designator in layout.
 
         Parameters
@@ -342,7 +342,7 @@ class Layout(ObjBase):
 
         """
         obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
-        return EDBComponent(self._pedb, obj) if obj is not None else None
+        return EDBComponent(self._pedb, obj) if not obj.IsNull() else None
 
     def find_primitive(
         self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
