@@ -25,3 +25,7 @@ GRPC_GENERAL_WARNING = (
     "interface. You can enable gRPC by passing ``grpc=True`` when instantiating the Edb object. "
     "For more information please check this link: https://edb.docs.pyansys.com/version/dev/grpc_api/index.html"
 )
+
+GRPC_BETA_WARNING = "You are using PyEDB with grpc flag True, which is currently in beta with ANSYS release 2026.1."
+
+GRPC_NOT_SUPPORTED_WARNING = "Your current version does not support PyEDB grpc, falling back to DotNet version"

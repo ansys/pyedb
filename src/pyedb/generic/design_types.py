@@ -22,7 +22,7 @@
 from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
-from pyedb.generic.grpc_warnings import GRPC_GENERAL_WARNING
+from pyedb.generic.grpc_warnings import GRPC_BETA_WARNING, GRPC_NOT_SUPPORTED_WARNING
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
@@ -279,43 +279,31 @@ def Edb(
                 settings.specified_version = version
 
     if grpc:
-        if float(settings.specified_version) < 2025.2:
-            raise ValueError(
-                f"gRPC flag was enabled however your ANSYS AEDT version {settings.specified_version} is not compatible"
-            )
+        if 2025.2 <= float(settings.specified_version) <= 2027.1:
+            warnings.warn(GRPC_BETA_WARNING, UserWarning)
+            from pyedb.grpc.edb import Edb as app
+        elif float(settings.specified_version) < 2025.2:
+            warnings.warn(GRPC_NOT_SUPPORTED_WARNING, UserWarning)
+            from pyedb.dotnet.edb import Edb as app
+        else:
+            # falling back default DotNet on any reason for now.
+            from pyedb.dotnet.edb import Edb as app
 
-        from pyedb.grpc.edb import Edb as app
-
-        return app(
-            edbpath=edbpath,
-            cellname=cellname,
-            isreadonly=isreadonly,
-            edbversion=version,
-            isaedtowned=isaedtowned,
-            oproject=oproject,
-            use_ppe=use_ppe,
-            map_file=map_file,
-            technology_file=technology_file,
-            control_file=control_file,
-        )
     else:
-        if float(settings.specified_version) >= 2025.2:
-            warnings.warn(GRPC_GENERAL_WARNING, UserWarning)
+        from pyedb.dotnet.edb import Edb as app
 
-        from pyedb.dotnet.edb import Edb
-
-        return Edb(
-            edbpath=edbpath,
-            cellname=cellname,
-            isreadonly=isreadonly,
-            isaedtowned=isaedtowned,
-            oproject=oproject,
-            use_ppe=use_ppe,
-            control_file=control_file,
-            map_file=map_file,
-            technology_file=technology_file,
-            layer_filter=layer_filter,
-        )
+    return app(
+        edbpath=edbpath,
+        cellname=cellname,
+        isreadonly=isreadonly,
+        edbversion=version,
+        isaedtowned=isaedtowned,
+        oproject=oproject,
+        use_ppe=use_ppe,
+        map_file=map_file,
+        technology_file=technology_file,
+        control_file=control_file,
+    )
 
 
 def Siwave(
