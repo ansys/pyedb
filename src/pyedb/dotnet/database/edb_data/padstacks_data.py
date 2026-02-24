@@ -2442,6 +2442,7 @@ class EDBPadstackInstance(Connectable):
             for i in range(4):
                 rect[i] = _translate(_rotate(rect[i]))
 
+
         if rect is None or len(rect) != 4:
             raise RuntimeError()
         offset_rect = [_translate(p, _rotate(pad_offset)) for p in rect]

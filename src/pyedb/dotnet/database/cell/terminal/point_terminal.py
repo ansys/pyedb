@@ -101,4 +101,4 @@ class PointTerminal(Terminal):
             True if the terminal is a reference terminal, False otherwise.
 
         """
-        return self.core.IsReferenceTerminal
+        return self.core.IsReferenceTerminal()
