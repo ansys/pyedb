@@ -1172,7 +1172,7 @@ class PadstackInstance:
                                    If from bottom, drill stops at the lower elevation of the layer.
             - **offset** : Layer offset (or depth if layer is empty).
             - **diameter** : Drilling diameter.
-            - **fill_material** : Fill material name (empty string if no fill). 
+            - **fill_material** : Fill material name (empty string if no fill).
                                   Returned only when include_fill_material is true.
 
         """
@@ -1206,7 +1206,7 @@ class PadstackInstance:
         from_bottom : bool
             Whether to get the back drill type from the bottom.
         include_fill_material : bool, optional
-            Input flag to obtain fill material as well as other parameters. 
+            Input flag to obtain fill material as well as other parameters.
             If false, the return tuple does not include fill material and is backward compatible with previous versions.
         Returns
         -------
