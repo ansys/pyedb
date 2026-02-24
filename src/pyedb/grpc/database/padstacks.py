@@ -233,10 +233,11 @@ class Padstacks(object):
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
-        if not self._instances_by_net:
-            for instance in self.instances.values():
-                if instance.net_name:
-                    self._instances_by_net.setdefault(instance.net_name, []).append(instance)
+        instances_by_net = {}
+        for instance in self._pedb.layout.padstack_instances:
+            net_name = instance.net_name
+            if net_name:
+                instances_by_net.setdefault(net_name, []).append(instance)
         return self._instances_by_net
 
     @property
@@ -284,7 +285,7 @@ class Padstacks(object):
         >>> if via:
         ...     print(f"Found via: {via.name}")
         """
-        return self._pedb.modeler.find_object_by_id(value)
+        return next(i for i in self._pedb.layout.padstack_instances if i.id == value)
 
     @property
     def pins(self) -> Dict[int, PadstackInstance]:
