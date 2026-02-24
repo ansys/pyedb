@@ -59,7 +59,7 @@ def Edb(
     grpc=False,
     control_file=None,
     layer_filter=None,
-):
+) -> Union[EdbGrpc, EdbDotnet]:
     """Provides the EDB application interface.
 
         This module inherits all objects that belong to EDB.

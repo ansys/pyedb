@@ -36,17 +36,23 @@ import subprocess  # nosec B404
 import sys
 import time
 import traceback
-from typing import Union
+from typing import Any, Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
 from pyedb.dotnet.database.cell.layout import Layout
+from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
+from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -77,6 +83,7 @@ from pyedb.dotnet.database.net_class import (
     EdbExtendedNets,
     EdbNetClasses,
 )
+from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.dotnet.database.simulation_setups import SimulationSetups
 from pyedb.dotnet.database.siwave import EdbSiwave
@@ -96,6 +103,7 @@ from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
+from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
 from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
@@ -180,14 +188,17 @@ class Edb:
 
     @property
     def logger(self):
+        """PyEDB logger."""
         return settings.logger
 
     @property
     def version(self):
+        """EDB API version."""
         return settings.specified_version
 
     @property
-    def base_path(self):
+    def base_path(self) -> str:
+        """Base path for EDB installation."""
         return settings.aedt_installation_path
 
     @execution_timer("EDB initialization")
@@ -310,7 +321,7 @@ class Edb:
         if ex_type:
             self.edb_exception(ex_value, ex_traceback)
 
-    def __getitem__(self, variable_name):
+    def __getitem__(self, variable_name) -> Variable:
         """Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
         it can be a design variable, in which case the ``$`` is omitted.
 
@@ -442,7 +453,7 @@ class Edb:
     def pedb_class(self):
         return pyedb.dotnet
 
-    def value(self, val):
+    def value(self, val) -> Value:
         """Convert a value into a pyedb value."""
         try:
             val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
@@ -451,12 +462,12 @@ class Edb:
             return val
 
     @property
-    def grpc(self):
+    def grpc(self) -> bool:
         """grpc flag."""
         return False
 
     @property
-    def cell_names(self):
+    def cell_names(self) -> List[str]:
         """Cell name container.
 
         Returns
@@ -469,7 +480,7 @@ class Edb:
         return names
 
     @property
-    def design_variables(self):
+    def design_variables(self) -> Dict[str, Variable]:
         """Get all edb design variables.
 
         Returns
@@ -486,7 +497,7 @@ class Edb:
         return self.base_path
 
     @property
-    def project_variables(self):
+    def project_variables(self) -> Dict[str, Variable]:
         """Get all project variables.
 
         Returns
@@ -500,7 +511,7 @@ class Edb:
         return p_var
 
     @property
-    def layout_validation(self):
+    def layout_validation(self) -> LayoutValidation:
         """:class:`pyedb.dotnet.database.edb_data.layout_validation.LayoutValidation`.
 
         Returns
@@ -510,7 +521,7 @@ class Edb:
         return LayoutValidation(self)
 
     @property
-    def variables(self):
+    def variables(self) -> Dict[str, Variable]:
         """Get all Edb variables.
 
         Returns
@@ -526,18 +537,19 @@ class Edb:
         return all_vars
 
     @property
-    def terminals(self):
+    def terminals(self) -> Dict[str, Terminal]:
         """Get terminals belonging to active layout.
 
         Returns
         -------
-        Dict
+        Dict[str, :class:`pyedb.dotnet.database.edb_data.ports.Terminal`]
+            Dictionary of terminal names to terminal objects.
         """
 
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self):
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort]]:
         """Get all layout excitations."""
         terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
         temp = {}
@@ -549,7 +561,7 @@ class Edb:
         return temp
 
     @property
-    def ports(self):
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
         Returns
@@ -581,21 +593,21 @@ class Edb:
         return ports
 
     @property
-    def excitations_nets(self):
+    def excitations_nets(self) -> List[str]:
         """Get all excitations net names."""
         names = list(set([i.net.name for i in self.layout.terminals]))
         names = [i for i in names if i]
         return names
 
     @property
-    def sources(self):
+    def sources(self) -> Dict[str, ExcitationSources]:
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [3, 4, 7]]
         terms = [term for term in terms if not term._edb_object.IsReferenceTerminal()]
         return {ter.name: ExcitationSources(self, ter._edb_object) for ter in terms}
 
     @property
-    def voltage_regulator_modules(self):
+    def voltage_regulator_modules(self) -> Dict[str, VoltageRegulator]:
         """Get all voltage regulator modules"""
         vrms = self.layout.voltage_regulators
         _vrms = {}
@@ -604,7 +616,7 @@ class Edb:
         return _vrms
 
     @property
-    def probes(self):
+    def probes(self) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all layout probes."""
         temp = {}
         for name, val in self.terminals.items():
@@ -614,7 +626,7 @@ class Edb:
         return temp
 
     @execution_timer("open_edb")
-    def open_edb(self):
+    def open_edb(self) -> bool:
         """Open EDB.
 
         Returns
@@ -705,7 +717,7 @@ class Edb:
         map_file=None,
         tech_file=None,
         layer_filter=None,
-    ):
+    ) -> str:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         .. deprecated:: 0.42.0
@@ -762,7 +774,7 @@ class Edb:
         map_file=None,
         tech_file=None,
         layer_filter=None,
-    ):
+    ) -> str:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
@@ -979,12 +991,11 @@ class Edb:
             self.logger.error(el)
 
     @property
-    def active_db(self):
-        """Database object."""
+    def active_db(self) -> Any:
         return self._db
 
     @property
-    def active_cell(self):
+    def active_cell(self) -> Any:
         """Active cell."""
         return self._active_cell
 
@@ -1006,7 +1017,7 @@ class Edb:
             raise "No valid design."
 
     @property
-    def core_components(self):  # pragma: no cover
+    def core_components(self) -> Components:  # pragma: no cover
         """Edb Components methods and properties.
 
         .. deprecated:: 0.6.62
@@ -1026,7 +1037,7 @@ class Edb:
         return self.components
 
     @property
-    def components(self):
+    def components(self) -> Components:
         """Edb Components methods and properties.
 
         Returns
@@ -1044,7 +1055,7 @@ class Edb:
         return self._components
 
     @property
-    def core_stackup(self):
+    def core_stackup(self) -> Stackup:
         """Core stackup.
 
         .. deprecated:: 0.6.5
@@ -1059,7 +1070,7 @@ class Edb:
         return self._stackup
 
     @property
-    def design_options(self):
+    def design_options(self) -> EdbDesignOptions:
         """Edb Design Settings and Options.
 
         Returns
@@ -1069,7 +1080,7 @@ class Edb:
         return EdbDesignOptions(self.active_cell)
 
     @property
-    def stackup(self):
+    def stackup(self) -> Stackup:
         """Stackup manager.
 
         Returns
@@ -1105,7 +1116,7 @@ class Edb:
         return None
 
     @property
-    def excitation_manager(self):
+    def excitation_manager(self) -> None | SourceExcitation:
         """Source excitation manager.
 
         Returns
@@ -1118,7 +1129,7 @@ class Edb:
         return None
 
     @property
-    def materials(self):
+    def materials(self) -> Materials | None:
         """Material Database.
 
         Returns
@@ -1138,7 +1149,7 @@ class Edb:
         return self._materials
 
     @property
-    def core_padstack(self):  # pragma: no cover
+    def core_padstack(self) -> EdbPadstacks:  # pragma: no cover
         """Core padstack.
 
 
@@ -1163,7 +1174,7 @@ class Edb:
         return self.padstacks
 
     @property
-    def padstacks(self):
+    def padstacks(self) -> EdbPadstacks | None:
         """Core padstack.
 
 
@@ -1186,7 +1197,7 @@ class Edb:
         return self._padstack
 
     @property
-    def core_siwave(self):  # pragma: no cover
+    def core_siwave(self) -> EdbSiwave | None:  # pragma: no cover
         """Core SIWave methods and properties.
 
         .. deprecated:: 0.6.62
@@ -1206,7 +1217,7 @@ class Edb:
         return self.siwave
 
     @property
-    def siwave(self):
+    def siwave(self) -> EdbSiwave | None:
         """Core SIWave methods and properties.
 
         Returns
@@ -1224,7 +1235,7 @@ class Edb:
         return self._siwave
 
     @property
-    def core_hfss(self):  # pragma: no cover
+    def core_hfss(self) -> EdbHfss | None:  # pragma: no cover
         """Core HFSS methods and properties.
 
         .. deprecated:: 0.6.62
@@ -1244,7 +1255,7 @@ class Edb:
         return self.hfss
 
     @property
-    def hfss(self):
+    def hfss(self) -> EdbHfss | None:
         """Core HFSS methods and properties.
 
         Returns
@@ -1268,7 +1279,7 @@ class Edb:
         return self._hfss
 
     @property
-    def core_nets(self):  # pragma: no cover
+    def core_nets(self) -> None | EdbNets:  # pragma: no cover
         """Core nets.
 
         .. deprecated:: 0.6.62
@@ -1289,7 +1300,7 @@ class Edb:
         return self.nets
 
     @property
-    def nets(self):
+    def nets(self) -> None | EdbNets:
         """Core nets.
 
         Returns
@@ -1306,7 +1317,7 @@ class Edb:
         return self._nets
 
     @property
-    def net_classes(self):
+    def net_classes(self) -> EdbNetClasses | None:
         """Get all net classes.
 
         Returns
@@ -1324,7 +1335,7 @@ class Edb:
             return EdbNetClasses(self)
 
     @property
-    def extended_nets(self):
+    def extended_nets(self) -> EdbExtendedNets | None:
         """Get all extended nets.
 
         Returns
@@ -1342,7 +1353,7 @@ class Edb:
             return EdbExtendedNets(self)
 
     @property
-    def differential_pairs(self):
+    def differential_pairs(self) -> EdbDifferentialPairs | None:
         """Get all differential pairs.
 
         Returns
@@ -1361,7 +1372,7 @@ class Edb:
             return
 
     @property
-    def core_primitives(self):  # pragma: no cover
+    def core_primitives(self) -> Modeler | None:  # pragma: no cover
         """Core primitives.
 
         .. deprecated:: 0.6.62
@@ -1381,7 +1392,7 @@ class Edb:
         return self.modeler
 
     @property
-    def modeler(self):
+    def modeler(self) -> Modeler | None:
         """Core primitives modeler.
 
         Returns
@@ -1409,7 +1420,7 @@ class Edb:
         return Layout(self, self._active_cell.GetLayout())
 
     @property
-    def active_layout(self):
+    def active_layout(self) -> Any:
         """Active layout.
 
         Returns
@@ -1419,7 +1430,7 @@ class Edb:
         return self.layout._edb_object
 
     @property
-    def layout_instance(self):
+    def layout_instance(self):# -> Any:
         """Edb Layout Instance."""
         return self.layout._edb_object.GetLayoutInstance()
 
@@ -1434,7 +1445,7 @@ class Edb:
         """
         return self.hfss.get_layout_bounding_box(self.active_layout)
 
-    def get_connected_objects(self, layout_object_instance):
+    def get_connected_objects(self, layout_object_instance) -> List[Union[EDBPadstackInstance, Path, EdbRectangle, EdbCircle, EdbPolygon]]:
         """Get connected objects.
 
         Returns
@@ -1484,7 +1495,7 @@ class Edb:
         return temp
 
     @property
-    def pins(self):
+    def pins(self) -> Dict[str, EDBPadstackInstance]:# -> dict:
         """EDB padstack instance of the component.
 
         .. deprecated:: 0.6.62
@@ -1525,7 +1536,7 @@ class Edb:
             VoltageProbe,
         ) = range(0, 9)
 
-    def edb_value(self, value, var_server=None):
+    def edb_value(self, value, var_server=None) -> Any:
         """Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
 
         Parameters
@@ -1559,7 +1570,7 @@ class Edb:
             return self.core.Utility.Value(value, var_server_db)
         return self.core.Utility.Value(value)
 
-    def point_3d(self, x, y, z=0.0):
+    def point_3d(self, x, y, z=0.0)->Any:# -> Any:
         """Compute the Edb 3d Point Data.
 
         Parameters
@@ -1577,7 +1588,7 @@ class Edb:
         """
         return self.core.Geometry.Point3DData(self.edb_value(x), self.edb_value(y), self.edb_value(z))
 
-    def copy_cells(self, cells_to_copy):
+    def copy_cells(self, cells_to_copy)-> Any:# -> Any:
         """Copy Cells from other Databases or this Database into this Database.
 
         Parameters
@@ -1595,7 +1606,7 @@ class Edb:
         _dbCells = convert_py_list_to_net_list(cells_to_copy)
         return self._db.CopyCells(_dbCells)
 
-    def point_data(self, x, y=None):
+    def point_data(self, x, y=None) -> Any: # -> Any:
         """Compute the Edb Point Data.
 
         Parameters
@@ -1626,13 +1637,13 @@ class Edb:
         else:
             return False
 
-    def _is_file_existing(self, filename):
+    def _is_file_existing(self, filename) -> bool:
         if os.path.exists(filename):
             return True
         else:
             return False
 
-    def _wait_for_file_release(self, timeout=30, file_to_release=None):
+    def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
@@ -1644,7 +1655,7 @@ class Edb:
             else:
                 time.sleep(0.250)
 
-    def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4):
+    def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4) -> bool:
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
@@ -1662,7 +1673,7 @@ class Edb:
                 times = 0
                 time.sleep(0.250)
 
-    def close_edb(self):
+    def close_edb(self) -> bool:
         """Close EDB and cleanup variables.
 
         . deprecated:: pyedb 0.47.0
@@ -1678,7 +1689,7 @@ class Edb:
         return self.close()
 
     @execution_timer("Close Edb file")
-    def close(self, **kwargs):
+    def close(self, **kwargs) -> bool:
         """Close EDB and cleanup variables.
 
         Returns
@@ -1695,7 +1706,7 @@ class Edb:
         self._clean_variables()
         return True
 
-    def save_edb(self):
+    def save_edb(self) -> bool:
         """Save the EDB file.
 
         . deprecated:: pyedb 0.47.0
@@ -1711,7 +1722,7 @@ class Edb:
         return self.save()
 
     @execution_timer("Save Edb file")
-    def save(self):
+    def save(self) -> bool:
         """Save the EDB file.
 
         Returns
@@ -1725,7 +1736,7 @@ class Edb:
         self._wait_for_file_release()
         return True
 
-    def save_edb_as(self, path):
+    def save_edb_as(self, path) -> bool:
         """Save the EDB file as another file.
 
         . deprecated:: pyedb 0.47.0
@@ -1747,7 +1758,7 @@ class Edb:
         return self.save_as(path)
 
     @execution_timer("EDB file save")
-    def save_as(self, path: str | Path):
+    def save_as(self, path: str | Path) -> bool:
         """Save the EDB file as another file.
 
         Parameters
@@ -1796,7 +1807,7 @@ class Edb:
         """
         return self.core.utility.utility.Command.Execute(func)
 
-    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
+    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) ->bool:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         Parameters
@@ -2082,7 +2093,7 @@ class Edb:
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
-    ):
+    ) -> list[list[float | complex | Any]] | list | list[list] | None:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
         It does in sequence:
