@@ -206,12 +206,19 @@ class Edb(EdbInit):
     _init_objects: Any
     design_mode: property
 
+    deprecate_argument_name(
+        {
+            "edbversion": "version",
+        }
+    )
+
+    @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
         cellname: str = None,
         isreadonly: bool = False,
-        edbversion: str = None,
+        version: str = None,
         isaedtowned: bool = False,
         oproject=None,
         use_ppe: bool = False,
@@ -221,9 +228,9 @@ class Edb(EdbInit):
         layer_filter: str = None,
         restart_rpc_server=False,
     ):
-        edbversion = get_string_version(edbversion)
+        edbversion = get_string_version(version)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=edbversion)
+        EdbInit.__init__(self, edbversion=version)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]

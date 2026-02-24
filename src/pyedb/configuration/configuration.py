@@ -263,7 +263,7 @@ class Configuration:
                             )
                         else:
                             raise ValueError(f"Mesh operation type {mp.mesh_operation_type} is not supported.")
-                elif setup.type == "siwave_ac":  # siwave ac
+                elif setup.type in ["siwave_ac", "siwave_syz"]:  # siwave ac
                     edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
                     if setup.si_slider_position is not None:
                         edb_setup.si_slider_position = setup.si_slider_position
