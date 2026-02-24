@@ -25,10 +25,16 @@ This module contains the ``EdbHfss`` class.
 """
 
 import math
+from typing import Dict, Union
 import warnings
 
+from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.dotnet.database.edb_data.ports import BundleWavePort, WavePort
+from pyedb.dotnet.database.edb_data.ports import BundleWavePort, ExcitationSources, GapPort, WavePort
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
@@ -92,17 +98,17 @@ class EdbHfss(object):
         return self._pedb.active_db
 
     @property
-    def excitations(self):
+    def excitations(self)-> Dict[str, Union[BundleWavePort, GapPort]]:
         """Get all excitations."""
         return self._pedb.excitations
 
     @property
-    def sources(self):
+    def sources(self)-> Dict[str, ExcitationSources]:
         """Get all sources."""
         return self._pedb.sources
 
     @property
-    def probes(self):
+    def probes(self)-> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all probes."""
         return self._pedb.probes
 

@@ -27,8 +27,13 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 
 import os
 import time
+from typing import Dict, Union
 
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+
 from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
@@ -48,7 +53,11 @@ from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 from pyedb.modeler.geometry_operators import GeometryOperators
-
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+    from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+    from pyedb.dotnet.database.edb_data.ports import ExcitationSources
 
 class EdbSiwave(object):
     """Manages EDB methods related to Siwave Setup accessible from `Edb.siwave` property.
@@ -108,12 +117,12 @@ class EdbSiwave(object):
         return self._pedb.excitations
 
     @property
-    def sources(self):
+    def sources(self)-> Dict[str, ExcitationSources]:
         """Get all sources."""
         return self._pedb.sources
 
     @property
-    def probes(self):
+    def probes(self)-> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all probes."""
         return self._pedb.probes
 
