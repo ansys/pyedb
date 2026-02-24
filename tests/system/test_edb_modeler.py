@@ -565,7 +565,7 @@ class TestClass(BaseTestClass):
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only implemented in gRPC")
     def test_insert_layout_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
