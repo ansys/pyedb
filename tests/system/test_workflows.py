@@ -101,7 +101,7 @@ class TestClass(BaseTestClass):
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
+    @pytest.mark.skipif(True, reason="Too heavy test for CI.")
     def test_drc_rules_from_file(self):
         from pyedb.workflows.drc.drc import Drc, Rules
 
@@ -123,7 +123,7 @@ class TestClass(BaseTestClass):
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
-        output_file = os.path.join(self.local_scratch.path, "drc_results.ipc356a")
+        output_file = os.path.join(self.edb_examples.example_models_path, "drc_results.ipc356a")
         drc.to_ipc356a(file_path=output_file)
         assert os.path.isfile(output_file)
         edbapp.close()
