@@ -210,6 +210,7 @@ class Edb(EdbInit):
         }
     )
 
+    @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
