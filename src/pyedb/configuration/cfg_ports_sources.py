@@ -637,7 +637,7 @@ class CfgSource(CfgCircuitElement):
 
         for terminal in circuit_elements:
             # Get reference terminal
-            terms = [terminal, terminals[terminal.core.reference_terminal.name]] if terminal.core.reference_terminal else [terminal]
+            terms = [terminal, terminals[terminal.name]] if terminal.is_reference_terminal else [terminal]
             for t in terms:
                 if not t.is_reference_terminal:
                     radius = self.positive_terminal_info.contact_radius

@@ -131,7 +131,6 @@ class TestClass(BaseTestClass):
         assert cmp_pinlist[0].net.name
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_padstack_properties_getter(self):
         """Evaluate properties"""
         edbapp = self.edb_examples.get_si_verse()
@@ -371,12 +370,12 @@ class TestClass(BaseTestClass):
                 assert confirmed_pads == 19
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        edb_plot = self.edb_examples.load_edb(self.target_path3)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
+        edb_plot = self.edb_examples.load_edb(source_path)
 
-        local_png1 = os.path.join(self.local_scratch.path, "test1.png")
+        local_png1 = os.path.join(source_path, "test1.png")
         edb_plot.nets.plot(
             nets=None,
             layers=None,
@@ -387,7 +386,7 @@ class TestClass(BaseTestClass):
         )
         assert os.path.exists(local_png1)
 
-        local_png2 = os.path.join(self.local_scratch.path, "test2.png")
+        local_png2 = os.path.join(source_path, "test2.png")
 
         edb_plot.nets.plot(
             nets="DDR4_DQS7_N",
@@ -400,7 +399,7 @@ class TestClass(BaseTestClass):
         edb_plot.modeler.create_polygon(
             [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
         )
-        local_png3 = os.path.join(self.local_scratch.path, "test3.png")
+        local_png3 = os.path.join(source_path, "test3.png")
         edb_plot.nets.plot(
             nets=["DDR4_DQ57", "DDR4_DQ56"],
             layers="1_Top",
@@ -411,14 +410,14 @@ class TestClass(BaseTestClass):
         )
         assert os.path.exists(local_png3)
 
-        local_png4 = os.path.join(self.local_scratch.path, "test4.png")
+        local_png4 = os.path.join(source_path, "test4.png")
         edb_plot.stackup.plot(
             save_plot=local_png4,
             plot_definitions=list(edb_plot.padstacks.definitions.keys())[0],
         )
         assert os.path.exists(local_png4)
 
-        local_png5 = os.path.join(self.local_scratch.path, "test5.png")
+        local_png5 = os.path.join(source_path, "test5.png")
         edb_plot.stackup.plot(
             scale_elevation=False,
             save_plot=local_png5,
@@ -448,7 +447,6 @@ class TestClass(BaseTestClass):
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
 
-    @pytest.mark.skipif(not use_grpc, reason="Unstable test with DotNet causing worker crash.")
     def test_padstack_instances_rtree_index(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)

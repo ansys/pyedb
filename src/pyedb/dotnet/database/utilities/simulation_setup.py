@@ -319,7 +319,7 @@ class SimulationSetup(object):
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
         """
         if "sweep_type" in kwargs:
-            self._pedb.logger("sweep_type parameter is deprecated. Use ``discrete`` parameter instead")
+            self._pedb.logger.warning("sweep_type parameter is deprecated. Use ``discrete`` parameter instead")
             discrete = False if kwargs["sweep_type"] == "interpolation" else True
 
         name = generate_unique_name("sweep") if not name else name

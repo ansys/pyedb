@@ -90,3 +90,15 @@ class PointTerminal(Terminal):
     def location(self, value):
         layer = self.layer
         self._edb_object.SetParameters(self._pedb.point_data(*value), layer._edb_object)
+
+    @property
+    def is_reference_terminal(self) -> bool:
+        """Whether the terminal is a reference terminal.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a reference terminal, False otherwise.
+
+        """
+        return self.core.IsReferenceTerminal

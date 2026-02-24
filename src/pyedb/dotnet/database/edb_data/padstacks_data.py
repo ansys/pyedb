@@ -2014,6 +2014,40 @@ class EDBPadstackInstance(Connectable):
         self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, self._pedb.edb_value(self.rotation))
 
     @property
+    def position_and_rotation(self):
+        """Padstack instance position and rotation.
+
+        Returns
+        -------
+        list
+            List of ``[x, y]`` coordinates for the padstack instance position.
+        """
+        _position_and_rotation = []
+        out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        if self._edb_padstackinstance.GetComponent():
+            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
+            _position_and_rotation = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6), round(out[2].ToDouble(), 6)]
+        elif out[0]:
+            _position_and_rotation = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6), round(out[2].ToDouble(), 6)]
+        _position_and_rotation.append(round(out[2].ToDouble(), 6))
+
+        return _position_and_rotation
+
+    @position_and_rotation.setter
+    def position_and_rotation(self, value):
+        pos = []
+        for v in value:
+            if isinstance(v, (float, int, str)):
+                pos.append(self._pedb.edb_value(v))
+            else:
+                pos.append(v)
+        point_data = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+            self._pedb, pos[0], pos[1]
+        )
+        self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, pos[2])
+
+
+    @property
     def rotation(self):
         """Padstack instance rotation.
 
