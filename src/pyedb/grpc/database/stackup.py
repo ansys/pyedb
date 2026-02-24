@@ -289,20 +289,6 @@ class LayerCollection:
         )
         return self.core.add_layer_above(layer.core, base_layer_name)
 
-    @property
-    def stackup_layers(self):
-        """Retrieve the dictionary of signal and dielectric layers.
-
-        .. deprecated:: 0.6.61
-            Use :func:`layers` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
-            Dictionary of stackup layers.
-        """
-        warnings.warn("Use new property :func:`layers` instead.", DeprecationWarning)
-        return self.layers
 
     @property
     def non_stackup_layers(self) -> Dict[str, Layer]:
@@ -414,36 +400,6 @@ class LayerCollection:
             obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
         }
 
-    def find_layer_by_name(self, name: str):
-        """Find a layer by its name.
-
-        .. deprecated:: 0.29.0
-            Use :func:`find_by_name` instead.
-
-        Parameters
-        ----------
-        name : str
-            Name of the layer.
-
-        Returns
-        -------
-        :class:`ansys.edb.core.layer.Layer`
-            Layer object found.
-
-        Raises
-        ------
-        ValueError
-            If no layer with the given name is found.
-        """
-        warnings.warn(
-            "`find_layer_by_name` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.find_by_name` instead.",
-            DeprecationWarning,
-        )
-        layer = self.core.find_by_name(name)
-        if layer.is_null:
-            raise ValueError(f"Layer with name '{name}' was not found.")
-        return layer
 
 
 class Stackup:
@@ -1206,34 +1162,6 @@ class Stackup:
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
 
-    def export_stackup(self, fpath, file_format="xml", include_material_with_layer=False):
-        """Export stackup definition to a file.
-
-        .. deprecated:: 0.6.61
-           Use :func:`export` instead.
-
-        Parameters
-        ----------
-        fpath : str
-            File path to export to.
-        file_format : str, optional
-            Format of the file to export. The default is ``"xml"``. Options are:
-            - ``"csv"``
-            - ``"xlsx"``
-            - ``"json"``
-        include_material_with_layer : bool, optional
-            Whether to include the material definition inside layer objects. This parameter is only used
-            when a JSON file is exported. The default is ``False``.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb()
-        >>> edb.stackup.export_stackup("stackup.xml")
-        """
-
-        self._logger.warning("Method export_stackup is deprecated. Use .export.")
-        return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
 
     def _export_layer_stackup_to_csv_xlsx(self, fpath: Optional[str] = None, file_format: Optional[str] = None) -> bool:
         try:

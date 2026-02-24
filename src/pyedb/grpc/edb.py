@@ -1502,21 +1502,6 @@ class Edb(EdbInit):
         # return self.core.utility.utility.Command.Execute(func)
         pass
 
-    def import_cadence_file(self, input_brd, work_dir=None, anstranslator_full_path="", use_ppe=False) -> bool:
-        """Import Cadence board file.
-
-        .. deprecated:: 0.50
-        Use :func:`import_layout_file` instead.
-        """
-        if self.import_layout_pcb(
-            input_brd,
-            working_dir=work_dir,
-            anstranslator_full_path=anstranslator_full_path,
-            use_ppe=use_ppe,
-        ):
-            return True
-        else:
-            return False
 
     @deprecate_argument_name({"inputGDS": "input_gds"})
     def import_gds_file(
@@ -2513,7 +2498,7 @@ class Edb(EdbInit):
                 ]
                 for layer in layers_to_remove:
                     edb.stackup.remove_layer(layer)
-            edb.stackup.stackup_mode = "Laminate"
+            edb.stackup.mode = "Laminate"
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],

@@ -428,7 +428,7 @@ class DefeatureSettings(object):
 
     @small_void_area.setter
     def small_void_area(self, value):
-        self._defeature_settings.SmallVoidArea = value
+        self._defeature_settings.SmallVoidArea = str(value)
         self._parent._update_setup()
 
     @property
