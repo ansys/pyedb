@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from typing import TYPE_CHECKING, Literal, Union, overload
+import warnings
 
+from pyedb.generic.grpc_warnings import GRPC_BETA_WARNING, GRPC_NOT_SUPPORTED_WARNING
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
@@ -277,9 +279,8 @@ def Edb(
                 settings.specified_version = version
 
     if grpc:
-        if float(settings.specified_version) < 2025.2:
-            raise RuntimeError(f"gRPC is supported from AEDT version 2025.2.")
-        else:
+        if 2025.2 <= float(settings.specified_version) <= 2027.1:
+            warnings.warn(GRPC_BETA_WARNING, UserWarning)
             from pyedb.grpc.edb import Edb
 
             return Edb(
@@ -293,6 +294,13 @@ def Edb(
                 map_file=map_file,
                 technology_file=technology_file,
                 control_file=control_file,
+            )
+
+        elif float(settings.specified_version) < 2025.2:
+            warnings.warn(GRPC_NOT_SUPPORTED_WARNING, UserWarning)
+            raise RuntimeError(
+                f"gRPC is not supported for AEDT version {settings.specified_version}. "
+                f"Please use version 2025.2 or later."
             )
 
     else:
