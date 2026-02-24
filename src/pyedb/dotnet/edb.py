@@ -26,6 +26,10 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 
 """
 
+# ------------------------------------------
+#   DotNet checking for grpc alignment
+# ------------------------------------------
+
 from datetime import datetime
 from itertools import combinations
 import os
