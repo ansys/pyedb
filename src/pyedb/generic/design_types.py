@@ -278,9 +278,7 @@ def Edb(
 
     if grpc:
         if float(settings.specified_version) < 2025.2:
-            raise RuntimeError(
-            f"gRPC is supported from AEDT version 2025.2."
-        )
+            raise RuntimeError(f"gRPC is supported from AEDT version 2025.2.")
         else:
             from pyedb.grpc.edb import Edb
 
