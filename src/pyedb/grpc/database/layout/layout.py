@@ -26,7 +26,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from pyedb.dotnet.database.general import Primitives
@@ -87,7 +87,7 @@ class Layout:
         self.__padstack_instances = {}
 
     @property
-    def layout_instance(self):
+    def layout_instance(self) ->Any:
         return self.core.layout_instance
 
     @property

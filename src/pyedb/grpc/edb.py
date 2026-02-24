@@ -507,12 +507,12 @@ class Edb(EdbInit):
         return LayoutValidation(self)
 
     @property
-    def variables(self) -> Dict[str, float]:
+    def variables(self) -> Dict[str, Variable]:
         """All variables (project + design) in database.
 
         Returns
         -------
-        dict[str, float]
+        dict[str, Variable]
             Combined dictionary of all variables.
         """
         all_vars = dict()

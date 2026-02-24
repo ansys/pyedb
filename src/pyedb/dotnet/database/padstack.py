@@ -213,7 +213,7 @@ class EdbPadstacks(object):
         return self.definitions
 
     @property
-    def instances(self):
+    def instances(self) -> Dict[int, EDBPadstackInstance]:
         """Dictionary  of all padstack instances (vias and pins).
 
         Returns

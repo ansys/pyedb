@@ -261,32 +261,32 @@ class Layout(ObjBase):
         return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
 
     @property
-    def pin_groups(self):
+    def pin_groups(self) -> List[PinGroup]:
         return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.GetName()) for i in self._edb_object.PinGroups]
 
     @property
-    def net_classes(self):
+    def net_classes(self) ->List[EDBNetClassData]:
         return [EDBNetClassData(self._pedb, i) for i in list(self._edb_object.NetClasses)]
 
     @property
-    def extended_nets(self):
+    def extended_nets(self) -> List[EDBExtendedNetData]:
         return [EDBExtendedNetData(self._pedb, i) for i in self._edb_object.ExtendedNets]
 
     @property
-    def differential_pairs(self):
+    def differential_pairs(self) ->List[EDBDifferentialPairData]:
         return [EDBDifferentialPairData(self._pedb, i) for i in list(self._edb_object.DifferentialPairs)]
 
     @property
-    def padstack_instances(self):
+    def padstack_instances(self) ->List[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     @property
-    def voltage_regulators(self):
+    def voltage_regulators(self) ->List[VoltageRegulator]:
         return [VoltageRegulator(self._pedb, i) for i in list(self._edb_object.VoltageRegulators)]
 
     @property
-    def port_reference_terminals_connected(self):
+    def port_reference_terminals_connected(self)-> bool:
         """:obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
 
         True if they are connected, False otherwise.
@@ -294,7 +294,7 @@ class Layout(ObjBase):
         """
         return self._edb_object.ArePortReferenceTerminalsConnected()
 
-    def find_object_by_id(self, value: int):
+    def find_object_by_id(self, value: int) -> Union[EDBPadstackInstance, EdbRectangle, EdbPolygon, EdbText, EdbCircle,Path]:
         """Find a layout object by Database ID.
 
         Parameters
