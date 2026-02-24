@@ -281,29 +281,43 @@ def Edb(
     if grpc:
         if 2025.2 <= float(settings.specified_version) <= 2027.1:
             warnings.warn(GRPC_BETA_WARNING, UserWarning)
-            from pyedb.grpc.edb import Edb as app
+            from pyedb.grpc.edb import Edb
+
+            return Edb(
+                edbpath=edbpath,
+                cellname=cellname,
+                isreadonly=isreadonly,
+                version=version,
+                isaedtowned=isaedtowned,
+                oproject=oproject,
+                use_ppe=use_ppe,
+                map_file=map_file,
+                technology_file=technology_file,
+                control_file=control_file,
+            )
+
         elif float(settings.specified_version) < 2025.2:
             warnings.warn(GRPC_NOT_SUPPORTED_WARNING, UserWarning)
-            from pyedb.dotnet.edb import Edb as app
-        else:
-            # falling back default DotNet on any reason for now.
-            from pyedb.dotnet.edb import Edb as app
+            raise RuntimeError(
+                f"gRPC is not supported for AEDT version {settings.specified_version}. "
+                f"Please use version 2025.2 or later."
+            )
 
     else:
-        from pyedb.dotnet.edb import Edb as app
+        from pyedb.dotnet.edb import Edb
 
-    return app(
-        edbpath=edbpath,
-        cellname=cellname,
-        isreadonly=isreadonly,
-        edbversion=version,
-        isaedtowned=isaedtowned,
-        oproject=oproject,
-        use_ppe=use_ppe,
-        map_file=map_file,
-        technology_file=technology_file,
-        control_file=control_file,
-    )
+        return Edb(
+            edbpath=edbpath,
+            cellname=cellname,
+            isreadonly=isreadonly,
+            isaedtowned=isaedtowned,
+            oproject=oproject,
+            use_ppe=use_ppe,
+            control_file=control_file,
+            map_file=map_file,
+            technology_file=technology_file,
+            layer_filter=layer_filter,
+        )
 
 
 def Siwave(
