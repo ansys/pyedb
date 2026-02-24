@@ -158,7 +158,6 @@ class PadstackInstance(conn_obj.ConnObj):
     def solderball_layer(self, solderball_layer):
         self.core.solderball_layer = solderball_layer
 
-
     def get_hole_overrides(self):
         return self.core.get_hole_overrides()
 
@@ -200,8 +199,9 @@ class PadstackInstance(conn_obj.ConnObj):
                     from_bottom=True,
                 )
             else:
-                self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
-                                     from_bottom=True)
+                self.set_back_drill_by_depth(
+                    Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)), from_bottom=True
+                )
         from_bottom = params.get("from_top")
         if from_bottom:
             if from_bottom.get("drill_to_layer"):
@@ -212,8 +212,9 @@ class PadstackInstance(conn_obj.ConnObj):
                     from_bottom=False,
                 )
             else:
-                self.set_back_drill_by_depth(Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)),
-                                     from_bottom=False)
+                self.set_back_drill_by_depth(
+                    Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)), from_bottom=False
+                )
 
     @property
     def is_pin(self):
@@ -749,7 +750,7 @@ class PadstackInstance(conn_obj.ConnObj):
         position = self.core.get_position_and_rotation()
         if self.component:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
-            self._position = [out2.x.value, out2.y.value]
+            self._position = [out2[0].value, out2[1].value]
         else:
             self._position = [Value(pt).value for pt in position[:2]]
         return self._position
@@ -818,9 +819,9 @@ class PadstackInstance(conn_obj.ConnObj):
             else:
                 pos.append(v)
         point_data = CorePointData(pos[0], pos[1])
-        self.core.set_position_and_rotation(x=point_data.x, y=point_data.y,
-                                            rotation=Value(pos[2], self._pedb.active_cell))
-
+        self.core.set_position_and_rotation(
+            x=point_data.x, y=point_data.y, rotation=Value(pos[2], self._pedb.active_cell)
+        )
 
     @property
     def name(self) -> str:
@@ -1193,7 +1194,7 @@ class PadstackInstance(conn_obj.ConnObj):
             diameter = Value(back_drill[2])
             return layer, offset, diameter
         except Exception:
-            return False, False,False
+            return False, False, False
 
     def get_back_drill_by_depth(self, from_bottom=True) -> tuple[float, float]:
         """Get back drill by depth parameters.
