@@ -424,11 +424,12 @@ class DefeatureSettings(object):
         -------
         float
         """
-        return self._defeature_settings.SmallVoidArea
+        return self._parent._pedb.value(self._defeature_settings.SmallVoidArea)
 
     @small_void_area.setter
     def small_void_area(self, value):
-        self._defeature_settings.SmallVoidArea = value
+        value = self._parent._pedb.value(value)
+        self._defeature_settings.SmallVoidArea = str(value) if float(self._parent._pedb.version) > 2025.2 else value
         self._parent._update_setup()
 
     @property

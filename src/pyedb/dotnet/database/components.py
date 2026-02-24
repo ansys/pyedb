@@ -1753,7 +1753,11 @@ class Components(object):
         """
         if not modelname:
             modelname = get_filename_without_extension(modelpath)
-        edbComponent = self.get_component_by_name(componentname)._edb_object
+        edbComponent = self._pedb.layout.find_component_by_name(componentname)
+        if edbComponent is None:
+            raise ValueError(f"Component {componentname} not found in the layout.")
+        else:
+            edbComponent = edbComponent._edb_object
         if str(edbComponent.EDBHandle) == "0":
             return False
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
