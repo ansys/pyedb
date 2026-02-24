@@ -1159,7 +1159,8 @@ class PadstackInstance:
         from_bottom : bool
             Whether to get the back drill type from the bottom.
         include_fill_material : bool, optional
-            Input flag to obtain fill material as well as other parameters. If false, the return tuple does not include fill material and is backward compatible with previous versions.
+            Input flag to obtain fill material as well as other parameters.
+            If false, the return tuple does not include fill material and is backward compatible with previous versions.
         Returns
         -------
         tuple of (.Layer, .Value, .Value, str)
@@ -1167,10 +1168,12 @@ class PadstackInstance:
 
             **(drill_to_layer, offset, diameter, fill_material)**
 
-            - **drill_to_layer** : Layer drills to. If drill from top, drill stops at the upper elevation of the layer. If from bottom, drill stops at the lower elevation of the layer.
+            - **drill_to_layer** : Layer drills to. If drill from top, drill stops at the upper elevation of the layer.
+                                   If from bottom, drill stops at the lower elevation of the layer.
             - **offset** : Layer offset (or depth if layer is empty).
             - **diameter** : Drilling diameter.
-            - **fill_material** : Fill material name (empty string if no fill). Returned only when include_fill_material is true.
+            - **fill_material** : Fill material name (empty string if no fill). 
+                                  Returned only when include_fill_material is true.
 
         """
         back_drill = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
@@ -1203,7 +1206,8 @@ class PadstackInstance:
         from_bottom : bool
             Whether to get the back drill type from the bottom.
         include_fill_material : bool, optional
-            Input flag to obtain fill material as well as other parameters. If false, the return tuple does not include fill material and is backward compatible with previous versions.
+            Input flag to obtain fill material as well as other parameters. 
+            If false, the return tuple does not include fill material and is backward compatible with previous versions.
         Returns
         -------
         tuple of (.Value, .Value, str)
