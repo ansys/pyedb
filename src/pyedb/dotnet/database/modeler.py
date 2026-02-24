@@ -1344,7 +1344,7 @@ class Modeler(object):
         poly._edb_object.SetPolygonData(new_poly)
         return True
 
-    def get_layout_statistics(self, evaluate_area=False, net_list=None):
+    def get_layout_statistics(self, evaluate_area=False, net_list=False)->EDBStatistics:
         """Return EDBStatistics object from a layout.
 
         Parameters
@@ -1353,7 +1353,8 @@ class Modeler(object):
         evaluate_area : optional bool
             When True evaluates the layout metal surface, can take time-consuming,
             avoid using this option on large design.
-
+        net_list: optional bool
+            list of net names to evaluate area for, if None all nets will be evaluated.
         Returns
         -------
 
@@ -1370,9 +1371,6 @@ class Modeler(object):
         stat_model.num_discrete_components = (
             len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
-        stat_model.num_inductors = len(self._pedb.components.inductors)
-        stat_model.num_resistors = len(self._pedb.components.resistors)
-        stat_model.num_capacitors = len(self._pedb.components.capacitors)
         stat_model.num_nets = len(self._pedb.nets.nets)
         stat_model.num_traces = len(self._pedb.modeler.paths)
         stat_model.num_polygons = len(self._pedb.modeler.polygons)
