@@ -53,7 +53,6 @@ from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle, EdbPolygon, EdbRectangle
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -62,11 +61,9 @@ from pyedb.dotnet.database.edb_data.ports import (
     GapPort,
     WavePort,
 )
+from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle, EdbPolygon, EdbRectangle
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
-)
-from pyedb.dotnet.database.edb_data.simulation_configuration import (
-    SimulationConfiguration,
 )
 from pyedb.dotnet.database.edb_data.sources import SourceType
 from pyedb.dotnet.database.edb_data.variables import Variable
@@ -617,7 +614,9 @@ class Edb:
         return _vrms
 
     @property
-    def probes(self) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
+    def probes(
+        self,
+    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all layout probes."""
         temp = {}
         for name, val in self.terminals.items():
@@ -707,7 +706,6 @@ class Edb:
             self._init_objects()
             return True
         return None
-
 
     @execution_timer("import_layout_file")
     def import_layout_file(
@@ -1008,7 +1006,6 @@ class Edb:
         """
         return Stackup(self, self.layout.layer_collection)
 
-
     @property
     def source_excitation(self) -> SourceExcitation:
         """Source excitation management.
@@ -1124,7 +1121,6 @@ class Edb:
             self._hfss = EdbHfss(self)
         return self._hfss
 
-
     @property
     def nets(self) -> None | EdbNets:
         """Core nets.
@@ -1197,7 +1193,6 @@ class Edb:
         else:  # pragma: no cover
             return
 
-
     @property
     def modeler(self) -> Modeler | None:
         """Core primitives modeler.
@@ -1237,7 +1232,7 @@ class Edb:
         return self.layout._edb_object
 
     @property
-    def layout_instance(self):# -> Any:
+    def layout_instance(self):  # -> Any:
         """Edb Layout Instance."""
         return self.layout._edb_object.GetLayoutInstance()
 
@@ -1252,7 +1247,9 @@ class Edb:
         """
         return self.hfss.get_layout_bounding_box(self.active_layout)
 
-    def get_connected_objects(self, layout_object_instance) -> List[Union[EDBPadstackInstance, Path, EdbRectangle, EdbCircle, EdbPolygon]]:
+    def get_connected_objects(
+        self, layout_object_instance
+    ) -> List[Union[EDBPadstackInstance, Path, EdbRectangle, EdbCircle, EdbPolygon]]:
         """Get connected objects.
 
         Returns
@@ -1300,7 +1297,6 @@ class Edb:
             else:
                 continue
         return temp
-
 
     class Boundaries:
         """Boundaries Enumerator.
@@ -1356,7 +1352,7 @@ class Edb:
             return self.core.Utility.Value(value, var_server_db)
         return self.core.Utility.Value(value)
 
-    def point_3d(self, x, y, z=0.0)->Any:# -> Any:
+    def point_3d(self, x, y, z=0.0) -> Any:  # -> Any:
         """Compute the Edb 3d Point Data.
 
         Parameters
@@ -1374,7 +1370,7 @@ class Edb:
         """
         return self.core.Geometry.Point3DData(self.edb_value(x), self.edb_value(y), self.edb_value(z))
 
-    def copy_cells(self, cells_to_copy)-> Any:# -> Any:
+    def copy_cells(self, cells_to_copy) -> Any:  # -> Any:
         """Copy Cells from other Databases or this Database into this Database.
 
         Parameters
@@ -1392,7 +1388,7 @@ class Edb:
         _dbCells = convert_py_list_to_net_list(cells_to_copy)
         return self._db.CopyCells(_dbCells)
 
-    def point_data(self, x, y=None) -> Any: # -> Any:
+    def point_data(self, x, y=None) -> Any:  # -> Any:
         """Compute the Edb Point Data.
 
         Parameters
@@ -1593,7 +1589,7 @@ class Edb:
         """
         return self.core.utility.utility.Command.Execute(func)
 
-    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) ->bool:
+    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         Parameters
@@ -2138,7 +2134,6 @@ class Edb:
                 self.components.refresh_components()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
-
     def _create_cutout_multithread(
         self,
         signal_list=[],
@@ -2648,7 +2643,6 @@ class Edb:
                     except Exception as e:
                         self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
-
 
     def write_export3d_option_config_file(self, path_to_output, config_dictionaries=None):
         """Write the options for a 3D export to a configuration file.

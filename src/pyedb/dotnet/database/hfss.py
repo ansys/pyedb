@@ -36,9 +36,6 @@ from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
 from pyedb.dotnet.database.edb_data.ports import BundleWavePort, ExcitationSources, GapPort, WavePort
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive
-from pyedb.dotnet.database.edb_data.simulation_configuration import (
-    SimulationConfiguration,
-)
 from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
     convert_pytuple_to_nettuple,
@@ -98,17 +95,19 @@ class EdbHfss(object):
         return self._pedb.active_db
 
     @property
-    def excitations(self)-> Dict[str, Union[BundleWavePort, GapPort]]:
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort]]:
         """Get all excitations."""
         return self._pedb.excitations
 
     @property
-    def sources(self)-> Dict[str, ExcitationSources]:
+    def sources(self) -> Dict[str, ExcitationSources]:
         """Get all sources."""
         return self._pedb.sources
 
     @property
-    def probes(self)-> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
+    def probes(
+        self,
+    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all probes."""
         return self._pedb.probes
 
@@ -657,9 +656,17 @@ class EdbHfss(object):
         else:
             return False
 
-
-    def create_edge_port(self, location, primitive_name, name, impedance=50, is_wave_port=True,
-                         horizontal_extent_factor=1, vertical_extent_factor=1, pec_launch_width=0.0001) -> WavePort:
+    def create_edge_port(
+        self,
+        location,
+        primitive_name,
+        name,
+        impedance=50,
+        is_wave_port=True,
+        horizontal_extent_factor=1,
+        vertical_extent_factor=1,
+        pec_launch_width=0.0001,
+    ) -> WavePort:
         """Create an edge port on a primitive specific location.
 
         .. deprecated:: 0.70.0
@@ -690,13 +697,16 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_edge_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_edge_port(location=location, primitive_name=primitive_name,
-                                                              name=name, impedance=impedance, is_wave_port=is_wave_port,
-                                                              horizontal_extent_factor=horizontal_extent_factor,
-                                                              vertical_extent_factor=vertical_extent_factor,
-                                                              pec_launch_width=pec_launch_width)
-
-
+        return self._pedb.excitation_manager.create_edge_port(
+            location=location,
+            primitive_name=primitive_name,
+            name=name,
+            impedance=impedance,
+            is_wave_port=is_wave_port,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
 
     def create_edge_port_on_polygon(
         self,
@@ -765,15 +775,16 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_edge_port_on_polygon` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_edge_port_on_polygon(polygon=polygon,
-        reference_polygon=reference_polygon,
-        terminal_point=terminal_point,
-        reference_point=reference_point,
-        reference_layer=reference_layer,
-        port_name=port_name,
-        port_impedance=port_impedance,
-        force_circuit_port=force_circuit_port,)
-
+        return self._pedb.excitation_manager.create_edge_port_on_polygon(
+            polygon=polygon,
+            reference_polygon=reference_polygon,
+            terminal_point=terminal_point,
+            reference_point=reference_point,
+            reference_layer=reference_layer,
+            port_name=port_name,
+            port_impedance=port_impedance,
+            force_circuit_port=force_circuit_port,
+        )
 
     def create_wave_port(
         self,
@@ -823,13 +834,15 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_wave_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_wave_port(prim_id=prim_id,
-        point_on_edge=point_on_edge,
-        port_name=port_name,
-        impedance=impedance,
-        horizontal_extent_factor=horizontal_extent_factor,
-        vertical_extent_factor=vertical_extent_factor,
-        pec_launch_width=pec_launch_width)
+        return self._pedb.excitation_manager.create_wave_port(
+            prim_id=prim_id,
+            point_on_edge=point_on_edge,
+            port_name=port_name,
+            impedance=impedance,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
 
     def create_edge_port_vertical(
         self,
@@ -883,16 +896,17 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_edge_port_vertical` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_edge_port_vertical( prim_id=prim_id,
-        point_on_edge=point_on_edge,
-        port_name=port_name,
-        impedance=impedance,
-        reference_layer=reference_layer,
-        hfss_type=hfss_type,
-        horizontal_extent_factor=horizontal_extent_factor,
-        vertical_extent_factor=vertical_extent_factor,
-        pec_launch_width=pec_launch_width)
-
+        return self._pedb.excitation_manager.create_edge_port_vertical(
+            prim_id=prim_id,
+            point_on_edge=point_on_edge,
+            port_name=port_name,
+            impedance=impedance,
+            reference_layer=reference_layer,
+            hfss_type=hfss_type,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
 
     def create_edge_port_horizontal(
         self,
@@ -940,13 +954,15 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_edge_port_horizontal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_edge_port_horizontal(prim_id=prim_id,
-        point_on_edge=point_on_edge,
-        ref_prim_id=ref_prim_id,
-        point_on_ref_edge=point_on_ref_edge,
-        port_name=port_name,
-        impedance=impedance,
-        layer_alignment=layer_alignment)
+        return self._pedb.excitation_manager.create_edge_port_horizontal(
+            prim_id=prim_id,
+            point_on_edge=point_on_edge,
+            ref_prim_id=ref_prim_id,
+            point_on_ref_edge=point_on_ref_edge,
+            port_name=port_name,
+            impedance=impedance,
+            layer_alignment=layer_alignment,
+        )
 
     def create_lumped_port_on_net(
         self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
@@ -987,8 +1003,13 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_lumped_port_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_lumped_port_on_net(nets=nets, reference_layer=reference_layer,
-                                                                       return_points_only=return_points_only, digit_resolution=digit_resolution, at_bounding_box=at_bounding_box)
+        return self._pedb.excitation_manager.create_lumped_port_on_net(
+            nets=nets,
+            reference_layer=reference_layer,
+            return_points_only=return_points_only,
+            digit_resolution=digit_resolution,
+            at_bounding_box=at_bounding_box,
+        )
 
     def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
         """Create an edge port on clipped signal traces.
@@ -1018,9 +1039,9 @@ class EdbHfss(object):
             "`pyedb.grpc.core.excitation_manager.create_vertical_circuit_port_on_clipped_traces` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(nets=nets,
-                                                                                            reference_net=reference_net,
-                                                                                            user_defined_extent=user_defined_extent)
+        return self._pedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
+            nets=nets, reference_net=reference_net, user_defined_extent=user_defined_extent
+        )
 
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
         """Evaluate the layout bounding box.

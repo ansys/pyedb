@@ -24,25 +24,23 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
+
 from __future__ import annotations
+
 import os
 import time
-from typing import Dict, Union
+from typing import TYPE_CHECKING, Dict, Union
 
 from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-
-from pyedb.dotnet.database.edb_data.simulation_configuration import (
-    SimulationConfiguration,
-    SourceType,
-)
 from pyedb.dotnet.database.edb_data.sources import (
     CircuitPort,
     CurrentSource,
     DCTerminal,
     ResistorSource,
+    SourceType,
     VoltageSource,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
@@ -53,11 +51,12 @@ from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 from pyedb.modeler.geometry_operators import GeometryOperators
-from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
     from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
     from pyedb.dotnet.database.edb_data.ports import ExcitationSources
+
 
 class EdbSiwave(object):
     """Manages EDB methods related to Siwave Setup accessible from `Edb.siwave` property.
@@ -117,12 +116,14 @@ class EdbSiwave(object):
         return self._pedb.excitations
 
     @property
-    def sources(self)-> Dict[str, ExcitationSources]:
+    def sources(self) -> Dict[str, ExcitationSources]:
         """Get all sources."""
         return self._pedb.sources
 
     @property
-    def probes(self)-> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
+    def probes(
+        self,
+    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all probes."""
         return self._pedb.probes
 
@@ -1035,7 +1036,7 @@ class EdbSiwave(object):
             ``True`` when successful, ``False`` when failed.
         """
 
-        if not isinstance(simulation_setup, SimulationConfiguration):  # pragma: no cover
+        if not isinstance(simulation_setup):  # pragma: no cover
             return False
         if simulation_setup.solver_type == SolverType.SiwaveSYZ:  # pragma: no cover
             simsetup_info = self._pedb.simsetupdata.SimSetupInfo[self._pedb.simsetupdata.SIwave.SIWSimulationSettings]()
