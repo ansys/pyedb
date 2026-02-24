@@ -27,7 +27,7 @@ class Value(float, value.Value):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        core =  val if isinstance(val, value.Value) else value.Value(val, owner.core if owner else None)
+        core =  val if isinstance(val, value.Value) else value.Value(val, owner if owner else None)
         inst = super().__new__(cls, core.value)
         inst.core = core
         return inst
