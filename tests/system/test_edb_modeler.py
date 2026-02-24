@@ -528,26 +528,6 @@ class TestClass(BaseTestClass):
         assert len(primitives) == 3
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="This test fails randomly, needs to be fixed.")
-    def test_arbitrary_wave_ports(self):
-        target_path_edb = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[
-            0
-        ]
-        output_edb = os.path.join(self.edb_examples.test_folder, "wave_ports.aedb")
-        edbapp = self.edb_examples.load_edb(edb_path=target_path_edb)
-        assert edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=os.path.join(self.edb_examples.test_folder, "_work"),
-            output_edb=output_edb,
-            mounting_side="top",
-        )
-        edbapp.close(terminate_rpc_session=False)
-        test_edb = self.edb_examples.load_edb(edb_path=output_edb)
-        assert len(list(test_edb.nets.signal.keys())) == 13
-        assert len(list(test_edb.stackup.layers.keys())) == 3
-        assert "ref" in test_edb.stackup.layers
-        assert len(test_edb.modeler.polygons) == 12
-        test_edb.close(terminate_rpc_session=False)
-
     def test_path_center_line(self):
         edb = self.edb_examples.create_empty_edb()
         edb.stackup.add_layer("GND", "Gap")
