@@ -587,7 +587,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_layout_instance_placement_3d(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -602,7 +602,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_3d_component_placement_3d(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
@@ -619,7 +619,7 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_3d_component_on_layer(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
