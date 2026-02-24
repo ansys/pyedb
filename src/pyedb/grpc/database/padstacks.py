@@ -256,11 +256,12 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        if not self._instances_by_name:
-            for edb_padstack_instance in self.instances.values():
-                if edb_padstack_instance.aedt_name:
-                    self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
-        return self._instances_by_name
+        instances_by_name = {}
+        for pds in self._pedb.layout.padstack_instances:
+            name = pds.aedt_name
+            if name:
+                instances_by_name[name] = pds
+        return instances_by_name
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
