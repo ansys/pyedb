@@ -43,6 +43,7 @@ from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.sources import Source, SourceType
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.padstack import EdbPadstacks
+from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import (
     _retry_ntimes,
     generate_unique_name,
@@ -91,7 +92,7 @@ class Components(object):
     >>> edbapp.components
     """
 
-    def __getitem__(self, name):
+    def __getitem__(self, name) -> EDBComponent | EDBComponentDef:
         """Get  a component or component definition from the Edb project.
 
         Parameters
@@ -118,7 +119,7 @@ class Components(object):
         self._padstack = EdbPadstacks(self._pedb)
 
     @property
-    def _logger(self):
+    def _logger(self) -> EdbLogger:
         """Logger."""
         return self._pedb.logger
 
@@ -149,28 +150,6 @@ class Components(object):
     def _db(self):
         return self._pedb._db
 
-    @property
-    def components(self):
-        """Component setup information.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`instances` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Default dictionary for the EDB component.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.components
-
-        """
-        warnings.warn("Use new property :func:`instances` instead.", DeprecationWarning)
-        return self.instances
 
     @property
     def instances(self):
@@ -1679,47 +1658,6 @@ class Components(object):
         self._cmp[new_cmp.GetName()] = new_edb_comp
         return new_edb_comp
 
-    def create_component_from_pins(
-        self, pins, component_name, placement_layer=None, component_part_name=None
-    ):  # pragma: no cover
-        """Create a component from pins.
-
-        .. deprecated:: 0.6.62
-           Use :func:`create` method instead.
-
-        Parameters
-        ----------
-        pins : list
-            List of EDB core pins.
-        component_name : str
-            Name of the reference designator for the component.
-        placement_layer : str, optional
-            Name of the layer used for placing the component.
-        component_part_name : str, optional
-            Part name of the component. It's created a new definition if doesn't exists.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> pins = edbapp.components.get_pin_from_component("A1")
-        >>> edbapp.components.create(pins, "A1New")
-
-        """
-        warnings.warn("`create_component_from_pins` is deprecated. Use `create` method instead.", DeprecationWarning)
-        return self.create(
-            pins=pins,
-            component_name=component_name,
-            placement_layer=placement_layer,
-            component_part_name=component_part_name,
-            is_rlc=False,
-        )
 
     def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None):
         """Assign a Spice or Touchstone model to a component.
@@ -1756,10 +1694,7 @@ class Components(object):
         edbComponent = self._pedb.layout.find_component_by_name(componentname)
         if edbComponent is None:
             raise ValueError(f"Component {componentname} not found in the layout.")
-        else:
-            edbComponent = edbComponent._edb_object
-        if str(edbComponent.EDBHandle) == "0":
-            return False
+
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
 
         componentPins = self.get_pin_from_component(componentname)
@@ -1921,32 +1856,6 @@ class Components(object):
 
         return deleted_comps
 
-    def delete_component(self, component_name):  # pragma: no cover
-        """Delete a component.
-
-        .. deprecated:: 0.6.62
-           Use :func:`delete` method instead.
-
-        Parameters
-        ----------
-        component_name : str
-            Name of the component.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.delete("A1")
-
-        """
-        warnings.warn("`delete_component` is deprecated. Use `delete` property instead.", DeprecationWarning)
-        return self.delete(component_name=component_name)
 
     def delete(self, component_name):
         """Delete a component.

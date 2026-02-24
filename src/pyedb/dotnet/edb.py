@@ -708,61 +708,6 @@ class Edb:
             return True
         return None
 
-    def import_layout_pcb(
-        self,
-        input_file,
-        working_dir="",
-        anstranslator_full_path="",
-        use_ppe=False,
-        control_file=None,
-        map_file=None,
-        tech_file=None,
-        layer_filter=None,
-    ) -> str:
-        """Import a board file and generate an ``edb.def`` file in the working directory.
-
-        .. deprecated:: 0.42.0
-           Use :func:`import_layout_file` method instead.
-
-        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
-
-        Parameters
-        ----------
-        input_file : str
-            Full path to the board file.
-        working_dir : str, optional
-            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
-            is the same as the name of the board file.
-        anstranslator_full_path : str, optional
-            Full path to the Ansys translator. The default is ``""``.
-        use_ppe : bool
-            Whether to use the PPE License. The default is ``False``.
-        control_file : str, optional
-            Path to the XML file. The default is ``None``, in which case an attempt is made to find
-            the XML file in the same directory as the board file. To succeed, the XML file and board file
-            must have the same name. Only the extension differs.
-        tech_file : str, optional
-            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
-        map_file : str, optional
-            Layer map .map file.
-        layer_filter:str,optional
-            Layer filter .txt file.
-
-        Returns
-        -------
-        Full path to the AEDB file : str
-        """
-        self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
-        return self.import_layout_file(
-            input_file,
-            working_dir,
-            anstranslator_full_path,
-            use_ppe,
-            control_file,
-            map_file,
-            tech_file,
-            layer_filter,
-        )
 
     @execution_timer("import_layout_file")
     def import_layout_file(
@@ -1018,26 +963,6 @@ class Edb:
             raise "No valid design."
 
     @property
-    def core_components(self) -> Components:  # pragma: no cover
-        """Edb Components methods and properties.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`components` instead.
-
-        Returns
-        -------
-        Instance of :class:`pyedb.dotnet.database.Components.Components`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> comp = edbapp.components.get_component_by_name("J1")
-        """
-        warnings.warn("Use new property :func:`components` instead.", DeprecationWarning)
-        return self.components
-
-    @property
     def components(self) -> Components:
         """Edb Components methods and properties.
 
@@ -1054,21 +979,6 @@ class Edb:
         if not self._components and self._db:
             self._components = Components(self)
         return self._components
-
-    @property
-    def core_stackup(self) -> Stackup:
-        """Core stackup.
-
-        .. deprecated:: 0.6.5
-            There is no need to use the ``core_stackup`` property anymore.
-            You can instantiate a new ``stackup`` class directly from the ``Edb`` class.
-        """
-        mess = "`core_stackup` is deprecated.\n"
-        mess += " Use `app.stackup` directly to instantiate new stackup methods."
-        warnings.warn(mess, DeprecationWarning)
-        if not self._stackup and self._db:
-            self._stackup = Stackup(self)
-        return self._stackup
 
     @property
     def design_options(self) -> EdbDesignOptions:
@@ -1150,31 +1060,6 @@ class Edb:
         return self._materials
 
     @property
-    def core_padstack(self) -> EdbPadstacks:  # pragma: no cover
-        """Core padstack.
-
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`padstacks` instead.
-
-        Returns
-        -------
-        Instance of :class: `pyedb.dotnet.database.padstack.EdbPadstack`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
-        >>> edbapp.padstacks.get_pad_parameters(
-        >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
-        >>> ... )
-        """
-
-        warnings.warn("Use new property :func:`padstacks` instead.", DeprecationWarning)
-        return self.padstacks
-
-    @property
     def padstacks(self) -> EdbPadstacks | None:
         """Core padstack.
 
@@ -1198,26 +1083,6 @@ class Edb:
         return self._padstack
 
     @property
-    def core_siwave(self) -> EdbSiwave | None:  # pragma: no cover
-        """Core SIWave methods and properties.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`siwave` instead.
-
-        Returns
-        -------
-        Instance of :class: `pyedb.dotnet.database.siwave.EdbSiwave`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
-        """
-        warnings.warn("Use new property :func:`siwave` instead.", DeprecationWarning)
-        return self.siwave
-
-    @property
     def siwave(self) -> EdbSiwave | None:
         """Core SIWave methods and properties.
 
@@ -1234,26 +1099,6 @@ class Edb:
         if not self._siwave and self._db:
             self._siwave = EdbSiwave(self)
         return self._siwave
-
-    @property
-    def core_hfss(self) -> EdbHfss | None:  # pragma: no cover
-        """Core HFSS methods and properties.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`hfss` instead.
-
-        Returns
-        -------
-        Instance of :class:`legacy.database.hfss.EdbHfss`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
-        """
-        warnings.warn("Use new property :func:`hfss` instead.", DeprecationWarning)
-        return self.hfss
 
     @property
     def hfss(self) -> EdbHfss | None:
@@ -1279,26 +1124,6 @@ class Edb:
             self._hfss = EdbHfss(self)
         return self._hfss
 
-    @property
-    def core_nets(self) -> None | EdbNets:  # pragma: no cover
-        """Core nets.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`nets` instead.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.nets.EdbNets`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.nets.find_or_create_net("GND")
-        >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
-        """
-        warnings.warn("Use new property :func:`nets` instead.", DeprecationWarning)
-        return self.nets
 
     @property
     def nets(self) -> None | EdbNets:
@@ -1372,25 +1197,6 @@ class Edb:
         else:  # pragma: no cover
             return
 
-    @property
-    def core_primitives(self) -> Modeler | None:  # pragma: no cover
-        """Core primitives.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`modeler` instead.
-
-        Returns
-        -------
-        Instance of :class: `legacy.database.layout.EdbLayout`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
-        """
-        warnings.warn("Use new property :func:`modeler` instead.", DeprecationWarning)
-        return self.modeler
 
     @property
     def modeler(self) -> Modeler | None:
@@ -1495,27 +1301,6 @@ class Edb:
                 continue
         return temp
 
-    @property
-    def pins(self) -> Dict[str, EDBPadstackInstance]:# -> dict:
-        """EDB padstack instance of the component.
-
-        .. deprecated:: 0.6.62
-           Use new method :func:`edb.padstacks.pins` instead.
-
-        Returns
-        -------
-        dic[str, :class:`legacy.database.edb_data.definitions.EDBPadstackInstance`]
-            Dictionary of EDBPadstackInstance Components.
-
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> pin_net_name = edbapp.pins[424968329].netname
-        """
-        warnings.warn("Use new method :func:`edb.padstacks.pins` instead.", DeprecationWarning)
-        return self.padstacks.pins
 
     class Boundaries:
         """Boundaries Enumerator.
@@ -2353,66 +2138,6 @@ class Edb:
                 self.components.refresh_components()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
-    def create_cutout(
-        self,
-        signal_list=[],
-        reference_list=["GND"],
-        extent_type="Conforming",
-        expansion_size=0.002,
-        use_round_corner=False,
-        output_aedb_path=None,
-        open_cutout_at_end=True,
-        use_pyaedt_extent_computing=False,
-    ):
-        """Create a cutout using an approach entirely based on legacy.
-        It does in sequence:
-        - delete all nets not in list,
-        - create an extent of the nets,
-        - check and delete all vias not in the extent,
-        - check and delete all the primitives not in extent,
-        - check and intersect all the primitives that intersect the extent.
-
-        .. deprecated:: 0.6.58
-           Use new method :func:`cutout` instead.
-
-        Parameters
-        ----------
-        signal_list : list
-            List of signal strings.
-        reference_list : list, optional
-            List of references to add. The default is ``["GND"]``.
-        extent_type : str, optional
-            Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
-            ``"Bounding"``. The default is ``"Conforming"``.
-        expansion_size : float, str, optional
-            Expansion size ratio in meters. The default is ``0.002``.
-        use_round_corner : bool, optional
-            Whether to use round corners. The default is ``False``.
-        output_aedb_path : str, optional
-            Full path and name for the new AEDB file.
-        open_cutout_at_end : bool, optional
-            Whether to open the cutout at the end. The default
-            is ``True``.
-        use_pyaedt_extent_computing : bool, optional
-            Whether to use legacy extent computing (experimental).
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        """
-        warnings.warn("Use new method `cutout` instead.", DeprecationWarning)
-        return self._create_cutout_legacy(
-            signal_list=signal_list,
-            reference_list=reference_list,
-            extent_type=extent_type,
-            expansion_size=expansion_size,
-            use_round_corner=use_round_corner,
-            output_aedb_path=output_aedb_path,
-            open_cutout_at_end=open_cutout_at_end,
-            use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-        )
 
     def _create_cutout_multithread(
         self,
@@ -2686,114 +2411,6 @@ class Edb:
         self.logger.reset_timer()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
-    def create_cutout_multithread(
-        self,
-        signal_list=[],
-        reference_list=["GND"],
-        extent_type="Conforming",
-        expansion_size=0.002,
-        use_round_corner=False,
-        number_of_threads=4,
-        custom_extent=None,
-        output_aedb_path=None,
-        remove_single_pin_components=False,
-        use_pyaedt_extent_computing=False,
-        extent_defeature=0,
-        keep_lines_as_path=False,
-        return_extent=False,
-    ):
-        """Create a cutout using an approach entirely based on legacy.
-        It does in sequence:
-        - delete all nets not in list,
-        - create a extent of the nets,
-        - check and delete all vias not in the extent,
-        - check and delete all the primitives not in extent,
-        - check and intersect all the primitives that intersect the extent.
-
-
-        .. deprecated:: 0.6.58
-           Use new method :func:`cutout` instead.
-
-        Parameters
-        ----------
-        signal_list : list
-            List of signal strings.
-        reference_list : list, optional
-            List of references to add. The default is ``["GND"]``.
-        extent_type : str, optional
-            Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
-            ``"Bounding"``. The default is ``"Conforming"``.
-        expansion_size : float, str, optional
-            Expansion size ratio in meters. The default is ``0.002``.
-        use_round_corner : bool, optional
-            Whether to use round corners. The default is ``False``.
-        number_of_threads : int, optional
-            Number of thread to use. Default is 4
-        custom_extent : list, optional
-            Custom extent to use for the cutout. It has to be a list of points [[x1,y1],[x2,y2]....] or
-            Edb PolygonData object. In this case, both signal_list and reference_list will be cut.
-        output_aedb_path : str, optional
-            Full path and name for the new AEDB file. If None, then current aedb will be cutout.
-        remove_single_pin_components : bool, optional
-            Remove all Single Pin RLC after the cutout is completed. Default is `False`.
-        use_pyaedt_extent_computing : bool, optional
-            Whether to use legacy extent computing (experimental).
-        extent_defeature : float, optional
-            Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
-            It applies only to Conforming bounding box. Default value is ``0`` which disable it.
-        keep_lines_as_path : bool, optional
-            Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
-            This feature works only in Electronics Desktop (3D Layout).
-            If the flag is set to True it can cause issues in SiWave once the Edb is imported.
-            Default is ``False`` to generate PolygonData of cut lines.
-        return_extent : bool, optional
-            When ``True`` extent used for clipping is returned, if ``False`` only the boolean indicating whether
-            clipping succeed or not is returned. Not applicable with custom extent usage.
-            Default is ``False``.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb(r"C:\\test.aedb", version="2022.2")
-        >>> edb.logger.info_timer("Edb Opening")
-        >>> edb.logger.reset_timer()
-        >>> start = time.time()
-        >>> signal_list = []
-        >>> for net in edb.nets.nets.keys():
-        >>>      if "3V3" in net:
-        >>>           signal_list.append(net)
-        >>> power_list = ["PGND"]
-        >>> edb.create_cutout_multithread(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
-        >>> end_time = str((time.time() - start) / 60)
-        >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
-        >>> edb.nets.plot(signal_list, None, color_by_net=True)
-        >>> edb.nets.plot(power_list, None, color_by_net=True)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-
-        """
-        warnings.warn("Use new method `cutout` instead.", DeprecationWarning)
-        return self._create_cutout_multithread(
-            signal_list=signal_list,
-            reference_list=reference_list,
-            extent_type=extent_type,
-            expansion_size=expansion_size,
-            use_round_corner=use_round_corner,
-            number_of_threads=number_of_threads,
-            custom_extent=custom_extent,
-            output_aedb_path=output_aedb_path,
-            remove_single_pin_components=remove_single_pin_components,
-            use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-            extent_defeature=extent_defeature,
-            keep_lines_as_path=keep_lines_as_path,
-            return_extent=return_extent,
-        )
-
     def get_conformal_polygon_from_netlist(self, netlist=None):
         """Return an EDB conformal polygon based on a netlist.
 
@@ -3032,58 +2649,6 @@ class Edb:
                         self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
 
-    def create_cutout_on_point_list(
-        self,
-        point_list,
-        units="mm",
-        output_aedb_path=None,
-        open_cutout_at_end=True,
-        nets_to_include=None,
-        include_partial_instances=False,
-        keep_voids=True,
-    ):
-        """Create a cutout on a specified shape and save it to a new AEDB file.
-
-        .. deprecated:: 0.6.58
-           Use new method :func:`cutout` instead.
-
-        Parameters
-        ----------
-        point_list : list
-            Points list defining the cutout shape.
-        units : str
-            Units of the point list. The default is ``"mm"``.
-        output_aedb_path : str, optional
-            Full path and name for the new AEDB file.
-            The aedb folder shall not exist otherwise the method will return ``False``.
-        open_cutout_at_end : bool, optional
-            Whether to open the cutout at the end. The default is ``True``.
-        nets_to_include : list, optional
-            List of nets to include in the cutout. The default is ``None``, in
-            which case all nets are included.
-        include_partial_instances : bool, optional
-            Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
-            This operation may slow down the cutout export.
-        keep_voids : bool
-            Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
-            Default value is ``True``, ``False`` will remove the voids.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        """
-        warnings.warn("Use new method `cutout` instead.", DeprecationWarning)
-        return self._create_cutout_on_point_list(
-            point_list=point_list,
-            units=units,
-            output_aedb_path=output_aedb_path,
-            open_cutout_at_end=open_cutout_at_end,
-            nets_to_include=nets_to_include,
-            include_partial_instances=include_partial_instances,
-            keep_voids=keep_voids,
-        )
 
     def write_export3d_option_config_file(self, path_to_output, config_dictionaries=None):
         """Write the options for a 3D export to a configuration file.
@@ -4148,7 +3713,7 @@ class Edb:
                 ]
                 for layer in layers_to_remove:
                     edb.stackup.remove_layer(layer)
-            edb.stackup.stackup_mode = "Laminate"
+            edb.stackup.mode = "Laminate"
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -4880,7 +4445,7 @@ class Edb:
         if not comps_to_export:
             comps_to_export = self.components.components
         for comp in comps_to_export:
-            ocomp = self.components.components[comp]
+            ocomp = self.components.instances[comp]
             gds_component = ET.SubElement(components, "GDS_COMPONENT")
             for pin_name, pin in ocomp.pins.items():
                 pins_position_unit = unit_converter(pin.position, output_units=gds_comps_unit)

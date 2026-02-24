@@ -334,25 +334,6 @@ class AdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines
 
-    @property
-    def automatic_mesh(self):
-        """Whether to automatically pick a suitable mesh refinement frequency,
-        depending on drawing size, number of modes, and/or maximum sweep
-        frequency.
-
-        .. deprecated:: 0.54.0
-           Use :func:`automatic_mesh` instead.
-
-        Returns
-        -------
-        bool
-            ``True`` if automatic mesh is used, ``False`` otherwise.
-        """
-        warnings.warn(
-            "`automatic_mesh` is deprecated. Use `mesh_automatic` instead.",
-            DeprecationWarning,
-        )
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic
 
     @property
     def mesh_automatic(self):
@@ -510,10 +491,6 @@ class AdvancedSettings(SettingsBase):
         edb_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
-
-    @automatic_mesh.setter
-    def automatic_mesh(self, value):
-        self.mesh_automatic = value
 
     @mesh_automatic.setter
     def mesh_automatic(self, value):

@@ -1523,27 +1523,7 @@ class Padstacks(object):
         self.definitions[padstack_name].data = cloned_padstack_def_data
         return True
 
-    def get_padstack_instance_by_net_name(self, net: str):
-        """Get padstack instances by net name.
 
-        .. deprecated:: 0.55.0
-        Use: :func:`get_instances` with `net_name` parameter instead.
-
-        Parameters
-        ----------
-        net : str
-            Net name to filter padstack instances.
-
-        Returns
-        -------
-        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
-            List of padstack instances associated with the specified net.
-        """
-        warnings.warn(
-            "`get_padstack_instance_by_net_name` is deprecated, use `get_instances` with `net_name` parameter instead.",
-            DeprecationWarning,
-        )
-        return self.get_instances(net_name=net)
 
     def get_instances(
         self,

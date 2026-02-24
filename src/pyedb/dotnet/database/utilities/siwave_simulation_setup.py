@@ -171,19 +171,6 @@ class SiwaveSimulationSetup(SimulationSetup):
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
         return sim_setup_info
 
-    def set_pi_slider(self, value):
-        """Set SIwave PI simulation accuracy level.
-        Options are:
-        - ``0``: Optimal speed
-        - ``1``:  Balanced
-        - ``2``: Optimal accuracy
-
-        .. deprecated:: 0.7.5
-           Use :property:`pi_slider_position` property instead.
-
-        """
-        self._pedb.logger.warning("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.")
-        self.pi_slider_position = value
 
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
@@ -345,20 +332,6 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         self.set_dc_slider(1)
         return self
 
-    @property
-    def enabled(self):
-        """Flag indicating if the setup is enabled.
-
-        .. deprecated:: 0.57.0
-            Use :property:`settings.enabled` property instead.
-
-        Returns
-        -------
-        bool
-        """
-
-        self._pedb.logger.warning("`enabled` property is deprecated. Use `settings.enabled` property instead.")
-        return self.settings.enabled
 
     @property
     def sim_setup_info(self):
@@ -452,51 +425,6 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         self._pedb.logger.warning("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` property instead.")
         return self.settings.dc_advanced
 
-    @property
-    def source_terms_to_ground(self):
-        """Dictionary of grounded terminals.
-
-        .. deprecated:: 0.57.0
-            Use :property:`settings.source_terms_to_ground` property instead.
-
-        Returns
-        -------
-        Dictionary
-            {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
-
-        """
-        self._pedb.logger.warning(
-            "`source_terms_to_ground` is deprecated. Use `settings.source_terms_to_ground` property instead."
-        )
-        return self.settings.source_terms_to_ground
-
-    def add_source_terminal_to_ground(self, source_name, terminal=0):
-        """Add a source terminal to ground.
-
-        .. deprecated:: 0.57.0
-            Use :method:`settings.add_source_terminal_to_ground` method instead.
-
-        Parameters
-        ----------
-        source_name : str,
-            Source name.
-        terminal : int, optional
-            Terminal to assign. Options are:
-
-             - 0=Unspecified
-             - 1=Negative node
-             - 2=Positive none
-
-        Returns
-        -------
-        bool
-
-        """
-        self._pedb.logger.warning(
-            "`add_source_terminal_to_ground` is deprecated. Use "
-            "`settings.add_source_terminal_to_ground` method instead."
-        )
-        return self.settings.add_source_terminal_to_ground(source_name, terminal)
 
 
 class General:
