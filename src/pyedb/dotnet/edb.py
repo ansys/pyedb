@@ -40,6 +40,10 @@ from typing import Union
 import warnings
 from zipfile import ZipFile as zpf
 
+from pyedb.dotnet.database.edb_data.simulation_configuration import (
+    SimulationConfiguration,
+)
+
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
 from pyedb.dotnet.database.cell.layout import Layout
@@ -57,9 +61,6 @@ from pyedb.dotnet.database.edb_data.ports import (
 )
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
-)
-from pyedb.dotnet.database.edb_data.simulation_configuration import (
-    SimulationConfiguration,
 )
 from pyedb.dotnet.database.edb_data.sources import SourceType
 from pyedb.dotnet.database.edb_data.variables import Variable

@@ -26,12 +26,13 @@ This module contains the ``EdbHfss`` class.
 
 import math
 
-from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.dotnet.database.edb_data.ports import BundleWavePort, WavePort
-from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
 )
+
+from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
+from pyedb.dotnet.database.edb_data.ports import BundleWavePort, WavePort
+from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
     convert_pytuple_to_nettuple,

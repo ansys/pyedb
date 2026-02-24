@@ -28,11 +28,12 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 import time
 
-from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.simulation_configuration import (
     SimulationConfiguration,
     SourceType,
 )
+
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.sources import (
     CircuitPort,
     CurrentSource,
