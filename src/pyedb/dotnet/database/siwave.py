@@ -24,7 +24,7 @@
 This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
 ``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
 """
-
+from __future__ import annotations
 import os
 import time
 from typing import Dict, Union

@@ -53,6 +53,7 @@ from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle, EdbPolygon, EdbRectangle
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
