@@ -690,6 +690,10 @@ class Materials(object):
             Loss tangent for the material.
         dielectric_model_frequency : str, float, int
             Test frequency in GHz for the dielectric.
+        dc_conductivity : str, float, int, optional
+            DC conductivity for the material.
+        dc_permittivity : str, float, int, optional
+            DC relative permittivity for the material.
 
         Returns
         -------
