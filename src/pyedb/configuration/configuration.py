@@ -282,7 +282,9 @@ class Configuration:
                         else:
                             f_set.append([f.distribution, f.start, f.stop, f.increment])
 
-                    sweep = edb_setup.add_sweep(sw.name, frequency_set=f_set, discrete=False if sw.type=="interpolation" else True)
+                    sweep = edb_setup.add_sweep(
+                        sw.name, frequency_set=f_set, discrete=False if sw.type == "interpolation" else True
+                    )
 
                     if len(freq_string) > 0 and not settings.is_grpc:
                         sweep.frequency_string = freq_string
@@ -375,14 +377,22 @@ class Configuration:
                         cfg_ac_setup.CfgFrequencySweep(
                             name=name,
                             type=sw.type,
-                            frequencies=sw.frequency_string if isinstance(sw.frequency_string, list) else sw.frequency_string.split("\t\n"),
+                            frequencies=sw.frequency_string
+                            if isinstance(sw.frequency_string, list)
+                            else sw.frequency_string.split("\t\n"),
                             compute_dc_point=sw.compute_dc_point,
                             enforce_causality=sw.enforce_causality,
                             enforce_passivity=sw.enforce_passivity,
-                            adv_dc_extrapolation=sw.adv_dc_extrapolation if hasattr(sw, "adv_dc_extrapolation") else False,
+                            adv_dc_extrapolation=sw.adv_dc_extrapolation
+                            if hasattr(sw, "adv_dc_extrapolation")
+                            else False,
                             use_hfss_solver_regions=sw.use_hfss_solver_regions,
-                            hfss_solver_region_setup_name=sw.hfss_solver_region_setup_name if hasattr(sw,"hfss_solver_region_setup_name") else None,
-                            hfss_solver_region_sweep_name=sw.hfss_solver_region_sweep_name if  hasattr(sw,"hfss_solver_region_sweep_name") else None,
+                            hfss_solver_region_setup_name=sw.hfss_solver_region_setup_name
+                            if hasattr(sw, "hfss_solver_region_setup_name")
+                            else None,
+                            hfss_solver_region_sweep_name=sw.hfss_solver_region_sweep_name
+                            if hasattr(sw, "hfss_solver_region_sweep_name")
+                            else None,
                         )
                     )
 
@@ -941,7 +951,7 @@ class Configuration:
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
-            if i.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal",as_grpc=settings.is_grpc):
+            if i.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 manager.add_padstack_instance_terminal(
                     padstack_instance=i.padstack_instance.aedt_name,
                     padstack_instance_id=i.padstack_instance.id,
@@ -955,7 +965,7 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
-            elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal",as_grpc=settings.is_grpc):
+            elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 manager.add_pin_group_terminal(
                     pin_group=i.pin_group.name,
                     name=i.name,
@@ -966,7 +976,7 @@ class Configuration:
                     phase=i.source_phase,
                     terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                 )
-            elif i.terminal_type == TerminalTypeMapper.get("PointTerminal",as_grpc=settings.is_grpc):
+            elif i.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                 manager.add_point_terminal(
                     x=i.location[0],
                     y=i.location[1],

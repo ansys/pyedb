@@ -221,14 +221,14 @@ class TestClass(BaseTestClass):
         )
         try:
             edb.components.set_component_model(
-            "C100000",
-            modelpath=os.path.join(
-                local_path,
-                test_subfolder,
-                "GRM32ER72A225KA35_25C_0V.sp",
-            ),
-            modelname="GRM32ER72A225KA35_25C_0V",
-        )
+                "C100000",
+                modelpath=os.path.join(
+                    local_path,
+                    test_subfolder,
+                    "GRM32ER72A225KA35_25C_0V.sp",
+                ),
+                modelname="GRM32ER72A225KA35_25C_0V",
+            )
         except ValueError as e:
             assert str(e) == f"Component C100000 not found in the layout."
         edb.close(terminate_rpc_session=False)
@@ -602,7 +602,7 @@ class TestClass(BaseTestClass):
         # Done
         edbapp = self.edb_examples.create_empty_edb()
         comp_lib = edbapp.components.get_vendor_libraries()
-        assert len(comp_lib.capacitors) >0
+        assert len(comp_lib.capacitors) > 0
         assert len(comp_lib.inductors) > 0
         network = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].s_parameters
         test_esr = comp_lib.capacitors["AVX"]["AccuP01005"]["C005YJ0R1ABSTR"].esr

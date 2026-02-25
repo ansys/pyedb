@@ -163,7 +163,6 @@ class Hfss:
         """
         return self._pedb.probes
 
-
     def get_trace_width_for_traces_with_ports(self):
         """Retrieve trace widths for traces with ports.
 
@@ -185,38 +184,38 @@ class Hfss:
             nets[net] = self._pedb.nets.nets[net].get_smallest_trace_width()
         return nets
 
-
-
-
-
-
     def get_edge_from_port(self, port):
         _, primitive, point = port._edb_object.GetEdges()[0].GetParameters()
 
         primitive = Primitive(self._pedb, primitive)
         point = PointData(self._pedb, point)
 
-    def create_edge_port(self, location, primitive_name, name, impedance=50, is_wave_port=True,
-                         horizontal_extent_factor=1, vertical_extent_factor=1, pec_launch_width=0.0001):
+    def create_edge_port(
+        self,
+        location,
+        primitive_name,
+        name,
+        impedance=50,
+        is_wave_port=True,
+        horizontal_extent_factor=1,
+        vertical_extent_factor=1,
+        pec_launch_width=0.0001,
+    ):
         warnings.warn(
             "`create_edge_port` is deprecated and is now located here "
             "`pyedb.grpc.core.excitations.create_edge_port` instead.",
             DeprecationWarning,
         )
-        return self._pedb.excitation_manager.create_edge_port(location=location,
-                                                       primitive_name=primitive_name,
-                                                       name=name, impedance=impedance,
-                                                       is_wave_port=is_wave_port,
-                                                       horizontal_extent_factor=horizontal_extent_factor  ,
-                                                       vertical_extent_factor=vertical_extent_factor,
-                                                       pec_launch_width=pec_launch_width)
-
-
-
-
-
-
-
+        return self._pedb.excitation_manager.create_edge_port(
+            location=location,
+            primitive_name=primitive_name,
+            name=name,
+            impedance=impedance,
+            is_wave_port=is_wave_port,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
 
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
         """Calculate layout bounding box.
@@ -258,8 +257,6 @@ class Hfss:
         ]
         return layout_bbox
 
-
-
     def _setup_decade_count_sweep(self, sweep, start_freq="1", stop_freq="1MHz", decade_count="10"):
         """Configure decade count sweep (internal).
 
@@ -287,8 +284,6 @@ class Hfss:
         while freq < stop_f:
             freq = freq * math.pow(10, 1.0 / decade_cnt)
             sweep.Frequencies.Add(str(freq))
-
-
 
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
         """Get component terminals bounding box (internal).
@@ -336,9 +331,6 @@ class Hfss:
             dim = 0.30 * max(abs(ur[0] - ll[0]), abs(ur[1] - ll[1]))
             terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
         return CorePolygonData.bbox_of_polygons(terms_bbox)
-
-
-
 
     def add_setup(
         self,

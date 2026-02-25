@@ -265,7 +265,7 @@ class Layout(ObjBase):
         return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.GetName()) for i in self._edb_object.PinGroups]
 
     @property
-    def net_classes(self) ->List[EDBNetClassData]:
+    def net_classes(self) -> List[EDBNetClassData]:
         return [EDBNetClassData(self._pedb, i) for i in list(self._edb_object.NetClasses)]
 
     @property
@@ -273,20 +273,20 @@ class Layout(ObjBase):
         return [EDBExtendedNetData(self._pedb, i) for i in self._edb_object.ExtendedNets]
 
     @property
-    def differential_pairs(self) ->List[EDBDifferentialPairData]:
+    def differential_pairs(self) -> List[EDBDifferentialPairData]:
         return [EDBDifferentialPairData(self._pedb, i) for i in list(self._edb_object.DifferentialPairs)]
 
     @property
-    def padstack_instances(self) ->List[EDBPadstackInstance]:
+    def padstack_instances(self) -> List[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     @property
-    def voltage_regulators(self) ->List[VoltageRegulator]:
+    def voltage_regulators(self) -> List[VoltageRegulator]:
         return [VoltageRegulator(self._pedb, i) for i in list(self._edb_object.VoltageRegulators)]
 
     @property
-    def port_reference_terminals_connected(self)-> bool:
+    def port_reference_terminals_connected(self) -> bool:
         """:obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
 
         True if they are connected, False otherwise.
@@ -294,7 +294,9 @@ class Layout(ObjBase):
         """
         return self._edb_object.ArePortReferenceTerminalsConnected()
 
-    def find_object_by_id(self, value: int) -> Union[EDBPadstackInstance, EdbRectangle, EdbPolygon, EdbText, EdbCircle,Path]:
+    def find_object_by_id(
+        self, value: int
+    ) -> Union[EDBPadstackInstance, EdbRectangle, EdbPolygon, EdbText, EdbCircle, Path]:
         """Find a layout object by Database ID.
 
         Parameters
@@ -330,7 +332,7 @@ class Layout(ObjBase):
         else:
             return EDBNetsData(obj, self._pedb)
 
-    def find_component_by_name(self, value: str)->EDBComponent|None:
+    def find_component_by_name(self, value: str) -> EDBComponent | None:
         """Find a component object by name. Component name is the reference designator in layout.
 
         Parameters

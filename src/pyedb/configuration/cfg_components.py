@@ -37,7 +37,7 @@ class CfgComponent(CfgBase):
             if not pin_pairs:
                 return
             temp["first_pin"] = pin_pairs[0].first_pin
-            temp["second_pin"] =  pin_pairs[0].second_pin
+            temp["second_pin"] = pin_pairs[0].second_pin
 
             temp["is_parallel"] = c_p.is_parallel_rlc
             temp["resistance"] = str(c_p.res_value)
@@ -72,7 +72,6 @@ class CfgComponent(CfgBase):
                 if height:
                     ic_die_prop.SetHeight(self._pedb.edb_value(height))
         self.pyedb_obj.ic_die_properties = ic_die_prop
-
 
     def _set_port_properties_to_edb(self):
         cp = self.pyedb_obj.component_property.core
@@ -181,8 +180,8 @@ class CfgComponent(CfgBase):
         temp = dict()
         cp = self.pyedb_obj
 
-        #ic_die_prop = cp.GetDieProperty().Clone()
-        #die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
+        # ic_die_prop = cp.GetDieProperty().Clone()
+        # die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
         temp["type"] = cp.ic_die_properties.die_type
         if not temp["type"] == "no_die":
             temp["orientation"] = cp.ic_die_properties.die_orientation
@@ -210,10 +209,10 @@ class CfgComponent(CfgBase):
         if c_type not in ["ic", "io", "other"]:
             return
         else:
-            #port_prop = cp.GetPortProperty().Clone()
-            #reference_height = port_prop.GetReferenceHeightValue().ToString()
-            #reference_size_auto = port_prop.GetReferenceSizeAuto()
-            #_, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
+            # port_prop = cp.GetPortProperty().Clone()
+            # reference_height = port_prop.GetReferenceHeightValue().ToString()
+            # reference_size_auto = port_prop.GetReferenceSizeAuto()
+            # _, reference_size_x, reference_size_y = port_prop.GetReferenceSize()
             temp["reference_height"] = str(cp.port_property.reference_height)
             temp["reference_size_auto"] = cp.port_property.reference_size_auto
             temp["reference_size_x"] = str(cp.port_property.get_reference_size()[0])

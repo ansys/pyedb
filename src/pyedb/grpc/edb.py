@@ -489,7 +489,7 @@ class Edb(EdbInit):
         dict[str, Variable]
             Variable names and values.
         """
-        return {i: Variable(self.active_cell,i) for i in self.active_cell.get_all_variable_names()}
+        return {i: Variable(self.active_cell, i) for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self) -> Dict[str, Variable]:
@@ -1141,11 +1141,11 @@ class Edb(EdbInit):
         if self.active_db:
             return self._source_excitation
         return None
-    
+
     @property
     def excitation_manager(self):
         """Source excitation manager.
-        
+
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -1351,7 +1351,12 @@ class Edb(EdbInit):
                         temp.append(Polygon(self, i.layout_obj))
                     else:
                         continue
-        except (AttributeError, RuntimeError, TypeError, ansys.edb.core.inner.exceptions.InvalidArgumentException) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ansys.edb.core.inner.exceptions.InvalidArgumentException,
+        ) as exc:
             # Be explicit about expected failure modes and include the exception in the log for easier debugging
             obj_id = getattr(getattr(layout_object_instance, "layout_obj", None), "id", "<unknown>")
             self.logger.warning(
@@ -1508,7 +1513,6 @@ class Edb(EdbInit):
         """
         # return self.core.utility.utility.Command.Execute(func)
         pass
-
 
     @deprecate_argument_name({"inputGDS": "input_gds"})
     def import_gds_file(

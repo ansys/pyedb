@@ -334,7 +334,6 @@ class AdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines
 
-
     @property
     def mesh_automatic(self):
         """Whether to automatically pick a suitable mesh refinement frequency,

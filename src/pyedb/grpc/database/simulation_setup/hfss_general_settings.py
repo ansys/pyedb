@@ -116,6 +116,7 @@ class BroadbandAdaptiveSolution:
     def max_passes(self, value):
         self.max_num_passes = value
 
+
 class AdaptiveFrequency:
     def __init__(self, pedb, core):
         """Represents an adaptive frequency."""

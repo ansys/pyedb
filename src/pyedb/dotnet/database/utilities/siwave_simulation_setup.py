@@ -171,7 +171,6 @@ class SiwaveSimulationSetup(SimulationSetup):
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
         return sim_setup_info
 
-
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
 
@@ -332,7 +331,6 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         self.set_dc_slider(1)
         return self
 
-
     @property
     def sim_setup_info(self):
         """Overrides the default sim_setup_info object."""
@@ -424,7 +422,6 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         """
         self._pedb.logger.warning("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` property instead.")
         return self.settings.dc_advanced
-
 
 
 class General:

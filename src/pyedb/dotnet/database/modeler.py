@@ -1316,7 +1316,7 @@ class Modeler(object):
         poly._edb_object.SetPolygonData(new_poly)
         return True
 
-    def get_layout_statistics(self, evaluate_area=False, net_list=False)->EDBStatistics:
+    def get_layout_statistics(self, evaluate_area=False, net_list=False) -> EDBStatistics:
         """Return EDBStatistics object from a layout.
 
         Parameters

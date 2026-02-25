@@ -74,7 +74,6 @@ class ICDieProperties:
 
 
 class PortProperty:
-
     def __init__(self, edbobj):
         self.core = edbobj
 
@@ -93,12 +92,11 @@ class PortProperty:
 
 class ComponentProperties:
     def __init__(self, edbobj):
-        self.core =edbobj
+        self.core = edbobj
 
     @property
     def port_property(self):
         return PortProperty(self.core.GetPortProperty().Clone())
-
 
 
 class EDBComponent(Group):
@@ -178,7 +176,7 @@ class EDBComponent(Group):
         if self.model_type == "RLC":
             return self._pin_pairs
         return []
-    
+
     @property
     def model(self):
         """Component model."""
@@ -221,7 +219,9 @@ class EDBComponent(Group):
         """Adding IC properties for grpc compatibility."""
         if self.type == "IC":
             if not self._ic_die_properties:
-                self._ic_die_properties = ICDieProperties(self._pedb, self.component_property.core.GetDieProperty().Clone())
+                self._ic_die_properties = ICDieProperties(
+                    self._pedb, self.component_property.core.GetDieProperty().Clone()
+                )
             return self._ic_die_properties
         return None
 
@@ -369,7 +369,7 @@ class EDBComponent(Group):
             solder_ball_prop.SetShape(shape)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
             self.edbcomponent.SetComponentProperty(cmp_property)
-        
+
     @property
     def solder_ball_diameter(self):
         """Solder ball diameter."""
@@ -416,7 +416,7 @@ class EDBComponent(Group):
 
     @property
     def solder_ball_material(self):
-        if "GetMaterialName" in  dir(self.component_property.core):
+        if "GetMaterialName" in dir(self.component_property.core):
             return self.component_property.core.GetSolderBallProperty().GetMaterialName()
         return ""
 
@@ -571,7 +571,7 @@ class EDBComponent(Group):
         if self._pin_pairs:
             return self._pin_pairs[0].first_pin
         return None
-    
+
     @property
     def second_pin(self):
         if self._pin_pairs:

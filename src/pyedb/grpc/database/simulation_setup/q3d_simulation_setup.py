@@ -76,4 +76,3 @@ class Q3DSimulationSetup(SimulationSetup):
             The Q3D simulation settings object.
         """
         return Q3DSimulationSettings(self._pedb, self.core.settings)
-
