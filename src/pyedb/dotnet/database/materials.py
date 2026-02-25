@@ -34,6 +34,7 @@ from pydantic import BaseModel, confloat
 from pyedb import Edb
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
+from pyedb.misc.decorators import deprecate_argument_name
 
 logger = logging.getLogger(__name__)
 
@@ -668,16 +669,17 @@ class Materials(object):
         material = self.add_material(name, **props)
         return material
 
-    def add_djordjevicsarkar_dielectric(
+    @deprecate_argument_name({"loss_tangent": "dielectric_loss_tangent"})
+    def add_djordjevic_sarkar_dielectric(
         self,
-        name,
-        permittivity_at_frequency,
-        loss_tangent_at_frequency,
-        dielectric_model_frequency,
-        dc_conductivity=None,
-        dc_permittivity=None,
+        name:str,
+        permittivity_at_frequency:int|float,
+        loss_tangent_at_frequency:int|float,
+        dielectric_model_frequency:int|float,
+        dc_conductivity:int|float|None=None,
+        dc_permittivity:int|float|None=None,
         **kwargs,
-    ):
+    )-> Material:
         """Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
@@ -690,6 +692,10 @@ class Materials(object):
             Loss tangent for the material.
         dielectric_model_frequency : str, float, int
             Test frequency in GHz for the dielectric.
+        dc_conductivity : str, float, int, optional
+            DC conductivity for the material.
+        dc_permittivity : str, float, int, optional
+            DC relative permittivity for the material.
 
         Returns
         -------
@@ -714,16 +720,42 @@ class Materials(object):
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():
                 setattr(material, key, value)
-            if "loss_tangent" in kwargs:  # pragma: no cover
-                warnings.warn(
-                    "This key is deprecated in versions >0.7.0 and will soon be removed. "
-                    "Use key dielectric_loss_tangent instead.",
-                    DeprecationWarning,
-                )
-                setattr(material, "dielectric_loss_tangent", kwargs["loss_tangent"])
             return material
         except MaterialModelException:
             raise ValueError("Use realistic values to define DS model.")
+
+    def add_djordjevicsarkar_dielectric(
+            self,
+            name,
+            permittivity_at_frequency,
+            loss_tangent_at_frequency,
+            dielectric_model_frequency,
+            dc_conductivity=None,
+            dc_permittivity=None,
+            **kwargs,
+    ):
+        """Add a dielectric using the Djordjevic-Sarkar model.
+
+        .. deprecated:: 0.7.0
+            This method name contains a typo and is deprecated.
+            Use :func:`add_djordjevic_sarkar_dielectric` instead.
+        """
+        warnings.warn(
+            "add_djordjevicsarkar_dielectric is deprecated due to a typo in the method name. "
+            "Use add_djordjevic_sarkar_dielectric instead.",
+            DeprecationWarning,
+            stacklevel=2
+        )
+
+        return self.add_djordjevic_sarkar_dielectric(
+            name,
+            permittivity_at_frequency,
+            loss_tangent_at_frequency,
+            dielectric_model_frequency,
+            dc_conductivity,
+            dc_permittivity,
+            **kwargs,
+        )
 
     def add_debye_material(
         self,

@@ -1694,7 +1694,7 @@ class Components(object):
         edbComponent = self._pedb.layout.find_component_by_name(componentname)
         if edbComponent is None:
             raise ValueError(f"Component {componentname} not found in the layout.")
-
+        edbComponent = edbComponent._edb_object
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
 
         componentPins = self.get_pin_from_component(componentname)
