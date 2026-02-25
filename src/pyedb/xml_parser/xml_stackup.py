@@ -22,7 +22,12 @@
 
 """XML stackup module for handling EDB stackup configurations."""
 
+from typing import TYPE_CHECKING
+
 from pydantic import BaseModel, Field
+
+if TYPE_CHECKING:
+    from pyedb.configuration.cfg_data import CfgStackup
 
 
 class XmlMaterialProperty(BaseModel):
@@ -256,7 +261,7 @@ class XmlStackup(BaseModel):
         self.layers = XmlLayers(length_unit="mm")
         return self.layers
 
-    def import_from_cfg_stackup(self, cfg_stackup: Any) -> None:
+    def import_from_cfg_stackup(self, cfg_stackup: "CfgStackup") -> None:
         """Import stackup configuration from a CFG stackup object.
 
         Parameters
