@@ -21,13 +21,14 @@
 # SOFTWARE.
 from pathlib import Path
 
+
 class Icepak:
     """SIwave Icepak."""
 
     def __init__(self, psiw):
         self._psiw = psiw
 
-    def run(self, name:str, dc_simulation_name:str) -> bool:
+    def run(self, name: str, dc_simulation_name: str) -> bool:
         """Run Icepak analysis.
 
         Parameters
@@ -45,7 +46,7 @@ class Icepak:
         flag = self._psiw.oproject.ScrRunIcepakSimulation(name, dc_simulation_name)
         return True if flag == 0 else False
 
-    def set_meshing_detail(self, mesh_level: int=0) -> bool:
+    def set_meshing_detail(self, mesh_level: int = 0) -> bool:
         """Sets the meshing detail level for Icepak simulations.
 
         Parameters
@@ -60,7 +61,7 @@ class Icepak:
         flag = self._psiw.oproject.ScrSetIcepakMeshingDetail({0: "basic", 1: "detailed", 2: "exhaustive"}[mesh_level])
         return True if flag == 0 else False
 
-    def set_board_outline_fidelity(self, fidelity: int=2)-> bool:
+    def set_board_outline_fidelity(self, fidelity: int = 2) -> bool:
         """Specifies the minimum edge length when modifying the board outline for export to Icepak. This
         minimum edge length is used when indiscretion arcs into a series of straight lines and when
         simplifying the outline to remove very small edges.
@@ -79,17 +80,17 @@ class Icepak:
 
     def set_thermal_environment(
         self,
-        convection: bool=True,
-        force_air: bool=True,
-        top_or_ambient_temperature: int|float=22,
-        top_or_overall_flow_direction: str="+X",
-        top_or_overall_flow_speed: int|float=2,
-        bottom_temperature: int | float=22,
-        bottom_flow_direction: str ="+X",
-        bottom_flow_speed: int | float=2,
-        gravity_vector_x: int | float=0,
-        gravity_vector_y: int | float=0,
-        gravity_vector_z: int | float=9.8,
+        convection: bool = True,
+        force_air: bool = True,
+        top_or_ambient_temperature: int | float = 22,
+        top_or_overall_flow_direction: str = "+X",
+        top_or_overall_flow_speed: int | float = 2,
+        bottom_temperature: int | float = 22,
+        bottom_flow_direction: str = "+X",
+        bottom_flow_speed: int | float = 2,
+        gravity_vector_x: int | float = 0,
+        gravity_vector_y: int | float = 0,
+        gravity_vector_z: int | float = 9.8,
     ) -> bool:
         """Sets the thermal environment settings to use for Icepak simulations.
 
@@ -135,7 +136,7 @@ class Icepak:
         )
         return True if flag == 0 else False
 
-    def export_report(self, simulation_name:str, file_path: str | Path) ->bool:
+    def export_report(self, simulation_name: str, file_path: str | Path) -> bool:
         """Export Icepak simulation report to a file.
 
         Parameters
