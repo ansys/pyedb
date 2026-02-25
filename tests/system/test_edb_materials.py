@@ -373,10 +373,7 @@ class TestClass(BaseTestClass):
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
-        reason="This test fails in CI. It may have somethind to do with garbage collection of edb api. "
-        "Needs to test in 27.1"
-    )
+    @pytest.mark.skip(reason="Bug 1421215")
     def test_material_thermal_modifier(self):
         edbapp = self.edb_examples.create_empty_edb()
         THERMAL_MODIFIER = {
