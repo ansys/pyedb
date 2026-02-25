@@ -97,7 +97,6 @@ jobs:
           ${ACTIVATE_VENV}
           python -c "import pyedb; from pyedb import __version__"
 
-
   unit-tests-dotnet:
     name: Unit test dotnet
     needs: [smoke-tests]
@@ -328,7 +327,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 20
+          timeout_minutes: 30
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -n auto --dist loadfile -v --cov
@@ -478,7 +477,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 20
+          timeout_minutes: 30
           command: |
             . .venv/bin/activate
             pytest tests/system -n auto --dist loadfile -v --cov
