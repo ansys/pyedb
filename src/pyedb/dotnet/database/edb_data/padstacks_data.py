@@ -1859,12 +1859,17 @@ class EDBPadstackInstance(Connectable):
                 False,
             )
 
-    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True):
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
         """Method added to bring compatibility with grpc."""
+        if fill_material:
+            warnings.warn("Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter "
+                          "will be ignored."
+                     , UserWarning, stacklevel=2)
+
         if from_bottom:
-            if not isinstance(drill_to_layer, str):
-                drill_to_layer = drill_to_layer.name
             self.set_backdrill_bottom(drill_depth=drill_to_layer, drill_diameter=diameter, offset=offset)
+        else:
+            self.set_backdrill_top(drill_depth=drill_to_layer, drill_diameter=diameter, offset=offset)
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.

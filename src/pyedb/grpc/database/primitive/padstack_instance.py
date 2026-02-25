@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Union, overload, Literal
 import warnings
 
 if TYPE_CHECKING:
@@ -1174,48 +1174,59 @@ class PadstackInstance(conn_obj.ConnObj):
         """
         return self.core.get_back_drill_type(from_bottom).name.lower()
 
-    def get_back_drill_by_layer(self, from_bottom=True) -> tuple[str, float, float]:
-        """Get backdrill by layer.
+    @overload
+    def get_back_drill_by_depth(
+            self, from_bottom: bool, include_fill_material: Literal[False] = False
+    ) -> tuple[Value, Value]:
+        ...
+
+    @overload
+    def get_back_drill_by_depth(
+            self, from_bottom: bool, include_fill_material: Literal[True]
+    ) -> tuple[Value, Value, str]:
+        ...
+
+    def get_back_drill_by_depth(
+            self, from_bottom: bool, include_fill_material: bool = False
+    ) -> tuple[float|Value, float|Value] | tuple[float|Value, float|Value, str]:
+        """Get the back drill type by depth.
 
         Parameters
         ----------
-        from_bottom : bool, optional.
-         Default value is `True`.
+        from_bottom : bool
+            Whether to get the back drill type from the bottom.
+        include_fill_material : bool, optional
+            Input flag to obtain fill material as well as other parameters.
+            If false, the return tuple does not include fill material and is backward compatible with previous versions.
+        Returns
+        -------
+        tuple of (.Value, .Value, str)
+            Tuple containing:
 
-         Return
-         ------
-         tuple (layer, offset, diameter) (str, [float, float], float).
+            - **drill_depth** : Drilling depth, may not align with layer.
+            - **diameter** : Drilling diameter.
+            - **fill_material** : Fill material name (empty string if no fill),
+              only included when ``include_fill_material`` is True.
 
         """
-        try:
-            back_drill = self.core.get_back_drill_by_layer(from_bottom)
-            layer = back_drill[0].name
-            offset = Value(back_drill[1])
-            diameter = Value(back_drill[2])
-            return layer, offset, diameter
-        except Exception:
-            return False, False, False
+        if float(self._pedb.version) < 2027.1 and include_fill_material:
+            warnings.warn("Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter "
+                          "will be ignored."
+                          , UserWarning, stacklevel=2)
 
-    def get_back_drill_by_depth(self, from_bottom=True) -> tuple[float, float]:
-        """Get back drill by depth parameters.
-        Parameters
-        ----------
-        from_bottom : bool, optional
-            Default value is `True`.
+        if float(self._pedb.version) < 2027.1:
+            drill_depth, drill_diameter = self.core.get_back_drill_by_depth(from_bottom)
+            return Value(drill_depth), Value(drill_diameter)
+        else:
+            params = self.core.get_back_drill_by_depth(from_bottom, include_fill_material)
+            if include_fill_material:
+                drill_depth, drill_diameter, fill_material = params
+                return Value(drill_depth), Value(drill_diameter), fill_material
+            else:
+                drill_depth, drill_diameter = params
+                return Value(drill_depth), Value(drill_diameter)
 
-        Return
-        ------
-        tuple (drill_depth, drill_diameter) (float, float)
-        """
-        try:
-            back_drill = self.core.get_back_drill_by_depth(from_bottom)
-            drill_depth = Value(back_drill[0])
-            drill_diameter = Value(back_drill[1])
-            return drill_depth, drill_diameter
-        except Exception:
-            return False, False
-
-    def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True):
+    def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True, fill_material=""):
         """Set back drill by depth.
 
         Parameters
@@ -1226,17 +1237,88 @@ class PadstackInstance(conn_obj.ConnObj):
             drill diameter
         from_bottom : bool, optional
             Default value is `True`.
+        fill_material : str, optional
         """
-        self.core.set_back_drill_by_depth(
-            drill_depth=Value(drill_depth), diameter=Value(diameter), from_bottom=from_bottom
-        )
+        if float(self._pedb.version) < 2027.1 and fill_material:
+            warnings.warn("Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter "
+                          "will be ignored."
+                          , UserWarning, stacklevel=2)
 
-    def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom=True):
+        if float(self._pedb.version) < 2027.1:
+            self.core.set_back_drill_by_depth(
+                drill_depth=Value(drill_depth),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+            )
+        else:
+            self.core.set_back_drill_by_depth(
+                drill_depth=Value(drill_depth),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+                fill_material=fill_material,
+            )
+
+    @overload
+    def get_back_drill_by_layer(
+            self, from_bottom: bool, include_fill_material: Literal[False] = False
+    ) -> tuple[str, Value, Value]:
+        ...
+
+    @overload
+    def get_back_drill_by_layer(
+            self, from_bottom: bool, include_fill_material: Literal[True]
+    ) -> tuple[str, Value, Value, str]:
+        ...
+
+    def get_back_drill_by_layer(
+            self, from_bottom: bool, include_fill_material: bool = False
+    ) -> tuple[str, float | Value, float | Value] | tuple[str, float | Value, float | Value, str]:
+        """Get the back drill type by the layer.
+
+        Parameters
+        ----------
+        from_bottom : bool
+            Whether to get the back drill type from the bottom.
+        include_fill_material : bool, optional
+            Input flag to obtain fill material as well as other parameters.
+            If false, the return tuple does not include fill material and is backward compatible with previous versions.
+        Returns
+        -------
+        tuple of (.Layer, .Value, .Value, str)
+            Returns a tuple in this format:
+
+            **(drill_to_layer, offset, diameter, fill_material)**
+
+            - **drill_to_layer** : Layer drills to. If drill from top, drill stops at the upper elevation of the layer.
+                                   If from bottom, drill stops at the lower elevation of the layer.
+            - **offset** : Layer offset (or depth if layer is empty).
+            - **diameter** : Drilling diameter.
+            - **fill_material** : Fill material name (empty string if no fill).
+                                  Returned only when include_fill_material is true.
+
+        """
+        if float(self._pedb.version) < 2027.1 and include_fill_material:
+            warnings.warn("Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter "
+                          "will be ignored."
+                          , UserWarning, stacklevel=2)
+        if float(self._pedb.version) < 2027.1:
+            drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
+            return drill_to_layer.name, Value(offset), Value(diameter)
+        else:
+            params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
+            if include_fill_material:
+                drill_to_layer, offset, diameter, fill_material = params
+                return drill_to_layer.name, Value(offset), Value(diameter), fill_material
+            else:
+                drill_to_layer, offset, diameter = params
+                return drill_to_layer.name, Value(offset), Value(diameter)
+
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
         """Set back drill layer.
 
         Parameters
         ----------
-        drill_to_layer : str, Layer
+        drill_to_layer : str
             Layer to drill to.
         offset : str, float
             Offset value
@@ -1244,15 +1326,30 @@ class PadstackInstance(conn_obj.ConnObj):
             Drill diameter
         from_bottom : bool, optional
             Default value is `True`
+        fill_material : str, optional
+            Fill material name
         """
-        if isinstance(drill_to_layer, str):
-            drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
-        self.core.set_back_drill_by_layer(
-            drill_to_layer=drill_to_layer.core,
-            offset=Value(offset),
-            diameter=Value(diameter),
-            from_bottom=from_bottom,
-        )
+        if float(self._pedb.version) < 2027.1 and fill_material:
+            warnings.warn("Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter "
+                          "will be ignored."
+                          , UserWarning, stacklevel=2)
+
+        drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
+        if float(self._pedb.version) < 2027.1:
+            self.core.set_back_drill_by_layer(
+                drill_to_layer=drill_to_layer.core,
+                offset=Value(offset),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+            )
+        else:
+            self.core.set_back_drill_by_layer(
+                drill_to_layer=drill_to_layer.core,
+                offset=Value(offset),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+                fill_material=fill_material,
+            )
 
     def parametrize_position(self, prefix=None) -> list[str]:
         """Parametrize the instance position.

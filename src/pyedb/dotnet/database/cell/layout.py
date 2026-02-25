@@ -381,7 +381,7 @@ class Layout(ObjBase):
         component_pin_name: Union[str, List[str]] = None,
         net_name: Union[str, List[str]] = None,
         instance_id: Union[int, List[int]] = None,
-    ) -> List:
+    ) -> List[EDBPadstackInstance]:
         """
         Finds padstack instances matching the specified criteria.
 

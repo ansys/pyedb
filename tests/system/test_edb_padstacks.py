@@ -62,7 +62,7 @@ class TestClass(BaseTestClass):
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and config["desktopVersion"]<"2026.1", reason="Not implemented with grpc")
+    @pytest.mark.skipif(config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="Not implemented with grpc")
     def test_create_with_packstack_name(self):
         """Create a padstack"""
         edbapp = self.edb_examples.get_si_verse()
@@ -329,9 +329,9 @@ class TestClass(BaseTestClass):
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
 
-    #@pytest.mark.skipif(
+    # @pytest.mark.skipif(
     #    reason="This is a bug deep in the code. This should never pass but it passes as try-else hides the bug."
-    #)
+    # )
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
         """Create a rectangle inscribed inside a padstack instance pad."""
@@ -716,8 +716,24 @@ def _assert_inside(rect, pad):
     )
 
 
+@pytest.mark.skip(reason="Updated method is not present in edb api.")
 @pytest.mark.usefixtures("close_rpc_session")
-class TestEMProperties(BaseTestClass):
+class TestPadstackInstance(BaseTestClass):
+    def test_backdrill_properties(self):
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        via = edbapp.layout.find_padstack_instances(aedt_name="Via1135")[0]
+        via.set_back_drill_by_layer(
+            drill_to_layer="Inner1_GND1",
+            diameter="400um",
+            offset="0.1mm",
+            from_bottom=True,
+            fill_material="FR4_epoxy",
+        )
+        edbapp.close(terminate_rpc_session=False)
+
+@pytest.mark.skip(reason="The updated method is not in ansys-edb-core yet.")
+@pytest.mark.usefixtures("close_rpc_session")
+class TestPadstackInstanceEMProperties(BaseTestClass):
     def test_em_properties(self):
         edbapp = self.edb_examples.get_si_verse()
         [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
