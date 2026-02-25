@@ -26,7 +26,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.generic.settings import settings
-from tests.conftest import config
+from tests.conftest import config, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -50,7 +50,7 @@ U8_IC_DIE_PROPERTIES = {
 
 
 def _assert_initial_ic_die_properties(component: dict):
-    assert component["ic_die_properties"]["type"] in ["none","no_die"]
+    assert component["ic_die_properties"]["type"] in ["none", "no_die"]
     assert "orientation" not in component["ic_die_properties"]
     assert "height" not in component["ic_die_properties"]
 
@@ -59,6 +59,7 @@ def _assert_final_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["type"] == "flip_chip"
     assert component["ic_die_properties"]["orientation"] == "chip_down"
     assert float(component["solder_ball_properties"]["diameter"]) == 0.000244
+
 
 def check_dictionaries(source_dict, target_dict):
     for key, value in source_dict.items():
@@ -77,6 +78,8 @@ def check_dictionaries(source_dict, target_dict):
             if str(value) != str(target_dict[key]):
                 return False
     return True
+
+
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_13b_stackup_materials(self):
@@ -380,12 +383,16 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"], reason="issue #687 resolved  (wave ports) but need new pyedb-core release published"
+    )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
-        edbapp.modeler.create_rectangle(
+        rectangle = edbapp.modeler.create_rectangle(
             layer_name="BOT", net_name="GND", lower_left_point=["-2mm", "-2mm"], upper_right_point=["2mm", "2mm"]
         )
+        assert not rectangle.is_null
         prim_1 = edbapp.modeler.create_trace(
             path_list=([0, 0], [0, "1mm"]),
             layer_name="TOP",
@@ -394,6 +401,7 @@ class TestClass(BaseTestClass):
             start_cap_style="Flat",
             end_cap_style="Flat",
         )
+        assert not prim_1.is_null
         prim_1.aedt_name = "path_1"
         data = {
             "ports": [
@@ -652,15 +660,16 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.create_empty_edb()
 
         assert edbapp.configuration.load(data, apply_file=True)
-
         data_from_db = edbapp.configuration.get_data_from_db(stackup=True)
+        # adding this list as DotNet returns 0.0 at Value conversion failure while grpc fails.
+        skipped_edb_value_conversion = ["fill_material", "material", "type", "name"]
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                try:
+                if not p in skipped_edb_value_conversion:
                     assert float(edbapp.value(value)) == float(edbapp.value(target_mat[p]))
-                except Exception as e:
-                    assert str(edbapp.value(value)) == str(edbapp.value(target_mat[p]))
+                else:
+                    assert str(value) == str(target_mat[p])
         edbapp.close(terminate_rpc_session=False)
 
     def test_15b_sources_net_net(self):
@@ -1094,7 +1103,7 @@ class TestClassSetups(BaseTestClass):
                     "single_frequency_adaptive_solution": {
                         "adaptive_frequency": "5GHz",
                         "max_passes": 10,
-                        "max_delta": '0.02',
+                        "max_delta": "0.02",
                     },
                     "freq_sweep": [],
                     "auto_mesh_operation": {
@@ -1108,7 +1117,7 @@ class TestClassSetups(BaseTestClass):
                             "name": "mop_1",
                             "mesh_operation_type": "length",
                             "max_length": "3mm",
-                            "max_elements": '100',
+                            "max_elements": "100",
                             "restrict_length": True,
                             "refine_inside": False,
                             "nets_layers_list": {"GND": ["1_Top", "16_Bottom"]},
@@ -1438,7 +1447,7 @@ class TestClassBoundaries(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-#@pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
+# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassPadstacks(BaseTestClass):
     def test_09_padstack_definition(self, is_grpc=None):
         solder_ball_parameters = {
@@ -1504,7 +1513,10 @@ class TestClassPadstacks(BaseTestClass):
         assert pad_params[key_regular][0]["offset_x"] == "0.1mm" or pad_params[key_regular][0]["offset_x"] == "0.0001"
         assert pad_params[key_anti][0]["diameter"] == "1mm" or pad_params[key_anti][0]["diameter"] == "0.001"
         assert pad_params[key_thermal][0]["inner"] == "1mm" or pad_params[key_thermal][0]["inner"] == "0.001"
-        assert pad_params[key_thermal][0]["channel_width"] == "0.2mm" or pad_params[key_thermal][0]["channel_width"] == "0.0002"
+        assert (
+            pad_params[key_thermal][0]["channel_width"] == "0.2mm"
+            or pad_params[key_thermal][0]["channel_width"] == "0.0002"
+        )
 
         hole_params = pdef["hole_parameters"]
         assert hole_params["shape"] in ["circle", "PADGEOMTYPE_CIRCLE"]
@@ -1512,7 +1524,7 @@ class TestClassPadstacks(BaseTestClass):
         assert pdef["solder_ball_parameters"]["shape"] == solder_ball_parameters["shape"]
 
         instance = [i for i in data_from_layout["padstacks"]["instances"] if i["name"] == "Via998"][0]
-        #GRPC is not working on solderball_layer and backdrill_parameters, so skipping those checks for now
+        # GRPC is not working on solderball_layer and backdrill_parameters, so skipping those checks for now
         if not settings.is_grpc:
             for k, v in INSTANCE.items():
                 assert v == instance[k]
@@ -1622,7 +1634,7 @@ class TestClassPadstacks(BaseTestClass):
             "Inner6(GND2)": "Inner6",
             "16_Bottom": "16_Bottom",
         }
-        vias_before = {i: [j.start_layer, j.stop_layer] for  i, j in edbapp.padstacks.instances.items()}
+        vias_before = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
         assert edbapp.configuration.load(data, apply_file=True)
         assert list(edbapp.stackup.layers.keys())[:4] == ["1_Top", "Inner1", "DE2", "DE3"]
         vias_after = {i: [j.start_layer, j.stop_layer] for i, j in edbapp.padstacks.instances.items()}
@@ -1805,7 +1817,9 @@ class TestModeler(BaseTestClass):
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
-        assert edbapp.components["U1"].component_property.core.GetSolderBallProperty().Clone().GetMaterialName() == "air"
+        assert (
+            edbapp.components["U1"].component_property.core.GetSolderBallProperty().Clone().GetMaterialName() == "air"
+        )
         edbapp.close(terminate_rpc_session=False)
 
     # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")

@@ -20,52 +20,52 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility import value
+from ansys.edb.core.utility.value import Value as CoreValue
 
 
-class Value(float, value.Value):
+class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        core =  val if isinstance(val, value.Value) else value.Value(val, owner if owner else None)
+        core = val if isinstance(val, CoreValue) else CoreValue(val, owner if owner else None)
         inst = super().__new__(cls, core.value)
         inst.core = core
         return inst
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        core = value.Value(f"({str(self.core)})+({str(other)})")
+        core = CoreValue(f"({str(self.core)})+({str(other)})")
         return self.__class__(core)
 
     def __radd__(self, other):
-        core = value.Value(f"({str(other)})+({str(self.core)})")
+        core = CoreValue(f"({str(other)})+({str(self.core)})")
         return self.__class__(core)
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        core = value.Value(f"({str(self.core)})-({str(other)})")
+        core = CoreValue(f"({str(self.core)})-({str(other)})")
         return self.__class__(core)
 
     def __rsub__(self, other):
-        core = value.Value(f"({str(other)})-({str(self.core)})")
+        core = CoreValue(f"({str(other)})-({str(self.core)})")
         return self.__class__(core)
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        core = value.Value(f"({str(self.core)})*({str(other)})")
+        core = CoreValue(f"({str(self.core)})*({str(other)})")
         return self.__class__(core)
 
     def __rmul__(self, other):
-        core = value.Value(f"({str(other)})*({str(self.core)})")
+        core = CoreValue(f"({str(other)})*({str(self.core)})")
         return self.__class__(core)
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        core = value.Value(f"({str(self.core)})/({str(other)})")
+        core = CoreValue(f"({str(self.core)})/({str(other)})")
         return self.__class__(core)
 
     def __rtruediv__(self, other):
-        core = value.Value(f"({str(other)})/({str(self.core)})")
+        core = CoreValue(f"({str(other)})/({str(self.core)})")
         return self.__class__(core)
 
     @property
@@ -74,40 +74,40 @@ class Value(float, value.Value):
 
     def sqrt(self):
         """Square root of the value."""
-        core = value.Value(f"({str(self.core)})**0.5")
+        core = CoreValue(f"({str(self.core)})**0.5")
         return self.__class__(core)
 
     def log10(self):
         """Base-10 logarithm of the value."""
-        core = value.Value(f"log10({str(self.core)})")
+        core = CoreValue(f"log10({str(self.core)})")
         return self.__class__(core)
 
     def sin(self):
         """Sine of the value."""
-        core = value.Value(f"sin({str(self.core)})")
+        core = CoreValue(f"sin({str(self.core)})")
         return self.__class__(core)
 
     def cos(self):
         """Cosine of the value."""
-        core = value.Value(f"cos({str(self.core)})")
+        core = CoreValue(f"cos({str(self.core)})")
         return self.__class__(core)
 
     def asin(self):
         """Arcsine of the value."""
-        core = value.Value(f"asin({str(self.core)})")
+        core = CoreValue(f"asin({str(self.core)})")
         return self.__class__(core)
 
     def acos(self):
         """Arccosine of the value."""
-        core = value.Value(f"acos({str(self.core)})")
+        core = CoreValue(f"acos({str(self.core)})")
         return self.__class__(core)
 
     def tan(self):
         """Tangent of the value."""
-        core = value.Value(f"tan({str(self.core)})")
+        core = CoreValue(f"tan({str(self.core)})")
         return self.__class__(core)
 
     def atan(self):
         """Arctangent of the value."""
-        core = value.Value(f"atan({str(self.core)})")
+        core = CoreValue(f"atan({str(self.core)})")
         return self.__class__(core)
