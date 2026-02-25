@@ -101,7 +101,6 @@ class TestClass(BaseTestClass):
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
-    @pytest.mark.skipif(True, reason="Too heavy test for CI.")
     def test_drc_rules_from_file(self):
         from pyedb.workflows.drc.drc import Drc, Rules
 
