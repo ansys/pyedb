@@ -46,6 +46,7 @@ from pyedb.generic.general_methods import (
     generate_unique_name,
     get_filename_without_extension,
 )
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
@@ -54,7 +55,6 @@ from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.generic.geometry_operators import GeometryOperators
 
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb as _Edb  # pragma: no cover

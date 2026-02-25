@@ -41,6 +41,7 @@ from ansys.edb.core.terminal.pin_group_terminal import (
 )
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.inner import conn_obj
 from pyedb.grpc.database.modeler import Circle
@@ -50,7 +51,6 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
-from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class PadstackInstance(conn_obj.ConnObj):
