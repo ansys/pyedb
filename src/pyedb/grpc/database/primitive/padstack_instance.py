@@ -804,7 +804,7 @@ class PadstackInstance(conn_obj.ConnObj):
         position = self.core.get_position_and_rotation()
         if self.component:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
-            _position_and_rotation = [out2.x.value, out2.y.value]
+            _position_and_rotation = [out2[0].value, out2[1].value]
             _position_and_rotation.append(Value(position[-1]).value)
         else:
             _position_and_rotation = [Value(pt).value for pt in position]
@@ -1304,8 +1304,11 @@ class PadstackInstance(conn_obj.ConnObj):
                 stacklevel=2,
             )
         if float(self._pedb.version) < 2027.1:
-            drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
-            return drill_to_layer.name, Value(offset), Value(diameter)
+            if self.backdrill_type == "no_drill":
+                return "", Value(0), Value(0)
+            else:
+                drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
+                return drill_to_layer.name, Value(offset), Value(diameter)
         else:
             params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
             if include_fill_material:
