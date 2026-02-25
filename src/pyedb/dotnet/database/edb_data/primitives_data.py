@@ -30,7 +30,7 @@ from pyedb.dotnet.database.dotnet.primitive import (
     TextDotNet,
 )
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 def cast(raw_primitive, core_app):

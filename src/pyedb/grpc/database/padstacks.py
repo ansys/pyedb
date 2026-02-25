@@ -42,11 +42,11 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 import numpy as np
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 if TYPE_CHECKING:
     import rtree

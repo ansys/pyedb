@@ -38,7 +38,7 @@ from pyedb.dotnet.database.general import (
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class EDBPadProperties(object):
