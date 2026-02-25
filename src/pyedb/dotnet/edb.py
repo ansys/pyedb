@@ -99,11 +99,11 @@ from pyedb.dotnet.database.utilities.value import Value
 from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
-from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
 

@@ -49,7 +49,7 @@ from pyedb.generic.general_methods import (
     generate_unique_name,
     get_filename_without_extension,
 )
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 def resistor_value_parser(RValue):

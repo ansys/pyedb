@@ -55,7 +55,7 @@ import datetime
 import itertools
 import os
 from queue import Queue
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 
 from pydantic import BaseModel
 
@@ -68,7 +68,7 @@ except ImportError:
     )
 
 import pyedb
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class MinLineWidth(BaseModel):
