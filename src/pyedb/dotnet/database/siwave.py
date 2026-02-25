@@ -49,8 +49,8 @@ from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
 )
 from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
-from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
 if TYPE_CHECKING:
     from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal

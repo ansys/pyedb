@@ -30,6 +30,7 @@ from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.components import Component
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.net.net import Net
@@ -46,7 +47,6 @@ from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
 from pyedb.grpc.database.utility.value import Value
-from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class SourceExcitationInternal:

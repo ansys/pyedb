@@ -43,8 +43,9 @@ except ImportError:
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from matplotlib.figure import Figure
     from matplotlib.axes import Axes
+    from matplotlib.figure import Figure
+
 
 class CommonNets:
     def __init__(self, _pedb):
@@ -52,21 +53,21 @@ class CommonNets:
 
     def plot(
         self,
-        nets: str | list[str]=None,
-        layers: str | list[str]=None,
-        color_by_net: bool=False,
-        show_legend: bool=True,
-        save_plot: str=None,
-        outline: list[list[float]]=None,
-        size: list | tuple=(6000, 3000),
-        plot_components: bool=True,
-        top_view: bool=True,
-        show: bool=True,
-        annotate_component_names: bool=True,
-        plot_vias: bool=False,
-        title: str=None,
+        nets: str | list[str] = None,
+        layers: str | list[str] = None,
+        color_by_net: bool = False,
+        show_legend: bool = True,
+        save_plot: str = None,
+        outline: list[list[float]] = None,
+        size: list | tuple = (6000, 3000),
+        plot_components: bool = True,
+        top_view: bool = True,
+        show: bool = True,
+        annotate_component_names: bool = True,
+        plot_vias: bool = False,
+        title: str = None,
         **kwargs,
-    ) ->tuple["Figure", "Axes"] | None:
+    ) -> tuple["Figure", "Axes"] | None:
         """Plot a Net to Matplotlib 2D Chart.
 
         Parameters

@@ -30,11 +30,11 @@ import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup,
 )
 from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
-from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class Hfss:
