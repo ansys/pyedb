@@ -26,10 +26,10 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.dotnet.database.utilities.obj_base import BBox
 
-
 if TYPE_CHECKING:  # pragma: no cover
-    from pyedb.dotnet.edb import Edb
     from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
+    from pyedb.dotnet.edb import Edb
+
 
 class PolygonData:
     """Polygon Data."""
@@ -118,7 +118,7 @@ class PolygonData:
         offset: float = 0.001,
         tolerance: float = 1e-12,
         round_corners: bool = True,
-        maximum_corner_extension: float = 0.001
+        maximum_corner_extension: float = 0.001,
     ) -> bool:
         """Expand the polygon shape by an absolute value in all direction.
 

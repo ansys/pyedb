@@ -23,6 +23,7 @@
 
 from typing import Any
 
+
 class PointData:
     """Point Data."""
 
