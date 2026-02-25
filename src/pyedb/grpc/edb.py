@@ -120,9 +120,6 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup,
 )
-from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
-    SIWaveCPASimulationSetup,
-)
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup,
 )
@@ -140,7 +137,7 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"

@@ -34,7 +34,7 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup,
 )
 from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class Hfss:

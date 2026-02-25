@@ -25,7 +25,7 @@
 from pyedb.dotnet.database.dotnet.database import NetDotNet
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.utilities import compute_arc_points
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 def cast(api, prim_object):

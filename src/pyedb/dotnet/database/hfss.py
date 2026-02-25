@@ -40,10 +40,9 @@ from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
     convert_pytuple_to_nettuple,
 )
-from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.generic.constants import RadiationBoxType, SweepType
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class EdbHfss(object):

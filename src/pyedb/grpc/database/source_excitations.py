@@ -46,7 +46,7 @@ from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
 from pyedb.grpc.database.utility.value import Value
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class SourceExcitationInternal:

@@ -103,7 +103,7 @@ from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
 

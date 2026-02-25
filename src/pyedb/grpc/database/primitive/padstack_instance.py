@@ -50,7 +50,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class PadstackInstance(conn_obj.ConnObj):
