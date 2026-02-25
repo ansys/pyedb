@@ -1722,3 +1722,56 @@ class PadstackInstance(conn_obj.ConnObj):
         List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
         """
         return self._pedb.get_connected_objects(self.object_instance)
+
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
+        pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
+
+        Parameters
+        ----------
+        contact_radius : float, optional
+            Radius of the contact circle. The default is ``None```, in which case the
+            method will use the pad size.
+        layer_name : str, optional
+            Layer name to set the equipotential region. The default is ``None``, in which case the method will use the
+            start layer of the padstack definition.
+        """
+        layer_name = layer_name if layer_name else self.start_layer
+        pad = self.definition.pad_by_layer[layer_name]
+
+        pos_x, pos_y = self.position
+
+        if contact_radius is not None:
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
+            prim.dcir_equipotential_region = True
+        elif pad.shape.lower() == "circle":
+            ra = self._pedb.value(pad.parameters_values[0] / 2)
+            pos = self.position
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+        elif pad.shape.lower() == "rectangle":
+            width, height = pad.parameters_values
+            prim = self._pedb.modeler.create_rectangle(
+                pad.layer_name,
+                self.net_name,
+                width=width,
+                height=height,
+                representation_type="CenterWidthHeight",
+                center_point=self.position,
+                rotation=self.component.rotation,
+            )
+        elif pad.shape.lower() == "oval":
+            width, height, _ = pad.parameters_values
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+            )
+        elif pad.polygon_data:
+            prim = self._pedb.modeler.create_polygon(
+                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+            )
+            prim.move(self.position)
+        else:
+            raise AttributeError(f"Unsupported pad shape {pad.shape} for DCIR equipotential region.")
+
+        prim.dcir_equipotential_region = True
+        return prim
