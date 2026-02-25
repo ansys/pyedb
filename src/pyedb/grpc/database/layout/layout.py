@@ -30,6 +30,7 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ansys.edb.core.layout.layout import Layout as CoreLayout
+
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -80,14 +81,14 @@ def _get_wrapper_class(prim_type: str):
 class Layout:
     """Manage Layout class."""
 
-    def __init__(self, pedb, core:CoreLayout):
+    def __init__(self, pedb, core: CoreLayout):
         self.core = core
         self._pedb = pedb
         self.__primitives = []
         self.__padstack_instances = {}
 
     @property
-    def layout_instance(self) ->Any:
+    def layout_instance(self) -> Any:
         # TODO: The return should be a LayoutInstance class.
         return self.core.layout_instance
 

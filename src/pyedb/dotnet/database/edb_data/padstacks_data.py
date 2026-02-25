@@ -1862,9 +1862,11 @@ class EDBPadstackInstance(Connectable):
     def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
         """Method added to bring compatibility with grpc."""
         if fill_material:
-            warnings.warn("Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter "
-                          "will be ignored."
-                     , UserWarning, stacklevel=2)
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         if from_bottom:
             self.set_backdrill_bottom(drill_depth=drill_to_layer, drill_diameter=diameter, offset=offset)
@@ -2031,9 +2033,17 @@ class EDBPadstackInstance(Connectable):
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
         if self._edb_padstackinstance.GetComponent():
             out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            _position_and_rotation = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6), round(out[2].ToDouble(), 6)]
+            _position_and_rotation = [
+                round(out2.X.ToDouble(), 6),
+                round(out2.Y.ToDouble(), 6),
+                round(out[2].ToDouble(), 6),
+            ]
         elif out[0]:
-            _position_and_rotation = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6), round(out[2].ToDouble(), 6)]
+            _position_and_rotation = [
+                round(out[1].X.ToDouble(), 6),
+                round(out[1].Y.ToDouble(), 6),
+                round(out[2].ToDouble(), 6),
+            ]
         _position_and_rotation.append(round(out[2].ToDouble(), 6))
 
         return _position_and_rotation
@@ -2050,7 +2060,6 @@ class EDBPadstackInstance(Connectable):
             self._pedb, pos[0], pos[1]
         )
         self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, pos[2])
-
 
     @property
     def rotation(self):
@@ -2447,7 +2456,6 @@ class EDBPadstackInstance(Connectable):
             for i in range(4):
                 rect[i] = _translate(_rotate(rect[i]))
 
-
         if rect is None or len(rect) != 4:
             raise RuntimeError()
         offset_rect = [_translate(p, _rotate(pad_offset)) for p in rect]
@@ -2464,8 +2472,14 @@ class EDBPadstackInstance(Connectable):
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True, pinlist_position: dict = None,
-):
+    def get_reference_pins(
+        self,
+        reference_net="GND",
+        search_radius=5e-3,
+        max_limit=0,
+        component_only=True,
+        pinlist_position: dict = None,
+    ):
         """Search for reference pins using given criteria.
 
         Parameters
@@ -2501,7 +2515,6 @@ class EDBPadstackInstance(Connectable):
             max_limit=max_limit,
             component_only=component_only,
             pinlist_position=pinlist_position,
-
         )
 
     def split(self) -> list:

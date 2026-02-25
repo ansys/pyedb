@@ -247,7 +247,7 @@ class HFSSAdvancedSettings:
             Small void area value.
 
         """
-        return  self.core.small_void_area
+        return self.core.small_void_area
 
     @small_void_area.setter
     def small_void_area(self, value: float):

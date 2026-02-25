@@ -42,7 +42,6 @@ class EdbDesignOptions:
     def suppress_pads(self, value):
         self._active_cell.suppress_pads = value
 
-
     @property
     def anti_pads_always_on(self):
         """Whether to always turn on antipad.

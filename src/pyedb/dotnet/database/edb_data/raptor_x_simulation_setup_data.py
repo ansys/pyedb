@@ -102,13 +102,19 @@ class RaptorXSimulationSetup(SimulationSetup):
             return False
         if not name:
             name = generate_unique_name("sweep")
-        sw_da = SweepData(self._pedb, None, name,self)
+        sw_da = SweepData(self._pedb, None, name, self)
         if frequency_sweep[0] == "linear count":
-            sw_da.set_frequencies_linear_count(start=frequency_sweep[1], stop=frequency_sweep[2], count=frequency_sweep[3])
+            sw_da.set_frequencies_linear_count(
+                start=frequency_sweep[1], stop=frequency_sweep[2], count=frequency_sweep[3]
+            )
         elif frequency_sweep[0] == "log scale":
-            sw_da.set_frequencies_log_scale(start=frequency_sweep[1], stop=frequency_sweep[2], points_per_decade=frequency_sweep[3])
+            sw_da.set_frequencies_log_scale(
+                start=frequency_sweep[1], stop=frequency_sweep[2], points_per_decade=frequency_sweep[3]
+            )
         elif frequency_sweep[0] == "linear scale":
-            sw_da.set_frequencies_linear_scale(start=frequency_sweep[1], stop=frequency_sweep[2], step=frequency_sweep[3])  
+            sw_da.set_frequencies_linear_scale(
+                start=frequency_sweep[1], stop=frequency_sweep[2], step=frequency_sweep[3]
+            )
         return sw_da
 
 

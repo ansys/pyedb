@@ -2521,15 +2521,25 @@ class SourceExcitation(SourceExcitationInternal):
             primitive = port.core.edges[0].primitive
             point = port.core.edges[0].point
             primitive = Primitive(self._pedb, primitive)
-            point =[str(point.x.value), str(point.y.value)]
+            point = [str(point.x.value), str(point.y.value)]
             return True, primitive, point
         return False, None, None
 
-    def create_edge_port(self, location, primitive_name, name, impedance=50, is_wave_port=True,
-                         horizontal_extent_factor=1, vertical_extent_factor=1, pec_launch_width=0.0001):
+    def create_edge_port(
+        self,
+        location,
+        primitive_name,
+        name,
+        impedance=50,
+        is_wave_port=True,
+        horizontal_extent_factor=1,
+        vertical_extent_factor=1,
+        pec_launch_width=0.0001,
+    ):
         from ansys.edb.core.terminal.edge_terminal import (
             EdgeTerminal as GrpcEdgeTerminal,
         )
+
         point_on_edge = CorePointData(location)
         primitive = self._pedb.modeler.primitives_by_name[primitive_name]
         pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)

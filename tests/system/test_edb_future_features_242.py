@@ -42,8 +42,8 @@ class TestClass(BaseTestClass):
         assert len(setup.frequency_sweeps) == 1
         general_settings = setup.settings.general_settings
         assert general_settings.global_temperature == 22.0
-        #general_settings.global_temperature = 35.0
-        #assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
+        # general_settings.global_temperature = 35.0
+        # assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
         assert general_settings.max_frequency == "10GHz"
         general_settings.max_frequency = 20e9
         assert float(general_settings.max_frequency) == 20e9

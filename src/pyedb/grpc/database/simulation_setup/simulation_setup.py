@@ -26,10 +26,14 @@ from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
-from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as CoreSimulationSetupType
-from ansys.edb.core.simulation_setup.simulation_setup import FreqSweepType
+from ansys.edb.core.simulation_setup.simulation_setup import (
+    FreqSweepType,
+    FrequencyData as CoreFrequencyData,
+    SimulationSetupType as CoreSimulationSetupType,
+)
+
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
-from ansys.edb.core.simulation_setup.simulation_setup import FrequencyData as CoreFrequencyData
+
 _mapping_simulation_types = {
     CoreSimulationSetupType.HFSS: "hfss",
     CoreSimulationSetupType.SI_WAVE: "siwave",
@@ -168,7 +172,13 @@ class SimulationSetup(SimulationSetupDeprecated):
         stop_freq_val = self._pedb.number_with_units(stop_freq, "Hz")
         step_val = str(step)
         sweep = SweepData(
-            self._pedb, name=name, distribution=distribution, start_f=start_freq_val, end_f=stop_freq_val, step=step_val, simsetup=self
+            self._pedb,
+            name=name,
+            distribution=distribution,
+            start_f=start_freq_val,
+            end_f=stop_freq_val,
+            step=step_val,
+            simsetup=self,
         )
         if discrete:
             # Use the string-based setter to avoid direct enum access
@@ -182,6 +192,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         appends them to the existing core.sweep_data.
         """
         from pyedb.grpc.database.simulation_setup.sweep_data import _mapping_distribution
+
         sw_data = None
         for sweep_item in frequency_set:
             # detect distribution token and map to internal code
@@ -205,15 +216,16 @@ class SimulationSetup(SimulationSetupDeprecated):
                 name = f"sweep_{init_sweep_count + 1}"
             if not sw_data:
                 sw_data = SweepData(
-                        self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step, simsetup=self
-                    )
-            else:
-                sw_data.add_frequency_data(
+                    self._pedb,
+                    name=name,
                     distribution=distribution,
                     start_f=start_freq,
                     end_f=stop_freq,
-                    step=step
+                    step=step,
+                    simsetup=self,
                 )
+            else:
+                sw_data.add_frequency_data(distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step)
         if discrete:
             # Use the string-based setter
             sw_data.type = "discrete" if discrete else "interpolating"

@@ -36,9 +36,9 @@ class SourceExcitation:
         res, primitive, point = port._edb_object.GetEdges()[0].GetParameters()
 
         primitive = Primitive(self._pedb, primitive)
-        point =[point.X.ToString(), point.Y.ToString()]
+        point = [point.X.ToString(), point.Y.ToString()]
         return res, primitive, point
-    
+
     def _create_edge_terminal(self, prim_id, point_on_edge, terminal_name=None, is_ref=False):
         """Create an edge terminal.
 
@@ -153,8 +153,17 @@ class SourceExcitation:
         bundle_term[0].name = _name + ":T1"
         bundle_term[1].mame = _name + ":T2"
 
-    def create_edge_port(self, location, primitive_name, name, impedance=50, is_wave_port=True,
-                         horizontal_extent_factor=1, vertical_extent_factor=1, pec_launch_width=0.0001) -> WavePort:
+    def create_edge_port(
+        self,
+        location,
+        primitive_name,
+        name,
+        impedance=50,
+        is_wave_port=True,
+        horizontal_extent_factor=1,
+        vertical_extent_factor=1,
+        pec_launch_width=0.0001,
+    ) -> WavePort:
         """Create an edge port on a primitive specific location.
 
         Parameters
@@ -177,9 +186,9 @@ class SourceExcitation:
             Pec launcher width for wave ports.
 
         """
-        point_on_edge =  self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb,
-                self._pedb.value(location[0]), self._pedb.value(location[1])
-            )._edb_object
+        point_on_edge = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+            self._pedb, self._pedb.value(location[0]), self._pedb.value(location[1])
+        )._edb_object
         primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
         pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge)
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
@@ -201,8 +210,6 @@ class SourceExcitation:
             wave_port.hfss_type = "Gap"
         wave_port.do_renormalize = True
         return wave_port
-
-
 
     def create_edge_port_on_polygon(
         self,
@@ -273,13 +280,14 @@ class SourceExcitation:
         if not isinstance(terminal_point, list):
             self._logger.error("Terminal point must be a list of float with providing the point location in meter")
             return False
-        terminal_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb,
-                terminal_point[0], terminal_point[1])._edb_object
-            
+        terminal_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+            self._pedb, terminal_point[0], terminal_point[1]
+        )._edb_object
+
         if reference_point and isinstance(reference_point, list):
-            reference_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb,
-                reference_point[0], reference_point[1]
-            )._edb_object   
+            reference_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+                self._pedb, reference_point[0], reference_point[1]
+            )._edb_object
         if not port_name:
             port_name = generate_unique_name("Port_")
         edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)
@@ -296,7 +304,9 @@ class SourceExcitation:
             edge_term.SetImpedance(self._pedb.edb_value(port_impedance))
         edge_term.SetName(port_name)
         if reference_polygon and reference_point:
-            ref_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(reference_polygon._edb_object, reference_point)
+            ref_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(
+                reference_polygon._edb_object, reference_point
+            )
             ref_edges = convert_py_list_to_net_list(ref_edge, self._pedb._edb.Cell.Terminal.Edge)
             ref_edge_term = self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(
                 reference_polygon._edb_object.GetLayout(),

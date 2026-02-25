@@ -1523,8 +1523,6 @@ class Padstacks(object):
         self.definitions[padstack_name].data = cloned_padstack_def_data
         return True
 
-
-
     def get_instances(
         self,
         name: Optional[str] = None,
@@ -1635,7 +1633,7 @@ class Padstacks(object):
                 if not references_pins:
                     return pinlist
             pinlist_position = {p: p.position for p in references_pins}
-        pos_position= positive_pin.position
+        pos_position = positive_pin.position
         pinlist = [
             p
             for p, pos in pinlist_position.items()

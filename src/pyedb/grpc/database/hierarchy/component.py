@@ -525,7 +525,6 @@ class Component:
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.height = Value(value)
 
-
     @property
     def solder_ball_shape(self) -> str:
         """Solder ball shape.
@@ -769,7 +768,7 @@ class Component:
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             return [self._rlc[0].r_enabled, self._rlc[0].l_enabled, self._rlc[0].c_enabled]
         return [False, False, False]
-    
+
     @property
     def res_enabled(self) -> bool:
         """Resistance enabled flag.
@@ -850,6 +849,7 @@ class Component:
         comp_prop = self.core.component_property
         comp_prop.model = model
         self.core.component_property = comp_prop
+
     @res_value.setter
     def res_value(self, value):  # pragma no cover
         _rlc = []
@@ -863,7 +863,6 @@ class Component:
         comp_prop = self.core.component_property
         comp_prop.model = model
         self.core.component_property = comp_prop
-
 
     @property
     def cap_value(self) -> float:

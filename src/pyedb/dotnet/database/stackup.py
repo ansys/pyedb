@@ -583,7 +583,6 @@ class Stackup(LayerCollection):
             self._layer_collection.SetMode(mode.MultiZone)
         self.update_layout()
 
-
     @property
     def _edb_layer_list(self):
         layer_list = list(self._layer_collection.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet))
@@ -903,7 +902,6 @@ class Stackup(LayerCollection):
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
 
-
     def _export_layer_stackup_to_csv_xlsx(self, fpath=None, file_format=None):
         try:
             import pandas as pd
@@ -1026,7 +1024,6 @@ class Stackup(LayerCollection):
                             self.layers[layer["name"]]._load_layer(layer)
             self.refresh_layer_collection()
             return True
-
 
     def limits(self, only_metals=False):
         """Retrieve stackup limits.

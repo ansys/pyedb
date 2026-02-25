@@ -34,8 +34,9 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(True, reason="SIwave module cannot be tested on VM as it runs in graphic model which VM doesn't "
-"support")
+@pytest.mark.skipif(
+    True, reason="SIwave module cannot be tested on VM as it runs in graphic model which VM doesn't support"
+)
 class TestClass(BaseTestClass):
     def test_siwave(self):
         """Create Siwave."""

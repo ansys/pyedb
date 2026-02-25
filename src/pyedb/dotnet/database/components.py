@@ -150,7 +150,6 @@ class Components(object):
     def _db(self):
         return self._pedb._db
 
-
     @property
     def instances(self):
         """All Cell components objects.
@@ -1658,7 +1657,6 @@ class Components(object):
         self._cmp[new_cmp.GetName()] = new_edb_comp
         return new_edb_comp
 
-
     def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None):
         """Assign a Spice or Touchstone model to a component.
 
@@ -1855,7 +1853,6 @@ class Components(object):
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
 
         return deleted_comps
-
 
     def delete(self, component_name):
         """Delete a component.

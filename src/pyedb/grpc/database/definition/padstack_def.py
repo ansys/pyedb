@@ -28,8 +28,8 @@ from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as CorePadGeometryType,
     PadstackHoleRange as CorePadstackHoleRange,
     PadType as CorePadType,
-    SolderballShape,
     SolderballPlacement,
+    SolderballShape,
 )
 import ansys.edb.core.geometry.polygon_data
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -302,7 +302,8 @@ class PadstackDef:
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             Dict of PadstackInstance objects.
         """
-        return [j
+        return [
+            j
             for j in list(self._pedb.padstacks.instances.values())
             if not j.is_null and j.padstack_def.name == self.core.name
         ]
@@ -959,18 +960,14 @@ class PadstackDef:
         """
 
         pdef_data = self.core.data
-        pad_type_list = [
-            CorePadType.REGULAR_PAD,
-            CorePadType.ANTI_PAD,
-            CorePadType.THERMAL_PAD
-        ]
+        pad_type_list = [CorePadType.REGULAR_PAD, CorePadType.ANTI_PAD, CorePadType.THERMAL_PAD]
         data = {}
         for pad_type in pad_type_list:
             pad_type_name = str(pad_type.name)
             temp_list = []
             for lyr_name in pdef_data.layer_names:
-                result = pdef_data.get_pad_parameters(lyr_name,pad_type)
-                if len(result)<5:
+                result = pdef_data.get_pad_parameters(lyr_name, pad_type)
+                if len(result) < 5:
                     continue
                 pad_shape, params, offset_x, offset_y, rotation = result
                 pad_shape = str(pad_shape.name)
@@ -998,7 +995,7 @@ class PadstackDef:
         ]
         for pad_type in pad_type_list:
             pad_type_name = str(pad_type.name)
-            rpp = param.get(pad_type_name,[]) if param.get(pad_type_name,[]) else param.get(pad_type_name.lower(), [])
+            rpp = param.get(pad_type_name, []) if param.get(pad_type_name, []) else param.get(pad_type_name.lower(), [])
             for _, layer_data in enumerate(rpp):
                 # Get geometry type from kwargs
                 p = layer_data.get("shape").upper()
@@ -1014,9 +1011,9 @@ class PadstackDef:
                 # Handle Square geometry type
                 elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE.name:
                     temp_param.append(layer_data["size"])
-                    pad_shape =  CorePadGeometryType.PADGEOMTYPE_SQUARE
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE
 
-                elif p ==  CorePadGeometryType.PADGEOMTYPE_RECTANGLE.name:
+                elif p == CorePadGeometryType.PADGEOMTYPE_RECTANGLE.name:
                     temp_param.append(layer_data["x_size"])
                     temp_param.append(layer_data["y_size"])
                     pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
@@ -1040,10 +1037,10 @@ class PadstackDef:
                     temp_param.append(layer_data["inner"])
                     temp_param.append(layer_data["channel_width"])
                     temp_param.append(layer_data["isolation_gap"])
-                    pad_shape =  CorePadGeometryType.PADGEOMTYPE_SQUARE45
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE45
 
                 # Handle Round90 geometry type
-                elif p ==  CorePadGeometryType.PADGEOMTYPE_SQUARE90.name:
+                elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE90.name:
                     temp_param.append(layer_data["inner"])
                     temp_param.append(layer_data["channel_width"])
                     temp_param.append(layer_data["isolation_gap"])
@@ -1057,7 +1054,7 @@ class PadstackDef:
                     temp_param.append(layer_data["inner"])
                     temp_param.append(layer_data["channel_width"])
                     temp_param.append(layer_data["isolation_gap"])
-                    pad_shape = CorePadGeometryType.PADGEOMTYPE_ROUND45     
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_ROUND45
                 else:
                     continue
 
@@ -1074,7 +1071,7 @@ class PadstackDef:
         self.core.data = pdef_data
 
     def get_hole_parameters(self):
-        pdef_data =  self.core.data
+        pdef_data = self.core.data
         result = pdef_data.get_hole_parameters()
         if len(result) == 0:
             return {}
@@ -1110,7 +1107,6 @@ class PadstackDef:
             Value(params.get("rotation", original_params.get("rotation", 0))),
             self.PAD_SHAPE_KEYS[shape],
             temp_param,
-
         )
 
         self.core.data = pdef_data
@@ -1164,13 +1160,13 @@ class PadstackDef:
     }
     PAD_SHAPE_KEYS = {
         "padgeomtype_circle": CorePadGeometryType.PADGEOMTYPE_CIRCLE,
-        "padgeomtype_square":  CorePadGeometryType.PADGEOMTYPE_SQUARE,
-        "padgeomtype_rectangle":  CorePadGeometryType.PADGEOMTYPE_RECTANGLE,
-        "padgeomtype_oval":  CorePadGeometryType.PADGEOMTYPE_OVAL,
+        "padgeomtype_square": CorePadGeometryType.PADGEOMTYPE_SQUARE,
+        "padgeomtype_rectangle": CorePadGeometryType.PADGEOMTYPE_RECTANGLE,
+        "padgeomtype_oval": CorePadGeometryType.PADGEOMTYPE_OVAL,
         "padgeomtype_bullet": CorePadGeometryType.PADGEOMTYPE_BULLET,
-        "padgeomtype_round45":  CorePadGeometryType.PADGEOMTYPE_ROUND45,
-        "padgeomtype_round90":  CorePadGeometryType.PADGEOMTYPE_ROUND90,
-        "padgeomtype_no_geometry":  CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
+        "padgeomtype_round45": CorePadGeometryType.PADGEOMTYPE_ROUND45,
+        "padgeomtype_round90": CorePadGeometryType.PADGEOMTYPE_ROUND90,
+        "padgeomtype_no_geometry": CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
     }
     SOLDER_SHAPE_TYPE = {
         "no_solder_ball": SolderballShape.NO_SOLDERBALL,

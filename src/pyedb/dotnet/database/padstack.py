@@ -278,7 +278,6 @@ class EdbPadstacks(object):
         vias = {via_id: inst for via_id, inst in self.instances.items() if via_id not in pnames}
         return vias
 
-
     @property
     def pingroups(self):
         """All Layout Pin groups.
@@ -926,7 +925,6 @@ class EdbPadstacks(object):
                     via_list.append(lobj)
         return via_list
 
-
     def create(
         self,
         padstackname=None,
@@ -1160,7 +1158,6 @@ class EdbPadstacks(object):
         else:
             return False
 
-
     def duplicate(self, target_padstack_name, new_padstack_name=""):
         """Duplicate a padstack.
 
@@ -1277,7 +1274,6 @@ class EdbPadstacks(object):
             return py_padstack_instance
         else:
             return False
-
 
     def remove_pads_from_padstack(self, padstack_name, layer_name=None):
         """Remove the Pad from a padstack on a specific layer by setting it as a 0 thickness circle.
@@ -1484,7 +1480,13 @@ class EdbPadstacks(object):
         return self.get_instances(net_name=net_name)
 
     def get_reference_pins(
-        self, positive_pin, reference_net="gnd", search_radius=5e-3, max_limit=0, component_only=True,pinlist_position=None
+        self,
+        positive_pin,
+        reference_net="gnd",
+        search_radius=5e-3,
+        max_limit=0,
+        component_only=True,
+        pinlist_position=None,
     ):
         """Search for reference pins using given criteria.
 
