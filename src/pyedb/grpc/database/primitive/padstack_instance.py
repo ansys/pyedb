@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import TYPE_CHECKING, Union, overload, Literal
+from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
 if TYPE_CHECKING:
@@ -1176,19 +1176,17 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @overload
     def get_back_drill_by_depth(
-            self, from_bottom: bool, include_fill_material: Literal[False] = False
-    ) -> tuple[Value, Value]:
-        ...
+        self, from_bottom: bool, include_fill_material: Literal[False] = False
+    ) -> tuple[Value, Value]: ...
 
     @overload
     def get_back_drill_by_depth(
-            self, from_bottom: bool, include_fill_material: Literal[True]
-    ) -> tuple[Value, Value, str]:
-        ...
+        self, from_bottom: bool, include_fill_material: Literal[True]
+    ) -> tuple[Value, Value, str]: ...
 
     def get_back_drill_by_depth(
-            self, from_bottom: bool, include_fill_material: bool = False
-    ) -> tuple[float|Value, float|Value] | tuple[float|Value, float|Value, str]:
+        self, from_bottom: bool, include_fill_material: bool = False
+    ) -> tuple[float | Value, float | Value] | tuple[float | Value, float | Value, str]:
         """Get the back drill type by depth.
 
         Parameters
@@ -1210,9 +1208,11 @@ class PadstackInstance(conn_obj.ConnObj):
 
         """
         if float(self._pedb.version) < 2027.1 and include_fill_material:
-            warnings.warn("Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter "
-                          "will be ignored."
-                          , UserWarning, stacklevel=2)
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         if float(self._pedb.version) < 2027.1:
             drill_depth, drill_diameter = self.core.get_back_drill_by_depth(from_bottom)
@@ -1240,9 +1240,11 @@ class PadstackInstance(conn_obj.ConnObj):
         fill_material : str, optional
         """
         if float(self._pedb.version) < 2027.1 and fill_material:
-            warnings.warn("Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter "
-                          "will be ignored."
-                          , UserWarning, stacklevel=2)
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         if float(self._pedb.version) < 2027.1:
             self.core.set_back_drill_by_depth(
@@ -1260,18 +1262,16 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @overload
     def get_back_drill_by_layer(
-            self, from_bottom: bool, include_fill_material: Literal[False] = False
-    ) -> tuple[str, Value, Value]:
-        ...
+        self, from_bottom: bool, include_fill_material: Literal[False] = False
+    ) -> tuple[str, Value, Value]: ...
 
     @overload
     def get_back_drill_by_layer(
-            self, from_bottom: bool, include_fill_material: Literal[True]
-    ) -> tuple[str, Value, Value, str]:
-        ...
+        self, from_bottom: bool, include_fill_material: Literal[True]
+    ) -> tuple[str, Value, Value, str]: ...
 
     def get_back_drill_by_layer(
-            self, from_bottom: bool, include_fill_material: bool = False
+        self, from_bottom: bool, include_fill_material: bool = False
     ) -> tuple[str, float | Value, float | Value] | tuple[str, float | Value, float | Value, str]:
         """Get the back drill type by the layer.
 
@@ -1298,9 +1298,11 @@ class PadstackInstance(conn_obj.ConnObj):
 
         """
         if float(self._pedb.version) < 2027.1 and include_fill_material:
-            warnings.warn("Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter "
-                          "will be ignored."
-                          , UserWarning, stacklevel=2)
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
         if float(self._pedb.version) < 2027.1:
             drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
             return drill_to_layer.name, Value(offset), Value(diameter)
@@ -1330,9 +1332,11 @@ class PadstackInstance(conn_obj.ConnObj):
             Fill material name
         """
         if float(self._pedb.version) < 2027.1 and fill_material:
-            warnings.warn("Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter "
-                          "will be ignored."
-                          , UserWarning, stacklevel=2)
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
 
         drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
         if float(self._pedb.version) < 2027.1:
@@ -1718,3 +1722,56 @@ class PadstackInstance(conn_obj.ConnObj):
         List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
         """
         return self._pedb.get_connected_objects(self.object_instance)
+
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
+        pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
+
+        Parameters
+        ----------
+        contact_radius : float, optional
+            Radius of the contact circle. The default is ``None```, in which case the
+            method will use the pad size.
+        layer_name : str, optional
+            Layer name to set the equipotential region. The default is ``None``, in which case the method will use the
+            start layer of the padstack definition.
+        """
+        layer_name = layer_name if layer_name else self.start_layer
+        pad = self.definition.pad_by_layer[layer_name]
+
+        pos_x, pos_y = self.position
+
+        if contact_radius is not None:
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
+            prim.dcir_equipotential_region = True
+        elif pad.shape.lower() == "circle":
+            ra = self._pedb.value(pad.parameters_values[0] / 2)
+            pos = self.position
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+        elif pad.shape.lower() == "rectangle":
+            width, height = pad.parameters_values
+            prim = self._pedb.modeler.create_rectangle(
+                pad.layer_name,
+                self.net_name,
+                width=width,
+                height=height,
+                representation_type="CenterWidthHeight",
+                center_point=self.position,
+                rotation=self.component.rotation,
+            )
+        elif pad.shape.lower() == "oval":
+            width, height, _ = pad.parameters_values
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+            )
+        elif pad.polygon_data:
+            prim = self._pedb.modeler.create_polygon(
+                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+            )
+            prim.move(self.position)
+        else:
+            raise AttributeError(f"Unsupported pad shape {pad.shape} for DCIR equipotential region.")
+
+        prim.dcir_equipotential_region = True
+        return prim
