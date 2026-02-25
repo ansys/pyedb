@@ -24,7 +24,6 @@ import math
 import re
 import warnings
 
-
 RAD2DEG = 180.0 / math.pi
 DEG2RAD = math.pi / 180
 HOUR2SEC = 3600.0
@@ -165,6 +164,7 @@ def _resolve_unit_system(unit_system_1, unit_system_2, operation):  # pragma: no
     except KeyError:
         return ""
 
+
 def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pragma: no cover
     m2 = re.findall(r"[0-9.]+ *([a-z_A-Z]+)", variable_value)
     if len(m2) > 0:
@@ -181,6 +181,7 @@ def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pr
             if i in m and _find_units_in_dependent_variables(v):
                 return _find_units_in_dependent_variables(v)
     return ""
+
 
 def decompose_variable_value(variable_value, full_variables={}):  # pragma: no cover
     """Decompose a variable value.
@@ -223,6 +224,7 @@ def decompose_variable_value(variable_value, full_variables={}):  # pragma: no c
                     float_value = variable_value
 
     return float_value, units
+
 
 def unit_converter(values, unit_system="Length", input_units="meter", output_units="mm"):  # pragma: no cover
     """Convert unit in specified unit system.

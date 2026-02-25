@@ -23,6 +23,7 @@
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.generic.settings import settings
 
+
 class CfgPackage(CfgBase):
     """Configuration package class."""
 

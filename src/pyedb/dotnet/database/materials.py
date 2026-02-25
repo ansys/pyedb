@@ -672,14 +672,14 @@ class Materials(object):
     @deprecate_argument_name({"loss_tangent": "dielectric_loss_tangent"})
     def add_djordjevic_sarkar_dielectric(
         self,
-        name:str,
-        permittivity_at_frequency:int|float,
-        loss_tangent_at_frequency:int|float,
-        dielectric_model_frequency:int|float,
-        dc_conductivity:int|float|None=None,
-        dc_permittivity:int|float|None=None,
+        name: str,
+        permittivity_at_frequency: int | float,
+        loss_tangent_at_frequency: int | float,
+        dielectric_model_frequency: int | float,
+        dc_conductivity: int | float | None = None,
+        dc_permittivity: int | float | None = None,
         **kwargs,
-    )-> Material:
+    ) -> Material:
         """Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
@@ -725,14 +725,14 @@ class Materials(object):
             raise ValueError("Use realistic values to define DS model.")
 
     def add_djordjevicsarkar_dielectric(
-            self,
-            name,
-            permittivity_at_frequency,
-            loss_tangent_at_frequency,
-            dielectric_model_frequency,
-            dc_conductivity=None,
-            dc_permittivity=None,
-            **kwargs,
+        self,
+        name,
+        permittivity_at_frequency,
+        loss_tangent_at_frequency,
+        dielectric_model_frequency,
+        dc_conductivity=None,
+        dc_permittivity=None,
+        **kwargs,
     ):
         """Add a dielectric using the Djordjevic-Sarkar model.
 
@@ -744,7 +744,7 @@ class Materials(object):
             "add_djordjevicsarkar_dielectric is deprecated due to a typo in the method name. "
             "Use add_djordjevic_sarkar_dielectric instead.",
             DeprecationWarning,
-            stacklevel=2
+            stacklevel=2,
         )
 
         return self.add_djordjevic_sarkar_dielectric(

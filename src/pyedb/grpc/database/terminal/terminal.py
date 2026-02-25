@@ -120,7 +120,6 @@ class Terminal(ConnObj):
             p["PEC Launch Width"] = ""
         return p
 
-
     @property
     def horizontal_extent_factor(self) -> float:
         """Horizontal extent factor.
@@ -172,7 +171,6 @@ class Terminal(ConnObj):
         p = self._hfss_port_property
         p["PEC Launch Width"] = value
         self._hfss_port_property = p
-
 
     @property
     def reference_layer(self):

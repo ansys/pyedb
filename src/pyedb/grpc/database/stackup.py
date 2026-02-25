@@ -289,7 +289,6 @@ class LayerCollection:
         )
         return self.core.add_layer_above(layer.core, base_layer_name)
 
-
     @property
     def non_stackup_layers(self) -> Dict[str, Layer]:
         """Retrieve the dictionary of non-stackup layers.
@@ -399,7 +398,6 @@ class LayerCollection:
         return {
             obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
         }
-
 
 
 class Stackup:
@@ -839,7 +837,6 @@ class Stackup:
         added_layer.type = CoreLayerType.USER_LAYER
         return added_layer
 
-
     @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
         self,
@@ -1161,7 +1158,6 @@ class Stackup:
         else:
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
-
 
     def _export_layer_stackup_to_csv_xlsx(self, fpath: Optional[str] = None, file_format: Optional[str] = None) -> bool:
         try:

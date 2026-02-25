@@ -77,7 +77,6 @@ class FrequencyData:
             )
         self._core.distribution = _mapping_distribution[value]
 
-
     @property
     def start_frequency(self) -> str:
         """Get the start frequency in Hz.
@@ -329,7 +328,6 @@ class SweepData:
         self.core.compute_dc_point = value
         self._update_sweep()
 
-
     @property
     def siwave_with_3dddm(self) -> bool:
         """Get the flag indicating if SIwave with 3D-DDM is used.
@@ -355,12 +353,12 @@ class SweepData:
         bool
             True if advanced DC extrapolation is used, False otherwise.
         """
-        #to be implemented in edb core, currently does not exist in edb core
-        return  False
+        # to be implemented in edb core, currently does not exist in edb core
+        return False
 
     @adv_dc_extrapolation.setter
     def adv_dc_extrapolation(self, value: bool):
-        #to be implemented in edb core, currently does not exist in edb core
+        # to be implemented in edb core, currently does not exist in edb core
         pass
 
     @property
@@ -389,7 +387,7 @@ class SweepData:
             Frequency sweep string.
         """
         return self.core.frequency_string.strip()
-    
+
     @frequency_string.setter
     def frequency_string(self, value: str):
         self.core.frequency_string = value

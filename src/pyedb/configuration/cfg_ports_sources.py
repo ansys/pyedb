@@ -157,7 +157,6 @@ class CfgPorts:
     def _get_edge_port_from_edb(self, p, port_type):
         _, primitive, point = self._pedb.excitation_manager.get_edge_from_port(p)
 
-
         cfg_port = CfgEdgePort(
             self._pedb,
             name=p.name,
@@ -196,11 +195,11 @@ class CfgPorts:
 
         for _, p in ports.items():
             if not p.reference_terminal:
-                if p.terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal",as_grpc=settings.is_grpc):
+                if p.terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                     port_type = "coax"
-                elif p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal",as_grpc=settings.is_grpc):
+                elif p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     port_type = "circuit"
-                elif p.terminal_type == TerminalTypeMapper.get("EdgeTerminal",as_grpc=settings.is_grpc):
+                elif p.terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc):
                     port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
                 else:
                     raise ValueError("Unknown terminal type")
@@ -422,11 +421,15 @@ class CfgCircuitElement(CfgBase):
                 search_radius = neg_value.get("search_radius", "5e-3")
                 temp = dict()
                 references_pins = {
-                    pin:pin.position for pin in list(list(pos_objs.values())[0].component.pins.values()) if pin.net_name == ref_net
+                    pin: pin.position
+                    for pin in list(list(pos_objs.values())[0].component.pins.values())
+                    if pin.net_name == ref_net
                 }
 
                 for i, j in pos_objs.items():
-                    temp[i] = self._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1, pinlist_position=references_pins)[0]
+                    temp[i] = self._pedb.padstacks.get_reference_pins(
+                        j, ref_net, search_radius, max_limit=1, pinlist_position=references_pins
+                    )[0]
                 self.neg_terminal = {
                     i: j.create_terminal(i + "_ref") if not j.terminal else j.terminal for i, j in temp.items()
                 }
@@ -707,12 +710,16 @@ class CfgProbe(CfgCircuitElement):
 
 class CfgEdgePort:
     def set_parameters_to_edb(self):
-        return self._pedb.hfss.create_edge_port(self.point_on_edge, self.primitive_name, self.name, 50,
-                                                True if self.type == "wave_port" else False,
-                                                self.horizontal_extent_factor, self.vertical_extent_factor,
-                                                self.pec_launch_width)
-
-
+        return self._pedb.hfss.create_edge_port(
+            self.point_on_edge,
+            self.primitive_name,
+            self.name,
+            50,
+            True if self.type == "wave_port" else False,
+            self.horizontal_extent_factor,
+            self.vertical_extent_factor,
+            self.pec_launch_width,
+        )
 
     def export_properties(self):
         return {

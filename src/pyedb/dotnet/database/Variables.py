@@ -49,9 +49,8 @@ from pyedb.generic.constants import (
     AEDT_UNITS,
     SI_UNITS,
     _resolve_unit_system,
-    unit_system,
     decompose_variable_value,
-
+    unit_system,
 )
 from pyedb.generic.general_methods import (
     GrpcApiError,

@@ -769,9 +769,6 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-
-
-
     def _get_closest_pin_from(self, pin, ref_pinlist):
         """Get closest pin from a list of pins.
 
@@ -796,7 +793,6 @@ class Components(object):
                 distance = temp_distance
                 closest_pin = ref_pin
         return closest_pin
-
 
     def _is_top_component(self, cmp) -> bool:
         """Check if component is on top layer.

@@ -45,7 +45,8 @@ class PinPairModel:
 
         """
         pp = self.core.pin_pairs()
-        return pp[0][0]  if pp else None
+        return pp[0][0] if pp else None
+
     @property
     def second_pin(self) -> str:
         """Second pin name.
@@ -57,7 +58,7 @@ class PinPairModel:
 
         """
         pp = self.core.pin_pairs()
-        return pp[0][1]  if pp else None
+        return pp[0][1] if pp else None
 
     @property
     def rlc(self) -> tuple[str, str]:

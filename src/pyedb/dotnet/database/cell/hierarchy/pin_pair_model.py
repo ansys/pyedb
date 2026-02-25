@@ -39,7 +39,6 @@ class PinPair(object):  # pragma: no cover
     @property
     def second_pin(self):
         return self._edb_pin_pair.SecondPin
-    
 
     @property
     def is_parallel(self):

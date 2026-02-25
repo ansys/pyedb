@@ -75,4 +75,3 @@ class RaptorXSimulationSetup(SimulationSetup):
 
         """
         return RaptorXSimulationSettings(self._pedb, self.core.settings)
-

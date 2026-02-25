@@ -107,7 +107,7 @@ class TestClass(BaseTestClass):
         assert via.backdrill_bottom
 
         via = edbapp.padstacks.instances_by_name["Via1266"]
-            
+
         via.backdrill_parameters = {
             "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
             "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
@@ -119,9 +119,9 @@ class TestClass(BaseTestClass):
             }
         else:
             assert via.backdrill_parameters == {
-            "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
-            "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
-        }
+                "from_bottom": {"drill_to_layer": "Inner5(PWR2)", "diameter": "0.4mm", "stub_length": "0.1mm"},
+                "from_top": {"drill_to_layer": "Inner2(PWR1)", "diameter": "0.41mm", "stub_length": "0.11mm"},
+            }
         edbapp.close(terminate_rpc_session=False)
 
     def test_padstacks_get_nets_from_pin_list(self):
@@ -730,6 +730,7 @@ class TestPadstackInstance(BaseTestClass):
             fill_material="FR4_epoxy",
         )
         edbapp.close(terminate_rpc_session=False)
+
 
 @pytest.mark.skip(reason="The updated method is not in ansys-edb-core yet.")
 @pytest.mark.usefixtures("close_rpc_session")

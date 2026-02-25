@@ -126,7 +126,6 @@ class EdbNets(CommonNets):
         """
         return list(self.nets.keys())
 
-
     @property
     def signal(self):
         """Signal nets.
@@ -534,7 +533,6 @@ class EdbNets(CommonNets):
         edb_net = self._edb.Cell.Net.FindByName(self._active_layout, net_name)
         if not edb_net.IsNull():
             return self._pedb.pedb_class.database.edb_data.nets_data.EDBNetsData(edb_net, self._pedb)
-
 
     def delete(self, netlist):
         """Delete one or more nets from EDB.
