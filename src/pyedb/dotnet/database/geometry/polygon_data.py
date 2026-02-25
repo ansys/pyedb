@@ -44,16 +44,17 @@ class PolygonData:
     ) -> None:
         self._pedb = pedb
 
-        if create_from_points:
+        if edb_object is not None:
+            self._edb_object = edb_object
+        elif create_from_points:
             self._edb_object = self.create_from_points(**kwargs)
-        elif create_from_circle:
-            x_center, y_center, radius = kwargs
-        elif create_from_rectangle:
-            x_lower_left, y_lower_left, x_upper_right, y_upper_right = kwargs
         elif create_from_bounding_box:
             self._edb_object = self.create_from_bounding_box(**kwargs)
-        else:  # pragma: no cover
-            self._edb_object = edb_object
+        else:
+            self._pedb.logger.error(
+                "PolygonData: No valid EDB object or creation method provided. "
+                "Please provide either an 'edb_object', 'create_from_points', or 'create_from_bounding_box' argument."
+            )
 
     @property
     def bounding_box(self) -> list[float]:
