@@ -21,47 +21,49 @@
 # SOFTWARE.
 
 
+from typing import Any
+
 class PointData:
     """Point Data."""
 
-    def __init__(self, pedb, edb_object=None):
+    def __init__(self, pedb: Any, edb_object: Any | None = None) -> None:
         self._pedb = pedb
         self._edb_object = edb_object
 
     @classmethod
-    def create_from_x(cls, pedb, x):
+    def create_from_x(cls, pedb: Any, x: float) -> "PointData":
         """Create a new PointData object."""
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x))
         return cls(pedb, edb_object)
 
     @classmethod
-    def create_from_xy(cls, pedb, x, y):
+    def create_from_xy(cls, pedb: Any, x: float, y: float) -> "PointData":
         """Create a new PointData object."""
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x), pedb.edb_value(y))
         return cls(pedb, edb_object)
 
     @property
-    def x(self):
+    def x(self) -> str:
         """X value of point."""
         return self._edb_object.X.ToString()
 
     @x.setter
-    def x(self, value):
+    def x(self, value: float) -> None:
         self._edb_object.X = self._pedb.edb_value(value)
 
     @property
-    def x_evaluated(self):
+    def x_evaluated(self) -> float:
         return self._edb_object.X.ToDouble()
 
     @property
-    def y(self):
+    def y(self) -> str:
         """Y value of point."""
         return self._edb_object.Y.ToString()
 
     @y.setter
-    def y(self, value):
+    def y(self, value: float) -> None:
         self._edb_object.Y = self._pedb.edb_value(value)
 
     @property
-    def y_evaluated(self):
+    def y_evaluated(self) -> float:
         return self._edb_object.Y.ToDouble()
