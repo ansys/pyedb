@@ -233,11 +233,11 @@ class Padstacks(object):
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
-        instances_by_net = {}
-        for instance in self._pedb.layout.padstack_instances:
-            net_name = instance.net_name
-            if net_name:
-                instances_by_net.setdefault(net_name, []).append(instance)
+        if not self._instances_by_net:
+            for instance in self._pedb.layout.padstack_instances:
+                net_name = instance.net_name
+                if net_name:
+                    self._instances_by_net.setdefault(net_name, []).append(instance)
         return self._instances_by_net
 
     @property
@@ -257,12 +257,12 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        instances_by_name = {}
-        for pds in self._pedb.layout.padstack_instances:
-            name = pds.aedt_name
-            if name:
-                instances_by_name[name] = pds
-        return instances_by_name
+        if not self._instances_by_net:
+            for pds in self._pedb.layout.padstack_instances:
+                name = pds.aedt_name
+                if name:
+                    self._instances_by_net[name] = pds
+        return self._instances_by_net
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
