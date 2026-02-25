@@ -408,27 +408,64 @@ class Layout(ObjBase):
         List
             A list of padstack instances matching the specified criteria.
         """
-        candidates = self.padstack_instances
+        candidates = self.padstack_instances  # make a copy of the list to filter down
         if instance_id is not None:
-            value = instance_id if isinstance(instance_id, list) else [instance_id]
-            value = [int(i) for i in value]
-            candidates = [i for i in candidates if i.id in value]
+            id_set = instance_id if isinstance(instance_id, list) else [instance_id]
+            id_set = {int(i) for i in id_set}
+            id_found = []
+            remaining = set(id_set)
+            for c in candidates:
+                cid = c.id
+                if cid in remaining:
+                    id_found.append(c)
+                    remaining.remove(cid)
+                    if not remaining:  # all ids found
+                        break
+            candidates = id_found
 
         if aedt_name is not None:
-            name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
-            candidates = [i for i in candidates if i.aedt_name in name]
+            name_set = set(aedt_name) if isinstance(aedt_name, list) else {aedt_name}
+            name_found = []
+            remaining = set(name_set)
+            for c in candidates:
+                cname = c.aedt_name
+                if cname in remaining:
+                    name_found.append(c)
+                    remaining.remove(cname)
+                    if not remaining:  # all names found
+                        break
+            candidates = name_found
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
             candidates = [i for i in candidates if i.component_name in value]
 
         if net_name is not None:
-            value = net_name if isinstance(net_name, list) else [net_name]
-            candidates = [i for i in candidates if i.net_name in value]
+            net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}
+            net_name_found = []
+            remaining = set(net_name_set)
+            for c in candidates:
+                n_name = c.net_name
+                if n_name in remaining:
+                    net_name_found.append(c)
+                    remaining.remove(n_name)
+                    if not remaining:  # all net names found
+                        break
+            candidates = net_name_found
 
         if component_pin_name is not None:
-            value = component_pin_name if isinstance(component_pin_name, list) else [component_pin_name]
-            candidates = [i for i in candidates if i.name in value]
+            c_pin_name_set = set(component_pin_name) if isinstance(component_pin_name, list) else {component_pin_name}
+            c_pin_name_found = []
+            remaining = set(c_pin_name_set)
+            for c in candidates:
+                p_name = c.name
+                if p_name in remaining:
+                    c_pin_name_found.append(c)
+                    remaining.remove(p_name)
+                    if not remaining:  # all component pin names found
+                        break
+            candidates = c_pin_name_found
+
         if not candidates:  # pragma: no cover
             raise ValueError(
                 f"Failed to find padstack instances with aedt_name={aedt_name}, component_name={component_name}, "
