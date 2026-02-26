@@ -271,14 +271,16 @@ class Configuration:
                         edb_setup.pi_slider_position = setup.pi_slider_position
                 else:
                     raise SyntaxError(f"Unsupported setup type '{setup.type}'.")
-
+                dist_dict = {"LIN": "linear_scale", "DEC": "log_scale", "LINC": "linear_count"}
                 # Apply frequency sweeps
                 for sw in setup.freq_sweep:
                     f_set = []
                     freq_string = []
                     for f in sw.frequencies:
                         if isinstance(f, str):
-                            freq_string.append(f)
+                            freq_strng = f.split(" ")
+                            if freq_strng[0] in dist_dict:
+                                f_set.append([dist_dict[freq_strng[0]], freq_strng[1], freq_strng[2], freq_strng[3]])
                         else:
                             f_set.append([f.distribution, f.start, f.stop, f.increment])
 
