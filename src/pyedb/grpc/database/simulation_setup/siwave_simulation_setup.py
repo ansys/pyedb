@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
 
 from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
 
@@ -82,3 +83,84 @@ class SiwaveSimulationSetup(SimulationSetup):
     def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
         """Setup dc settings."""
         return self.settings.dc_advanced
+
+    @property
+    def use_si_settings(self) -> bool:
+        """Whether to use SI settings.
+
+        This attribute is added for backward compatibility. It will be removed in a future release.
+        Please use 'settings.general.use_si_settings' instead.
+
+        .. deprecated:: 0.70.0
+            The 'use_si_settings' property is deprecated. Please use 'settings.use_si_settings' instead.
+
+        """
+        warnings.warn(
+            "The 'use_si_settings' property is deprecated. Please use 'settings.use_si_settings' instead.",
+            category=DeprecationWarning,
+        )
+        return self.settings.general.use_si_settings
+
+    @use_si_settings.setter
+    def use_si_settings(self, value: bool):
+        """Set whether to use SI settings.
+
+        This attribute is added for backward compatibility. It will be removed in a future release.
+        Please use 'settings.general.use_si_settings' instead.
+
+        .. deprecated:: 0.70.0
+            The 'use_si_settings' property is deprecated. Please use 'settings.use_si_settings' instead.
+
+        """
+        warnings.warn(
+            "The 'use_si_settings' property is deprecated. Please use 'settings.use_si_settings' instead.",
+            category=DeprecationWarning,
+        )
+        self.settings.general.use_si_settings = value
+
+    @property
+    def si_slider_position(self) -> int:
+        """Get or set the SI slider position.
+
+        .. deprecated:: 0.70.0
+            The 'si_slider_position' property is deprecated. Please use 'settings.general.si_slider_pos' instead.
+
+        """
+        warnings.warn(
+            "The 'si_slider_position' property is deprecated. Please use 'settings.general.si_slider_pos' instead.",
+            DeprecationWarning,
+        )
+        return self.settings.general.si_slider_pos
+
+    @si_slider_position.setter
+    def si_slider_position(self, value: int):
+        """Set the SI slider position."""
+        warnings.warn("The 'si_slider_position' property is deprecated. Please use 'settings.general.si_slider_pos' ")
+        self.settings.general.si_slider_pos = value
+
+    @property
+    def pi_slider_position(self) -> int:
+        """Get or set the PI slider position.
+
+        .. deprecated:: 0.70.0
+            The 'pi_slider_position' property is deprecated. Please use 'settings.general.pi_slider_pos' instead.
+
+        Returns
+        -------
+        int
+            The PI slider position.
+        """
+        warnings.warn(
+            "The 'pi_slider_position' property is deprecated. Please use 'settings.general.pi_slider_pos'",
+            DeprecationWarning,
+        )
+        return self.settings.general.pi_slider_pos
+
+    @pi_slider_position.setter
+    def pi_slider_position(self, value: int):
+        """Set the PI slider position."""
+        warnings.warn(
+            "The 'pi_slider_position' property is deprecated. Please use 'settings.general.pi_slider_pos'",
+            DeprecationWarning,
+        )
+        self.settings.general.pi_slider_pos = value

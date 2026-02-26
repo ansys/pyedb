@@ -363,7 +363,7 @@ class Configuration:
                         else:
                             raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
-                elif setup.type == "siwave_ac":  # siwave ac
+                elif setup.type in ["siwave_ac", "siwave"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
