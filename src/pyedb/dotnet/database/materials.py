@@ -32,6 +32,12 @@ import warnings
 from pydantic import BaseModel, confloat
 
 from pyedb import Edb
+from pyedb.dotnet.database.definition.definition_obj import (
+    ATTRIBUTES,
+    DC_ATTRIBUTES,
+    PERMEABILITY_DEFAULT_VALUE,
+    MaterialDef,
+)
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
 from pyedb.misc.decorators import deprecate_argument_name
@@ -50,28 +56,6 @@ try:
 except:
     PositiveFloat = confloat(gt=0)
 
-ATTRIBUTES = [
-    "conductivity",
-    "dielectric_loss_tangent",
-    "magnetic_loss_tangent",
-    "mass_density",
-    "permittivity",
-    "permeability",
-    "poisson_ratio",
-    "specific_heat",
-    "thermal_conductivity",
-    "youngs_modulus",
-    "thermal_expansion_coefficient",
-]
-DC_ATTRIBUTES = [
-    "dielectric_model_frequency",
-    "loss_tangent_at_frequency",
-    "permittivity_at_frequency",
-    "dc_conductivity",
-    "dc_permittivity",
-]
-PERMEABILITY_DEFAULT_VALUE = 1
-
 
 def get_line_float_value(line):
     """Retrieve the float value expected in the line of an AMAT file.
@@ -84,439 +68,6 @@ def get_line_float_value(line):
         return float(re.split(",|=", line)[-1].strip("'\n)"))
     except ValueError:
         return None
-
-
-class MaterialProperties(BaseModel):
-    """Store material properties."""
-
-    conductivity: Optional[PositiveFloat] = 0.0
-    dielectric_loss_tangent: Optional[PositiveFloat] = 0.0
-    magnetic_loss_tangent: Optional[PositiveFloat] = 0.0
-    mass_density: Optional[PositiveFloat] = 0.0
-    permittivity: Optional[PositiveFloat] = 0.0
-    permeability: Optional[PositiveFloat] = 0.0
-    poisson_ratio: Optional[PositiveFloat] = 0.0
-    specific_heat: Optional[PositiveFloat] = 0.0
-    thermal_conductivity: Optional[PositiveFloat] = 0.0
-    youngs_modulus: Optional[PositiveFloat] = 0.0
-    thermal_expansion_coefficient: Optional[PositiveFloat] = 0.0
-    dc_conductivity: Optional[PositiveFloat] = 0.0
-    dc_permittivity: Optional[PositiveFloat] = 0.0
-    dielectric_model_frequency: Optional[PositiveFloat] = 0.0
-    loss_tangent_at_frequency: Optional[PositiveFloat] = 0.0
-    permittivity_at_frequency: Optional[PositiveFloat] = 0.0
-
-
-class Material(object):
-    """Manage EDB methods for material property management."""
-
-    def __init__(self, edb: Edb, material_def):
-        self.__edb: Edb = edb
-        self.__edb_definition = edb.core.Definition
-        self.__name: str = material_def.GetName()
-        self.__material_def = material_def
-        self.__dc_model = material_def.GetDielectricMaterialModel()
-
-        self._pedb = edb
-        self._edb_object = material_def
-        definition = self.__edb_definition
-        self.material_property_id_mapping = {
-            "conductivity": definition.MaterialPropertyId.Conductivity,
-            "permittivity": definition.MaterialPropertyId.Permittivity,
-            "dielectric_loss_tangent": definition.MaterialPropertyId.DielectricLossTangent,
-            "magnetic_loss_tangent": definition.MaterialPropertyId.MagneticLossTangent,
-            "mass_density": definition.MaterialPropertyId.MassDensity,
-            "permeability": definition.MaterialPropertyId.Permeability,
-            "poisson_ratio": definition.MaterialPropertyId.PoissonsRatio,
-            "specific_heat": definition.MaterialPropertyId.SpecificHeat,
-            "thermal_conductivity": definition.MaterialPropertyId.ThermalConductivity,
-            "thermal_expansion_coefficient": definition.MaterialPropertyId.ThermalExpansionCoefficient,
-        }
-
-    @property
-    def name(self):
-        """Material name."""
-        return self.__name
-
-    @property
-    def dc_model(self):
-        """Material dielectric model."""
-        return self.__dc_model
-
-    @property
-    def conductivity(self):
-        """Get material conductivity."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.Conductivity
-        return self.__property_value(material_property_id)
-
-    @conductivity.setter
-    def conductivity(self, value):
-        """Set material conductivity."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.Conductivity
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def permittivity(self):
-        """Get material permittivity."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.Permittivity
-        return self.__property_value(material_property_id)
-
-    @permittivity.setter
-    def permittivity(self, value):
-        """Set material permittivity."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.Permittivity
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def permeability(self):
-        """Get material permeability."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.Permeability
-        return self.__property_value(material_property_id)
-
-    @permeability.setter
-    def permeability(self, value):
-        """Set material permeability."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.Permeability
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def loss_tangent(self):
-        """Get material loss tangent."""
-        warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. "
-            "Use property dielectric_loss_tangent instead.",
-            DeprecationWarning,
-        )
-        return self.dielectric_loss_tangent
-
-    @loss_tangent.setter
-    def loss_tangent(self, value):
-        """Set material loss tangent."""
-        warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. "
-            "Use property dielectric_loss_tangent instead.",
-            DeprecationWarning,
-        )
-        self.dielectric_loss_tangent = value
-
-    @property
-    def dielectric_loss_tangent(self):
-        """Get material loss tangent."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
-        return self.__property_value(material_property_id)
-
-    @dielectric_loss_tangent.setter
-    def dielectric_loss_tangent(self, value):
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.DielectricLossTangent
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def dc_conductivity(self):
-        """Get material dielectric conductivity."""
-        res = None
-        if self.__dc_model:
-            res = self.__dc_model.GetDCConductivity()
-        return res
-
-    @dc_conductivity.setter
-    def dc_conductivity(self, value: Union[int, float]):
-        """Set material dielectric conductivity."""
-        if self.__dc_model and value:
-            self.__dc_model.SetDCConductivity(value)
-        else:
-            self.__edb.logger.error(f"DC conductivity cannot be updated in material without DC model or value {value}.")
-
-    @property
-    def dc_permittivity(self):
-        """Get material dielectric relative permittivity"""
-        res = None
-        if self.__dc_model:
-            res = self.__dc_model.GetDCRelativePermitivity()
-        return res
-
-    @dc_permittivity.setter
-    def dc_permittivity(self, value: Union[int, float]):
-        """Set material dielectric relative permittivity"""
-        if self.__dc_model and value:
-            self.__dc_model.SetDCRelativePermitivity(value)
-        else:
-            self.__edb.logger.error(f"DC permittivity cannot be updated in material without DC model or value {value}.")
-
-    @property
-    def dielectric_model_frequency(self):
-        """Get material frequency in GHz."""
-        res = None
-        if self.__dc_model:
-            res = self.__dc_model.GetFrequency()
-        return res
-
-    @dielectric_model_frequency.setter
-    def dielectric_model_frequency(self, value: Union[int, float]):
-        """Get material frequency in GHz."""
-        if self.__dc_model:
-            self.__dc_model.SetFrequency(value)
-        else:
-            self.__edb.logger.error(f"Material frequency cannot be updated in material without DC model.")
-
-    @property
-    def loss_tangent_at_frequency(self):
-        """Get material loss tangeat at frequency."""
-        res = None
-        if self.__dc_model:
-            res = self.__dc_model.GetLossTangentAtFrequency()
-        return res
-
-    @loss_tangent_at_frequency.setter
-    def loss_tangent_at_frequency(self, value):
-        """Set material loss tangent at frequency."""
-        if self.__dc_model:
-            edb_value = self.__edb_value(value)
-            self.__dc_model.SetLossTangentAtFrequency(edb_value)
-        else:
-            self.__edb.logger.error(f"Loss tangent at frequency cannot be updated in material without DC model.")
-
-    @property
-    def permittivity_at_frequency(self):
-        """Get material relative permittivity at frequency."""
-        res = None
-        if self.__dc_model:
-            res = self.__dc_model.GetRelativePermitivityAtFrequency()
-        return res
-
-    @permittivity_at_frequency.setter
-    def permittivity_at_frequency(self, value: Union[int, float]):
-        """Set material relative permittivity at frequency."""
-        if self.__dc_model:
-            self.__dc_model.SetRelativePermitivityAtFrequency(value)
-        else:
-            self.__edb.logger.error(f"Permittivity at frequency cannot be updated in material without DC model.")
-
-    @property
-    def magnetic_loss_tangent(self):
-        """Get material magnetic loss tangent."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.MagneticLossTangent
-        return self.__property_value(material_property_id)
-
-    @magnetic_loss_tangent.setter
-    def magnetic_loss_tangent(self, value):
-        """Set material magnetic loss tangent."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.MagneticLossTangent
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def thermal_conductivity(self):
-        """Get material thermal conductivity."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.ThermalConductivity
-        return self.__property_value(material_property_id)
-
-    @thermal_conductivity.setter
-    def thermal_conductivity(self, value):
-        """Set material thermal conductivity."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.ThermalConductivity
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def mass_density(self):
-        """Get material mass density."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.MassDensity
-        return self.__property_value(material_property_id)
-
-    @mass_density.setter
-    def mass_density(self, value):
-        """Set material mass density."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.MassDensity
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def youngs_modulus(self):
-        """Get material youngs modulus."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.YoungsModulus
-        return self.__property_value(material_property_id)
-
-    @youngs_modulus.setter
-    def youngs_modulus(self, value):
-        """Set material youngs modulus."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.YoungsModulus
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def specific_heat(self):
-        """Get material specific heat."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.SpecificHeat
-        return self.__property_value(material_property_id)
-
-    @specific_heat.setter
-    def specific_heat(self, value):
-        """Set material specific heat."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.SpecificHeat
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def poisson_ratio(self):
-        """Get material poisson ratio."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.PoissonsRatio
-        return self.__property_value(material_property_id)
-
-    @poisson_ratio.setter
-    def poisson_ratio(self, value):
-        """Set material poisson ratio."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.PoissonsRatio
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    @property
-    def thermal_expansion_coefficient(self):
-        """Get material thermal coefficient."""
-        material_property_id = self.__edb_definition.MaterialPropertyId.ThermalExpansionCoefficient
-        return self.__property_value(material_property_id)
-
-    @thermal_expansion_coefficient.setter
-    def thermal_expansion_coefficient(self, value):
-        """Set material thermal coefficient."""
-        edb_value = self.__edb_value(value)
-        material_property_id = self.__edb_definition.MaterialPropertyId.ThermalExpansionCoefficient
-        self.__material_def.SetProperty(material_property_id, edb_value)
-
-    def to_dict(self):
-        """Convert material into dictionary."""
-        properties = self.__load_all_properties()
-
-        res = {"name": self.name}
-        res.update(properties.model_dump())
-        return res
-
-    def update(self, input_dict: dict):
-        if input_dict:
-            # Update attributes
-            for attribute in ATTRIBUTES:
-                if attribute in input_dict:
-                    setattr(self, attribute, input_dict[attribute])
-            if "loss_tangent" in input_dict:  # pragma: no cover
-                setattr(self, "loss_tangent", input_dict["loss_tangent"])
-
-            # Update DS model
-            # NOTE: Contrary to before we don't test 'dielectric_model_frequency' only
-            if any(map(lambda attribute: input_dict.get(attribute, None) is not None, DC_ATTRIBUTES)):
-                if not self.__dc_model:
-                    self.__dc_model = self.__edb_definition.DjordjecvicSarkarModel()
-                for attribute in DC_ATTRIBUTES:
-                    if attribute in input_dict:
-                        if attribute == "dc_permittivity" and input_dict[attribute] is not None:
-                            self.__dc_model.SetUseDCRelativePermitivity(True)
-                        setattr(self, attribute, input_dict[attribute])
-                self.__material_def.SetDielectricMaterialModel(self.__dc_model)
-            # Unset DS model if it is already assigned to the material in the database
-            elif self.__dc_model:
-                self.__material_def.SetDielectricMaterialModel(self.__edb_value(None))
-
-    def __edb_value(self, value):
-        """Convert a value to an EDB value.
-
-        Parameters
-        ----------
-        val : str, float, int
-        """
-        return self.__edb.edb_value(value)
-
-    def __load_all_properties(self) -> MaterialProperties:
-        """Load all properties of the material."""
-        res = MaterialProperties()
-        for property in res.model_dump().keys():
-            value = getattr(self, property)
-            setattr(res, property, value)
-        return res
-
-    def __property_value(self, material_property_id):
-        """Get property value from a material property id."""
-        _, property_box = self.__material_def.GetProperty(material_property_id)
-        if isinstance(property_box, float):
-            return property_box
-        else:
-            return property_box.ToDouble()
-
-    # def __reset_property(self, name):
-    #     """Reset a property using the default value of the EDB API.
-    #
-    #     This method consists in resetting the value of a property by updating the inner property
-    #     to ``None`` and accessing the property afterward. When one wants to access a property
-    #     whose stored inner value is ``None``, the value is updated to the EDB API default value
-    #     associated to that property.
-    #     """
-    #     # Update inner property to None
-    #     setattr(self.__properties, name, None)
-    #     # Trigger get value on the property
-    #     _ = getattr(self, name)
-
-    def set_thermal_modifier(
-        self,
-        property_name: str,
-        basic_quadratic_temperature_reference: float = 21,
-        basic_quadratic_c1: float = 0.1,
-        basic_quadratic_c2: float = 0.1,
-        advanced_quadratic_lower_limit: float = -270,
-        advanced_quadratic_upper_limit: float = 1001,
-        advanced_quadratic_auto_calculate: bool = False,
-        advanced_quadratic_lower_constant: float = 1.1,
-        advanced_quadratic_upper_constant: float = 1.1,
-    ):
-        """Sets the material property thermal modifier of a given material property.
-
-        Parameters
-        ----------
-        property_name : str
-            Name of the property to modify.
-        basic_quadratic_temperature_reference : float, optional
-            The TempRef value in the quadratic model.
-        basic_quadratic_c1 : float, optional
-            The C1 value in the quadratic model.
-        basic_quadratic_c2 : float, optional
-            The C2 value in the quadratic model.
-        advanced_quadratic_lower_limit : float, optional
-            The lower temperature limit where the quadratic model is valid.
-        advanced_quadratic_upper_limit : float, optional
-            The upper temperature limit where the quadratic model is valid.
-        advanced_quadratic_auto_calculate : bool, optional
-             The flag indicating whether or the LowerConstantThermalModifierVal and UpperConstantThermalModifierVal
-             values should be auto calculated.
-        advanced_quadratic_lower_constant : float, optional
-            The constant thermal modifier value for temperatures lower than LowerConstantThermalModifierVal.
-        advanced_quadratic_upper_constant : float, optional
-            The constant thermal modifier value for temperatures greater than UpperConstantThermalModifierVal.
-
-        Returns
-        -------
-
-        """
-        _edb = self._pedb._edb
-        basic = _edb.Utility.BasicQuadraticParams(
-            _edb.Utility.Value(basic_quadratic_temperature_reference),
-            _edb.Utility.Value(basic_quadratic_c1),
-            _edb.Utility.Value(basic_quadratic_c2),
-        )
-        advanced = _edb.Utility.AdvancedQuadraticParams(
-            _edb.Utility.Value(advanced_quadratic_lower_limit),
-            _edb.Utility.Value(advanced_quadratic_upper_limit),
-            advanced_quadratic_auto_calculate,
-            _edb.Utility.Value(advanced_quadratic_lower_constant),
-            _edb.Utility.Value(advanced_quadratic_upper_constant),
-        )
-
-        thermal_modifier = _edb.Definition.MaterialPropertyThermalModifier(basic, advanced)
-        if not self.__material_def.SetThermalModifier(
-            self.material_property_id_mapping[property_name], thermal_modifier
-        ):
-            raise ValueError(f"Fail to set thermal modifier for property {property_name}")
-        else:
-            return True
 
 
 class Materials(object):
@@ -555,7 +106,7 @@ class Materials(object):
         self.__syslib = os.path.join(self.__edb.base_path, "syslib")
 
     def __contains__(self, item):
-        if isinstance(item, Material):
+        if isinstance(item, MaterialDef):
             return item.name in self.materials
         else:
             return item in self.materials
@@ -572,7 +123,7 @@ class Materials(object):
     def materials(self):
         """Get materials."""
         materials = {
-            material_def.GetName(): Material(self.__edb, material_def)
+            material_def.GetName(): MaterialDef(self.__edb, material_def)
             for material_def in list(self.__edb._db.MaterialDefs)
         }
         return materials
@@ -605,8 +156,7 @@ class Materials(object):
             m = {material.lower(): material for material in curr_materials}[name.lower()]
             raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
 
-        material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, name)
-        material = Material(self.__edb, material_def)
+        material = MaterialDef.create(self.__edb, name)
         # Apply default values to the material
         if "permeability" not in kwargs:
             kwargs["permeability"] = PERMEABILITY_DEFAULT_VALUE
@@ -679,7 +229,7 @@ class Materials(object):
         dc_conductivity: int | float | None = None,
         dc_permittivity: int | float | None = None,
         **kwargs,
-    ) -> Material:
+    ) -> MaterialDef:
         """Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
@@ -906,7 +456,7 @@ class Materials(object):
         material_def = self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, name)
         succeeded = material_def.SetDielectricMaterialModel(material_model)
         if succeeded:
-            material = Material(self.__edb, material_def)
+            material = MaterialDef(self.__edb, material_def)
             return material
         raise MaterialModelException("Set dielectric material model failed.")
 
@@ -933,7 +483,7 @@ class Materials(object):
         material = self.materials[material_name]
         material_def = self.__edb_definition.MaterialDef.Create(self.__edb.active_db, new_material_name)
         material_dict = material.to_dict()
-        new_material = Material(self.__edb, material_def)
+        new_material = MaterialDef(self.__edb, material_def)
         new_material.update(material_dict)
 
         return new_material

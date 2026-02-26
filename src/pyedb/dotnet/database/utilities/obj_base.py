@@ -20,8 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
+
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.geometry.point_data import PointData
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.edb import Edb
 
 
 class BBox:
@@ -54,7 +59,7 @@ class BBox:
 class ObjBase(object):
     """Manages EDB functionalities for a base object."""
 
-    def __init__(self, pedb, edb_object):
+    def __init__(self, pedb: "Edb", edb_object):
         self._pedb = pedb
         self._edb_object = edb_object
 
@@ -79,3 +84,11 @@ class ObjBase(object):
     @name.setter
     def name(self, value):
         self._edb_object.SetName(value)
+
+    @property
+    def core(self):
+        return self._edb_object
+
+    @core.setter
+    def core(self, value):
+        self._edb_object = value

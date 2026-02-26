@@ -26,9 +26,9 @@ import os
 
 import pytest
 
+from pyedb.configuration.cfg_stackup import MaterialProperties
 from pyedb.dotnet.database.materials import (
     PERMEABILITY_DEFAULT_VALUE,
-    MaterialProperties,
 )
 from tests.conftest import GRPC, local_path
 
@@ -82,22 +82,6 @@ class TestClass(BaseTestClass):
         assert 12 == material.loss_tangent
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=not GRPC, reason="Need to refactor dielectric model for DotNet")
-    def test_material_dc_properties(self):
-        """Evaluate material DC properties."""
-        edbapp = self.edb_examples.create_empty_edb()
-        material = edbapp.materials.add_material(MATERIAL_NAME)
-        material.set_djordjecvic_sarkar_model()
-        for property in DC_PROPERTIES:
-            for value in (INT_VALUE, FLOAT_VALUE):
-                setattr(material, property, value)
-                assert float(value) == getattr(material, property)
-            # NOTE: Other properties do not accept EDB calls with string value
-            if property == "loss_tangent_at_frequency":
-                setattr(material, property, STR_VALUE)
-                assert float(STR_VALUE) == getattr(material, property)
-        edbapp.close(terminate_rpc_session=False)
-
     def test_material_to_dict(self):
         """Evaluate material conversion into a dictionary."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -116,7 +100,7 @@ class TestClass(BaseTestClass):
         assert expected_result == material_dict
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=not GRPC, reason="Need to refactor dielectric model for DotNet")
+    # @pytest.mark.skipif(condition=not GRPC, reason="Need to refactor dielectric model for DotNet")
     def test_material_with_dc_model_to_dict(self):
         """Evaluate material conversion into a dictionary."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -142,13 +126,12 @@ class TestClass(BaseTestClass):
             setattr(material, property, FLOAT_VALUE)
         expected_value = FLOAT_VALUE + 1
         material_dict = MaterialProperties(
-            **{field: expected_value for field in MaterialProperties.__annotations__}
+            **{field: expected_value for field in MaterialProperties.__annotations__ if field not in DC_PROPERTIES}
         ).model_dump()
 
         material.update(material_dict)
-        if not edbapp.grpc:  # DC properties are not available in gRPC
-            for property in PROPERTIES + DC_PROPERTIES:
-                assert expected_value == getattr(material, property)
+        for property in PROPERTIES:
+            assert expected_value == getattr(material, property)
         edbapp.close(terminate_rpc_session=False)
 
     def test_materials_syslib(self):
@@ -281,18 +264,6 @@ class TestClass(BaseTestClass):
             materials.delete_material(MATERIAL_NAME)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=GRPC, reason="This test is not valid for gRPC mode")
-    def test_materials_material_property_to_id(self):
-        """Evaluate materials map between material property and id."""
-        pytest.skip("This test is not available in gRPC mode.")
-        edbapp = self.edb_examples.create_empty_edb()
-        materials = edbapp.materials
-        permittivity_id = edbapp.core.Definition.MaterialPropertyId.Permittivity
-        invalid_id = edbapp.core.Definition.MaterialPropertyId.InvalidProperty
-        assert permittivity_id == materials.material_property_to_id("permittivity")
-        assert invalid_id == materials.material_property_to_id("azertyuiop")
-        edbapp.close(terminate_rpc_session=False)
-
     def test_material_load_amat(self):
         """Evaluate load material from an AMAT file."""
         edbapp = self.edb_examples.create_empty_edb()
@@ -373,10 +344,7 @@ class TestClass(BaseTestClass):
         edbapp.materials["FR4_epoxy"].thermal_conductivity = 0.294
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
-        reason="This test fails in CI. It may have somethind to do with garbage collection of edb api. "
-        "Needs to test in 27.1"
-    )
+    @pytest.mark.skip(reason="Bug 1421215")
     def test_material_thermal_modifier(self):
         edbapp = self.edb_examples.create_empty_edb()
         THERMAL_MODIFIER = {
@@ -393,4 +361,20 @@ class TestClass(BaseTestClass):
         material.conductivity = 5.7e8
         if not edbapp.grpc:  # This test is not valid for gRPC mode
             assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)
+        edbapp.close(terminate_rpc_session=False)
+
+
+class TestDielectricModel(BaseTestClass):
+    def test_djordjevic_sarkar_model_properties(self):
+        """Evaluate Djordjevic-Sarkar model properties."""
+        edbapp = self.edb_examples.create_empty_edb()
+        material = edbapp.materials.add_material("ds_model")
+        material.set_djordjecvic_sarkar_model()
+        ds_model = material.dielectric_material_model
+        assert ds_model.dc_conductivity == 1e-12
+        assert ds_model.dc_relative_permittivity == 5
+        assert ds_model.frequency == 1e9
+        assert ds_model.loss_tangent_at_frequency == 0.02
+        assert ds_model.relative_permittivity_at_frequency == 4
+        assert ds_model.use_dc_relative_permittivity is False
         edbapp.close(terminate_rpc_session=False)

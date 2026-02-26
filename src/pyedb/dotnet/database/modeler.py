@@ -1499,3 +1499,9 @@ class Modeler(object):
             if net_obj:
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
+
+    @staticmethod
+    def clear_cache():
+        """Force reload of all primitives and reset indexes."""
+        warnings.warn("Redundant methods. Not use.", DeprecationWarning)
+        pass

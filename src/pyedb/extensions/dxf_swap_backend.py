@@ -235,7 +235,7 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
 
     dxf_polygon = create_polygon_from_dxf(edb, dxf_path, layer_name)
     point_dxf = dxf_polygon.center
-    point_dxf = [f"{x.value * 1000}mm" for x in point_dxf]
+    point_dxf = [f"{x * 1000}mm" for x in point_dxf]
 
     point_dxf_double = [
         edb.value(point_dxf[0]),
