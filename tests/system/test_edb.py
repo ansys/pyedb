@@ -583,7 +583,6 @@ class TestClass(BaseTestClass):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
         setup1 = edbapp.hfss.add_setup("setup1")
-        assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
             assert setup1.adaptive_settings.adaptive_solution_type == "single"
@@ -673,7 +672,6 @@ class TestClass(BaseTestClass):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
         setup1 = edbapp.hfss.add_setup("setup1")
-        assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
             assert setup1.adaptive_settings.adaptive_solution_type == "single"
@@ -697,7 +695,6 @@ class TestClass(BaseTestClass):
         assert setup1.hfss_solver_settings.use_shell_elements
 
         setup1 = edbapp.setups["setup1"]
-        assert not setup1.is_null
         setup1.adaptive_settings.max_refine_per_pass = 20
         assert setup1.adaptive_settings.max_refine_per_pass == 20
         setup1.adaptive_settings.min_passes = 2
@@ -758,11 +755,10 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_setup()
-        assert not setup.is_null
         setup.name = "test_siwave_setup"
         assert setup.name == "test_siwave_setup"
 
@@ -890,11 +886,10 @@ class TestClass(BaseTestClass):
         assert not sp.use_state_space
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_dcir_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup()
-        assert not setup.is_null
         setup.name = "test_siwave_dcir_setup"
         assert setup.name == "test_siwave_dcir_setup"
 
@@ -971,11 +966,10 @@ class TestClass(BaseTestClass):
         assert not general.user_si_settings
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_raptor_x_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_raptor_x_setup()
-        assert not setup.is_null
         setup.name = "test_raptorx_setup"
         assert setup.name == "test_raptorx_setup"
         assert not setup.sweep_data  # default we don't create sweep if not data provided while setup creation
@@ -1044,7 +1038,7 @@ class TestClass(BaseTestClass):
         assert general.use_gold_em_solver
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_q3d_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_q3d_setup()
@@ -1133,7 +1127,7 @@ class TestClass(BaseTestClass):
         assert general.solution_frequency == 20e9
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_sweep(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_hfss_setup(

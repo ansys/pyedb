@@ -24,6 +24,9 @@
 from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SiwaveSimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
+    RaptorXSimulationSetup,
+)
 
 
 class SimulationSetups:
@@ -62,3 +65,115 @@ class SimulationSetups:
         else:
             raise ValueError(f"Unsupported solver type: {solver}.")
         return setup
+
+    def create_hfss_setup(self, name:str=None)->HfssSimulationSetup:
+        """Create an HFSS simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb()
+        >>> setup1 = edbapp.create_hfss_setup("setup1")
+        >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
+        """
+        if name in self._pedb.setups:
+            raise RuntimeError("setup already exists")
+        elif not name:
+            name = generate_unique_name("setup")
+        setup = HfssSimulationSetup.create(self._pedb, name=name)
+        setup.set_solution_single_frequency("1Ghz")
+        return setup
+
+    def create_raptorx_setup(self, name=None):
+        """Create an RaptorX simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+
+        """
+        if name in self.setups:
+            raise ValueError("Setup name already used in the layout")
+        version = float(self._pedb.version)
+        if version < 2024.2:
+            raise RuntimeError("RaptorX simulation only supported with Ansys release 2024R2 and higher")
+        else:
+            setup = RaptorXSimulationSetup.create(self._pedb, name=name)
+            return setup
+
+    def create_siwave_dcir_setup(self, name=None, **kwargs):
+        """Create a setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb()
+        >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
+        >>> setup1.mesh_bondwires = True
+
+        """
+        if not name:
+            name = generate_unique_name("Siwave_DC")
+        if name in self._pedb.setups:
+            raise RuntimeError("setup already exists")
+        setup = SiwaveDCSimulationSetup(self._pedb, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return setup
+
+    def create_siwave_setup(self, name=None, **kwargs):
+        """Create a setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb()
+        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
+        >>> setup1.add_frequency_sweep(
+        ...     frequency_sweep=[
+        ...         ["linear count", "0", "1kHz", 1],
+        ...         ["log scale", "1kHz", "0.1GHz", 10],
+        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
+        ...     ]
+        ... )
+        """
+        if not name:
+            name = generate_unique_name("Siwave_SYZ")
+        if name in self._pedb.setups:
+            raise RuntimeError("setup already exists")
+        setup = SiwaveSimulationSetup(self._pedb, name=name)
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return self._pedb.setups[name]

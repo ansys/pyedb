@@ -3245,55 +3245,14 @@ class Edb:
 
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
         """
-        if name in self.setups:
-            self.logger.info("setup already exists")
-            return False
-        elif not name:
-            name = generate_unique_name("setup")
-        setup = HfssSimulationSetup.create(self, name=name)
-        setup.set_solution_single_frequency("1Ghz")
-        return setup
+        warnings.warn("Deprecated method. Use simulation_setups.create_hfss_setup instead.", DeprecationWarning)
+        return self.simulation_setups.create_hfss_setup(name)
 
     def create_raptorx_setup(self, name=None):
-        """Create an RaptorX simulation setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
-
-        """
-        if name in self.setups:
-            self.logger.error("Setup name already used in the layout")
-            return False
-        version = self.version.split(".")
-        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = RaptorXSimulationSetup.create(self, name=name)
-            return setup
-        else:
-            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
-            return False
+        """Create a RaptorX simulation setup."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_raptorx_setup instead.", DeprecationWarning)
+        return self.simulation_setups.create_raptorx_setup(name)
 
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
@@ -3318,67 +3277,18 @@ class Edb:
         return HFSSPISimulationSetup(self, name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
-        >>> setup1.add_frequency_sweep(
-        ...     frequency_sweep=[
-        ...         ["linear count", "0", "1kHz", 1],
-        ...         ["log scale", "1kHz", "0.1GHz", 10],
-        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...     ]
-        ... )
-        """
-        if not name:
-            name = generate_unique_name("Siwave_SYZ")
-        if name in self.setups:
-            return False
-        setup = SiwaveSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return self.setups[name]
+        """Create a Siwave SYZ setup from a template."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_siwave_syz_setup instead.",
+                      DeprecationWarning,
+                      stacklevel=2)
+        return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
     def create_siwave_dc_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
-        >>> setup1.mesh_bondwires = True
-
-        """
-        if not name:
-            name = generate_unique_name("Siwave_DC")
-        if name in self.setups:
-            return False
-        setup = SiwaveDCSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return setup
+        """Create a Siwave DC IR setup from a template."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_siwave_dcir_setup instead.",
+                      DeprecationWarning,
+                      stacklevel=2)
+        return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
 
     @execution_timer("calculate_initial_extent")
     def calculate_initial_extent(self, expansion_factor):
