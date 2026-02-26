@@ -96,41 +96,6 @@ class Siwave(object):  # pragma no cover
 
     """
 
-    @property
-    def version(self):
-        ver = self.oSiwave.GetVersion()
-        return ".".join(ver.split(".")[:-1])
-
-    @property
-    def version_keys(self):
-        """Version keys for AEDT."""
-
-        self._version_keys = []
-        self._version_ids = {}
-
-        version_list = list_installed_ansysem()
-        for version_env_var in version_list:
-            try:
-                current_version_id = version_env_var.replace("ANSYSEM_ROOT", "").replace("ANSYSEMSV_ROOT", "")
-                version = int(current_version_id[0:2])
-                release = int(current_version_id[2])
-                if version < 20:
-                    if release < 3:
-                        version -= 1
-                    else:
-                        release -= 2
-                v_key = "20{0}.{1}".format(version, release)
-                self._version_keys.append(v_key)
-                self._version_ids[v_key] = version_env_var
-            except ValueError:
-                continue
-        return self._version_keys
-
-    @property
-    def current_version(self):
-        """Current version of AEDT."""
-        return self.version_keys[0]
-
     def __init__(self, specified_version=None):
         self._logger = settings.logger
         if is_windows:  # pragma: no cover
@@ -188,7 +153,41 @@ class Siwave(object):  # pragma no cover
             self._main.oSiwave.RestoreWindow()
         self._main.siwave_initialized = True
         self._oproject = self.oSiwave.GetActiveProject()
-        pass
+
+    @property
+    def version(self):
+        ver = self.oSiwave.GetVersion()
+        return ".".join(ver.split(".")[:-1])
+
+    @property
+    def version_keys(self):
+        """Version keys for AEDT."""
+
+        self._version_keys = []
+        self._version_ids = {}
+
+        version_list = list_installed_ansysem()
+        for version_env_var in version_list:
+            try:
+                current_version_id = version_env_var.replace("ANSYSEM_ROOT", "").replace("ANSYSEMSV_ROOT", "")
+                version = int(current_version_id[0:2])
+                release = int(current_version_id[2])
+                if version < 20:
+                    if release < 3:
+                        version -= 1
+                    else:
+                        release -= 2
+                v_key = "20{0}.{1}".format(version, release)
+                self._version_keys.append(v_key)
+                self._version_ids[v_key] = version_env_var
+            except ValueError:
+                continue
+        return self._version_keys
+
+    @property
+    def current_version(self):
+        """Current version of AEDT."""
+        return self.version_keys[0]
 
     @property
     def project_name(self):
