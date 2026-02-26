@@ -152,7 +152,7 @@ class Primitive:
     @net_name.setter
     def net_name(self, value):
         if value in self._pedb.nets.nets:
-            self.core.net = self._pedb.nets.nets[value]
+            self.core.net = self._pedb.nets.nets[value].core
 
     @property
     def layer_name(self) -> str:

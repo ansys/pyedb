@@ -111,13 +111,13 @@ class TestClass(BaseTestClass):
     def test_create_custom_cutout_3(self):
         """Create custom cutout 3."""
         edbapp = self.edb_examples.get_si_verse()
-        edbapp.components.create_port_on_component(
+        edbapp.excitation_manager.create_port_on_component(
             "U1",
             ["5V"],
             reference_net="GND",
             port_type="circuit_port",
         )
-        edbapp.components.create_port_on_component("U2", ["5V"], reference_net="GND")
+        edbapp.excitation_manager.create_port_on_component("U2", ["5V"], reference_net="GND")
         edbapp.excitation_manager.create_voltage_source_on_net("U4", "5V", "U4", "GND")
         legacy_name = edbapp.edbpath
         assert edbapp.cutout(

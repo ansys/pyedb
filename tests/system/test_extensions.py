@@ -25,7 +25,7 @@ from pathlib import Path
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
-from tests.conftest import GRPC, desktop_version
+from tests.conftest import GRPC, config, desktop_version
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -291,7 +291,7 @@ class TestClass(BaseTestClass):
             },
             "differential_signals": {},
         }
-        app = ViaDesignBackend(cfg)
+        app = ViaDesignBackend(cfg, config["use_grpc"])
 
     def test_backend_diff(self):
         cfg = {
@@ -503,7 +503,7 @@ class TestClass(BaseTestClass):
                 },
             },
         }
-        app = ViaDesignBackend(cfg)
+        app = ViaDesignBackend(cfg, config["use_grpc"])
 
     def test_backend_diff_pcb(self):
         cfg = {
@@ -596,7 +596,7 @@ class TestClass(BaseTestClass):
                 },
             },
         }
-        app = ViaDesignBackend(cfg)
+        app = ViaDesignBackend(cfg, config["use_grpc"])
 
     def test_arbitrary_wave_ports(self):
         local_path = Path(__file__).parent.parent

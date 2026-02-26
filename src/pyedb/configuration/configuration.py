@@ -304,7 +304,7 @@ class Configuration:
     def get_setups(self):
         self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
-            if setup.type == "siwave_dc":
+            if setup.type in ["siwave_dc", "siwave_dcir"]:
                 self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
                     dc_slider_position=setup.dc_settings.dc_slider_position,
@@ -363,7 +363,7 @@ class Configuration:
                         else:
                             raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
-                elif setup.type == "siwave_ac":  # siwave ac
+                elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
@@ -495,11 +495,12 @@ class Configuration:
 
         if modeler.padstack_defs:
             for p in modeler.padstack_defs:
-                pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                pdef.SetData(pdata)
-                pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
-                set_padstack_definition(p, pdef)
+                pdef = self._pedb.padstacks.create(p.name)
+                # pdata = self._pedb._edb.Definition.PadstackDefData.Create()
+                # pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
+                # pdef.SetData(pdata)
+                # pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
+                set_padstack_definition(p, self._pedb.padstacks[pdef])
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:

@@ -27,45 +27,46 @@ class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        core = val if isinstance(val, CoreValue) else CoreValue(val, owner if owner else None)
+        core = val if isinstance(val, CoreValue) else CoreValue(val, owner)
         inst = super().__new__(cls, core.value)
         inst.core = core
+        inst.owner = owner
         return inst
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        core = CoreValue(f"({str(self.core)})+({str(other)})")
+        core = CoreValue(f"({str(self.core)})+({str(other)})", self.owner)
         return self.__class__(core)
 
     def __radd__(self, other):
-        core = CoreValue(f"({str(other)})+({str(self.core)})")
+        core = CoreValue(f"({str(other)})+({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        core = CoreValue(f"({str(self.core)})-({str(other)})")
+        core = CoreValue(f"({str(self.core)})-({str(other)})", self.owner)
         return self.__class__(core)
 
     def __rsub__(self, other):
-        core = CoreValue(f"({str(other)})-({str(self.core)})")
+        core = CoreValue(f"({str(other)})-({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        core = CoreValue(f"({str(self.core)})*({str(other)})")
+        core = CoreValue(f"({str(self.core)})*({str(other)})", self.owner)
         return self.__class__(core)
 
     def __rmul__(self, other):
-        core = CoreValue(f"({str(other)})*({str(self.core)})")
+        core = CoreValue(f"({str(other)})*({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        core = CoreValue(f"({str(self.core)})/({str(other)})")
+        core = CoreValue(f"({str(self.core)})/({str(other)})", self.owner)
         return self.__class__(core)
 
     def __rtruediv__(self, other):
-        core = CoreValue(f"({str(other)})/({str(self.core)})")
+        core = CoreValue(f"({str(other)})/({str(self.core)})", self.owner)
         return self.__class__(core)
 
     @property
@@ -74,40 +75,40 @@ class Value(float, CoreValue):
 
     def sqrt(self):
         """Square root of the value."""
-        core = CoreValue(f"({str(self.core)})**0.5")
+        core = CoreValue(f"({str(self.core)})**0.5", self.owner)
         return self.__class__(core)
 
     def log10(self):
         """Base-10 logarithm of the value."""
-        core = CoreValue(f"log10({str(self.core)})")
+        core = CoreValue(f"log10({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def sin(self):
         """Sine of the value."""
-        core = CoreValue(f"sin({str(self.core)})")
+        core = CoreValue(f"sin({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def cos(self):
         """Cosine of the value."""
-        core = CoreValue(f"cos({str(self.core)})")
+        core = CoreValue(f"cos({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def asin(self):
         """Arcsine of the value."""
-        core = CoreValue(f"asin({str(self.core)})")
+        core = CoreValue(f"asin({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def acos(self):
         """Arccosine of the value."""
-        core = CoreValue(f"acos({str(self.core)})")
+        core = CoreValue(f"acos({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def tan(self):
         """Tangent of the value."""
-        core = CoreValue(f"tan({str(self.core)})")
+        core = CoreValue(f"tan({str(self.core)})", self.owner)
         return self.__class__(core)
 
     def atan(self):
         """Arctangent of the value."""
-        core = CoreValue(f"atan({str(self.core)})")
+        core = CoreValue(f"atan({str(self.core)})", self.owner)
         return self.__class__(core)

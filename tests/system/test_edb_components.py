@@ -350,7 +350,7 @@ class TestClass(BaseTestClass):
         edbapp.components["C2"].is_enabled = True
         assert edbapp.components["C2"].is_enabled is True
         pins = [*edbapp.components.instances["L10"].pins.values()]
-        edbapp.components.create_port_on_pins("L10", pins[0], pins[1])
+        edbapp.excitation_manager.create_port_on_pins("L10", pins[0], pins[1])
         assert edbapp.components["L10"].is_enabled is False
         assert "L10" in edbapp.ports.keys()
 
@@ -411,12 +411,14 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         pin = "A24"
         ref_pins = [pin for pin in list(edbapp.components["U1"].pins.values()) if pin.net_name == "GND"]
-        assert edbapp.components.create_port_on_pins(refdes="U1", pins=pin, reference_pins=ref_pins)
-        assert edbapp.components.create_port_on_pins(refdes="U1", pins="C1", reference_pins=["A11"])
-        assert edbapp.components.create_port_on_pins(refdes="U1", pins="C2", reference_pins=["A11"])
-        assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A24"], reference_pins=["A11", "A16"])
-        assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A26"], reference_pins=["A11", "A16", "A17"])
-        assert edbapp.components.create_port_on_pins(refdes="U1", pins=["A28"], reference_pins=["A11", "A16"])
+        assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins=pin, reference_pins=ref_pins)
+        assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins="C1", reference_pins=["A11"])
+        assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins="C2", reference_pins=["A11"])
+        assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins=["A24"], reference_pins=["A11", "A16"])
+        assert edbapp.excitation_manager.create_port_on_pins(
+            refdes="U1", pins=["A26"], reference_pins=["A11", "A16", "A17"]
+        )
+        assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins=["A28"], reference_pins=["A11", "A16"])
         edbapp.close(terminate_rpc_session=False)
 
     def test_replace_rlc_by_gap_boundaries(self):
@@ -512,7 +514,9 @@ class TestClass(BaseTestClass):
         """Check pec boundary ports."""
         # TODO check how we can return only pec in dotnet.
         edbapp = self.edb_examples.get_si_verse()
-        edbapp.components.create_port_on_pins(refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True)
+        edbapp.excitation_manager.create_port_on_pins(
+            refdes="U1", pins="AU38", reference_pins="AU37", pec_boundary=True
+        )
         if edbapp.grpc:
             assert edbapp.terminals["Port_GND_U1_AU38"].boundary_type == "pec"
             assert edbapp.terminals["Port_GND_U1_AU38_ref"].boundary_type == "pec"
@@ -595,7 +599,7 @@ class TestClass(BaseTestClass):
         # Done
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.components.create_pingroup_from_pins([*edbapp.components.instances["Q1"].pins.values()])
-        assert edbapp.components._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
+        assert edbapp.excitation_manager._create_pin_group_terminal(edbapp.padstacks.pingroups[0], term_type="circuit")
         edbapp.close(terminate_rpc_session=False)
 
     def test_component_lib(self):

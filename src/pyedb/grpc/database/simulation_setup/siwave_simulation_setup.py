@@ -82,3 +82,30 @@ class SiwaveSimulationSetup(SimulationSetup):
     def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
         """Setup dc settings."""
         return self.settings.dc_advanced
+
+    @property
+    def use_si_settings(self) -> bool:
+        """Whether to use SI settings."""
+        return self.settings.general.use_si_settings
+
+    @use_si_settings.setter
+    def use_si_settings(self, value: bool):
+        self.settings.general.use_si_settings = value
+
+    @property
+    def si_slider_position(self) -> int:
+        """SI slider position."""
+        return self.settings.general.si_slider_position
+
+    @si_slider_position.setter
+    def si_slider_position(self, value: int):
+        self.settings.general.si_slider_position = value
+
+    @property
+    def pi_slider_position(self) -> int:
+        """I slider position."""
+        return self.settings.general.pi_slider_pos
+
+    @pi_slider_position.setter
+    def pi_slider_position(self, value: int):
+        self.settings.general.pi_slider_pos = value
