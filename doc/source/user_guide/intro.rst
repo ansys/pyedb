@@ -21,7 +21,7 @@ Import and Initialize with a Context Manager
    edb_path = "/tmp/my_first_project.aedb"  # Note: Using a Linux path!
 
    # Create a new EDB project using a context manager
-   edb = Edb(edbversion="2025.2")
+   edb = Edb(version="2025.2")
 
    # Define materials and stackup
    edb.materials.add_conductor_material(name="gold", conductivity=4.1e7)
