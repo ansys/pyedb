@@ -32,11 +32,15 @@ import warnings
 from pydantic import BaseModel, confloat
 
 from pyedb import Edb
+from pyedb.dotnet.database.definition.definition_obj import (
+    ATTRIBUTES,
+    DC_ATTRIBUTES,
+    PERMEABILITY_DEFAULT_VALUE,
+    MaterialDef,
+)
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.dotnet.database.definition.definition_obj import MaterialDef
-from pyedb.dotnet.database.definition.definition_obj import ATTRIBUTES, DC_ATTRIBUTES, PERMEABILITY_DEFAULT_VALUE
 
 logger = logging.getLogger(__name__)
 
@@ -52,6 +56,7 @@ try:
 except:
     PositiveFloat = confloat(gt=0)
 
+
 def get_line_float_value(line):
     """Retrieve the float value expected in the line of an AMAT file.
 
@@ -63,6 +68,7 @@ def get_line_float_value(line):
         return float(re.split(",|=", line)[-1].strip("'\n)"))
     except ValueError:
         return None
+
 
 class Materials(object):
     """Manages EDB methods for material management accessible from `Edb.materials` property."""
@@ -150,7 +156,7 @@ class Materials(object):
             m = {material.lower(): material for material in curr_materials}[name.lower()]
             raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
 
-        material= MaterialDef.create(self.__edb, name)
+        material = MaterialDef.create(self.__edb, name)
         # Apply default values to the material
         if "permeability" not in kwargs:
             kwargs["permeability"] = PERMEABILITY_DEFAULT_VALUE

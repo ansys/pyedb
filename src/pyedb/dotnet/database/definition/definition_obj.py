@@ -19,16 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import Optional, Union
 import warnings
-from typing import Union, Optional
+
 from pydantic import BaseModel, confloat
 
-from pyedb.dotnet.database.utilities.obj_base import ObjBase
 from pyedb.dotnet.database.definition.dielectric_material_model import (
-    DjordjecvicSarkarModel,
     DebyeModel,
-    MultipoleDebyeModel
+    DjordjecvicSarkarModel,
+    MultipoleDebyeModel,
 )
+from pyedb.dotnet.database.utilities.obj_base import ObjBase
+
 try:
     from annotated_types import Gt
     from typing_extensions import Annotated
@@ -307,9 +309,7 @@ class DeprecatedMaterial:
         )
 
         thermal_modifier = _edb.Definition.MaterialPropertyThermalModifier(basic, advanced)
-        if not self.core.SetThermalModifier(
-            self.material_property_id_mapping[property_name], thermal_modifier
-        ):
+        if not self.core.SetThermalModifier(self.material_property_id_mapping[property_name], thermal_modifier):
             raise ValueError(f"Fail to set thermal modifier for property {property_name}")
         else:
             return True
@@ -333,7 +333,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
             "thermal_conductivity": self.property_id.ThermalConductivity,
             "thermal_expansion_coefficient": self.property_id.ThermalExpansionCoefficient,
         }
-        
+
     @classmethod
     def create(cls, pedb, name: str) -> "MaterialDef":
         """Creates a material definition into the database with given name."""
@@ -359,13 +359,13 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
             self._edb_object.SetDielectricMaterialModel(None)
 
     def set_djordjecvic_sarkar_model(
-            self,
-            dc_conductivity: float | None = 1e-12,
-            dc_relative_permittivity: float | None = 5,
-            frequency: float | None = 1e9,
-            loss_tangent_at_frequency: float | None = 0.02,
-            relative_permittivity_at_frequency: float | None = 4,
-            use_dc_relative_permittivity: bool | None = False
+        self,
+        dc_conductivity: float | None = 1e-12,
+        dc_relative_permittivity: float | None = 5,
+        frequency: float | None = 1e9,
+        loss_tangent_at_frequency: float | None = 0.02,
+        relative_permittivity_at_frequency: float | None = 4,
+        use_dc_relative_permittivity: bool | None = False,
     ) -> DjordjecvicSarkarModel:
         """Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
         on it will not be reflected on the database.
@@ -427,7 +427,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def permeability(self):
         """Get material permeability."""
         material_property_id = self.property_id.Permeability
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @permeability.setter
@@ -441,7 +441,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def dielectric_loss_tangent(self):
         """Get material loss tangent."""
         material_property_id = self.property_id.DielectricLossTangent
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @dielectric_loss_tangent.setter
@@ -454,7 +454,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def magnetic_loss_tangent(self):
         """Get material magnetic loss tangent."""
         material_property_id = self.property_id.MagneticLossTangent
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @magnetic_loss_tangent.setter
@@ -468,7 +468,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def thermal_conductivity(self):
         """Get material thermal conductivity."""
         material_property_id = self.property_id.ThermalConductivity
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @thermal_conductivity.setter
@@ -482,7 +482,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def mass_density(self):
         """Get material mass density."""
         material_property_id = self.property_id.MassDensity
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @mass_density.setter
@@ -496,7 +496,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def youngs_modulus(self):
         """Get material youngs modulus."""
         material_property_id = self.property_id.YoungsModulus
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @youngs_modulus.setter
@@ -510,7 +510,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def specific_heat(self):
         """Get material specific heat."""
         material_property_id = self.property_id.SpecificHeat
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @specific_heat.setter
@@ -524,7 +524,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def poisson_ratio(self):
         """Get material poisson ratio."""
         material_property_id = self.property_id.PoissonsRatio
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @poisson_ratio.setter
@@ -538,7 +538,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
     def thermal_expansion_coefficient(self):
         """Get material thermal coefficient."""
         material_property_id = self.property_id.ThermalExpansionCoefficient
-        _, val =  self.core.GetProperty(material_property_id)
+        _, val = self.core.GetProperty(material_property_id)
         return val
 
     @thermal_expansion_coefficient.setter
