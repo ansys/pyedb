@@ -21,7 +21,7 @@
 # SOFTWARE.
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Literal, Union, overload
+from typing import TYPE_CHECKING, Any, Literal, overload
 import warnings
 
 from pyedb.generic.grpc_warnings import GRPC_BETA_WARNING, GRPC_NOT_SUPPORTED_WARNING
@@ -31,6 +31,7 @@ from pyedb.misc.decorators import deprecate_argument_name
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
     from pyedb.grpc.edb import Edb as EdbGrpc
+    from pyedb.siwave import Siwave
 
 
 @overload
@@ -42,103 +43,93 @@ def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet": ...
 
 
 @overload
-def Edb(*, grpc: bool, **kwargs) -> Union["EdbGrpc", "EdbDotnet"]: ...
+def Edb(*, grpc: bool, **kwargs) -> "EdbGrpc" | "EdbDotnet": ...
 
 
 # lazy imports
 @deprecate_argument_name({"edbversion": "version"})
 def Edb(
-    edbpath=None,
-    cellname=None,
-    isreadonly=False,
-    version=None,
-    isaedtowned=False,
-    oproject=None,
-    student_version=False,
-    use_ppe=False,
-    map_file=None,
-    technology_file=None,
-    grpc=False,
-    control_file=None,
-    layer_filter=None,
-) -> Union[EdbGrpc, EdbDotnet]:
+    edbpath: str | None = None,
+    cellname: str | None = None,
+    isreadonly: bool = False,
+    version: str | None = None,
+    isaedtowned: bool = False,
+    oproject: Any = None,
+    student_version: bool = False,
+    use_ppe: bool = False,
+    map_file: str | None = None,
+    technology_file: str | None = None,
+    grpc: bool = False,
+    control_file: str | None = None,
+    layer_filter: str | None = None,
+) -> EdbGrpc | EdbDotnet:
     """Provides the EDB application interface.
 
-        This module inherits all objects that belong to EDB.
+    This module inherits all objects that belong to EDB.
 
-        Parameters
-        ----------
-        edbpath : str, optional
-            Full path to the ``aedb`` folder. The variable can also contain
-            the path to a layout to import. Allowed formats are BRD,
-            XML (IPC2581), GDS, and DXF. The default is ``None``.
-            For GDS import, the Ansys control file (also XML) should have the same
-            name as the GDS file. Only the file extension differs.
-        cellname : str, optional
-            Name of the cell to select. The default is ``None``.
-        isreadonly : bool, optional
-            Whether to open EBD in read-only mode when it is
-            owned by HFSS 3D Layout. The default is ``False``.
-        version : str, optional
-            Version of EDB to use. The default is ``"2021.2"``.
-        isaedtowned : bool, optional
-            Whether to launch EDB from HFSS 3D Layout. The
-            default is ``False``.
-        oproject : optional
-            Reference to the AEDT project object.
-        student_version : bool, optional
-            Whether to open the AEDT student version. The default is ``False.``
-        use_ppe : bool, optional
-            Whether to use PPE license. The default is ``False``.
-        technology_file : str, optional
-            Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
-        grpc : bool, optional
-            Whether to enable gRPC. Default value is ``False``.
-        layer_filter: str,optional
-            Layer filter .txt file.
-        map_file : str, optional
-            Layer map .map file.
-        control_file : str, optional
-            Path to the XML file. The default is ``None``, in which case an attempt is made to find
-            the XML file in the same directory as the board file. To succeed, the XML file and board file
-            must have the same name. Only the extension differs.
+    Parameters
+    ----------
+    edbpath : str, optional
+        Full path to the ``aedb`` folder. The variable can also contain the path to a layout to import.
+        Allowed formats are BRD, XML (IPC2581), GDS, and DXF. The default is ``None``.
+        For GDS import, the Ansys control file (also XML) should have the same name as the GDS file.
+        Only the file extension differs.
+    cellname : str, optional
+        Name of the cell to select. The default is ``None``.
+    isreadonly : bool, optional
+        Whether to open EBD in read-only mode when it is owned by HFSS 3D Layout.
+        The default is ``False``.
+    version : str, optional
+        Version of EDB to use. The default is ``None``.
+    isaedtowned : bool, optional
+        Whether to launch EDB from HFSS 3D Layout. The default is ``False``.
+    oproject : Any, optional
+        Reference to the AEDT project object.
+    student_version : bool, optional
+        Whether to open the AEDT student version. The default is ``False.``
+    use_ppe : bool, optional
+        Whether to use PPE license. The default is ``False``.
+    map_file : str, optional
+        Layer MAP file. The default is ``None``.
+    technology_file : str, optional
+        Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
+    grpc : bool, optional
+        Whether to enable gRPC. Default value is ``False``.
+    layer_filter: str,optional
+        Layer filter .txt file.
+    control_file : str, optional
+        Path to the XML file. The default is ``None``, in which case an attempt is made to find
+        the XML file in the same directory as the board file. To succeed, the XML file and board file
+        must have the same name. Only the extension differs.
 
-        Returns
-        -------
-        :class:`Edb <pyedb.dotnet.edb.Edb>` or :class:`Edb <pyedb.grpc.edb.Edb>`
+    Returns
+    -------
+    :class:`Edb <pyedb.dotnet.edb.Edb>` or :class:`Edb <pyedb.grpc.edb.Edb>`
 
-        Note
-        ----
-        PyEDB gRPC will be released starting ANSYS release 2025R2. For legacy purpose, the gRPC will not be activated by
-        default. However, PyEDB gRPC will be the lon term supported version. The legacy PyEDB .NET will be deprecated
-        and at some point all new features will only be implemented in PyEDB gRPC. We highly encourage users moving to
-        gRPC starting release 2025R2, we tried keeping gRPC version backward compatible with legace .NET as much as
-        possible and only minor adjustments are required to be compatible.
-
-        Examples
-        --------
-        1. Creating and Opening an EDB Database
+    Examples
+    --------
+    1. Creating and Opening an EDB Database
 
     >>> from pyedb import Edb
 
-        # Create a new EDB instance
+    # Create a new EDB instance
     >>> edb = Edb()
 
-        # Open an existing AEDB database
+    # Open an existing AEDB database
     >>> edb = Edb(edbpath="my_project.aedb")
 
-        # Import a board file (BRD, XML, GDS, etc.)
+    # Import a board file (BRD, XML, GDS, etc.)
     >>> edb = Edb(edbpath="my_board.brd")
 
-        2. Cutout Operation
+    2. Cutout Operation
 
-        # Simple cutout with signal and reference nets
+    # Simple cutout with signal and reference nets
     >>> edb.cutout(
     >>>    signal_list=["PCIe", "USB"],
     >>>    reference_list=["GND"]
-    >>>    )
+    >>> )
 
-        # Advanced cutout with custom parameters
+    # Advanced cutout with custom parameters
     >>> edb.cutout(
     >>>    signal_list=["DDR"],
     >>>    reference_list=["GND"],
@@ -147,105 +138,120 @@ def Edb(
     >>>    use_round_corner=True,
     >>>    output_aedb_path="cutout.aedb",
     >>>    remove_single_pin_components=True
-    >>>    )
+    >>> )
 
-        3. Exporting Designs
+    3. Exporting Designs
 
-        # Export to IPC2581 format
+    # Export to IPC2581 format
     >>> edb.export_to_ipc2581("output.xml", units="millimeter")
 
-        # Export to HFSS project
+    # Export to HFSS project
     >>> edb.export_hfss("hfss_output")
 
-        # Export to Q3D project
+    # Export to Q3D project
     >>> edb.export_q3d("q3d_output", net_list=["PowerNet"])
 
-        # Export to Maxwell project
+    # Export to Maxwell project
     >>> edb.export_maxwell("maxwell_output")
 
-        4. Simulation Setup
+    4. Simulation Setup
 
-        # Create SIwave SYZ setup
-    >>> syz_setup = edb.create_siwave_syz_setup(name="GHz_Setup", start_freq="1GHz", stop_freq="10GHz")
+    # Create SIwave SYZ setup
+    >>> syz_setup = edb.create_siwave_syz_setup(
+    >>>     name="GHz_Setup",
+    >>>     start_freq="1GHz",
+    >>>     stop_freq="10GHz"
+    >>> )
 
-        # Create SIwave DC setup
+    # Create SIwave DC setup
     >>> dc_setup = edb.create_siwave_dc_setup(name="DC_Analysis", use_dc_point=True)
 
-        # Solve with SIwave
+    # Solve with SIwave
     >>> edb.solve_siwave()
 
-        5. Database Management
+    5. Database Management
 
-        # Save database
+    # Save database
     >>> edb.save()
 
-        # Save as new database
+    # Save as new database
     >>> edb.save_as("new_project.aedb")
 
-        # Close database
+    # Close database
     >>> edb.close()
 
-        6. Stackup and Material Operations
+    6. Stackup and Material Operations
 
-        # Access stackup layers
+    # Access stackup layers
     >>> for layer_name, layer in edb.stackup.layers.items():
-    >>> print(f"Layer: {layer_name}, Thickness: {layer.thickness}")
+    >>>     print(f"Layer: {layer_name}, Thickness: {layer.thickness}")
 
-        # Add new material
+    # Add new material
     >>> edb.materials.add_material("MyMaterial", permittivity=4.3, loss_tangent=0.02)
 
-        # Change layer thickness
+    # Change layer thickness
     >>> edb.stackup["TopLayer"].thickness = "0.035mm"
 
-        7. Port Creation
+    7. Port Creation
 
-        # Create wave port between two pins
-    >>> wave_port = edb.excitation_manager.create_port(positive_terminal=pin1, negative_terminal=pin2, port_type="Wave")
+    # Create wave port between two pins
+    >>> wave_port = edb.excitation_manager.create_port(
+    >>>     positive_terminal=pin1,
+    >>>     negative_terminal=pin2,
+    >>>     port_type="Wave"
+    >>> )
 
-        # Create lumped port
-    >>> lumped_port = edb.excitation_manager.create_port(positive_terminal=via_terminal, port_type="Lumped")
+    # Create lumped port
+    >>> lumped_port = edb.excitation_manager.create_port(
+    >>>     positive_terminal=via_terminal,
+    >>>     port_type="Lumped"
+    >>> )
 
-        8. Component Management
+    8. Component Management
 
-        # Delete components by type
+    # Delete components by type
     >>> edb.components.delete_component(["R1", "C2"])
 
-        # Set component properties
+    # Set component properties
     >>> edb.components["U1"].set_property("Value", "10nH")
 
-        9. Parametrization
+    9. Parametrization
 
-        # Auto-parametrize design elements
-    >>> params = edb.auto_parametrize_design(traces=True, pads=True, antipads=True, use_relative_variables=True)
+    # Auto-parametrize design elements
+    >>> params = edb.auto_parametrize_design(
+    >>>     traces=True,
+    >>>     pads=True,
+    >>>     antipads=True,
+    >>>     use_relative_variables=True
+    >>> )
     >>> print("Created parameters:", params)
 
-        10. Design Statistics
+    10. Design Statistics
 
-        # Get layout statistics with area calculation
+    # Get layout statistics with area calculation
     >>> stats = edb.get_statistics(compute_area=True)
     >>> print(f"Total nets: {stats.net_count}")
     >>> print(f"Total components: {stats.component_count}")
 
-        11. Layout Validation
+    11. Layout Validation
 
-        # Run DRC check
+    # Run DRC check
     >>> drc_errors = edb.layout_validation.run_drc()
     >>> print(f"Found {len(drc_errors)} DRC violations")
 
-        12. Differential Pairs
+    12. Differential Pairs
 
-        # Create differential pair
+    # Create differential pair
     >>> edb.differential_pairs.create(positive_net="USB_P", negative_net="USB_N", name="USB_DP")
 
-        13. Workflow Automation
+    13. Workflow Automation
 
-        # Define and run workflow
+    # Define and run workflow
     >>> workflow = edb.workflow
     >>> workflow.add_task("Import", file_path="input.brd")
     >>> workflow.add_task("Cutout", signal_nets=["PCIe"])
     >>> workflow.add_task("Export", format="IPC2581")
     >>> workflow.run()
-
     """
     settings.is_student_version = student_version
     settings.is_grpc = grpc
@@ -324,8 +330,15 @@ def Edb(
 
 def Siwave(
     specified_version=None,
-):
-    """Siwave Class."""
+) -> "Siwave":
+    """Provides the SIwave application interface.
+
+    Parameters
+    ----------
+    specified_version : str, optional
+        Version of SIwave to use. The default is ``None``.
+        If not specified, the latest installed version will be used.
+    """
     from pyedb.siwave import Siwave as app
 
     return app(
