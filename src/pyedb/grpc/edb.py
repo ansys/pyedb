@@ -203,12 +203,6 @@ class Edb(EdbInit):
     _init_objects: Any
     design_mode: property
 
-    deprecate_argument_name(
-        {
-            "edbversion": "version",
-        }
-    )
-
     @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
