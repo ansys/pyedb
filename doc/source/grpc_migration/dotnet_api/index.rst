@@ -13,7 +13,7 @@ methods are inherited into the ``Edb`` class.
 If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
 
 
-.. image:: ../resources/edb_intro.png
+.. image:: ../../resources/edb_intro.png
   :width: 800
   :alt: EDB apps
   :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
@@ -25,7 +25,7 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 
     from pyedb import Edb
 
-    edb = Edb("my_project.aedb", edbversion="2023.1")
+    edb = Edb("my_project.aedb", version="2025.2")
     edb.core_components.components["R1"].r_value = 40
     edb.close_edb()
 

@@ -9,17 +9,6 @@ Welcome to PyEDB |version|
 PyEDB is a Python client library that provides a high-level interface to create, modify,
 and analyze PCB designs by communicating with the ``ansys-edb-core`` gRPC service.
 
-.. note::
-
-   **Architecture Notice: Standalone gRPC Service**
-   PyEDB is a standalone Python client library that connects to the ``ansys-edb-core`` gRPC service.
-
-.. admonition:: For users of the legacy `pyedb.dotnet` API
-   :class: danger
-
-   The ``dotnet`` module is **deprecated and archived** with Ansys release 2026R1.
-   You can find more information :ref:`here <archive>`.
-
 
 .. grid:: 2
 
@@ -38,7 +27,7 @@ and analyze PCB designs by communicating with the ``ansys-edb-core`` gRPC servic
 .. grid:: 2
 
     .. grid-item-card::  API reference :fa:`book-bookmark`
-        :link: grpc_api/index
+        :link: grpc_migration/dotnet_api/index
         :link-type: doc
 
         This section contains descriptions of the functions and modules included in PyEDB.

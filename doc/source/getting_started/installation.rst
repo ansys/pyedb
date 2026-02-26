@@ -48,4 +48,4 @@ To test your installation and connection to the ``ansys-edb-core`` service, run 
    # Note a new grpc flag is added to the Edb class. Set it to True to use gRPC.
    # This will attempt to connect to the ansys-edb-core service
    # If successful, it will print the client and server versions.
-   edb = Edb(version="2025.2", grpc=True)
+   edb = Edb(version="2025.2", grpc=False)
