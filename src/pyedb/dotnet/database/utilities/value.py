@@ -25,10 +25,15 @@ class Value(float):
     """Class defining Edb Value properties."""
 
     def __new__(cls, pedb, edb_obj):
-        temp = super().__new__(cls, float(round(edb_obj.ToDouble(), 9)))
+        temp = super().__new__(cls, edb_obj.ToDouble())
         temp._pedb = pedb
         temp._edb_obj = edb_obj
+        temp.__core = edb_obj
         return temp
+
+    @property
+    def core(self):
+        return self.__core
 
     @property
     def value(self):
