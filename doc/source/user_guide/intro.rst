@@ -1,16 +1,16 @@
 Basic tutorial
 ==============
 
-This tutorial walks you through creating a simple EDB from scratch using the pure Python client connected to the
-``ansys-edb-core`` gRPC service.
+This tutorial walks you through creating a simple EDB from scratch using the pure Python client connected to
+``ansys-edb-core``.
 
 Prerequisites
 -------------
-*   The PyEDB client is installed (`pip install pyedb`).
+*   PyEDB library is installed (`pip install pyedb`).
 *   The ``ansys-edb-core`` service is installed and available (see :doc:`../installation`).
 
-Import and Initialize with a Context Manager
---------------------------------------------
+Import and initialize
+---------------------
 
 .. code-block:: python
 

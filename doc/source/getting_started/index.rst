@@ -37,31 +37,51 @@ Getting started
 Why PyEDB?
 ----------
 
-PyEDB represents a modern, decoupled approach to PCB design automation, offering significant advantages over traditional methods.
+PyEDB represents a modern approach to PCB design automation using Python, offering significant advantages over traditional methods.
 
 
-Server-Side Automation & Headless Operation
+PyEDB Architecture and components
+---------------------------------
+
+PyEDB is built on top of lower-level APIs and provides a simplified, high-level interface for EDB automation:
+
+**Component Stack:**
+
+1. **Ansys EDB (.NET Libraries):** The core Ansys Electronics Database engine written in .NET, installed with AEDT.
+   This contains all the fundamental EDB functionality for layout manipulation, simulation setup, etc.
+
+2. **PyEDB-Core:** A lower-level Python API (not to be confused with ansys-edb-core) that provides direct .NET bindings
+   to the EDB libraries. Using PyEDB-Core requires deep knowledge of EDB architecture and class hierarchies.
+
+3. **ansys-edb-core:** A Python package that provides gRPC client capabilities for future client-server architecture.
+   Currently installed as a dependency but the gRPC server functionality is not yet active.
+
+4. **PyEDB (This Library):** The high-level, user-friendly Python interface that wraps PyEDB-Core with application-oriented
+   classes and methods. PyEDB significantly simplifies EDB workflows and reduces the learning curve.
+
+Current Architecture: .NET Interoperability
 -------------------------------------------
-The core innovation of PyEDB is its decoupled architecture:
 
-*   **PyEDB (Client):** A pure Python library you install and run in your environment.
-*   **ansys-edb-core (Server):** A separate, high-performance COM service that handles all EDB operations.
+**How PyEDB works:**
 
-This means you can **run PyEDB on a machine without a graphical user interface (GUI)**, such as:
+*   **PyEDB:** A pure Python library providing high-level API classes (``Edb``, ``Stackup``, ``Components``, etc.)
+*   **PythonNET Bridge:** Uses the ``pythonnet`` package to load .NET CLR (Common Language Runtime)
+*   **Ansys EDB .NET Libraries:** The actual EDB engine that executes within the .NET runtime
+*   **PyEDB-Core:** Lower-level API that PyEDB calls internally for .NET operations
 
-*   **Linux servers** and high-performance computing (HPC) clusters.
-*   **Docker containers** for consistent, reproducible environments.
-*   **Cloud platforms** like AWS, Azure, or GCP.
+The .NET libraries are loaded directly into the Python process via PythonNET, allowing seamless interoperability
+between Python code and .NET EDB objects.
 
-This enables true **CI/CD (Continuous Integration/Continuous Deployment) for PCB design**. You can automate checks,
-simulations, and reports every time a design change is committed.
+**Important:** The current architecture requires AEDT installation on the same machine where PyEDB runs, as it needs
+access to the local EDB .NET assemblies.
+
 
 Performance and Integration
 ---------------------------
-*   **Performance:** The COM-based architecture provides efficient communication for automating complex tasks and
-processing large designs.
+*   **Performance:** Direct .NET interoperability (current) provides efficient access to EDB functionality.
+    The upcoming gRPC architecture will enable distributed computing and parallel processing.
 
-*   **Python Ecosystem:** Being a pure Python client, PyEDB integrates seamlessly with the vast Python data science and
+*   **Python Ecosystem:** Being a pure Python library, PyEDB integrates seamlessly with the vast Python data science and
 machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily post-process simulation
 results or use AI/ML to guide design decisions.
 
