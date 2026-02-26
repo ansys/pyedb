@@ -36,7 +36,7 @@ API documentation
 .. toctree::
    :maxdepth: 1
 
-   ../../autoapi/pyedb/dotnet/index
+   PyEDB API <../../autoapi/pyedb/dotnet/index>
    dotnet/SiWave
 
 

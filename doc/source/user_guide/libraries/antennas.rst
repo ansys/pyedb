@@ -5,7 +5,7 @@ The planar antenna libraries provide parametric generators for common microstrip
 These functions automatically calculate antenna dimensions based on operating frequency and substrate properties,
 eliminating tedious manual calculations.
 
-Purpose
+Summary
 -------
 
 Patch antennas are widely used in wireless systems due to their:

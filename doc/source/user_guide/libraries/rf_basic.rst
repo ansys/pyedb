@@ -5,7 +5,7 @@ The RF basic libraries provide parametric generators for common RF and microwave
 These pre-built functions automate the creation of complex geometries that would otherwise require
 manual calculation and drawing.
 
-Purpose
+Summary
 -------
 
 These libraries enable rapid prototyping of RF circuits by providing:
