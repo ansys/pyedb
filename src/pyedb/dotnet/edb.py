@@ -3244,8 +3244,7 @@ class Edb:
         return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
-        """Create an HFSS simulation setup from a template.
-        """
+        """Create an HFSS simulation setup from a template."""
         warnings.warn("Deprecated method. Use simulation_setups.create_hfss_setup instead.", DeprecationWarning)
         return self.simulation_setups.create_hfss_setup(name)
 
@@ -3278,16 +3277,20 @@ class Edb:
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a Siwave SYZ setup from a template."""
-        warnings.warn("Deprecated method. Use simulation_setups.create_siwave_syz_setup instead.",
-                      DeprecationWarning,
-                      stacklevel=2)
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_siwave_syz_setup instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
     def create_siwave_dc_setup(self, name=None, **kwargs):
         """Create a Siwave DC IR setup from a template."""
-        warnings.warn("Deprecated method. Use simulation_setups.create_siwave_dcir_setup instead.",
-                      DeprecationWarning,
-                      stacklevel=2)
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_siwave_dcir_setup instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
 
     @execution_timer("calculate_initial_extent")

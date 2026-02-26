@@ -21,12 +21,12 @@
 # SOFTWARE.
 
 
-from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
-from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SIwaveSimulationSetup
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
 )
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SIwaveSimulationSetup
+from pyedb.generic.general_methods import generate_unique_name
 
 
 class SimulationSetups:
@@ -67,15 +67,15 @@ class SimulationSetups:
         return setup
 
     def create_hfss_setup(
-            self,
-                          name:str=None,
-            distribution="linear",
-            start_freq: float = None,
-            stop_freq: float = None,
-            freq_step: float = None,
-            discrete_sweep=False,
-            sweep_name: str = "frequency_sweep",
-    )->HfssSimulationSetup:
+        self,
+        name: str = None,
+        distribution="linear",
+        start_freq: float = None,
+        stop_freq: float = None,
+        freq_step: float = None,
+        discrete_sweep=False,
+        sweep_name: str = "frequency_sweep",
+    ) -> HfssSimulationSetup:
         """Create an HFSS simulation setup from a template.
 
         Parameters

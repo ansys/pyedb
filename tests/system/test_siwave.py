@@ -27,16 +27,16 @@ import time
 import pytest
 
 from pyedb.siwave import Siwave
-from tests.conftest import desktop_version, local_path
+from tests.conftest import config, desktop_version, local_path
 from tests.system.base_test_class import BaseTestClass
-from tests.conftest import config
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(
-    config["use_grpc"], reason="SIwave module cannot be tested on VM as it runs in graphic model which VM doesn't support"
+    config["use_grpc"],
+    reason="SIwave module cannot be tested on VM as it runs in graphic model which VM doesn't support",
 )
 @pytest.mark.skip()
 class TestClass(BaseTestClass):

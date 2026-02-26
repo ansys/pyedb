@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import warnings
 from typing import TYPE_CHECKING
+import warnings
 
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.geometry.point_data import PointData
@@ -50,7 +50,6 @@ class SystemObject(object):
     @_edb_object.setter
     def _edb_object(self, value):
         self.__core = value
-
 
 
 class BBox:

@@ -26,9 +26,8 @@ import warnings
 
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
-from pyedb.generic.general_methods import generate_unique_name
 from pyedb.dotnet.database.utilities.obj_base import SystemObject
-
+from pyedb.generic.general_methods import generate_unique_name
 
 _setup_type_mapping = {
     "kHFSS": "hfss",
@@ -119,7 +118,6 @@ class SimulationSetup(SystemObject):
             )
         if self._edb_object:
             self._name = self._edb_object.GetName()
-
 
     @property
     def sim_setup_info(self):

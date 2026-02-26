@@ -194,7 +194,7 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        value =  self.sim_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh
         return self._parent._pedb.value(value)
 
     @property
@@ -251,7 +251,7 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if coplane coupling is used, ``False`` otherwise.
         """
-        return  self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeCoPlaneCoupling
+        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeCoPlaneCoupling
 
     @property
     def include_fringe_coupling(self):
@@ -497,7 +497,7 @@ class AdvancedSettings(SettingsBase):
         self._parent._update_setup()
 
     @max_coupled_lines.setter
-    def max_coupled_lines(self, value:int):
+    def max_coupled_lines(self, value: int):
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)

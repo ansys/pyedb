@@ -1155,7 +1155,7 @@ class TestClass(BaseTestClass):
         sweep.enforce_causality = True
         sweep.enforce_passivity = False
         assert not sweep.enforce_passivity
-        assert sweep.frequency_string == ['DEC 0.0GHz 1.0GHz 10']
+        assert sweep.frequency_string == ["DEC 0.0GHz 1.0GHz 10"]
         sweep.name = "renamed_sweep"
         assert sweep.name == "renamed_sweep"
         sweep.save_fields = True

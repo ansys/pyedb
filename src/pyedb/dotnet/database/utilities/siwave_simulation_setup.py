@@ -29,6 +29,7 @@ from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
+from pyedb.dotnet.database.sim_setup_data.data.siwave import SIwaveSParameterSettings
 from pyedb.dotnet.database.sim_setup_data.io.siwave import (
     AdvancedSettings,
     DCAdvancedSettings,
@@ -37,7 +38,6 @@ from pyedb.dotnet.database.sim_setup_data.io.siwave import (
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux
 from pyedb.generic.settings import settings
-from pyedb.dotnet.database.sim_setup_data.data.siwave import SIwaveSParameterSettings
 
 
 def _parse_value(v):
