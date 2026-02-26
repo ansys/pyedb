@@ -52,12 +52,12 @@ from pyedb.generic.general_methods import (
 from pyedb.generic.geometry_operators import GeometryOperators
 
 
-def resistor_value_parser(RValue):
+def resistor_value_parser(RValue: str | float) -> float:
     """Convert a resistor value.
 
     Parameters
     ----------
-    RValue : float
+    RValue : str | float
         Resistor value.
 
     Returns
@@ -68,7 +68,7 @@ def resistor_value_parser(RValue):
     """
     if isinstance(RValue, str):
         RValue = RValue.replace(" ", "")
-        RValue = RValue.replace("meg", "m")
+        RValue = RValue.replace("meg", "M")
         RValue = RValue.replace("Ohm", "")
         RValue = RValue.replace("ohm", "")
         RValue = RValue.replace("k", "e3")
@@ -171,7 +171,7 @@ class Components(object):
 
     @property
     def definitions(self):
-        """Retrieve component definition list.
+        """Retrieve component definition ist.
 
         Returns
         -------
@@ -848,7 +848,7 @@ class Components(object):
 
     def _get_pins_for_ports(
         self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
-    ) -> List[EDBPadstackInstance]:
+    ) -> list[EDBPadstackInstance]:
         if not pins:
             raise ValueError("No pins provided for port creation.")
         elif not isinstance(pins, List):
