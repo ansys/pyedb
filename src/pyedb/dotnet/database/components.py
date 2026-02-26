@@ -26,6 +26,7 @@ import codecs
 import json
 import math
 import os
+from pathlib import Path
 import re
 from typing import List, Set, Union
 import warnings
@@ -184,15 +185,16 @@ class Components(object):
         m = "Ansys.Ansoft.Edb.Definition.NPortComponentModel"
         return {name: l for name, l in self.definitions.items() if m in [i.ToString() for i in l._comp_model]}
 
-    def import_definition(self, file_path):
+    def import_definition(self, file_path: Path) -> bool:
         """Import component definition from json file.
 
         Parameters
         ----------
-        file_path : str
+        file_path : Path
             File path of json file.
         """
-        with codecs.open(file_path, "r", encoding="utf-8") as f:
+        file_path_str = str(file_path)
+        with codecs.open(file_path_str, "r", encoding="utf-8") as f:
             data = json.load(f)
             for part_name, p in data["Definitions"].items():
                 model_type = p["Model_type"]
@@ -205,25 +207,25 @@ class Components(object):
                     comp_definition.assign_rlc_model(p["Res"], p["Ind"], p["Cap"], p["Is_parallel"])
                 else:
                     model_name = p["Model_name"]
-                    file_path = data[model_type][model_name]
+                    file_path_str = data[model_type][model_name]
                     if model_type == "SParameterModel":
                         if "Reference_net" in p:
                             reference_net = p["Reference_net"]
                         else:
                             reference_net = None
-                        comp_definition.assign_s_param_model(file_path, model_name, reference_net)
+                        comp_definition.assign_s_param_model(file_path_str, model_name, reference_net)
                     elif model_type == "SPICEModel":
-                        comp_definition.assign_spice_model(file_path, model_name)
+                        comp_definition.assign_spice_model(file_path_str, model_name)
                     else:
                         pass
         return True
 
-    def export_definition(self, file_path):
+    def export_definition(self, file_path: Path) -> str:
         """Export component definitions to json file.
 
         Parameters
         ----------
-        file_path : str
+        file_path : Path
             File path of json file.
 
         Returns
@@ -235,6 +237,7 @@ class Components(object):
             "SPICEModel": {},
             "Definitions": {},
         }
+        file_path_str = str(file_path)
         for part_name, props in self.definitions.items():
             comp_list = list(props.components.values())
             if comp_list:
@@ -254,19 +257,19 @@ class Components(object):
                         data["Definitions"][part_name]["Model_name"] = model.name
                         data["Definitions"][part_name]["Reference_net"] = model.reference_net
                         if not model.name in data["SParameterModel"]:
-                            data["SParameterModel"][model.name] = model.file_path
+                            data["SParameterModel"][model.name] = model.file_path_str
                     elif comp.model_type == "SPICEModel":
                         model = comp.spice_model
                         data["Definitions"][part_name]["Model_name"] = model.name
                         if not model.name in data["SPICEModel"]:
-                            data["SPICEModel"][model.name] = model.file_path
+                            data["SPICEModel"][model.name] = model.file_path_str
                     else:
                         model = comp.netlist_model
                         data["Definitions"][part_name]["Model_name"] = model.netlist
 
-        with codecs.open(file_path, "w", encoding="utf-8") as f:
+        with codecs.open(file_path_str, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        return file_path
+        return file_path_str
 
     def refresh_components(self):
         """Refresh the component dictionary."""
