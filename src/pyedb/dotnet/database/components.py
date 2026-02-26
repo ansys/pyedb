@@ -171,7 +171,7 @@ class Components(object):
         return self._cmp
 
     @property
-    def definitions(self):
+    def definitions(self) -> dict:
         """Retrieve component definition ist.
 
         Returns
@@ -180,7 +180,7 @@ class Components(object):
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.active_db.ComponentDefs)}
 
     @property
-    def nport_comp_definition(self):
+    def nport_comp_definition(self) -> dict:
         """Retrieve Nport component definition list."""
         m = "Ansys.Ansoft.Edb.Definition.NPortComponentModel"
         return {name: l for name, l in self.definitions.items() if m in [i.ToString() for i in l._comp_model]}
@@ -271,7 +271,7 @@ class Components(object):
             json.dump(data, f, ensure_ascii=False, indent=4)
         return file_path_str
 
-    def refresh_components(self):
+    def refresh_components(self) -> bool:
         """Refresh the component dictionary."""
         self._cmp = {}
         self._res = {}
@@ -299,7 +299,7 @@ class Components(object):
         return True
 
     @property
-    def resistors(self):
+    def resistors(self) -> dict:
         """Resistors.
 
         Returns
@@ -317,7 +317,7 @@ class Components(object):
         return self._res
 
     @property
-    def capacitors(self):
+    def capacitors(self) -> dict:
         """Capacitors.
 
         Returns
@@ -335,7 +335,7 @@ class Components(object):
         return self._cap
 
     @property
-    def inductors(self):
+    def inductors(self) -> dict:
         """Inductors.
 
         Returns
@@ -354,7 +354,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self):
+    def ICs(self) -> dict:
         """Integrated circuits.
 
         Returns
@@ -373,7 +373,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self):
+    def IOs(self) -> dict:
         """Circuit inupts and outputs.
 
         Returns
@@ -392,7 +392,7 @@ class Components(object):
         return self._ios
 
     @property
-    def Others(self):
+    def Others(self) -> dict:
         """Other core components.
 
         Returns
@@ -411,7 +411,7 @@ class Components(object):
         return self._others
 
     @property
-    def components_by_partname(self):
+    def components_by_partname(self) -> dict:
         """Components by part name.
 
         Returns
@@ -435,7 +435,7 @@ class Components(object):
                 self._comps_by_part[val.partname] = [val]
         return self._comps_by_part
 
-    def get_component_by_name(self, name):
+    def get_component_by_name(self, name) -> bool:
         """Retrieve a component by name.
 
         Parameters
@@ -451,7 +451,7 @@ class Components(object):
         """
         return self._pedb.layout.find_component_by_name(name)
 
-    def get_components_from_nets(self, netlist=None):
+    def get_components_from_nets(self, netlist=None) -> list:
         """Retrieve components from a net list.
 
         Parameters
@@ -475,7 +475,7 @@ class Components(object):
                 cmp_list.append(refdes)
         return cmp_list
 
-    def _get_edb_pin_from_pin_name(self, cmp, pin):
+    def _get_edb_pin_from_pin_name(self, cmp, pin) -> bool:
         if not isinstance(cmp, self._pedb.core.Cell.Hierarchy.Component):
             return False
         if not isinstance(pin, str):
@@ -494,7 +494,7 @@ class Components(object):
         hosting_component_pin1,
         hosting_component_pin2,
         flipped=False,
-    ):
+    ) -> tuple:
         """Get the placement vector between 2 components.
 
         Parameters
@@ -521,7 +521,7 @@ class Components(object):
 
         Examples
         --------
-        >>> edb1 = Edb(edbpath=targetfile1, edbversion="2021.2")
+        >>> edb1 = Edb(edbpath=targetfile1, version="2025.2")
         >>> hosting_cmp = edb1.components.get_component_by_name("U100")
         >>> mounted_cmp = edb2.components.get_component_by_name("BGA")
         >>> vector, rotation, solder_ball_height = edb1.components.get_component_placement_vector(
@@ -585,7 +585,7 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp):
+    def get_solder_ball_height(self, cmp) -> float | bool:
         """Get component solder ball height.
 
         Parameters
@@ -606,7 +606,7 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
-    def get_vendor_libraries(self):
+    def get_vendor_libraries(self) -> dict[str, dict]:
         """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
 
         Returns
@@ -650,7 +650,7 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-    def create_source_on_component(self, sources=None):
+    def create_source_on_component(self, sources=None) -> bool:
         """Create voltage, current source, or resistor on component.
 
         Parameters
@@ -850,11 +850,11 @@ class Components(object):
         return term or False
 
     def _get_pins_for_ports(
-        self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
-    ) -> list[EDBPadstackInstance]:
+        self, pins: int | str | EDBPadstackInstance | list[int | str | EDBPadstackInstance],
+            comp: EDBComponent) -> list[EDBPadstackInstance]:
         if not pins:
             raise ValueError("No pins provided for port creation.")
-        elif not isinstance(pins, List):
+        elif not isinstance(pins, list):
             pins = [pins]
         result = []
         for pin in pins:
