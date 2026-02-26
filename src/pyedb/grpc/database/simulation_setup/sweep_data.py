@@ -214,7 +214,8 @@ class SweepData:
         """
         if distribution not in _mapping_distribution:
             raise ValueError(
-                f"Unsupported distribution type: {distribution}. Supported types are: {list(_mapping_distribution.keys())}"
+                f"Unsupported distribution type: {distribution}. Supported types are: "
+                f"{list(_mapping_distribution.keys())}"
             )
         distribution = _mapping_distribution[distribution]
         frequency_data = CoreFrequencyData(
@@ -353,12 +354,12 @@ class SweepData:
         bool
             True if advanced DC extrapolation is used, False otherwise.
         """
-        # to be implemented in edb core, currently does not exist in edb core
+        # TODO to be implemented in edb core, currently does not exist in edb core
         return False
 
     @adv_dc_extrapolation.setter
     def adv_dc_extrapolation(self, value: bool):
-        # to be implemented in edb core, currently does not exist in edb core
+        # TODO to be implemented in edb core, currently does not exist in edb core
         pass
 
     @property
