@@ -177,7 +177,7 @@ class RectangularPatch:
                 self._edb, layer=self.layer, net="FEED", length=self.length_feeding_line, x0=self.width / 2, y0=0
             ).create()
             if self.add_port:
-                self._edb.hfss.create_wave_port(
+                self._edb.excitation_manager.create_wave_port(
                     prim_id=ustrip_line.id,
                     point_on_edge=[self.width / 2 + self.length_feeding_line, 0],
                     port_name="ustrip_port",
@@ -348,7 +348,7 @@ class CircularPatch:
                 self._edb, layer=self.layer, net="FEED", length=self.length_feeding_line, x0=self.radius, y0=0
             ).create()
             if self.add_port:
-                self._edb.hfss.create_wave_port(
+                self._edb.excitation_manager.create_wave_port(
                     prim_id=ustrip_line.id,
                     point_on_edge=[self.radius + self.length_feeding_line, 0],
                     port_name="ustrip_port",
@@ -584,7 +584,7 @@ class TriangularPatch:
                 y0=centroid[1],
             ).create()
             if self.add_port:
-                self._edb.hfss.create_wave_port(
+                self._edb.excitation_manager.create_wave_port(
                     prim_id=ustrip_line.id,
                     point_on_edge=[centroid[0] + self.length_feeding_line, centroid[1]],
                     port_name="ustrip_port",

@@ -898,7 +898,7 @@ class Configuration:
                 )
 
             elif cfg_terminal.terminal_type == "pin_group":
-                terminal = self._pedb.excitation_manager.create_pin_group_terminal(
+                terminal = self._pedb.excitation_manager.create_terminal_from_pin_group(
                     name=cfg_terminal.name,
                     pin_group=cfg_terminal.pin_group,
                 )
