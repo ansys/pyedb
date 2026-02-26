@@ -32,7 +32,7 @@ For end-to-end examples, see :doc:`pyedb_examples`.
 
             Core PyEDB concepts.
 
-   .. grid-item-card:: PyEDB libraries
+   .. grid-item-card:: Advanced libraries
             :link: libraries/index
             :link-type: doc
             :margin: 2 2 0 0
