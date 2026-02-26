@@ -149,7 +149,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if interplane coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInterPlaneCoupling
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInterPlaneCoupling
+        return self._parent._pedb.value(value)
 
     @property
     def xtalk_threshold(self):
@@ -160,7 +161,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.XtalkThreshold
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.XtalkThreshold
+        return self._parent._pedb.value(value)
 
     @property
     def min_void_area(self):
@@ -170,7 +172,8 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MinVoidArea
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MinVoidArea
+        return self._parent._pedb.value(value)
 
     @property
     def min_pad_area_to_mesh(self):
@@ -180,7 +183,8 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MinPadAreaToMesh
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MinPadAreaToMesh
+        return self._parent._pedb.value(value)
 
     @property
     def min_plane_area_to_mesh(self):
@@ -190,7 +194,8 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh
+        value =  self.sim_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh
+        return self._parent._pedb.value(value)
 
     @property
     def snap_length_threshold(self):
@@ -200,7 +205,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.SnapLengthThreshold
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.SnapLengthThreshold
+        return self._parent._pedb.value(value)
 
     @property
     def return_current_distribution(self):
@@ -245,7 +251,7 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if coplane coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeCoPlaneCoupling
+        return  self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeCoPlaneCoupling
 
     @property
     def include_fringe_coupling(self):
@@ -288,7 +294,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if infinite ground is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInfGnd
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInfGnd
+        return self._parent._pedb.value(value)
 
     @property
     def include_trace_coupling(self):
@@ -300,7 +307,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if trace coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeTraceCoupling
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeTraceCoupling
+        return self._parent._pedb.value(value)
 
     @property
     def include_vi_sources(self):
@@ -312,7 +320,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if vi sources is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeVISources
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeVISources
+        return self._parent._pedb.value(value)
 
     @property
     def infinite_ground_location(self):
@@ -322,7 +331,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.InfGndLocation
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.InfGndLocation
+        return self._parent._pedb.value(value)
 
     @property
     def max_coupled_lines(self):
@@ -370,7 +380,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshFrequency
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MeshFrequency
+        return self._parent._pedb.value(value)
 
     @include_inter_plane_coupling.setter
     def include_inter_plane_coupling(self, value):
@@ -388,6 +399,7 @@ class AdvancedSettings(SettingsBase):
 
     @min_void_area.setter
     def min_void_area(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MinVoidArea = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -395,6 +407,7 @@ class AdvancedSettings(SettingsBase):
 
     @min_pad_area_to_mesh.setter
     def min_pad_area_to_mesh(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MinPadAreaToMesh = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -402,6 +415,7 @@ class AdvancedSettings(SettingsBase):
 
     @min_plane_area_to_mesh.setter
     def min_plane_area_to_mesh(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -409,6 +423,7 @@ class AdvancedSettings(SettingsBase):
 
     @snap_length_threshold.setter
     def snap_length_threshold(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.SnapLengthThreshold = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -438,7 +453,6 @@ class AdvancedSettings(SettingsBase):
     @include_fringe_coupling.setter
     def include_fringe_coupling(self, value):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeFringeCoupling = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
@@ -446,47 +460,45 @@ class AdvancedSettings(SettingsBase):
     @include_split_plane_coupling.setter
     def include_split_plane_coupling(self, value):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeSplitPlaneCoupling = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @include_infinite_ground.setter
     def include_infinite_ground(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeInfGnd = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @include_trace_coupling.setter
     def include_trace_coupling(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeTraceCoupling = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @include_vi_sources.setter
     def include_vi_sources(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeVISources = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @infinite_ground_location.setter
     def infinite_ground_location(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.InfGndLocation = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @max_coupled_lines.setter
-    def max_coupled_lines(self, value):
+    def max_coupled_lines(self, value:int):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
@@ -494,7 +506,6 @@ class AdvancedSettings(SettingsBase):
     @mesh_automatic.setter
     def mesh_automatic(self, value):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
@@ -508,8 +519,8 @@ class AdvancedSettings(SettingsBase):
 
     @mesh_frequency.setter
     def mesh_frequency(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.MeshFrequency = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()

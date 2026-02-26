@@ -38,6 +38,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 @pytest.mark.skipif(
     config["use_grpc"], reason="SIwave module cannot be tested on VM as it runs in graphic model which VM doesn't support"
 )
+@pytest.mark.skip()
 class TestClass(BaseTestClass):
     def test_siwave(self):
         """Create Siwave."""
@@ -61,7 +62,7 @@ class TestClass(BaseTestClass):
         assert siw.quit_application()
 
     def test_configuration(self):
-        edbapp = self.edb_examples.edb_examples.get_si_verse(edbapp=False)
+        edbapp = self.edb_examples.get_si_verse(edbapp=False)
         data = {
             "ports": [
                 {

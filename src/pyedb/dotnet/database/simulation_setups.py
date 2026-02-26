@@ -22,7 +22,7 @@
 
 
 from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
-from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SiwaveSimulationSetup
+from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SIwaveSimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
@@ -57,7 +57,7 @@ class SimulationSetups:
             setup = HfssSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"HFSS setup {name} created.")
         elif solver.lower() == "siwave":
-            setup = SiwaveSimulationSetup.create(self._pedb, name)
+            setup = SIwaveSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"SIWave setup {name} created.")
         elif solver.lower() == "siwave_dcir":
             setup = SiwaveDCSimulationSetup.create(self._pedb, name)
@@ -66,7 +66,16 @@ class SimulationSetups:
             raise ValueError(f"Unsupported solver type: {solver}.")
         return setup
 
-    def create_hfss_setup(self, name:str=None)->HfssSimulationSetup:
+    def create_hfss_setup(
+            self,
+                          name:str=None,
+            distribution="linear",
+            start_freq: float = None,
+            stop_freq: float = None,
+            freq_step: float = None,
+            discrete_sweep=False,
+            sweep_name: str = "frequency_sweep",
+    )->HfssSimulationSetup:
         """Create an HFSS simulation setup from a template.
 
         Parameters
@@ -91,9 +100,17 @@ class SimulationSetups:
             name = generate_unique_name("setup")
         setup = HfssSimulationSetup.create(self._pedb, name=name)
         setup.set_solution_single_frequency("1Ghz")
+        setup.add_sweep(
+            name=sweep_name,
+            distribution=distribution,
+            start_freq=start_freq,
+            stop_freq=stop_freq,
+            step=freq_step,
+            discrete=discrete_sweep,
+        )
         return setup
 
-    def create_raptorx_setup(self, name=None):
+    def create_raptor_x_setup(self, name=None):
         """Create an RaptorX simulation setup from a template.
 
         Parameters
@@ -106,7 +123,7 @@ class SimulationSetups:
         :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
 
         """
-        if name in self.setups:
+        if name in self._pedb.setups:
             raise ValueError("Setup name already used in the layout")
         version = float(self._pedb.version)
         if version < 2024.2:
@@ -173,7 +190,7 @@ class SimulationSetups:
             name = generate_unique_name("Siwave_SYZ")
         if name in self._pedb.setups:
             raise RuntimeError("setup already exists")
-        setup = SiwaveSimulationSetup(self._pedb, name=name)
+        setup = SIwaveSimulationSetup(self._pedb, name=name)
         for k, v in kwargs.items():
             setattr(setup, k, v)
         return self._pedb.setups[name]

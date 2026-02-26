@@ -93,7 +93,7 @@ from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
 )
 from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
-    SiwaveSimulationSetup,
+    SIwaveSimulationSetup,
 )
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.dotnet.database.Variables import decompose_variable_value
@@ -3191,7 +3191,7 @@ class Edb:
             if i.GetType().ToString().endswith("kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kSIWave"):
-                setups[i.GetName()] = SiwaveSimulationSetup(self, i)
+                setups[i.GetName()] = SIwaveSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kRaptorX"):
@@ -3241,7 +3241,7 @@ class Edb:
         -------
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
@@ -3252,7 +3252,7 @@ class Edb:
     def create_raptorx_setup(self, name=None):
         """Create a RaptorX simulation setup."""
         warnings.warn("Deprecated method. Use simulation_setups.create_raptorx_setup instead.", DeprecationWarning)
-        return self.simulation_setups.create_raptorx_setup(name)
+        return self.simulation_setups.create_raptor_x_setup(name)
 
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.

@@ -947,3 +947,27 @@ class MeshOperationTypeMapper(CommonMapper):
 
     class DOTNET(Enum):
         (BASE, LENGTH, SKIN_DEPTH) = ("kMeshSetupBase", "kMeshSetupLength", "kMeshSetupSkinDepth")
+
+
+class DCBehaviorMapper(CommonMapper):
+    class GRPC(Enum):
+        (zero, same, linear, constant, one_port_capacitor, open) = ("zero", "same", "linear", "constant", "one_port_capacitor", "open")
+
+    class DOTNET(Enum):
+        (zero, same, linear, constant, one_port_capacitor, open) = ("kZeroDC", "kSameDC", "kLinearDC", "kConstantDC", "kOnePortCapacitorDC", "kOpenDC")
+
+
+class SParamExtrapolationMapper(CommonMapper):
+    class GRPC(Enum):
+        (zero, same, linear, constant) = ("zero", "same", "linear", "constant")
+
+    class DOTNET(Enum):
+        (zero, same, linear, constant)  = ("kZeroEx", "kSameEx", "kLinearEx", "kConstantEx")
+
+
+class SparamInterpolationMapper(CommonMapper):
+    class GRPC(Enum):
+        (point, linear, step) = ("point", "linear", "step")
+
+    class DOTNET(Enum):
+        (point, linear, step) = ("kPointIn", "kLinearIn", "kStepIn")

@@ -282,10 +282,12 @@ class SIWaveAdvancedSettings:
         float
             Minimum void area.
         """
-        return self.core.min_void_area
+        value = self.core.min_void_area
+        return self._pedb.value(value)
 
     @min_void_area.setter
-    def min_void_area(self, value: str):
+    def min_void_area(self, value: str|float):
+        value = str(self._pedb.value(value))
         self.core.min_void_area = str(self._pedb.value(value))
 
     @property
