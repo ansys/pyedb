@@ -1091,7 +1091,7 @@ class Edb:
         --------
         >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
-        >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
+        >>> p2 = edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         if not self._siwave and self._db:
             self._siwave = EdbSiwave(self)
@@ -3106,11 +3106,11 @@ class Edb:
         --------
         >>> from pyedb import Edb
         >>>edb = Edb()
-        >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
-        >>> edb.hfss.create_edge_port_horizontal(
+        >>> edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+        >>> edb.excitation_manager.create_edge_port_horizontal(
         >>> ... prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
         >>> ... )
-        >>> edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
+        >>> edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
         >>> edb.cutout(["Net1"])
         >>> assert edb.are_port_reference_terminals_connected()
         """
@@ -3419,7 +3419,7 @@ class Edb:
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
                 defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
-                edb_terminals_info = edb.hfss.create_vertical_circuit_port_on_clipped_traces(
+                edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,
                     user_defined_extent=zone_info[1],

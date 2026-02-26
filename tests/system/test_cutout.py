@@ -118,7 +118,7 @@ class TestClass(BaseTestClass):
             port_type="circuit_port",
         )
         edbapp.components.create_port_on_component("U2", ["5V"], reference_net="GND")
-        edbapp.hfss.create_voltage_source_on_net("U4", "5V", "U4", "GND")
+        edbapp.excitation_manager.create_voltage_source_on_net("U4", "5V", "U4", "GND")
         legacy_name = edbapp.edbpath
         assert edbapp.cutout(
             signal_nets=["5V"],

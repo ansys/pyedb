@@ -172,7 +172,7 @@ class Components(object):
 
     @property
     def definitions(self):
-        """Retrieve component definition ist.
+        """Retrieve component definition list.
 
         Returns
         -------
@@ -890,6 +890,9 @@ class Components(object):
     ):
         """Create ports on a component.
 
+        .. deprecated:: 0.70.0
+            Use :func:`pyedb.excitation_manager.create_port_on_component` instead.
+
         Parameters
         ----------
         component : str or  self._pedb.component
@@ -938,190 +941,23 @@ class Components(object):
         >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
 
         """
-        # Adding grpc compatibility
-        if not isinstance(port_type, int):
-            if port_type == "circuit_port":
-                port_type = SourceType.CircPort
-            elif port_type in ["coaxial_port", "coax_port"]:
-                port_type = SourceType.CoaxPort
-            elif port_type == "lumped_port":
-                port_type = SourceType.LumpedPort
-            elif port_type == "rlc":
-                port_type = SourceType.Rlc
-            elif port_type == "current_source":
-                port_type = SourceType.Isource
-            elif port_type == "voltage_source":
-                port_type = SourceType.Vsource
-            elif port_type == "dc_terminal":
-                port_type = SourceType.DcTerminal
-            else:
-                self._pedb.logger.error(f"Port type {port_type} seems to be for grpc version but is not compatible.")
-                return False
-        if isinstance(component, str):
-            component = self.instances[component].edbcomponent
-
-        nets = self._normalize_net_list(net_list)
-
-        if not isinstance(reference_net, List):
-            reference_net = [reference_net]
-        ref_nets = self._normalize_net_list(reference_net)
-        nets_to_remove = ref_nets.intersection(nets)
-        if nets_to_remove:
-            self._logger.warning(f"Removing reference nets {sorted(nets_to_remove)} from the positive net list.")
-        nets -= nets_to_remove
-        cmp_pins = [p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in nets]
-        for p in cmp_pins:
-            if not p.IsLayoutPin():
-                p.SetIsLayoutPin(True)
-        if len(cmp_pins) == 0:
-            self._logger.info(
-                "No pins found on component {}, searching padstack instances instead".format(component.GetName())
-            )
-            return False
-        ref_pins = [
-            p for p in list(component.LayoutObjs) if int(p.GetObjType()) == 1 and p.GetNet().GetName() in ref_nets
-        ]
-        pin_layers = cmp_pins[0].GetPadstackDef().GetData().GetLayerNames()
-        if port_type == SourceType.CoaxPort:
-            if not ref_pins:
-                self._logger.error(
-                    "No reference pins found on component. You might consider"
-                    "using Circuit port instead since reference pins can be extended"
-                    "outside the component when not found if argument extend_reference_pins_outside_component is True."
-                )
-                return False
-            pad_params = self._padstack.get_pad_parameters(pin=cmp_pins[0], layername=pin_layers[0], pad_type=0)
-
-            if not solder_balls_height:
-                solder_balls_height = self.instances[component.GetName()].solder_ball_height
-            if not solder_balls_size:
-                solder_balls_size = self.instances[component.GetName()].solder_ball_diameter[0]
-            if not solder_balls_mid_size:
-                solder_balls_mid_size = self.instances[component.GetName()].solder_ball_diameter[1]
-
-            if not pad_params[0] == 7:
-                if not solder_balls_size:  # pragma no cover
-                    sball_diam = min([self._pedb.edb_value(val).ToDouble() for val in pad_params[1]])
-                    sball_mid_diam = sball_diam
-                else:  # pragma no cover
-                    sball_diam = solder_balls_size
-                    if solder_balls_mid_size:
-                        sball_mid_diam = solder_balls_mid_size
-                    else:
-                        sball_mid_diam = solder_balls_size
-                if not solder_balls_height:  # pragma no cover
-                    solder_balls_height = 2 * sball_diam / 3
-            else:  # pragma no cover
-                if not solder_balls_size:
-                    bbox = pad_params[1]
-                    sball_diam = min([abs(bbox[2] - bbox[0]), abs(bbox[3] - bbox[1])]) * 0.8
-                else:
-                    sball_diam = solder_balls_size
-                if not solder_balls_height:
-                    solder_balls_height = 2 * sball_diam / 3
-                if solder_balls_mid_size:
-                    sball_mid_diam = solder_balls_mid_size
-                else:
-                    sball_mid_diam = sball_diam
-            sball_shape = "Cylinder"
-            if not sball_diam == sball_mid_diam:
-                sball_shape = "Spheroid"
-            self.set_solder_ball(
-                component=component,
-                sball_height=solder_balls_height,
-                sball_diam=sball_diam,
-                sball_mid_diam=sball_mid_diam,
-                shape=sball_shape,
-            )
-
-            for pin in cmp_pins:
-                self._padstack.create_coax_port(padstackinstance=pin, name=port_name)
-
-        elif port_type == SourceType.CircPort:
-            for p in ref_pins:
-                if not p.IsLayoutPin():
-                    p.SetIsLayoutPin(True)
-            if not ref_pins:
-                self._logger.warning("No reference pins found on component")
-                if not extend_reference_pins_outside_component:
-                    self._logger.warning(
-                        "Argument extend_reference_pins_outside_component is False. You might want "
-                        "setting to True to extend the reference pin search outside the component"
-                    )
-                else:
-                    do_pingroup = False
-            if do_pingroup:
-                if len(ref_pins) == 1:
-                    ref_pins.is_pin = True
-                    ref_pin_group_term = self._create_terminal(ref_pins[0])
-                else:
-                    for pin in ref_pins:
-                        pin.is_pin = True
-                    ref_pin_group = self.create_pingroup_from_pins(ref_pins)
-                    if not ref_pin_group:
-                        self._logger.error(f"Failed to create reference pin group on component {component.GetName()}.")
-                        return False
-                    ref_pin_group = self._pedb.siwave.pin_groups[ref_pin_group.GetName()]
-                    ref_pin_group_term = self._create_pin_group_terminal(ref_pin_group, isref=False)
-                    if not ref_pin_group_term:
-                        self._logger.error(
-                            f"Failed to create reference pin group terminal on component {component.GetName()}"
-                        )
-                        return False
-                for net in nets:
-                    pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
-                    if pins:
-                        if len(pins) == 1:
-                            pin_term = self._create_terminal(pins[0])
-                            if pin_term:
-                                pin_term.SetReferenceTerminal(ref_pin_group_term)
-                        else:
-                            pin_group = self.create_pingroup_from_pins(pins)
-                            if not pin_group:
-                                return False
-                            pin_group = self._pedb.siwave.pin_groups[pin_group.GetName()]
-                            pin_group_term = self._create_pin_group_terminal(pin_group)
-                            if pin_group_term:
-                                pin_group_term.SetReferenceTerminal(ref_pin_group_term)
-                    else:
-                        self._logger.info("No pins found on component {} for the net {}".format(component, net))
-            else:
-                for net in nets:
-                    pins = [pin for pin in cmp_pins if pin.GetNet().GetName() == net]
-                    for pin in pins:
-                        if ref_pins:
-                            self.create_port_on_pins(component, pin, ref_pins)
-                        else:
-                            if extend_reference_pins_outside_component:
-                                _pin = EDBPadstackInstance(pin, self._pedb)
-                                ref_pin = _pin.get_reference_pins(
-                                    reference_net=reference_net[0],
-                                    max_limit=1,
-                                    component_only=False,
-                                    search_radius=3e-3,
-                                )
-                                if ref_pin:
-                                    self.create_port_on_pins(
-                                        component,
-                                        [EDBPadstackInstance(pin, self._pedb).name],
-                                        [EDBPadstackInstance(ref_pin[0]._edb_object, self._pedb).id],
-                                    )
-                            else:
-                                self._logger.error("Skipping port creation no reference pin found.")
-        return True
-
-    def _normalize_net_list(self, net_list) -> Set[str]:
-        if not isinstance(net_list, List):
-            net_list = [net_list]
-        nets = set()
-        for net in net_list:
-            if isinstance(net, EDBNetsData):
-                net_name = net.name
-                if net_name != "":
-                    nets.add(net_name)
-            elif isinstance(net, str) and net != "":
-                nets.add(net)
-        return nets
+        warnings.warn(
+            "`create_port_on_component` is deprecated and is now located here "
+            "`pyedb.excitation_manager.create_port_on_component` instead.",
+            DeprecationWarning,
+        )
+        return self._pedb.excitation_manager.create_port_on_component(
+            component=component,
+            net_list=net_list,
+            port_type=port_type,
+            do_pingroup=do_pingroup,
+            reference_net=reference_net,
+            port_name=port_name,
+            solder_balls_height=solder_balls_height,
+            solder_balls_size=solder_balls_size,
+            solder_balls_mid_size=solder_balls_mid_size,
+            extend_reference_pins_outside_component=extend_reference_pins_outside_component,
+        )
 
     def _create_terminal(self, pin, term_name=None):
         """Create terminal on component pin.
@@ -1772,49 +1608,7 @@ class Components(object):
         >>> edbapp.components.create_pingroup_from_pins(gndpinlist, "MyGNDPingroup")
 
         """
-        if len(pins) < 1:
-            self._logger.error("No pins specified for pin group %s", group_name)
-            return (False, None)
-        if len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]):
-            _pins = [pin._edb_padstackinstance for pin in pins]
-            if _pins:
-                pins = _pins
-        if group_name is None:
-            group_name = self._edb.Cell.Hierarchy.PinGroup.GetUniqueName(self._active_layout)
-        for pin in pins:
-            pin.SetIsLayoutPin(True)
-        forbiden_car = "-><"
-        group_name = group_name.translate({ord(i): "_" for i in forbiden_car})
-        for pgroup in list(self._pedb.active_layout.PinGroups):
-            if pgroup.GetName() == group_name:
-                pin_group_exists = True
-                if len(pgroup.GetPins()) == len(pins):
-                    pnames = [i.GetName() for i in pins]
-                    for p in pgroup.GetPins():
-                        if p.GetName() in pnames:
-                            continue
-                        else:
-                            group_name = self._edb.Cell.Hierarchy.PinGroup.GetUniqueName(
-                                self._active_layout, group_name
-                            )
-                            pin_group_exists = False
-                else:
-                    group_name = self._edb.Cell.Hierarchy.PinGroup.GetUniqueName(self._active_layout, group_name)
-                    pin_group_exists = False
-                if pin_group_exists:
-                    return pgroup
-        pingroup = _retry_ntimes(
-            10,
-            self._edb.Cell.Hierarchy.PinGroup.Create,
-            self._active_layout,
-            group_name,
-            convert_py_list_to_net_list(pins),
-        )
-        if pingroup.IsNull():
-            return False
-        else:
-            pingroup.SetNet(pins[0].GetNet())
-            return pingroup
+        return self._pedb.excitation_manager.create_pingroup_from_pins(pins=pins, group_name=group_name)
 
     def delete_single_pin_rlc(self, deactivate_only=False):
         # type: (bool) -> list

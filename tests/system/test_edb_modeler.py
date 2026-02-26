@@ -512,7 +512,7 @@ class TestClass(BaseTestClass):
     def test_287_circuit_ports(self):
         edbapp = self.edb_examples.get_si_verse()
         cap = edbapp.components.capacitors["C1"]
-        assert edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        assert edbapp.excitation_manager.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
         assert edbapp.components.capacitors["C3"].pins
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)

@@ -42,8 +42,8 @@ class TestClass(BaseTestClass):
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
-        assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
+        assert edbapp.excitation_manager.create_coax_port_on_component("U1", "DDR4_DQS0_P")
+        assert edbapp.excitation_manager.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_bounding_box(self):
@@ -58,19 +58,21 @@ class TestClass(BaseTestClass):
         """Create a circuit port on a net."""
         edbapp = self.edb_examples.get_si_verse()
         initial_len = len(edbapp.padstacks.pingroups)
-        assert edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
-        p2 = edbapp.siwave.create_circuit_port_on_net("U1", "PLL_1V8", "U1", "GND", 50, "test")
+        assert edbapp.excitation_manager.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
+        p2 = edbapp.excitation_manager.create_circuit_port_on_net("U1", "PLL_1V8", "U1", "GND", 50, "test")
         assert p2 != "test" and "test" in p2
         pins = edbapp.components.get_pin_from_component("U1")
-        p3 = edbapp.siwave.create_circuit_port_on_pin(pins[200], pins[0], 45)
+        p3 = edbapp.excitation_manager.create_circuit_port_on_pin(pins[200], pins[0], 45)
         assert p3 != ""
-        p4 = edbapp.hfss.create_circuit_port_on_net("U1", "USB3_D_P")
+        p4 = edbapp.excitation_manager.create_circuit_port_on_net("U1", "USB3_D_P")
         assert len(edbapp.padstacks.pingroups) == initial_len + 6
         assert "GND" in p4 and "USB3_D_P" in p4
         assert "test" in edbapp.terminals
         assert edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
         assert edbapp.siwave.create_pin_group_on_net("U1", "GND", "U1_GND")
-        assert edbapp.siwave.create_circuit_port_on_pin_group("PG_V1P0_S0", "U1_GND", impedance=50, name="test_port")
+        assert edbapp.excitation_manager.create_circuit_port_on_pin_group(
+            "PG_V1P0_S0", "U1_GND", impedance=50, name="test_port"
+        )
         edbapp.excitations["test_port"].name = "test_rename"
         assert any(port for port in list(edbapp.excitations) if port == "test_rename")
         edbapp.close(terminate_rpc_session=False)
@@ -78,12 +80,14 @@ class TestClass(BaseTestClass):
     def test_siwave_create_voltage_source(self):
         """Create a voltage source."""
         edbapp = self.edb_examples.get_si_verse()
-        assert "Vsource_" in edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
+        assert "Vsource_" in edbapp.excitation_manager.create_voltage_source_on_net(
+            "U1", "USB3_D_P", "U1", "GND", 3.3, 0
+        )
         assert len(edbapp.terminals) == 2
         assert list(edbapp.terminals.values())[0].magnitude == 3.3
 
         pins = edbapp.components.get_pin_from_component("U1")
-        assert "VSource_" in edbapp.siwave.create_voltage_source_on_pin(
+        assert "VSource_" in edbapp.excitation_manager.create_voltage_source_on_pin(
             pins[300], pins[10], voltage_value=3.3, phase_value=1
         )
         assert len(edbapp.terminals) == 4
@@ -101,13 +105,13 @@ class TestClass(BaseTestClass):
         """Create a current source."""
 
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
+        assert edbapp.excitation_manager.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = edbapp.components.get_pin_from_component("U1")
-        assert "I22" == edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
+        assert "I22" == edbapp.excitation_manager.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
         assert edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd")
         edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vrm_pos")
-        edbapp.siwave.create_current_source_on_pin_group(
+        edbapp.excitation_manager.create_current_source_on_pin_group(
             pos_pin_group_name="vrm_pos", neg_pin_group_name="gnd", name="vrm_current_source"
         )
 
@@ -115,7 +119,9 @@ class TestClass(BaseTestClass):
         edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd2")
 
         # move to source_excitations when dotnet is removed
-        assert edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd2", name="vrm_voltage_source")
+        assert edbapp.excitation_manager.create_voltage_source_on_pin_group(
+            "sink_pos", "gnd2", name="vrm_voltage_source"
+        )
         edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
         assert edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="vp_neg")
         assert edbapp.siwave.pin_groups["vp_pos"]
@@ -149,7 +155,7 @@ class TestClass(BaseTestClass):
         """Create a resistor on pin."""
         edbapp = self.edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("U1")
-        assert "RST4000" == edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
+        assert "RST4000" == edbapp.excitation_manager.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
         edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_add_syz_analsyis(self):
@@ -180,7 +186,7 @@ class TestClass(BaseTestClass):
     def test_hfss_mesh_operations(self):
         """Retrieve the trace width for traces with ports."""
         edbapp = self.edb_examples.get_si_verse()
-        edbapp.components.create_port_on_component(
+        edbapp.excitation_manager.create_port_on_component(
             "U1",
             ["VDD_DDR"],
             reference_net="GND",
@@ -293,7 +299,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # method already deprecated in grpc.
-            assert edb.hfss.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly,
                 reference_polygon=ref_poly,
                 terminal_point=port_location,
@@ -312,7 +318,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # method already deprecated in grpc.
-            assert edb.hfss.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly,
                 reference_polygon=ref_poly,
                 terminal_point=port_location,
@@ -326,7 +332,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # method already deprecated in grpc.
-            assert edb.hfss.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
             )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
@@ -387,7 +393,9 @@ class TestClass(BaseTestClass):
         edb = self.edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
-        assert edb.hfss.create_rlc_boundary_on_pins(pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13)
+        assert edb.excitation_manager.create_rlc_boundary_on_pins(
+            pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13
+        )
         edb.close(terminate_rpc_session=False)
 
     def test_configure_hfss_analysis_setup_enforce_causality(self):
@@ -419,7 +427,7 @@ class TestClass(BaseTestClass):
         else:
             # This method is also available at same location in grpc but is deprecated.
             prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
-            assert edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+            assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
 
         prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]
         if edb.grpc:
@@ -428,7 +436,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # This method is also available at same location in grpc but is deprecated.
-            assert edb.hfss.create_edge_port_horizontal(
+            assert edb.excitation_manager.create_edge_port_horizontal(
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
             )
         if edb.grpc:
@@ -465,7 +473,7 @@ class TestClass(BaseTestClass):
         if edb.grpc:
             wave_port = edb.excitation_manager.create_bundle_wave_port(paths_ids, pts)
         else:
-            wave_port = edb.hfss.create_bundle_wave_port(paths_ids, pts)
+            wave_port = edb.excitation_manager.create_bundle_wave_port(paths_ids, pts)
         wave_port.horizontal_extent_factor = 10
         assert wave_port.horizontal_extent_factor == 10
         wave_port.vertical_extent_factor = 10
@@ -490,7 +498,7 @@ class TestClass(BaseTestClass):
                 port_name="df_port",
             )
         else:
-            assert edb.hfss.create_differential_wave_port(
+            assert edb.excitation_manager.create_differential_wave_port(
                 traces[1].id,
                 trace_paths[0][0],
                 traces[2].id,
@@ -510,7 +518,7 @@ class TestClass(BaseTestClass):
         if edb.grpc:
             df_port = edb.excitation_manager.create_bundle_wave_port(traces_id, paths)
         else:
-            df_port = edb.hfss.create_bundle_wave_port(traces_id, paths)
+            df_port = edb.excitation_manager.create_bundle_wave_port(traces_id, paths)
         assert df_port.name
         assert df_port.terminals
         df_port.horizontal_extent_factor = 10
@@ -547,9 +555,9 @@ class TestClass(BaseTestClass):
         if config["use_grpc"]:
             assert edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
         else:
-            assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
+            assert edb.excitation_manager.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
-        assert edb.hfss.create_differential_wave_port(
+        assert edb.excitation_manager.create_differential_wave_port(
             traces[0],
             trace_paths[0][0],
             traces[1],
@@ -561,7 +569,7 @@ class TestClass(BaseTestClass):
         if config["use_grpc"]:
             p = edb.excitation_manager.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
-            p = edb.hfss.create_bundle_wave_port(traces, paths)
+            p = edb.excitation_manager.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
