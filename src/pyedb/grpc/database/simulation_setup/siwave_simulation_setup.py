@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
 
 from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
 

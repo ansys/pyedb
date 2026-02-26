@@ -1127,7 +1127,7 @@ class PadstackDef:
             "diameter": str(Value(diameter)),
             "mid_diameter": str(Value(mid_diameter)),
             "placement": place,
-            "material": str(material),
+            "material": material,
         }
         return parameters
 

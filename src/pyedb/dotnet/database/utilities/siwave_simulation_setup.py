@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 from pyedb.dotnet.database.general import (
     convert_netdict_to_pydict,
@@ -28,6 +29,7 @@ from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
+from pyedb.dotnet.database.sim_setup_data.data.siwave import SIwaveSParameterSettings
 from pyedb.dotnet.database.sim_setup_data.io.siwave import (
     AdvancedSettings,
     DCAdvancedSettings,
@@ -106,7 +108,7 @@ def clone_edb_sim_setup_info(source, target):
                     )
 
 
-class SiwaveSimulationSetup(SimulationSetup):
+class SIwaveSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave simulation setup."""
 
     def __init__(self, pedb, edb_object=None, name: str = None):
@@ -150,6 +152,10 @@ class SiwaveSimulationSetup(SimulationSetup):
         }
 
     @property
+    def settings(self):
+        return SIWaveSimulationSettings(self)
+
+    @property
     def advanced_settings(self):
         """SIwave advanced settings."""
         return AdvancedSettings(self)
@@ -183,16 +189,6 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.use_custom_settings = False
         self.si_slider_position = value
         self.advanced_settings.set_si_slider(value)
-
-    @property
-    def enabled(self):
-        """Flag indicating if the setup is enabled."""
-        return self.sim_setup_info.simulation_settings.Enabled
-
-    @enabled.setter
-    def enabled(self, value: bool):
-        """Set the enabled flag for the setup."""
-        self.sim_setup_info.simulation_settings.Enabled = value
 
     @property
     def pi_slider_position(self):
@@ -356,10 +352,10 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
         Returns
         -------
-        Settings
+        SIWaveSimulationSettings
             An instance of the Settings class providing access to SIwave DC simulation settings.
         """
-        return Settings(self, self.sim_setup_info)
+        return SIWaveSimulationSettings(self)
 
     @property
     def dc_ir_settings(self):
@@ -448,40 +444,16 @@ class General:
         return self._parent.use_si_settings
 
 
-class SIwaveSParameterSettings:
-    def __init__(self, parent):
-        self._parent = parent
-
-    @property
-    def dc_behavior(self):
-        return
-
-    @property
-    def extrapolation(self):
-        return
-
-    @property
-    def interpolation(self):
-        return
-
-    @property
-    def use_state_space(self):
-        return True
-
-
-class Settings(SimulationSetup):
+class SIWaveSimulationSettings:
     """Class to manage global settings for the Siwave simulation setup module.
     Added to be compliant with ansys-edbe-core settings structure."""
 
-    def __init__(self, parent, sim_setup_info):
-        SimulationSetup.__init__(self, pedb=parent._pedb, edb_object=parent._edb_object)
-
+    def __init__(self, parent: SIwaveSimulationSetup):
         self._parent = parent
-        self._sim_setup_info = sim_setup_info
 
     @property
     def advanced(self):
-        return True
+        return self._parent.advanced_settings
 
     @property
     def dc(self):
@@ -497,6 +469,7 @@ class Settings(SimulationSetup):
 
     @property
     def general(self):
+        warnings.warn("Deprecated: settings.dc.", DeprecationWarning)
         return DCSettings(self._parent)
 
     @property
@@ -521,11 +494,13 @@ class Settings(SimulationSetup):
     @property
     def enabled(self) -> bool:
         """Flag indicating if the setup is enabled."""
-        return self._sim_setup_info.simulation_settings.Enabled
+        return self._parent.sim_setup_info.simulation_settings.Enabled
 
     @enabled.setter
     def enabled(self, value: bool):
-        self._sim_setup_info.simulation_settings.Enabled = value
+        sim_info = self._parent.sim_setup_info
+        sim_info.simulation_settings.Enabled = value
+        self._parent.set_sim_setup_info(sim_info)
 
     @property
     def export_dc_thermal_data(self) -> bool:
@@ -584,7 +559,7 @@ class Settings(SimulationSetup):
     @property
     def s_parameter(self) -> SIwaveSParameterSettings:
         """S-parameter settings."""
-        return SIwaveSParameterSettings(self._parent)
+        return SIwaveSParameterSettings(self._parent, self.advanced.sim_setup_info.simulation_settings.SParamSettings)
 
     @property
     def source_terms_to_ground(self) -> dict[str, int]:
