@@ -4,7 +4,7 @@ Core Concepts
 Understanding the client-server architecture and the EDB object hierarchy is key to working effectively with PyEDB.
 
 Architecture: Decoupled COM Model
------------------------------------
+---------------------------------
 PyEDB operates on a decoupled architecture using COM (Component Object Model):
 
 1.  **Client (Your Script):** The lightweight `pyedb` Python package. It contains the high-level API and sends commands.
