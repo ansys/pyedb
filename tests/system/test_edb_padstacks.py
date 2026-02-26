@@ -716,7 +716,7 @@ def _assert_inside(rect, pad):
     )
 
 
-@pytest.mark.skip(reason="Updated method is not present in edb api.")
+@pytest.mark.skipif(config["use_grpc"], reason="Updated method is not present in edb api.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstance(BaseTestClass):
     def test_backdrill_properties(self):
@@ -732,7 +732,7 @@ class TestPadstackInstance(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skip(reason="The updated method is not in ansys-edb-core yet.")
+@pytest.mark.skipif(config["use_grpc"], reason="The updated method is not in ansys-edb-core yet.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstanceEMProperties(BaseTestClass):
     def test_em_properties(self):
