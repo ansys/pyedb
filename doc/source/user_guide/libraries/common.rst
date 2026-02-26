@@ -4,7 +4,7 @@ Common Libraries
 The common libraries provide fundamental building blocks for PCB design, including material definitions,
 substrate specifications, and layer stackup configurations.
 
-API Reference
+API reference
 -------------
 
 .. currentmodule:: pyedb.libraries.common

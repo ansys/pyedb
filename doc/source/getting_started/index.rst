@@ -59,7 +59,7 @@ PyEDB is built on top of lower-level APIs and provides a simplified, high-level 
 4. **PyEDB (This Library):** The high-level, user-friendly Python interface that wraps PyEDB-Core with application-oriented
    classes and methods. PyEDB significantly simplifies EDB workflows and reduces the learning curve.
 
-Current Architecture: .NET Interoperability
+Current architecture: .NET interoperability
 -------------------------------------------
 
 **How PyEDB works:**
@@ -79,7 +79,7 @@ access to the local EDB .NET assemblies.
 Performance and Integration
 ---------------------------
 *   **Performance:** Direct .NET interoperability (current) provides efficient access to EDB functionality.
-    The upcoming gRPC architecture will enable distributed computing and parallel processing.
+    The upcoming gRPC architecture enables distributed computing and parallel processing.
 
 *   **Python Ecosystem:** Being a pure Python library, PyEDB integrates seamlessly with the vast Python data science and
 machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily post-process simulation

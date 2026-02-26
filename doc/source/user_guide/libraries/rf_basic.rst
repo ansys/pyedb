@@ -17,7 +17,7 @@ These libraries enable rapid prototyping of RF circuits by providing:
 * **Ground Structures**: Hatched ground planes for controlled impedance
 
 
-API Reference
+API reference
 -------------
 
 .. currentmodule:: pyedb.libraries.rf_libraries.base_functions

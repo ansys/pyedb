@@ -23,7 +23,7 @@ PyEDB is built on top of lower-level APIs and provides a simplified, high-level 
    classes and methods. PyEDB significantly simplifies EDB workflows and reduces the learning curve.
 
 
-Current Architecture: .NET Interoperability
+Current architecture: .NET interoperability
 -------------------------------------------
 
 **How PyEDB works:**

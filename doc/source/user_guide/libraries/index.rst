@@ -23,7 +23,7 @@ The PyEDB library system consists of three main categories:
    with automatically calculated dimensions based on frequency and substrate properties.
 
 
-Library Reference
+Library reference
 -----------------
 
 .. toctree::

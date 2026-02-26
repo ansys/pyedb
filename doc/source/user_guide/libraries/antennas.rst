@@ -1,4 +1,4 @@
-Planar Antennas Libraries
+Planar antennas libraries
 =========================
 
 The planar antenna libraries provide parametric generators for common microstrip patch antenna geometries.
@@ -23,7 +23,7 @@ The PyEDB antenna libraries automate the design of these antennas by:
 * Creating the complete geometry ready for simulation
 
 
-API Reference
+API reference
 -------------
 
 .. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
