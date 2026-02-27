@@ -42,6 +42,7 @@ from pyedb.generic.general_methods import generate_unique_name
 
 class HfssSimulationSetup(SimulationSetup):
     """Manages EDB methods for HFSS simulation setup."""
+
     class Settings:
         """HFSS simulation setup settings container."""
 
