@@ -151,6 +151,14 @@ class PadstackInstance(conn_obj.ConnObj):
         return cls(layout._pedb, inst)
 
     @property
+    def layer_map(self):
+        return self.core.layer_map
+
+    @layer_map.setter
+    def layer_map(self, layer_map):
+        self.core.layer_map = layer_map
+
+    @property
     def solderball_layer(self):
         return self.core.solderball_layer
 

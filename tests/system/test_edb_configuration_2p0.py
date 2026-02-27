@@ -25,6 +25,7 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
 from tests.conftest import config, use_grpc
 from tests.system.base_test_class import BaseTestClass
@@ -1643,7 +1644,11 @@ class TestClassPadstacks(BaseTestClass):
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                assert value == target_mat[p]
+                assert (
+                    value == target_mat[p]
+                    if isinstance(target_mat[p], str)
+                    else f"{unit_converter(target_mat[p], input_units='m', output_units='mm')}mm"
+                )
         edbapp.close(terminate_rpc_session=False)
 
     def test_deprecated_methods_hfss_single(self):
