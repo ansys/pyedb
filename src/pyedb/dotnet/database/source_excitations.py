@@ -35,8 +35,8 @@ from pyedb.dotnet.database.edb_data.sources import (
     VoltageSource,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class SourceExcitation:
@@ -2061,7 +2061,7 @@ class SourceExcitation:
 
         """
         if len(pins) < 1:
-            self._logger.error("No pins specified for pin group %s", group_name)
+            self._pedb.logger.error("No pins specified for pin group %s", group_name)
             return (False, None)
         if len([pin for pin in pins if isinstance(pin, EDBPadstackInstance)]):
             _pins = [pin._edb_padstackinstance for pin in pins]
@@ -2103,3 +2103,123 @@ class SourceExcitation:
         else:
             pingroup.SetNet(pins[0].GetNet())
             return pingroup
+
+    def create_port_on_pins(
+        self,
+        refdes,
+        pins,
+        reference_pins,
+        impedance=50.0,
+        port_name=None,
+        pec_boundary=False,
+        pingroup_on_single_pin=False,
+    ):
+        """Create circuit port between pins and reference ones.
+
+        Parameters
+        ----------
+        refdes : Component reference designator
+            str or EDBComponent object.
+        pins : pin specifier(s) or instance(s) where the port terminal is to be created. Single pin name or a list of
+        several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the
+        global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances
+        can be provided as ``EDBPadstackInstance`` objects.
+        For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with
+        ``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be
+        provided.
+            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+        reference_pins : reference pin specifier(s) or instance(s) for the port reference terminal. Allowed values are
+        the same as for the ``pins`` parameter.
+            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+        impedance : Port impedance
+            str, float
+        port_name : str, optional
+            Port name. The default is ``None``, in which case a name is automatically assigned.
+        pec_boundary : bool, optional
+        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
+        a perfect short is created between the pin and impedance is ignored. This
+        parameter is only supported on a port created between two pins, such as
+        when there is no pin group.
+        pingroup_on_single_pin : bool
+            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
+            ``False`` the port is created at the pad edge. Default value is ``False``.
+
+        Returns
+        -------
+        EDB terminal created, or False if failed to create.
+
+        Example:
+        >>> from pyedb import Edb
+        >>> edb = Edb(path_to_edb_file)
+        >>> pin = "AJ6"
+        >>> ref_pins = ["AM7", "AM4"]
+        Or to take all reference pins
+        >>> ref_pins = [pin for pin in list(edb.components["U2A5"].pins.values()) if pin.net_name == "GND"]
+        >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
+        >>> edb.save()
+        >>> edb.close()
+        """
+
+        if isinstance(refdes, str):
+            refdes = self._pedb.components.instances[refdes]
+        elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
+            from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+            refdes = EDBComponent(self._pedb, refdes)
+        pins = self._pedb.components._get_pins_for_ports(pins, refdes)
+        if not pins:  # pragma: no cover
+            raise RuntimeError("No pins found during port creation. Port is not defined.")
+        reference_pins = self._pedb.components._get_pins_for_ports(reference_pins, refdes)
+        if not reference_pins:
+            raise RuntimeError("No reference pins found during port creation. Port is not defined.")
+        if not pins:
+            raise RuntimeWarning("No pins found during port creation. Port is not defined.")
+        if reference_pins:
+            reference_pins = self._pedb.components._get_pins_for_ports(reference_pins, refdes)
+            if not reference_pins:
+                raise RuntimeWarning("No reference pins found during port creation. Port is not defined.")
+        if refdes and any(refdes.rlc_values):
+            return self._pedb.components.deactivate_rlc_component(component=refdes, create_circuit_port=True)
+        if not port_name:
+            port_name = f"Port_{pins[0].net_name}_{pins[0].aedt_name}".replace("-", "_")
+
+        if len(pins) > 1 or pingroup_on_single_pin:
+            if pec_boundary:
+                pec_boundary = False
+                self._pedb.logger.info(
+                    "Disabling PEC boundary creation, this feature is supported on single pin "
+                    f"ports only, {len(pins)} pins found (pingroup_on_single_pin: {pingroup_on_single_pin})."
+                )
+            group_name = "group_{}".format(port_name)
+            pin_group = self.create_pingroup_from_pins(pins, group_name)
+            term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
+        else:
+            term = self._pedb.components._create_terminal(pins[0]._edb_object, term_name=port_name)
+        term.SetIsCircuitPort(True)
+
+        if len(reference_pins) > 1 or pingroup_on_single_pin:
+            if pec_boundary:
+                pec_boundary = False
+                self._pedb.logger.info(
+                    "Disabling PEC boundary creation. This feature is supported on single pin "
+                    f"ports only, {len(reference_pins)} reference pins found "
+                    f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
+                )
+            ref_group_name = f"group_{port_name}_ref"
+            ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
+            ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
+        else:
+            ref_term = self._pedb.components._create_terminal(reference_pins[0]._edb_object, term_name=port_name + "_ref")
+        ref_term.SetIsCircuitPort(True)
+
+        term.SetImpedance(self._edb.Utility.Value(impedance))
+        term.SetReferenceTerminal(ref_term)
+        if pec_boundary:
+            term.SetIsCircuitPort(False)
+            ref_term.SetIsCircuitPort(False)
+            term.SetBoundaryType(self._edb.Cell.Terminal.BoundaryType.PecBoundary)
+            ref_term.SetBoundaryType(self._edb.Cell.Terminal.BoundaryType.PecBoundary)
+            self._pedb.logger.info(
+                f"PEC boundary created between pin {pins[0].name} and reference pin {reference_pins[0].name}"
+            )
+
+        return term or False

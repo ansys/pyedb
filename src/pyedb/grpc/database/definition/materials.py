@@ -160,6 +160,7 @@ class Material:
         :class:`MultipoleDebyeModel <ansys.edb.core.definition.multipole_debye_model.MultipoleDebyeModel>`.
             EDB dielectric model.
         """
+        # Todo missing wrapper classes for dielctric model classes.
         try:
             if self.core.dielectric_material_model.type.name.lower() == "debye":
                 self.__dielectric_model = CoreDebyeModel(self.core.dielectric_material_model.msg)

@@ -907,7 +907,9 @@ class Drc:
         # === STEP 1: Extract all EDB data in single-thread ===
         padstacks_definitions = self.edb.padstacks.definitions
         via_data = []
-        for via in self.edb.padstacks.instances.values():
+        for via in self.edb.layout.padstack_instances:
+            if not via.padstack_definition in padstacks_definitions:
+                continue
             via_def = padstacks_definitions[via.padstack_definition]
 
             # Skip if no hole properties (non-drilled padstack)
@@ -971,28 +973,29 @@ class Drc:
         # Snapshot data
         primitives_by_layer = dict(self.edb.modeler.primitives_by_layer)
         layout_outline = [prim for prim in self.edb.modeler.primitives if prim.layer.name.lower() == "outline"]
-        if not layout_outline:
-            raise ValueError("No outline primitive found in the layout.")
-        if self.edb.grpc:
-            area_board = layout_outline[0].polygon_data.area()
-        else:
-            area_board = layout_outline[0].polygon_data.area
-
-        for layer, prim_list in primitives_by_layer.items():
+        if layout_outline:
             if self.edb.grpc:
-                area_copper = sum(prim.polygon_data.area() for prim in prim_list)
+                area_board = layout_outline[0].polygon_data.area()
             else:
-                area_copper = sum(prim.polygon_data.area for prim in prim_list)
-            imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
-            if imbalance > max_imbalance:
-                self.violations.append(
-                    {
-                        "rule": "copper_balance",
-                        "layer": layer,
-                        "imbalance_pct": imbalance,
-                        "limit_pct": max_imbalance,
-                    }
-                )
+                area_board = layout_outline[0].polygon_data.area
+
+            for layer, prim_list in primitives_by_layer.items():
+                if self.edb.grpc:
+                    area_copper = sum(prim.polygon_data.area() for prim in prim_list)
+                else:
+                    area_copper = sum(prim.polygon_data.area for prim in prim_list)
+                imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
+                if imbalance > max_imbalance:
+                    self.violations.append(
+                        {
+                            "rule": "copper_balance",
+                            "layer": layer,
+                            "imbalance_pct": imbalance,
+                            "limit_pct": max_imbalance,
+                        }
+                    )
+        else:
+            self.edb.logger.warning("No outline primitive found in the layout.")
 
     # High-speed rules
     def _rule_diff_pair_length_match(self, rule: DiffPairLengthMatch):
