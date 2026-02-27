@@ -30,6 +30,7 @@ from pathlib import Path
 import re
 from typing import List, Set, Union
 import warnings
+import skrf
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
@@ -494,7 +495,7 @@ class Components(object):
         hosting_component_pin1,
         hosting_component_pin2,
         flipped=False,
-    ) -> bool:
+    ) -> tuple:
         """Get the placement vector between 2 components.
 
         Parameters
@@ -585,7 +586,7 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp):
+    def get_solder_ball_height(self, cmp) -> float | bool:
         """Get component solder ball height.
 
         Parameters
@@ -606,7 +607,7 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
-    def get_vendor_libraries(self):
+    def get_vendor_libraries(self) -> dict[str, dict[str, dict[str, SciktRF]]]:
         """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
 
         Returns
@@ -650,7 +651,7 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-    def create_source_on_component(self, sources=None):
+    def create_source_on_component(self, sources=None) -> bool:
         """Create voltage, current source, or resistor on component.
 
         Parameters
