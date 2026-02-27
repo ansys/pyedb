@@ -41,6 +41,7 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -673,6 +674,7 @@ class Modeler(object):
         )
         return primitive
 
+    @deprecate_argument_name({"main_shape": "points"})
     def create_polygon(
         self,
         points: Union[List[List[float]], CorePolygonData],

@@ -1817,9 +1817,13 @@ class TestModeler(BaseTestClass):
         assert rect.voids
         assert [i for i in edbapp.layout.primitives if i.aedt_name == "GND_TOP_POLY"][0]
         assert edbapp.components["U1"]
-        assert (
-            edbapp.components["U1"].component_property.core.GetSolderBallProperty().Clone().GetMaterialName() == "air"
-        )
+        if edbapp.grpc:
+            assert edbapp.components["U1"].component_property.solder_ball_property.material_name == "air"
+        else:
+            assert (
+                edbapp.components["U1"].component_property.core.GetSolderBallProperty().Clone().GetMaterialName()
+                == "air"
+            )
         edbapp.close(terminate_rpc_session=False)
 
     # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
