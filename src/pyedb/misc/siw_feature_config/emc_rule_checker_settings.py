@@ -32,7 +32,28 @@ from pyedb.misc.siw_feature_config.emc.net_tags import NetTags
 from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
 
 
-def kwargs_parser(kwargs):
+def kwargs_parser(kwargs: dict) -> dict[str, str]:
+    """Parse and convert keyword arguments to string format.
+
+    Parameters
+    ----------
+    kwargs : dict
+        Dictionary of keyword arguments to parse.
+
+    Returns
+    -------
+    dict[str, str]
+        Dictionary with all values converted to strings.
+
+    Examples
+    --------
+    >>> from pyedb.misc.siw_feature_config.emc_rule_checker_settings import kwargs_parser
+    >>> kwargs = {"key1": True, "key2": 123, "key3": "test"}
+    >>> result = kwargs_parser(kwargs)
+    >>> result
+    {'key1': '1', 'key2': '123', 'key3': 'test'}
+
+    """
     kwargs = copy(kwargs)
     kwargs = {i: False if j == np.nan else j for i, j in kwargs.items()}
     kwargs = {i: int(j) if isinstance(j, bool) else j for i, j in kwargs.items()}
@@ -41,9 +62,18 @@ def kwargs_parser(kwargs):
 
 
 class EMCRuleCheckerSettings:
-    """Manages EMI scanner settings."""
+    """Manages EMI scanner settings.
 
-    def __init__(self):
+    Examples
+    --------
+    >>> from pyedb.misc.siw_feature_config.emc_rule_checker_settings import EMCRuleCheckerSettings
+    >>> settings = EMCRuleCheckerSettings()
+    >>> settings.add_net("net1", is_clock=True)
+
+    """
+
+    def __init__(self) -> None:
+        """Initialize EMC rule checker settings."""
         self.version = "1.0"
         self.encoding = "UTF-8"
         self.standalone = "no"
@@ -71,13 +101,19 @@ class EMCRuleCheckerSettings:
             pass
         return tree
 
-    def read_xml(self, fpath):
-        """Read settings from a json file.
+    def read_xml(self, fpath: str) -> None:
+        """Read settings from an XML file.
 
         Parameters
         ----------
-        fpath: str
+        fpath : str
             Path to file.
+
+        Examples
+        --------
+        >>> settings = EMCRuleCheckerSettings()
+        >>> settings.read_xml("config.xml")
+
         """
         tree = defused_parse(fpath)
         root = tree.getroot()
@@ -86,23 +122,35 @@ class EMCRuleCheckerSettings:
         self.net_tags = NetTags(root.find("NetTags"))
         self.component_tags = ComponentTags(root.find("ComponentTags"))
 
-    def write_xml(self, fpath):
-        """Write settings to a file in xml format.
+    def write_xml(self, fpath: str) -> None:
+        """Write settings to a file in XML format.
 
         Parameters
         ----------
-        fpath: str, Path
+        fpath : str
             Path to file.
+
+        Examples
+        --------
+        >>> settings = EMCRuleCheckerSettings()
+        >>> settings.write_xml("config.xml")
+
         """
         self._element_tree.write(fpath, encoding=self.encoding, xml_declaration=True)
 
-    def write_json(self, fpath):
-        """Write settings to a file in json format.
+    def write_json(self, fpath: str) -> None:
+        """Write settings to a file in JSON format.
 
         Parameters
         ----------
-        fpath: str
+        fpath : str
             Path to file.
+
+        Examples
+        --------
+        >>> settings = EMCRuleCheckerSettings()
+        >>> settings.write_json("config.json")
+
         """
         data = {}
         self.tag_library.write_dict(data)
@@ -112,13 +160,19 @@ class EMCRuleCheckerSettings:
         with open(fpath, "w") as f:
             json.dump(data, f, indent=4)
 
-    def read_json(self, fpath):
-        """Read settings from a json file.
+    def read_json(self, fpath: str) -> None:
+        """Read settings from a JSON file.
 
         Parameters
         ----------
-        fpath: str
+        fpath : str
             Path to file.
+
+        Examples
+        --------
+        >>> settings = EMCRuleCheckerSettings()
+        >>> settings.read_json("config.json")
+
         """
         self.tag_library = TagLibrary(None)
         self.net_tags = NetTags(None)
@@ -140,24 +194,42 @@ class EMCRuleCheckerSettings:
             self.component_tags.read_dict(component_tags)
 
     def add_net(
-        self, name, is_bus=False, is_clock=False, is_critical=False, net_type="Single-Ended", diff_mate_name=""
-    ):
+        self,
+        name: str,
+        is_bus: bool | str | int = False,
+        is_clock: bool | str | int = False,
+        is_critical: bool | str = False,
+        net_type: str = "Single-Ended",
+        diff_mate_name: str = "",
+    ) -> None:
         """Assign tags to a net.
 
         Parameters
         ----------
-        is_bus: str, int
-            Whether the net is a bus.
-        is_clock: str, int
-            Whether the net is a clock.
-        is_critical: str
-            Whether the net is critical.
-        name: str
+        name : str
             Name of the net.
-        net_type: str
+        is_bus : bool, str or int, optional
+            Whether the net is a bus.
+            The default is ``False``.
+        is_clock : bool, str or int, optional
+            Whether the net is a clock.
+            The default is ``False``.
+        is_critical : bool or str, optional
+            Whether the net is critical.
+            The default is ``False``.
+        net_type : str, optional
             Type of the net.
-        diff_mate_name: str, optional
-            differential mate name.
+            The default is ``"Single-Ended"``.
+        diff_mate_name : str, optional
+            Differential mate name.
+            The default is ``""``.
+
+        Examples
+        --------
+        >>> settings = EMCRuleCheckerSettings()
+        >>> settings.add_net("CLK_100M", is_clock=True, is_critical=True)
+        >>> settings.add_net("USB_DP", net_type="Differential", diff_mate_name="USB_DN")
+
         """
         kwargs = {
             "isBus": is_bus,
@@ -188,41 +260,58 @@ class EMCRuleCheckerSettings:
 
     def add_component(
         self,
-        comp_name,
-        comp_value,
-        device_name,
-        is_clock_driver,
-        is_high_speed,
-        is_ic,
-        is_oscillator,
-        x_loc,
-        y_loc,
-        cap_type=None,
-    ):
+        comp_name: str,
+        comp_value: str,
+        device_name: str,
+        is_clock_driver: bool | str,
+        is_high_speed: bool | str,
+        is_ic: bool | str,
+        is_oscillator: bool | str,
+        x_loc: str | float,
+        y_loc: str | float,
+        cap_type: str | None = None,
+    ) -> None:
         """Assign tags to a component.
 
         Parameters
         ----------
-        comp_name: str
+        comp_name : str
             Name of the component.
-        comp_value: str
+        comp_value : str
             Value of the component.
-        device_name: str
+        device_name : str
             Name of the device.
-        is_clock_driver: str
+        is_clock_driver : bool or str
             Whether the component is a clock driver.
-        is_high_speed: str
-            Whether the component is a high speed.
-        is_ic: str
-            Whether the component is a IC.
-        is_oscillator: str
+        is_high_speed : bool or str
+            Whether the component is high speed.
+        is_ic : bool or str
+            Whether the component is an IC.
+        is_oscillator : bool or str
             Whether the component is an oscillator.
-        x_loc: str
+        x_loc : str or float
             X coordinate.
-        y_loc: str
-            Y coordinate
-        cap_type: str, optional
-            Type of the capacitor. The default is ``"None"``. Options are ``"Decoupling"``, ``"Stitching"``.
+        y_loc : str or float
+            Y coordinate.
+        cap_type : str or None, optional
+            Type of the capacitor. Options are ``"Decoupling"`` and ``"Stitching"``.
+            The default is ``None``.
+
+        Examples
+        --------
+        >>> settings = EMCRuleCheckerSettings()
+        >>> settings.add_component(
+        ...     comp_name="U1",
+        ...     comp_value="FPGA",
+        ...     device_name="XC7A35T",
+        ...     is_clock_driver=False,
+        ...     is_high_speed=True,
+        ...     is_ic=True,
+        ...     is_oscillator=False,
+        ...     x_loc="10.5",
+        ...     y_loc="20.3",
+        ... )
+
         """
         kwargs = {
             "CompName": comp_name,

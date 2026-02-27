@@ -28,8 +28,22 @@ import warnings
 from pyedb.generic.settings import settings
 
 
-def list_installed_ansysem():
-    """Return a list of installed AEDT versions on ``ANSYSEM_ROOT``."""
+def list_installed_ansysem() -> list[str]:
+    """Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
+
+    Returns
+    -------
+    list[str]
+        List of environment variable names for installed AEDT versions.
+
+    Examples
+    --------
+    >>> from pyedb.misc.misc import list_installed_ansysem
+    >>> versions = list_installed_ansysem()
+    >>> versions
+    ['ANSYSEM_ROOT241', 'ANSYSEM_ROOT232']
+
+    """
     aedt_env_var_prefix = "ANSYSEM_ROOT"
     version_list = sorted([x for x in os.environ if x.startswith(aedt_env_var_prefix)], reverse=True)
     aedt_env_var_sv_prefix = "ANSYSEMSV_ROOT"
@@ -43,11 +57,22 @@ def list_installed_ansysem():
     return version_list
 
 
-def installed_versions():
+def installed_versions() -> dict[str, str]:
     """Get the installed AEDT versions.
 
-    This method returns a dictionary, with version as the key and installation path
-    as the value."""
+    Returns
+    -------
+    dict[str, str]
+        Dictionary with version as the key and installation path as the value.
+
+    Examples
+    --------
+    >>> from pyedb.misc.misc import installed_versions
+    >>> versions = installed_versions()
+    >>> versions
+    {'2024.1': 'C:/Program Files/AnsysEM/v241/Win64', '2023.2': 'C:/Program Files/AnsysEM/v232/Win64'}
+
+    """
 
     return_dict = {}
     version_list = list_installed_ansysem()
@@ -76,16 +101,44 @@ def installed_versions():
     return return_dict
 
 
-def current_version():
-    """Get the current AEDT version."""
+def current_version() -> str:
+    """Get the current AEDT version.
+
+    Returns
+    -------
+    str
+        Current AEDT version string, or empty string if no version is found.
+
+    Examples
+    --------
+    >>> from pyedb.misc.misc import current_version
+    >>> version = current_version()
+    >>> version
+    '2024.1'
+
+    """
     try:
         return list(installed_versions().keys())[0]
     except (NameError, IndexError):
         return ""
 
 
-def current_student_version():
-    """Get the current AEDT student version."""
+def current_student_version() -> str:
+    """Get the current AEDT student version.
+
+    Returns
+    -------
+    str
+        Current AEDT student version string with 'SV' suffix, or empty string if no student version is found.
+
+    Examples
+    --------
+    >>> from pyedb.misc.misc import current_student_version
+    >>> version = current_student_version()
+    >>> version
+    '2024.1SV'
+
+    """
     for version_key in installed_versions():
         if "SV" in version_key:
             return version_key

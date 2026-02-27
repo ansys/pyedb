@@ -25,6 +25,10 @@ from collections import defaultdict
 import math
 import re
 import sys
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.database.Variables import VariableManager
 
 import numpy as np
 
@@ -35,20 +39,27 @@ class GeometryOperators(object):
     """Manages geometry operators."""
 
     @staticmethod
-    def List2list(input_list):  # pragma: no cover
+    def List2list(input_list) -> list:  # pragma: no cover
         """Convert a C# list object to a Python list.
 
         This function performs a deep conversion.
 
         Parameters
         ----------
-        input_list : List
+        input_list : list
             C# list to convert to a Python list.
 
         Returns
         -------
-        List
+        list
             Converted Python list.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> csharp_list = [1, 2, [3, 4]]
+        >>> go.List2list(csharp_list)
+        [1, 2, [3, 4]]
 
         """
         output_list = []
@@ -60,37 +71,39 @@ class GeometryOperators(object):
         return output_list
 
     @staticmethod
-    def parse_dim_arg(string, scale_to_unit=None, variable_manager=None):  # pragma: no cover
+    def parse_dim_arg(
+        string: str | float, scale_to_unit: str | None = None, variable_manager: VariableManager = None
+    ) -> float | str | None:  # pragma: no cover
         """Convert a number and unit to a float.
+
         Angles are converted in radians.
 
         Parameters
         ----------
-        string : str, optional
-            String to convert. For example, ``"2mm"``. The default is ``None``.
-        scale_to_unit : str, optional
-            Units for the value to convert. For example, ``"mm"``.
-        variable_manager : :class:`pyedb.dotnet.database.Variables.VariableManager`, optional
+        string : str or float
+            String to convert. For example, ``"2mm"``.
+        scale_to_unit : str or None, optional
+            Units for the value to convert.
+        variable_manager : VariableManager, optional
             Try to parse formula and returns numeric value.
-            The default is ``None``.
 
         Returns
         -------
-        float
-            Value for the converted value and units. For example, ``0.002``.
+        float, str, or None
+            Value for the converted value and units.
 
         Examples
         --------
-        Parse `'"2mm"'`.
+        Parse ``"2mm"``.
 
-        >>> from pyedb.modeler.geometry_operators import GeometryOperators as go
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
         >>> go.parse_dim_arg("2mm")
-        >>> 0.002
+        0.002
 
         Use the optional argument ``scale_to_unit`` to specify the destination unit.
 
         >>> go.parse_dim_arg("2mm", scale_to_unit="mm")
-        >>> 2.0
+        2.0
 
         """
         if type(string) is not str:
@@ -128,7 +141,7 @@ class GeometryOperators(object):
                 return value
 
     @staticmethod
-    def draft_type_str(val):  # pragma: no cover
+    def draft_type_str(val: int) -> str:  # pragma: no cover
         """Retrieve the draft type.
 
         Parameters
@@ -139,7 +152,14 @@ class GeometryOperators(object):
         Returns
         -------
         str
-           Type of the draft.
+            Type of the draft.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> from pyedb.generic.constants import SWEEPDRAFT
+        >>> go.draft_type_str(SWEEPDRAFT.Extended)
+        'Extended'
 
         """
         if val == SWEEPDRAFT.Extended:
@@ -150,42 +170,59 @@ class GeometryOperators(object):
             return "Natural"
 
     @staticmethod
-    def get_mid_point(v1, v2):
+    def get_mid_point(v1: list[float], v2: list[float]) -> list[float]:
         """Evaluate the midpoint between two points.
 
         Parameters
         ----------
-        v1 : List
+        v1 : list[float]
             List of ``[x, y, z]`` coordinates for the first point.
-        v2 : List
+        v2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[x, y, z]`` coordinates for the midpoint.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> p1 = [0.0, 0.0, 0.0]
+        >>> p2 = [2.0, 4.0, 6.0]
+        >>> go.get_mid_point(p1, p2)
+        [1.0, 2.0, 3.0]
 
         """
         m = [((i + j) / 2.0) for i, j in zip(v1, v2)]
         return m
 
     @staticmethod
-    def get_triangle_area(v1, v2, v3):  # pragma: no cover
+    def get_triangle_area(v1: list[float], v2: list[float], v3: list[float]) -> float:  # pragma: no cover
         """Evaluate the area of a triangle defined by its three vertices.
 
         Parameters
         ----------
-        v1 : List
+        v1 : list[float]
             List of ``[x, y, z]`` coordinates for the first vertex.
-        v2 : List
+        v2 : list[float]
             List of ``[x, y, z]`` coordinates for the second vertex.
-        v3 : List
+        v3 : list[float]
             List of ``[x, y, z]`` coordinates for the third vertex.
 
         Returns
         -------
         float
             Area of the triangle.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> v1 = [0.0, 0.0, 0.0]
+        >>> v2 = [1.0, 0.0, 0.0]
+        >>> v3 = [0.0, 1.0, 0.0]
+        >>> go.get_triangle_area(v1, v2, v3)
+        0.5
 
         """
         a = ((v1[0] - v2[0]) ** 2 + (v1[1] - v2[1]) ** 2 + (v1[2] - v2[2]) ** 2) ** 0.5
@@ -198,39 +235,56 @@ class GeometryOperators(object):
         return area
 
     @staticmethod
-    def v_cross(a, b):  # pragma: no cover
+    def v_cross(a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
         """Evaluate the cross product of two geometry vectors.
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[x, y, z]`` coordinates for the result vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [1.0, 0.0, 0.0]
+        >>> b = [0.0, 1.0, 0.0]
+        >>> go.v_cross(a, b)
+        [0.0, 0.0, 1.0]
+
         """
         c = [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]]
         return c
 
     @staticmethod
-    def _v_dot(a, b):  # pragma: no cover
+    def _v_dot(a: list[float], b: list[float]) -> float | bool:  # pragma: no cover
         """Evaluate the dot product between two geometry vectors.
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
 
         Returns
         -------
-        float
+        float, or bool
             Result of the dot product.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [1.0, 2.0, 3.0]
+        >>> b = [4.0, 5.0, 6.0]
+        >>> go._v_dot(a, b)
+        32.0
 
         """
         if len(a) == 3:
@@ -242,66 +296,90 @@ class GeometryOperators(object):
         return False
 
     @staticmethod
-    def v_dot(a, b):  # pragma: no cover
+    def v_dot(a: list[float], b: list[float]) -> float | bool:  # pragma: no cover
         """Evaluate the dot product between two geometry vectors.
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
 
         Returns
         -------
-        float
+        float, or bool
             Result of the dot product.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [1.0, 2.0, 3.0]
+        >>> b = [4.0, 5.0, 6.0]
+        >>> go.v_dot(a, b)
+        32.0
 
         """
         return GeometryOperators._v_dot(a, b)
 
     @staticmethod
-    def v_prod(s, v):  # pragma: no cover
+    def v_prod(s: float, v: list[float]) -> list[float]:  # pragma: no cover
         """Evaluate the product between a scalar value and a vector.
 
         Parameters
         ----------
         s : float
             Scalar value.
-        v : List
+        v : list[float]
             List of values for the vector in the format ``[v1, v2,..., vn]``.
             The vector can be any length.
 
         Returns
         -------
-        List
+        list[float]
             List of values for the result vector. This list is the
             same length as the list for the input vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> v = [1.0, 2.0, 3.0]
+        >>> go.v_prod(2.0, v)
+        [2.0, 4.0, 6.0]
 
         """
         r = [s * i for i in v]
         return r
 
     @staticmethod
-    def v_rotate_about_axis(vector, angle, radians=False, axis="z"):  # pragma: no cover
+    def v_rotate_about_axis(
+        vector: list[float], angle: float, radians: bool = False, axis: str = "z"
+    ) -> tuple[float, float, float]:  # pragma: no cover
         """Evaluate rotation of a vector around an axis.
 
         Parameters
         ----------
-        vector : list
+        vector : list[float]
             List of the three component of the vector.
         angle : float
             Angle by which the vector is to be rotated (radians or degree).
         radians : bool, optional
-            Whether the angle is expressed in radians. Default is ``False``.
+            Whether the angle is expressed in radians. The default is ``False``.
         axis : str, optional
-            Axis about which to rotate the vector. Default is ``"z"``.
+            Axis about which to rotate the vector. The default is ``"z"``.
 
         Returns
         -------
-        list
+        tuple[float, float, float]
             List of values for the result vector.
 
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> import math
+        >>> v = [1.0, 0.0, 0.0]
+        >>> go.v_rotate_about_axis(v, 90.0, axis="z")
+        (6.123233995736766e-17, 1.0, 0.0)
         """
         if not radians:
             angle = math.radians(angle)
@@ -324,58 +402,81 @@ class GeometryOperators(object):
         return rotated_x, rotated_y, rotated_z
 
     @staticmethod
-    def v_sub(a, b):  # pragma: no cover
+    def v_sub(a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
         """Evaluate two geometry vectors by subtracting them (a-b).
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[x, y, z]`` coordinates for the result vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [5.0, 7.0, 9.0]
+        >>> b = [1.0, 2.0, 3.0]
+        >>> go.v_sub(a, b)
+        [4.0, 5.0, 6.0]
 
         """
         c = [i - j for i, j in zip(a, b)]
         return c
 
     @staticmethod
-    def v_sum(a, b):  # pragma: no cover
+    def v_sum(a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
         """Evaluate two geometry vectors by adding them (a+b).
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[x, y, z]`` coordinates for the result vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [1.0, 2.0, 3.0]
+        >>> b = [4.0, 5.0, 6.0]
+        >>> go.v_sum(a, b)
+        [5.0, 7.0, 9.0]
 
         """
         c = [i + j for i, j in zip(a, b)]
         return c
 
     @staticmethod
-    def v_norm(a):  # pragma: no cover
+    def v_norm(a: list[float]) -> float:  # pragma: no cover
         """Evaluate the Euclidean norm of a geometry vector.
 
         Parameters
         ----------
-        a : List
-        List of ``[x, y, z]`` coordinates for the vector.
+        a : list[float]
+            List of ``[x, y, z]`` coordinates for the vector.
 
         Returns
         -------
         float
             Evaluated norm in the same unit as the coordinates for the input vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [3.0, 4.0, 0.0]
+        >>> go.v_norm(a)
+        5.0
 
         """
         t = 0
@@ -385,18 +486,25 @@ class GeometryOperators(object):
         return m
 
     @staticmethod
-    def normalize_vector(v):  # pragma: no cover
+    def normalize_vector(v: list[float]) -> list[float]:  # pragma: no cover
         """Normalize a geometry vector.
 
         Parameters
         ----------
-        v : List
+        v : list[float]
             List of ``[x, y, z]`` coordinates for vector.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[x, y, z]`` coordinates for the normalized vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> v = [3.0, 4.0, 0.0]
+        >>> go.normalize_vector(v)
+        [0.6, 0.8, 0.0]
 
         """
         # normalize a vector to its norm
@@ -405,38 +513,55 @@ class GeometryOperators(object):
         return vn
 
     @staticmethod
-    def v_points(p1, p2):  # pragma: no cover
+    def v_points(p1: list[float], p2: list[float]) -> list[float]:  # pragma: no cover
         """Vector from one point to another point.
 
         Parameters
         ----------
-        p1 : List
+        p1 : list[float]
             Coordinates ``[x1,y1,z1]`` for the first point.
-        p2 : List
+        p2 : list[float]
             Coordinates ``[x2,y2,z2]`` for second point.
 
         Returns
         -------
-        List
+        list[float]
             Coordinates ``[vx, vy, vz]`` for the vector from the first point to the second point.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> p1 = [1.0, 2.0, 3.0]
+        >>> p2 = [4.0, 6.0, 8.0]
+        >>> go.v_points(p1, p2)
+        [3.0, 4.0, 5.0]
+
         """
         return GeometryOperators.v_sub(p2, p1)
 
     @staticmethod
-    def points_distance(p1, p2):  # pragma: no cover
+    def points_distance(p1: list[float], p2: list[float]) -> float | bool:  # pragma: no cover
         """Evaluate the distance between two points expressed as their Cartesian coordinates.
 
         Parameters
         ----------
-        p1 : List
+        p1 : list[float]
             List of ``[x1,y1,z1]`` coordinates for the first point.
-        p2 : List
-            List of ``[x2,y2,z2]`` coordinates for the second ppint.
+        p2 : list[float]
+            List of ``[x2,y2,z2]`` coordinates for the second point.
 
         Returns
         -------
-        float
+        float, or bool
             Distance between the two points in the same unit as the coordinates for the points.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> p1 = [0.0, 0.0, 0.0]
+        >>> p2 = [3.0, 4.0, 0.0]
+        >>> go.points_distance(p1, p2)
+        5.0
 
         """
         # fmt: off
@@ -448,19 +573,20 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def find_point_on_plane(pointlists, direction=0):  # pragma: no cover
+    def find_point_on_plane(pointlists: list[list[float]], direction: int = 0) -> float:  # pragma: no cover
         """Find a point on a plane.
 
         Parameters
         ----------
-        pointlists : List
+        pointlists : list[list[float]]
             List of points.
         direction : int, optional
-             The default is ``0``.
+            Direction parameter. The default is ``0``.
 
         Returns
         -------
-        List
+        float
+            Point on plane.
 
         """
         if direction <= 2:
@@ -476,26 +602,34 @@ class GeometryOperators(object):
         return point
 
     @staticmethod
-    def distance_vector(p, a, b):  # pragma: no cover
+    def distance_vector(p: list[float], a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
         """Evaluate the vector distance between point ``p`` and a line defined by two points, ``a`` and ``b``.
 
-        .. note::
-            he formula is  ``d = (a-p)-((a-p)dot p)n``, where ``a`` is a point of the line (either ``a`` or ``b``)
-            and ``n`` is the unit vector in the direction of the line.
+        The formula is  ``d = (a-p)-((a-p)dot p)n``, where ``a`` is a point of the line (either ``a`` or ``b``)
+        and ``n`` is the unit vector in the direction of the line.
 
         Parameters
         ----------
-        p : List
+        p : list[float]
             List of ``[x, y, z]`` coordinates for the reference point.
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the segment.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the segment.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[x, y, z]`` coordinates for the distance vector.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> p = [0.0, 1.0, 0.0]
+        >>> a = [0.0, 0.0, 0.0]
+        >>> b = [1.0, 0.0, 0.0]
+        >>> go.distance_vector(p, a, b)
+        [0.0, 1.0, 0.0]
 
         """
         v1 = GeometryOperators.v_points(a, b)
@@ -507,24 +641,35 @@ class GeometryOperators(object):
         return vd
 
     @staticmethod
-    def is_between_points(p, a, b, tol=1e-6):  # pragma: no cover
+    def is_between_points(
+        p: list[float], a: list[float], b: list[float], tol: float = 1e-6
+    ) -> bool:  # pragma: no cover
         """Check if a point lies on the segment defined by two points.
 
         Parameters
         ----------
-        p : List
+        p : list[float]
             List of ``[x, y, z]`` coordinates for the reference point ``p``.
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the segment.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the segment.
-        tol : float
-            Linear tolerance. The default value is ``1e-6``.
+        tol : float, optional
+            Linear tolerance.  The default is ``1e-6``.
 
         Returns
         -------
         bool
             ``True`` when the point lies on the segment defined by the two points, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> p = [0.5, 0.5, 0.0]
+        >>> a = [0.0, 0.0, 0.0]
+        >>> b = [1.0, 1.0, 0.0]
+        >>> go.is_between_points(p, a, b)
+        True
 
         """
         v1 = GeometryOperators.v_points(a, b)
@@ -539,26 +684,38 @@ class GeometryOperators(object):
             return True
 
     @staticmethod
-    def is_parallel(a1, a2, b1, b2, tol=1e-6):  # pragma: no cover
+    def is_parallel(
+        a1: list[float], a2: list[float], b1: list[float], b2: list[float], tol: float = 1e-6
+    ) -> bool:  # pragma: no cover
         """Check if a segment defined by two points is parallel to a segment defined by two other points.
 
         Parameters
         ----------
-        a1 : List
-            List of ``[x, y, z]`` coordinates for the first point of the fiirst segment.
-        a2 : List
+        a1 : list[float]
+            List of ``[x, y, z]`` coordinates for the first point of the first segment.
+        a2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the first segment.
-        b1 : List
+        b1 : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the second segment.
-        b2 : List
+        b2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the second segment.
-        tol : float
-            Linear tolerance. The default value is ``1e-6``.
+        tol : float, optional
+            Linear tolerance. The default is ``1e-6``.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a1 = [0.0, 0.0, 0.0]
+        >>> a2 = [1.0, 0.0, 0.0]
+        >>> b1 = [0.0, 1.0, 0.0]
+        >>> b2 = [1.0, 1.0, 0.0]
+        >>> go.is_parallel(a1, a2, b1, b2)
+        True
 
         """
         if 1.0 - GeometryOperators.parallel_coeff(a1, a2, b1, b2) < tol * tol:
@@ -567,24 +724,25 @@ class GeometryOperators(object):
             return False
 
     @staticmethod
-    def parallel_coeff(a1, a2, b1, b2):  # pragma: no cover
-        """ADD DESCRIPTION.
+    def parallel_coeff(a1: list[float], a2: list[float], b1: list[float], b2: list[float]) -> float:  # pragma: no cover
+        """Evaluate the parallelism coefficient between two segments.
 
         Parameters
         ----------
-        a1 : List
+        a1 : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the first segment.
-        a2 : List
+        a2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the first segment.
-        b1 : List
+        b1 : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the second segment.
-        b2 : List
+        b2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the second segment.
 
         Returns
         -------
         float
-            _vdot of 4 vertices of 2 segments.
+            Dot product of 4 vertices of 2 segments.
+
         """
         va = GeometryOperators.v_points(a1, a2)
         vb = GeometryOperators.v_points(b1, b2)
@@ -594,22 +752,30 @@ class GeometryOperators(object):
         return abs(var)
 
     @staticmethod
-    def is_collinear(a, b, tol=1e-6):  # pragma: no cover
+    def is_collinear(a: list[float], b: list[float], tol: float = 1e-6) -> bool:  # pragma: no cover
         """Check if two vectors are collinear (parallel or anti-parallel).
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
-        tol : float
-            Linear tolerance. The default value is ``1e-6``.
+        tol : float, optional
+            Linear tolerance. The default is ``1e-6``.
 
         Returns
         -------
         bool
             ``True`` if vectors are collinear, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [1.0, 0.0, 0.0]
+        >>> b = [2.0, 0.0, 0.0]
+        >>> go.is_collinear(a, b)
+        True
 
         """
         an = GeometryOperators.v_norm(a)
@@ -621,24 +787,26 @@ class GeometryOperators(object):
             return False
 
     @staticmethod
-    def is_projection_inside(a1, a2, b1, b2):  # pragma: no cover
+    def is_projection_inside(
+        a1: list[float], a2: list[float], b1: list[float], b2: list[float]
+    ) -> bool:  # pragma: no cover
         """Project a segment onto another segment and check if the projected segment is inside it.
 
         Parameters
         ----------
-        a1 : List
+        a1 : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the projected segment.
-        a2 : List
+        a2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the projected segment.
-        b1 : List
+        b1 : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the other segment.
-        b2 : List
+        b2 : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the other segment.
 
         Returns
         -------
         bool
-            ``True`` when the projected segment is inside the other segmennt, ``False`` otherwise.
+            ``True`` when the projected segment is inside the other segment, ``False`` otherwise.
 
         """
         if not GeometryOperators.is_parallel(a1, a2, b1, b2):
@@ -653,18 +821,20 @@ class GeometryOperators(object):
         return True
 
     @staticmethod
-    def arrays_positions_sum(vertlist1, vertlist2):  # pragma: no cover
+    def arrays_positions_sum(vertlist1: list[list[float]], vertlist2: list[list[float]]) -> float:  # pragma: no cover
         """Return the sum of two vertices lists.
 
         Parameters
         ----------
-        vertlist1 : List
-
-        vertlist2 : List
+        vertlist1 : list[list[float]]
+            First list of vertices.
+        vertlist2 : list[list[float]]
+            Second list of vertices.
 
         Returns
         -------
         float
+            Average distance between all vertex pairs.
 
         """
         s = 0
@@ -674,20 +844,30 @@ class GeometryOperators(object):
         return s / (len(vertlist1) + len(vertlist2))
 
     @staticmethod
-    def v_angle(a, b):  # pragma: no cover
+    def v_angle(a: list[float], b: list[float]) -> float:  # pragma: no cover
         """Evaluate the angle between two geometry vectors.
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
 
         Returns
         -------
         float
             Angle in radians.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> import math
+        >>> a = [1.0, 0.0, 0.0]
+        >>> b = [0.0, 1.0, 0.0]
+        >>> angle = go.v_angle(a, b)
+        >>> math.degrees(angle)
+        90.0
 
         """
         d = GeometryOperators.v_dot(a, b)
@@ -699,22 +879,25 @@ class GeometryOperators(object):
             return math.acos(d / (an * bn))
 
     @staticmethod
-    def pointing_to_axis(x_pointing, y_pointing):  # pragma: no cover
-        """Retrieve the axes from the HFSS X axis and Y pointing axis as per
-        the definition of the AEDT interface coordinate system.
+    def pointing_to_axis(
+        x_pointing: list[float], y_pointing: list[float]
+    ) -> tuple[list[float], list[float], list[float]]:  # pragma: no cover
+        """Retrieve the axes from the HFSS X axis and Y pointing axis.
+
+        This is as per the definition of the AEDT interface coordinate system.
 
         Parameters
         ----------
-        x_pointing : List
+        x_pointing : list[float]
             List of ``[x, y, z]`` coordinates for the X axis.
-
-        y_pointing : List
+        y_pointing : list[float]
             List of ``[x, y, z]`` coordinates for the Y pointing axis.
 
         Returns
         -------
-        tuple
+        tuple[list[float], list[float], list[float]]
             ``[Xx, Xy, Xz], [Yx, Yy, Yz], [Zx, Zy, Zz]`` of the three axes (normalized).
+
         """
         zpt = GeometryOperators.v_cross(x_pointing, y_pointing)
         ypt = GeometryOperators.v_cross(zpt, x_pointing)
@@ -726,23 +909,25 @@ class GeometryOperators(object):
         return xp, yp, zp
 
     @staticmethod
-    def axis_to_euler_zxz(x, y, z):  # pragma: no cover
+    def axis_to_euler_zxz(
+        x: list[float], y: list[float], z: list[float]
+    ) -> tuple[float, float, float]:  # pragma: no cover
         """Retrieve Euler angles of a frame following the rotation sequence ZXZ.
 
         Provides assumption for the gimbal lock problem.
 
         Parameters
         ----------
-        x : List
+        x : list[float]
             List of ``[Xx, Xy, Xz]`` coordinates for the X axis.
-        y : List
+        y : list[float]
             List of ``[Yx, Yy, Yz]`` coordinates for the Y axis.
-        z : List
+        z : list[float]
             List of ``[Zx, Zy, Zz]`` coordinates for the Z axis.
 
         Returns
         -------
-        tuple
+        tuple[float, float, float]
             (phi, theta, psi) containing the Euler angles in radians.
 
         """
@@ -769,23 +954,25 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    def axis_to_euler_zyz(x, y, z):  # pragma: no cover
+    def axis_to_euler_zyz(
+        x: list[float], y: list[float], z: list[float]
+    ) -> tuple[float, float, float]:  # pragma: no cover
         """Retrieve Euler angles of a frame following the rotation sequence ZYZ.
 
         Provides assumption for the gimbal lock problem.
 
         Parameters
         ----------
-        x : List
+        x : list[float]
             List of ``[Xx, Xy, Xz]`` coordinates for the X axis.
-        y : List
+        y : list[float]
             List of ``[Yx, Yy, Yz]`` coordinates for the Y axis.
-        z : List
+        z : list[float]
             List of ``[Zx, Zy, Zz]`` coordinates for the Z axis.
 
         Returns
         -------
-        tuple
+        tuple[float, float, float]
             (phi, theta, psi) containing the Euler angles in radians.
 
         """
@@ -812,17 +999,17 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    def quaternion_to_axis(q):  # pragma: no cover
+    def quaternion_to_axis(q: list[float]) -> tuple[list[float], list[float], list[float]]:  # pragma: no cover
         """Convert a quaternion to a rotated frame defined by X, Y, and Z axes.
 
         Parameters
         ----------
-        q : List
+        q : list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         Returns
         -------
-        tuple
+        tuple[list[float], list[float], list[float]]
             [Xx, Xy, Xz], [Yx, Yy, Yz], [Zx, Zy, Zz] of the three axes (normalized).
 
         """
@@ -850,17 +1037,17 @@ class GeometryOperators(object):
         return x, y, z
 
     @staticmethod
-    def quaternion_to_axis_angle(q):  # pragma: no cover
+    def quaternion_to_axis_angle(q: list[float]) -> tuple[list[float], float]:  # pragma: no cover
         """Convert a quaternion to the axis angle rotation formulation.
 
         Parameters
         ----------
-        q : List
+        q : list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         Returns
         -------
-        tuple
+        tuple[list[float], float]
             ([ux, uy, uz], theta) containing the rotation axes expressed as X, Y, Z components of
             the unit vector ``u`` and the rotation angle theta expressed in radians.
 
@@ -875,20 +1062,19 @@ class GeometryOperators(object):
         return u, theta
 
     @staticmethod
-    def axis_angle_to_quaternion(u, theta):  # pragma: no cover
+    def axis_angle_to_quaternion(u: list[float], theta: float) -> list[float]:  # pragma: no cover
         """Convert the axis angle rotation formulation to a quaternion.
 
         Parameters
         ----------
-        u : List
+        u : list[float]
             List of ``[ux, uy, uz]`` coordinates for the rotation axis.
-
         theta : float
             Angle of rotation in radians.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         """
@@ -901,17 +1087,17 @@ class GeometryOperators(object):
         return [q1, q2, q3, q4]
 
     @staticmethod
-    def quaternion_to_euler_zxz(q):  # pragma: no cover
+    def quaternion_to_euler_zxz(q: list[float]) -> tuple[float, float, float]:  # pragma: no cover
         """Convert a quaternion to Euler angles following rotation sequence ZXZ.
 
         Parameters
         ----------
-        q : List
+        q : list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         Returns
         -------
-        tuple
+        tuple[float, float, float]
             (phi, theta, psi) containing the Euler angles in radians.
 
         """
@@ -930,21 +1116,21 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    def euler_zxz_to_quaternion(phi, theta, psi):  # pragma: no cover
+    def euler_zxz_to_quaternion(phi: float, theta: float, psi: float) -> list[float]:  # pragma: no cover
         """Convert the Euler angles following rotation sequence ZXZ to a quaternion.
 
         Parameters
         ----------
         phi : float
-            Euler angle psi in radians.
+            Euler angle phi in radians.
         theta : float
             Euler angle theta in radians.
         psi : float
-            Euler angle phi in radians.
+            Euler angle psi in radians.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         """
@@ -960,17 +1146,17 @@ class GeometryOperators(object):
         return [q1, q2, q3, q4]
 
     @staticmethod
-    def quaternion_to_euler_zyz(q):  # pragma: no cover
+    def quaternion_to_euler_zyz(q: list[float]) -> tuple[float, float, float]:  # pragma: no cover
         """Convert a quaternion to Euler angles following rotation sequence ZYZ.
 
         Parameters
         ----------
-        q : List
+        q : list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         Returns
         -------
-        tuple
+        tuple[float, float, float]
             (phi, theta, psi) containing the Euler angles in radians.
 
         """
@@ -989,21 +1175,21 @@ class GeometryOperators(object):
         return phi, theta, psi
 
     @staticmethod
-    def euler_zyz_to_quaternion(phi, theta, psi):  # pragma: no cover
+    def euler_zyz_to_quaternion(phi: float, theta: float, psi: float) -> list[float]:  # pragma: no cover
         """Convert the Euler angles following rotation sequence ZYZ to a quaternion.
 
         Parameters
         ----------
         phi : float
-            Euler angle psi in radians.
+            Euler angle phi in radians.
         theta : float
             Euler angle theta in radians.
         psi : float
-            Euler angle phi in radians.
+            Euler angle psi in radians.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         """
@@ -1019,7 +1205,7 @@ class GeometryOperators(object):
         return [q1, q2, q3, q4]
 
     @staticmethod
-    def deg2rad(angle):
+    def deg2rad(angle: float) -> float:
         """Convert the angle from degrees to radians.
 
         Parameters
@@ -1032,12 +1218,18 @@ class GeometryOperators(object):
         float
             Angle in radians.
 
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> go.deg2rad(180.0)
+        3.141592653589793
+
         """
         pi = math.pi
         return angle / 180.0 * pi
 
     @staticmethod
-    def rad2deg(angle):
+    def rad2deg(angle: float) -> float:
         """Convert the angle from radians to degrees.
 
         Parameters
@@ -1050,30 +1242,34 @@ class GeometryOperators(object):
         float
             Angle in degrees.
 
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> import math
+        >>> go.rad2deg(math.pi)
+        180.0
+
         """
         pi = math.pi
         return angle * 180.0 / pi
 
     @staticmethod
-    def atan2(y, x):  # pragma: no cover
-        """Implementation of atan2 that does not suffer from the following issues:
-        math.atan2(0.0, 0.0) = 0.0
-        math.atan2(-0.0, 0.0) = -0.0
-        math.atan2(0.0, -0.0) = 3.141592653589793
-        math.atan2(-0.0, -0.0) = -3.141592653589793
-        and returns always 0.0.
+    def atan2(y: float, x: float) -> float:  # pragma: no cover
+        """Implementation of atan2 that does not suffer from sign issues.
+
+        This implementation always returns 0.0 for very small values.
 
         Parameters
         ----------
         y : float
             Y-axis value for atan2.
-
         x : float
             X-axis value for atan2.
 
         Returns
         -------
         float
+            Arctangent of y/x in radians.
 
         """
         eps = 7.0 / 3.0 - 4.0 / 3.0 - 1.0
@@ -1084,23 +1280,24 @@ class GeometryOperators(object):
         return math.atan2(y, x)
 
     @staticmethod
-    def q_prod(p, q):  # pragma: no cover
-        """Evaluate the product of two quaternions, ``p`` and ``q``, defined as:
+    def q_prod(p: list[float], q: list[float]) -> list[float]:  # pragma: no cover
+        """Evaluate the product of two quaternions.
+
+        The product is defined as:
         p = p0 + p' = p0 + ip1 + jp2 + kp3.
         q = q0 + q' = q0 + iq1 + jq2 + kq3.
         r = pq = p0q0 - p' • q' + p0q' + q0p' + p' x q'.
 
         Parameters
         ----------
-        p : List
+        p : list[float]
             List of ``[p1, p2, p3, p4]`` coordinates for quaternion ``p``.
-
-        q : List
-            List of ``[p1, p2, p3, p4]`` coordinates for quaternion ``q``.
+        q : list[float]
+            List of ``[q1, q2, q3, q4]`` coordinates for quaternion ``q``.
 
         Returns
         -------
-        List
+        list[float]
             List of [r1, r2, r3, r4] coordinates for the result quaternion.
 
         """
@@ -1119,23 +1316,25 @@ class GeometryOperators(object):
         return [r0, rv[0], rv[1], rv[2]]
 
     @staticmethod
-    def q_rotation(v, q):  # pragma: no cover
+    def q_rotation(v: list[float], q: list[float]) -> list[float]:  # pragma: no cover
         """Evaluate the rotation of a vector, defined by a quaternion.
+
         Evaluated as:
-        ``"q = q0 + q' = q0 + iq1 + jq2 + kq3"``,
-        ``"w = qvq* = (q0^2 - |q'|^2)v + 2(q' • v)q' + 2q0(q' x v)"``.
+        ``q = q0 + q' = q0 + iq1 + jq2 + kq3``,
+        ``w = qvq* = (q0^2 - |q'|^2)v + 2(q' • v)q' + 2q0(q' x v)``.
 
         Parameters
         ----------
-        v : List
+        v : list[float]
             List of ``[v1, v2, v3]`` coordinates for the vector.
-        q : List
+        q : list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[w1, w2, w3]`` coordinates for the result vector ``w``.
+
         """
         q0 = q[0]
         qv = q[1:4]
@@ -1154,26 +1353,25 @@ class GeometryOperators(object):
         return w
 
     @staticmethod
-    def q_rotation_inv(v, q):
+    def q_rotation_inv(v: list[float], q: list[float]) -> list[float]:
         """Evaluate the inverse rotation of a vector that is defined by a quaternion.
 
         It can also be the rotation of the coordinate frame with respect to the vector.
 
-            q = q0 + q' = q0 + iq1 + jq2 + kq3
-            q* = q0 - q' = q0 - iq1 - jq2 - kq3
-            w = q*vq
+        q = q0 + q' = q0 + iq1 + jq2 + kq3
+        q* = q0 - q' = q0 - iq1 - jq2 - kq3
+        w = q*vq
 
         Parameters
         ----------
-        v : List
+        v : list[float]
             List of ``[v1, v2, v3]`` coordinates for the vector.
-
-        q : List
+        q : list[float]
             List of ``[q1, q2, q3, q4]`` coordinates for the quaternion.
 
         Returns
         -------
-        List
+        list[float]
             List of ``[w1, w2, w3]`` coordinates for the vector.
 
         """
@@ -1181,18 +1379,25 @@ class GeometryOperators(object):
         return GeometryOperators.q_rotation(v, q1)
 
     @staticmethod
-    def get_polygon_centroid(pts):  # pragma: no cover
+    def get_polygon_centroid(pts: list[list[float]]) -> list[float]:  # pragma: no cover
         """Evaluate the centroid of a polygon defined by its points.
 
         Parameters
         ----------
-        pts : List
+        pts : list[list[float]]
             List of points, with each point defined by its ``[x,y,z]`` coordinates.
 
         Returns
         -------
-        List
+        list[float]
             List of [x,y,z] coordinates for the centroid of the polygon.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> pts = [[0.0, 0.0, 0.0], [1.0, 0.0, 0.0], [1.0, 1.0, 0.0], [0.0, 1.0, 0.0]]
+        >>> go.get_polygon_centroid(pts)
+        [0.5, 0.5, 0.0]
 
         """
         if len(pts) == 0:  # pragma: no cover
@@ -1216,22 +1421,23 @@ class GeometryOperators(object):
         return [xc, yc, zc]
 
     @staticmethod
-    def cs_xy_pointing_expression(yaw, pitch, roll):  # pragma: no cover
-        """Return x_pointing and y_pointing vectors as expressions from
-        the yaw, ptich, and roll input (as strings).
+    def cs_xy_pointing_expression(yaw: str, pitch: str, roll: str) -> list[list[str]]:  # pragma: no cover
+        """Return x_pointing and y_pointing vectors as expressions.
 
         Parameters
         ----------
-        yaw : str, required
-            String expression for the yaw angle (rotation about Z-axis)
+        yaw : str
+            String expression for the yaw angle (rotation about Z-axis).
         pitch : str
-            String expression for the pitch angle (rotation about Y-axis)
+            String expression for the pitch angle (rotation about Y-axis).
         roll : str
-            String expression for the roll angle (rotation about X-axis)
+            String expression for the roll angle (rotation about X-axis).
 
         Returns
         -------
-        [x_pointing, y_pointing] vector expressions.
+        list[list[str]]
+            [x_pointing, y_pointing] vector expressions.
+
         """
         # X-Pointing
         xx = "cos(" + yaw + ")*cos(" + pitch + ")"
@@ -1254,8 +1460,26 @@ class GeometryOperators(object):
         return [x_pointing, y_pointing]
 
     @staticmethod
-    def get_numeric(s):
-        """Convert a string to a numeric value. Discard the suffix."""
+    def get_numeric(s: str | float | None) -> float:
+        """Convert a string to a numeric value. Discard the suffix.
+
+        Parameters
+        ----------
+        s : str, float, or None
+            String or numeric value to convert.
+
+        Returns
+        -------
+        float
+            Numeric value.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> go.get_numeric("123.45mm")
+        123.45
+
+        """
         if type(s) == str:
             if s == "Global":
                 return 0.0
@@ -1267,30 +1491,47 @@ class GeometryOperators(object):
             return float(s)
 
     @staticmethod
-    def is_small(s):
+    def is_small(s: str | float) -> bool:
         """Return ``True`` if the number represented by s is zero (i.e very small).
 
         Parameters
         ----------
-        s : numeric or str
+        s : str, or float
             Variable value.
 
         Returns
         -------
-            bool
+        bool
+            ``True`` if the value is very small, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> go.is_small(0.0)
+        True
+        >>> go.is_small(1e-20)
+        True
+        >>> go.is_small(1.0)
+        False
 
         """
         n = GeometryOperators.get_numeric(s)
         return True if math.fabs(n) < 2.0 * abs(sys.float_info.epsilon) else False
 
     @staticmethod
-    def numeric_cs(cs_in):  # pragma: no cover
+    def numeric_cs(cs_in: list[str] | str) -> list[float] | None:  # pragma: no cover
         """Return a list of [x,y,z] numeric values given a coordinate system as input.
 
         Parameters
         ----------
-        cs_in : List of str or str
+        cs_in : list[str], or str
             ``["x", "y", "z"]`` or "Global".
+
+        Returns
+        -------
+        list[float], or None
+            Numeric coordinate values or None.
+
         """
         if type(cs_in) is str:
             if cs_in == "Global":
@@ -1304,28 +1545,36 @@ class GeometryOperators(object):
                 return [0, 0, 0]
 
     @staticmethod
-    def orient_polygon(x, y, clockwise=True):
-        """
-        Orient a polygon clockwise or counterclockwise. The vertices should be already ordered either way.
+    def orient_polygon(x: list[float], y: list[float], clockwise: bool = True) -> tuple[list[float], list[float]]:
+        """Orient a polygon clockwise or counterclockwise.
+
+        The vertices should be already ordered either way.
         Use this function to change the orientation.
         The polygon is represented by its vertices coordinates.
 
-
         Parameters
         ----------
-        x : List
+        x : list[float]
             List of x coordinates of the vertices. Length must be >= 1.
             Degenerate polygon with only 2 points is also accepted, in this case the points are returned unchanged.
-        y : List
+        y : list[float]
             List of y coordinates of the vertices. Must be of the same length as x.
-        clockwise : bool
+        clockwise : bool, optional
             If ``True`` the polygon is oriented clockwise, if ``False`` it is oriented counterclockwise.
-            Default is ``True``.
+            The default is ``True``.
 
         Returns
         -------
-        List of List
+        tuple[list[float], list[float]]
             Lists of oriented vertices.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> x = [0.0, 1.0, 1.0, 0.0]
+        >>> y = [0.0, 0.0, 1.0, 1.0]
+        >>> x_new, y_new = go.orient_polygon(x, y, clockwise=True)
+
         """
         x_ret = x[:]
         y_ret = y[:]
@@ -1379,8 +1628,11 @@ class GeometryOperators(object):
         return x_ret, y_ret
 
     @staticmethod
-    def v_angle_sign(va, vb, vn, right_handed=True):  # pragma: no cover
+    def v_angle_sign(
+        va: list[float], vb: list[float], vn: list[float], right_handed: bool = True
+    ) -> float:  # pragma: no cover
         """Evaluate the signed angle between two geometry vectors.
+
         The sign is evaluated respect to the normal to the plane containing the two vectors as per the following rule.
         In case of opposite vectors, it returns an angle equal to 180deg (always positive).
         Assuming that the plane normal is normalized (vb == 1), the signed angle is simplified.
@@ -1391,15 +1643,16 @@ class GeometryOperators(object):
 
         Parameters
         ----------
-        va : List
+        va : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        vb : List
+        vb : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
-        vn : List
+        vn : list[float]
             List of ``[x, y, z]`` coordinates for the plane normal.
-        right_handed : bool
-            Whether to consider the right-handed rotation from va to vb. The default is ``True``.
+        right_handed : bool, optional
+            Whether to consider the right-handed rotation from va to vb.
             When ``False``, left-hand rotation from va to vb is considered.
+            The default is ``True``.
 
         Returns
         -------
@@ -1422,25 +1675,37 @@ class GeometryOperators(object):
             return math.atan2(GeometryOperators.v_dot(mcross, vnn), GeometryOperators.v_dot(va, vb))
 
     @staticmethod
-    def v_angle_sign_2D(va, vb, right_handed=True):
+    def v_angle_sign_2D(va: list[float], vb: list[float], right_handed: bool = True) -> float:
         """Evaluate the signed angle between two 2D geometry vectors.
-        Iit the 2D version of the ``GeometryOperators.v_angle_sign`` considering vn = [0,0,1].
+
+        It is the 2D version of the ``GeometryOperators.v_angle_sign`` considering vn = [0,0,1].
         In case of opposite vectors, it returns an angle equal to 180deg (always positive).
 
         Parameters
         ----------
-        va : List
+        va : list[float]
             List of ``[x, y]`` coordinates for the first vector.
-        vb : List
+        vb : list[float]
             List of ``[x, y]`` coordinates for the second vector.
-        right_handed : bool
-            Whether to consider the right-handed rotation from Va to Vb. The default is ``True``.
+        right_handed : bool, optional
+            Whether to consider the right-handed rotation from Va to Vb.
             When ``False``, left-hand rotation from Va to Vb is considered.
+            The default is ``True``.
 
         Returns
         -------
         float
             Angle in radians.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> import math
+        >>> va = [1.0, 0.0]
+        >>> vb = [0.0, 1.0]
+        >>> angle = go.v_angle_sign_2D(va, vb)
+        >>> math.degrees(angle)
+        90.0
 
         """
         c = va[0] * vb[1] - va[1] * vb[0]
@@ -1451,17 +1716,19 @@ class GeometryOperators(object):
             return math.atan2(-c, GeometryOperators.v_dot(va, vb))
 
     @staticmethod
-    def point_in_polygon(point, polygon, tolerance=1e-8):
+    def point_in_polygon(point: list[float], polygon: list[list[float]], tolerance: float = 1e-8) -> int:
         """Determine if a point is inside, outside the polygon or at exactly at the border.
 
         The method implements the radial algorithm (https://es.wikipedia.org/wiki/Algoritmo_radial)
 
-        point : List
+        Parameters
+        ----------
+        point : list[float]
             List of ``[x, y]`` coordinates.
-        polygon : List
+        polygon : list[list[float]]
             [[x1, x2, ..., xn],[y1, y2, ..., yn]]
-        tolerance : float
-            tolerance used for the algorithm. Default value is 1e-8.
+        tolerance : float, optional
+            Tolerance used for the algorithm. The default is ``1e-8``.
 
         Returns
         -------
@@ -1469,6 +1736,15 @@ class GeometryOperators(object):
             - ``-1`` When the point is outside the polygon.
             - ``0`` When the point is exactly on one of the sides of the polygon.
             - ``1`` When the point is inside the polygon.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> point = [0.5, 0.5]
+        >>> polygon = [[0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 1.0, 1.0]]
+        >>> go.point_in_polygon(point, polygon)
+        1
+
         """
         # fmt: off
         tol = tolerance
@@ -1498,14 +1774,16 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def is_point_in_polygon(point, polygon):
+    def is_point_in_polygon(point: list[float], polygon: list[list[float]]) -> bool:
         """Determine if a point is inside or outside a polygon, both located on the same plane.
 
         The method implements the radial algorithm (https://es.wikipedia.org/wiki/Algoritmo_radial)
 
-        point : List
+        Parameters
+        ----------
+        point : list[float]
             List of ``[x, y]`` coordinates.
-        polygon : List
+        polygon : list[list[float]]
             [[x1, x2, ..., xn],[y1, y2, ..., yn]]
 
         Returns
@@ -1513,6 +1791,15 @@ class GeometryOperators(object):
         bool
             ``True`` if the point is inside the polygon or exactly on one of its sides.
             ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> point = [0.5, 0.5]
+        >>> polygon = [[0.0, 1.0, 1.0, 0.0], [0.0, 0.0, 1.0, 1.0]]
+        >>> go.is_point_in_polygon(point, polygon)
+        True
+
         """
         r = GeometryOperators.point_in_polygon(point, polygon)
         if r == -1:
@@ -1521,27 +1808,31 @@ class GeometryOperators(object):
             return True
 
     @staticmethod
-    def are_segments_intersecting(a1, a2, b1, b2, include_collinear=True):
-        """
-        Determine if the two segments a and b are intersecting.
+    def are_segments_intersecting(
+        a1: list[float], a2: list[float], b1: list[float], b2: list[float], include_collinear: bool = True
+    ) -> bool:
+        """Determine if the two segments a and b are intersecting.
 
-        a1 : List
+        Parameters
+        ----------
+        a1 : list[float]
             First point of segment a. List of ``[x, y]`` coordinates.
-        a2 : List
+        a2 : list[float]
             Second point of segment a. List of ``[x, y]`` coordinates.
-        b1 : List
+        b1 : list[float]
             First point of segment b. List of ``[x, y]`` coordinates.
-        b2 : List
+        b2 : list[float]
             Second point of segment b. List of ``[x, y]`` coordinates.
-        include_collinear : bool
+        include_collinear : bool, optional
             If ``True`` two segments are considered intersecting also if just one end lies on the other segment.
-            Default is ``True``.
+            The default is ``True``.
 
         Returns
         -------
         bool
             ``True`` if the segments are intersecting.
             ``False`` otherwise.
+
         """
 
         # fmt: off
@@ -1610,22 +1901,25 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def is_segment_intersecting_polygon(a, b, polygon):
-        """
-        Determine if a segment defined by two points ``a`` and ``b`` intersects a polygon.
+    def is_segment_intersecting_polygon(a: list[float], b: list[float], polygon: list[list[float]]) -> bool:
+        """Determine if a segment defined by two points ``a`` and ``b`` intersects a polygon.
+
         Points on the vertices and on the polygon boundaries are not considered intersecting.
 
-        a : List
+        Parameters
+        ----------
+        a : list[float]
             First point of the segment. List of ``[x, y]`` coordinates.
-        b : List
+        b : list[float]
             Second point of the segment. List of ``[x, y]`` coordinates.
-        polygon : List
+        polygon : list[list[float]]
             [[x1, x2, ..., xn],[y1, y2, ..., yn]]
 
         Returns
         -------
-        float
+        bool
             ``True`` if the segment intersect the polygon. ``False`` otherwise.
+
         """
         if len(a) != 2 or len(b) != 2:
             raise ValueError("Point must be a list in the form [x, y]")
@@ -1645,22 +1939,30 @@ class GeometryOperators(object):
         return False
 
     @staticmethod
-    def is_perpendicular(a, b, tol=1e-6):
+    def is_perpendicular(a: list[float], b: list[float], tol: float = 1e-6) -> bool:
         """Check if two vectors are perpendicular.
 
         Parameters
         ----------
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first vector.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second vector.
-        tol : float
-            Linear tolerance. The default value is ``1e-6``.
+        tol : float, optional
+            Linear tolerance. The default is ``1e-6``.
 
         Returns
         -------
         bool
             ``True`` if vectors are perpendicular, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> a = [1.0, 0.0, 0.0]
+        >>> b = [0.0, 1.0, 0.0]
+        >>> go.is_perpendicular(a, b)
+        True
 
         """
         var = GeometryOperators._v_dot(a, b)
@@ -1670,16 +1972,16 @@ class GeometryOperators(object):
             return False
 
     @staticmethod
-    def is_point_projection_in_segment(p, a, b):
+    def is_point_projection_in_segment(p: list[float], a: list[float], b: list[float]) -> bool:
         """Check if a point projection lies on the segment defined by two points.
 
         Parameters
         ----------
-        p : List
+        p : list[float]
             List of ``[x, y, z]`` coordinates for the reference point ``p``.
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the segment.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the segment.
 
         Returns
@@ -1696,22 +1998,23 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def point_segment_distance(p, a, b):  # pragma: no cover
+    def point_segment_distance(p: list[float], a: list[float], b: list[float]) -> float:  # pragma: no cover
         """Calculate the distance between a point ``p`` and a segment defined by two points ``a`` and ``b``.
 
         Parameters
         ----------
-        p : List
+        p : list[float]
             List of ``[x, y, z]`` coordinates for the reference point ``p``.
-        a : List
+        a : list[float]
             List of ``[x, y, z]`` coordinates for the first point of the segment.
-        b : List
+        b : list[float]
             List of ``[x, y, z]`` coordinates for the second point of the segment.
 
         Returns
         -------
         float
             Distance between the point and the segment.
+
         """
         # fmt: off
         den = math.sqrt((b[0] - a[0])**2 + (b[1] - a[1])**2)
@@ -1721,7 +2024,9 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def find_largest_rectangle_inside_polygon(polygon, partition_max_order=16):
+    def find_largest_rectangle_inside_polygon(
+        polygon: list[list[float]], partition_max_order: int = 16
+    ) -> list[list[list[float]]]:
         """Find the largest area rectangles of arbitrary orientation in a polygon.
 
         Implements the algorithm described by Rubén Molano, et al.
@@ -1732,17 +2037,18 @@ class GeometryOperators(object):
 
         Parameters
         ----------
-        polygon : List
+        polygon : list[list[float]]
             [[x1, x2, ..., xn],[y1, y2, ..., yn]]
-        partition_max_order : float, optional
+        partition_max_order : int, optional
             Order of the lattice partition used to find the quasi-lattice polygon that approximates ``polygon``.
-            Default is ``16``.
+            The default is ``16``.
 
         Returns
         -------
-        List of List
+        list[list[list[float]]]
             List containing the rectangles points. Return all rectangles found.
             List is in the form: [[[x1, y1],[x2, y2],...],[[x1, y1],[x2, y2],...],...].
+
         """
 
         # fmt: off
@@ -1829,7 +2135,7 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def degrees_over_rounded(angle, digits):
+    def degrees_over_rounded(angle: float, digits: int) -> float:
         """Ceil of angle.
 
         Parameters
@@ -1842,12 +2148,13 @@ class GeometryOperators(object):
         Returns
         -------
         float
+            Angle in degrees rounded up.
 
         """
         return math.ceil(math.degrees(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    def radians_over_rounded(angle, digits):
+    def radians_over_rounded(angle: float, digits: int) -> float:
         """Radian angle ceiling.
 
         Parameters
@@ -1860,12 +2167,13 @@ class GeometryOperators(object):
         Returns
         -------
         float
+            Angle in radians rounded up.
 
         """
         return math.ceil(math.radians(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    def degrees_default_rounded(angle, digits):
+    def degrees_default_rounded(angle: float, digits: int) -> float:
         """Convert angle to degree with given digits rounding.
 
         Parameters
@@ -1878,12 +2186,13 @@ class GeometryOperators(object):
         Returns
         -------
         float
+            Angle in degrees rounded down.
 
         """
         return math.floor(math.degrees(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    def radians_default_rounded(angle, digits):
+    def radians_default_rounded(angle: float, digits: int) -> float:
         """Convert to radians with given round.
 
         Parameters
@@ -1896,29 +2205,34 @@ class GeometryOperators(object):
         Returns
         -------
         float
+            Angle in radians rounded down.
 
         """
         return math.floor(math.radians(angle) * 10**digits) / (10**digits)
 
     @staticmethod
-    def find_closest_points(points_list, reference_point, tol=1e-6):  # pragma: no cover
+    def find_closest_points(
+        points_list: list[list[float]], reference_point: list[float], tol: float = 1e-6
+    ) -> list[list[float]] | bool:  # pragma: no cover
         """Given a list of points, finds the closest points to a reference point.
+
         It returns a list of points because more than one can be found.
         It works with 2D or 3D points. The tolerance used to evaluate the distance
         to the reference point can be specified.
 
         Parameters
         ----------
-        points_list : List of List
+        points_list : list[list[float]]
             List of points. The points can be defined in 2D or 3D space.
-        reference_point : List
+        reference_point : list[float]
             The reference point. The point can be defined in 2D or 3D space (same as points_list).
         tol : float, optional
-            The tolerance used to evaluate the distance. Default is ``1e-6``.
+            The tolerance used to evaluate the distance. The default is ``1e-6``.
 
         Returns
         -------
-        List of List
+        list[list[float]], or bool
+            List of closest points or False if none found.
 
         """
         # fmt: off
@@ -1948,22 +2262,33 @@ class GeometryOperators(object):
         # fmt: on
 
     @staticmethod
-    def mirror_point(start, reference, vector):  # pragma: no cover
+    def mirror_point(
+        start: list[float], reference: list[float], vector: list[float]
+    ) -> list[float]:  # pragma: no cover
         """Mirror point about a plane defining by a point on the plane and a normal point.
 
         Parameters
         ----------
-        start : list
-            Point to be mirrored
-        reference : list
+        start : list[float]
+            Point to be mirrored.
+        reference : list[float]
             The reference point. Point on the plane around which you want to mirror the object.
-        vector : list
+        vector : list[float]
             Normalized vector used for the mirroring.
 
         Returns
         -------
-        List
+        list[float]
             List of the reflected point.
+
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
+        >>> start = [1.0, 0.0, 0.0]
+        >>> reference = [0.0, 0.0, 0.0]
+        >>> vector = [1.0, 0.0, 0.0]
+        >>> go.mirror_point(start, reference, vector)
+        [-1.0, 0.0, 0.0]
 
         """
         distance = [start[i] - reference[i] for i in range(3)]
@@ -1975,8 +2300,12 @@ class GeometryOperators(object):
 
     @staticmethod
     def find_points_along_lines(
-        points, minimum_number_of_points=3, distance_threshold=None, selected_angles=None, return_additional_info=False
-    ):
+        points: list[list[float]] | np.ndarray,
+        minimum_number_of_points: int = 3,
+        distance_threshold: float | None = None,
+        selected_angles: list[float] | None = None,
+        return_additional_info: bool = False,
+    ) -> tuple:
         """Detect all points that are placed along lines.
 
         The method takes as input a list of 2D points and detects all lines that contain at least 3 points.
@@ -1988,15 +2317,19 @@ class GeometryOperators(object):
         ``minimum_number_of_points`` requirement, it is discarded.
         If `distance_threshold` is set (not ``None``), the computational time increases.
 
-        points : List, numpy.ndarray
+        Parameters
+        ----------
+        points : list[list[float]] or np.ndarray
             The points to process. Can be a list of lists where each sublist
             represents a 2D point ``[x, y]`` coordinates, or a numpy array of shape (n, 2).
         minimum_number_of_points : int, optional
-            The minimum number of points that a line must contain. Default is ``3``.
-        distance_threshold : float, None, optional
+            The minimum number of points that a line must contain.
+            The default is ``3``.
+        distance_threshold : float or None, optional
             If two points in a line are separated by a distance larger than `distance_threshold`,
-            the line is divided in two parts. Default is ``None``, in which case the control is not performed.
-        selected_angles : list, None, optional
+            the line is divided in two parts.
+            The default is ``None``.
+        selected_angles : list[float] or None, optional
             Specify a list of angles in degrees. If specified, the method returns only the lines which
             have one of the specified angles.
             The angle is defined as the positive angle of the infinite line with respect to the x-axis
@@ -2004,10 +2337,10 @@ class GeometryOperators(object):
             For example, ``[90]`` indicated vertical lines parallel to the y-axis,
             ``[0]`` or ``[180]`` identifies horizontal lines parallel to the x-axis,
             ``45`` identifies lines parallel to the first quadrant bisector.
-            Default is ``None``, in which case all lines are returned.
+            The default is ``None``.
         return_additional_info : bool, optional
             Whether to return additional information about the number of elements processed.
-            The default is ``True``.
+            The default is ``False``.
 
         Returns
         -------
@@ -2022,6 +2355,7 @@ class GeometryOperators(object):
                 returned if ``return_additional_info`` is ``True``
             - number of detected lines after ``distance_threshold`` is applied: optional,
                 returned if ``return_additional_info`` is ``True``
+
         """
 
         # Parameters
@@ -2161,22 +2495,31 @@ class GeometryOperators(object):
         return lines, lines_idx
 
     @staticmethod
-    def smallest_distance_between_polygons(polygon1, polygon2):
-        """
-        Find the smallest distance between two polygons using KDTree for efficient nearest neighbor search.
+    def smallest_distance_between_polygons(
+        polygon1: list[tuple[float, float]], polygon2: list[tuple[float, float]]
+    ) -> float:
+        """Find the smallest distance between two polygons using KDTree for efficient nearest neighbor search.
 
-        Parameters:
-        polygon1 (list of tuples): List of (x, y) coordinates representing the points of the first polygon.
-        polygon2 (list of tuples): List of (x, y) coordinates representing the points of the second polygon.
+        Parameters
+        ----------
+        polygon1 : list[tuple[float, float]]
+            List of (x, y) coordinates representing the points of the first polygon.
+        polygon2 : list[tuple[float, float]]
+            List of (x, y) coordinates representing the points of the second polygon.
 
-        Returns:
-        float: The smallest distance between any two points from the two polygons.
+        Returns
+        -------
+        float
+            The smallest distance between any two points from the two polygons.
 
-        Example:
+        Examples
+        --------
+        >>> from pyedb.generic.geometry_operators import GeometryOperators as go
         >>> polygon1 = [(1, 1), (4, 1), (4, 4), (1, 4)]
         >>> polygon2 = [(5, 5), (8, 5), (8, 8), (5, 8)]
-        >>> smallest_distance_between_polygons(polygon1, polygon2)
+        >>> go.smallest_distance_between_polygons(polygon1, polygon2)
         1.4142135623730951
+
         """
         try:
             from scipy.spatial import KDTree
