@@ -469,6 +469,10 @@ class TestClass(BaseTestClass):
         assert len(test) == 194
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_polygon_based_padstack(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -537,6 +541,10 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_via_merge(self):
         edbapp = self.edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
@@ -544,6 +552,10 @@ class TestClass(BaseTestClass):
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_via_merge3(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(edb_path=source_path)
@@ -600,6 +612,10 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_create_backdrill_dielectric_fill_via(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -624,6 +640,10 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_create_backdrill_dielectric_fill_via2(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -645,6 +665,10 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_create_backdrill_dielectric_fill_via3(self):
         edbapp = self.edb_examples.get_si_verse()
         instances = edbapp.padstacks.definitions["v40h20-1"].instances

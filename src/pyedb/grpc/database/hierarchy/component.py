@@ -83,10 +83,12 @@ class ComponentProperty:
         """
         return getattr(self.core, name)
 
-    @property
-    def model(self):
-        """Component model."""
-        return self.core.component_property.model
+    def __setattr__(self, name, value):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        setattr(self.core, name, value)
 
 
 class Component:
@@ -1291,7 +1293,10 @@ class Component:
         comp_prop = self.component_property
         if hasattr(model, "core"):
             model = model.core
-        comp_prop.model = model
+        if hasattr(comp_prop, "core"):
+            comp_prop.core.model = model
+        else:
+            comp_prop.model = model
         self.component_property = comp_prop
         return model
 
