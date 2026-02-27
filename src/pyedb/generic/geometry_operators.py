@@ -25,10 +25,11 @@ from collections import defaultdict
 import math
 import re
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from pyedb.dotnet.database.Variables import VariableManager
+    from pyedb.dotnet.database.Variables import VariableManager as DotNetVariableManager
+    from pyedb.grpc.database.variables import Variable as CoreVariableManager
 
 import numpy as np
 
@@ -72,7 +73,7 @@ class GeometryOperators(object):
 
     @staticmethod
     def parse_dim_arg(
-        string: str | float, scale_to_unit: str | None = None, variable_manager: VariableManager = None
+        string: str | float, scale_to_unit: str | None = None, variable_manager: Any = None
     ) -> float | str | None:  # pragma: no cover
         """Convert a number and unit to a float.
 
