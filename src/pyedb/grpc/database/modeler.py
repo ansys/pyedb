@@ -702,11 +702,7 @@ class Modeler(object):
         if isinstance(points, list):
             new_points = []
             for idx, i in enumerate(points):
-                new_points.append(
-                    CorePointData(
-                        [self._pedb.value(i[0], self._pedb.active_cell), self._pedb.value(i[1], self._pedb.active_cell)]
-                    )
-                )
+                new_points.append(CorePointData([self._pedb.value(i[0]), self._pedb.value(i[1])]))
             polygon_data = CorePolygonData(points=new_points)
 
         elif isinstance(points, CorePolygonData):
