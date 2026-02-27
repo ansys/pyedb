@@ -496,10 +496,6 @@ class Configuration:
         if modeler.padstack_defs:
             for p in modeler.padstack_defs:
                 pdef = self._pedb.padstacks.create(p.name)
-                # pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                # pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                # pdef.SetData(pdata)
-                # pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
                 set_padstack_definition(p, self._pedb.padstacks[pdef])
 
         if modeler.padstack_instances:
@@ -545,10 +541,20 @@ class Configuration:
                         if i.aedt_name == v:
                             self._pedb.modeler.add_void(obj, i)
 
+        # grpc component.create() requires padstack_instance objects instead of names
+        # so we need to get the mapping here
+        instance_by_name = None
         if modeler.components:
+            if settings.is_grpc:
+                instance_by_name = self._pedb.padstacks.instances_by_name
             for c in modeler.components:
+                if instance_by_name:
+                    # entering this block only for grpc
+                    pins = [instance_by_name[i] for i in c.pins]
+                else:
+                    pins = c.pins
                 obj = self._pedb.components.create(
-                    c.pins,
+                    pins,
                     component_name=c.reference_designator,
                     placement_layer=c.placement_layer,
                     component_part_name=c.definition,
