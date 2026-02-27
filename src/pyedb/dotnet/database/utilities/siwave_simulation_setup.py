@@ -605,21 +605,23 @@ class SIWaveGeneralSettings:
     def __init__(self, parent):
         self._parent = parent
 
-    @property
-    def pi_slider_pos(self):
-        return self._parent.dc_slider_position
+    def __getattribute__(self, item):
+        if item in ["dc_report_config_file", "dc_report_show_active_devices", "enabled", "export_dc_thermal_data",
+                    "full_dc_report_path", "icepak_temp_file_path", "icepak_temp_file", "import_thermal_data",
+                    "per_pin_res_path", "s_parameter", "source_terms_to_ground", "use_loop_res_for_per_pin",
+                    "per_pin_use_pin_format", "via_report_path", "add_source_terminal_to_ground"]:
+            return object.__getattribute__(self, "_parent").settings.__getattribute__(item)
+        else:
+            return object.__getattribute__(self, item)
 
-    @property
-    def si_slider_pos(self):
-        return self._parent.si_slider_position
-
-    @property
-    def use_custom_settings(self):
-        return self._parent.use_custom_settings
-
-    @property
-    def use_si_settings(self):
-        return self._parent.use_si_settings
+    def __setattr__(self, key, value):
+        if key in ["dc_report_config_file", "dc_report_show_active_devices", "enabled", "export_dc_thermal_data",
+                   "full_dc_report_path", "icepak_temp_file_path", "icepak_temp_file", "import_thermal_data",
+                   "per_pin_res_path", "s_parameter", "source_terms_to_ground", "use_loop_res_for_per_pin",
+                   "per_pin_use_pin_format", "via_report_path"]:
+            return object.__getattribute__(self, "_parent").settings.__setattr__(key, value)
+        else:
+            return object.__setattr__(self, key, value)
 
 
 class Settings(DeprecatedSettings):
