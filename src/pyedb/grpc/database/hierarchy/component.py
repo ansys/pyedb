@@ -83,10 +83,12 @@ class ComponentProperty:
         """
         return getattr(self.core, name)
 
-    @property
-    def model(self):
-        """Component model."""
-        return self.core.component_property.model
+    def __setattr__(self, name, value):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        setattr(self.core, name, value)
 
 
 class Component:

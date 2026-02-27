@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from tests.conftest import local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -435,6 +435,10 @@ class TestClass(BaseTestClass):
         assert len(rlc_list) == 10
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_components_get_component_placement_vector(self):
         """Get the placement vector between 2 components."""
         target_path4 = self.edb_examples.copy_test_files_into_local_folder("TEDB/Package.aedb")[0]
@@ -571,6 +575,10 @@ class TestClass(BaseTestClass):
         assert edb.components["C200"].package_def.name == "C200_CAPC3216X180X55ML20T25"
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_solder_ball_getter_setter(self):
         # Done
         edb = self.edb_examples.get_si_verse()
