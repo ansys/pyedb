@@ -2164,6 +2164,7 @@ class SourceExcitation:
             refdes = self._pedb.components.instances[refdes]
         elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
             from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+
             refdes = EDBComponent(self._pedb, refdes)
         pins = self._pedb.components._get_pins_for_ports(pins, refdes)
         if not pins:  # pragma: no cover
@@ -2208,7 +2209,9 @@ class SourceExcitation:
             ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
             ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
         else:
-            ref_term = self._pedb.components._create_terminal(reference_pins[0]._edb_object, term_name=port_name + "_ref")
+            ref_term = self._pedb.components._create_terminal(
+                reference_pins[0]._edb_object, term_name=port_name + "_ref"
+            )
         ref_term.SetIsCircuitPort(True)
 
         term.SetImpedance(self._edb.Utility.Value(impedance))
