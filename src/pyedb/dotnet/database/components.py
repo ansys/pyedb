@@ -271,7 +271,7 @@ class Components(object):
             json.dump(data, f, ensure_ascii=False, indent=4)
         return file_path_str
 
-    def refresh_components(self):
+    def refresh_components(self) -> bool:
         """Refresh the component dictionary."""
         self._cmp = {}
         self._res = {}
@@ -299,7 +299,7 @@ class Components(object):
         return True
 
     @property
-    def resistors(self):
+    def resistors(self) -> dict[str, dict]:
         """Resistors.
 
         Returns
@@ -317,7 +317,7 @@ class Components(object):
         return self._res
 
     @property
-    def capacitors(self):
+    def capacitors(self) -> dict[str, dict]:
         """Capacitors.
 
         Returns
@@ -335,7 +335,7 @@ class Components(object):
         return self._cap
 
     @property
-    def inductors(self):
+    def inductors(self) -> dict[str, dict]:
         """Inductors.
 
         Returns
@@ -354,7 +354,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self):
+    def ICs(self) ->dict[str, dict]:
         """Integrated circuits.
 
         Returns
@@ -373,7 +373,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self):
+    def IOs(self) ->dict[str, dict]:
         """Circuit inupts and outputs.
 
         Returns
@@ -392,7 +392,7 @@ class Components(object):
         return self._ios
 
     @property
-    def Others(self):
+    def Others(self) ->dict[str, dict]:
         """Other core components.
 
         Returns
