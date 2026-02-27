@@ -3455,8 +3455,8 @@ class Edb:
                 if edb_terminals_info:
                     terminals[os.path.splitext(os.path.basename(edb_path))[0]] = edb_terminals_info
                 project_connexions = self._get_connected_ports_from_multizone_cutout(terminals)
-            edb.save_edb()
-            edb.close_edb()
+            edb.save()
+            edb.close()
         return defined_ports, project_connexions
 
     def _get_connected_ports_from_multizone_cutout(self, terminal_info_dict):
