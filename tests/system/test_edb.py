@@ -1299,12 +1299,31 @@ class TestClass(BaseTestClass):
         assert edbapp.grpc == config["use_grpc"]
         val = edbapp.value(1)
         assert val
-        edbapp["test"] = 1
+        edbapp.add_design_variable("test", 1)
         assert edbapp.design_variables["test"].value == 1
-        assert not edbapp.project_variables
+        edbapp.add_project_variable("test2", 2)
+        assert edbapp.project_variables["$test2"].value == 2
         assert type(edbapp.layout_validation)
         # TODO add layout validation obj extended test
-        assert edbapp.design_variables["test"].value == edbapp.variables["test"].value
+        assert "test", "$test2" in edbapp.variables.items()
+        edbapp.change_design_variable_value("test", 3)
+        assert edbapp.design_variables["test"].value == 3
+        assert edbapp.get_bounding_box()
+        assert edbapp.get_statistics()
+        assert edbapp.are_port_reference_terminals_connected()
+        edbapp.close()
+
+    @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
+    def test_ports_and_sources_creation(self):
+        edbapp = self.edb_examples.get_si_verse()
+        p1 = edbapp.padstacks.instances_by_name["Via1"].create_terminal("p1")
+        p2 = edbapp.padstacks.instances_by_name["Via2"].create_terminal("p2")
+        edbapp.create_port(p1, p2, True, "test")
+        assert edbapp.ports["test"]
+        p3 = edbapp.padstacks.instances_by_name["Via3"].create_terminal("p3")
+        p4 = edbapp.padstacks.instances_by_name["Via4"].create_terminal("p4")
+        edbapp.create_port(p3, p4, False, "test2")
+        assert edbapp.ports["test2"]
 
     @pytest.mark.skip(reason="BUG 1422195")
     def test_siwave_simulation_setup_bug(self):
@@ -1315,3 +1334,4 @@ class TestClass(BaseTestClass):
 
         setup = edbapp.setups["setup_1"]
         assert not setup.settings.use_loop_res_for_per_pin  # fail on .net
+        edbapp.close()
