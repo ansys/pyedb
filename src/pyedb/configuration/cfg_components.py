@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 
 from pyedb.configuration.cfg_common import CfgBase
@@ -29,6 +30,17 @@ _solder_shape_mapping = {
     "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,
     "spheroid": CoreSolderballShape.SOLDERBALL_SPHEROID,
     "no_solder_ball": CoreSolderballShape.NO_SOLDERBALL,
+}
+
+_die_type_mapping = {
+    "flip_chip": CoreDieType.FLIPCHIP,
+    "wire_bond": CoreDieType.WIREBOND,
+    "no_die": CoreDieType.NONE,
+}
+
+_die_orientation_mapping = {
+    "chip_up": CoreDieOrientation.CHIP_UP,
+    "chip_down": CoreDieOrientation.CHIP_DOWN,
 }
 
 
@@ -65,21 +77,40 @@ class CfgComponent(CfgBase):
             self.spice_model["terminal_pairs"] = c_p.model.pin_pairs
 
     def _set_ic_die_properties_to_edb(self):
-        cp = self.pyedb_obj.component_property.core
-        ic_die_prop = cp.GetDieProperty().Clone()
+        if hasattr(self.pyedb_obj.component_property, "core"):
+            cp = self.pyedb_obj.component_property.core
+        else:
+            # grpc is returning pyedb-core object directly as it is internal.
+            cp = self.pyedb_obj.component_property
+        if self._pedb.grpc:
+            ic_die_prop = cp.die_property
+        else:
+            ic_die_prop = cp.GetDieProperty().Clone()
         die_type = self.ic_die_properties.get("type")
-        ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
+        if self._pedb.grpc:
+            ic_die_prop.die_type = _die_type_mapping[die_type]
+        else:
+            ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
         if not die_type == "no_die":
             orientation = self.ic_die_properties.get("orientation")
             if orientation:
-                ic_die_prop.SetOrientation(
-                    getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
-                )
+                if self._pedb.grpc:
+                    ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
+                else:
+                    ic_die_prop.SetOrientation(
+                        getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
+                    )
             if die_type == "wire_bond":
                 height = self.ic_die_properties.get("height")
                 if height:
-                    ic_die_prop.SetHeight(self._pedb.edb_value(height))
-        self.pyedb_obj.ic_die_properties = ic_die_prop
+                    if self._pedb.grpc:
+                        ic_die_prop.height = self._pedb.value(height)
+                    else:
+                        ic_die_prop.SetHeight(self._pedb.edb_value(height))
+        if self._pedb.grpc:
+            self.pyedb_obj.core.component_property.die_property = ic_die_prop
+        else:
+            self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
         if hasattr(self.pyedb_obj.component_property, "core"):
