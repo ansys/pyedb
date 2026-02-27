@@ -387,7 +387,7 @@ class SweepData:
         str
             Frequency sweep string.
         """
-        return self.core.frequency_string.strip()
+        return self.core.frequency_string.strip().split("\t\n")
 
     @frequency_string.setter
     def frequency_string(self, value: str):

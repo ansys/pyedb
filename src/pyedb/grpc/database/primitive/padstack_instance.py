@@ -1684,7 +1684,7 @@ class PadstackInstance(conn_obj.ConnObj):
         for point in path.points:
             if self.component:
                 p_transf = self.component.transform.transform_point(point)
-                new_rect.append([Value(p_transf.x), Value(p_transf.y)])
+                new_rect.append([p_transf.x, p_transf.y])
         if return_points:
             return new_rect
         else:

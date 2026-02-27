@@ -287,6 +287,11 @@ class PadstackDef:
         self._thermalpad_by_layer = {}
         self._bounding_box = []
 
+    @property
+    def is_null(self):
+        """Check if the padstack definition is null."""
+        return self.core.is_null
+
     @classmethod
     def create(cls, edb, name: str):
         """Create a new padstack definition."""

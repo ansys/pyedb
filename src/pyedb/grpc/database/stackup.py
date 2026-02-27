@@ -1287,7 +1287,7 @@ class Stackup:
                     non_stackup_layers.append(cloned_layer)
                     continue
                 if "RadBox" not in cloned_layer.name and not cloned_layer.is_via_layer:
-                    upper_elevation = Value(cloned_layer.upper_elevation) * 1.0e6
+                    upper_elevation = self._pedb.value(cloned_layer.upper_elevation) * 1.0e6
                     updated_lower_el = max_elevation - upper_elevation
                     val = Value(f"{updated_lower_el}um")
                     cloned_layer.lower_elevation = val

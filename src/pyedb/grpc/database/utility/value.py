@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import math
 
 from ansys.edb.core.utility.value import Value as CoreValue
 
@@ -35,39 +36,39 @@ class Value(float, CoreValue):
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        core = CoreValue(f"({str(self.core)})+({str(other)})", self.owner)
-        return self.__class__(core)
+        res = self.core.value + other
+        return res
 
     def __radd__(self, other):
-        core = CoreValue(f"({str(other)})+({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = self.core.value + other
+        return res
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        core = CoreValue(f"({str(self.core)})-({str(other)})", self.owner)
-        return self.__class__(core)
+        res = self.core.value - other
+        return res
 
     def __rsub__(self, other):
-        core = CoreValue(f"({str(other)})-({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = -self.core.value + other
+        return res
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        core = CoreValue(f"({str(self.core)})*({str(other)})", self.owner)
-        return self.__class__(core)
+        res = self.core.value * other
+        return res
 
     def __rmul__(self, other):
-        core = CoreValue(f"({str(other)})*({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = self.core.value * other
+        return res
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        core = CoreValue(f"({str(self.core)})/({str(other)})", self.owner)
-        return self.__class__(core)
+        res = self.core.value / other
+        return res
 
     def __rtruediv__(self, other):
-        core = CoreValue(f"({str(other)})/({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = other / self.core.value
+        return res
 
     @property
     def expression(self):
@@ -75,40 +76,45 @@ class Value(float, CoreValue):
 
     def sqrt(self):
         """Square root of the value."""
-        core = CoreValue(f"({str(self.core)})**0.5", self.owner)
-        return self.__class__(core)
+        res = self.core.value**0.5
+        return res
 
     def log10(self):
         """Base-10 logarithm of the value."""
-        core = CoreValue(f"log10({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.log10(self.core.value)
+        return res
 
     def sin(self):
         """Sine of the value."""
-        core = CoreValue(f"sin({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.sin(self.core.value)
+        return res
 
     def cos(self):
         """Cosine of the value."""
-        core = CoreValue(f"cos({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.cos(self.core.value)
+        return res
 
     def asin(self):
         """Arcsine of the value."""
-        core = CoreValue(f"asin({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.asin(self.core.value)
+        return res
 
     def acos(self):
         """Arccosine of the value."""
-        core = CoreValue(f"acos({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.acos(self.core.value)
+        return res
 
     def tan(self):
         """Tangent of the value."""
-        core = CoreValue(f"tan({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.tan(self.core.value)
+        return res
 
     def atan(self):
         """Arctangent of the value."""
-        core = CoreValue(f"atan({str(self.core)})", self.owner)
-        return self.__class__(core)
+        res = math.atan(self.core.value)
+        return res
+
+    def __abs__(self):
+        """Abs of the value."""
+        res = math.fabs(self.core.value)
+        return res

@@ -569,7 +569,7 @@ class Edb(EdbInit):
         )
 
         for t in terminals:
-            if t.is_circuit:
+            if t.is_circuit_port:
                 ports[t.name] = CircuitPort(self, t.core)
             if isinstance(t, BundleTerminal):
                 bundle_ter = BundleTerminal(self, t.core)
