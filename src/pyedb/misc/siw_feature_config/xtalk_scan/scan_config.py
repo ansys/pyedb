@@ -38,9 +38,38 @@ class ScanType(Enum):
 
 
 class SiwaveScanConfig:
-    """XML control file handle for Siwave crosstalk scan."""
+    """XML control file handle for Siwave crosstalk scan.
 
-    def __init__(self, pedb, scan_type="impedance"):
+    Parameters
+    ----------
+    pedb : object
+        PyEDB instance.
+    scan_type : str, optional
+        Type of scan to configure. Options are ``"impedance"``, ``"frequency_xtalk"``, or ``"time_xtalk"``.
+        The default is ``"impedance"``.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb("path/to/aedb")
+    >>> scan_config = SiwaveScanConfig(edb, scan_type="impedance")
+    >>> scan_config.file_path = "output_config.xml"
+    >>> scan_config.write_xml()
+
+    """
+
+    def __init__(self, pedb, scan_type: str = "impedance") -> None:
+        """Initialize Siwave scan configuration.
+
+        Parameters
+        ----------
+        pedb : object
+            PyEDB instance.
+        scan_type : str, optional
+            Type of scan to configure. Options are ``"impedance"``, ``"frequency_xtalk"``, or ``"time_xtalk"``.
+            The default is ``"impedance"``.
+
+        """
         self._pedb = pedb
         self.file_path = ""
         if scan_type == "impedance":
@@ -57,12 +86,23 @@ class SiwaveScanConfig:
         self.frequency_xtalk_scan = CrosstalkFrequency(self._pedb)
         self.time_xtalk_scan = CrossTalkTime(self._pedb)
 
-    def write_xml(self):
-        """Write XML control file
+    def write_xml(self) -> bool:
+        """Write XML control file.
 
         Returns
         -------
         bool
+            ``True`` if the file was written successfully, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> scan_config = SiwaveScanConfig(pedb, scan_type="impedance")
+        >>> scan_config.file_path = "impedance_scan.xml"
+        >>> scan_config.impedance_scan.add_net("CLK", threshold_near=5.0, threshold_far=10.0)
+        >>> success = scan_config.write_xml()
+        >>> success
+        True
+
         """
         if not self.file_path:
             self._pedb.logger.error("No xml file path provided, please provide absolute valid one.")
