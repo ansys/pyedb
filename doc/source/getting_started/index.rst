@@ -79,7 +79,7 @@ access to the local EDB .NET assemblies.
 Performance and Integration
 ---------------------------
 *   **Performance:** Direct .NET interoperability (current) provides efficient access to EDB functionality.
-    The upcoming gRPC architecture enables distributed computing and parallel processing.
+    The upcoming gRPC architecture enables pure native python API for better compatibility and stability especially on Linux.
 
 *   **Python Ecosystem:** Being a pure Python library, PyEDB integrates seamlessly with the vast Python data science and
 machine learning stack (NumPy, Pandas, Matplotlib, Scikit-learn, PyTorch, etc.). You can easily post-process simulation
