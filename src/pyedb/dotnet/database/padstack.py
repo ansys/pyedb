@@ -1723,7 +1723,7 @@ class EdbPadstacks(object):
                     convex_hull_contour = ConvexHull(instances_pts)
                     contour_points = list(instances_pts[convex_hull_contour.vertices])
                     layer = list(self._pedb.stackup.layers.values())[0].name
-                    polygon = self._pedb.modeler.create_polygon(main_shape=contour_points, layer_name=layer)
+                    polygon = self._pedb.modeler.create_polygon(points=contour_points, layer_name=layer)
                     polygon_data = polygon.polygon_data
                     polygon.delete()
                     new_padstack_def = generate_unique_name(all_instances[instances[0]].definition.name)

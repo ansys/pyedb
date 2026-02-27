@@ -773,7 +773,7 @@ class RadialStub:
             [self.radius * math.cos(-theta / 2), self.radius * math.sin(-theta / 2)],
             [self.radius * math.cos(theta / 2), self.radius * math.sin(theta / 2)],
         ]
-        self._edb.modeler.create_polygon(main_shape=pts, layer_name=self.layer, net_name=self.net)
+        self._edb.modeler.create_polygon(points=pts, layer_name=self.layer, net_name=self.net)
         # feed
         self._edb.modeler.create_rectangle(
             layer_name=self.layer,

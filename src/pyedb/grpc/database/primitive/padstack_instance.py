@@ -1321,6 +1321,8 @@ class PadstackInstance(conn_obj.ConnObj):
                 drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
                 return drill_to_layer.name, Value(offset), Value(diameter)
         else:
+            # Todo include_fill_material is not merged in core yet.
+            # params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
             params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
             if include_fill_material:
                 drill_to_layer, offset, diameter, fill_material = params

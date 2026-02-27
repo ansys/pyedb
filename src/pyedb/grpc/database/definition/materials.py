@@ -160,6 +160,7 @@ class Material:
         :class:`MultipoleDebyeModel <ansys.edb.core.definition.multipole_debye_model.MultipoleDebyeModel>`.
             EDB dielectric model.
         """
+        # Todo missing wrapper classes for dielctric model classes.
         try:
             if self.core.dielectric_material_model.type.name.lower() == "debye":
                 self.__dielectric_model = CoreDebyeModel(self.core.dielectric_material_model.msg)
@@ -533,6 +534,9 @@ class Material:
     def set_djordjecvic_sarkar_model(self):
         """Set Djordjecvic-Sarkar model on current material."""
         self.core.dielectric_material_model = CoreDjordjecvicSarkarModel.create()
+        # Default frequency value to avoid validation error in DS model which requires frequency to be set
+        #  when the model is assigned to the material
+        self.dielectric_material_model.frequency = 1e9
 
     def to_dict(self):
         """Convert material into dictionary."""

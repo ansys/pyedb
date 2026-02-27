@@ -112,13 +112,13 @@ class TestClass(BaseTestClass):
                 {
                     "name": "DPMATCH",
                     "tolerance": "5mil",
-                    "pairs": [{"positive": "PCIe_Gen4_TX3_CAP_P", "negative": "PCIe_Gen4_TX3_CAP_N"}],
+                    "pairs": [{"positive": "SFPA_TX_P", "negative": "SFPA_TX_N"}],
                 }
             ],
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
-        edbapp = self.edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse_sfp()
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
