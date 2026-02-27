@@ -26,6 +26,7 @@ import codecs
 import json
 import math
 import os
+from pathlib import Path
 import re
 from typing import List, Set, Union
 import warnings
@@ -35,7 +36,6 @@ from pyedb.component_libraries.ansys_components import (
     ComponentPart,
     Series,
 )
-from pathlib import Path
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
