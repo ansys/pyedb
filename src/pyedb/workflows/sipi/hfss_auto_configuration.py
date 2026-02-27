@@ -869,7 +869,7 @@ class HFSSAutoConfiguration:
                     reference_net=self.reference_net,
                 )
 
-        self._pedb.logger.info(f"Ports created: {len(self._pedb.hfss.excitations)}")
+        self._pedb.logger.info(f"Ports created: {len(self._pedb.hfss.ports)}")
         # step 3: create simulation setup
         self._pedb.logger.info(f"step 3: creating simulation setup")
         setup = self._pedb.hfss.add_setup("Setup1")

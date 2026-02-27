@@ -725,7 +725,7 @@ class EdbPadstacks(object):
         return ""
 
     def _port_exist(self, port_name):
-        return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
+        return any(port for port in list(self._pedb.ports.keys()) if port == port_name)
 
     def get_pinlist_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.

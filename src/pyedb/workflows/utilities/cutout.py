@@ -203,7 +203,7 @@ class GrpcCutout:
         >>> initial_extent = cutout.calculate_initial_extent(3.0)
         """
         nets = []
-        for port in self._edb.excitations.values():
+        for port in self._edb.ports.values():
             nets.append(port.net_name)
         for port in self._edb.sources.values():
             nets.append(port.net_name)
@@ -1008,7 +1008,7 @@ class DotNetCutout:
         >>> initial_extent = cutout.calculate_initial_extent(3.0)
         """
         nets = []
-        for port in self._edb.excitations.values():
+        for port in self._edb.ports.values():
             nets.append(port.net_name)
         for port in self._edb.sources.values():
             nets.append(port.net_name)

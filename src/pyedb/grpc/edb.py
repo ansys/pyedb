@@ -109,7 +109,7 @@ from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
 from pyedb.grpc.database.padstacks import Padstacks
-from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
+from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
@@ -531,31 +531,33 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self) -> Dict[str, GapPort]:
-        """All layout excitations.
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
         Returns
         -------
-        dict[str, :class:`GapPort <pyedb.grpc.database.ports.ports.GapPort>`]
-            Excitation names and objects.
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
-        temp = {}
-        for term in terms:
-            if not term.core.bundle_terminal.is_null:
-                temp[term.name] = BundleWavePort(self, term)
-            else:
-                temp[term.name] = GapPort(self, term)
-        return temp
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
 
     @property
-    def ports(self) -> Dict[str, GapPort]:
-        """All ports in design.
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
         Returns
         -------
-        dict[str, list[:class:`GapPort` or :class:`WavePort` or :class:`CoaxPort`]]
-            Port names and objects.
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
         terminals = [term for term in self.layout.terminals if not getattr(term, "is_reference_terminal", False)]
         ports = {}
@@ -567,6 +569,8 @@ class Edb(EdbInit):
         )
 
         for t in terminals:
+            if t.is_circuit:
+                ports[t.name] = CircuitPort(self, t.core)
             if isinstance(t, BundleTerminal):
                 bundle_ter = BundleTerminal(self, t.core)
                 ports[bundle_ter.name] = bundle_ter
@@ -2224,7 +2228,7 @@ class Edb(EdbInit):
             True if all port references are connected.
         """
         all_sources: List[Any] = [
-            i for i in self.excitations.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
+            i for i in self.ports.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
         ]
         all_sources.extend(list(self.sources.values()))
         if not all_sources:
@@ -2396,7 +2400,7 @@ class Edb(EdbInit):
         float
         """
         nets = []
-        for port in self.excitations.values():
+        for port in self.ports.values():
             nets.append(self._get_terminal_net_name(port))
         for port in self.sources.values():
             nets.append(self._get_terminal_net_name(port))
@@ -2508,7 +2512,7 @@ class Edb(EdbInit):
             edb.active_cell.name = os.path.splitext(os.path.basename(edb_path))[0]
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
-                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
+                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.ports.keys())
                 edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,

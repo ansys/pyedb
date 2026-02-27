@@ -34,7 +34,14 @@ from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import Padst
 from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.hfss_extent_info import HfssExtentInfo
-from pyedb.dotnet.database.edb_data.ports import BundleWavePort, ExcitationSources, GapPort, WavePort
+from pyedb.dotnet.database.edb_data.ports import (
+    BundleWavePort,
+    CircuitPort,
+    CoaxPort,
+    ExcitationSources,
+    GapPort,
+    WavePort,
+)
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.dotnet.database.general import (
     convert_py_list_to_net_list,
@@ -94,9 +101,35 @@ class EdbHfss(object):
         return self._pedb.active_db
 
     @property
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort]]:
-        """Get all excitations."""
-        return self._pedb.excitations
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CircuitPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CoaxPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.BundleWavePort`]]
+
+        """
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
+
+    @property
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CircuitPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CoaxPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.BundleWavePort`]]
+
+        """
+        return self._pedb.ports
 
     @property
     def sources(self) -> Dict[str, ExcitationSources]:

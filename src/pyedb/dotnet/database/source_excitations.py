@@ -1285,7 +1285,7 @@ class SourceExcitation:
             prop,
         )
         if pos_edge_term:
-            return port_name, self._pedb.hfss.excitations[port_name]
+            return port_name, self._pedb.hfss.ports[port_name]
         else:
             return False
 

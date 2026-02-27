@@ -25,12 +25,13 @@ This module contains the ``EdbHfss`` class.
 """
 
 import math
-from typing import Optional
+from typing import Dict, Optional, Union
 import warnings
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup,
 )
@@ -131,15 +132,35 @@ class Hfss:
         return self._pedb.active_db
 
     @property
-    def excitations(self):
-        """All excitation definitions in the layout.
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
         Returns
         -------
-        list
-            List of excitation objects.
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
-        return self._pedb.excitations
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
+
+    @property
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
+        """
+        return self._pedb.ports
 
     @property
     def sources(self):

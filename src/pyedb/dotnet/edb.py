@@ -97,6 +97,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
 )
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.dotnet.database.Variables import decompose_variable_value
+from pyedb.edb_logger import EdbLogger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.geometry_operators import GeometryOperators
@@ -185,18 +186,29 @@ class Edb:
     _db = None
 
     @property
-    def logger(self):
-        """PyEDB logger."""
+    def logger(self) -> EdbLogger:
+        """PyEDB logger.
+        Returns
+        -------
+        EdbLogger object.
+        """
         return settings.logger
 
     @property
-    def version(self):
-        """EDB API version."""
+    def version(self) -> str:
+        """EDB API version.
+        Returns
+        -------
+            str: version of the edb object.
+        """
         return settings.specified_version
 
     @property
     def base_path(self) -> str:
-        """Base path for EDB installation."""
+        """Base path for EDB installation.
+        Returns
+        -------
+            str: path to the edb installation."""
         return settings.aedt_installation_path
 
     @execution_timer("EDB initialization")
@@ -319,7 +331,7 @@ class Edb:
         if ex_type:
             self.edb_exception(ex_value, ex_traceback)
 
-    def __getitem__(self, variable_name) -> Variable:
+    def __getitem__(self, variable_name) -> Variable | None:
         """Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
         it can be a design variable, in which case the ``$`` is omitted.
 
@@ -361,7 +373,7 @@ class Edb:
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
-    def __initialization(self):
+    def __initialization(self) -> None:
         self.logger.info(f"Edb version {self.version}")
 
         """Initialize DLLs."""
@@ -414,7 +426,7 @@ class Edb:
                     except:
                         self.logger.info(f"Failed to delete AEDT project-related file {file}.")
 
-    def _clean_variables(self):
+    def _clean_variables(self) -> None:
         """Initialize internal variables and perform garbage collection."""
         self._materials = None
         self._components = None
@@ -452,7 +464,11 @@ class Edb:
         return pyedb.dotnet
 
     def value(self, val) -> Value:
-        """Convert a value into a pyedb value."""
+        """Convert a value into a pyedb value.
+        Returns
+        -------
+            class:`Value <pyedb.dotnet.database.utility.Value>`
+        """
         try:
             val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
             return Value(self, val_)
@@ -491,7 +507,12 @@ class Edb:
         return d_var
 
     @property
-    def ansys_em_path(self):
+    def ansys_em_path(self) -> str:
+        """Base path for EDB installation.
+        Returns
+        -------
+            str: path to the edb installation."""
+        warnings.warn("This property will be soon deprecated. Use property ''base_path'' instead.", DeprecationWarning)
         return self.base_path
 
     @property
@@ -547,16 +568,17 @@ class Edb:
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort]]:
-        """Get all layout excitations."""
-        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
-        temp = {}
-        for ter in terms:
-            if "BundleTerminal" in ter._edb_object.GetType().ToString():
-                temp[ter.name] = BundleWavePort(self, ter._edb_object)
-            else:
-                temp[ter.name] = GapPort(self, ter._edb_object)
-        return temp
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,]]
+
+        """
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
 
     @property
     def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
@@ -565,7 +587,10 @@ class Edb:
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
-                   :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,]]
+                   :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CircuitPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CoaxPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.BundleWavePort`]]
 
         """
         temp = [term for term in self.layout.terminals if not term.is_reference_terminal]
@@ -3114,7 +3139,7 @@ class Edb:
         >>> edb.cutout(["Net1"])
         >>> assert edb.are_port_reference_terminals_connected()
         """
-        all_sources = [i for i in self.excitations.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))]
+        all_sources = [i for i in self.ports.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))]
         all_sources.extend([i for i in self.sources.values()])
         if not all_sources:
             return True
@@ -3308,7 +3333,7 @@ class Edb:
         float
         """
         nets = []
-        for port in self.excitations.values():
+        for port in self.ports.values():
             nets.append(port.net_name)
         for port in self.sources.values():
             nets.append(port.net_name)
@@ -3421,7 +3446,7 @@ class Edb:
             edb.active_cell.SetName(os.path.splitext(os.path.basename(edb_path))[0])
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
-                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
+                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.ports.keys())
                 edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,

@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
+import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -34,7 +34,7 @@ from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.components import Component
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.net.net import Net
-from pyedb.grpc.database.ports.ports import BundleWavePort, WavePort
+from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
@@ -392,9 +392,35 @@ class SourceExcitation(SourceExcitationInternal):
         return self._pedb.logger
 
     @property
-    def excitations(self) -> Dict[str, Any]:
-        """Get all excitations."""
-        return self._pedb.excitations
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
+        """
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
+
+    @property
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
+        """
+        return self._pedb.ports
 
     @property
     def sources(self) -> Dict[str, Any]:
@@ -1113,7 +1139,7 @@ class SourceExcitation(SourceExcitationInternal):
         return port_name
 
     def _port_exist(self, port_name: str) -> bool:
-        return any(port for port in list(self._pedb.excitations.keys()) if port == port_name)
+        return any(port for port in list(self._pedb.ports.keys()) if port == port_name)
 
     def create_circuit_port_on_pin(
         self,

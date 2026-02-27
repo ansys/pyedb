@@ -28,6 +28,8 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 import os
 from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
 
+from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
 import warnings
@@ -89,16 +91,35 @@ class Siwave(object):
         return self._pedb.active_db
 
     @property
-    def excitations(self) -> Dict[str, Any]:
-        """Excitation sources in the layout.
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
-        >>> excitations = edbapp.siwave.excitations
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
-        return self._pedb.excitations
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
+
+    @property
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
+        """
+        return self._pedb.ports
 
     @property
     def sources(self) -> Dict[str, Any]:

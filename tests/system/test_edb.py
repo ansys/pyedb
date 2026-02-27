@@ -28,6 +28,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import is_linux
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
@@ -73,8 +74,8 @@ class TestClass(BaseTestClass):
         assert edbapp.excitation_manager.create_circuit_port_on_pin_group(
             "PG_V1P0_S0", "U1_GND", impedance=50, name="test_port"
         )
-        edbapp.excitations["test_port"].name = "test_rename"
-        assert any(port for port in list(edbapp.excitations) if port == "test_rename")
+        edbapp.ports["test_port"].name = "test_rename"
+        assert any(port for port in list(edbapp.ports) if port == "test_rename")
         edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_voltage_source(self):
@@ -1258,3 +1259,19 @@ class TestClass(BaseTestClass):
         general.use_dc_custom_settings = False
         assert not general.use_dc_custom_settings
         edbapp.close()
+
+    @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
+    def test_edb_settings(self):
+        edbapp = self.edb_examples.get_si_verse()
+        assert type(edbapp.logger) == EdbLogger
+        assert edbapp.version == config["desktopVersion"]
+        assert edbapp.base_path == edbapp.ansys_em_path
+        assert edbapp.grpc == config["use_grpc"]
+        val = edbapp.value(1)
+        assert val
+        edbapp["test"] = 1
+        assert edbapp.design_variables["test"].value == 1
+        assert not edbapp.project_variables
+        assert type(edbapp.layout_validation)
+        # TODO add layout validation obj extended test
+        assert edbapp.design_variables["test"].value == edbapp.variables["test"].value
