@@ -72,7 +72,7 @@ class GeometryOperators(object):
 
     @staticmethod
     def parse_dim_arg(
-        string: str | float, scale_to_unit: str | None = None, variable_manager: VariableManager = None
+        string: str | float, scale_to_unit: str | None = None, variable_manager: "VariableManager" = None
     ) -> float | str | None:  # pragma: no cover
         """Convert a number and unit to a float.
 

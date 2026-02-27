@@ -766,6 +766,7 @@ class TestClass(BaseTestClass):
     def test_siwaves_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_setup()
+        setup = edbapp.setups[setup.name]
         setup.name = "test_siwave_setup"
         assert setup.name == "test_siwave_setup"
 
@@ -891,6 +892,7 @@ class TestClass(BaseTestClass):
         assert sp.interpolation == "point"
         sp.use_state_space = False
         assert not sp.use_state_space
+
         edbapp.close(terminate_rpc_session=False)
 
     # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")

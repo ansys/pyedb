@@ -1644,11 +1644,8 @@ class TestClassPadstacks(BaseTestClass):
         for lay in data["stackup"]["layers"]:
             target_mat = [i for i in data_from_db["stackup"]["layers"] if i["name"] == lay["name"]][0]
             for p, value in lay.items():
-                assert (
-                    value == target_mat[p]
-                    if isinstance(target_mat[p], str)
-                    else f"{unit_converter(target_mat[p], input_units='m', output_units='mm')}mm"
-                )
+                val_to_check = unit_converter(target_mat[p], input_units="m", output_units="mm")
+                assert value == target_mat[p] if isinstance(target_mat[p], str) else f"{val_to_check}mm"
         edbapp.close(terminate_rpc_session=False)
 
     def test_deprecated_methods_hfss_single(self):
