@@ -20,8 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
+
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.database.general import pascal_to_snake, snake_to_pascal
+
+_solder_shape_mapping = {
+    "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,
+    "spheroid": CoreSolderballShape.SOLDERBALL_SPHEROID,
+    "no_solder_ball": CoreSolderballShape.NO_SOLDERBALL,
+}
 
 
 class CfgComponent(CfgBase):
@@ -74,22 +82,43 @@ class CfgComponent(CfgBase):
         self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
-        cp = self.pyedb_obj.component_property.core
-        port_prop = cp.GetPortProperty().Clone()
+        if hasattr(self.pyedb_obj.component_property, "core"):
+            cp = self.pyedb_obj.component_property.core
+        else:
+            # grpc is returning pyedb-core object directly as it is internal.
+            cp = self.pyedb_obj.component_property
+        if self._pedb.grpc:
+            port_prop = cp.port_property
+        else:
+            port_prop = cp.GetPortProperty().Clone()
         height = self.port_properties.get("reference_height")
         if height:
-            port_prop.SetReferenceHeight(self._pedb.edb_value(height))
+            if self._pedb.grpc:
+                port_prop.reference_height = self._pedb.value(height)
+            else:
+                port_prop.SetReferenceHeight(self._pedb.edb_value(height))
         reference_size_auto = self.port_properties.get("reference_size_auto")
         if reference_size_auto is not None:
-            port_prop.SetReferenceSizeAuto(reference_size_auto)
+            if self._pedb.grpc:
+                port_prop.reference_size_auto = reference_size_auto
+            else:
+                port_prop.SetReferenceSizeAuto(reference_size_auto)
         reference_size_x = self.port_properties.get("reference_size_x", 0)
         reference_size_y = self.port_properties.get("reference_size_y", 0)
-        port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
-        cp.SetPortProperty(port_prop)
+        if self._pedb.grpc:
+            port_prop.set_reference_size(self._pedb.value(reference_size_x), self._pedb.value(reference_size_y))
+            cp.port_properties = port_prop
+        else:
+            port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
+            cp.SetPortProperty(port_prop)
         self.pyedb_obj.component_property = cp
 
     def _set_model_properties_to_edb(self):
-        c_p = self.pyedb_obj.component_property.core
+        if hasattr(self.pyedb_obj.component_property, "core"):
+            c_p = self.pyedb_obj.component_property.core
+        else:
+            # grpc is returning pyedb-core object directly as it is internal.
+            c_p = self.pyedb_obj.component_property
         if self.netlist_model:
             m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
             m.SetNetlist(self.netlist_model["netlist"])
@@ -154,26 +183,47 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
-        cp = self.pyedb_obj.component_property.core
-        solder_ball_prop = cp.GetSolderBallProperty().Clone()
-        shape = self.solder_ball_properties.get("shape")
-        if shape:
-            solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
+        if hasattr(self.pyedb_obj.component_property, "core"):
+            cp = self.pyedb_obj.component_property.core
         else:
-            return
+            # grpc is returning pyedb-core object directly as it is internal.
+            cp = self.pyedb_obj.component_property
+        if self._pedb.grpc:
+            solder_ball_prop = cp.solder_ball_property
+            shape = self.solder_ball_properties.get("shape")
+            if shape:
+                solder_ball_prop.shape = _solder_shape_mapping.get(shape, CoreSolderballShape.NO_SOLDERBALL)
+        else:
+            solder_ball_prop = cp.GetSolderBallProperty().Clone()
+            shape = self.solder_ball_properties.get("shape")
+            if shape:
+                solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
+            else:
+                return
 
         if shape == "cylinder":
             diameter = self.solder_ball_properties["diameter"]
-            solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(diameter))
+            if self._pedb.grpc:
+                solder_ball_prop.set_diameter(self._pedb.value(diameter), self._pedb.value(diameter))
+            else:
+                solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(diameter))
         elif shape == "spheroid":
             diameter = self.solder_ball_properties["diameter"]
             mid_diameter = self.solder_ball_properties["mid_diameter"]
-            solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
+            if self._pedb.grpc:
+                solder_ball_prop.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
+            else:
+                solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
         else:
             raise ValueError("Solderball shape must be either cylinder or spheroid")
-        solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
-        solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
-        cp.SetSolderBallProperty(solder_ball_prop)
+        if self._pedb.grpc:
+            solder_ball_prop.height = self._pedb.value(self.solder_ball_properties["height"])
+            solder_ball_prop.material_name = self.solder_ball_properties.get("material", "solder")
+            cp.solder_ball_property = solder_ball_prop
+        else:
+            solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
+            solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
+            cp.SetSolderBallProperty(solder_ball_prop)
         self.pyedb_obj.component_property = cp
 
     def _retrieve_ic_die_properties_from_edb(self):

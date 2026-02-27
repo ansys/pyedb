@@ -838,12 +838,15 @@ class Components(object):
                 return None
             ind = 1
             for pin in pins:
-                if not pin.name:
-                    pin.name = str(ind)
-                ind += 1
-                component_definition_pin = ComponentPin.create(component_definition, pin.name)
+                if not isinstance(pin, str):
+                    if not pin.name:
+                        pin = str(ind)
+                    else:
+                        pin = pin.name
+                    ind += 1
+                component_definition_pin = ComponentPin.create(component_definition, pin)
                 if component_definition_pin.core.is_null:
-                    self._logger.error(f"Failed to create component definition pin {name}-{pin.name}")
+                    self._logger.error(f"Failed to create component definition pin {name}-{pin}")
                     return None
         return component_definition
 
@@ -916,8 +919,9 @@ class Components(object):
         else:
             hosting_component_location = None
         for padstack_instance, component_pin in zip(pins, compdef.component_pins):
-            padstack_instance.is_layout_pin = True
-            padstack_instance.name = component_pin.name
+            if hasattr(padstack_instance, "is_layout"):
+                padstack_instance.is_layout_pin = True
+                padstack_instance.name = component_pin.name
             if hasattr(padstack_instance, "core"):
                 padstack_instance = padstack_instance.core
             new_cmp.add_member(padstack_instance)

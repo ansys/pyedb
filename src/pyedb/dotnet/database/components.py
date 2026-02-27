@@ -475,7 +475,7 @@ class Components(object):
                 cmp_list.append(refdes)
         return cmp_list
 
-    def _get_edb_pin_from_pin_name(self, cmp, pin):
+    def _get_edb_pin_from_pin_name(self, cmp, pin) -> bool:
         if not isinstance(cmp, self._pedb.core.Cell.Hierarchy.Component):
             return False
         if not isinstance(pin, str):
@@ -494,7 +494,7 @@ class Components(object):
         hosting_component_pin1,
         hosting_component_pin2,
         flipped=False,
-    ):
+    ) -> bool:
         """Get the placement vector between 2 components.
 
         Parameters
