@@ -710,7 +710,7 @@ class CfgProbe(CfgCircuitElement):
 
 class CfgEdgePort:
     def set_parameters_to_edb(self):
-        return self._pedb.hfss.create_edge_port(
+        return self._pedb.excitation_manager.create_edge_port(
             self.point_on_edge,
             self.primitive_name,
             self.name,

@@ -85,3 +85,15 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
 
         """
         return SIWaveDCIRSettings(self._pedb, self.core.settings)
+
+    @property
+    def dc_settings(self) -> SIWaveDCIRSettings:
+        """SIWave DCIR simulation settings.
+
+        Returns
+        -------
+        SIWaveDCIRSettings
+            The SIWave DCIR simulation settings object.
+
+        """
+        return self.settings.dc

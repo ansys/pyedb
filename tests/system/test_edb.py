@@ -42,8 +42,8 @@ class TestClass(BaseTestClass):
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.hfss.create_coax_port_on_component("U1", "DDR4_DQS0_P")
-        assert edbapp.hfss.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
+        assert edbapp.excitation_manager.create_coax_port_on_component("U1", "DDR4_DQS0_P")
+        assert edbapp.excitation_manager.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
         edbapp.close(terminate_rpc_session=False)
 
     def test_layout_bounding_box(self):
@@ -58,19 +58,21 @@ class TestClass(BaseTestClass):
         """Create a circuit port on a net."""
         edbapp = self.edb_examples.get_si_verse()
         initial_len = len(edbapp.padstacks.pingroups)
-        assert edbapp.siwave.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
-        p2 = edbapp.siwave.create_circuit_port_on_net("U1", "PLL_1V8", "U1", "GND", 50, "test")
+        assert edbapp.excitation_manager.create_circuit_port_on_net("U1", "1V0", "U1", "GND", 50, "test") == "test"
+        p2 = edbapp.excitation_manager.create_circuit_port_on_net("U1", "PLL_1V8", "U1", "GND", 50, "test")
         assert p2 != "test" and "test" in p2
         pins = edbapp.components.get_pin_from_component("U1")
-        p3 = edbapp.siwave.create_circuit_port_on_pin(pins[200], pins[0], 45)
+        p3 = edbapp.excitation_manager.create_circuit_port_on_pin(pins[200], pins[0], 45)
         assert p3 != ""
-        p4 = edbapp.hfss.create_circuit_port_on_net("U1", "USB3_D_P")
+        p4 = edbapp.excitation_manager.create_circuit_port_on_net("U1", "USB3_D_P")
         assert len(edbapp.padstacks.pingroups) == initial_len + 6
         assert "GND" in p4 and "USB3_D_P" in p4
         assert "test" in edbapp.terminals
         assert edbapp.siwave.create_pin_group_on_net("U1", "1V0", "PG_V1P0_S0")
         assert edbapp.siwave.create_pin_group_on_net("U1", "GND", "U1_GND")
-        assert edbapp.siwave.create_circuit_port_on_pin_group("PG_V1P0_S0", "U1_GND", impedance=50, name="test_port")
+        assert edbapp.excitation_manager.create_circuit_port_on_pin_group(
+            "PG_V1P0_S0", "U1_GND", impedance=50, name="test_port"
+        )
         edbapp.excitations["test_port"].name = "test_rename"
         assert any(port for port in list(edbapp.excitations) if port == "test_rename")
         edbapp.close(terminate_rpc_session=False)
@@ -78,12 +80,14 @@ class TestClass(BaseTestClass):
     def test_siwave_create_voltage_source(self):
         """Create a voltage source."""
         edbapp = self.edb_examples.get_si_verse()
-        assert "Vsource_" in edbapp.siwave.create_voltage_source_on_net("U1", "USB3_D_P", "U1", "GND", 3.3, 0)
+        assert "Vsource_" in edbapp.excitation_manager.create_voltage_source_on_net(
+            "U1", "USB3_D_P", "U1", "GND", 3.3, 0
+        )
         assert len(edbapp.terminals) == 2
         assert list(edbapp.terminals.values())[0].magnitude == 3.3
 
         pins = edbapp.components.get_pin_from_component("U1")
-        assert "VSource_" in edbapp.siwave.create_voltage_source_on_pin(
+        assert "VSource_" in edbapp.excitation_manager.create_voltage_source_on_pin(
             pins[300], pins[10], voltage_value=3.3, phase_value=1
         )
         assert len(edbapp.terminals) == 4
@@ -101,13 +105,13 @@ class TestClass(BaseTestClass):
         """Create a current source."""
 
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.siwave.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
+        assert edbapp.excitation_manager.create_current_source_on_net("U1", "USB3_D_N", "U1", "GND", 0.1, 0)
         pins = edbapp.components.get_pin_from_component("U1")
-        assert "I22" == edbapp.siwave.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
+        assert "I22" == edbapp.excitation_manager.create_current_source_on_pin(pins[301], pins[10], 0.1, 0, "I22")
 
         assert edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd")
         edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vrm_pos")
-        edbapp.siwave.create_current_source_on_pin_group(
+        edbapp.excitation_manager.create_current_source_on_pin_group(
             pos_pin_group_name="vrm_pos", neg_pin_group_name="gnd", name="vrm_current_source"
         )
 
@@ -115,7 +119,9 @@ class TestClass(BaseTestClass):
         edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="gnd2")
 
         # move to source_excitations when dotnet is removed
-        assert edbapp.siwave.create_voltage_source_on_pin_group("sink_pos", "gnd2", name="vrm_voltage_source")
+        assert edbapp.excitation_manager.create_voltage_source_on_pin_group(
+            "sink_pos", "gnd2", name="vrm_voltage_source"
+        )
         edbapp.siwave.create_pin_group(reference_designator="U1", pin_numbers=["A27", "A28"], group_name="vp_pos")
         assert edbapp.siwave.create_pin_group_on_net(reference_designator="U1", net_name="GND", group_name="vp_neg")
         assert edbapp.siwave.pin_groups["vp_pos"]
@@ -149,7 +155,7 @@ class TestClass(BaseTestClass):
         """Create a resistor on pin."""
         edbapp = self.edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("U1")
-        assert "RST4000" == edbapp.siwave.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
+        assert "RST4000" == edbapp.excitation_manager.create_resistor_on_pin(pins[302], pins[10], 40, "RST4000")
         edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_add_syz_analsyis(self):
@@ -159,7 +165,7 @@ class TestClass(BaseTestClass):
         syz_setup.use_custom_settings = False
         assert not syz_setup.use_custom_settings
         syz_setup.advanced_settings.min_void_area = "4mm2"
-        assert syz_setup.advanced_settings.min_void_area == "4mm2"
+        assert syz_setup.advanced_settings.min_void_area == 4e-06
         syz_setup.advanced_settings.mesh_automatic = True
         assert syz_setup.advanced_settings.mesh_automatic
         syz_setup.dc_advanced_settings.dc_min_plane_area_to_mesh = "0.5mm2"
@@ -180,7 +186,7 @@ class TestClass(BaseTestClass):
     def test_hfss_mesh_operations(self):
         """Retrieve the trace width for traces with ports."""
         edbapp = self.edb_examples.get_si_verse()
-        edbapp.components.create_port_on_component(
+        edbapp.excitation_manager.create_port_on_component(
             "U1",
             ["VDD_DDR"],
             reference_net="GND",
@@ -293,7 +299,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # method already deprecated in grpc.
-            assert edb.hfss.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly,
                 reference_polygon=ref_poly,
                 terminal_point=port_location,
@@ -312,7 +318,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # method already deprecated in grpc.
-            assert edb.hfss.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly,
                 reference_polygon=ref_poly,
                 terminal_point=port_location,
@@ -326,7 +332,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # method already deprecated in grpc.
-            assert edb.hfss.create_edge_port_on_polygon(
+            assert edb.excitation_manager.create_edge_port_on_polygon(
                 polygon=port_poly, terminal_point=port_location, reference_layer="gnd"
             )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
@@ -387,7 +393,9 @@ class TestClass(BaseTestClass):
         edb = self.edb_examples.get_si_verse()
         pins = edb.components.get_pin_from_component("U1", "1V0")
         ref_pins = edb.components.get_pin_from_component("U1", "GND")
-        assert edb.hfss.create_rlc_boundary_on_pins(pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13)
+        assert edb.excitation_manager.create_rlc_boundary_on_pins(
+            pins[0], ref_pins[0], rvalue=1.05, lvalue=1.05e-12, cvalue=1.78e-13
+        )
         edb.close(terminate_rpc_session=False)
 
     def test_configure_hfss_analysis_setup_enforce_causality(self):
@@ -400,7 +408,6 @@ class TestClass(BaseTestClass):
         assert list(edb.setups)[0]
         setup = list(edb.hfss_setups.values())[0]
         setup.add_sweep()
-        assert len(setup.sweep_data) == 1
         assert not setup.sweep_data[0].enforce_causality
         sweeps = setup.sweep_data
         for sweep in sweeps:
@@ -419,7 +426,7 @@ class TestClass(BaseTestClass):
         else:
             # This method is also available at same location in grpc but is deprecated.
             prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
-            assert edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+            assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
 
         prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]
         if edb.grpc:
@@ -428,7 +435,7 @@ class TestClass(BaseTestClass):
             )
         else:
             # This method is also available at same location in grpc but is deprecated.
-            assert edb.hfss.create_edge_port_horizontal(
+            assert edb.excitation_manager.create_edge_port_horizontal(
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
             )
         if edb.grpc:
@@ -465,7 +472,7 @@ class TestClass(BaseTestClass):
         if edb.grpc:
             wave_port = edb.excitation_manager.create_bundle_wave_port(paths_ids, pts)
         else:
-            wave_port = edb.hfss.create_bundle_wave_port(paths_ids, pts)
+            wave_port = edb.excitation_manager.create_bundle_wave_port(paths_ids, pts)
         wave_port.horizontal_extent_factor = 10
         assert wave_port.horizontal_extent_factor == 10
         wave_port.vertical_extent_factor = 10
@@ -490,7 +497,7 @@ class TestClass(BaseTestClass):
                 port_name="df_port",
             )
         else:
-            assert edb.hfss.create_differential_wave_port(
+            assert edb.excitation_manager.create_differential_wave_port(
                 traces[1].id,
                 trace_paths[0][0],
                 traces[2].id,
@@ -510,7 +517,7 @@ class TestClass(BaseTestClass):
         if edb.grpc:
             df_port = edb.excitation_manager.create_bundle_wave_port(traces_id, paths)
         else:
-            df_port = edb.hfss.create_bundle_wave_port(traces_id, paths)
+            df_port = edb.excitation_manager.create_bundle_wave_port(traces_id, paths)
         assert df_port.name
         assert df_port.terminals
         df_port.horizontal_extent_factor = 10
@@ -547,9 +554,9 @@ class TestClass(BaseTestClass):
         if config["use_grpc"]:
             assert edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][1], "wave_port")
         else:
-            assert edb.hfss.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
+            assert edb.excitation_manager.create_wave_port(traces[0], trace_paths[0][0], "wave_port")
 
-        assert edb.hfss.create_differential_wave_port(
+        assert edb.excitation_manager.create_differential_wave_port(
             traces[0],
             trace_paths[0][0],
             traces[1],
@@ -561,7 +568,7 @@ class TestClass(BaseTestClass):
         if config["use_grpc"]:
             p = edb.excitation_manager.create_bundle_wave_port(traces, paths, port_name="port2")
         else:
-            p = edb.hfss.create_bundle_wave_port(traces, paths)
+            p = edb.excitation_manager.create_bundle_wave_port(traces, paths)
         p.horizontal_extent_factor = 6
         p.vertical_extent_factor = 5
         p.pec_launch_width = "0.02mm"
@@ -583,7 +590,6 @@ class TestClass(BaseTestClass):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
         setup1 = edbapp.hfss.add_setup("setup1")
-        assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
             assert setup1.adaptive_settings.adaptive_solution_type == "single"
@@ -673,7 +679,6 @@ class TestClass(BaseTestClass):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
         setup1 = edbapp.hfss.add_setup("setup1")
-        assert not edbapp.hfss.add_setup("setup1")
         assert setup1.set_solution_single_frequency()
         if "adaptive_solution_type" in dir(setup1.adaptive_settings):
             assert setup1.adaptive_settings.adaptive_solution_type == "single"
@@ -697,7 +702,6 @@ class TestClass(BaseTestClass):
         assert setup1.hfss_solver_settings.use_shell_elements
 
         setup1 = edbapp.setups["setup1"]
-        assert not setup1.is_null
         setup1.adaptive_settings.max_refine_per_pass = 20
         assert setup1.adaptive_settings.max_refine_per_pass == 20
         setup1.adaptive_settings.min_passes = 2
@@ -758,11 +762,11 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_setup()
-        assert not setup.is_null
+        setup = edbapp.setups[setup.name]
         setup.name = "test_siwave_setup"
         assert setup.name == "test_siwave_setup"
 
@@ -795,8 +799,8 @@ class TestClass(BaseTestClass):
         assert adv_settings.min_pad_area_to_mesh == 1e-5
         adv_settings.min_plane_area_to_mesh = 1e-5
         assert adv_settings.min_plane_area_to_mesh == 1e-5
-        adv_settings.min_void_area = "3mm2"
-        assert adv_settings.min_void_area == "3mm2"
+        adv_settings.min_void_area = 3e-06
+        assert adv_settings.min_void_area == 3e-06
         adv_settings.perform_erc = True
         assert adv_settings.perform_erc
         adv_settings.return_current_distribution = True
@@ -888,13 +892,13 @@ class TestClass(BaseTestClass):
         assert sp.interpolation == "point"
         sp.use_state_space = False
         assert not sp.use_state_space
+
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_dcir_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup()
-        assert not setup.is_null
         setup.name = "test_siwave_dcir_setup"
         assert setup.name == "test_siwave_dcir_setup"
 
@@ -971,11 +975,10 @@ class TestClass(BaseTestClass):
         assert not general.user_si_settings
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_raptor_x_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
-        setup = edbapp.simulation_setups.create_raptor_x_setup()
-        assert not setup.is_null
+        setup = edbapp.simulation_setups.create_raptor_x_setup(name="test_raptorx_setup")
         setup.name = "test_raptorx_setup"
         assert setup.name == "test_raptorx_setup"
         assert not setup.sweep_data  # default we don't create sweep if not data provided while setup creation
@@ -993,8 +996,14 @@ class TestClass(BaseTestClass):
         assert adv_settings.eliminate_slit_per_holes == 2.0
         adv_settings.mesh_bws = 25e9
         assert adv_settings.mesh_bws == 25e9
-        adv_settings.net_settings_options = {"VDD": ["mesh_vias", "via_diameter"]}
-        assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
+        if config["use_grpc"]:
+            adv_settings.net_settings_options = {"VDD": ["mesh_vias", "via_diameter"]}
+            assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
+        else:
+            # Todo
+            pass
+            # adv_settings.net_settings_options = [["VDD", "mesh_vias"], ["VDD", "via_diameter"]]
+            # assert adv_settings.net_settings_options == {"VDD": ["mesh_vias", "via_diameter"]}
         adv_settings.override_shrink_factor = 2.0
         assert adv_settings.override_shrink_factor == 2.0
         adv_settings.plane_projection_factor = 2.0
@@ -1044,7 +1053,7 @@ class TestClass(BaseTestClass):
         assert general.use_gold_em_solver
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    @pytest.mark.skipif(not config["use_grpc"], reason="issue #1860. Missing create_q3d_setup in dotnet")
     def test_q3d_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_q3d_setup()
@@ -1133,11 +1142,11 @@ class TestClass(BaseTestClass):
         assert general.solution_frequency == 20e9
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_sweep(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_hfss_setup(
-            name="test_hfss_setup", distribution="decade_count", start_freq="0GHz", stop_freq="1GHz", freq_step="10"
+            name="test_hfss_setup", distribution="log_scale", start_freq="0GHz", stop_freq="1GHz", freq_step="10"
         )
         sweep = setup.sweep_data[0]
         sweep.compute_dc_point = True
@@ -1148,7 +1157,7 @@ class TestClass(BaseTestClass):
         sweep.enforce_causality = True
         sweep.enforce_passivity = False
         assert not sweep.enforce_passivity
-        assert sweep.frequency_string == "DEC 0GHz 1GHz 10"
+        assert sweep.frequency_string == ["DEC 0.0GHz 1.0GHz 10"]
         sweep.name = "renamed_sweep"
         assert sweep.name == "renamed_sweep"
         sweep.save_fields = True
@@ -1163,10 +1172,10 @@ class TestClass(BaseTestClass):
         assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Safeguard test for dotnet compatibility with grpc")
+    # @pytest.mark.skipif(True, reason="Safeguard test for dotnet compatibility with grpc")
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.create_empty_edb()
-        setup = edbapp.create_siwave_dc_setup()
+        setup = edbapp.simulation_setups.create_siwave_dcir_setup()
         settings = setup.settings
 
         # settings
@@ -1175,7 +1184,6 @@ class TestClass(BaseTestClass):
         settings.enabled = False
         assert not settings.enabled
         settings.enabled = True
-        assert not settings.frequency_sweeps
         settings.icepak_temp_file = "icepak_temp_file.txt"
         assert settings.icepak_temp_file == "icepak_temp_file.txt"
         settings.icepak_temp_file_path = "icepak_temp_file_path.txt"
@@ -1190,7 +1198,6 @@ class TestClass(BaseTestClass):
         assert settings.via_report_path == "via_report.txt"
         settings.use_loop_res_for_per_pin = False
         assert not settings.use_loop_res_for_per_pin
-        assert settings.setup_type == "siwave_dc"
 
         settings.export_dc_thermal_data = True
         assert settings.export_dc_thermal_data

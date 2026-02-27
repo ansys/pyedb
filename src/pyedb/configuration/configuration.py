@@ -271,14 +271,16 @@ class Configuration:
                         edb_setup.pi_slider_position = setup.pi_slider_position
                 else:
                     raise SyntaxError(f"Unsupported setup type '{setup.type}'.")
-
+                dist_dict = {"LIN": "linear_scale", "DEC": "log_scale", "LINC": "linear_count"}
                 # Apply frequency sweeps
                 for sw in setup.freq_sweep:
                     f_set = []
                     freq_string = []
                     for f in sw.frequencies:
                         if isinstance(f, str):
-                            freq_string.append(f)
+                            freq_strng = f.split(" ")
+                            if freq_strng[0] in dist_dict:
+                                f_set.append([dist_dict[freq_strng[0]], freq_strng[1], freq_strng[2], freq_strng[3]])
                         else:
                             f_set.append([f.distribution, f.start, f.stop, f.increment])
 
@@ -302,7 +304,7 @@ class Configuration:
     def get_setups(self):
         self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
-            if setup.type == "siwave_dc":
+            if setup.type in ["siwave_dc", "siwave_dcir"]:
                 self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
                     dc_slider_position=setup.dc_settings.dc_slider_position,
@@ -361,7 +363,7 @@ class Configuration:
                         else:
                             raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
-                elif setup.type == "siwave_ac":  # siwave ac
+                elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
                     cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
@@ -493,11 +495,12 @@ class Configuration:
 
         if modeler.padstack_defs:
             for p in modeler.padstack_defs:
-                pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                pdef.SetData(pdata)
-                pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
-                set_padstack_definition(p, pdef)
+                pdef = self._pedb.padstacks.create(p.name)
+                # pdata = self._pedb._edb.Definition.PadstackDefData.Create()
+                # pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
+                # pdef.SetData(pdata)
+                # pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
+                set_padstack_definition(p, self._pedb.padstacks[pdef])
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
@@ -645,12 +648,12 @@ class Configuration:
         # step 1, archive padstack definitions
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
-            pdef_edb_object = pdef._padstack_def_data
+            pdef_edb_object = pdef.data
             temp_pdef_data[pdef_name] = pdef_edb_object
         # step 2, archive padstack instance layer map
         temp_p_inst_layer_map = {}
         for p_inst in self._pedb.layout.padstack_instances:
-            temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
+            temp_p_inst_layer_map[p_inst.id] = p_inst.layer_map
 
         # ----------------------------------------------------------------------
         # Apply stackup
@@ -700,7 +703,7 @@ class Configuration:
             pdef._padstack_def_data = pdef_data
         # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
-            p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
+            p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
 
     def get_stackup(self):
         self.cfg_data.stackup.layers = []
@@ -896,7 +899,7 @@ class Configuration:
                 )
 
             elif cfg_terminal.terminal_type == "pin_group":
-                terminal = self._pedb.excitation_manager.create_pin_group_terminal(
+                terminal = self._pedb.excitation_manager.create_terminal_from_pin_group(
                     name=cfg_terminal.name,
                     pin_group=cfg_terminal.pin_group,
                 )

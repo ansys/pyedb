@@ -432,7 +432,12 @@ class Modeler(object):
             Bounding box coordinates [min_x, min_y, max_x, max_y].
         """
         bounding_box = polygon.polygon_data.bbox()
-        return [Value(bounding_box[0].x), Value(bounding_box[0].y), Value(bounding_box[1].x), Value(bounding_box[1].y)]
+        return [
+            self._pedb.value(bounding_box[0].x),
+            self._pedb.value(bounding_box[0].y),
+            self._pedb.value(bounding_box[1].x),
+            self._pedb.value(bounding_box[1].y),
+        ]
 
     @staticmethod
     def get_polygon_points(polygon) -> List[List[float]]:
@@ -457,9 +462,9 @@ class Modeler(object):
                 point = polygon.polygon_data.points[i]
                 if prev_point != point:
                     if point.is_arc:
-                        points.append([Value(point.x)])
+                        points.append([self._pedb.value(point.x)])
                     else:
-                        points.append([Value(point.x), Value(point.y)])
+                        points.append([self._pedb.value(point.x), self._pedb.value(point.y)])
                     prev_point = point
                     i += 1
                 else:
@@ -515,8 +520,8 @@ class Modeler(object):
         polygon_data = polygon.polygon_data
         bound_center = polygon_data.bounding_circle()[0]
         bound_center2 = selection_polygon_data.bounding_circle()[0]
-        center = [Value(bound_center[0]), Value(bound_center[1])]
-        center2 = [Value(bound_center2[0]), Value(bound_center2[1])]
+        center = [self._pedb.value(bound_center[0]), self._pedb.value(bound_center[1])]
+        center2 = [self._pedb.value(bound_center2[0]), self._pedb.value(bound_center2[1])]
         x1, y1 = calc_slope(center2, center)
 
         if not origin:
@@ -531,12 +536,12 @@ class Modeler(object):
                 if prev_point != point:
                     check_inside = selection_polygon_data.is_inside(point)
                     if check_inside:
-                        xcoeff, ycoeff = calc_slope([Value(point.x), Value(point.x)], origin)
+                        xcoeff, ycoeff = calc_slope([self._pedb.value(point.x), self._pedb.value(point.x)], origin)
 
                         new_points = CorePointData(
                             [
-                                Value(str(Value(point.x) + f"{xcoeff}*{offset_name}")),
-                                Value(str(Value(point.y)) + f"{ycoeff}*{offset_name}"),
+                                self._pedb.value(str(self._pedb.value(point.x) + f"{xcoeff}*{offset_name}")),
+                                self._pedb.value(str(self._pedb.value(point.y)) + f"{ycoeff}*{offset_name}"),
                             ]
                         )
                         polygon_data.points[i] = new_points
@@ -596,11 +601,11 @@ class Modeler(object):
             for pt in points:
                 _pt = []
                 for coord in pt:
-                    coord = Value(coord, self._pedb.active_cell)
+                    coord = self._pedb.value(coord)
                     _pt.append(coord)
                 _points.append(_pt)
             points = _points
-            width = Value(width, self._pedb.active_cell)
+            width = self._pedb.value(width)
             polygon_data = CorePolygonData(points)
         elif isinstance(points, CorePolygonData):
             polygon_data = points
@@ -698,7 +703,9 @@ class Modeler(object):
             new_points = []
             for idx, i in enumerate(points):
                 new_points.append(
-                    CorePointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
+                    CorePointData(
+                        [self._pedb.value(i[0], self._pedb.active_cell), self._pedb.value(i[1], self._pedb.active_cell)]
+                    )
                 )
             polygon_data = CorePolygonData(points=new_points)
 
@@ -776,40 +783,40 @@ class Modeler(object):
                 layer=layer_name,
                 net=net,
                 rep_type=representation_type,
-                param1=Value(lower_left_point[0]),
-                param2=Value(lower_left_point[1]),
-                param3=Value(upper_right_point[0]),
-                param4=Value(upper_right_point[1]),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=self._pedb.value(lower_left_point[0]),
+                param2=self._pedb.value(lower_left_point[1]),
+                param3=self._pedb.value(upper_right_point[0]),
+                param4=self._pedb.value(upper_right_point[1]),
+                corner_rad=self._pedb.value(corner_radius),
+                rotation=self._pedb.value(rotation),
             )
         else:
             rep_type = "center_width_height"
             if isinstance(width, str):
                 if width in self._pedb.variables:
-                    width = Value(width, self._pedb.active_cell)
+                    width = self._pedb.value(width, self._pedb.active_cell)
                 else:
-                    width = Value(width)
+                    width = self._pedb.value(width)
             else:
-                width = Value(width)
+                width = self._pedb.value(width)
             if isinstance(height, str):
                 if height in self._pedb.variables:
-                    height = Value(height, self._pedb.active_cell)
+                    height = self._pedb.value(height, self._pedb.active_cell)
                 else:
-                    height = Value(width)
+                    height = self._pedb.value(width)
             else:
-                height = Value(width)
+                height = self._pedb.value(width)
             rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=rep_type,
-                param1=Value(center_point[0]),
-                param2=Value(center_point[1]),
-                param3=Value(width),
-                param4=Value(height),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=self._pedb.value(center_point[0]),
+                param2=self._pedb.value(center_point[1]),
+                param3=self._pedb.value(width),
+                param4=self._pedb.value(height),
+                corner_rad=self._pedb.value(corner_radius),
+                rotation=self._pedb.value(rotation),
             )
         if not rect.is_null:
             return rect
@@ -844,9 +851,9 @@ class Modeler(object):
             layout=self._active_layout,
             layer=layer_name,
             net=edb_net,
-            center_x=Value(x),
-            center_y=Value(y),
-            radius=Value(radius),
+            center_x=self._pedb.value(x),
+            center_y=self._pedb.value(y),
+            radius=self._pedb.value(radius),
         )
         if not circle.is_null:
             return circle
@@ -933,9 +940,9 @@ class Modeler(object):
                 layout=self._active_layout,
                 layer=void_circle.layer_name,
                 net=void_circle.net,
-                center_x=Value(circ_params[0]),
-                center_y=Value(circ_params[1]),
-                radius=Value(circ_params[2]),
+                center_x=self._pedb.value(circ_params[0]),
+                center_y=self._pedb.value(circ_params[1]),
+                radius=self._pedb.value(circ_params[2]),
             )
             if not cloned_circle.is_null:
                 cloned_circle.is_negative = True
@@ -1027,14 +1034,14 @@ class Modeler(object):
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.active_cell.add_variable(
-                                name=_parameter_name, value=Value(variable_value), is_param=True
+                                name=_parameter_name, value=self._pedb.value(variable_value), is_param=True
                             )
-                            p.width = Value(_parameter_name, self._pedb.active_cell)
+                            p.width = self._pedb.value(_parameter_name, self._pedb.active_cell)
                         elif p.layer.name in layers_name:
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.add_design_variable(parameter_name, variable_value, True)
-                            p.width = Value(_parameter_name, self._pedb.active_cell)
+                            p.width = self._pedb.value(_parameter_name, self._pedb.active_cell)
         return True
 
     def unite_polygons_on_layer(
@@ -1179,7 +1186,7 @@ class Modeler(object):
                     primitives = self.primitives_by_layer[layer]
                     for prim in primitives:
                         if prim.primitive_type.name == "PATH":
-                            surface += Path(self._pedb, prim).length * Value(prim.cast().width)
+                            surface += Path(self._pedb, prim).length * self._pedb.value(prim.cast().width)
                         if prim.primitive_type.name == "POLYGON":
                             surface += prim.polygon_data.area()
                             stat_model.occupying_surface[layer] = round(surface, 6)
@@ -1269,14 +1276,14 @@ class Modeler(object):
             bondwire_type=bondwire_type,
             definition_name=definition_name,
             placement_layer=placement_layer,
-            width=Value(width),
+            width=self._pedb.value(width),
             material=material,
             start_layer_name=start_layer_name,
-            start_x=Value(start_x),
-            start_y=Value(start_y),
+            start_x=self._pedb.value(start_x),
+            start_y=self._pedb.value(start_y),
             end_layer_name=end_layer_name,
-            end_x=Value(end_x),
-            end_y=Value(end_y),
+            end_x=self._pedb.value(end_x),
+            end_y=self._pedb.value(end_y),
             net=net,
             end_cell_inst=end_cell_inst,
             start_cell_inst=start_cell_inst,
@@ -1521,9 +1528,7 @@ class Modeler(object):
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(
-            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
-        )
+        location = GrpcPoint3DData(self._pedb.value(x).core, self._pedb.value(y).core, self._pedb.value(z).core)
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 
@@ -1579,9 +1584,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1)._edb_object,
-            (self._pedb.value(local_origin_y) * -1)._edb_object,
-            (self._pedb.value(local_origin_z) * -1)._edb_object,
+            (self._pedb.value(local_origin_x) * -1).core,
+            (self._pedb.value(local_origin_y) * -1).core,
+            (self._pedb.value(local_origin_z) * -1).core,
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1605,9 +1610,7 @@ class Modeler(object):
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(
-            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
-        )
+        location = GrpcPoint3DData(self._pedb.value(x).core, self._pedb.value(y).core, self._pedb.value(z).core)
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 

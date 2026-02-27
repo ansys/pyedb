@@ -203,12 +203,6 @@ class Edb(EdbInit):
     _init_objects: Any
     design_mode: property
 
-    deprecate_argument_name(
-        {
-            "edbversion": "version",
-        }
-    )
-
     @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
@@ -461,10 +455,9 @@ class Edb(EdbInit):
             return None
         return None
 
-    @staticmethod
-    def value(val) -> Value:
+    def value(self, val) -> Value:
         """Convert a value into a pyedb value."""
-        return Value(val)
+        return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
 
     @property
     def cell_names(self) -> List[str]:

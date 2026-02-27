@@ -44,9 +44,9 @@ class TestClass(BaseTestClass):
         assert general_settings.global_temperature == 22.0
         # general_settings.global_temperature = 35.0
         # assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
-        assert general_settings.max_frequency == "10GHz"
+        assert general_settings.max_frequency == 10e9
         general_settings.max_frequency = 20e9
-        assert float(general_settings.max_frequency) == 20e9
+        assert general_settings.max_frequency == 20e9
         advanced_settings = setup.settings.advanced_settings
         assert advanced_settings.auto_removal_sliver_poly == 0.001
         advanced_settings.auto_removal_sliver_poly = 0.002
@@ -54,15 +54,15 @@ class TestClass(BaseTestClass):
         assert advanced_settings.cell_per_wave_length == 80
         advanced_settings.cell_per_wave_length = 60
         assert advanced_settings.cell_per_wave_length == 60
-        assert advanced_settings.edge_mesh == "0.8um"
-        advanced_settings.edge_mesh = "1um"
-        assert advanced_settings.edge_mesh == "1um"
+        assert advanced_settings.edge_mesh == 8e-7
+        advanced_settings.edge_mesh = 1e-6
+        assert advanced_settings.edge_mesh == 1e-6
         assert advanced_settings.eliminate_slit_per_hole == 5.0
         advanced_settings.eliminate_slit_per_hole = 4.0
         assert advanced_settings.eliminate_slit_per_hole == 4.0
-        assert advanced_settings.mesh_frequency == "1GHz"
-        advanced_settings.mesh_frequency = "5GHz"
-        assert advanced_settings.mesh_frequency == "5GHz"
+        assert advanced_settings.mesh_frequency == 1e9
+        advanced_settings.mesh_frequency = 5e9
+        assert advanced_settings.mesh_frequency == 5e9
         assert advanced_settings.override_shrink_fac == 1.0
         advanced_settings.override_shrink_fac = 1.5
         assert advanced_settings.override_shrink_fac == 1.5

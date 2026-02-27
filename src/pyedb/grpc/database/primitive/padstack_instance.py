@@ -151,6 +151,14 @@ class PadstackInstance(conn_obj.ConnObj):
         return cls(layout._pedb, inst)
 
     @property
+    def layer_map(self):
+        return self.core.layer_map
+
+    @layer_map.setter
+    def layer_map(self, layer_map):
+        self.core.layer_map = layer_map
+
+    @property
     def solderball_layer(self):
         return self.core.solderball_layer
 
@@ -367,7 +375,7 @@ class PadstackInstance(conn_obj.ConnObj):
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(
-                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    drill_to_layer=drill_depth,
                     offset=Value(offset),
                     diameter=Value(drill_diameter),
                     from_bottom=False,
@@ -807,7 +815,7 @@ class PadstackInstance(conn_obj.ConnObj):
         position = self.core.get_position_and_rotation()
         if self.component:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
-            _position_and_rotation = [out2[0].value, out2[1].value]
+            _position_and_rotation = [out2.x.value, out2.y.value]
             _position_and_rotation.append(Value(position[-1]).value)
         else:
             _position_and_rotation = [Value(pt).value for pt in position]
@@ -1344,7 +1352,9 @@ class PadstackInstance(conn_obj.ConnObj):
                 stacklevel=2,
             )
 
-        drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
+        drill_to_layer = (
+            self._pedb.stackup.layers[drill_to_layer] if isinstance(drill_to_layer, str) else drill_to_layer
+        )
         if float(self._pedb.version) < 2027.1:
             self.core.set_back_drill_by_layer(
                 drill_to_layer=drill_to_layer.core,

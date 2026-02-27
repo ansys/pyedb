@@ -676,7 +676,7 @@ class ViaDesignBackend:
                 self._OUTPUT_DIR = Path(output_dir)
         return self._OUTPUT_DIR
 
-    def __init__(self, cfg):
+    def __init__(self, cfg, grpc=False):
         cfg_json = {
             "stackup": {"layers": [], "materials": []},
             "variables": [],
@@ -713,8 +713,11 @@ class ViaDesignBackend:
         self.output_dir.mkdir(parents=True, exist_ok=True)
         with open(self.output_dir / "config.json", "w") as f:
             json.dump(cfg_json, f, indent=4)
+
         self.app = Edb(
-            edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")), edbversion=self.version
+            edbpath=str((Path(self.output_dir) / self.cfg["title"]).with_suffix(".aedb")),
+            version=self.version,
+            grpc=grpc,
         )
         self.app.configuration.load(cfg_json, apply_file=True)
         self.app.save()

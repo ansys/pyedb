@@ -842,7 +842,7 @@ class HFSSAutoConfiguration:
                     if not comp in self.components:
                         self._pedb.logger.warning(f"Component {comp} not found in the design, skipping")
                         continue
-                    self._pedb.components.create_port_on_component(
+                    self._pedb.excitation_manager.create_port_on_component(
                         component=comp,
                         net_list=self.signal_nets,
                         port_type="coax_port",
@@ -853,7 +853,7 @@ class HFSSAutoConfiguration:
                     )
             else:
                 for component in self.components:
-                    self._pedb.components.create_port_on_component(
+                    self._pedb.excitation_manager.create_port_on_component(
                         component=component,
                         net_list=self.signal_nets,
                         port_type="coax_port",
@@ -861,7 +861,7 @@ class HFSSAutoConfiguration:
                     )
         elif self.port_type in ["circuit_port", "circuit", "circuit_ports"]:
             for component in self.components:
-                self._pedb.components.create_port_on_component(
+                self._pedb.excitation_manager.create_port_on_component(
                     component=component,
                     net_list=self.signal_nets,
                     port_type="circuit_port",

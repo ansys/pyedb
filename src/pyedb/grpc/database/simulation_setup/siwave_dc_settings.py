@@ -74,7 +74,7 @@ class SIWaveDCSettings:
         self.core.contact_radius = value
 
     @property
-    def dc_slider_pos(self) -> int:
+    def dc_slider_position(self) -> int:
         """DC slider position.
 
         Returns
@@ -83,11 +83,11 @@ class SIWaveDCSettings:
             DC slider position.
 
         """
-        return self.core.dc_slider_pos
+        return self.core.dc.dc_slider_pos
 
-    @dc_slider_pos.setter
-    def dc_slider_pos(self, value: int):
-        self.core.dc_slider_pos = value
+    @dc_slider_position.setter
+    def dc_slider_position(self, value: int):
+        self.core.dc.dc_slider_pos = value
 
     @property
     def plot_jv(self) -> bool:

@@ -366,6 +366,28 @@ class SourceExcitation(SourceExcitationInternal):
         self._pedb = pedb
 
     @property
+    def pin_groups(self) -> Dict[str, Any]:
+        """All layout pin groups.
+
+        Returns
+        -------
+        dict
+            Dictionary of pin groups with names as keys and pin group objects as values.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+        >>> pin_groups = edbapp.siwave.pin_groups
+        >>> for name, group in pin_groups.items():
+        ...     print(f"Pin group {name} has {len(group.pins)} pins")
+        """
+        _pingroups = {}
+        for el in self._pedb.layout.pin_groups:
+            _pingroups[el.name] = el
+        return _pingroups
+
+    @property
     def _logger(self) -> Any:
         return self._pedb.logger
 
@@ -1124,7 +1146,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
-        >>> edbapp.siwave.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
+        >>> edbapp.excitation_manager.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
         if not port_name:
             port_name = f"Port_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
@@ -1400,7 +1422,7 @@ class SourceExcitation(SourceExcitationInternal):
         self,
         positive_component_name: str,
         positive_net_name: str,
-        negative_component_name: str,
+        negative_component_name: str = None,
         negative_net_name: Optional[str] = None,
         impedance_value: Union[int, float] = 50,
         port_name: Optional[str] = None,
@@ -2540,7 +2562,7 @@ class SourceExcitation(SourceExcitationInternal):
             EdgeTerminal as GrpcEdgeTerminal,
         )
 
-        point_on_edge = CorePointData(location)
+        point_on_edge = CorePointData([self._pedb.value(i) for i in location])
         primitive = self._pedb.modeler.primitives_by_name[primitive_name]
         pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)
         edge_term = GrpcEdgeTerminal.create(
@@ -3236,7 +3258,13 @@ class SourceExcitation(SourceExcitationInternal):
         except AttributeError:
             pass
 
-    def create_pin_group_terminal(self, pin_group, name=""):
+    def create_pin_group_terminal(
+        self,
+        pin_group,
+    ):
+        return self._pedb.create_pin_group_terminal(pin_group)
+
+    def create_terminal_from_pin_group(self, pin_group, name=""):
         _name = name if name else generate_unique_name(pin_group)
         pg = self._pedb.siwave.pin_groups[pin_group]
         terminal = pg.create_terminal(name=_name)

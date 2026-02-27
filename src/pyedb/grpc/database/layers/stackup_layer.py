@@ -454,10 +454,7 @@ class StackupLayer:
         if not self.roughness_enabled:
             return 0.0
         bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
-        if len(bottom_roughness_model) == 2:
-            return Value(bottom_roughness_model[0], self._pedb.active_cell)
-        else:
-            return 0.0
+        return bottom_roughness_model
 
     @bottom_hallhuray_nodule_radius.setter
     def bottom_hallhuray_nodule_radius(self, value):
@@ -475,10 +472,7 @@ class StackupLayer:
         if not self.roughness_enabled:
             return 0.0
         bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
-        if len(bottom_roughness_model) == 2:
-            return Value(bottom_roughness_model[1], self._pedb.active_cell)
-        else:
-            return 0.0
+        return bottom_roughness_model
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):
@@ -696,8 +690,8 @@ class StackupLayer:
         roughness = {"top": {}, "bottom": {}, "side": {}}
         if self.top_hallhuray_nodule_radius:
             roughness["top"]["model"] = "huray"
-            roughness["top"]["nodule_radius"] = self.top_hallhuray_nodule_radius
-            roughness["top"]["surface_ratio"] = self.top_hallhuray_surface_ratio
+            roughness["top"]["nodule_radius"] = str(self.top_hallhuray_nodule_radius.value)
+            roughness["top"]["surface_ratio"] = str(self.top_hallhuray_surface_ratio.value)
 
         elif self.top_groisse_roughness:
             roughness["top"]["model"] = "groisse"
@@ -705,8 +699,8 @@ class StackupLayer:
 
         if self.bottom_hallhuray_nodule_radius:
             roughness["bottom"]["model"] = "huray"
-            roughness["bottom"]["nodule_radius"] = self.bottom_hallhuray_nodule_radius
-            roughness["bottom"]["surface_ratio"] = self.bottom_hallhuray_surface_ratio
+            roughness["bottom"]["nodule_radius"] = str(self.bottom_hallhuray_nodule_radius.value)
+            roughness["bottom"]["surface_ratio"] = str(self.bottom_hallhuray_surface_ratio.value)
 
         elif self.bottom_groisse_roughness:
             roughness["bottom"]["model"] = "groisse"
@@ -714,8 +708,8 @@ class StackupLayer:
 
         if self.side_hallhuray_nodule_radius:
             roughness["side"]["model"] = "huray"
-            roughness["side"]["nodule_radius"] = self.side_hallhuray_nodule_radius
-            roughness["side"]["surface_ratio"] = self.side_hallhuray_surface_ratio
+            roughness["side"]["nodule_radius"] = str(self.side_hallhuray_nodule_radius.value)
+            roughness["side"]["surface_ratio"] = str(self.side_hallhuray_surface_ratio.value)
 
         elif self.side_groisse_roughness:
             roughness["side"]["model"] = "groisse"

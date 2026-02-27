@@ -93,7 +93,7 @@ from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
 )
 from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
-    SiwaveSimulationSetup,
+    SIwaveSimulationSetup,
 )
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.dotnet.database.Variables import decompose_variable_value
@@ -1091,7 +1091,7 @@ class Edb:
         --------
         >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
-        >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
+        >>> p2 = edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         if not self._siwave and self._db:
             self._siwave = EdbSiwave(self)
@@ -3106,11 +3106,11 @@ class Edb:
         --------
         >>> from pyedb import Edb
         >>>edb = Edb()
-        >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
-        >>> edb.hfss.create_edge_port_horizontal(
+        >>> edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+        >>> edb.excitation_manager.create_edge_port_horizontal(
         >>> ... prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
         >>> ... )
-        >>> edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
+        >>> edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
         >>> edb.cutout(["Net1"])
         >>> assert edb.are_port_reference_terminals_connected()
         """
@@ -3191,7 +3191,7 @@ class Edb:
             if i.GetType().ToString().endswith("kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kSIWave"):
-                setups[i.GetName()] = SiwaveSimulationSetup(self, i)
+                setups[i.GetName()] = SIwaveSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kRaptorX"):
@@ -3241,59 +3241,17 @@ class Edb:
         -------
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
-        """Create an HFSS simulation setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
-        """
-        if name in self.setups:
-            self.logger.info("setup already exists")
-            return False
-        elif not name:
-            name = generate_unique_name("setup")
-        setup = HfssSimulationSetup.create(self, name=name)
-        setup.set_solution_single_frequency("1Ghz")
-        return setup
+        """Create an HFSS simulation setup from a template."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_hfss_setup instead.", DeprecationWarning)
+        return self.simulation_setups.create_hfss_setup(name)
 
     def create_raptorx_setup(self, name=None):
-        """Create an RaptorX simulation setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
-
-        """
-        if name in self.setups:
-            self.logger.error("Setup name already used in the layout")
-            return False
-        version = self.version.split(".")
-        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = RaptorXSimulationSetup.create(self, name=name)
-            return setup
-        else:
-            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
-            return False
+        """Create a RaptorX simulation setup."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_raptorx_setup instead.", DeprecationWarning)
+        return self.simulation_setups.create_raptor_x_setup(name)
 
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
@@ -3318,67 +3276,22 @@ class Edb:
         return HFSSPISimulationSetup(self, name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
-        >>> setup1.add_frequency_sweep(
-        ...     frequency_sweep=[
-        ...         ["linear count", "0", "1kHz", 1],
-        ...         ["log scale", "1kHz", "0.1GHz", 10],
-        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...     ]
-        ... )
-        """
-        if not name:
-            name = generate_unique_name("Siwave_SYZ")
-        if name in self.setups:
-            return False
-        setup = SiwaveSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return self.setups[name]
+        """Create a Siwave SYZ setup from a template."""
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_siwave_syz_setup instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
     def create_siwave_dc_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
-        >>> setup1.mesh_bondwires = True
-
-        """
-        if not name:
-            name = generate_unique_name("Siwave_DC")
-        if name in self.setups:
-            return False
-        setup = SiwaveDCSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return setup
+        """Create a Siwave DC IR setup from a template."""
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_siwave_dcir_setup instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
 
     @execution_timer("calculate_initial_extent")
     def calculate_initial_extent(self, expansion_factor):
@@ -3509,7 +3422,7 @@ class Edb:
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
                 defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
-                edb_terminals_info = edb.hfss.create_vertical_circuit_port_on_clipped_traces(
+                edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,
                     user_defined_extent=zone_info[1],

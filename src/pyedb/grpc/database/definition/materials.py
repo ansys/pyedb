@@ -901,7 +901,7 @@ class Materials(object):
         permittivities = [float(i) for i in permittivities]
         loss_tangents = [float(i) for i in loss_tangents]
         material_model = CoreMultipoleDebyeModel.create()
-        material_model.set_parameters(frequencies, permittivities, loss_tangents)
+        material_model.parameters = frequencies, permittivities, loss_tangents
         try:
             material = self.__add_dielectric_material_model(name, material_model)
             for key, value in kwargs.items():

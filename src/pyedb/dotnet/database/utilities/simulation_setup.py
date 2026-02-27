@@ -26,6 +26,7 @@ import warnings
 
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
+from pyedb.dotnet.database.utilities.obj_base import SystemObject
 from pyedb.generic.general_methods import generate_unique_name
 
 _setup_type_mapping = {
@@ -72,7 +73,7 @@ class AdaptiveType(object):
     (SingleFrequency, MultiFrequency, BroadBand) = range(0, 3)
 
 
-class SimulationSetup(object):
+class SimulationSetup(SystemObject):
     """Provide base simulation setup.
 
     Parameters
@@ -86,8 +87,8 @@ class SimulationSetup(object):
     """
 
     def __init__(self, pedb, edb_object=None):
-        self._pedb = pedb
-        self._edb_object = edb_object
+        super().__init__(pedb, edb_object)
+
         self._setup_type = ""
         self._simulation_setup_builder = None
         self._simulation_setup_type = {
@@ -125,14 +126,14 @@ class SimulationSetup(object):
         else:
             return None
 
-    def set_sim_setup_info(self, sim_setup_info):
+    def set_sim_setup_info(self, sim_setup_info: SimSetupInfo):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
-    @property
-    def get_sim_setup_info(self):
-        """Get simulation setup information."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-        return self.sim_setup_info._edb_object
+    # @property
+    # def get_sim_setup_info(self):
+    #     """Get simulation setup information."""
+    #     warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+    #     return self.sim_setup_info._edb_object
 
     @property
     def is_null(self):
@@ -213,14 +214,22 @@ class SimulationSetup(object):
         else:
             return True
 
+    # @property
+    # def enabled(self):
+    #     """Flag indicating if the setup is enabled."""
+    #     return self.get_simulation_settings()["enabled"]
+    #
+    # @enabled.setter
+    # def enabled(self, value: bool):
+    #     self.set_simulation_settings({"enabled": value})
+
     @property
     def enabled(self):
-        """Flag indicating if the setup is enabled."""
-        return self.get_simulation_settings()["enabled"]
+        return self.settings.enabled
 
     @enabled.setter
-    def enabled(self, value: bool):
-        self.set_simulation_settings({"enabled": value})
+    def enabled(self, value):
+        self.settings.enabled = value
 
     @property
     def name(self):

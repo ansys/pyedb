@@ -1002,7 +1002,7 @@ class Component:
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return (Value(pt1.x), Value(pt1.y)), (Value(pt2.x), Value(pt2.y))
+        return [pt1.x.value, pt1.y.value, pt2.x.value, pt2.y.value]
 
     @property
     def rotation(self) -> float:

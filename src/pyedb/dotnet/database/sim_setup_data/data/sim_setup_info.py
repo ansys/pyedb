@@ -35,6 +35,7 @@ class SimSetupInfo:
         setup_type: str = None,
         name: str = None,
     ):
+        self.core = edb_object
         self._pedb = pedb
         self.sim_setup = sim_setup
         simulation_setup_type = {

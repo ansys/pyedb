@@ -20,28 +20,104 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-# -*- coding: utf-8 -*-
 from decimal import Decimal
 import json
 import math
 import re
 import secrets
 import string
+from typing import Any, Iterable
 
 from pyedb.generic.general_methods import settings
 
+RKM_MAPS = {
+    # Resistors
+    "L": "m",
+    "R": "",
+    "E": "",
+    "k": "k",
+    "K": "k",
+    "M": "M",
+    "G": "G",
+    "T": "T",
+    "f": "f",
+    # Capacitors/Inductors
+    "F": "",
+    "H": "",
+    "h": "",
+    "m": "m",
+    "u": "μ",
+    "μ": "μ",
+    "U": "μ",
+    "n": "n",
+    "N": "n",
+    "p": "p",
+    "P": "p",
+    "mF": "m",
+    "uF": "μ",
+    "μF": "μ",
+    "UF": "μ",
+    "nF": "n",
+    "NF": "n",
+    "pF": "p",
+    "PF": "p",
+    "mH": "m",
+    "uH": "μ",
+    "μH": "μ",
+    "UH": "μ",
+    "nH": "n",
+    "NH": "n",
+    "pH": "p",
+    "PH": "p",
+}
 
-def format_decimals(el):  # pragma: no cover
-    """
+UNIT_VAL = {
+    "": 1.0,
+    "uV": 1e-6,
+    "mV": 1e-3,
+    "V": 1.0,
+    "kV": 1e3,
+    "MegV": 1e6,
+    "ns": 1e-9,
+    "us": 1e-6,
+    "ms": 1e-3,
+    "s": 1.0,
+    "min": 60,
+    "hour": 3600,
+    "rad": 1.0,
+    "deg": math.pi / 180,
+    "Hz": 1.0,
+    "kHz": 1e3,
+    "MHz": 1e6,
+    "nm": 1e-9,
+    "um": 1e-6,
+    "mm": 1e-3,
+    "in": 0.0254,
+    "inches": 0.0254,
+    "mil": 2.54e-5,
+    "cm": 1e-2,
+    "dm": 1e-1,
+    "meter": 1.0,
+    "km": 1e3,
+}
+
+
+# FIXME: Should this module be removed ? The function `float_units` is the only one
+# used in pyedb atm.
+
+
+def format_decimals(el: int | str) -> str:  # pragma: no cover
+    """Format a number with appropriate decimal places and commas.
 
     Parameters
     ----------
-    el :
-
+    el : int or str
+        The number to format.
 
     Returns
     -------
-
+    str
+        The formatted number as a string, with commas and appropriate decimal places.
     """
     if float(el) > 1000:
         num = "{:,.0f}".format(Decimal(el))
@@ -52,24 +128,23 @@ def format_decimals(el):  # pragma: no cover
     return num
 
 
-def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cover
+def random_string(length: int = 6, only_digits: bool = False, char_set: str | None = None) -> str:  # pragma: no cover
     """Generate a random string
 
     Parameters
     ----------
-    length :
-        length of the random string (Default value = 6)
+    length : int
+        Length of the random string. Default value is ``6``.
     only_digits : bool, optional
-        ``True`` if only digits are to be included.
+        Whether only digits are to be included. Default is ``False``.
     char_set : str, optional
-        Custom character set to pick the characters from.  By default chooses from
+        Custom character set to pick the characters from. By default chooses from
         ASCII and digit characters or just digits if ``only_digits`` is ``True``.
 
     Returns
     -------
-    type
-        random string
-
+    str
+        Random string of specified length.
     """
     if not char_set:
         if only_digits:
@@ -80,19 +155,20 @@ def random_string(length=6, only_digits=False, char_set=None):  # pragma: no cov
     return random_str
 
 
-def unique_string_list(element_list, only_string=True):  # pragma: no cover
+def unique_string_list(element_list: str | Iterable[str], only_string: bool = True) -> list[str]:  # pragma: no cover
     """Return a unique list of strings from an element list.
 
     Parameters
     ----------
-    element_list :
-
-    only_string :
-         (Default value = True)
+    element_list : str or Iterable[str]
+        The input element(s) to be converted to a unique list of strings.
+    only_string : bool, optional
+        Whether only strings are allowed in the input list. Default is ``True``.
 
     Returns
     -------
-
+    list[str]
+        A unique list of strings without duplicates.
     """
     if isinstance(element_list, str):
         element_list = [element_list]
@@ -103,17 +179,18 @@ def unique_string_list(element_list, only_string=True):  # pragma: no cover
     return list(set(element_list))
 
 
-def string_list(element_list):  # pragma: no cover
-    """
+def string_list(element_list: str | list) -> list[str]:  # pragma: no cover
+    """Return a list of strings from a string or a list of strings.
 
     Parameters
     ----------
-    element_list :
-
+    element_list : str or list
+        The input element(s) to be converted to a list of strings.
 
     Returns
     -------
-
+    list[str]
+        A list of strings.
     """
     if not isinstance(element_list, (str, list)):
         raise TypeError("Input must be a list or a string")
@@ -122,24 +199,25 @@ def string_list(element_list):  # pragma: no cover
     return element_list
 
 
-def ensure_list(element_list):  # pragma: no cover
-    """
+def ensure_list(element_list: Any) -> list[Any]:  # pragma: no cover
+    """Check if the input is a list, if not, convert it to a list.
 
     Parameters
     ----------
-    element_list :
-
+    element_list : Any
+        The input element(s) to be converted to a list.
 
     Returns
     -------
-
+    list[Any]
+        A list containing the input element(s).
     """
     if not isinstance(element_list, list):
         element_list = [element_list]
     return element_list
 
 
-def from_rkm(code):  # pragma: no cover
+def from_rkm(code: str) -> str:  # pragma: no cover
     """Convert an RKM code string to a string with a decimal point.
 
     Parameters
@@ -206,12 +284,18 @@ def from_rkm(code):  # pragma: no cover
     return code
 
 
-def str_to_bool(s):  # pragma: no cover
+def str_to_bool(s: str) -> bool | str:  # pragma: no cover
     """Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
 
     If the passed arguments are not relevant in the context of conversion, the argument
     itself is returned. This method can be called using the ``map()`` function to
     ensure conversion of Boolean strings in a list.
+
+    The method is not case-sensitive:
+
+        - ``True`` is returned if the input is ``"true"``, ``"1"``, `"yes"``, or ``"y"``;
+        - ``False`` is returned if the input is ``"false"``, ``"no"``, ``"n"``,  or ``"0"``.
+        - Otherwise, the input value is passed through the method unchanged.
 
     Parameters
     ----------
@@ -220,18 +304,11 @@ def str_to_bool(s):  # pragma: no cover
     Returns
     -------
     bool or str
-         The method is not case-sensitive.
-         - ``True`` is returned  if the input is ``"true"``, ``"1"``,
-           `"yes"``, or ``"y"``,
-         - ``False`` is returned if the input is ``"false"``, ``"no"``,
-           ``"n``,  or ``"0"``.
-         - Otherwise, the input value is passed through the method unchanged.
-
     """
     if type(s) == str:
-        if s.lower() in ["true", "yes", "y", "1"]:
+        if s.lower() in ("true", "yes", "y", "1"):
             return True
-        elif s.lower() in ["false", "no", "n", "0"]:
+        elif s.lower() in ("false", "no", "n", "0"):
             return False
         else:
             return s
@@ -239,38 +316,7 @@ def str_to_bool(s):  # pragma: no cover
         return False if s == 0 else True
 
 
-unit_val = {
-    "": 1.0,
-    "uV": 1e-6,
-    "mV": 1e-3,
-    "V": 1.0,
-    "kV": 1e3,
-    "MegV": 1e6,
-    "ns": 1e-9,
-    "us": 1e-6,
-    "ms": 1e-3,
-    "s": 1.0,
-    "min": 60,
-    "hour": 3600,
-    "rad": 1.0,
-    "deg": math.pi / 180,
-    "Hz": 1.0,
-    "kHz": 1e3,
-    "MHz": 1e6,
-    "nm": 1e-9,
-    "um": 1e-6,
-    "mm": 1e-3,
-    "in": 0.0254,
-    "inches": 0.0254,
-    "mil": 2.54e-5,
-    "cm": 1e-2,
-    "dm": 1e-1,
-    "meter": 1.0,
-    "km": 1e3,
-}
-
-
-def float_units(val_str, units=""):  # pragma: no cover
+def float_units(val_str: str, units: str = "") -> float:  # pragma: no cover
     """Retrieve units for a value.
 
     Parameters
@@ -283,34 +329,35 @@ def float_units(val_str, units=""):  # pragma: no cover
 
     Returns
     -------
-
+    float
+         The value of the float with the appropriate units.
     """
-    if not units in unit_val:
-        raise Exception("Specified unit string " + units + " not known!")
+    if not units in UNIT_VAL:
+        raise Exception("Specified unit string " + units + " not known.")
 
     loc = re.search("[a-zA-Z]", val_str)
     try:
         b = loc.span()[0]
         var = [float(val_str[0:b]), val_str[b:]]
-        val = var[0] * unit_val[var[1]]
+        val = var[0] * UNIT_VAL[var[1]]
     except:
         val = float(val_str)
 
-    val = val / unit_val[units]
+    val = val / UNIT_VAL[units]
     return val
 
 
-def json_to_dict(fn):  # pragma: no cover
-    """Load Json File to a dictionary.
+def json_to_dict(fn: str) -> dict[str, Any]:  # pragma: no cover
+    """Load JSON file to a dictionary.
 
     Parameters
     ----------
     fn : str
-        json file full path.
+        JSON file full path.
 
     Returns
     -------
-    dict
+    dict[str, Any]
     """
     json_data = {}
     with open(fn) as json_file:

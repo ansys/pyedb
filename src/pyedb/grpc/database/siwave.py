@@ -141,10 +141,7 @@ class Siwave(object):
         >>> for name, group in pin_groups.items():
         ...     print(f"Pin group {name} has {len(group.pins)} pins")
         """
-        _pingroups = {}
-        for el in self._pedb.layout.pin_groups:
-            _pingroups[el.name] = el
-        return _pingroups
+        return self._pedb.excitation_manager.pin_groups
 
     def _create_terminal_on_pins(self, source):
         """Create a terminal on pins.
