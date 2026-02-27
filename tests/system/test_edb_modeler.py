@@ -517,6 +517,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
     def test_get_primitives_by_point_layer_and_nets(self):
         # Done
         edbapp = self.edb_examples.get_si_verse()
