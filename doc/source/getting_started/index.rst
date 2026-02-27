@@ -67,7 +67,6 @@ Current architecture: .NET interoperability
 *   **PyEDB:** A pure Python library providing high-level API classes (``Edb``, ``Stackup``, ``Components``, etc.)
 *   **PythonNET Bridge:** Uses the ``pythonnet`` package to load .NET CLR (Common Language Runtime)
 *   **Ansys EDB .NET Libraries:** The actual EDB engine that executes within the .NET runtime
-*   **PyEDB-Core:** Lower-level API that PyEDB calls internally for .NET operations
 
 The .NET libraries are loaded directly into the Python process via PythonNET, allowing seamless interoperability
 between Python code and .NET EDB objects.
