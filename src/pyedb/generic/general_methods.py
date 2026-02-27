@@ -30,8 +30,6 @@ import csv
 import datetime
 import difflib
 import fnmatch
-import inspect
-import itertools
 import math
 import os
 from pathlib import Path
@@ -42,6 +40,7 @@ import sys
 import tempfile
 import time
 from typing import IO, TYPE_CHECKING, Any
+import xml.etree.ElementTree as ET
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
