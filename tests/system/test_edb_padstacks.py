@@ -469,7 +469,7 @@ class TestClass(BaseTestClass):
         assert len(test) == 194
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
@@ -541,7 +541,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
@@ -552,7 +552,7 @@ class TestClass(BaseTestClass):
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
@@ -612,7 +612,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
@@ -640,7 +640,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
@@ -665,7 +665,7 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )

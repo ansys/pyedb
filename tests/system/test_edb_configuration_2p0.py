@@ -81,7 +81,7 @@ def check_dictionaries(source_dict, target_dict):
     return True
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -854,7 +854,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -1089,7 +1089,7 @@ class TestClassTerminals(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -1353,7 +1353,7 @@ class TestClassSetups(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -1461,7 +1461,7 @@ class TestClassBoundaries(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -1696,7 +1696,7 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.max_delta = 0.02
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -1859,7 +1859,7 @@ class TestModeler(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
@@ -1878,7 +1878,7 @@ class TestComponent(BaseTestClass):
         _assert_final_ic_die_properties(component)
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )

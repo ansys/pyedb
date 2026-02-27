@@ -31,7 +31,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )

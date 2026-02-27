@@ -29,7 +29,7 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-@pytest.mark.skip(
+@pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
     reason="This test is failing in grpc. To be validated in 26R1.",
 )

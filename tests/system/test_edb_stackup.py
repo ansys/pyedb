@@ -1352,7 +1352,7 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(
+    @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
