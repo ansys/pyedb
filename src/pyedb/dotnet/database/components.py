@@ -30,6 +30,7 @@ from pathlib import Path
 import re
 from typing import List, Set, Union
 import warnings
+
 import skrf
 
 from pyedb.component_libraries.ansys_components import (
@@ -173,7 +174,7 @@ class Components(object):
 
     @property
     def definitions(self):
-        """Retrieve component definition ist.
+        """Retrieve component definition list.
 
         Returns
         -------
@@ -607,7 +608,7 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
-    def get_vendor_libraries(self) -> dict[str, dict[str, dict[str, SciktRF]]]:
+    def get_vendor_libraries(self) -> dict[str, dict[str, dict[str]]]:
         """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
 
         Returns
@@ -741,17 +742,20 @@ class Components(object):
         pec_boundary=False,
         pingroup_on_single_pin=False,
     ):
-        warnings.warn("`create_port_on_pins` is deprecated and will be removed in future versions. "
-                      "Please use `create_port_on_component` from edb.excitation_manager instead.",
-                      DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "`create_port_on_pins` is deprecated and will be removed in future versions. "
+            "Please use `create_port_on_component` from edb.excitation_manager instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self._pedb.source_excitation.create_port_on_pins(
-        refdes,
-        pins,
-        reference_pins,
-        impedance,
-        port_name,
-        pec_boundary,
-        pingroup_on_single_pin,
+            refdes,
+            pins,
+            reference_pins,
+            impedance,
+            port_name,
+            pec_boundary,
+            pingroup_on_single_pin,
         )
 
     def _get_pins_for_ports(
