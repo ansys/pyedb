@@ -492,6 +492,17 @@ class EDBPadstack(object):
         pstack_data = self._edb_object.GetData()
         return self._edb.Definition.PadstackDefData(pstack_data)
 
+    @property
+    def data(self):
+        """Get padstack definition data.
+
+        Returns
+        -------
+        PadstackDefData
+            Padstack definition data object.
+        """
+        return self._padstack_def_data
+
     @_padstack_def_data.setter
     def _padstack_def_data(self, value):
         self._edb_object.SetData(value)
@@ -1412,6 +1423,11 @@ class EDBPadstackInstance(Connectable):
         self._object_instance = None
         self._position = []
         self._pdef = None
+
+    @property
+    def layer_map(self):
+        """Edb layer map."""
+        return self._edb_object.GetLayerMap()
 
     def get_hole_overrides(self):
         return self._edb_object.GetHoleOverrideValue()

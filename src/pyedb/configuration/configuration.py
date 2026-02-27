@@ -648,12 +648,12 @@ class Configuration:
         # step 1, archive padstack definitions
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
-            pdef_edb_object = pdef._padstack_def_data
+            pdef_edb_object = pdef.data
             temp_pdef_data[pdef_name] = pdef_edb_object
         # step 2, archive padstack instance layer map
         temp_p_inst_layer_map = {}
         for p_inst in self._pedb.layout.padstack_instances:
-            temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
+            temp_p_inst_layer_map[p_inst.id] = p_inst.layer_map
 
         # ----------------------------------------------------------------------
         # Apply stackup
@@ -703,7 +703,7 @@ class Configuration:
             pdef._padstack_def_data = pdef_data
         # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
-            p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
+            p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
 
     def get_stackup(self):
         self.cfg_data.stackup.layers = []
