@@ -2562,7 +2562,7 @@ class SourceExcitation(SourceExcitationInternal):
             EdgeTerminal as GrpcEdgeTerminal,
         )
 
-        point_on_edge = CorePointData(location)
+        point_on_edge = CorePointData([self._pedb.value(i) for i in location])
         primitive = self._pedb.modeler.primitives_by_name[primitive_name]
         pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)
         edge_term = GrpcEdgeTerminal.create(
