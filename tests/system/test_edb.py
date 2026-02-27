@@ -1249,7 +1249,6 @@ class TestClass(BaseTestClass):
         setup = edbapp.setups["setup_1"]
         settings = setup.settings
 
-
         assert settings.dc_report_config_file == "custom_dc_report.cfg"
         assert settings.enabled
         assert settings.icepak_temp_file == "icepak_temp_file.txt"
@@ -1306,7 +1305,6 @@ class TestClass(BaseTestClass):
         assert type(edbapp.layout_validation)
         # TODO add layout validation obj extended test
         assert edbapp.design_variables["test"].value == edbapp.variables["test"].value
-
 
     @pytest.mark.skip(reason="BUG 1422195")
     def test_siwave_simulation_setup_bug(self):

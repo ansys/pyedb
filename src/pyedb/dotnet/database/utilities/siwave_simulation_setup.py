@@ -107,6 +107,7 @@ def clone_edb_sim_setup_info(source, target):
                         f"Failed to update attribute {k} with value {value} - {type(e).__name__}: {str(e)}"
                     )
 
+
 class DeprecatedSettings:
     @property
     def dc_report_config_file(self) -> str:
@@ -354,8 +355,11 @@ class SIwaveSimulationSetup(SimulationSetup):
     @property
     def pi_slider_position(self):
         """PI solider position. Values are from ``1`` to ``3``."""
-        warnings.warn("`pi_slider_position` is deprecated. Use `settings.advanced.pi_slider_position` "
-                      "property instead.", DeprecationWarning, stacklevel=2)
+        warnings.warn(
+            "`pi_slider_position` is deprecated. Use `settings.advanced.pi_slider_position` property instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         return self.pi_slider_pos
 
     @pi_slider_position.setter
@@ -650,4 +654,3 @@ class Settings(DeprecatedSettings):
     def general(self):
         warnings.warn("Deprecated: settings.dc.", DeprecationWarning)
         return SIWaveGeneralSettings(self._parent)
-

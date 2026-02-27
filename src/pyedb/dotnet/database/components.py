@@ -271,7 +271,7 @@ class Components(object):
             json.dump(data, f, ensure_ascii=False, indent=4)
         return file_path_str
 
-    def refresh_components(self):
+    def refresh_components(self) -> bool:
         """Refresh the component dictionary."""
         self._cmp = {}
         self._res = {}
@@ -299,7 +299,7 @@ class Components(object):
         return True
 
     @property
-    def resistors(self):
+    def resistors(self) -> dict[str, dict]:
         """Resistors.
 
         Returns
@@ -317,7 +317,7 @@ class Components(object):
         return self._res
 
     @property
-    def capacitors(self):
+    def capacitors(self) -> dict[str, dict]:
         """Capacitors.
 
         Returns
@@ -335,7 +335,7 @@ class Components(object):
         return self._cap
 
     @property
-    def inductors(self):
+    def inductors(self) -> dict[str, dict]:
         """Inductors.
 
         Returns
@@ -354,7 +354,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self):
+    def ICs(self) -> dict[str, dict]:
         """Integrated circuits.
 
         Returns
@@ -373,7 +373,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self):
+    def IOs(self) -> dict[str, dict]:
         """Circuit inupts and outputs.
 
         Returns
@@ -392,7 +392,7 @@ class Components(object):
         return self._ios
 
     @property
-    def Others(self):
+    def Others(self) -> dict[str, dict]:
         """Other core components.
 
         Returns
@@ -411,7 +411,7 @@ class Components(object):
         return self._others
 
     @property
-    def components_by_partname(self):
+    def components_by_partname(self) -> dict:
         """Components by part name.
 
         Returns
@@ -435,7 +435,7 @@ class Components(object):
                 self._comps_by_part[val.partname] = [val]
         return self._comps_by_part
 
-    def get_component_by_name(self, name):
+    def get_component_by_name(self, name) -> bool:
         """Retrieve a component by name.
 
         Parameters
@@ -451,7 +451,7 @@ class Components(object):
         """
         return self._pedb.layout.find_component_by_name(name)
 
-    def get_components_from_nets(self, netlist=None):
+    def get_components_from_nets(self, netlist=None) -> list:
         """Retrieve components from a net list.
 
         Parameters
