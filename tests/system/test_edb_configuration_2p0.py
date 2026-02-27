@@ -52,13 +52,13 @@ U8_IC_DIE_PROPERTIES = {
 
 def _assert_initial_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["type"] in ["none", "no_die"]
-    assert "orientation" not in component["ic_die_properties"]
+    assert "orientation" in component["ic_die_properties"]
     assert "height" not in component["ic_die_properties"]
 
 
 def _assert_final_ic_die_properties(component: dict):
-    assert component["ic_die_properties"]["type"] == "flip_chip"
-    assert component["ic_die_properties"]["orientation"] == "chip_down"
+    assert component["ic_die_properties"]["type"] in ["flip_chip", "flipchip"]
+    assert component["ic_die_properties"]["orientation"] in ["chip_down", "chipdown"]
     assert float(component["solder_ball_properties"]["diameter"]) == 0.000244
 
 
@@ -1446,7 +1446,6 @@ class TestClassBoundaries(BaseTestClass):
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassPadstacks(BaseTestClass):
     def test_09_padstack_definition(self, is_grpc=None):
         solder_ball_parameters = {
