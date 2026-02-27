@@ -69,6 +69,26 @@ component_type_mapping = {
 }
 
 
+class ComponentProperty:
+    """Class managing component properties."""
+
+    def __init__(self, core):
+        # Use super().__setattr__ to avoid recursion in __setattr__ if you add it later
+        super().__setattr__("core", core)
+
+    def __getattr__(self, name):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        return getattr(self.core, name)
+
+    @property
+    def model(self):
+        """Component model."""
+        return self.core.component_property.model
+
+
 class Component:
     """Manages EDB functionalities for components.
 
@@ -287,7 +307,7 @@ class Component:
         :class:`ComponentProperty <ansys.edb.core.hierarchy.component_property.ComponentProperty>`
 
         """
-        return self.core.component_property
+        return ComponentProperty(self.core.component_property)
 
     @component_property.setter
     def component_property(self, value):

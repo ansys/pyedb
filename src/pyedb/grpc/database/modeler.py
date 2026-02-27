@@ -1498,9 +1498,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1),
-            (self._pedb.value(local_origin_y) * -1),
-            (self._pedb.value(local_origin_z) * -1),
+            (self._pedb.value(local_origin_x * -1)),
+            (self._pedb.value(local_origin_y * -1)),
+            (self._pedb.value(local_origin_z * -1)),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1580,9 +1580,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1).core,
-            (self._pedb.value(local_origin_y) * -1).core,
-            (self._pedb.value(local_origin_z) * -1).core,
+            (self._pedb.value(local_origin_x * -1)).core,
+            (self._pedb.value(local_origin_y * -1)).core,
+            (self._pedb.value(local_origin_z * -1)).core,
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset

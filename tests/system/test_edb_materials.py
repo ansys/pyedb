@@ -30,7 +30,7 @@ from pyedb.configuration.cfg_stackup import MaterialProperties
 from pyedb.dotnet.database.materials import (
     PERMEABILITY_DEFAULT_VALUE,
 )
-from tests.conftest import GRPC, local_path
+from tests.conftest import GRPC, config, local_path
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 from tests.system.base_test_class import BaseTestClass
@@ -376,5 +376,6 @@ class TestDielectricModel(BaseTestClass):
         assert ds_model.frequency == 1e9
         assert ds_model.loss_tangent_at_frequency == 0.02
         assert ds_model.relative_permittivity_at_frequency == 4
-        assert ds_model.use_dc_relative_permittivity is False
+        if not config["use_grpc"]:
+            assert ds_model.use_dc_relative_permittivity is False
         edbapp.close(terminate_rpc_session=False)

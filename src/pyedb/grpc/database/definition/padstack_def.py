@@ -587,7 +587,7 @@ class PadstackDef:
         if not self._antipad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.ANTI_PAD, self)
+                    self._antipad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.ANTI_PAD, self)
                 except:
                     self._antipad_by_layer[layer] = None
         return self._antipad_by_layer

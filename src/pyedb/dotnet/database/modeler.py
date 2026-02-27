@@ -33,6 +33,7 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.misc.decorators import deprecate_argument_name
 
 
 class Modeler(object):
@@ -629,12 +630,19 @@ class Modeler(object):
 
         return primitive
 
-    def create_polygon(self, main_shape=None, layer_name="", voids=[], net_name="", points=None):
+    @deprecate_argument_name({"main_shape": "points"})
+    def create_polygon(
+        self,
+        main_shape=None,
+        layer_name="",
+        voids=[],
+        net_name="",
+    ):
         """Create a polygon based on a list of points and voids.
 
         Parameters
         ----------
-        main_shape : list of points or PolygonData or ``modeler.Shape``
+        points : list of points or PolygonData or ``modeler.Shape``
             Shape or point lists of the main object. Point list can be in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
             Each point can be:
             - [x, y] coordinate
@@ -656,16 +664,10 @@ class Modeler(object):
         """
         from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 
-        if main_shape:
-            warnings.warn(
-                "main_shape argument will be deprecated soon with grpc version, use points instead.", DeprecationWarning
-            )
-
         net = self._pedb.nets.find_or_create_net(net_name)
-        if points:
+
+        if isinstance(points, list):
             arcs = []
-            if isinstance(points, PolygonData):
-                points = points.points
             for _ in range(len(points)):
                 arcs.append(
                     self._edb.Geometry.ArcData(
@@ -680,28 +682,11 @@ class Modeler(object):
                 pdata_1 = self._pedb.edb_value(i[1])
                 new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
                 polygonData.SetPoint(idx, new_points)
-        if isinstance(main_shape, list):
-            arcs = []
-            for _ in range(len(main_shape)):
-                arcs.append(
-                    self._edb.Geometry.ArcData(
-                        self._pedb.point_data(0, 0),
-                        self._pedb.point_data(0, 0),
-                    )
-                )
-            polygonData = self._edb.Geometry.PolygonData.CreateFromArcs(convert_py_list_to_net_list(arcs), True)
 
-            for idx, i in enumerate(main_shape):
-                pdata_0 = self._pedb.edb_value(i[0])
-                pdata_1 = self._pedb.edb_value(i[1])
-                new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
-                polygonData.SetPoint(idx, new_points)
-
-        elif isinstance(main_shape, Modeler.Shape):
-            polygonData = self.shape_to_polygon_data(main_shape)
+        elif isinstance(points, Modeler.Shape):
+            polygonData = self.shape_to_polygon_data(points)
         else:
-            if not points:
-                polygonData = main_shape
+            polygonData = points
         if isinstance(polygonData, PolygonData):
             if not polygonData.points:
                 raise RuntimeError("Failed to create main shape polygon data")
