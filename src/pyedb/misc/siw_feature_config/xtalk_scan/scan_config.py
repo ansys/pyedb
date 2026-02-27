@@ -38,7 +38,7 @@ class ScanType(Enum):
 
 
 class SiwaveScanConfig:
-    """XML control file handle for Siwave crosstalk scan.
+    """XML control file handle for SIwave crosstalk scan.
 
     Parameters
     ----------
@@ -59,7 +59,7 @@ class SiwaveScanConfig:
     """
 
     def __init__(self, pedb, scan_type: str = "impedance") -> None:
-        """Initialize Siwave scan configuration.
+        """Initialize SIwave scan configuration.
 
         Parameters
         ----------
