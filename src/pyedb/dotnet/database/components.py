@@ -411,7 +411,7 @@ class Components(object):
         return self._others
 
     @property
-    def components_by_partname(self):
+    def components_by_partname(self) -> dict:
         """Components by part name.
 
         Returns
@@ -435,7 +435,7 @@ class Components(object):
                 self._comps_by_part[val.partname] = [val]
         return self._comps_by_part
 
-    def get_component_by_name(self, name):
+    def get_component_by_name(self, name) -> bool:
         """Retrieve a component by name.
 
         Parameters
@@ -451,7 +451,7 @@ class Components(object):
         """
         return self._pedb.layout.find_component_by_name(name)
 
-    def get_components_from_nets(self, netlist=None):
+    def get_components_from_nets(self, netlist=None) -> list:
         """Retrieve components from a net list.
 
         Parameters
