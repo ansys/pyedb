@@ -421,3 +421,14 @@ class SimulationSetup(SystemObject):
         """
         warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)
+
+    @property
+    def settings(self):
+        """Get the settings interface for SIwave DC simulation.
+
+        Returns
+        -------
+        SIWaveSimulationSettings
+            An instance of the Settings class providing access to SIwave DC simulation settings.
+        """
+        raise NotImplementedError("The `settings` property is not implemented in the base SimulationSetup class")
