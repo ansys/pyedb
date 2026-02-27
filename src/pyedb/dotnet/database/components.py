@@ -30,6 +30,7 @@ from pathlib import Path
 import re
 from typing import List, Set, Union
 import warnings
+import skrf
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
@@ -494,7 +495,7 @@ class Components(object):
         hosting_component_pin1,
         hosting_component_pin2,
         flipped=False,
-    ) -> bool:
+    ) -> tuple:
         """Get the placement vector between 2 components.
 
         Parameters
@@ -585,7 +586,7 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp):
+    def get_solder_ball_height(self, cmp) -> float | bool:
         """Get component solder ball height.
 
         Parameters
@@ -606,7 +607,7 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
-    def get_vendor_libraries(self):
+    def get_vendor_libraries(self) -> dict[str, dict[str, dict[str, SciktRF]]]:
         """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
 
         Returns
@@ -650,7 +651,7 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-    def create_source_on_component(self, sources=None):
+    def create_source_on_component(self, sources=None) -> bool:
         """Create voltage, current source, or resistor on component.
 
         Parameters
@@ -740,114 +741,18 @@ class Components(object):
         pec_boundary=False,
         pingroup_on_single_pin=False,
     ):
-        """Create circuit port between pins and reference ones.
-
-        Parameters
-        ----------
-        refdes : Component reference designator
-            str or EDBComponent object.
-        pins : pin specifier(s) or instance(s) where the port terminal is to be created. Single pin name or a list of
-        several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the
-        global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances
-        can be provided as ``EDBPadstackInstance`` objects.
-        For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with
-        ``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be
-        provided.
-            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
-        reference_pins : reference pin specifier(s) or instance(s) for the port reference terminal. Allowed values are
-        the same as for the ``pins`` parameter.
-            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
-        impedance : Port impedance
-            str, float
-        port_name : str, optional
-            Port name. The default is ``None``, in which case a name is automatically assigned.
-        pec_boundary : bool, optional
-        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-        a perfect short is created between the pin and impedance is ignored. This
-        parameter is only supported on a port created between two pins, such as
-        when there is no pin group.
-        pingroup_on_single_pin : bool
-            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
-            ``False`` the port is created at the pad edge. Default value is ``False``.
-
-        Returns
-        -------
-        EDB terminal created, or False if failed to create.
-
-        Example:
-        >>> from pyedb import Edb
-        >>> edb = Edb(path_to_edb_file)
-        >>> pin = "AJ6"
-        >>> ref_pins = ["AM7", "AM4"]
-        Or to take all reference pins
-        >>> ref_pins = [pin for pin in list(edb.components["U2A5"].pins.values()) if pin.net_name == "GND"]
-        >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
-        >>> edb.save()
-        >>> edb.close()
-        """
-
-        if isinstance(refdes, str):
-            refdes = self.instances[refdes]
-        elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
-            refdes = EDBComponent(self._pedb, refdes)
-        pins = self._get_pins_for_ports(pins, refdes)
-        if not pins:  # pragma: no cover
-            raise RuntimeError("No pins found during port creation. Port is not defined.")
-        reference_pins = self._get_pins_for_ports(reference_pins, refdes)
-        if not reference_pins:
-            raise RuntimeError("No reference pins found during port creation. Port is not defined.")
-        if not pins:
-            raise RuntimeWarning("No pins found during port creation. Port is not defined.")
-        if reference_pins:
-            reference_pins = self._get_pins_for_ports(reference_pins, refdes)
-            if not reference_pins:
-                raise RuntimeWarning("No reference pins found during port creation. Port is not defined.")
-        if refdes and any(refdes.rlc_values):
-            return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
-        if not port_name:
-            port_name = f"Port_{pins[0].net_name}_{pins[0].aedt_name}".replace("-", "_")
-
-        if len(pins) > 1 or pingroup_on_single_pin:
-            if pec_boundary:
-                pec_boundary = False
-                self._logger.info(
-                    "Disabling PEC boundary creation, this feature is supported on single pin "
-                    f"ports only, {len(pins)} pins found (pingroup_on_single_pin: {pingroup_on_single_pin})."
-                )
-            group_name = "group_{}".format(port_name)
-            pin_group = self.create_pingroup_from_pins(pins, group_name)
-            term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
-        else:
-            term = self._create_terminal(pins[0]._edb_object, term_name=port_name)
-        term.SetIsCircuitPort(True)
-
-        if len(reference_pins) > 1 or pingroup_on_single_pin:
-            if pec_boundary:
-                pec_boundary = False
-                self._logger.info(
-                    "Disabling PEC boundary creation. This feature is supported on single pin "
-                    f"ports only, {len(reference_pins)} reference pins found "
-                    f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
-                )
-            ref_group_name = f"group_{port_name}_ref"
-            ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
-            ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
-        else:
-            ref_term = self._create_terminal(reference_pins[0]._edb_object, term_name=port_name + "_ref")
-        ref_term.SetIsCircuitPort(True)
-
-        term.SetImpedance(self._edb.Utility.Value(impedance))
-        term.SetReferenceTerminal(ref_term)
-        if pec_boundary:
-            term.SetIsCircuitPort(False)
-            ref_term.SetIsCircuitPort(False)
-            term.SetBoundaryType(self._edb.Cell.Terminal.BoundaryType.PecBoundary)
-            ref_term.SetBoundaryType(self._edb.Cell.Terminal.BoundaryType.PecBoundary)
-            self._logger.info(
-                f"PEC boundary created between pin {pins[0].name} and reference pin {reference_pins[0].name}"
-            )
-
-        return term or False
+        warnings.warn("`create_port_on_pins` is deprecated and will be removed in future versions. "
+                      "Please use `create_port_on_component` from edb.excitation_manager instead.",
+                      DeprecationWarning, stacklevel=2)
+        self._pedb.source_excitation.create_port_on_pins(
+        refdes,
+        pins,
+        reference_pins,
+        impedance,
+        port_name,
+        pec_boundary,
+        pingroup_on_single_pin,
+        )
 
     def _get_pins_for_ports(
         self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent

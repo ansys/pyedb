@@ -633,7 +633,7 @@ class Modeler(object):
     @deprecate_argument_name({"main_shape": "points"})
     def create_polygon(
         self,
-        main_shape=None,
+        points=None,
         layer_name="",
         voids=[],
         net_name="",
@@ -654,8 +654,7 @@ class Modeler(object):
             List of shape objects for voids or points that creates the shapes. The default is``[]``.
         net_name : str, optional
             Name of the net. The default is ``""``.
-        points : list, optional
-            Added for compatibility with grpc.
+
 
         Returns
         -------
