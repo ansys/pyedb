@@ -455,10 +455,9 @@ class Edb(EdbInit):
             return None
         return None
 
-    @staticmethod
-    def value(val) -> float:
+    def value(self, val) -> Value:
         """Convert a value into a pyedb value."""
-        return Value(val) if isinstance(val, str) and "$" in val else Value(val)
+        return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
 
     @property
     def cell_names(self) -> List[str]:
