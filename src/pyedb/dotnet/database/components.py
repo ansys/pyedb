@@ -354,7 +354,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self) ->dict[str, dict]:
+    def ICs(self) -> dict[str, dict]:
         """Integrated circuits.
 
         Returns
@@ -373,7 +373,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self) ->dict[str, dict]:
+    def IOs(self) -> dict[str, dict]:
         """Circuit inupts and outputs.
 
         Returns
@@ -392,7 +392,7 @@ class Components(object):
         return self._ios
 
     @property
-    def Others(self) ->dict[str, dict]:
+    def Others(self) -> dict[str, dict]:
         """Other core components.
 
         Returns
