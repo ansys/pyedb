@@ -226,7 +226,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.get_instances(component_reference_designator="U7")
 
         """Access padstack instance by name."""
-        padstack_instances = edbapp.padstacks.get_padstack_instance_by_net_name("GND")
+        padstack_instances = edbapp.padstacks.get_instances(net_name="GND")
         assert len(padstack_instances)
         padstack_1 = padstack_instances[0]
         assert padstack_1.id

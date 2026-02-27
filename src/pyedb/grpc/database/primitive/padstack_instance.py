@@ -375,7 +375,7 @@ class PadstackInstance(conn_obj.ConnObj):
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(
-                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    drill_to_layer=drill_depth,
                     offset=Value(offset),
                     diameter=Value(drill_diameter),
                     from_bottom=False,
@@ -1352,7 +1352,9 @@ class PadstackInstance(conn_obj.ConnObj):
                 stacklevel=2,
             )
 
-        drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
+        drill_to_layer = (
+            self._pedb.stackup.layers[drill_to_layer] if isinstance(drill_to_layer, str) else drill_to_layer
+        )
         if float(self._pedb.version) < 2027.1:
             self.core.set_back_drill_by_layer(
                 drill_to_layer=drill_to_layer.core,
