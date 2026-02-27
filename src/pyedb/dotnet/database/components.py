@@ -796,7 +796,7 @@ class Components(object):
         solder_balls_size=None,
         solder_balls_mid_size=None,
         extend_reference_pins_outside_component=False,
-    ):
+    ) -> float | bool:
         """Create ports on a component.
 
         Parameters
@@ -812,7 +812,7 @@ class Components(object):
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
-        refnet : string or list of string.
+        reference_net : string or list of string.
             list of the reference net.
         port_name : str
             Port name for overwriting the default port-naming convention,
@@ -843,8 +843,8 @@ class Components(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
-        >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
-        >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
+        >>> edbapp.components.create_port_on_component(component="U2A5", net_list=net_list,
+        >>> port_type=SourceType.CoaxPort, do_pingroup=False, reference_net="GND")
 
         """
         # Adding grpc compatibility
