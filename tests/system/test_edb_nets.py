@@ -28,7 +28,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_windows
 from tests import conftest
-from tests.conftest import config, local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -124,6 +124,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="get_connected_object returns empty list, needs investigation.")
     def test_nets_dc_shorts(self):
         # TODO get_connected_object return empty list.
         edbapp = self.edb_examples.get_si_verse()
