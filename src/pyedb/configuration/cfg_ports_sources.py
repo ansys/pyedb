@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import copy
 
 import numpy as np
 
@@ -93,7 +94,7 @@ class CfgNearestPinTerminalInfo(CfgTerminalInfo):
 
 class CfgSources:
     def get_pin_group_name(self, src):
-        return src._edb_object.GetPinGroup().GetName()
+        return src.pin_group.name
 
     def __init__(self, pedb, sources_data):
         self._pedb = pedb
@@ -115,18 +116,18 @@ class CfgSources:
             refdes = ""
             pos_term_info = {}
             neg_term_info = {}
-            if src.terminal_type == "PinGroupTerminal":
+            if src.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 pg = self._pedb.siwave.pin_groups[self.get_pin_group_name(src)]
                 pos_term_info = {"pin_group": pg.name}
-            elif src.terminal_type == "PadstackInstanceTerminal":
+            elif src.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 refdes = src.component.refdes if src.component else ""
                 pos_term_info = {"padstack": src.padstack_instance.aedt_name}
 
             neg_term = self._pedb.terminals[src.reference_terminal.name]
-            if neg_term.terminal_type == "PinGroupTerminal":
+            if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 pg = self._pedb.siwave.pin_groups[self.get_pin_group_name(neg_term)]
                 neg_term_info = {"pin_group": pg.name}
-            elif neg_term.terminal_type == "PadstackInstanceTerminal":
+            elif neg_term.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
 
             cfg_src = CfgSource(
@@ -154,17 +155,14 @@ class CfgPorts:
         return port.pin_group
 
     def _get_edge_port_from_edb(self, p, port_type):
-        _, primitive, point = p._edb_object.GetEdges()[0].GetParameters()
-
-        primitive = Primitive(self._pedb, primitive)
-        point = PointData(self._pedb, point)
+        _, primitive, point = self._pedb.excitation_manager.get_edge_from_port(p)
 
         cfg_port = CfgEdgePort(
             self._pedb,
             name=p.name,
             type=port_type,
             primitive_name=primitive.aedt_name,
-            point_on_edge=[point._edb_object.X.ToString(), point._edb_object.Y.ToString()],
+            point_on_edge=[point[0], point[1]],
             horizontal_extent_factor=p.horizontal_extent_factor,
             vertical_extent_factor=p.vertical_extent_factor,
             pec_launch_width=p.pec_launch_width,
@@ -197,11 +195,11 @@ class CfgPorts:
 
         for _, p in ports.items():
             if not p.reference_terminal:
-                if p.terminal_type in ["PadstackInstanceTerminal", "padstack_inst", "padstack_instance"]:
+                if p.terminal_type in TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                     port_type = "coax"
-                elif p.terminal_type == "PinGroupTerminal":
+                elif p.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     port_type = "circuit"
-                elif p.terminal_type == "EdgeTerminal":
+                elif p.terminal_type == TerminalTypeMapper.get("EdgeTerminal", as_grpc=settings.is_grpc):
                     port_type = "wave_port" if p.hfss_type == "Wave" else "gap_port"
                 else:
                     raise ValueError("Unknown terminal type")
@@ -332,7 +330,7 @@ class CfgCircuitElement(CfgBase):
 
         elif pos_type == "padstack":
             flag = False
-            for pds in self._pedb.layout.padstack_instances:
+            for pds in self._pedb.padstacks.instances.values():
                 if pds.aedt_name == pos_value:
                     pos_objs.update({pos_value: pds})
                     flag = True
@@ -422,11 +420,20 @@ class CfgCircuitElement(CfgBase):
                 ref_net = neg_value.get("reference_net", "GND")
                 search_radius = neg_value.get("search_radius", "5e-3")
                 temp = dict()
+                references_pins = {
+                    pin: pin.position
+                    for pin in list(list(pos_objs.values())[0].component.pins.values())
+                    if pin.net_name == ref_net
+                }
+
                 for i, j in pos_objs.items():
-                    temp[i] = self._pedb.padstacks.get_reference_pins(j, ref_net, search_radius, max_limit=1)[0]
+                    temp[i] = self._pedb.padstacks.get_reference_pins(
+                        j, ref_net, search_radius, max_limit=1, pinlist_position=references_pins
+                    )[0]
                 self.neg_terminal = {
                     i: j.create_terminal(i + "_ref") if not j.terminal else j.terminal for i, j in temp.items()
                 }
+                pass
             else:
                 if neg_type == "pin_group":
                     neg_obj = {neg_value: self._pedb.siwave.pin_groups[neg_value]}
@@ -438,7 +445,7 @@ class CfgCircuitElement(CfgBase):
                     # create pin group
                     neg_obj = self._create_pin_group(pins, self.negative_terminal_info.reference_designator, True)
                 elif neg_type == "padstack":
-                    for pds in self._pedb.layout.padstack_instances:
+                    for pds in self._pedb.padstacks.instances.values():
                         if pds.aedt_name == neg_value:
                             neg_obj = {neg_value: pds}
                             break
@@ -482,7 +489,7 @@ class CfgCircuitElement(CfgBase):
         component = pin.component
         placement_layer = component.placement_layer
         pos_x, pos_y = pin.position
-        comp_rotation = self._pedb.edb_value(component.rotation).ToDouble() % 3.141592653589793
+        comp_rotation = self._pedb.value(component.rotation).value % 3.141592653589793
 
         pad = pin.definition.pad_by_layer[placement_layer]
         if pad.shape.lower() in ["rectangle", "oval"]:
@@ -522,7 +529,7 @@ class CfgCircuitElement(CfgBase):
             for x, y in [[1, 1], [-1, 1], [1, -1], [-1, -1]]:
                 positions.append([x_offset * x, y_offset * y])
 
-        pdef_name = f"{self.name}_{pin.pin_number}"
+        pdef_name = f"{self.name}_{pin.name}"
         self._pedb.padstacks.create(padstackname=pdef_name, has_hole=False, paddiam=radius * 2, antipaddiam=0)
         instances = {}
         for idx, xy in enumerate(positions):
@@ -607,6 +614,8 @@ class CfgSource(CfgCircuitElement):
         create_xxx_source = (
             self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
         )
+        terminals = self._pedb.terminals
+
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
                 elem = create_xxx_source(j, self.neg_terminal[name])
@@ -624,12 +633,14 @@ class CfgSource(CfgCircuitElement):
             else:
                 elem.name = name
                 elem.magnitude = self.magnitude / self._elem_num
-            elem = self._pedb.terminals[elem.name]
+            if elem.name not in terminals:
+                terminals = self._pedb.terminals
+            elem = terminals[elem.name]
             circuit_elements.append(elem)
 
         for terminal in circuit_elements:
             # Get reference terminal
-            terms = [terminal, terminal.reference_terminal] if terminal.reference_terminal else [terminal]
+            terms = [terminal, terminals[terminal.name]] if terminal.is_reference_terminal else [terminal]
             for t in terms:
                 if not t.is_reference_terminal:
                     radius = self.positive_terminal_info.contact_radius
@@ -637,7 +648,7 @@ class CfgSource(CfgCircuitElement):
                 else:
                     radius = self.negative_terminal_info.contact_radius
                     contact_type = self.negative_terminal_info.contact_type
-                if t.terminal_type == "PointTerminal":
+                if t.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                     temp = [i for i in self._pedb.layout.terminals if i.name == t.name][0]
                     prim = self._pedb.modeler.create_circle(
                         temp.layer.name, temp.location[0], temp.location[1], radius, temp.net_name
@@ -646,20 +657,20 @@ class CfgSource(CfgCircuitElement):
                     continue
                 elif contact_type.lower() == "default":
                     continue
-                elif t.terminal_type == "PadstackInstanceTerminal":
+                elif t.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                     if contact_type.lower() in ["full", "quad", "inline"]:
-                        t.padstack_instance._set_equipotential()
+                        t.padstack_instance.set_dcir_equipotential_advanced()
                     elif contact_type.lower() == "center":
-                        t.padstack_instance._set_equipotential(contact_radius=radius)
-                elif t.terminal_type == "PinGroupTerminal":
+                        t.padstack_instance.set_dcir_equipotential_advanced(contact_radius=radius)
+                elif t.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     name = t._edb_object.GetPinGroup().GetName()
                     pg = self._pedb.siwave.pin_groups[name]
                     pads = [i for _, i in pg.pins.items()]
                     for i in pads:
                         if contact_type.lower() in ["full", "quad", "inline"]:
-                            i._set_equipotential()
+                            i.set_dcir_equipotential_advanced()
                         elif contact_type.lower() == "center":
-                            i._set_equipotential(contact_radius=radius)
+                            i.set_dcir_equipotential_advanced(contact_radius=radius)
                         elif t.is_reference_terminal:
                             continue
                 else:
@@ -699,28 +710,16 @@ class CfgProbe(CfgCircuitElement):
 
 class CfgEdgePort:
     def set_parameters_to_edb(self):
-        point_on_edge = PointData.create_from_xy(self._pedb, x=self.point_on_edge[0], y=self.point_on_edge[1])
-        primitive = self._pedb.layout.primitives_by_aedt_name[self.primitive_name]
-        pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge._edb_object)
-        pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
-        edge_term = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
-            primitive._edb_object.GetLayout(),
-            primitive._edb_object.GetNet(),
+        return self._pedb.excitation_manager.create_edge_port(
+            self.point_on_edge,
+            self.primitive_name,
             self.name,
-            pos_edge,
-            isRef=False,
+            50,
+            True if self.type == "wave_port" else False,
+            self.horizontal_extent_factor,
+            self.vertical_extent_factor,
+            self.pec_launch_width,
         )
-        edge_term.SetImpedance(self._pedb.edb_value(50))
-        wave_port = WavePort(self._pedb, edge_term)
-        wave_port.horizontal_extent_factor = self.horizontal_extent_factor
-        wave_port.vertical_extent_factor = self.vertical_extent_factor
-        wave_port.pec_launch_width = self.pec_launch_width
-        if self.type == "wave_port":
-            wave_port.hfss_type = "Wave"
-        else:
-            wave_port.hfss_type = "Gap"
-        wave_port.do_renormalize = True
-        return wave_port
 
     def export_properties(self):
         return {
@@ -775,11 +774,4 @@ class CfgDiffWavePort:
     def set_parameters_to_edb(self):
         pos_term = self.positive_port.set_parameters_to_edb()
         neg_term = self.negative_port.set_parameters_to_edb()
-        edb_list = convert_py_list_to_net_list(
-            [pos_term._edb_object, neg_term._edb_object], self._pedb.core.Cell.Terminal.Terminal
-        )
-        _edb_boundle_terminal = self._pedb.core.Cell.Terminal.BundleTerminal.Create(edb_list)
-        _edb_boundle_terminal.SetName(self.name)
-        pos, neg = list(_edb_boundle_terminal.GetTerminals())
-        pos.SetName(self.name + ":T1")
-        neg.SetName(self.name + ":T2")
+        return self._pedb.excitation_manager.create_bundle_terminal([pos_term, neg_term], self.name)

@@ -42,11 +42,11 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 import numpy as np
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 if TYPE_CHECKING:
     import rtree
@@ -229,14 +229,15 @@ class Padstacks(object):
         >>> for inst_id, instance in all_instances.items():
         ...     print(f"Instance {inst_id}: {instance.name}")
         """
-        return self._pedb.layout.padstack_instances
+        return {i.id: i for i in self._pedb.layout.padstack_instances}
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
         if not self._instances_by_net:
-            for instance in self.instances.values():
-                if instance.net_name:
-                    self._instances_by_net.setdefault(instance.net_name, []).append(instance)
+            for instance in self._pedb.layout.padstack_instances:
+                net_name = instance.net_name
+                if net_name:
+                    self._instances_by_net.setdefault(net_name, []).append(instance)
         return self._instances_by_net
 
     @property
@@ -256,11 +257,12 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        if not self._instances_by_name:
-            for edb_padstack_instance in self.instances.values():
-                if edb_padstack_instance.aedt_name:
-                    self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
-        return self._instances_by_name
+        if not self._instances_by_net:
+            for pds in self._pedb.layout.padstack_instances:
+                name = pds.aedt_name
+                if name:
+                    self._instances_by_net[name] = pds
+        return self._instances_by_net
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
@@ -283,7 +285,7 @@ class Padstacks(object):
         >>> if via:
         ...     print(f"Found via: {via.name}")
         """
-        return self._pedb.modeler.find_object_by_id(value)
+        return next(i for i in self._pedb.layout.padstack_instances if i.id == value)
 
     @property
     def pins(self) -> Dict[int, PadstackInstance]:
@@ -768,7 +770,7 @@ class Padstacks(object):
             "`pyedb.grpc.core.excitations.create_coax_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.source_excitation.create_coax_port(
+        self._pedb.excitation_manager.create_coax_port(
             self, padstackinstance, use_dot_separator=use_dot_separator, name=name
         )
 
@@ -1021,7 +1023,7 @@ class Padstacks(object):
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
         via_list = []
-        for inst in self._layout.padstack_instances.values():
+        for inst in self.instances.values():
             pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:
@@ -1165,7 +1167,7 @@ class Padstacks(object):
                 offset_y=value0,
                 rotation=value0,
                 type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
-                fp=polygon_hole,
+                poly=polygon_hole,
             )
             padstack_data.plating_percentage = Value(20.0)
         else:
@@ -1227,7 +1229,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=pad_polygon.core,
+                    poly=pad_polygon.core,
                 )
                 padstack_data.set_pad_parameters(
                     layer=layer,
@@ -1235,7 +1237,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=antipad_polygon.core,
+                    poly=antipad_polygon.core,
                 )
         else:
             for layer in layers:
@@ -1521,28 +1523,6 @@ class Padstacks(object):
         self.definitions[padstack_name].data = cloned_padstack_def_data
         return True
 
-    def get_padstack_instance_by_net_name(self, net: str):
-        """Get padstack instances by net name.
-
-        .. deprecated:: 0.55.0
-        Use: :func:`get_instances` with `net_name` parameter instead.
-
-        Parameters
-        ----------
-        net : str
-            Net name to filter padstack instances.
-
-        Returns
-        -------
-        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
-            List of padstack instances associated with the specified net.
-        """
-        warnings.warn(
-            "`get_padstack_instance_by_net_name` is deprecated, use `get_instances` with `net_name` parameter instead.",
-            DeprecationWarning,
-        )
-        return self.get_instances(net_name=net)
-
     def get_instances(
         self,
         name: Optional[str] = None,
@@ -1612,6 +1592,7 @@ class Padstacks(object):
         search_radius: float = 5e-3,
         max_limit: int = 0,
         component_only: bool = True,
+        pinlist_position: dict = None,
     ) -> List[PadstackInstance]:
         """Find reference pins near a specified pin.
 
@@ -1633,30 +1614,33 @@ class Padstacks(object):
         list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             List of reference pins.
         """
-        pinlist = []
-        if not positive_pin:
-            search_radius = 10e-2
-            component_only = True
-        if component_only:
-            references_pins = [
-                pin
-                for pin in list(positive_pin.component.pins.values())
-                if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
-            ]
-            references_pins = [pin for pin in references_pins if not pin.terminal]
-            if not references_pins:
-                return pinlist
-        else:
-            references_pins = self.get_instances(net_name=reference_net)
-            if not references_pins:
-                return pinlist
+        if not pinlist_position:
+            pinlist = []
+            if not positive_pin:
+                search_radius = 10e-2
+                component_only = True
+            if component_only:
+                references_pins = [
+                    pin
+                    for pin in list(positive_pin.component.pins.values())
+                    if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
+                ]
+                references_pins = [pin for pin in references_pins if not pin.terminal]
+                if not references_pins:
+                    return pinlist
+            else:
+                references_pins = self.get_instances(net_name=reference_net)
+                if not references_pins:
+                    return pinlist
+            pinlist_position = {p: p.position for p in references_pins}
+        pos_position = positive_pin.position
         pinlist = [
             p
-            for p in references_pins
-            if GeometryOperators.points_distance(positive_pin.position, p.position) <= search_radius
+            for p, pos in pinlist_position.items()
+            if GeometryOperators.points_distance(pos_position, pos) <= search_radius
         ]
         if max_limit and len(pinlist) > max_limit:
-            pin_dict = {GeometryOperators.points_distance(positive_pin.position, p.position): p for p in pinlist}
+            pin_dict = {GeometryOperators.points_distance(pos_position, p.position): p for p in pinlist}
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
 

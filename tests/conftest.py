@@ -195,7 +195,7 @@ class EdbExamples:
 
     def load_dxf_edb(self):
         aedb = self.copy_test_files_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")[0]
-        return Edb(edbpath=aedb, version=desktop_version, grpc=True)
+        return Edb(edbpath=aedb, version=desktop_version, grpc=self.grpc)
 
     def get_log_file_example(self):
         return os.path.join(self.example_models_path, "test.log")

@@ -28,7 +28,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_windows
 from tests import conftest
-from tests.conftest import config, local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -124,22 +124,22 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Test slow on windows with grpc")
+    @pytest.mark.skipif(config["use_grpc"], reason="get_connected_object returns empty list, needs investigation.")
     def test_nets_dc_shorts(self):
         # TODO get_connected_object return empty list.
         edbapp = self.edb_examples.get_si_verse()
-        # dc_shorts = edbapp.layout_validation.dc_shorts()
-        # assert dc_shorts
-        # edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
-        # edbapp.layout_validation.illegal_net_names(True)
-        # edbapp.layout_validation.illegal_rlc_values(True)
-        #
-        # # assert len(dc_shorts) == 20
-        # assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
-        # assert ["VDD_DDR", "GND"] in dc_shorts
-        # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
-        # edbapp.nets["DDR4_DM3"].find_dc_short(True)
-        # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
+        dc_shorts = edbapp.layout_validation.dc_shorts()
+        assert dc_shorts
+        edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
+        edbapp.layout_validation.illegal_net_names(True)
+        edbapp.layout_validation.illegal_rlc_values(True)
+
+        # assert len(dc_shorts) == 20
+        assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
+        assert ["VDD_DDR", "GND"] in dc_shorts
+        assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
+        edbapp.nets["DDR4_DM3"].find_dc_short(True)
+        assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
         edbapp.close(terminate_rpc_session=False)
 
     def test_nets_eligible_power_nets(self):
@@ -157,7 +157,6 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_0(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -175,7 +174,6 @@ class TestClass(BaseTestClass):
         assert "$TOP_value" in parameters
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_1(self):
         edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
@@ -184,7 +182,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_2(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -204,7 +201,6 @@ class TestClass(BaseTestClass):
         assert "$sigma_COPPER_delta" in edbapp.variables
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_3(self):
         # TODO check grpc test is slow.
         edbapp = self.edb_examples.get_package()
@@ -214,7 +210,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 18
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_4(self):
         # TODO check grpc test is slow.
         edbapp = self.edb_examples.get_package()
@@ -224,7 +219,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_layout_auto_parametrization_5(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -234,7 +228,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Test slow on windows with grpc")
     def test_layout_auto_parametrization_6(self):
         # Done
         edbapp = self.edb_examples.get_package()
@@ -244,7 +237,6 @@ class TestClass(BaseTestClass):
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
     def test_layout_auto_parametrization_7(self):
         # Done
         edbapp = self.edb_examples.get_package()

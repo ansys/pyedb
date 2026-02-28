@@ -30,7 +30,7 @@ from pyedb.dotnet.database.dotnet.primitive import (
     TextDotNet,
 )
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 def cast(raw_primitive, core_app):
@@ -80,7 +80,7 @@ class EdbPolygon(Primitive):
             ``True`` when successful, ``False`` when failed.
         """
         return self._pedb.modeler.create_polygon(
-            main_shape=self.polygon_data._edb_object,
+            points=self.polygon_data._edb_object,
             layer_name=self.layer_name,
             net_name=self.net_name,
             voids=self.voids,
@@ -232,7 +232,7 @@ class EdbPolygon(Primitive):
                 self.polygon_data._edb_object.GetArcData(), True
             )
             moved_polygon = self._pedb.modeler.create_polygon(
-                main_shape=polygon_data, net_name=self.net_name, layer_name=layer
+                points=polygon_data, net_name=self.net_name, layer_name=layer
             )
             if moved_polygon:
                 self.delete()

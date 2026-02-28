@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
 
 from pyedb.dotnet.database.general import (
     convert_netdict_to_pydict,
@@ -185,14 +186,12 @@ class SiwaveDCIRSettings:
             str
             path for the Icepak temp file.
         """
-        return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.IcepakTempFile
+        warnings.warn("Deprecated property. Use 'icepak_temp_file' instead.", DeprecationWarning)
+        return self.icepak_temp_file
 
     @icepak_temp_file_path.setter
     def icepak_temp_file_path(self, value):
-        edb_setup_info = self._parent.get_sim_setup_info
-        edb_setup_info.simulation_settings.DCIRSettings.IcepakTempFile = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
+        self.icepak_temp_file = value
 
     @property
     def per_pin_res_path(self):

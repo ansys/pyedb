@@ -285,6 +285,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._material = None
         self._upper_elevation = 0.0
         self._lower_elevation = 0.0
+        self.core = edb_object
 
     def _create(self, layer_type):
         layer_type_edb_name = self._layer_name_mapping[layer_type]

@@ -38,3 +38,8 @@ class SPICEModel(Model):
     def spice_file_path(self):
         """SPICE file path."""
         return self._edb_object.GetSPICEFilePath()
+
+    @property
+    def sub_circuit(self):
+        """SPICE sub-ciruit."""
+        return self._edb_object.GetSubCkt()

@@ -101,7 +101,10 @@ class TestClass(BaseTestClass):
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_drc_rules_from_file(self):
         from pyedb.workflows.drc.drc import Drc, Rules
 
@@ -113,17 +116,17 @@ class TestClass(BaseTestClass):
                 {
                     "name": "DPMATCH",
                     "tolerance": "5mil",
-                    "pairs": [{"positive": "PCIe_Gen4_TX3_CAP_P", "negative": "PCIe_Gen4_TX3_CAP_N"}],
+                    "pairs": [{"positive": "SFPA_TX_P", "negative": "SFPA_TX_N"}],
                 }
             ],
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
-        edbapp = self.edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse_sfp()
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
-        output_file = os.path.join(self.local_scratch.path, "drc_results.ipc356a")
+        output_file = os.path.join(self.edb_examples.example_models_path, "drc_results.ipc356a")
         drc.to_ipc356a(file_path=output_file)
         assert os.path.isfile(output_file)
         edbapp.close()

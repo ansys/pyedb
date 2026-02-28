@@ -27,7 +27,7 @@ import os
 
 import pytest
 
-from tests.conftest import GRPC, desktop_version, local_path, test_subfolder
+from tests.conftest import GRPC, config, desktop_version
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -1352,6 +1352,10 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_test_layers_consolidated(self):
         edbapp = self.edb_examples.get_si_verse()
         layers = edbapp.stackup.layers

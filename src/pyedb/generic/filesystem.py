@@ -21,48 +21,39 @@
 # SOFTWARE.
 
 import os
+import pathlib
 import secrets
 import shutil
 import string
+from types import TracebackType
 
 from pyedb.generic.settings import settings
 
 
-def search_files(dirname, pattern="*"):
+def search_files(dirname: str, pattern: str = "*") -> list[str]:
     """Search for files inside a directory given a specific pattern.
 
     Parameters
     ----------
     dirname : str
-    pattern :str, optional
+        Directory where the search will be performed.
+    pattern : str, optional
+        Pattern to match files against. The default is ``"*"``, which matches all files.
 
     Returns
     -------
     list
     """
-
-    import pathlib
-
     return [os.path.abspath(i) for i in pathlib.Path(dirname).glob(pattern)]
 
 
 def my_location():
-    """ """
+    """Get the normalized path of the current file's directory."""
     return os.path.normpath(os.path.dirname(__file__))
 
 
 class Scratch:
-    """ """
-
-    @property
-    def path(self):
-        """ """
-        return self._scratch_path
-
-    @property
-    def is_empty(self):
-        """ """
-        return self._cleaned
+    """Class for managing a scratch directory."""
 
     def __init__(self, local_path, permission=0o777, volatile=False):
         self._volatile = volatile
@@ -84,18 +75,38 @@ class Scratch:
             except FileNotFoundError as fnf_error:  # Raise error if folder doesn't exist.
                 print(fnf_error)
 
-    def remove(self):
-        """ """
+    def __enter__(self) -> "Scratch":
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if exc_type or self._volatile:
+            self.remove()
+
+    @property
+    def path(self) -> str:
+        """Get the path of the scratch directory."""
+        return self._scratch_path
+
+    @property
+    def is_empty(self) -> bool:
+        """Check if the scratch directory is empty."""
+        return self._cleaned
+
+    def remove(self) -> None:
+        """Remove the scratch directory and its contents."""
         try:
-            # TODO check why on Anaconda 3.7 get errors with os.path.exists
             shutil.rmtree(self._scratch_path, ignore_errors=True)
+            self._cleaned = True
         except Exception:
             settings.logger.error(f"An error occurred while removing {self._scratch_path}")
 
-    def copyfile(self, src_file, dst_filename=None):
-        """
-        Copy a file to the scratch directory. The target filename is optional.
-        If omitted, the target file name is identical to the source file name.
+    def copyfile(self, src_file: str, dst_filename: str | None = None) -> str:
+        """Copy a file to the scratch directory.
 
         Parameters
         ----------
@@ -106,12 +117,10 @@ class Scratch:
             in which case the destination file is given the same name as the
             source file.
 
-
         Returns
         -------
         dst_file : str
             Full path and file name of the copied file.
-
         """
         if dst_filename:
             dst_file = os.path.join(self.path, dst_filename)
@@ -129,44 +138,39 @@ class Scratch:
 
         return dst_file
 
-    def copyfolder(self, src_folder, destfolder=None):
-        """
+    def copyfolder(self, src_folder: str, destfolder: str | None = None) -> str:
+        """Copy a folder to the scratch directory.
 
         Parameters
         ----------
-        src_folder :
-
-        destfolder :
-
+        src_folder : str
+            Source folder with fullpath.
+        destfolder : str, optional
+            Destination folder. The default is ``None``, in which case the destination folder
+            is given the same name as the source folder.
 
         Returns
         -------
-
+        destfolder : str
+            Full path of the copied folder.
         """
-
         if not destfolder:
             destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
         shutil.copytree(src_folder, destfolder, dirs_exist_ok=True)
         return destfolder
 
-    def __enter__(self):
-        return self
-
-    def __exit__(self, ex_type, ex_value, ex_traceback):
-        if ex_type or self._volatile:
-            self.remove()
-
 
 def get_json_files(start_folder):
-    """
-    Get the absolute path to all *.json files in start_folder.
+    """Get the absolute path to all JSON files in start_folder.
 
     Parameters
     ----------
-    start_folder, str
-        Path to the folder where the json files are located.
+    start_folder : str
+        Path to the folder where the JSON files are located.
 
     Returns
     -------
+    list
+         List of paths to JSON files in start_folder.
     """
     return [y for x in os.walk(start_folder) for y in search_files(x[0], "*.json")]

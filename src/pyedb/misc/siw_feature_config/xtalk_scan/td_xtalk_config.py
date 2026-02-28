@@ -26,9 +26,31 @@ from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin, ReceiverPin
 
 
 class CrossTalkTime:
-    """Time domain crosstalk configuration class handler."""
+    """Time domain crosstalk configuration class handler.
 
-    def __init__(self, pedb):
+    Parameters
+    ----------
+    pedb : object
+        PyEDB instance.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb("path/to/aedb")
+    >>> xtalk = CrossTalkTime(edb)
+    >>> xtalk.add_single_ended_net("CLK", driver_rise_time=5.0, voltage=1.8)
+
+    """
+
+    def __init__(self, pedb) -> None:
+        """Initialize time domain crosstalk configuration.
+
+        Parameters
+        ----------
+        pedb : object
+            PyEDB instance.
+
+        """
         self._pedb = pedb
         self.nets = {}
         self.driver_pins = []
@@ -36,31 +58,42 @@ class CrossTalkTime:
 
     def add_single_ended_net(
         self,
-        name,
-        driver_rise_time=5.0,
-        voltage=10,
-        driver_impedance=5.0,
-        termination_impedance=5.0,
-    ):
+        name: str,
+        driver_rise_time: float | str = 5.0,
+        voltage: float | str = 10,
+        driver_impedance: float | str = 5.0,
+        termination_impedance: float | str = 5.0,
+    ) -> bool:
         """Add single ended net.
 
         Parameters
         ----------
         name : str
             Net name.
-        driver_rise_time : flot or str
-            Near end crosstalk warning threshold value. Default value is ``5.0``.
-        voltage : float, str
-            Near end crosstalk violation threshold value. Default value is ``10.0
-
-        driver_impedance : float, str
-            Far end crosstalk violation threshold value, Default value is ``5.0``
-        termination_impedance : float, str
-            Far end crosstalk warning threshold value, Default value is ``5.0``
+        driver_rise_time : float or str, optional
+            Driver rise time value.
+            The default is ``5.0``.
+        voltage : float or str, optional
+            Voltage value.
+            The default is ``10``.
+        driver_impedance : float or str, optional
+            Driver impedance value.
+            The default is ``5.0``.
+        termination_impedance : float or str, optional
+            Termination impedance value.
+            The default is ``5.0``.
 
         Returns
         -------
         bool
+            ``True`` if the net was added successfully, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> xtalk = CrossTalkTime(pedb)
+        >>> xtalk.add_single_ended_net("DDR_DQ0", driver_rise_time=2.0, voltage=1.2)
+        True
+
         """
         if name and name not in self.nets:
             net = SingleEndedNet()
@@ -75,7 +108,33 @@ class CrossTalkTime:
             self._pedb.logger.error(f"Net {name} already assigned.")
             return False
 
-    def add_driver_pins(self, name, ref_des, rise_time="100ps", voltage=1.0, impedance=50.0):
+    def add_driver_pins(
+        self, name: str, ref_des: str, rise_time: str = "100ps", voltage: float = 1.0, impedance: float = 50.0
+    ) -> None:
+        """Add driver pins.
+
+        Parameters
+        ----------
+        name : str
+            Pin name.
+        ref_des : str
+            Reference designator of the component.
+        rise_time : str, optional
+            Driver rise time.
+            The default is ``"100ps"``.
+        voltage : float, optional
+            Voltage value.
+            The default is ``1.0``.
+        impedance : float, optional
+            Driver impedance value.
+            The default is ``50.0``.
+
+        Examples
+        --------
+        >>> xtalk = CrossTalkTime(pedb)
+        >>> xtalk.add_driver_pins("A1", "U1", rise_time="50ps", voltage=1.8, impedance=40.0)
+
+        """
         pin = DriverPin()
         pin.name = name
         pin.ref_des = ref_des
@@ -84,14 +143,39 @@ class CrossTalkTime:
         pin.driver_impedance = impedance
         self.driver_pins.append(pin)
 
-    def add_receiver_pin(self, name, ref_des, impedance):
+    def add_receiver_pin(self, name: str, ref_des: str, impedance: float) -> None:
+        """Add receiver pin.
+
+        Parameters
+        ----------
+        name : str
+            Pin name.
+        ref_des : str
+            Reference designator of the component.
+        impedance : float
+            Receiver impedance value.
+
+        Examples
+        --------
+        >>> xtalk = CrossTalkTime(pedb)
+        >>> xtalk.add_receiver_pin("B1", "U2", impedance=75.0)
+
+        """
         pin = ReceiverPin()
         pin.name = name
         pin.ref_des = ref_des
         pin.receiver_impedance = impedance
         self.receiver_pins.append(pin)
 
-    def extend_xml(self, parent):
+    def extend_xml(self, parent) -> None:
+        """Extend XML tree with crosstalk configuration.
+
+        Parameters
+        ----------
+        parent : xml.etree.ElementTree.Element
+            Parent XML element to extend.
+
+        """
         time_scan = ET.SubElement(parent, "TdXtalkConfig")
         single_ended_nets = ET.SubElement(time_scan, "SingleEndedNets")
         for net in list(self.nets.values()):
