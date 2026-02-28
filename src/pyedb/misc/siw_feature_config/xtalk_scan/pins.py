@@ -25,17 +25,37 @@ from pyedb.generic.general_methods import ET
 
 
 class DriverPin:
-    """Driver pin class handler."""
+    """Driver pin class handler.
 
-    def __init__(self):
-        self.name = None
-        self.ref_des = None
-        self.driver_rise_time = None
-        self.voltage = None
-        self.driver_impedance = None
+    Examples
+    --------
+    >>> from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin
+    >>> pin = DriverPin()
+    >>> pin.name = "A1"
+    >>> pin.ref_des = "U1"
+    >>> pin.driver_rise_time = "50ps"
+    >>> pin.voltage = 1.8
+    >>> pin.driver_impedance = 40.0
 
-    def extend_xml(self, parent):
-        """Write  object to xml section."""
+    """
+
+    def __init__(self) -> None:
+        """Initialize driver pin with default values."""
+        self.name: str | None = None
+        self.ref_des: str | None = None
+        self.driver_rise_time: str | float | None = None
+        self.voltage: float | None = None
+        self.driver_impedance: float | None = None
+
+    def extend_xml(self, parent) -> None:
+        """Write object to XML section.
+
+        Parameters
+        ----------
+        parent : xml.etree.ElementTree.Element
+            Parent XML element to extend.
+
+        """
         pin = ET.SubElement(parent, "Pin")
         pin.set("Name", self.name)
         pin.set("RefDes", self.ref_des)
@@ -45,16 +65,34 @@ class DriverPin:
 
 
 class ReceiverPin:
-    """Receiver pin class handler."""
+    """Receiver pin class handler.
 
-    def __init__(self):
-        self.name = None
-        self.ref_des = None
-        self.receiver_impedance = None
+    Examples
+    --------
+    >>> from pyedb.misc.siw_feature_config.xtalk_scan.pins import ReceiverPin
+    >>> pin = ReceiverPin()
+    >>> pin.name = "B1"
+    >>> pin.ref_des = "U2"
+    >>> pin.receiver_impedance = 75.0
 
-    def extend_xml(self, parent):
-        """Write object to xml section."""
+    """
+
+    def __init__(self) -> None:
+        """Initialize receiver pin with default values."""
+        self.name: str | None = None
+        self.ref_des: str | None = None
+        self.receiver_impedance: float | None = None
+
+    def extend_xml(self, parent) -> None:
+        """Write object to XML section.
+
+        Parameters
+        ----------
+        parent : xml.etree.ElementTree.Element
+            Parent XML element to extend.
+
+        """
         pin = ET.SubElement(parent, "Pin")
         pin.set("Name", self.name)
-        pin.set("Name", self.name)
+        pin.set("RefDes", self.ref_des)
         pin.set("ReceiverImpedance", str(self.receiver_impedance))

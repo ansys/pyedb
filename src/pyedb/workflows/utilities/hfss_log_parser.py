@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""HFSS log file parser for extracting simulation results and metrics."""
 
 from __future__ import annotations
 
@@ -27,18 +28,39 @@ from dataclasses import dataclass
 import math
 from pathlib import Path
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 
 def _to_hz(text: str) -> float:
-    """
-    Convert a human-readable frequency string to hertz.
+    """Convert a human-readable frequency string to hertz.
 
-    :param text: Frequency expression such as ``'3 GHz'``, ``'100 kHz'``, ``'10MHz'``.
-    :type text: str
-    :return: Numerical value in Hz. Returns :py:const:`math.nan` if the string
-             cannot be parsed.
-    :rtype: float
+    Parse frequency expressions with standard SI prefixes (k, M, G) and
+    convert them to numerical values in hertz.
+
+    Parameters
+    ----------
+    text : str
+        Frequency expression such as ``'3 GHz'``, ``'100 kHz'``, or ``'10MHz'``.
+        Spaces between value and unit are optional.
+
+    Returns
+    -------
+    float
+        Numerical value in Hz. Returns ``math.nan`` if the string cannot be parsed.
+
+    Examples
+    --------
+    >>> _to_hz("3 GHz")
+    3000000000.0
+    >>> _to_hz("100 kHz")
+    100000.0
+    >>> _to_hz("10MHz")
+    10000000.0
+    >>> _to_hz("2.4GHz")
+    2400000000.0
+    >>> import math
+    >>> math.isnan(_to_hz("invalid"))
+    True
     """
     m = re.match(r"(?P<val>[\d.]+)\s*(?P<unit>[kMG]?Hz)", text, re.I)
     if not m:
@@ -49,15 +71,32 @@ def _to_hz(text: str) -> float:
 
 
 def _to_sec(mm_ss: str) -> int:
-    """
-    Convert an ANSYS time stamp to seconds.
+    """Convert an Ansys time stamp to seconds.
 
-    Accepts ``MM:SS``, ``H:MM:SS`` or ``HH:MM:SS``.
+    Parse time stamps in various formats (MM:SS, H:MM:SS, or HH:MM:SS) and
+    convert them to total elapsed seconds.
 
-    :param mm_ss: Time stamp extracted from the log.
-    :type mm_ss: str
-    :return: Total elapsed seconds.
-    :rtype: int
+    Parameters
+    ----------
+    mm_ss : str
+        Time stamp extracted from the log in format ``MM:SS``, ``H:MM:SS``,
+        or ``HH:MM:SS``.
+
+    Returns
+    -------
+    int
+        Total elapsed seconds.
+
+    Examples
+    --------
+    >>> _to_sec("02:30")
+    150
+    >>> _to_sec("1:15:45")
+    4545
+    >>> _to_sec("12:30:00")
+    45000
+    >>> _to_sec("00:05")
+    5
     """
     parts = mm_ss.strip().split(":")
     if len(parts) == 2:  # MM:SS
@@ -68,7 +107,37 @@ def _to_sec(mm_ss: str) -> int:
 
 
 def _as_dict(obj: Any) -> Any:
-    """Recursively convert dataclasses / lists / primitives to plain Python types."""
+    """Recursively convert dataclasses to plain Python types.
+
+    Convert dataclass instances, lists, and Path objects to JSON-serializable
+    primitive types (dict, list, str, etc.).
+
+    Parameters
+    ----------
+    obj : Any
+        Object to convert. Can be a dataclass instance, list, Path, or primitive type.
+
+    Returns
+    -------
+    Any
+        Plain Python type representation. Dataclasses become dicts, Paths become
+        strings, lists are recursively processed, and primitives pass through unchanged.
+
+    Examples
+    --------
+    >>> from dataclasses import dataclass
+    >>> from pathlib import Path
+    >>> @dataclass
+    ... class Point:
+    ...     x: int
+    ...     y: int
+    >>> _as_dict(Point(1, 2))
+    {'x': 1, 'y': 2}
+    >>> _as_dict(Path("/tmp/file.txt"))
+    '/tmp/file.txt'
+    >>> _as_dict([1, 2, Path("/test")])
+    [1, 2, '/test']
+    """
     if hasattr(obj, "__dataclass_fields__"):
         return {f: _as_dict(getattr(obj, f)) for f in obj.__dataclass_fields__}
     if isinstance(obj, list):
@@ -80,14 +149,29 @@ def _as_dict(obj: Any) -> Any:
 
 @dataclass(slots=True)
 class ProjectInfo:
-    """
-    Basic meta-data extracted from the header of an HFSS batch log.
+    """Basic meta-data extracted from the header of an HFSS batch log.
 
-    :ivar str name: Project name (without extension).
-    :ivar ~pathlib.Path file: Full path to the project file.
-    :ivar str design: Active design name (may be empty).
-    :ivar str user: OS user that launched the solve.
-    :ivar str cmd_line: Exact command line used for the run.
+    Attributes
+    ----------
+    name : str
+        Project name (without extension).
+    file : pathlib.Path
+        Full path to the project file.
+    design : str, optional
+        Active design name. The default is ``""``.
+    user : str, optional
+        OS user that launched the solve. The default is ``""``.
+    cmd_line : str, optional
+        Exact command line used for the run. The default is ``""``.
+
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> info = ProjectInfo(
+    ...     name="Patch_Antenna", file=Path("/project/antenna.aedt"), design="HFSSDesign1", user="engineer"
+    ... )
+    >>> info.name
+    'Patch_Antenna'
     """
 
     name: str
@@ -99,13 +183,26 @@ class ProjectInfo:
 
 @dataclass(slots=True)
 class InitMesh:
-    """
-    Statistics reported during the initial tetrahedral meshing phase.
+    """Statistics reported during the initial tetrahedral meshing phase.
 
-    :ivar int tetrahedra: Number of tetrahedra created.
-    :ivar float memory_mb: Peak memory consumption in megabytes.
-    :ivar int real_time_sec: Wall clock time in seconds.
-    :ivar int cpu_time_sec: CPU time in seconds.
+    Attributes
+    ----------
+    tetrahedra : int
+        Number of tetrahedra created.
+    memory_mb : float
+        Peak memory consumption in megabytes.
+    real_time_sec : int
+        Wall clock time in seconds.
+    cpu_time_sec : int
+        CPU time in seconds.
+
+    Examples
+    --------
+    >>> mesh = InitMesh(tetrahedra=5000, memory_mb=128.5, real_time_sec=45, cpu_time_sec=42)
+    >>> mesh.tetrahedra
+    5000
+    >>> mesh.memory_mb
+    128.5
     """
 
     tetrahedra: int
@@ -116,17 +213,43 @@ class InitMesh:
 
 @dataclass(slots=True)
 class AdaptivePass:
-    """
-    Single adaptive solution pass (frequency, delta-S, memory, …).
+    """Single adaptive solution pass with convergence metrics.
 
-    :ivar int pass_nr: 1-based pass index.
-    :ivar float freq_hz: Target frequency in hertz.
-    :ivar int tetrahedra: Number of tetrahedra at *end* of pass.
-    :ivar int matrix_size: Order of the FEM matrix.
-    :ivar float memory_mb: Memory used in megabytes.
-    :ivar float delta_s: Maximum |ΔS| observed (``None`` until reported).
-    :ivar bool converged: ``True`` if this pass triggered convergence.
-    :ivar int elapsed_sec: Wall time spent in this pass.
+    Attributes
+    ----------
+    pass_nr : int
+        1-based pass index.
+    freq_hz : float
+        Target frequency in hertz.
+    tetrahedra : int
+        Number of tetrahedra at end of pass.
+    matrix_size : int
+        Order of the FEM matrix.
+    memory_mb : float
+        Memory used in megabytes.
+    delta_s : float, optional
+        Maximum |ΔS| observed. The default is ``None`` until reported.
+    converged : bool
+        ``True`` if this pass triggered convergence.
+    elapsed_sec : int
+        Wall time spent in this pass.
+
+    Examples
+    --------
+    >>> pass1 = AdaptivePass(
+    ...     pass_nr=1,
+    ...     freq_hz=3e9,
+    ...     tetrahedra=10000,
+    ...     matrix_size=5000,
+    ...     memory_mb=256.0,
+    ...     delta_s=0.02,
+    ...     converged=False,
+    ...     elapsed_sec=120,
+    ... )
+    >>> pass1.pass_nr
+    1
+    >>> pass1.converged
+    False
     """
 
     pass_nr: int
@@ -141,51 +264,99 @@ class AdaptivePass:
 
 @dataclass(slots=True)
 class Sweep:
-    """
-    Frequency-sweep summary block.
+    """Frequency-sweep summary block.
 
-    :ivar str type: Sweep algorithm: ``Interpolating``, ``Discrete`` or ``Fast``.
-    :ivar int frequencies: Total number of frequency points requested.
-    :ivar list[float] solved: List of frequencies (Hz) actually solved.
-    :ivar int elapsed_sec: Wall clock time for the entire sweep.
+    Attributes
+    ----------
+    type : str
+        Sweep algorithm: ``Interpolating``, ``Discrete`` or ``Fast``.
+    frequencies : int
+        Total number of frequency points requested.
+    solved : list of float
+        List of frequencies (Hz) actually solved.
+    elapsed_sec : int
+        Wall clock time for the entire sweep.
+
+    Examples
+    --------
+    >>> sweep = Sweep(type="Interpolating", frequencies=101, solved=[1e9, 2e9, 3e9], elapsed_sec=300)
+    >>> sweep.type
+    'Interpolating'
+    >>> len(sweep.solved)
+    3
     """
 
     type: str
     frequencies: int
-    solved: List[float]
+    solved: list[float]
     elapsed_sec: int
 
 
 class BlockParser:
-    """Base class for a single block parser."""
+    """Base class for a single block parser.
 
-    def __init__(self, lines: List[str]) -> None:
+    Parameters
+    ----------
+    lines : list of str
+        Lines of text to parse from the log file.
+
+    Examples
+    --------
+    >>> lines = ["Line 1", "Line 2"]
+    >>> parser = BlockParser(lines)
+    >>> parser.lines
+    ['Line 1', 'Line 2']
+    """
+
+    def __init__(self, lines: list[str]) -> None:
         self.lines = lines
 
     def parse(self) -> Any:
+        """Parse the stored lines.
+
+        Returns
+        -------
+        Any
+            Parsed data structure.
+        """
         raise NotImplementedError
 
 
 class ProjectBlockParser(BlockParser):
-    """
-    Extract project meta-data from the log header.
+    """Extract project meta-data from the log header.
 
-    Example::
+    This parser searches for project name, design name, user information,
+    and command line arguments in the log file header section.
 
-        >>> block = ProjectBlockParser(lines)
-        >>> info = block.parse()
-        >>> info.name
-        'Patch_Antenna'
+    Examples
+    --------
+    >>> lines = [
+    ...     "Project: MyProject, Design: HFSSDesign1",
+    ...     "Running as user: engineer",
+    ...     'Using command line: "ansysedt.exe"',
+    ...     "Batch Solve/Save: /path/to/project.aedt",
+    ... ]
+    >>> parser = ProjectBlockParser(lines)
+    >>> info = parser.parse()
+    >>> info.name
+    'MyProject'
     """
 
     def parse(self) -> ProjectInfo:
-        """
-        Parse the stored lines and return a :class:`ProjectInfo` instance.
+        """Parse the stored lines and return a ProjectInfo instance.
 
-        :return: Populated data object.
-        :rtype: ProjectInfo
-        :raises ValueError: If mandatory fields (project name or file path)
-                            cannot be located.
+        Returns
+        -------
+        ProjectInfo
+            Populated project meta-data object.
+
+        Examples
+        --------
+        >>> lines = ["Project: Antenna, Design: HFSS1", "Batch Solve/Save: /tmp/antenna.aedt"]
+        >>> parser = ProjectBlockParser(lines)
+        >>> info = parser.parse()
+        >>> info.name
+        'Antenna'
         """
         proj, design, user, cmd = "", "", "", ""
         for line in self.lines:
@@ -201,7 +372,42 @@ class ProjectBlockParser(BlockParser):
 
 
 class InitMeshBlockParser(BlockParser):
+    """Extract initial mesh statistics from the log.
+
+    This parser searches for the initial meshing profile section and extracts
+    tetrahedra count, memory usage, and timing information.
+
+    Examples
+    --------
+    >>> lines = [
+    ...     "[PROFILE] Initial Meshing",
+    ...     "Tetrahedra: 5000",
+    ...     "Memory 128.5 MB",
+    ...     "Real Time 00:45",
+    ...     "CPU Time 00:42",
+    ... ]
+    >>> parser = InitMeshBlockParser(lines)
+    >>> mesh = parser.parse()
+    >>> mesh.tetrahedra
+    5000
+    """
+
     def parse(self) -> InitMesh:
+        """Parse initial mesh statistics from log lines.
+
+        Returns
+        -------
+        InitMesh
+            Initial mesh metrics including tetrahedra count, memory, and timing.
+
+        Examples
+        --------
+        >>> lines = ["[PROFILE] Initial Meshing", "Tetrahedra: 10000"]
+        >>> parser = InitMeshBlockParser(lines)
+        >>> mesh = parser.parse()
+        >>> mesh.tetrahedra
+        10000
+        """
         tet = mem = rt = ct = None
         for idx, line in enumerate(self.lines):
             if "[PROFILE] Initial Meshing" in line:
@@ -222,18 +428,47 @@ class InitMeshBlockParser(BlockParser):
 
 
 class AdaptiveBlockParser(BlockParser):
-    """
-    Build a list of :class:`AdaptivePass` objects from the adaptive section.
+    """Build a list of AdaptivePass objects from the adaptive section.
+
+    This parser extracts all adaptive pass information including convergence
+    status, frequency, mesh statistics, and delta-S values.
+
+    Examples
+    --------
+    >>> lines = [
+    ...     "Adaptive Pass 1 at Frequency: 3 GHz",
+    ...     "Tetrahedra: 10000",
+    ...     "Matrix size: 5000",
+    ...     "Memory 256.0 MB",
+    ...     "Max Mag. Delta S: 0.02",
+    ...     "[CONVERGE] Solution has converged at pass number 1",
+    ...     "Adaptive Passes converged",
+    ... ]
+    >>> parser = AdaptiveBlockParser(lines)
+    >>> passes = parser.parse()
+    >>> passes[0].pass_nr
+    1
+    >>> passes[0].converged
+    True
     """
 
-    def parse(self) -> List[AdaptivePass]:
-        """
-        Parse every adaptive pass and determine which one triggered convergence.
+    def parse(self) -> list[AdaptivePass]:
+        """Parse every adaptive pass and determine which one triggered convergence.
 
-        :return: Ordered list of passes (pass_nr always increases).
-        :rtype: list[AdaptivePass]
+        Returns
+        -------
+        list of AdaptivePass
+            Ordered list of passes (pass_nr always increases).
+
+        Examples
+        --------
+        >>> lines = ["Adaptive Pass 1 at Frequency: 2 GHz", "Tetrahedra: 8000"]
+        >>> parser = AdaptiveBlockParser(lines)
+        >>> passes = parser.parse()
+        >>> len(passes)
+        0
         """
-        passes: List[AdaptivePass] = []
+        passes: list[AdaptivePass] = []
         current: Optional[AdaptivePass] = None
         last_converge_pass: Optional[int] = None
         adaptive_converged_line_found = False
@@ -285,16 +520,42 @@ class AdaptiveBlockParser(BlockParser):
 
 
 class SweepBlockParser(BlockParser):
-    """
-    Extract frequency-sweep summary (if present).
+    """Extract frequency-sweep summary from the log.
+
+    This parser searches for frequency sweep information including sweep type,
+    number of frequencies, and elapsed time.
+
+    Examples
+    --------
+    >>> lines = [
+    ...     "Interpolating Sweep",
+    ...     "101 Frequencies",
+    ...     "Frequency - 1 GHz",
+    ...     "Frequency - 2 GHz",
+    ...     "Elapsed time: 00:05:00",
+    ... ]
+    >>> parser = SweepBlockParser(lines)
+    >>> sweep = parser.parse()
+    >>> sweep.type
+    'Interpolating'
+    >>> sweep.frequencies
+    101
     """
 
     def parse(self) -> Optional[Sweep]:
-        """
-        Return sweep information or ``None`` if the log contains no sweep block.
+        """Return sweep information or None if no sweep block exists.
 
-        :return: Sweep summary object.
-        :rtype: Sweep | None
+        Returns
+        -------
+        Sweep or None
+            Sweep summary object, or ``None`` if the log contains no sweep block.
+
+        Examples
+        --------
+        >>> lines = ["No sweep data"]
+        >>> parser = SweepBlockParser(lines)
+        >>> parser.parse() is None
+        True
         """
         sweep_type, freqs, solved, elapsed = "", 0, [], 0
         for line in self.lines:
@@ -312,35 +573,60 @@ class SweepBlockParser(BlockParser):
 
 
 class HFSSLogParser:
+    """High-level parser that orchestrates all block parsers.
+
+    This class provides the main interface for parsing HFSS log files.
+    It coordinates multiple specialized parsers to extract project info,
+    mesh statistics, adaptive passes, and sweep data.
+
+    Parameters
+    ----------
+    log_path : str or pathlib.Path
+        Path to the HFSS log file to parse.
+
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> log = HFSSLogParser("/tmp/project.aedt.batchinfo.1234/hfss.log")
+    >>> data = log.parse()
+    >>> data.is_converged()
+    True
+
+    Parse and check for errors:
+
+    >>> log = HFSSLogParser("simulation.log")
+    >>> result = log.parse()
+    >>> if result.errors():
+    ...     print("Errors found:", result.errors())
+    ... else:
+    ...     print("No errors detected")
     """
-    High-level façade that orchestrates all block parsers.
 
-    Typical usage::
-
-        >>> log = HFSSLogParser("/tmp/project.aedt.batchinfo.1234/hfss.log")
-        >>> data = log.parse()
-        >>> data.is_converged()
-        True
-    """
-
-    BLOCK_MAP: Dict[str, type[BlockParser]] = {
+    BLOCK_MAP: dict[str, type[BlockParser]] = {
         "project": ProjectBlockParser,
         "init_mesh": InitMeshBlockParser,
         "adaptive": AdaptiveBlockParser,
         "sweep": SweepBlockParser,
     }
 
-    def __init__(self, log_path: str | Path):
+    def __init__(self, log_path: str | Path) -> None:
         self.path = Path(log_path)
 
     def parse(self) -> ParsedLog:
-        """
-        Execute all sub-parsers and return a unified object.
+        """Execute all sub-parsers and return a unified object.
 
-        :return: Structured representation of the entire log.
-        :rtype: ParsedLog
-        :raises FileNotFoundError: If *log_path* does not exist.
-        :raises ValueError: If a mandatory block cannot be parsed.
+        Returns
+        -------
+        ParsedLog
+            Structured representation of the entire log including project info,
+            mesh statistics, adaptive passes, and sweep data.
+
+        Examples
+        --------
+        >>> log = HFSSLogParser("hfss.log")
+        >>> result = log.parse()
+        >>> print(f"Converged: {result.is_converged()}")
+        >>> print(f"Passes: {len(result.adaptive)}")
         """
         text = self.path.read_text(encoding="utf-8", errors="ignore")
         lines = text.splitlines()
@@ -360,47 +646,136 @@ class HFSSLogParser:
 
 @dataclass(slots=True)
 class ParsedLog:
-    """
-    Root container returned by :meth:`HFSSLogParser.parse`.
+    """Root container returned by HFSSLogParser.parse().
 
-    :ivar ProjectInfo project: Project meta-data.
-    :ivar InitMesh init_mesh: Initial-mesh metrics.
-    :ivar list[AdaptivePass] adaptive: Adaptive passes in chronological order.
-    :ivar Sweep | None sweep: Frequency-sweep summary (``None`` if absent).
+    This class holds all parsed information from an HFSS log file and provides
+    convenience methods for checking convergence, completion status, and
+    extracting specific metrics.
+
+    Attributes
+    ----------
+    project : ProjectInfo
+        Project meta-data including name, file path, and design information.
+    init_mesh : InitMesh
+        Initial mesh statistics.
+    adaptive : list of AdaptivePass
+        Adaptive passes in chronological order.
+    sweep : Sweep or None
+        Frequency-sweep summary, or ``None`` if no sweep was performed.
+
+    Examples
+    --------
+    >>> from pathlib import Path
+    >>> parsed = ParsedLog(
+    ...     project=ProjectInfo(name="Test", file=Path("/tmp/test.aedt")),
+    ...     init_mesh=InitMesh(tetrahedra=5000, memory_mb=100, real_time_sec=30, cpu_time_sec=28),
+    ...     adaptive=[],
+    ...     sweep=None,
+    ... )
+    >>> parsed.project.name
+    'Test'
     """
 
     project: ProjectInfo
     init_mesh: InitMesh
-    adaptive: List[AdaptivePass]
+    adaptive: list[AdaptivePass]
     sweep: Optional[Sweep]
 
     def to_dict(self) -> dict:
-        """
-        Deep-convert the entire object to JSON-serialisable primitives.
+        """Deep-convert the entire object to JSON-serializable primitives.
 
-        :return: Plain ``dict`` / ``list`` / scalar structure.
-        :rtype: dict[str, Any]
+        Returns
+        -------
+        dict
+            Plain dict/list/scalar structure suitable for JSON serialization.
+
+        Examples
+        --------
+        >>> parsed = ParsedLog(project=..., init_mesh=..., adaptive=[], sweep=None)
+        >>> data_dict = parsed.to_dict()
+        >>> isinstance(data_dict, dict)
+        True
         """
         return _as_dict(self)
 
     def is_converged(self) -> bool:
-        """
-        Return ``True`` if the adaptive solver declared convergence.
+        """Check if the adaptive solver declared convergence.
 
-        :rtype: bool
+        Returns
+        -------
+        bool
+            ``True`` if at least one adaptive pass converged, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> parsed = ParsedLog(
+        ...     project=ProjectInfo(name="T", file=Path("/t")),
+        ...     init_mesh=InitMesh(tetrahedra=100, memory_mb=10, real_time_sec=5, cpu_time_sec=5),
+        ...     adaptive=[
+        ...         AdaptivePass(
+        ...             pass_nr=1,
+        ...             freq_hz=1e9,
+        ...             tetrahedra=100,
+        ...             matrix_size=50,
+        ...             memory_mb=10,
+        ...             delta_s=0.01,
+        ...             converged=True,
+        ...             elapsed_sec=10,
+        ...         )
+        ...     ],
+        ...     sweep=None,
+        ... )
+        >>> parsed.is_converged()
+        True
         """
         return self.adaptive[-1].converged if self.adaptive else False
 
-    def adaptive_passes(self) -> List[AdaptivePass]:
-        """Alias to keep API explicit."""
+    def adaptive_passes(self) -> list[AdaptivePass]:
+        """Return the list of adaptive passes.
+
+        Returns
+        -------
+        list of AdaptivePass
+            All adaptive passes in chronological order.
+
+        Examples
+        --------
+        >>> parsed = ParsedLog(project=..., init_mesh=..., adaptive=[pass1, pass2], sweep=None)
+        >>> passes = parsed.adaptive_passes()
+        >>> len(passes)
+        2
+        """
         return self.adaptive
 
     def memory_on_convergence(self) -> float:
-        """
-        Memory (MB) consumed by the *last* converged adaptive pass.
+        """Memory consumed by the last converged adaptive pass.
 
-        :return: Megabytes, or :py:const:`math.nan` if no pass converged.
-        :rtype: float
+        Returns
+        -------
+        float
+            Memory in megabytes, or ``math.nan`` if no pass converged.
+
+        Examples
+        --------
+        >>> parsed = ParsedLog(
+        ...     project=ProjectInfo(name="T", file=Path("/t")),
+        ...     init_mesh=InitMesh(tetrahedra=100, memory_mb=10, real_time_sec=5, cpu_time_sec=5),
+        ...     adaptive=[
+        ...         AdaptivePass(
+        ...             pass_nr=1,
+        ...             freq_hz=1e9,
+        ...             tetrahedra=100,
+        ...             matrix_size=50,
+        ...             memory_mb=256.5,
+        ...             delta_s=0.01,
+        ...             converged=True,
+        ...             elapsed_sec=10,
+        ...         )
+        ...     ],
+        ...     sweep=None,
+        ... )
+        >>> parsed.memory_on_convergence()
+        256.5
         """
         for p in reversed(self.adaptive):
             if p.converged:
@@ -408,29 +783,59 @@ class ParsedLog:
         return math.nan
 
     def is_completed(self) -> bool:
-        """
-        Heuristic indicating a successful end-to-end solve.
+        """Check if the simulation completed successfully.
 
-        A simulation is considered complete when **both** of the following
-        conditions are satisfied:
+        A simulation is considered complete when both adaptive convergence
+        occurred and a frequency sweep was executed.
 
-        1. At least one adaptive pass converged.
-        2. A frequency-sweep block exists with elapsed time greater than zero.
+        Returns
+        -------
+        bool
+            ``True`` if converged and sweep completed, ``False`` otherwise.
 
-        :rtype: bool
+        Examples
+        --------
+        >>> parsed = ParsedLog(
+        ...     project=ProjectInfo(name="T", file=Path("/t")),
+        ...     init_mesh=InitMesh(tetrahedra=100, memory_mb=10, real_time_sec=5, cpu_time_sec=5),
+        ...     adaptive=[
+        ...         AdaptivePass(
+        ...             pass_nr=1,
+        ...             freq_hz=1e9,
+        ...             tetrahedra=100,
+        ...             matrix_size=50,
+        ...             memory_mb=256,
+        ...             delta_s=0.01,
+        ...             converged=True,
+        ...             elapsed_sec=10,
+        ...         )
+        ...     ],
+        ...     sweep=Sweep(type="Interpolating", frequencies=11, solved=[1e9], elapsed_sec=30),
+        ... )
+        >>> parsed.is_completed()
+        True
         """
         return self.is_converged() and self.sweep is not None and self.sweep.elapsed_sec > 0
 
-    def errors(self) -> List[str]:
-        """
-        Extract only **error** lines (warnings are ignored).
+    def errors(self) -> list[str]:
+        """Extract error lines from the log file.
 
-        ANSYS marks errors with ``[error]`` or ``*** ERROR ***``.
+        Searches the log for lines containing error markers like ``[error]``
+        or ``*** ERROR ***``. Warnings are ignored.
 
-        :return: List of stripped error lines (empty if none).
-        :rtype: list[str]
+        Returns
+        -------
+        list of str
+            List of stripped error lines, empty if none found.
+
+        Examples
+        --------
+        >>> parsed = ParsedLog(project=..., init_mesh=..., adaptive=[], sweep=None)
+        >>> errs = parsed.errors()
+        >>> len(errs)
+        0
         """
-        errs: List[str] = []
+        errs: list[str] = []
         # we keep the raw lines inside the ProjectBlockParser – expose them
         raw = self._raw_lines  # added below
         for line in raw:
@@ -439,7 +844,7 @@ class ParsedLog:
         return errs
 
     @property
-    def _raw_lines(self) -> List[str]:
+    def _raw_lines(self) -> list[str]:
         # cache lazily
         if not hasattr(self, "__raw"):
             self.__raw = self.project.file.with_suffix(".log").read_text(encoding="utf-8", errors="ignore").splitlines()

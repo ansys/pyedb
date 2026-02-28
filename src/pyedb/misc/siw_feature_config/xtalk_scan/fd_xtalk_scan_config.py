@@ -25,21 +25,48 @@ from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 
 
 class CrosstalkFrequency:
-    """Siwave frequency domain crosstalk configuration handler."""
+    """SIwave frequency domain crosstalk configuration handler.
 
-    def __init__(self, pedb):
-        self._pedb = pedb
-        self.min_transmission_line_segment_length = "0.25mm"
-        self.frequency = "2e9Hz"
-        self.nets = {}
+    This class manages frequency domain crosstalk scanning configuration including
+    transmission line segment length, frequency, and net-specific crosstalk thresholds.
 
-    def extend_xml(self, parent):
-        """Write class xml section.
+    Parameters
+    ----------
+    pedb : object
+        PyEDB instance.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edb = Edb("path/to/aedb")
+    >>> xtalk_freq = CrosstalkFrequency(edb)
+    >>> xtalk_freq.min_transmission_line_segment_length = "0.5mm"
+    >>> xtalk_freq.frequency = "5e9Hz"
+    >>> xtalk_freq.add_single_ended_net("USB_DP", next_warning_threshold=3.0, fext_warning_threshold=2.0)
+
+    """
+
+    def __init__(self, pedb) -> None:
+        """Initialize frequency domain crosstalk configuration.
 
         Parameters
         ----------
-        parent : :class xml.etree.cElementTree object
-        Parent object.
+        pedb : object
+            PyEDB instance.
+
+        """
+        self._pedb = pedb
+        self.min_transmission_line_segment_length: str = "0.25mm"
+        self.frequency: str = "2e9Hz"
+        self.nets: dict[str, SingleEndedNet] = {}
+
+    def extend_xml(self, parent) -> None:
+        """Write class XML section.
+
+        Parameters
+        ----------
+        parent : xml.etree.ElementTree.Element
+            Parent XML element to extend.
 
         """
         freq_scan = ET.SubElement(parent, "FdXtalkConfig")
@@ -51,31 +78,42 @@ class CrosstalkFrequency:
 
     def add_single_ended_net(
         self,
-        name,
-        next_warning_threshold=5.0,
-        next_violation_threshold=10.0,
-        fext_warning_threshold_warning=5.0,
-        fext_violation_threshold=5.0,
-    ):
-        """Add single ended net.
+        name: str,
+        next_warning_threshold: float | str = 5.0,
+        next_violation_threshold: float | str = 10.0,
+        fext_warning_threshold_warning: float | str = 5.0,
+        fext_violation_threshold: float | str = 5.0,
+    ) -> bool:
+        """Add single ended net to frequency domain crosstalk configuration.
 
         Parameters
         ----------
         name : str
             Net name.
-        next_warning_threshold : flot or str
-            Near end crosstalk warning threshold value. Default value is ``5.0``.
-        next_violation_threshold : float, str
-            Near end crosstalk violation threshold value. Default value is ``10.0
-
-        fext_violation_threshold : float, str
-            Far end crosstalk violation threshold value, Default value is ``5.0``
-        fext_warning_threshold_warning : float, str
-            Far end crosstalk warning threshold value, Default value is ``5.0``
+        next_warning_threshold : float or str, optional
+            Near end crosstalk warning threshold value in dB.
+            The default is ``5.0``.
+        next_violation_threshold : float or str, optional
+            Near end crosstalk violation threshold value in dB.
+            The default is ``10.0``.
+        fext_warning_threshold_warning : float or str, optional
+            Far end crosstalk warning threshold value in dB.
+            The default is ``5.0``.
+        fext_violation_threshold : float or str, optional
+            Far end crosstalk violation threshold value in dB.
+            The default is ``5.0``.
 
         Returns
         -------
         bool
+            ``True`` if the net was added successfully, ``False`` otherwise.
+
+        Examples
+        --------
+        >>> xtalk_freq = CrosstalkFrequency(pedb)
+        >>> xtalk_freq.add_single_ended_net("USB_DP", next_warning_threshold=3.0, fext_warning_threshold=2.0)
+        True
+
         """
         if name and name not in self.nets:
             net = SingleEndedNet()

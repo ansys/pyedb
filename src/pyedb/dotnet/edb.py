@@ -36,17 +36,23 @@ import subprocess  # nosec B404
 import sys
 import time
 import traceback
-from typing import Union
+from typing import Any, Dict, List, Union
 import warnings
 from zipfile import ZipFile as zpf
 
 from pyedb.configuration.configuration import Configuration
 import pyedb.dotnet
 from pyedb.dotnet.database.cell.layout import Layout
+from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
+from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
 from pyedb.dotnet.database.components import Components
 import pyedb.dotnet.database.dotnet.database
 from pyedb.dotnet.database.edb_data.design_options import EdbDesignOptions
+from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.ports import (
     BundleWavePort,
     CircuitPort,
@@ -55,11 +61,9 @@ from pyedb.dotnet.database.edb_data.ports import (
     GapPort,
     WavePort,
 )
+from pyedb.dotnet.database.edb_data.primitives_data import EdbCircle, EdbPolygon, EdbRectangle
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
-)
-from pyedb.dotnet.database.edb_data.simulation_configuration import (
-    SimulationConfiguration,
 )
 from pyedb.dotnet.database.edb_data.sources import SourceType
 from pyedb.dotnet.database.edb_data.variables import Variable
@@ -77,6 +81,7 @@ from pyedb.dotnet.database.net_class import (
     EdbExtendedNets,
     EdbNetClasses,
 )
+from pyedb.dotnet.database.nets import EdbNets
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.dotnet.database.simulation_setups import SimulationSetups
 from pyedb.dotnet.database.siwave import EdbSiwave
@@ -88,16 +93,18 @@ from pyedb.dotnet.database.utilities.hfss_simulation_setup import (
 )
 from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SiwaveDCSimulationSetup,
-    SiwaveSimulationSetup,
+    SIwaveSimulationSetup,
 )
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.dotnet.database.Variables import decompose_variable_value
+from pyedb.edb_logger import EdbLogger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
+from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.misc.decorators import deprecate_argument_name, execution_timer
-from pyedb.modeler.geometry_operators import GeometryOperators
 from pyedb.siwave_core.product_properties import SIwaveProperties
 from pyedb.workflows.utilities.cutout import Cutout
 
@@ -179,15 +186,29 @@ class Edb:
     _db = None
 
     @property
-    def logger(self):
+    def logger(self) -> EdbLogger:
+        """PyEDB logger.
+        Returns
+        -------
+        EdbLogger object.
+        """
         return settings.logger
 
     @property
-    def version(self):
+    def version(self) -> str:
+        """EDB API version.
+        Returns
+        -------
+            str: version of the edb object.
+        """
         return settings.specified_version
 
     @property
-    def base_path(self):
+    def base_path(self) -> str:
+        """Base path for EDB installation.
+        Returns
+        -------
+            str: path to the edb installation."""
         return settings.aedt_installation_path
 
     @execution_timer("EDB initialization")
@@ -310,7 +331,7 @@ class Edb:
         if ex_type:
             self.edb_exception(ex_value, ex_traceback)
 
-    def __getitem__(self, variable_name):
+    def __getitem__(self, variable_name) -> Variable | None:
         """Get or Set a variable to the Edb project. The variable can be project using ``$`` prefix or
         it can be a design variable, in which case the ``$`` is omitted.
 
@@ -352,7 +373,7 @@ class Edb:
         if description:  # Add the variable description if a two-item list is passed for variable_value.
             self.__getitem__(variable_name).description = description
 
-    def __initialization(self):
+    def __initialization(self) -> None:
         self.logger.info(f"Edb version {self.version}")
 
         """Initialize DLLs."""
@@ -405,7 +426,7 @@ class Edb:
                     except:
                         self.logger.info(f"Failed to delete AEDT project-related file {file}.")
 
-    def _clean_variables(self):
+    def _clean_variables(self) -> None:
         """Initialize internal variables and perform garbage collection."""
         self._materials = None
         self._components = None
@@ -442,18 +463,25 @@ class Edb:
     def pedb_class(self):
         return pyedb.dotnet
 
-    def value(self, val):
-        """Convert a value into a pyedb value."""
-        val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
-        return Value(self, val_)
+    def value(self, val) -> Value:
+        """Convert a value into a pyedb value.
+        Returns
+        -------
+            class:`Value <pyedb.dotnet.database.utility.Value>`
+        """
+        try:
+            val_ = val if isinstance(val, self._edb.Utility.Value) else self.edb_value(val)
+            return Value(self, val_)
+        except Exception as e:
+            return val
 
     @property
-    def grpc(self):
+    def grpc(self) -> bool:
         """grpc flag."""
         return False
 
     @property
-    def cell_names(self):
+    def cell_names(self) -> List[str]:
         """Cell name container.
 
         Returns
@@ -466,7 +494,7 @@ class Edb:
         return names
 
     @property
-    def design_variables(self):
+    def design_variables(self) -> Dict[str, Variable]:
         """Get all edb design variables.
 
         Returns
@@ -479,11 +507,16 @@ class Edb:
         return d_var
 
     @property
-    def ansys_em_path(self):
+    def ansys_em_path(self) -> str:
+        """Base path for EDB installation.
+        Returns
+        -------
+            str: path to the edb installation."""
+        warnings.warn("This property will be soon deprecated. Use property ''base_path'' instead.", DeprecationWarning)
         return self.base_path
 
     @property
-    def project_variables(self):
+    def project_variables(self) -> Dict[str, Variable]:
         """Get all project variables.
 
         Returns
@@ -497,7 +530,7 @@ class Edb:
         return p_var
 
     @property
-    def layout_validation(self):
+    def layout_validation(self) -> LayoutValidation:
         """:class:`pyedb.dotnet.database.edb_data.layout_validation.LayoutValidation`.
 
         Returns
@@ -507,7 +540,7 @@ class Edb:
         return LayoutValidation(self)
 
     @property
-    def variables(self):
+    def variables(self) -> Dict[str, Variable]:
         """Get all Edb variables.
 
         Returns
@@ -517,42 +550,47 @@ class Edb:
         """
         all_vars = dict()
         for i, j in self.project_variables.items():
-            all_vars[i] = j.value
+            all_vars[i] = j
         for i, j in self.design_variables.items():
-            all_vars[i] = j.value
+            all_vars[i] = j
         return all_vars
 
     @property
-    def terminals(self):
+    def terminals(self) -> Dict[str, Terminal]:
         """Get terminals belonging to active layout.
 
         Returns
         -------
-        Dict
+        Dict[str, :class:`pyedb.dotnet.database.edb_data.ports.Terminal`]
+            Dictionary of terminal names to terminal objects.
         """
 
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self):
-        """Get all layout excitations."""
-        terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
-        temp = {}
-        for ter in terms:
-            if "BundleTerminal" in ter._edb_object.GetType().ToString():
-                temp[ter.name] = BundleWavePort(self, ter._edb_object)
-            else:
-                temp[ter.name] = GapPort(self, ter._edb_object)
-        return temp
-
-    @property
-    def ports(self):
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
                    :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,]]
+
+        """
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
+
+    @property
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CircuitPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.CoaxPort`,
+                   :class:`pyedb.dotnet.database.edb_data.ports.BundleWavePort`]]
 
         """
         temp = [term for term in self.layout.terminals if not term.is_reference_terminal]
@@ -578,21 +616,21 @@ class Edb:
         return ports
 
     @property
-    def excitations_nets(self):
+    def excitations_nets(self) -> List[str]:
         """Get all excitations net names."""
         names = list(set([i.net.name for i in self.layout.terminals]))
         names = [i for i in names if i]
         return names
 
     @property
-    def sources(self):
+    def sources(self) -> Dict[str, ExcitationSources]:
         """Get all layout sources."""
         terms = [term for term in self.layout.terminals if int(term._edb_object.GetBoundaryType()) in [3, 4, 7]]
         terms = [term for term in terms if not term._edb_object.IsReferenceTerminal()]
         return {ter.name: ExcitationSources(self, ter._edb_object) for ter in terms}
 
     @property
-    def voltage_regulator_modules(self):
+    def voltage_regulator_modules(self) -> Dict[str, VoltageRegulator]:
         """Get all voltage regulator modules"""
         vrms = self.layout.voltage_regulators
         _vrms = {}
@@ -601,7 +639,9 @@ class Edb:
         return _vrms
 
     @property
-    def probes(self):
+    def probes(
+        self,
+    ) -> Dict[str, Union[PinGroupTerminal, PointTerminal, BundleTerminal, PadstackInstanceTerminal, EdgeTerminal]]:
         """Get all layout probes."""
         temp = {}
         for name, val in self.terminals.items():
@@ -611,7 +651,7 @@ class Edb:
         return temp
 
     @execution_timer("open_edb")
-    def open_edb(self):
+    def open_edb(self) -> bool:
         """Open EDB.
 
         Returns
@@ -692,62 +732,6 @@ class Edb:
             return True
         return None
 
-    def import_layout_pcb(
-        self,
-        input_file,
-        working_dir="",
-        anstranslator_full_path="",
-        use_ppe=False,
-        control_file=None,
-        map_file=None,
-        tech_file=None,
-        layer_filter=None,
-    ):
-        """Import a board file and generate an ``edb.def`` file in the working directory.
-
-        .. deprecated:: 0.42.0
-           Use :func:`import_layout_file` method instead.
-
-        This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
-
-        Parameters
-        ----------
-        input_file : str
-            Full path to the board file.
-        working_dir : str, optional
-            Directory in which to create the ``aedb`` folder. The name given to the AEDB file
-            is the same as the name of the board file.
-        anstranslator_full_path : str, optional
-            Full path to the Ansys translator. The default is ``""``.
-        use_ppe : bool
-            Whether to use the PPE License. The default is ``False``.
-        control_file : str, optional
-            Path to the XML file. The default is ``None``, in which case an attempt is made to find
-            the XML file in the same directory as the board file. To succeed, the XML file and board file
-            must have the same name. Only the extension differs.
-        tech_file : str, optional
-            Technology file. The file can be *.ircx, *.vlc.tech, or *.itf
-        map_file : str, optional
-            Layer map .map file.
-        layer_filter:str,optional
-            Layer filter .txt file.
-
-        Returns
-        -------
-        Full path to the AEDB file : str
-        """
-        self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
-        return self.import_layout_file(
-            input_file,
-            working_dir,
-            anstranslator_full_path,
-            use_ppe,
-            control_file,
-            map_file,
-            tech_file,
-            layer_filter,
-        )
-
     @execution_timer("import_layout_file")
     def import_layout_file(
         self,
@@ -759,7 +743,7 @@ class Edb:
         map_file=None,
         tech_file=None,
         layer_filter=None,
-    ):
+    ) -> str:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
@@ -976,12 +960,11 @@ class Edb:
             self.logger.error(el)
 
     @property
-    def active_db(self):
-        """Database object."""
+    def active_db(self) -> Any:
         return self._db
 
     @property
-    def active_cell(self):
+    def active_cell(self) -> Any:
         """Active cell."""
         return self._active_cell
 
@@ -1003,27 +986,7 @@ class Edb:
             raise "No valid design."
 
     @property
-    def core_components(self):  # pragma: no cover
-        """Edb Components methods and properties.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`components` instead.
-
-        Returns
-        -------
-        Instance of :class:`pyedb.dotnet.database.Components.Components`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> comp = edbapp.components.get_component_by_name("J1")
-        """
-        warnings.warn("Use new property :func:`components` instead.", DeprecationWarning)
-        return self.components
-
-    @property
-    def components(self):
+    def components(self) -> Components:
         """Edb Components methods and properties.
 
         Returns
@@ -1041,22 +1004,7 @@ class Edb:
         return self._components
 
     @property
-    def core_stackup(self):
-        """Core stackup.
-
-        .. deprecated:: 0.6.5
-            There is no need to use the ``core_stackup`` property anymore.
-            You can instantiate a new ``stackup`` class directly from the ``Edb`` class.
-        """
-        mess = "`core_stackup` is deprecated.\n"
-        mess += " Use `app.stackup` directly to instantiate new stackup methods."
-        warnings.warn(mess, DeprecationWarning)
-        if not self._stackup and self._db:
-            self._stackup = Stackup(self)
-        return self._stackup
-
-    @property
-    def design_options(self):
+    def design_options(self) -> EdbDesignOptions:
         """Edb Design Settings and Options.
 
         Returns
@@ -1066,7 +1014,7 @@ class Edb:
         return EdbDesignOptions(self.active_cell)
 
     @property
-    def stackup(self):
+    def stackup(self) -> Stackup:
         """Stackup manager.
 
         Returns
@@ -1084,11 +1032,37 @@ class Edb:
         return Stackup(self, self.layout.layer_collection)
 
     @property
-    def source_excitation(self):
-        return self._source_excitation
+    def source_excitation(self) -> SourceExcitation:
+        """Source excitation management.
+
+        .. deprecated:: 0.70
+           Use: func:`excitation_manager` property instead.
+        Returns
+        -------
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
+            Source and port creation tools.
+        """
+        warnings.warn("Use property excitation_manager instead.", DeprecationWarning)
+
+        if self.active_db:
+            return self._source_excitation
+        return None
 
     @property
-    def materials(self):
+    def excitation_manager(self) -> None | SourceExcitation:
+        """Source excitation manager.
+
+        Returns
+        -------
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
+            Source and port creation tools.
+        """
+        if self.active_db:
+            return self._source_excitation
+        return None
+
+    @property
+    def materials(self) -> Materials | None:
         """Material Database.
 
         Returns
@@ -1108,32 +1082,7 @@ class Edb:
         return self._materials
 
     @property
-    def core_padstack(self):  # pragma: no cover
-        """Core padstack.
-
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`padstacks` instead.
-
-        Returns
-        -------
-        Instance of :class: `pyedb.dotnet.database.padstack.EdbPadstack`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> p = edbapp.padstacks.create(padstackname="myVia_bullet", antipad_shape="Bullet")
-        >>> edbapp.padstacks.get_pad_parameters(
-        >>> ... p, "TOP", edbapp.padstacks.pad_type.RegularPad
-        >>> ... )
-        """
-
-        warnings.warn("Use new property :func:`padstacks` instead.", DeprecationWarning)
-        return self.padstacks
-
-    @property
-    def padstacks(self):
+    def padstacks(self) -> EdbPadstacks | None:
         """Core padstack.
 
 
@@ -1156,27 +1105,7 @@ class Edb:
         return self._padstack
 
     @property
-    def core_siwave(self):  # pragma: no cover
-        """Core SIWave methods and properties.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`siwave` instead.
-
-        Returns
-        -------
-        Instance of :class: `pyedb.dotnet.database.siwave.EdbSiwave`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
-        """
-        warnings.warn("Use new property :func:`siwave` instead.", DeprecationWarning)
-        return self.siwave
-
-    @property
-    def siwave(self):
+    def siwave(self) -> EdbSiwave | None:
         """Core SIWave methods and properties.
 
         Returns
@@ -1187,79 +1116,32 @@ class Edb:
         --------
         >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
-        >>> p2 = edbapp.siwave.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
+        >>> p2 = edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V3P3_S0", "U2A5", "GND", 50, "test")
         """
         if not self._siwave and self._db:
             self._siwave = EdbSiwave(self)
         return self._siwave
 
     @property
-    def core_hfss(self):  # pragma: no cover
-        """Core HFSS methods and properties.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`hfss` instead.
-
-        Returns
-        -------
-        Instance of :class:`legacy.database.hfss.EdbHfss`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
-        """
-        warnings.warn("Use new property :func:`hfss` instead.", DeprecationWarning)
-        return self.hfss
-
-    @property
-    def hfss(self):
+    def hfss(self) -> EdbHfss | None:
         """Core HFSS methods and properties.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.hfss.EdbHfss`
 
-        See Also
-        --------
-        :class:`legacy.database.edb_data.simulation_configuration.SimulationConfiguration`
-
         Examples
         --------
         >>> from pyedb import Edb
         >>> edbapp = Edb("myproject.aedb")
-        >>> sim_config = edbapp.new_simulation_configuration()
-        >>> sim_config.mesh_freq = "10Ghz"
-        >>> edbapp.hfss.configure_hfss_analysis_setup(sim_config)
+
         """
         if not self._hfss and self._db:
             self._hfss = EdbHfss(self)
         return self._hfss
 
     @property
-    def core_nets(self):  # pragma: no cover
-        """Core nets.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`nets` instead.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.nets.EdbNets`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> edbapp.nets.find_or_create_net("GND")
-        >>> edbapp.nets.find_and_fix_disjoint_nets("GND", keep_only_main_net=True)
-        """
-        warnings.warn("Use new property :func:`nets` instead.", DeprecationWarning)
-        return self.nets
-
-    @property
-    def nets(self):
+    def nets(self) -> None | EdbNets:
         """Core nets.
 
         Returns
@@ -1276,7 +1158,7 @@ class Edb:
         return self._nets
 
     @property
-    def net_classes(self):
+    def net_classes(self) -> EdbNetClasses | None:
         """Get all net classes.
 
         Returns
@@ -1294,7 +1176,7 @@ class Edb:
             return EdbNetClasses(self)
 
     @property
-    def extended_nets(self):
+    def extended_nets(self) -> EdbExtendedNets | None:
         """Get all extended nets.
 
         Returns
@@ -1312,7 +1194,7 @@ class Edb:
             return EdbExtendedNets(self)
 
     @property
-    def differential_pairs(self):
+    def differential_pairs(self) -> EdbDifferentialPairs | None:
         """Get all differential pairs.
 
         Returns
@@ -1331,27 +1213,7 @@ class Edb:
             return
 
     @property
-    def core_primitives(self):  # pragma: no cover
-        """Core primitives.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`modeler` instead.
-
-        Returns
-        -------
-        Instance of :class: `legacy.database.layout.EdbLayout`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> top_prims = edbapp.modeler.primitives_by_layer["TOP"]
-        """
-        warnings.warn("Use new property :func:`modeler` instead.", DeprecationWarning)
-        return self.modeler
-
-    @property
-    def modeler(self):
+    def modeler(self) -> Modeler | None:
         """Core primitives modeler.
 
         Returns
@@ -1379,7 +1241,7 @@ class Edb:
         return Layout(self, self._active_cell.GetLayout())
 
     @property
-    def active_layout(self):
+    def active_layout(self) -> Any:
         """Active layout.
 
         Returns
@@ -1389,7 +1251,7 @@ class Edb:
         return self.layout._edb_object
 
     @property
-    def layout_instance(self):
+    def layout_instance(self):  # -> Any:
         """Edb Layout Instance."""
         return self.layout._edb_object.GetLayoutInstance()
 
@@ -1404,7 +1266,9 @@ class Edb:
         """
         return self.hfss.get_layout_bounding_box(self.active_layout)
 
-    def get_connected_objects(self, layout_object_instance):
+    def get_connected_objects(
+        self, layout_object_instance
+    ) -> List[Union[EDBPadstackInstance, Path, EdbRectangle, EdbCircle, EdbPolygon]]:
         """Get connected objects.
 
         Returns
@@ -1453,28 +1317,6 @@ class Edb:
                 continue
         return temp
 
-    @property
-    def pins(self):
-        """EDB padstack instance of the component.
-
-        .. deprecated:: 0.6.62
-           Use new method :func:`edb.padstacks.pins` instead.
-
-        Returns
-        -------
-        dic[str, :class:`legacy.database.edb_data.definitions.EDBPadstackInstance`]
-            Dictionary of EDBPadstackInstance Components.
-
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myproject.aedb")
-        >>> pin_net_name = edbapp.pins[424968329].netname
-        """
-        warnings.warn("Use new method :func:`edb.padstacks.pins` instead.", DeprecationWarning)
-        return self.padstacks.pins
-
     class Boundaries:
         """Boundaries Enumerator.
 
@@ -1495,7 +1337,7 @@ class Edb:
             VoltageProbe,
         ) = range(0, 9)
 
-    def edb_value(self, value, var_server=None):
+    def edb_value(self, value, var_server=None) -> Any:
         """Convert a value to an EDB value. Value can be a string, float or integer. Mainly used in internal calls.
 
         Parameters
@@ -1529,7 +1371,7 @@ class Edb:
             return self.core.Utility.Value(value, var_server_db)
         return self.core.Utility.Value(value)
 
-    def point_3d(self, x, y, z=0.0):
+    def point_3d(self, x, y, z=0.0) -> Any:  # -> Any:
         """Compute the Edb 3d Point Data.
 
         Parameters
@@ -1547,7 +1389,7 @@ class Edb:
         """
         return self.core.Geometry.Point3DData(self.edb_value(x), self.edb_value(y), self.edb_value(z))
 
-    def copy_cells(self, cells_to_copy):
+    def copy_cells(self, cells_to_copy) -> Any:  # -> Any:
         """Copy Cells from other Databases or this Database into this Database.
 
         Parameters
@@ -1565,7 +1407,7 @@ class Edb:
         _dbCells = convert_py_list_to_net_list(cells_to_copy)
         return self._db.CopyCells(_dbCells)
 
-    def point_data(self, x, y=None):
+    def point_data(self, x, y=None) -> Any:  # -> Any:
         """Compute the Edb Point Data.
 
         Parameters
@@ -1596,13 +1438,13 @@ class Edb:
         else:
             return False
 
-    def _is_file_existing(self, filename):
+    def _is_file_existing(self, filename) -> bool:
         if os.path.exists(filename):
             return True
         else:
             return False
 
-    def _wait_for_file_release(self, timeout=30, file_to_release=None):
+    def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
@@ -1614,7 +1456,7 @@ class Edb:
             else:
                 time.sleep(0.250)
 
-    def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4):
+    def _wait_for_file_exists(self, timeout=30, file_to_release=None, wait_count=4) -> bool:
         if not file_to_release:
             file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
@@ -1632,7 +1474,7 @@ class Edb:
                 times = 0
                 time.sleep(0.250)
 
-    def close_edb(self):
+    def close_edb(self) -> bool:
         """Close EDB and cleanup variables.
 
         . deprecated:: pyedb 0.47.0
@@ -1648,7 +1490,7 @@ class Edb:
         return self.close()
 
     @execution_timer("Close Edb file")
-    def close(self, **kwargs):
+    def close(self, **kwargs) -> bool:
         """Close EDB and cleanup variables.
 
         Returns
@@ -1665,7 +1507,7 @@ class Edb:
         self._clean_variables()
         return True
 
-    def save_edb(self):
+    def save_edb(self) -> bool:
         """Save the EDB file.
 
         . deprecated:: pyedb 0.47.0
@@ -1681,7 +1523,7 @@ class Edb:
         return self.save()
 
     @execution_timer("Save Edb file")
-    def save(self):
+    def save(self) -> bool:
         """Save the EDB file.
 
         Returns
@@ -1695,7 +1537,7 @@ class Edb:
         self._wait_for_file_release()
         return True
 
-    def save_edb_as(self, path):
+    def save_edb_as(self, path) -> bool:
         """Save the EDB file as another file.
 
         . deprecated:: pyedb 0.47.0
@@ -1717,7 +1559,7 @@ class Edb:
         return self.save_as(path)
 
     @execution_timer("EDB file save")
-    def save_as(self, path: str | Path):
+    def save_as(self, path: str | Path) -> bool:
         """Save the EDB file as another file.
 
         Parameters
@@ -1766,7 +1608,7 @@ class Edb:
         """
         return self.core.utility.utility.Command.Execute(func)
 
-    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False):
+    def import_cadence_file(self, inputBrd, WorkDir=None, anstranslator_full_path="", use_ppe=False) -> bool:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         Parameters
@@ -2052,7 +1894,7 @@ class Edb:
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
-    ):
+    ) -> list[list[float | complex | Any]] | list | list[list] | None:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
         It does in sequence:
@@ -2310,67 +2152,6 @@ class Edb:
                 self.logger.info_timer("Single Pins components deleted")
                 self.components.refresh_components()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
-
-    def create_cutout(
-        self,
-        signal_list=[],
-        reference_list=["GND"],
-        extent_type="Conforming",
-        expansion_size=0.002,
-        use_round_corner=False,
-        output_aedb_path=None,
-        open_cutout_at_end=True,
-        use_pyaedt_extent_computing=False,
-    ):
-        """Create a cutout using an approach entirely based on legacy.
-        It does in sequence:
-        - delete all nets not in list,
-        - create an extent of the nets,
-        - check and delete all vias not in the extent,
-        - check and delete all the primitives not in extent,
-        - check and intersect all the primitives that intersect the extent.
-
-        .. deprecated:: 0.6.58
-           Use new method :func:`cutout` instead.
-
-        Parameters
-        ----------
-        signal_list : list
-            List of signal strings.
-        reference_list : list, optional
-            List of references to add. The default is ``["GND"]``.
-        extent_type : str, optional
-            Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
-            ``"Bounding"``. The default is ``"Conforming"``.
-        expansion_size : float, str, optional
-            Expansion size ratio in meters. The default is ``0.002``.
-        use_round_corner : bool, optional
-            Whether to use round corners. The default is ``False``.
-        output_aedb_path : str, optional
-            Full path and name for the new AEDB file.
-        open_cutout_at_end : bool, optional
-            Whether to open the cutout at the end. The default
-            is ``True``.
-        use_pyaedt_extent_computing : bool, optional
-            Whether to use legacy extent computing (experimental).
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        """
-        warnings.warn("Use new method `cutout` instead.", DeprecationWarning)
-        return self._create_cutout_legacy(
-            signal_list=signal_list,
-            reference_list=reference_list,
-            extent_type=extent_type,
-            expansion_size=expansion_size,
-            use_round_corner=use_round_corner,
-            output_aedb_path=output_aedb_path,
-            open_cutout_at_end=open_cutout_at_end,
-            use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-        )
 
     def _create_cutout_multithread(
         self,
@@ -2644,114 +2425,6 @@ class Edb:
         self.logger.reset_timer()
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
-    def create_cutout_multithread(
-        self,
-        signal_list=[],
-        reference_list=["GND"],
-        extent_type="Conforming",
-        expansion_size=0.002,
-        use_round_corner=False,
-        number_of_threads=4,
-        custom_extent=None,
-        output_aedb_path=None,
-        remove_single_pin_components=False,
-        use_pyaedt_extent_computing=False,
-        extent_defeature=0,
-        keep_lines_as_path=False,
-        return_extent=False,
-    ):
-        """Create a cutout using an approach entirely based on legacy.
-        It does in sequence:
-        - delete all nets not in list,
-        - create a extent of the nets,
-        - check and delete all vias not in the extent,
-        - check and delete all the primitives not in extent,
-        - check and intersect all the primitives that intersect the extent.
-
-
-        .. deprecated:: 0.6.58
-           Use new method :func:`cutout` instead.
-
-        Parameters
-        ----------
-        signal_list : list
-            List of signal strings.
-        reference_list : list, optional
-            List of references to add. The default is ``["GND"]``.
-        extent_type : str, optional
-            Type of the extension. Options are ``"Conforming"``, ``"ConvexHull"``, and
-            ``"Bounding"``. The default is ``"Conforming"``.
-        expansion_size : float, str, optional
-            Expansion size ratio in meters. The default is ``0.002``.
-        use_round_corner : bool, optional
-            Whether to use round corners. The default is ``False``.
-        number_of_threads : int, optional
-            Number of thread to use. Default is 4
-        custom_extent : list, optional
-            Custom extent to use for the cutout. It has to be a list of points [[x1,y1],[x2,y2]....] or
-            Edb PolygonData object. In this case, both signal_list and reference_list will be cut.
-        output_aedb_path : str, optional
-            Full path and name for the new AEDB file. If None, then current aedb will be cutout.
-        remove_single_pin_components : bool, optional
-            Remove all Single Pin RLC after the cutout is completed. Default is `False`.
-        use_pyaedt_extent_computing : bool, optional
-            Whether to use legacy extent computing (experimental).
-        extent_defeature : float, optional
-            Defeature the cutout before applying it to produce simpler geometry for mesh (Experimental).
-            It applies only to Conforming bounding box. Default value is ``0`` which disable it.
-        keep_lines_as_path : bool, optional
-            Whether to keep the lines as Path after they are cutout or convert them to PolygonData.
-            This feature works only in Electronics Desktop (3D Layout).
-            If the flag is set to True it can cause issues in SiWave once the Edb is imported.
-            Default is ``False`` to generate PolygonData of cut lines.
-        return_extent : bool, optional
-            When ``True`` extent used for clipping is returned, if ``False`` only the boolean indicating whether
-            clipping succeed or not is returned. Not applicable with custom extent usage.
-            Default is ``False``.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb(r"C:\\test.aedb", version="2022.2")
-        >>> edb.logger.info_timer("Edb Opening")
-        >>> edb.logger.reset_timer()
-        >>> start = time.time()
-        >>> signal_list = []
-        >>> for net in edb.nets.nets.keys():
-        >>>      if "3V3" in net:
-        >>>           signal_list.append(net)
-        >>> power_list = ["PGND"]
-        >>> edb.create_cutout_multithread(signal_list=signal_list, reference_list=power_list, extent_type="Conforming")
-        >>> end_time = str((time.time() - start) / 60)
-        >>> edb.logger.info("Total legacy cutout time in min %s", end_time)
-        >>> edb.nets.plot(signal_list, None, color_by_net=True)
-        >>> edb.nets.plot(power_list, None, color_by_net=True)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-
-        """
-        warnings.warn("Use new method `cutout` instead.", DeprecationWarning)
-        return self._create_cutout_multithread(
-            signal_list=signal_list,
-            reference_list=reference_list,
-            extent_type=extent_type,
-            expansion_size=expansion_size,
-            use_round_corner=use_round_corner,
-            number_of_threads=number_of_threads,
-            custom_extent=custom_extent,
-            output_aedb_path=output_aedb_path,
-            remove_single_pin_components=remove_single_pin_components,
-            use_pyaedt_extent_computing=use_pyaedt_extent_computing,
-            extent_defeature=extent_defeature,
-            keep_lines_as_path=keep_lines_as_path,
-            return_extent=return_extent,
-        )
-
     def get_conformal_polygon_from_netlist(self, netlist=None):
         """Return an EDB conformal polygon based on a netlist.
 
@@ -2989,59 +2662,6 @@ class Edb:
                     except Exception as e:
                         self.logger.error(f"Failed to copy {source} to {target} - {type(e).__name__}: {str(e)}")
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(polygonData.GetPolygonWithoutArcs().Points)]
-
-    def create_cutout_on_point_list(
-        self,
-        point_list,
-        units="mm",
-        output_aedb_path=None,
-        open_cutout_at_end=True,
-        nets_to_include=None,
-        include_partial_instances=False,
-        keep_voids=True,
-    ):
-        """Create a cutout on a specified shape and save it to a new AEDB file.
-
-        .. deprecated:: 0.6.58
-           Use new method :func:`cutout` instead.
-
-        Parameters
-        ----------
-        point_list : list
-            Points list defining the cutout shape.
-        units : str
-            Units of the point list. The default is ``"mm"``.
-        output_aedb_path : str, optional
-            Full path and name for the new AEDB file.
-            The aedb folder shall not exist otherwise the method will return ``False``.
-        open_cutout_at_end : bool, optional
-            Whether to open the cutout at the end. The default is ``True``.
-        nets_to_include : list, optional
-            List of nets to include in the cutout. The default is ``None``, in
-            which case all nets are included.
-        include_partial_instances : bool, optional
-            Whether to include padstack instances that have bounding boxes intersecting with point list polygons.
-            This operation may slow down the cutout export.
-        keep_voids : bool
-            Boolean used for keep or not the voids intersecting the polygon used for clipping the layout.
-            Default value is ``True``, ``False`` will remove the voids.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        """
-        warnings.warn("Use new method `cutout` instead.", DeprecationWarning)
-        return self._create_cutout_on_point_list(
-            point_list=point_list,
-            units=units,
-            output_aedb_path=output_aedb_path,
-            open_cutout_at_end=open_cutout_at_end,
-            nets_to_include=nets_to_include,
-            include_partial_instances=include_partial_instances,
-            keep_voids=keep_voids,
-        )
 
     def write_export3d_option_config_file(self, path_to_output, config_dictionaries=None):
         """Write the options for a 3D export to a configuration file.
@@ -3481,189 +3101,6 @@ class Edb:
             [bbox.Item2.X.ToDouble(), bbox.Item2.Y.ToDouble()],
         ]
 
-    def build_simulation_project(self, simulation_setup):
-        # type: (SimulationConfiguration) -> bool
-        """Build a ready-to-solve simulation project.
-
-        Parameters
-        ----------
-        simulation_setup : :class:`pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfiguration`.
-            SimulationConfiguration object that can be instantiated or directly loaded with a
-            configuration file.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, False when ``Failed``.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> from pyedb.dotnet.database.edb_data.simulation_configuration import SimulationConfiguration
-        >>> config_file = path_configuration_file
-        >>> source_file = path_to_edb_folder
-        >>> edb = Edb(source_file)
-        >>> sim_setup = SimulationConfiguration(config_file)
-        >>> edb.build_simulation_project(sim_setup)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-        self.logger.info("Building simulation project.")
-        legacy_name = self.edbpath
-        if simulation_setup.output_aedb:
-            self.save_edb_as(simulation_setup.output_aedb)
-        if simulation_setup.signal_layer_etching_instances:
-            for layer in simulation_setup.signal_layer_etching_instances:
-                if layer in self.stackup.layers:
-                    idx = simulation_setup.signal_layer_etching_instances.index(layer)
-                    if len(simulation_setup.etching_factor_instances) > idx:
-                        self.stackup[layer].etch_factor = float(simulation_setup.etching_factor_instances[idx])
-
-        if not simulation_setup.signal_nets and simulation_setup.components:
-            nets_to_include = []
-            pnets = list(self.nets.power.keys())[:]
-            for el in simulation_setup.components:
-                nets_to_include.append([i for i in self.components[el].nets if i not in pnets])
-            simulation_setup.signal_nets = [
-                i
-                for i in list(set.intersection(*map(set, nets_to_include)))
-                if i not in simulation_setup.power_nets and i != ""
-            ]
-        self.nets.classify_nets(simulation_setup.power_nets, simulation_setup.signal_nets)
-        if not simulation_setup.power_nets or not simulation_setup.signal_nets:
-            self.logger.info("Disabling cutout as no signals or power nets have been defined.")
-            simulation_setup.do_cutout_subdesign = False
-        if simulation_setup.do_cutout_subdesign:
-            self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
-            if simulation_setup.use_default_cutout:
-                old_cell_name = self.active_cell.GetName()
-                if self.cutout(
-                    signal_list=simulation_setup.signal_nets,
-                    reference_list=simulation_setup.power_nets,
-                    expansion_size=simulation_setup.cutout_subdesign_expansion,
-                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                    extent_type=simulation_setup.cutout_subdesign_type,
-                    use_pyaedt_cutout=False,
-                    use_pyaedt_extent_computing=False,
-                ):
-                    self.logger.info("Cutout processed.")
-                    old_cell = self.active_cell.FindByName(
-                        self._db,
-                        self.core.Cell.CellType.CircuitCell,
-                        old_cell_name,
-                    )
-                    if old_cell:
-                        old_cell.Delete()
-                else:  # pragma: no cover
-                    self.logger.error("Cutout failed.")
-            else:
-                self.logger.info("Cutting out using method: {0}".format(simulation_setup.cutout_subdesign_type))
-                self.cutout(
-                    signal_list=simulation_setup.signal_nets,
-                    reference_list=simulation_setup.power_nets,
-                    expansion_size=simulation_setup.cutout_subdesign_expansion,
-                    use_round_corner=simulation_setup.cutout_subdesign_round_corner,
-                    extent_type=simulation_setup.cutout_subdesign_type,
-                    use_pyaedt_cutout=True,
-                    use_pyaedt_extent_computing=True,
-                    remove_single_pin_components=True,
-                )
-                self.logger.info("Cutout processed.")
-        else:
-            if simulation_setup.include_only_selected_nets:
-                included_nets = simulation_setup.signal_nets + simulation_setup.power_nets
-                nets_to_remove = [net.name for net in list(self.nets.nets.values()) if not net.name in included_nets]
-                self.nets.delete(nets_to_remove)
-        self.logger.info("Deleting existing ports.")
-        map(lambda port: port.Delete(), self.layout.terminals)
-        map(lambda pg: pg.Delete(), self.layout.pin_groups)
-        if simulation_setup.solver_type == SolverType.Hfss3dLayout:
-            if simulation_setup.generate_excitations:
-                self.logger.info("Creating HFSS ports for signal nets.")
-                source_type = SourceType.CoaxPort
-                if not simulation_setup.generate_solder_balls:
-                    source_type = SourceType.CircPort
-                for cmp in simulation_setup.components:
-                    if isinstance(cmp, str):  # keep legacy component
-                        self.components.create_port_on_component(
-                            cmp,
-                            net_list=simulation_setup.signal_nets,
-                            do_pingroup=False,
-                            reference_net=simulation_setup.power_nets,
-                            port_type=source_type,
-                        )
-                    elif isinstance(cmp, dict):
-                        if "refdes" in cmp:
-                            if not "solder_balls_height" in cmp:  # pragma no cover
-                                cmp["solder_balls_height"] = None
-                            if not "solder_balls_size" in cmp:  # pragma no cover
-                                cmp["solder_balls_size"] = None
-                                cmp["solder_balls_mid_size"] = None
-                            if not "solder_balls_mid_size" in cmp:  # pragma no cover
-                                cmp["solder_balls_mid_size"] = None
-                            self.components.create_port_on_component(
-                                cmp["refdes"],
-                                net_list=simulation_setup.signal_nets,
-                                do_pingroup=False,
-                                reference_net=simulation_setup.power_nets,
-                                port_type=source_type,
-                                solder_balls_height=cmp["solder_balls_height"],
-                                solder_balls_size=cmp["solder_balls_size"],
-                                solder_balls_mid_size=cmp["solder_balls_mid_size"],
-                            )
-                if simulation_setup.generate_solder_balls and not self.hfss.set_coax_port_attributes(
-                    simulation_setup
-                ):  # pragma: no cover
-                    self.logger.error("Failed to configure coaxial port attributes.")
-                self.logger.info("Number of ports: {}".format(self.hfss.get_ports_number()))
-                self.logger.info("Configure HFSS extents.")
-                if simulation_setup.generate_solder_balls and simulation_setup.trim_reference_size:  # pragma: no cover
-                    self.logger.info(
-                        "Trimming the reference plane for coaxial ports: {0}".format(
-                            bool(simulation_setup.trim_reference_size)
-                        )
-                    )
-                    self.hfss.trim_component_reference_size(simulation_setup)  # pragma: no cover
-            self.hfss.configure_hfss_extents(simulation_setup)
-            if not self.hfss.configure_hfss_analysis_setup(simulation_setup):
-                self.logger.error("Failed to configure HFSS simulation setup.")
-        if simulation_setup.solver_type == SolverType.SiwaveSYZ:
-            if simulation_setup.generate_excitations:
-                for cmp in simulation_setup.components:
-                    if isinstance(cmp, str):  # keep legacy
-                        self.components.create_port_on_component(
-                            cmp,
-                            net_list=simulation_setup.signal_nets,
-                            do_pingroup=simulation_setup.do_pingroup,
-                            reference_net=simulation_setup.power_nets,
-                            port_type=SourceType.CircPort,
-                        )
-                    elif isinstance(cmp, dict):
-                        if "refdes" in cmp:  # pragma no cover
-                            self.components.create_port_on_component(
-                                cmp["refdes"],
-                                net_list=simulation_setup.signal_nets,
-                                do_pingroup=simulation_setup.do_pingroup,
-                                reference_net=simulation_setup.power_nets,
-                                port_type=SourceType.CircPort,
-                            )
-            self.logger.info("Configuring analysis setup.")
-            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                self.logger.error("Failed to configure Siwave simulation setup.")
-        if simulation_setup.solver_type == SolverType.SiwaveDC:
-            if simulation_setup.generate_excitations:
-                self.components.create_source_on_component(simulation_setup.sources)
-            if not self.siwave.configure_siw_analysis_setup(simulation_setup):  # pragma: no cover
-                self.logger.error("Failed to configure Siwave simulation setup.")
-        self.padstacks.check_and_fix_via_plating()
-        self.save_edb()
-        if not simulation_setup.open_edb_after_build and simulation_setup.output_aedb:
-            self.close_edb()
-            self.edbpath = legacy_name
-            self.open_edb()
-        return True
-
     def get_statistics(self, compute_area=False):
         """Get the EDBStatistics object.
 
@@ -3694,15 +3131,15 @@ class Edb:
         --------
         >>> from pyedb import Edb
         >>>edb = Edb()
-        >>> edb.hfss.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
-        >>> edb.hfss.create_edge_port_horizontal(
+        >>> edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
+        >>> edb.excitation_manager.create_edge_port_horizontal(
         >>> ... prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
         >>> ... )
-        >>> edb.hfss.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
+        >>> edb.excitation_manager.create_wave_port(traces[0].id, trace_paths[0][0], "wave_port")
         >>> edb.cutout(["Net1"])
         >>> assert edb.are_port_reference_terminals_connected()
         """
-        all_sources = [i for i in self.excitations.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))]
+        all_sources = [i for i in self.ports.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))]
         all_sources.extend([i for i in self.sources.values()])
         if not all_sources:
             return True
@@ -3762,25 +3199,6 @@ class Edb:
         # If the intersections are non-zero, the terminal references are connected.
         return True if len(iDintersection) > 0 else False
 
-    def new_simulation_configuration(self, filename=None):
-        # type: (str) -> SimulationConfiguration
-        """New SimulationConfiguration Object.
-
-        .. deprecated:: 0.68.0
-        This configuration method is deprecated. Use edbapp.configuration class instead.
-
-        Parameters
-        ----------
-        filename : str, optional
-            Input config file.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.simulation_configuration.SimulationConfiguration`
-        """
-
-        return SimulationConfiguration(filename, self)
-
     @property
     def setups(self):
         """Get the dictionary of all EDB HFSS and SIwave setups.
@@ -3798,7 +3216,7 @@ class Edb:
             if i.GetType().ToString().endswith("kHFSS"):
                 setups[i.GetName()] = HfssSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kSIWave"):
-                setups[i.GetName()] = SiwaveSimulationSetup(self, i)
+                setups[i.GetName()] = SIwaveSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kSIWaveDCIR"):
                 setups[i.GetName()] = SiwaveDCSimulationSetup(self, i)
             elif i.GetType().ToString().endswith("kRaptorX"):
@@ -3848,59 +3266,17 @@ class Edb:
         -------
         Dict[str, :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`]
         """
-        return {name: i for name, i in self.setups.items() if isinstance(i, SiwaveSimulationSetup)}
+        return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
     def create_hfss_setup(self, name=None):
-        """Create an HFSS simulation setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.hfss_simulation_setup_data.HfssSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_hfss_setup("setup1")
-        >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
-        """
-        if name in self.setups:
-            self.logger.info("setup already exists")
-            return False
-        elif not name:
-            name = generate_unique_name("setup")
-        setup = HfssSimulationSetup.create(self, name=name)
-        setup.set_solution_single_frequency("1Ghz")
-        return setup
+        """Create an HFSS simulation setup from a template."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_hfss_setup instead.", DeprecationWarning)
+        return self.simulation_setups.create_hfss_setup(name)
 
     def create_raptorx_setup(self, name=None):
-        """Create an RaptorX simulation setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
-
-        """
-        if name in self.setups:
-            self.logger.error("Setup name already used in the layout")
-            return False
-        version = self.version.split(".")
-        if int(version[0]) >= 2024 and int(version[-1]) >= 2 or int(version[0]) > 2024:
-            setup = RaptorXSimulationSetup(self).create(name)
-            return setup
-        else:
-            self.logger.error("RaptorX simulation only supported with Ansys release 2024R2 and higher")
-            return False
+        """Create a RaptorX simulation setup."""
+        warnings.warn("Deprecated method. Use simulation_setups.create_raptorx_setup instead.", DeprecationWarning)
+        return self.simulation_setups.create_raptor_x_setup(name)
 
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
@@ -3925,67 +3301,22 @@ class Edb:
         return HFSSPISimulationSetup(self, name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
-        >>> setup1.add_frequency_sweep(
-        ...     frequency_sweep=[
-        ...         ["linear count", "0", "1kHz", 1],
-        ...         ["log scale", "1kHz", "0.1GHz", 10],
-        ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
-        ...     ]
-        ... )
-        """
-        if not name:
-            name = generate_unique_name("Siwave_SYZ")
-        if name in self.setups:
-            return False
-        setup = SiwaveSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return self.setups[name]
+        """Create a Siwave SYZ setup from a template."""
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_siwave_syz_setup instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
     def create_siwave_dc_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
-
-        Parameters
-        ----------
-        name : str, optional
-            Setup name.
-
-        Returns
-        -------
-        :class:`legacy.database.edb_data.siwave_simulation_setup_data.SiwaveSYZSimulationSetup`
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb()
-        >>> setup1 = edbapp.create_siwave_dc_setup("setup1")
-        >>> setup1.mesh_bondwires = True
-
-        """
-        if not name:
-            name = generate_unique_name("Siwave_DC")
-        if name in self.setups:
-            return False
-        setup = SiwaveDCSimulationSetup(self, name=name)
-        for k, v in kwargs.items():
-            setattr(setup, k, v)
-        return setup
+        """Create a Siwave DC IR setup from a template."""
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_siwave_dcir_setup instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
 
     @execution_timer("calculate_initial_extent")
     def calculate_initial_extent(self, expansion_factor):
@@ -4002,7 +3333,7 @@ class Edb:
         float
         """
         nets = []
-        for port in self.excitations.values():
+        for port in self.ports.values():
             nets.append(port.net_name)
         for port in self.sources.values():
             nets.append(port.net_name)
@@ -4106,7 +3437,7 @@ class Edb:
                 ]
                 for layer in layers_to_remove:
                     edb.stackup.remove_layer(layer)
-            edb.stackup.stackup_mode = "Laminate"
+            edb.stackup.mode = "Laminate"
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -4115,8 +3446,8 @@ class Edb:
             edb.active_cell.SetName(os.path.splitext(os.path.basename(edb_path))[0])
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
-                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
-                edb_terminals_info = edb.hfss.create_vertical_circuit_port_on_clipped_traces(
+                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.ports.keys())
+                edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,
                     user_defined_extent=zone_info[1],
@@ -4124,8 +3455,8 @@ class Edb:
                 if edb_terminals_info:
                     terminals[os.path.splitext(os.path.basename(edb_path))[0]] = edb_terminals_info
                 project_connexions = self._get_connected_ports_from_multizone_cutout(terminals)
-            edb.save_edb()
-            edb.close_edb()
+            edb.save()
+            edb.close()
         return defined_ports, project_connexions
 
     def _get_connected_ports_from_multizone_cutout(self, terminal_info_dict):
@@ -4767,11 +4098,11 @@ class Edb:
         )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                main_shape=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
+                points=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
             )
             port_poly.scale(1.1)
             pec_poly = cloned_edb.modeler.create_polygon(
-                main_shape=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 
@@ -4838,7 +4169,7 @@ class Edb:
         if not comps_to_export:
             comps_to_export = self.components.components
         for comp in comps_to_export:
-            ocomp = self.components.components[comp]
+            ocomp = self.components.instances[comp]
             gds_component = ET.SubElement(components, "GDS_COMPONENT")
             for pin_name, pin in ocomp.pins.items():
                 pins_position_unit = unit_converter(pin.position, output_units=gds_comps_unit)

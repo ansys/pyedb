@@ -19,9 +19,37 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from typing import TYPE_CHECKING
+import warnings
 
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.geometry.point_data import PointData
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.edb import Edb
+
+
+class SystemObject(object):
+    def __init__(self, pedb: "Edb", edb_object):
+        self._pedb = pedb
+        self.__core = edb_object
+
+    @property
+    def core(self):
+        return self._edb_object
+
+    @core.setter
+    def core(self, value):
+        self._edb_object = value
+
+    @property
+    def _edb_object(self):
+        warnings.warn("Deprecated internal property. Use `core` property instead.", DeprecationWarning)
+        return self.__core
+
+    @_edb_object.setter
+    def _edb_object(self, value):
+        self.__core = value
 
 
 class BBox:
@@ -51,31 +79,27 @@ class BBox:
         return [self.point_1, self.point_2]
 
 
-class ObjBase(object):
+class ObjBase(SystemObject):
     """Manages EDB functionalities for a base object."""
-
-    def __init__(self, pedb, edb_object):
-        self._pedb = pedb
-        self._edb_object = edb_object
 
     @property
     def is_null(self):
         """Flag indicating if this object is null."""
-        return self._edb_object.IsNull()
+        return self.core.IsNull()
 
     @property
     def type(self):
         """Type of the edb object."""
         try:
-            return self._edb_object.GetType()
+            return self.core.GetType()
         except AttributeError:  # pragma: no cover
             return None
 
     @property
     def name(self):
         """Name of the definition."""
-        return self._edb_object.GetName()
+        return self.core.GetName()
 
     @name.setter
     def name(self, value):
-        self._edb_object.SetName(value)
+        self.core.SetName(value)

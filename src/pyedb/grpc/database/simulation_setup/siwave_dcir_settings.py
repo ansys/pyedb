@@ -41,6 +41,11 @@ class SIWaveDCIRSettings:
         return SIWaveDCSettings(self._pedb, self.core)
 
     @property
+    def dc_settings(self) -> SIWaveDCSettings:
+        """Setup dc settings."""
+        return self.dc
+
+    @property
     def dc_advanced(self):
         return SIWaveDCAdvancedSettings(self._pedb, self.core)
 

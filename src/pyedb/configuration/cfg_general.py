@@ -31,7 +31,7 @@ class CfgGeneral:
             self.pedb.design_options.suppress_pads = self.suppress_pads
 
     def get_parameters_from_edb(self):
-        anti_pads_always_on = self.pedb.design_options.antipads_always_on
+        anti_pads_always_on = self.pedb.design_options.anti_pads_always_on
         suppress_pads = self.pedb.design_options.suppress_pads
         data = {"anti_pads_always_on": anti_pads_always_on, "suppress_pads": suppress_pads}
         return data

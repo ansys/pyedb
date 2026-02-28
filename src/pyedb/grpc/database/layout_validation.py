@@ -170,7 +170,7 @@ class LayoutValidation:
         timer_start = self._pedb.logger.reset_timer()
 
         if not net_list:
-            net_list = list(self._pedb.nets.keys())
+            net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         _objects_list = {}
@@ -202,7 +202,7 @@ class LayoutValidation:
             objs = list(obj_dict.values())
             l = len(objs)
             while l > 0:
-                l1 = self._layout_instance.get_connected_objects(objs[0].layout_object_instance, False)
+                l1 = self._layout_instance.get_connected_objects(objs[0].object_instance, False)
                 l1.append(objs[0].id)
                 repetition = False
                 for group in net_groups:
@@ -384,7 +384,7 @@ class LayoutValidation:
         # Automatically assign names to unnamed padstacks
         #     edb.layout_validation.padstacks_no_name(fix=True)
         """
-        pds = self._pedb.layout.padstack_instances.values()
+        pds = self._pedb.layout.padstack_instances
         counts = 0
         via_count = 1
         for obj in pds:

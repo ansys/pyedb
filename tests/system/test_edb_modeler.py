@@ -419,7 +419,7 @@ class TestClass(BaseTestClass):
         # Done
         edbapp = self.edb_examples.create_empty_edb()
         edbapp["$H"] = "0.65mil"
-        assert edbapp["$H"] == 1.651e-5
+        assert edbapp["$H"].value == 1.651e-5
         edbapp["$S_D"] = "10.65mil"
         edbapp["$T"] = "21.3mil"
         edbapp["$Antipad_R"] = "24mil"
@@ -512,11 +512,12 @@ class TestClass(BaseTestClass):
     def test_287_circuit_ports(self):
         edbapp = self.edb_examples.get_si_verse()
         cap = edbapp.components.capacitors["C1"]
-        assert edbapp.siwave.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
+        assert edbapp.excitation_manager.create_circuit_port_on_pin(pos_pin=cap.pins["1"], neg_pin=cap.pins["2"])
         assert edbapp.components.capacitors["C3"].pins
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
     def test_get_primitives_by_point_layer_and_nets(self):
         # Done
         edbapp = self.edb_examples.get_si_verse()
@@ -527,26 +528,6 @@ class TestClass(BaseTestClass):
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(point=[20e-3, 30e-3])
         assert len(primitives) == 3
         edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(True, reason="This test fails randomly, needs to be fixed.")
-    def test_arbitrary_wave_ports(self):
-        target_path_edb = self.edb_examples.copy_test_files_into_local_folder("TEDB/example_arbitrary_wave_ports.aedb")[
-            0
-        ]
-        output_edb = os.path.join(self.edb_examples.test_folder, "wave_ports.aedb")
-        edbapp = self.edb_examples.load_edb(edb_path=target_path_edb)
-        assert edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=os.path.join(self.edb_examples.test_folder, "_work"),
-            output_edb=output_edb,
-            mounting_side="top",
-        )
-        edbapp.close(terminate_rpc_session=False)
-        test_edb = self.edb_examples.load_edb(edb_path=output_edb)
-        assert len(list(test_edb.nets.signal.keys())) == 13
-        assert len(list(test_edb.stackup.layers.keys())) == 3
-        assert "ref" in test_edb.stackup.layers
-        assert len(test_edb.modeler.polygons) == 12
-        test_edb.close(terminate_rpc_session=False)
 
     def test_path_center_line(self):
         edb = self.edb_examples.create_empty_edb()
@@ -585,7 +566,7 @@ class TestClass(BaseTestClass):
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only implemented in gRPC")
     def test_insert_layout_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -607,7 +588,11 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_layout_instance_placement_3d(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -622,7 +607,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_3d_component_placement_3d(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
@@ -639,7 +624,7 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="bug in dotnet core")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
     def test_insert_3d_component_on_layer(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
