@@ -24,24 +24,48 @@ from pyedb.generic.general_methods import ET
 
 
 class SingleEndedNet:
-    """Single ended net class handler."""
+    """Single ended net class handler.
 
-    def __init__(self):
-        self.name = None
-        self.nominal_impedance = None
-        self.warning_threshold = None
-        self.violation_threshold = None
-        self.fext_warning_threshold = None
-        self.fext_violation_threshold = None
-        self.next_warning_threshold = None
-        self.next_violation_threshold = None
-        self.driver_rise_time = None
-        self.voltage = None
-        self.driver_impedance = None
-        self.termination_impedance = None
+    This class manages the configuration for single-ended nets including
+    impedance, thresholds, and driver/termination parameters.
 
-    def extend_xml(self, parent):
-        """Write XMl object section."""
+    Examples
+    --------
+    >>> from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
+    >>> net = SingleEndedNet()
+    >>> net.name = "DDR_DQ0"
+    >>> net.nominal_impedance = 50.0
+    >>> net.warning_threshold = 45.0
+    >>> net.violation_threshold = 40.0
+    >>> net.driver_rise_time = "100ps"
+    >>> net.voltage = 1.2
+
+    """
+
+    def __init__(self) -> None:
+        """Initialize single ended net with default values."""
+        self.name: str | None = None
+        self.nominal_impedance: float | None = None
+        self.warning_threshold: float | None = None
+        self.violation_threshold: float | None = None
+        self.fext_warning_threshold: float | None = None
+        self.fext_violation_threshold: float | None = None
+        self.next_warning_threshold: float | None = None
+        self.next_violation_threshold: float | None = None
+        self.driver_rise_time: str | float | None = None
+        self.voltage: float | None = None
+        self.driver_impedance: float | None = None
+        self.termination_impedance: float | None = None
+
+    def extend_xml(self, parent) -> None:
+        """Write XML object section.
+
+        Parameters
+        ----------
+        parent : xml.etree.ElementTree.Element
+            Parent XML element to extend.
+
+        """
         net = ET.SubElement(parent, "Net")
         if self.name is not None:
             net.set("Name", self.name)

@@ -33,7 +33,6 @@ class Terminal(Connectable):
     def __init__(self, pedb, edb_object=None):
         super().__init__(pedb, edb_object)
         self._reference_object = None
-
         self.__boundary_type_mapping = {
             "InvalidBoundary": self._pedb.core.Cell.Terminal.BoundaryType.InvalidBoundary,
             "PortBoundary": self._pedb.core.Cell.Terminal.BoundaryType.PortBoundary,

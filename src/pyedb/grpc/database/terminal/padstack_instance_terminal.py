@@ -73,28 +73,6 @@ class PadstackInstanceTerminal(Terminal):
         return cls(layout._pedb, edb_terminal_inst)
 
     @property
-    def is_circuit_port(self) -> bool:
-        """Check if the terminal is a circuit port.
-
-        Returns
-        -------
-        bool
-            True if the terminal is a circuit port, False otherwise.
-        """
-        return self.core.is_circuit_port
-
-    @is_circuit_port.setter
-    def is_circuit_port(self, value: bool):
-        """Set whether the terminal is a circuit port.
-
-        Parameters
-        ----------
-        value : bool
-            True to set the terminal as a circuit port, False otherwise.
-        """
-        self.core.is_circuit_port = value
-
-    @property
     def is_reference_terminal(self) -> bool:
         """Check if the terminal is a reference terminal.
 

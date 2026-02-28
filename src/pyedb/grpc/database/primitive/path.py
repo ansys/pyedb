@@ -275,7 +275,7 @@ class Path(Primitive):
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
 
         # if port_type.lower() == "wave":
-        #     return self._pedb.hfss.create_wave_port(
+        #     return self._pedb.excitation_manager.create_wave_port(
         #         self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         #     )
         # else:

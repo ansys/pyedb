@@ -50,7 +50,7 @@ class SIWaveGeneralSettings:
         self.core.pi_slider_pos = value
 
     @property
-    def si_slider_pos(self) -> int:
+    def si_slider_position(self) -> int:
         """Position of the SI slider.
 
         Returns
@@ -60,8 +60,8 @@ class SIWaveGeneralSettings:
         """
         return self.core.si_slider_pos
 
-    @si_slider_pos.setter
-    def si_slider_pos(self, value: int):
+    @si_slider_position.setter
+    def si_slider_position(self, value: int):
         self.core.si_slider_pos = value
 
     @property

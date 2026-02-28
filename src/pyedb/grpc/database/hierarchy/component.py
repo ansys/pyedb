@@ -69,6 +69,28 @@ component_type_mapping = {
 }
 
 
+class ComponentProperty:
+    """Class managing component properties."""
+
+    def __init__(self, core):
+        # Use super().__setattr__ to avoid recursion in __setattr__ if you add it later
+        super().__setattr__("core", core)
+
+    def __getattr__(self, name):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        return getattr(self.core, name)
+
+    def __setattr__(self, name, value):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        setattr(self.core, name, value)
+
+
 class Component:
     """Manages EDB functionalities for components.
 
@@ -88,6 +110,13 @@ class Component:
         self._comp_instance = None
         self._logger = pedb.logger
         self._package_def = None
+
+    @property
+    def pin_pairs(self) -> List[PinPairModel]:
+        """Pinpairs of the model."""
+        if "PinPairModel" in str(self.model):
+            return [PinPairModel(self._pedb, self.model)]
+        return None
 
     @property
     def group_type(self):
@@ -280,7 +309,7 @@ class Component:
         :class:`ComponentProperty <ansys.edb.core.hierarchy.component_property.ComponentProperty>`
 
         """
-        return self.core.component_property
+        return ComponentProperty(self.core.component_property)
 
     @component_property.setter
     def component_property(self, value):
@@ -517,8 +546,6 @@ class Component:
             cmp_property = self.core.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.height = Value(value)
-            cmp_property.solder_ball_property = solder_ball_prop
-            self.core.component_property = cmp_property
 
     @property
     def solder_ball_shape(self) -> str:
@@ -589,6 +616,24 @@ class Component:
             solder_ball_prop.set_diameter(diameter, mid_diameter)
             cmp_property.solder_ball_property = solder_ball_prop
             self.core.component_property = cmp_property
+
+    @property
+    def solder_ball_material(self) -> str:
+        """Solderball material name."""
+        return self.component_property.solder_ball_property.material_name
+
+    @solder_ball_material.setter
+    def solder_ball_material(self, value):
+        self.component_property.solder_ball_property.material_name = value
+
+    @property
+    def uses_solderball(self) -> bool:
+        """Whether if solderball is enabled or not."""
+        return self.component_property.solder_ball_property.uses_solderball
+
+    @uses_solderball.setter
+    def uses_solderball(self, value):
+        self.component_property.solder_ball_property.uses_solderball = value
 
     @property
     def solder_ball_placement(self):
@@ -718,6 +763,114 @@ class Component:
             if result:
                 return result[0]  # -> first pin pair change for managing multi pin pair components
         return 0.0
+
+    @res_value.setter
+    def res_value(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.r_enabled = True
+            rlc.r = Value(value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+
+    @property
+    def rlc_enable(self) -> bool:
+        """RLC enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if RLC is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return [self._rlc[0].r_enabled, self._rlc[0].l_enabled, self._rlc[0].c_enabled]
+        return [False, False, False]
+
+    @property
+    def res_enabled(self) -> bool:
+        """Resistance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if resistor is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].r_enabled
+        return False
+
+    @res_enabled.setter
+    def res_enabled(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.r_enabled = value
+            rlc.r = Value(self.res_value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+
+    @property
+    def cap_enabled(self) -> bool:
+        """Capacitance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if capacitance is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].c_enabled
+        return False
+
+    @cap_enabled.setter
+    def cap_enabled(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.c_enabled = value
+            rlc.c = Value(self.cap_value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
+
+    @property
+    def ind_enabled(self) -> bool:
+        """Inductance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if inductance is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].l_enabled
+        return False
+
+    @ind_enabled.setter
+    def ind_enabled(self, value):  # pragma no cover
+        _rlc = []
+        model = PinPairModel(self._pedb, CorePinPairModel.create())
+        for rlc in self._rlc:
+            rlc.l_enabled = value
+            rlc.l = Value(self.ind_value)
+            _rlc.append(rlc)
+        for ind in range(len(self._pin_pairs)):
+            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
+        comp_prop = self.core.component_property
+        comp_prop.model = model
+        self.core.component_property = comp_prop
 
     @res_value.setter
     def res_value(self, value):  # pragma no cover
@@ -871,7 +1024,7 @@ class Component:
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return (Value(pt1.x), Value(pt1.y)), (Value(pt2.x), Value(pt2.y))
+        return [pt1.x.value, pt1.y.value, pt2.x.value, pt2.y.value]
 
     @property
     def rotation(self) -> float:
@@ -1140,7 +1293,10 @@ class Component:
         comp_prop = self.component_property
         if hasattr(model, "core"):
             model = model.core
-        comp_prop.model = model
+        if hasattr(comp_prop, "core"):
+            comp_prop.core.model = model
+        else:
+            comp_prop.model = model
         self.component_property = comp_prop
         return model
 
@@ -1341,10 +1497,10 @@ class Component:
             bool
         """
         bounding_box = self.bounding_box
-        opening = [bounding_box[0][0] - extra_soldermask_clearance]
-        opening.append(bounding_box[0][1] - extra_soldermask_clearance)
-        opening.append(bounding_box[1][0] + extra_soldermask_clearance)
-        opening.append(bounding_box[1][1] + extra_soldermask_clearance)
+        opening = [bounding_box[0] - extra_soldermask_clearance]
+        opening.append(bounding_box[1] - extra_soldermask_clearance)
+        opening.append(bounding_box[2] + extra_soldermask_clearance)
+        opening.append(bounding_box[3] + extra_soldermask_clearance)
 
         comp_layer = self.layer
         layer_names = list(self._pedb.stackup.layers.keys())
@@ -1408,7 +1564,7 @@ class ICDieProperty:
         Returns
         -------
         str
-            Die type, ``noine``, ``flipchip``, ``wirebond``.
+            Die type, ``none``, ``flipchip``, ``wirebond``.
 
         """
         return self._die_property.die_type.name.lower()

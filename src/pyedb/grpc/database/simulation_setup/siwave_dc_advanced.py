@@ -112,6 +112,22 @@ class SIWaveDCAdvancedSettings:
         self.core.max_num_passes = value
 
     @property
+    def max_passes(self) -> int:
+        """Maximum number of passes for broadband adaptive solution.
+
+        Returns
+        -------
+        int
+            Maximum number of passes.
+
+        """
+        return self.max_num_passes
+
+    @max_passes.setter
+    def max_passes(self, value):
+        self.max_num_passes = value
+
+    @property
     def mesh_bws(self) -> bool:
         """Mesh BWS.
 
