@@ -50,9 +50,7 @@ from ansys.edb.core.layer.layer_collection import (
 from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
 from defusedxml.ElementTree import parse as defused_parse
-import matplotlib.colors as colors
 import numpy as np
-import pandas as pd
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
@@ -291,48 +289,6 @@ class LayerCollection:
         )
         return self.core.add_layer_above(layer.core, base_layer_name)
 
-    def add_document_layer(self, name: str, layer_type: str = "user", **kwargs: Any) -> Optional["Layer"]:
-        """Add a document layer.
-
-        Parameters
-        ----------
-        name : str
-            Name of the layer.
-        layer_type : str, optional
-            Type of the layer. The default is ``"user"``. Options are ``"user"`` and ``"outline"``.
-        **kwargs : dict, optional
-            Additional keyword arguments.
-
-        Returns
-        -------
-        :class:`pyedb.grpc.database.layers.layer.Layer`
-            Layer object created.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb()
-        >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
-        """
-        added_layer = self.add_layer_top(name)
-        added_layer.type = CoreLayerType.USER_LAYER
-        return added_layer
-
-    @property
-    def stackup_layers(self):
-        """Retrieve the dictionary of signal and dielectric layers.
-
-        .. deprecated:: 0.6.61
-            Use :func:`layers` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`]
-            Dictionary of stackup layers.
-        """
-        warnings.warn("Use new property :func:`layers` instead.", DeprecationWarning)
-        return self.layers
-
     @property
     def non_stackup_layers(self) -> Dict[str, Layer]:
         """Retrieve the dictionary of non-stackup layers.
@@ -443,37 +399,6 @@ class LayerCollection:
             obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
         }
 
-    def find_layer_by_name(self, name: str):
-        """Find a layer by its name.
-
-        .. deprecated:: 0.29.0
-            Use :func:`find_by_name` instead.
-
-        Parameters
-        ----------
-        name : str
-            Name of the layer.
-
-        Returns
-        -------
-        :class:`ansys.edb.core.layer.Layer`
-            Layer object found.
-
-        Raises
-        ------
-        ValueError
-            If no layer with the given name is found.
-        """
-        warnings.warn(
-            "`find_layer_by_name` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.find_by_name` instead.",
-            DeprecationWarning,
-        )
-        layer = self.core.find_by_name(name)
-        if layer.is_null:
-            raise ValueError(f"Layer with name '{name}' was not found.")
-        return layer
-
 
 class Stackup:
     """Manages EDB methods for stackup operations.
@@ -574,6 +499,24 @@ class Stackup:
             layer.name: Layer(core=layer)
             for layer in self._pedb.stackup.core.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
         }
+
+    @property
+    def all_layers(self):
+        """Retrieve all the dictionary layers.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.layers.layer.Layer`]
+            Dictionary of all layers.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> all_layers = edb.stackup.all_layers
+        """
+        merged_dict = {**self.layers, **self.non_stackup_layers}
+        return merged_dict
 
     @property
     def thickness(self) -> float:
@@ -867,6 +810,33 @@ class Stackup:
         """
         return self.add_layer(layer_name="Outline", layer_type="outline")
 
+    def add_document_layer(self, name: str, layer_type: str = "user", **kwargs: Any) -> Optional["Layer"]:
+        """Add a document layer.
+
+        Parameters
+        ----------
+        name : str
+            Name of the layer.
+        layer_type : str, optional
+            Type of the layer. The default is ``"user"``. Options are ``"user"`` and ``"outline"``.
+        **kwargs : dict, optional
+            Additional keyword arguments.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.layers.layer.Layer`
+            Layer object created.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb()
+        >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
+        """
+        added_layer = self.add_layer_top(name)
+        added_layer.type = CoreLayerType.USER_LAYER
+        return added_layer
+
     @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
         self,
@@ -947,7 +917,11 @@ class Stackup:
             material_properties = self._pedb.materials.read_syslib_material(material)
             if material_properties:
                 logger.info(f"Material {material} found in syslib. Adding it to aedb project.")
-                materials.add_material(material, **material_properties)
+                if not material.lower() in self._pedb.materials.materials:
+                    materials.add_material(material, **material_properties)
+                else:
+                    material = material.lower()
+                    logger.info(f"Material {material} already exists in aedb project.")
             else:
                 logger.warning(f"Material {material} not found. Check the library and retry.")
 
@@ -1185,36 +1159,15 @@ class Stackup:
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
 
-    def export_stackup(self, fpath, file_format="xml", include_material_with_layer=False):
-        """Export stackup definition to a file.
-
-        .. deprecated:: 0.6.61
-           Use :func:`export` instead.
-
-        Parameters
-        ----------
-        fpath : str
-            File path to export to.
-        file_format : str, optional
-            Format of the file to export. The default is ``"xml"``. Options are:
-            - ``"csv"``
-            - ``"xlsx"``
-            - ``"json"``
-        include_material_with_layer : bool, optional
-            Whether to include the material definition inside layer objects. This parameter is only used
-            when a JSON file is exported. The default is ``False``.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb()
-        >>> edb.stackup.export_stackup("stackup.xml")
-        """
-
-        self._logger.warning("Method export_stackup is deprecated. Use .export.")
-        return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
-
     def _export_layer_stackup_to_csv_xlsx(self, fpath: Optional[str] = None, file_format: Optional[str] = None) -> bool:
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError(
+                "Pandas library is required for workflow. "
+                "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+            )
+
         data = {
             "Type": [],
             "Material": [],
@@ -1334,7 +1287,7 @@ class Stackup:
                     non_stackup_layers.append(cloned_layer)
                     continue
                 if "RadBox" not in cloned_layer.name and not cloned_layer.is_via_layer:
-                    upper_elevation = Value(cloned_layer.upper_elevation) * 1.0e6
+                    upper_elevation = self._pedb.value(cloned_layer.upper_elevation) * 1.0e6
                     updated_lower_el = max_elevation - upper_elevation
                     val = Value(f"{updated_lower_el}um")
                     cloned_layer.lower_elevation = val
@@ -2141,6 +2094,14 @@ class Stackup:
         bool
             ``True`` when successful.
         """
+        try:
+            import pandas as pd
+        except ImportError:
+            raise ImportError(
+                "Pandas library is required for workflow. "
+                "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+            )
+
         df = pd.read_csv(file_path, index_col=0)
 
         for name in self.layers.keys():  # pragma: no cover
@@ -2409,6 +2370,14 @@ class Stackup:
         bool
             ``True`` when successful.
         """
+        try:
+            import matplotlib.colors as colors
+        except ImportError:
+            raise ImportError(
+                "Matplotlib library is required for plotting. "
+                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+            )
+
         tree = defused_parse(file_path)
         root = tree.getroot()
         stackup = root.find("Stackup")

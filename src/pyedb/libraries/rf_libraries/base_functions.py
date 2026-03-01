@@ -167,7 +167,7 @@ class HatchGround:
                 hatched_plan.add_void(void)
         grid.delete()
         if self._edb.grpc:
-            self._edb.modeler._reload_all()  # ->caching will be removed soon
+            self._edb.modeler.clear_cache()  # ->caching will be removed soon
 
     def _add_stripe(self, x0: float, y0: float, x1: float, y1: float) -> None:
         """Create one rectangular copper bar on the GND layer."""
@@ -773,7 +773,7 @@ class RadialStub:
             [self.radius * math.cos(-theta / 2), self.radius * math.sin(-theta / 2)],
             [self.radius * math.cos(theta / 2), self.radius * math.sin(theta / 2)],
         ]
-        self._edb.modeler.create_polygon(main_shape=pts, layer_name=self.layer, net_name=self.net)
+        self._edb.modeler.create_polygon(points=pts, layer_name=self.layer, net_name=self.net)
         # feed
         self._edb.modeler.create_rectangle(
             layer_name=self.layer,
@@ -1056,10 +1056,10 @@ class InterdigitalCapacitor:
         pfx = self.VAR_PREFIX
         eps0 = 8.854e-12
         er = self.substrate.er
-        N = self._edb[f"{pfx}_fingers"]
-        L = self._edb[f"{pfx}_finger_length"]
-        W = self._edb[f"{pfx}_finger_width"]
-        g = self._edb[f"{pfx}_gap"]
+        N = self._edb[f"{pfx}_fingers"].value
+        L = self._edb[f"{pfx}_finger_length"].value
+        W = self._edb[f"{pfx}_finger_width"].value
+        g = self._edb[f"{pfx}_gap"].value
         return (eps0 * er * N * L * W / g) * 1e12
 
     def create(self) -> bool:
@@ -1190,8 +1190,8 @@ class DifferentialTLine:
         float
             Differential impedance in Ohms.
         """
-        w = self._edb["diff_w"]
-        s = self._edb["diff_s"]
+        w = self._edb["diff_w"].value
+        s = self._edb["diff_s"].value
         z0_single = 60.0
         return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * s / w))
 
@@ -1309,7 +1309,7 @@ class MicroStripLine:
 
     @property
     def _ereff(self) -> float:
-        w = self._edb["w"]
+        w = self._edb["w"].value
         er = self.substrate.er
         h = self.substrate.h
 
@@ -1332,7 +1332,7 @@ class MicroStripLine:
         Valid for 0.05 ≤ w/h ≤ 1000 and 1 ≤ εr ≤ 128.
         Source: G. Wheeler, E. Hammerstad & Jensen, IEEE-MTT 1980.
         """
-        w = self._edb["w"]
+        w = self._edb["w"].value
         h = self.substrate.h
         er = self.substrate.er
 

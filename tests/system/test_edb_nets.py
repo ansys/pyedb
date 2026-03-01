@@ -28,7 +28,7 @@ import pytest
 
 from pyedb.generic.general_methods import is_windows
 from tests import conftest
-from tests.conftest import config, local_path, test_subfolder
+from tests.conftest import config, local_path, test_subfolder, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
@@ -36,17 +36,10 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-        self.target_path = target_path
-        self.target_path2 = target_path2
-        self.target_path4 = target_path4
-
-    def test_nets_queries(self, edb_examples):
+    def test_nets_queries(self):
         """Evaluate nets queries"""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.nets.netlist) > 0
         signalnets = edbapp.nets.signal
         assert not signalnets[list(signalnets.keys())[0]].is_power_ground
@@ -74,10 +67,10 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["AVCC_1V3"].extended_net
         edbapp.close(terminate_rpc_session=False)
 
-    def test_nets_get_power_tree(self, edb_examples):
+    def test_nets_get_power_tree(self):
         """Evaluate nets get powertree."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         OUTPUT_NET = "5V"
         GROUND_NETS = ["GND", "PGND"]
         (
@@ -90,19 +83,19 @@ class TestClass(BaseTestClass):
         assert net_group
         edbapp.close(terminate_rpc_session=False)
 
-    def test_nets_delete(self, edb_examples):
+    def test_nets_delete(self):
         """Delete a net."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert "JTAG_TCK" in edbapp.nets.nets
         edbapp.nets.nets["JTAG_TCK"].delete()
         assert "JTAG_TCK" not in edbapp.nets.nets
         edbapp.close(terminate_rpc_session=False)
 
-    def test_nets_classify_nets(self, edb_examples):
+    def test_nets_classify_nets(self):
         """Reassign power based on list of nets."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert "SFPA_SDA" in edbapp.nets.signal
         assert "SFPA_SCL" in edbapp.nets.signal
         assert "SFPA_VCCR" in edbapp.nets.power
@@ -121,53 +114,52 @@ class TestClass(BaseTestClass):
         assert "SFPA_VCCR" in edbapp.nets.power
         edbapp.close(terminate_rpc_session=False)
 
-    def test_nets_arc_data(self, edb_examples):
+    def test_nets_arc_data(self):
         """Evaluate primitive arc data."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs) > 0
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].start
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].end
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="Test slow on windows with grpc")
-    def test_nets_dc_shorts(self, edb_examples):
+    @pytest.mark.skipif(config["use_grpc"], reason="get_connected_object returns empty list, needs investigation.")
+    def test_nets_dc_shorts(self):
         # TODO get_connected_object return empty list.
-        edbapp = edb_examples.get_si_verse()
-        # dc_shorts = edbapp.layout_validation.dc_shorts()
-        # assert dc_shorts
-        # edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
-        # edbapp.layout_validation.illegal_net_names(True)
-        # edbapp.layout_validation.illegal_rlc_values(True)
-        #
-        # # assert len(dc_shorts) == 20
-        # assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
-        # assert ["VDD_DDR", "GND"] in dc_shorts
-        # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
-        # edbapp.nets["DDR4_DM3"].find_dc_short(True)
-        # assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
+        edbapp = self.edb_examples.get_si_verse()
+        dc_shorts = edbapp.layout_validation.dc_shorts()
+        assert dc_shorts
+        edbapp.nets.nets["DDR4_A0"].name = "DDR4$A0"
+        edbapp.layout_validation.illegal_net_names(True)
+        edbapp.layout_validation.illegal_rlc_values(True)
+
+        # assert len(dc_shorts) == 20
+        assert ["SFPA_Tx_Fault", "PCIe_Gen4_CLKREQ_L"] in dc_shorts
+        assert ["VDD_DDR", "GND"] in dc_shorts
+        assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) > 0
+        edbapp.nets["DDR4_DM3"].find_dc_short(True)
+        assert len(edbapp.nets["DDR4_DM3"].find_dc_short()) == 0
         edbapp.close(terminate_rpc_session=False)
 
-    def test_nets_eligible_power_nets(self, edb_examples):
+    def test_nets_eligible_power_nets(self):
         """Evaluate eligible power nets."""
         # Done
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         assert "GND" in [i.name for i in edbapp.nets.eligible_power_nets()]
         edbapp.close(terminate_rpc_session=False)
 
-    def test_nets_merge_polygon(self, edb_examples):
+    def test_nets_merge_polygon(self):
         """Convert paths from net into polygons."""
         # Done
-        source_path = os.path.join(local_path, "example_models", test_subfolder, "test_merge_polygon.aedb")
-        edbapp = edb_examples.load_edb(edb_path=source_path)
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_merge_polygon.aedb")[0]
+        edbapp = self.edb_examples.load_edb(edb_path=source_path)
         assert edbapp.nets.merge_nets_polygons(["net1", "net2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
-    def test_layout_auto_parametrization_0(self, edb_examples):
+    def test_layout_auto_parametrization_0(self):
         # Done
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         parameters = edbapp.auto_parametrize_design(
             layers=True,
             layer_filter="TOP",
@@ -182,20 +174,17 @@ class TestClass(BaseTestClass):
         assert "$TOP_value" in parameters
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
-    def test_layout_auto_parametrization_1(self, edb_examples):
-        # Done
-        edbapp = edb_examples.get_package()
+    def test_layout_auto_parametrization_1(self):
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=True, materials=False, via_holes=False, pads=False, antipads=False, traces=False, via_offset=False
         )
         assert len(list(edbapp.variables.keys())) == len(list(edbapp.stackup.layers.keys()))
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
-    def test_layout_auto_parametrization_2(self, edb_examples):
+    def test_layout_auto_parametrization_2(self):
         # Done
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=True,
@@ -212,50 +201,45 @@ class TestClass(BaseTestClass):
         assert "$sigma_COPPER_delta" in edbapp.variables
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
-    def test_layout_auto_parametrization_3(self, edb_examples):
+    def test_layout_auto_parametrization_3(self):
         # TODO check grpc test is slow.
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=True, via_holes=False, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 18
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
-    def test_layout_auto_parametrization_4(self, edb_examples):
+    def test_layout_auto_parametrization_4(self):
         # TODO check grpc test is slow.
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=True, pads=False, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
-    def test_layout_auto_parametrization_5(self, edb_examples):
+    def test_layout_auto_parametrization_5(self):
         # Done
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Test slow on windows with grpc")
-    def test_layout_auto_parametrization_6(self, edb_examples):
+    def test_layout_auto_parametrization_6(self):
         # Done
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
         edbapp.close()
 
-    @pytest.mark.skipif(conftest.config["use_grpc"], reason="slow")
-    def test_layout_auto_parametrization_7(self, edb_examples):
+    def test_layout_auto_parametrization_7(self):
         # Done
-        edbapp = edb_examples.get_package()
+        edbapp = self.edb_examples.get_package()
         edbapp.auto_parametrize_design(
             layers=False,
             materials=False,

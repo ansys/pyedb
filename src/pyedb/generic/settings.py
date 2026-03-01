@@ -31,6 +31,7 @@ import warnings
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
 
+    CURRENT_STABLE_AEDT_VERSION = 2025.2
     INSTALLED_VERSIONS = None
     INSTALLED_STUDENT_VERSIONS = None
     INSTALLED_CLIENT_VERSIONS = None
@@ -74,9 +75,23 @@ class Settings(object):
         self.logger = None
         self.log_file = None
         self._aedt_version = None
-
+        self.__is_grpc = False
         self.__get_version_information()
         self.__init_logger()
+
+    @property
+    def is_grpc(self):
+        """Whether Edb is launched using grpc or not.
+
+        Returns
+        -------
+        bool
+        """
+        return self.__is_grpc
+
+    @is_grpc.setter
+    def is_grpc(self, value):
+        self.__is_grpc = value
 
     @property
     def edb_environment_variables(self):
@@ -295,7 +310,13 @@ class Settings(object):
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
         if len(self.INSTALLED_VERSIONS):
-            self.LATEST_VERSION = max(standard_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
+            for i in sorted([float(i) for i in standard_versions], reverse=True):
+                if i <= self.CURRENT_STABLE_AEDT_VERSION:
+                    self.LATEST_VERSION = str(i)
+                    break
+            if self.LATEST_VERSION is None:
+                raise RuntimeError(f"No stable version of AEDT is found.")
+
         if len(self.INSTALLED_STUDENT_VERSIONS):
             self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
 

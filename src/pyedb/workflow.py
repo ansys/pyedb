@@ -23,7 +23,13 @@
 from pathlib import Path
 from typing import Union
 
-import pandas as pd
+try:
+    import pandas as pd
+except ImportError:
+    raise ImportError(
+        "Pandas library is required for workflow. "
+        "Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+    )
 
 
 class Workflow:

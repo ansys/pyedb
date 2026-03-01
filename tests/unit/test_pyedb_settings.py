@@ -27,6 +27,7 @@ from pyedb.generic.settings import Settings
 os_environ = {
     "ANSYSEM_ROOT251": "/fake/path251",
     "ANSYSEM_ROOT252": "/fake/path252",
+    "ANSYSEM_ROOT952": "/fake/path952",
     "ANSYSEMSV_ROOT251": "/fake/pathSV251",
     "ANSYSEMSV_ROOT252": "/fake/pathSV252",
     "ANSYSEM_PY_CLIENT_ROOT252": "/fake/path_py_client",
@@ -38,6 +39,7 @@ def test_general():
     settings = Settings()
     settings.specified_version = "2025.1"
     assert settings.INSTALLED_VERSIONS == {
+        "2095.2": "/fake/path952",
         "2025.2": "/fake/path252",
         "2025.1": "/fake/path251",
     }

@@ -151,16 +151,8 @@ class Rectangle(Primitive):
             corner_rad=Value(corner_rad),
             rotation=Value(rotation),
         )
-        # keep cache synced
         new_rect = cls(layout._pedb, edb_object)
-        layout._pedb.modeler._add_primitive(new_rect)
         return new_rect
-
-    def delete(self):
-        """Delete the rectangle primitive from the layout."""
-        # Remove from cache
-        self._pedb.modeler._remove_primitive(self)
-        self.core.delete()
 
     def get_parameters(self):
         """Get coordinates parameters.

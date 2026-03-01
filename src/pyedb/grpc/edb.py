@@ -72,7 +72,11 @@ import time
 import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
+from pyedb.grpc.database.design_options import EdbDesignOptions
+from pyedb.grpc.database.variables import Variable
+
 if TYPE_CHECKING:
+    from pyedb import Edb
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
 import warnings
 from zipfile import ZipFile as Zpf
@@ -83,8 +87,6 @@ from ansys.edb.core.hierarchy.layout_component import (
 )
 import ansys.edb.core.layout.cell
 from ansys.edb.core.layout.cell import DesignMode as CoreDesignMode
-from ansys.edb.core.utility.value import Value as CoreValue
-import rtree
 
 from pyedb.configuration.configuration import Configuration
 from pyedb.generic.constants import unit_converter
@@ -95,6 +97,7 @@ from pyedb.generic.general_methods import (
     is_linux,
     is_windows,
 )
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.components import Components
@@ -105,9 +108,8 @@ from pyedb.grpc.database.layout_validation import LayoutValidation
 from pyedb.grpc.database.modeler import Modeler
 from pyedb.grpc.database.net.differential_pair import DifferentialPairs
 from pyedb.grpc.database.net.extended_net import ExtendedNets
-from pyedb.grpc.database.nets import NetClasses, Nets
 from pyedb.grpc.database.padstacks import Padstacks
-from pyedb.grpc.database.ports.ports import BundleWavePort, CoaxPort, GapPort, WavePort
+from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.primitive.path import Path
@@ -118,9 +120,6 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
 )
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import (
     RaptorXSimulationSetup,
-)
-from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
-    SIWaveCPASimulationSetup,
 )
 from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import (
     SIWaveDCIRSimulationSetup,
@@ -139,11 +138,12 @@ from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.modeler.geometry_operators import GeometryOperators
-from pyedb.workflow import Workflow
 from pyedb.workflows.utilities.cutout import Cutout
 
 os.environ["no_proxy"] = "localhost,127.0.0.1"
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.nets import NetClasses, Nets
 
 
 class Edb(EdbInit):
@@ -203,12 +203,13 @@ class Edb(EdbInit):
     _init_objects: Any
     design_mode: property
 
+    @deprecate_argument_name({"edbversion": "version"})
     def __init__(
         self,
         edbpath: Union[str, Path] = None,
         cellname: str = None,
         isreadonly: bool = False,
-        edbversion: str = None,
+        version: str = None,
         isaedtowned: bool = False,
         oproject=None,
         use_ppe: bool = False,
@@ -218,9 +219,9 @@ class Edb(EdbInit):
         layer_filter: str = None,
         restart_rpc_server=False,
     ):
-        edbversion = get_string_version(edbversion)
+        edbversion = get_string_version(version)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=edbversion)
+        EdbInit.__init__(self, edbversion=version)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -454,13 +455,9 @@ class Edb(EdbInit):
             return None
         return None
 
-    def value(self, val) -> float:
+    def value(self, val) -> Value:
         """Convert a value into a pyedb value."""
-        if isinstance(val, CoreValue):
-            return Value(val)
-        else:
-            context = self.active_cell if not str(val).startswith("$") else self.active_db
-            return Value(CoreValue(val, context), context)
+        return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
 
     @property
     def cell_names(self) -> List[str]:
@@ -474,26 +471,26 @@ class Edb(EdbInit):
         return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
-    def design_variables(self) -> Dict[str, float]:
+    def design_variables(self) -> Dict[str, Variable]:
         """All design variables in active cell.
 
         Returns
         -------
-        dict[str, float]
+        dict[str, Variable]
             Variable names and values.
         """
-        return {i: Value(self.active_cell.get_variable_value(i)) for i in self.active_cell.get_all_variable_names()}
+        return {i: Variable(self.active_cell, i) for i in self.active_cell.get_all_variable_names()}
 
     @property
-    def project_variables(self) -> Dict[str, float]:
+    def project_variables(self) -> Dict[str, Variable]:
         """All project variables in database.
 
         Returns
         -------
-        dict[str, float]
+        dict[str, Variable]
             Variable names and values.
         """
-        return {i: Value(self.active_db.get_variable_value(i)) for i in self.active_db.get_all_variable_names()}
+        return {i: Variable(self.active_db, i) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
@@ -507,12 +504,12 @@ class Edb(EdbInit):
         return LayoutValidation(self)
 
     @property
-    def variables(self) -> Dict[str, float]:
+    def variables(self) -> Dict[str, Variable]:
         """All variables (project + design) in database.
 
         Returns
         -------
-        dict[str, float]
+        dict[str, Variable]
             Combined dictionary of all variables.
         """
         all_vars = dict()
@@ -534,31 +531,33 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    def excitations(self) -> Dict[str, GapPort]:
-        """All layout excitations.
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
         Returns
         -------
-        dict[str, :class:`GapPort <pyedb.grpc.database.ports.ports.GapPort>`]
-            Excitation names and objects.
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
-        terms = [term for term in self.layout.terminals if term.boundary_type == "port"]
-        temp = {}
-        for term in terms:
-            if not term.core.bundle_terminal.is_null:
-                temp[term.name] = BundleWavePort(self, term)
-            else:
-                temp[term.name] = GapPort(self, term)
-        return temp
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
 
     @property
-    def ports(self) -> Dict[str, GapPort]:
-        """All ports in design.
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
         Returns
         -------
-        dict[str, list[:class:`GapPort` or :class:`WavePort` or :class:`CoaxPort`]]
-            Port names and objects.
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
         terminals = [term for term in self.layout.terminals if not getattr(term, "is_reference_terminal", False)]
         ports = {}
@@ -570,6 +569,8 @@ class Edb(EdbInit):
         )
 
         for t in terminals:
+            if t.is_circuit_port:
+                ports[t.name] = CircuitPort(self, t.core)
             if isinstance(t, BundleTerminal):
                 bundle_ter = BundleTerminal(self, t.core)
                 ports[bundle_ter.name] = bundle_ter
@@ -998,6 +999,17 @@ class Edb(EdbInit):
         return ipc_path
 
     @property
+    def layout_bounding_box(self) -> list[float]:
+        """Get the bounding box of the active layout.
+
+        Returns
+        -------
+        list[float]
+            Bounding box coordinates as [xmin, ymin, xmax, ymax].
+        """
+        return self.hfss.get_layout_bounding_box(self.active_layout)
+
+    @property
     def configuration(self) -> Configuration:
         """Project configuration manager.
 
@@ -1092,6 +1104,10 @@ class Edb(EdbInit):
         return self._components
 
     @property
+    def design_options(self):
+        return EdbDesignOptions(self.active_cell)
+
+    @property
     def stackup(self) -> Stackup:
         """Stackup management interface.
 
@@ -1107,6 +1123,22 @@ class Edb(EdbInit):
     @property
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
+        .. deprecated:: 0.70
+           Use: func:`excitation_manager` property instead.
+        Returns
+        -------
+        :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
+            Source and port creation tools.
+        """
+        warnings.warn("Use property excitation_manager instead.", DeprecationWarning)
+
+        if self.active_db:
+            return self._source_excitation
+        return None
+
+    @property
+    def excitation_manager(self):
+        """Source excitation manager.
 
         Returns
         -------
@@ -1170,7 +1202,7 @@ class Edb(EdbInit):
         return self._hfss
 
     @property
-    def nets(self) -> Nets:
+    def nets(self) -> "Nets":
         """Net management interface.
 
         Returns
@@ -1178,12 +1210,14 @@ class Edb(EdbInit):
         :class:`Nets <pyedb.grpc.database.nets.Nets>`
             Net manipulation tools.
         """
+        from pyedb.grpc.database.nets import Nets
+
         if not self._nets and self.active_db:
             self._nets = Nets(self)
         return self._nets
 
     @property
-    def net_classes(self) -> Optional[NetClasses]:
+    def net_classes(self) -> Optional["NetClasses"]:
         """Net class management.
 
         Returns
@@ -1191,6 +1225,8 @@ class Edb(EdbInit):
         :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
             Net classes objects.
         """
+        from pyedb.grpc.database.nets import NetClasses
+
         if self.active_db:
             return NetClasses(self)
         return None
@@ -1232,7 +1268,7 @@ class Edb(EdbInit):
         """
         if not self._modeler and self.active_db:
             self._modeler = Modeler(self)
-            self._modeler._reload_all()  # Reload primitives cache for the new active cell
+            self._modeler.clear_cache()  # Reload primitives cache for the new active cell
         return self._modeler
 
     @property
@@ -1309,7 +1345,12 @@ class Edb(EdbInit):
                         temp.append(Polygon(self, i.layout_obj))
                     else:
                         continue
-        except (AttributeError, RuntimeError, TypeError) as exc:
+        except (
+            AttributeError,
+            RuntimeError,
+            TypeError,
+            ansys.edb.core.inner.exceptions.InvalidArgumentException,
+        ) as exc:
             # Be explicit about expected failure modes and include the exception in the log for easier debugging
             obj_id = getattr(getattr(layout_object_instance, "layout_obj", None), "id", "<unknown>")
             self.logger.warning(
@@ -1466,22 +1507,6 @@ class Edb(EdbInit):
         """
         # return self.core.utility.utility.Command.Execute(func)
         pass
-
-    def import_cadence_file(self, input_brd, work_dir=None, anstranslator_full_path="", use_ppe=False) -> bool:
-        """Import Cadence board file.
-
-        .. deprecated:: 0.50
-        Use :func:`import_layout_file` instead.
-        """
-        if self.import_layout_pcb(
-            input_brd,
-            working_dir=work_dir,
-            anstranslator_full_path=anstranslator_full_path,
-            use_ppe=use_ppe,
-        ):
-            return True
-        else:
-            return False
 
     @deprecate_argument_name({"inputGDS": "input_gds"})
     def import_gds_file(
@@ -2203,7 +2228,7 @@ class Edb(EdbInit):
             True if all port references are connected.
         """
         all_sources: List[Any] = [
-            i for i in self.excitations.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
+            i for i in self.ports.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
         ]
         all_sources.extend(list(self.sources.values()))
         if not all_sources:
@@ -2375,7 +2400,7 @@ class Edb(EdbInit):
         float
         """
         nets = []
-        for port in self.excitations.values():
+        for port in self.ports.values():
             nets.append(self._get_terminal_net_name(port))
         for port in self.sources.values():
             nets.append(self._get_terminal_net_name(port))
@@ -2478,7 +2503,7 @@ class Edb(EdbInit):
                 ]
                 for layer in layers_to_remove:
                     edb.stackup.remove_layer(layer)
-            edb.stackup.stackup_mode = "Laminate"
+            edb.stackup.mode = "Laminate"
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -2487,8 +2512,8 @@ class Edb(EdbInit):
             edb.active_cell.name = os.path.splitext(os.path.basename(edb_path))[0]
             if common_reference_net:
                 signal_nets = list(self.nets.signal.keys())
-                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.excitations.keys())
-                edb_terminals_info = edb.source_excitation.create_vertical_circuit_port_on_clipped_traces(
+                defined_ports[os.path.splitext(os.path.basename(edb_path))[0]] = list(edb.ports.keys())
+                edb_terminals_info = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
                     nets=signal_nets,
                     reference_net=common_reference_net,
                     user_defined_extent=zone_info[1],
@@ -2587,56 +2612,56 @@ class Edb(EdbInit):
 
         """
 
-        warnings.warn("Use create_port from edb.source_excitation.create_port", DeprecationWarning)
-        return self.source_excitation.create_port(terminal, ref_terminal, is_circuit_port, name)
+        warnings.warn("Use create_port from edb.excitation_manager.create_port", DeprecationWarning)
+        return self.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port, name)
 
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
         ..deprecated:: 0.50.0
-           Use :func:`create_voltage_probe` has been moved to edb.source_excitation.create_voltage_probe.
+           Use :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
 
         """
         warnings.warn("Use create_voltage_probe located in edb.source_excitation instead", DeprecationWarning)
-        return self.source_excitation.create_voltage_probe(terminal, ref_terminal)
+        return self.excitation_manager.create_voltage_probe(terminal, ref_terminal)
 
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
         ..deprecated:: 0.50.0
-           Use: func:`create_voltage_source` has been moved to edb.source_excitation.create_voltage_source.
+           Use: func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
 
         """
         warnings.warn(
-            "use create_voltage_source located in edb.source_excitation.create_voltage_source instead",
+            "use create_voltage_source located in edb.excitation_manager.create_voltage_source instead",
             DeprecationWarning,
         )
-        return self.source_excitation.create_voltage_source(terminal, ref_terminal)
+        return self.excitation_manager.create_voltage_source(terminal, ref_terminal)
 
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
         ..deprecated:: 0.50.0
-           Use :func:`create_current_source` has been moved to edb.source_excitation.create_current_source.
+           Use :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
 
         """
         warnings.warn(
-            "use create_current_source located in edb.source_excitation.create_current_source instead",
+            "use create_current_source located in edb.excitation_manager.create_current_source instead",
             DeprecationWarning,
         )
-        return self.source_excitation.create_current_source(terminal, ref_terminal)
+        return self.excitation_manager.create_current_source(terminal, ref_terminal)
 
     def get_point_terminal(self, name, net_name, location, layer):
         """Place terminal between two points.
 
         ..deprecated:: 0.50.0
-           Use: func:`get_point_terminal` has been moved to edb.source_excitation.get_point_terminal.
+           Use: func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
         """
 
         warnings.warn(
-            "use get_point_terminal located in edb.source_excitation.get_point_terminal instead", DeprecationWarning
+            "use get_point_terminal located in edb.excitation_manager.get_point_terminal instead", DeprecationWarning
         )
-        return self.source_excitation.get_point_terminal(name, net_name, location, layer)
+        return self.excitation_manager.get_point_terminal(name, net_name, location, layer)
 
     def auto_parametrize_design(
         self,
@@ -2884,9 +2909,13 @@ class Edb(EdbInit):
             var_y = "via_offset_y"
             if var_y not in self.variables:
                 self.add_design_variable(var_y, 0.0)
+            via_to_parametrize = {}
             for via in self.padstacks.instances.values():
                 if not via.is_pin and (not trace_net_filter or (trace_net_filter and via.net_name in trace_net_filter)):
-                    via.position = [f"{via.position[0]}+via_offset_x", f"{via.position[1]}+via_offset_y"]
+                    via_to_parametrize[via] = via.position_and_rotation
+
+            for via, pos in via_to_parametrize.items():
+                via.position_and_rotation = [f"{pos[0]}+via_offset_x", f"{pos[1]}+via_offset_y", pos[2]]
 
         if expand_polygons_size:
             for poly in self.modeler.polygons:
@@ -2958,6 +2987,14 @@ class Edb(EdbInit):
         bool
             True if successful, False otherwise.
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if not temp_directory:
             self.logger.error("Temp directory must be provided when creating model foe arbitrary wave port")
             return False
@@ -2981,15 +3018,16 @@ class Edb(EdbInit):
             signal_nets = list(self.nets.signal.keys())
 
         used_padstack_defs = []
+        padstack_instances_dict = self.padstacks.instances
         padstack_instances_index = rtree.index.Index()
-        for padstack_inst in list(self.padstacks.instances.values()):
-            if not reference_layer in [padstack_inst.start_layer, padstack_inst.stop_layer]:
-                padstack_inst.delete()
+        for _, inst in padstack_instances_dict.items():
+            if reference_layer not in [inst.start_layer, inst.stop_layer]:
+                inst.delete()
             else:
-                if padstack_inst.net.name in signal_nets:
-                    padstack_instances_index.insert(padstack_inst.edb_uid, padstack_inst.position)
-                    if not padstack_inst.padstack_def.name in used_padstack_defs:
-                        used_padstack_defs.append(padstack_inst.padstack_def.name)
+                if inst.net.name in signal_nets:
+                    padstack_instances_index.insert(inst.edb_uid, inst.position)
+                    if inst.padstack_def.name not in used_padstack_defs:
+                        used_padstack_defs.append(inst.padstack_def.name)
 
         polys = [
             poly
@@ -3007,7 +3045,7 @@ class Edb(EdbInit):
                 void_bbox = void.bbox
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 if included_instances:
-                    void_padstacks.append((void, [self.padstacks.instances[edb_uid] for edb_uid in included_instances]))
+                    void_padstacks.append((void, [padstack_instances_dict[edb_uid] for edb_uid in included_instances]))
 
         if not void_padstacks:
             self.logger.error(
@@ -3096,6 +3134,8 @@ class Edb(EdbInit):
         :class:`Workflow <pyedb.workflow.Workflow>`
             Workflow automation tools.
         """
+        from pyedb.workflow import Workflow
+
         return Workflow(self)
 
     def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
@@ -3221,6 +3261,47 @@ class Edb(EdbInit):
             layout=self.active_layout.core, output_aedb_comp_path=component_path
         )
 
+    def physical_merge(
+        self,
+        merged_edb: Union[str, "Edb"],
+        on_top: bool = True,
+        vector: tuple = (0.0, 0.0),
+        prefix: str = "merged_",
+        show_progress: bool = True,
+    ):
+        """Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
+
+        Parameters
+        ----------
+        merged_edb : str, Edb
+            Edb folder path or The EDB that will be merged into the hosting_edb.
+        on_top : bool, optional
+            If True, the primitives from the merged_edb will be placed on top of the hosting_edb primitives.
+            If False, they will be placed below. Default is True.
+        vector : tuple, optional
+            A tuple (x, y) representing the offset to apply to the primitives from the merged. Default is (0.0, 0.0).
+        prefix : str, optional
+            A prefix to add to the layer names of the merged primitives to avoid name clashes. Default is "merged_."
+        show_progress : bool, optional
+            If True, print progress to stdout during long operations (primitives/padstacks merging). Default is True.
+
+        Returns
+        -------
+        bool
+            True if the merge was successful, False otherwise.
+
+        """
+        from pyedb.workflows.utilities.physical_merge import physical_merge
+
+        return physical_merge(
+            hosting_edb=self,
+            merged_edb=merged_edb,
+            on_top=on_top,
+            vector=vector,
+            prefix=prefix,
+            show_progress=show_progress,
+        )
+
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):
         """Copy Cells from another Edb Database into this Database."""
         edb2 = Edb(edbpath=edb_path, edbversion=self.version)
@@ -3235,6 +3316,8 @@ class Edb(EdbInit):
         high-level helper objects and stores them on the Edb instance so that
         subsequent property accesses return ready-to-use interfaces.
         """
+        from pyedb.grpc.database.nets import Nets
+
         # Core manager objects
         self._components = Components(self)
         layer_collection = self.active_cell.layout.layer_collection
@@ -3249,7 +3332,7 @@ class Edb(EdbInit):
         self._hfss = Hfss(self)
         self._nets = Nets(self)
         self._modeler = Modeler(self)
-        self._modeler._reload_all()  # Reload primitives cache for the new active cell
+        self._modeler.clear_cache()  # Reload primitives cache for the new active cell
         # Materials and source excitation
         self._materials = Materials(self)
         self._source_excitation = SourceExcitation(self)

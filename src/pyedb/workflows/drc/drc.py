@@ -20,29 +20,46 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""" "
-Self-contained DRC engine for PyEDB.
+"""Design Rule Check (DRC) engine for PyEDB.
 
 This module provides a high-performance, multi-threaded design-rule checker
-that runs **inside** an open PyEDB session and validates 50+ industry-standard
-rules (geometry, spacing, manufacturing, high-speed, test).
+that runs inside an open PyEDB session and validates industry-standard rules
+including geometry, spacing, manufacturing, high-speed, and test constraints.
 
-Features
---------
-* Impedance checks via improved analytical formulas (Wheeler, Cohn, Hammerstad-Jensen).
-* Copper-balance by layer or by arbitrary zone polygons.
-* Back-drill stub / depth verification.
-* R-tree spatial index for fast geometry queries.
+The DRC engine features:
 
+- Multi-threaded rule checking using ThreadPoolExecutor
+- R-tree spatial indexing for fast geometry queries
+- Impedance checks via analytical formulas (Wheeler, Cohn, Hammerstad-Jensen)
+- Copper balance verification by layer or zone polygons
+- Back-drill stub and depth verification
+- IPC-D-356A netlist export with DRC annotations
 
 Examples
 --------
+Basic DRC workflow:
+
 >>> import pyedb
 >>> from pyedb.workflows.drc.drc import Drc, Rules
 >>> edb = pyedb.Edb(edbpath="my_board.aedb")
->>> rules = Rules.parse_file("rules.json")  # or Rules.parse_obj(python_dict)
+>>> rules = Rules.parse_file("rules.json")
 >>> drc = Drc(edb)
 >>> violations = drc.check(rules)
+>>> print(f"Found {len(violations)} violations")
+
+Build rules programmatically:
+
+>>> rules = (
+...     Rules()
+...     .add_min_line_width("trace_width", "3.5mil")
+...     .add_min_clearance("clk2data", "4mil", "CLK*", "DATA*")
+...     .add_copper_balance("top_balance", max_percent=10, layers=["TOP"])
+... )
+>>> drc = Drc(edb)
+>>> violations = drc.check(rules)
+
+Export results for fabrication review:
+
 >>> drc.to_ipc356a("fab_review.ipc")
 """
 
@@ -55,30 +72,69 @@ import datetime
 import itertools
 import os
 from queue import Queue
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Set
 
 from pydantic import BaseModel
-from rtree import index as rtree_index
+
+try:
+    from rtree import index as rtree_index
+except ImportError:
+    raise ImportError(
+        "Rtree library is required for spatial indexing. "
+        "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+    )
 
 import pyedb
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class MinLineWidth(BaseModel):
-    """Minimum-line-width rule."""
+    """Minimum trace width constraint rule.
 
-    name: str
-    """Rule identifier (human readable)."""
+    This rule validates that all trace widths meet or exceed a specified
+    minimum value on selected layers.
 
-    value: str
-    """Minimum width with unit, e.g. ``"3.5mil"``."""
+    Attributes
+    ----------
+    name : str
+        Rule identifier for reporting violations.
+    value : str
+        Minimum acceptable width with unit (e.g., ``"3.5mil"``, ``"0.1mm"``).
+
+    Examples
+    --------
+    >>> rule = MinLineWidth(name="signal_width", value="3.5mil")
+    >>> rule.name
+    'signal_width'
+    """
 
     name: str
     value: str
 
 
 class MinClearance(BaseModel):
-    """Minimum clearance between two nets."""
+    """Minimum spacing constraint between nets.
+
+    This rule validates that spacing between specified nets meets or exceeds
+    a minimum clearance value. Supports wildcard matching for net names.
+
+    Attributes
+    ----------
+    name : str
+        Rule identifier for reporting violations.
+    value : str
+        Minimum acceptable clearance with unit (e.g., ``"4mil"``, ``"0.15mm"``).
+    net1 : str
+        First net name or wildcard pattern (``"*"`` matches all nets).
+    net2 : str
+        Second net name or wildcard pattern (``"*"`` matches all nets).
+
+    Examples
+    --------
+    >>> rule = MinClearance(name="clk2data", value="4mil", net1="CLK*", net2="DATA*")
+    >>> rule.net1
+    'CLK*'
+    """
 
     name: str
     value: str
@@ -87,121 +143,220 @@ class MinClearance(BaseModel):
 
 
 class MinAnnularRing(BaseModel):
-    """Minimum annular ring for drilled holes."""
+    """Minimum annular ring constraint for drilled holes.
+
+    This rule validates that the copper ring around drilled holes (vias, pins)
+    meets a minimum width requirement.
+
+    Attributes
+    ----------
+    name : str
+        Rule identifier for reporting violations.
+    value : str
+        Minimum acceptable ring width with unit (e.g., ``"2mil"``, ``"0.05mm"``).
+
+    Examples
+    --------
+    >>> rule = MinAnnularRing(name="via_ring", value="2mil")
+    >>> rule.value
+    '2mil'
+    """
 
     name: str
     value: str
 
 
 class DiffPair(BaseModel):
-    """Differential-pair definition."""
+    """Differential pair net definition.
+
+    Defines a single differential pair consisting of positive and negative nets.
+
+    Attributes
+    ----------
+    positive : str
+        Positive net name in the differential pair.
+    negative : str
+        Negative net name in the differential pair.
+
+    Examples
+    --------
+    >>> pair = DiffPair(positive="USB_DP", negative="USB_DN")
+    >>> pair.positive
+    'USB_DP'
+    """
 
     positive: str
     negative: str
 
 
 class DiffPairLengthMatch(BaseModel):
-    """Length-matching rule for differential pairs."""
+    """Length matching constraint for differential pairs.
+
+    This rule validates that the length difference between positive and
+    negative traces in differential pairs stays within tolerance.
+
+    Attributes
+    ----------
+    name : str
+        Rule identifier for reporting violations.
+    tolerance : str
+        Maximum allowed length difference with unit (e.g., ``"0.1mm"``, ``"5mil"``).
+    pairs : list of DiffPair
+        List of differential pairs to validate.
+
+    Examples
+    --------
+    >>> pair1 = DiffPair(positive="USB_DP", negative="USB_DN")
+    >>> rule = DiffPairLengthMatch(name="usb_match", tolerance="0.1mm", pairs=[pair1])
+    >>> rule.tolerance
+    '0.1mm'
+    """
 
     name: str
     tolerance: str
-    pairs: List[DiffPair]
+    pairs: list[DiffPair]
 
 
 class BackDrillStubLength(BaseModel):
-    """Maximum allowed back-drill stub length."""
+    """Maximum back-drill stub length constraint.
+
+    This rule validates that remaining stub length after back-drilling
+    stays below a maximum value to minimize signal reflections.
+
+    Attributes
+    ----------
+    name : str
+        Rule identifier for reporting violations.
+    value : str
+        Maximum allowed stub length with unit (e.g., ``"6mil"``, ``"0.15mm"``).
+
+    Examples
+    --------
+    >>> rule = BackDrillStubLength(name="max_stub", value="6mil")
+    >>> rule.value
+    '6mil'
+    """
 
     name: str
     value: str
 
 
 class CopperBalance(BaseModel):
-    """Copper-density balance rule."""
+    """Copper density balance constraint.
 
-    name: str
-    max_percent: int
-    layers: List[str]
-
-
-class Rules(BaseModel):
-    """
-    Centralised, serialisable container for **all** design-rule categories
-    supported by the PyEDB DRC engine.
-
-    The class is a thin ``pydantic`` model that provides:
-
-    * JSON/YAML round-trip via ``parse_file``, ``parse_obj``, ``model_dump``,
-      ``model_dump_json``.
-    * Type-safe, API to incrementally **build** rule decks without
-      manipulating raw dictionaries.
-
-
-    Examples
-    --------
-    >>> from pyedb.workflows.drc.drc import Rules
-    >>>
-    >>> rules = (
-    ...     Rules()
-    ...     .add_min_line_width("pwr", "15 mil")
-    ...     .add_min_clearance("clk2data", "4 mil", "CLK*", "DATA*")
-    ...     .add_min_annular_ring("via5", "5 mil")
-    ...     .add_diff_pair_length_match("usb", tolerance="0.1 mm", pairs=[("USB_P", "USB_N")])
-    ...     .add_copper_balance("top_bal", max_percent=10, layers=["TOP"])
-    ... )
-    >>> rules.model_dump_json(indent=2)
-    >>> rules.write_json("my_rules.json")
+    This rule validates that copper distribution across layers stays within
+    acceptable balance limits to prevent warping during fabrication.
 
     Attributes
     ----------
-    min_line_width : List[:class:`MinLineWidth`]
-        Minimum acceptable trace width per layer or globally.
-    min_clearance : List[:class:`MinClearance`]
-        Spacing requirements between nets (wild-cards allowed).
-    min_annular_ring : List[:class:`MinAnnularRing`]
-        Minimum annular ring for drilled holes.
-    diff_pair_length_match : List[:class:`DiffPairLengthMatch`]
-        Length-matching constraints for differential pairs.
-    back_drill_stub_length : List[:class:`BackDrillStubLength`]
-        Maximum allowed back-drill stub length.
-    copper_balance : List[:class:`CopperBalance`]
-        Copper-density balance limits per layer or zone.
-    """  # noqa: E501
+    name : str
+        Rule identifier for reporting violations.
+    max_percent : int
+        Maximum allowed imbalance percentage (e.g., ``15`` for 15%).
+    layers : list of str
+        Layer names to check for balance.
 
-    min_line_width: List[MinLineWidth] = []
-    min_clearance: List[MinClearance] = []
-    min_annular_ring: List[MinAnnularRing] = []
-    diff_pair_length_match: List[DiffPairLengthMatch] = []
-    back_drill_stub_length: List[BackDrillStubLength] = []
-    copper_balance: List[CopperBalance] = []
+    Examples
+    --------
+    >>> rule = CopperBalance(name="top_balance", max_percent=10, layers=["TOP"])
+    >>> rule.max_percent
+    10
+    """
+
+    name: str
+    max_percent: int
+    layers: list[str]
+
+
+class Rules(BaseModel):
+    """Centralized container for all design rule categories.
+
+    This class provides a type-safe, serializable container for design rules
+    with JSON/YAML round-trip support and a fluent API for building rule decks.
+
+    Attributes
+    ----------
+    min_line_width : list of MinLineWidth
+        Minimum acceptable trace width rules per layer or globally.
+    min_clearance : list of MinClearance
+        Spacing requirements between nets (wildcards allowed).
+    min_annular_ring : list of MinAnnularRing
+        Minimum annular ring requirements for drilled holes.
+    diff_pair_length_match : list of DiffPairLengthMatch
+        Length matching constraints for differential pairs.
+    back_drill_stub_length : list of BackDrillStubLength
+        Maximum allowed back-drill stub length constraints.
+    copper_balance : list of CopperBalance
+        Copper density balance limits per layer or zone.
+
+    Examples
+    --------
+    Build rules programmatically:
+
+    >>> rules = (
+    ...     Rules()
+    ...     .add_min_line_width("pwr", "15mil")
+    ...     .add_min_clearance("clk2data", "4mil", "CLK*", "DATA*")
+    ...     .add_min_annular_ring("via5", "5mil")
+    ...     .add_copper_balance("top_bal", max_percent=10, layers=["TOP"])
+    ... )
+
+    Load from JSON file:
+
+    >>> rules = Rules.parse_file("my_rules.json")
+
+    Export to JSON:
+
+    >>> rules.model_dump_json(indent=2)
+    """
+
+    min_line_width: list[MinLineWidth] = []
+    min_clearance: list[MinClearance] = []
+    min_annular_ring: list[MinAnnularRing] = []
+    diff_pair_length_match: list[DiffPairLengthMatch] = []
+    back_drill_stub_length: list[BackDrillStubLength] = []
+    copper_balance: list[CopperBalance] = []
 
     # ------------------------------------------------------------------
     # Serialization helpers
     # ------------------------------------------------------------------
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Rules":
-        """
-        Alias for :meth:`model_validate <pydantic.BaseModel.model_validate>`.
+        """Create Rules instance from dictionary.
 
         Parameters
         ----------
-        data
-            Dictionary produced by ``json.load``, ``yaml.safe_load``, etc.
+        data : dict
+            Dictionary produced by ``json.load()``, ``yaml.safe_load()``, etc.
 
         Returns
         -------
         Rules
-            Validated instance ready for :meth:`Drc.check`.
+            Validated instance ready for ``Drc.check()``.
+
+        Examples
+        --------
+        >>> import json
+        >>> with open("rules.json") as f:
+        ...     data = json.load(f)
+        >>> rules = Rules.from_dict(data)
         """
         return cls.model_validate(data)
 
     def to_dict(self) -> dict[str, Any]:
-        """
-        Alias for :meth:`model_dump <pydantic.BaseModel.model_dump>`.
+        """Convert Rules to dictionary.
 
         Returns
         -------
         dict
-            JSON-serialisable dictionary.
+            JSON-serializable dictionary.
+
+        Examples
+        --------
+        >>> rules = Rules().add_min_line_width("trace", "3mil")
+        >>> data = rules.to_dict()
+        >>> "min_line_width" in data
+        True
         """
         return self.model_dump()
 
@@ -214,23 +369,28 @@ class Rules(BaseModel):
         value: str,
         layers: list[str] | None = None,
     ) -> "Rules":
-        """
-        Append a minimum-line-width rule.
+        """Append a minimum line width rule.
 
         Parameters
         ----------
         name : str
-            Rule identifier
+            Rule identifier for reporting.
         value : str
-            Minimum width with unit, e.g. ``"3.5mil"``.
-        layers : list[str], optional
-            List of layer names to apply the rule to.  If ``None``,
-            applies to all signal layers.
+            Minimum width with unit (e.g., ``"3.5mil"``, ``"0.1mm"``).
+        layers : list of str or None, optional
+            Layer names to apply rule to. If ``None``, applies to all
+            signal layers. The default is ``None``.
 
         Returns
         -------
         Rules
-            Self to enable method chaining.
+            Self for method chaining.
+
+        Examples
+        --------
+        >>> rules = Rules().add_min_line_width("trace_width", "3.5mil")
+        >>> len(rules.min_line_width)
+        1
         """
         rule = MinLineWidth(name=name, value=value)
         if layers is not None:
@@ -245,43 +405,53 @@ class Rules(BaseModel):
         net1: str,
         net2: str,
     ) -> "Rules":
-        """
-        Append a minimum-clearance rule between two nets (wild-cards allowed).
+        """Append a minimum clearance rule between nets.
 
         Parameters
         ----------
         name : str
-            Rule identifier.
+            Rule identifier for reporting.
         value : str
-            Minimum clearance with unit, e.g. ``"4mil"``.
+            Minimum clearance with unit (e.g., ``"4mil"``, ``"0.15mm"``).
         net1 : str
-            First net name or wild-card (``"*"``).
+            First net name or wildcard (``"*"`` matches all).
         net2 : str
-            Second net name or wild-card (``"*"``).
+            Second net name or wildcard (``"*"`` matches all).
 
         Returns
         -------
         Rules
-            Self to enable method chaining.
+            Self for method chaining.
+
+        Examples
+        --------
+        >>> rules = Rules().add_min_clearance("clk2data", "4mil", "CLK*", "DATA*")
+        >>> rules.min_clearance[0].net1
+        'CLK*'
         """
         self.min_clearance.append(MinClearance(name=name, value=value, net1=net1, net2=net2))
         return self
 
     def add_min_annular_ring(self, name: str, value: str) -> "Rules":
-        """
-        Append a minimum-annular-ring rule for drilled holes.
+        """Append a minimum annular ring rule for drilled holes.
 
         Parameters
         ----------
         name : str
-            Rule identifier.
+            Rule identifier for reporting.
         value : str
-            Minimum annular ring with unit, e.g. ``"2mil"``.
+            Minimum ring width with unit (e.g., ``"2mil"``, ``"0.05mm"``).
 
         Returns
         -------
         Rules
-            Self to enable method chaining.
+            Self for method chaining.
+
+        Examples
+        --------
+        >>> rules = Rules().add_min_annular_ring("via_ring", "2mil")
+        >>> rules.min_annular_ring[0].value
+        '2mil'
         """
         self.min_annular_ring.append(MinAnnularRing(name=name, value=value))
         return self
@@ -292,42 +462,52 @@ class Rules(BaseModel):
         tolerance: str,
         pairs: list[tuple[str, str]],
     ) -> "Rules":
-        """
-        Append a length-matching rule for differential pairs.
+        """Append a differential pair length matching rule.
 
         Parameters
         ----------
         name : str
-            Rule identifier.
+            Rule identifier for reporting.
         tolerance : str
-            Maximum allowed length difference with unit, e.g. ``"0.1mm"``.
-        pairs : list[tuple[str, str]]
-            List of differential pairs as tuples of
+            Maximum allowed length difference with unit (e.g., ``"0.1mm"``).
+        pairs : list of tuple[str, str]
+            List of (positive_net, negative_net) tuples.
 
         Returns
         -------
         Rules
-            Self to enable method chaining.
+            Self for method chaining.
+
+        Examples
+        --------
+        >>> rules = Rules().add_diff_pair_length_match("usb_match", tolerance="0.1mm", pairs=[("USB_DP", "USB_DN")])
+        >>> rules.diff_pair_length_match[0].tolerance
+        '0.1mm'
         """
         dpairs = [DiffPair(positive=p, negative=n) for p, n in pairs]
         self.diff_pair_length_match.append(DiffPairLengthMatch(name=name, tolerance=tolerance, pairs=dpairs))
         return self
 
     def add_back_drill_stub_length(self, name: str, value: str) -> "Rules":
-        """
-        Append a maximum-allowed back-drill stub-length rule.
+        """Append a maximum back-drill stub length rule.
 
         Parameters
         ----------
         name : str
-            Rule identifier.
+            Rule identifier for reporting.
         value : str
-            Maximum allowed stub length with unit, e.g. ``"6mil"``.
+            Maximum allowed stub length with unit (e.g., ``"6mil"``).
 
         Returns
         -------
         Rules
-            Self to enable method chaining.
+            Self for method chaining.
+
+        Examples
+        --------
+        >>> rules = Rules().add_back_drill_stub_length("max_stub", "6mil")
+        >>> rules.back_drill_stub_length[0].value
+        '6mil'
         """
         self.back_drill_stub_length.append(BackDrillStubLength(name=name, value=value))
         return self
@@ -338,56 +518,93 @@ class Rules(BaseModel):
         max_percent: int,
         layers: list[str],
     ) -> "Rules":
-        """
-        Append a copper-density balance rule.
+        """Append a copper density balance rule.
 
         Parameters
         ----------
         name : str
-            Rule identifier.
+            Rule identifier for reporting.
         max_percent : int
-            Maximum allowed copper imbalance in percent (e.g. ``15`` for 15%).
-        layers : list[str]
-            List of layer names to apply the rule to.
+            Maximum allowed imbalance percentage (e.g., ``15`` for 15%).
+        layers : list of str
+            Layer names to check for balance.
 
         Returns
         -------
         Rules
-            Self to enable method chaining.
+            Self for method chaining.
+
+        Examples
+        --------
+        >>> rules = Rules().add_copper_balance("top_bal", max_percent=10, layers=["TOP"])
+        >>> rules.copper_balance[0].max_percent
+        10
         """
         self.copper_balance.append(CopperBalance(name=name, max_percent=max_percent, layers=layers))
         return self
 
 
 class Drc:
-    """
-    Lightweight, high-accuracy DRC engine that runs **inside** an open PyEDB session.
+    """High-performance DRC engine for PyEDB.
 
-    The engine is **thread-safe** and uses an R-tree spatial index for
-    scalable geometry queries.  All rule checks are parallelised with
-    `concurrent.futures.ThreadPoolExecutor`.
+    This class provides a multi-threaded design rule checker that runs inside
+    an open PyEDB session. It uses R-tree spatial indexing for efficient
+    geometry queries and parallelizes all rule checks using ThreadPoolExecutor.
 
     Parameters
     ----------
     edb : pyedb.Edb
-        Active EDB session (must already be open).
+        Active EDB session that must already be open.
+
+    Attributes
+    ----------
+    edb : pyedb.Edb
+        Reference to the EDB instance.
+    violations : list of dict
+        List of violation dictionaries populated by ``check()``.
+    idx_primitives : rtree.index.Index
+        R-tree spatial index for primitive geometries.
+    idx_vias : rtree.index.Index
+        R-tree spatial index for via locations.
+    idx_components : rtree.index.Index
+        R-tree spatial index for component bounding boxes.
 
     Examples
     --------
+    Basic DRC workflow:
+
+    >>> import pyedb
+    >>> from pyedb.workflows.drc.drc import Drc, Rules
     >>> edb = pyedb.Edb("my_board.aedb")
-    >>> rules = Rules.load("rules.json")
+    >>> rules = Rules.parse_file("rules.json")
     >>> drc = Drc(edb)
     >>> violations = drc.check(rules)
+    >>> print(f"Found {len(violations)} violations")
+
+    Export to IPC-356A format:
+
     >>> drc.to_ipc356a("review.ipc")
     """
 
     def __init__(self, edb: pyedb.Edb):
+        """Initialize the DRC engine with an EDB instance.
+
+        Parameters
+        ----------
+        edb : pyedb.Edb
+            Active EDB session that must already be open.
+        """
         self.edb = edb
-        self.violations: List[Dict[str, Any]] = []
+        self.violations: list[dict[str, Any]] = []
         self._build_spatial_index()
 
     # Spatial index (R-tree)
     def _build_spatial_index(self) -> None:
+        """Build R-tree spatial indices for fast geometry queries.
+
+        Creates three separate indices for primitives, vias, and components
+        to enable efficient proximity and intersection queries.
+        """
         self.idx_primitives = rtree_index.Index()
         self.idx_vias = rtree_index.Index()
         self.idx_components = rtree_index.Index()
@@ -400,28 +617,33 @@ class Drc:
         for i, comp in enumerate(self.edb.components.instances.values()):
             self.idx_components.insert(i, comp.bounding_box)
 
-    def check(self, rules: Rules) -> List[Dict[str, Any]]:
-        """
-        Run **all** rules and return a list of violations.
+    def check(self, rules: Rules) -> list[dict[str, Any]]:
+        """Run all rules and return a list of violations.
 
-        Rules are dispatched to the appropriate internal handler
-        (`_rule_*`) automatically.  The method is thread-safe and
-        re-entrant; successive calls **overwrite** previous results.
+        This method dispatches each rule to its appropriate handler and
+        collects all violations. Successive calls overwrite previous results.
 
         Parameters
         ----------
         rules : Rules
-            Validated rule container.
+            Validated rule container with design constraints.
 
         Returns
         -------
-        list[dict]
-            Each dictionary describes a single violation and contains at
-            minimum the keys:
+        list of dict
+            Each dictionary describes a single violation with keys:
 
-            * ``rule`` – rule type (``minLineWidth``, ``minClearance``, …)
-            * ``limit_um`` – limit value in micrometres
-            * Additional keys are rule-specific (``layer``, ``net1``, ``primitive``, …)
+            - ``rule`` : Rule type (e.g., ``"minLineWidth"``)
+            - ``limit_um`` : Limit value in micrometers
+            - Additional rule-specific keys (``layer``, ``net1``, ``primitive``, etc.)
+
+        Examples
+        --------
+        >>> rules = Rules().add_min_line_width("trace", "3.5mil")
+        >>> drc = Drc(edb)
+        >>> violations = drc.check(rules)
+        >>> for v in violations:
+        ...     print(f"{v['rule']}: {v}")
         """
         self.violations.clear()
 
@@ -435,14 +657,31 @@ class Drc:
         return self.violations
 
     def _noop(self, rule):
+        """Placeholder for unimplemented rule handlers."""
         raise NotImplementedError(f"Rule handler for '{rule.name}' not implemented. ")
 
     # Geometry / Manufacturing Rules
 
     def _rule_min_line_width(self, rule: MinLineWidth, max_workers: int = None):
-        """
-        Multi-threaded, thread-safe min-line-width check.
-        Extracts EDB data in single-thread, processes in parallel.
+        """Check minimum line width rule across all path primitives.
+
+        This is a multi-threaded check that extracts EDB data in a single
+        thread, then processes paths in parallel across available cores.
+
+        Parameters
+        ----------
+        rule : MinLineWidth
+            Rule configuration with minimum width constraint.
+        max_workers : int or None, optional
+            Number of worker threads. If ``None``, uses CPU count minus 1.
+            The default is ``None``.
+
+        Examples
+        --------
+        >>> rule = MinLineWidth(name="trace_width", value="3.5mil")
+        >>> drc._rule_min_line_width(rule)
+        >>> len(drc.violations)
+        5
         """
         # === Detect available cores ===
         if max_workers is None:
@@ -489,8 +728,32 @@ class Drc:
     def _rule_min_clearance(
         self, rule: MinClearance, max_workers: int = None, chunked_precompute: bool = False, chunk_size: int = 5000
     ):
-        """
-        High-performance min-clearance check with auto core detection.
+        """Check minimum clearance between nets using spatial indexing.
+
+        This is a high-performance check with automatic core detection that
+        precomputes spatial intersections and then validates clearances in
+        parallel threads.
+
+        Parameters
+        ----------
+        rule : MinClearance
+            Rule configuration with minimum clearance constraint.
+        max_workers : int or None, optional
+            Number of worker threads. If ``None``, uses CPU count minus 1.
+            The default is ``None``.
+        chunked_precompute : bool, optional
+            If ``True``, precompute spatial index intersections in chunks to
+            reduce memory usage. The default is ``False``.
+        chunk_size : int, optional
+            Size of chunks for precomputation when ``chunked_precompute`` is
+            ``True``. The default is ``5000``.
+
+        Examples
+        --------
+        >>> rule = MinClearance(name="clk2data", value="4mil", net1="CLK*", net2="DATA*")
+        >>> drc._rule_min_clearance(rule)
+        >>> len(drc.violations)
+        3
         """
         if max_workers is None:
             total_cores = os.cpu_count() or 4  # fallback to 4 if detection fails
@@ -503,10 +766,10 @@ class Drc:
         all_nets = sorted(set(nets1 + nets2))
 
         # === LAYER 1: single-threaded EDB extraction ===
-        primitives_by_net_layer: Dict[str, Dict[str, List[dict]]] = {}
-        primitive_points_map: Dict[int, List[tuple]] = {}  # prim_id -> points
-        prim_bboxes: Dict[int, List[float]] = {}  # prim_id -> [minx,miny,maxx,maxy]
-        prim_to_net: Dict[int, str] = {}  # prim_id -> net name
+        primitives_by_net_layer: dict[str, dict[str, list[dict]]] = {}
+        primitive_points_map: dict[int, list[tuple]] = {}  # prim_id -> points
+        prim_bboxes: dict[int, list[float]] = {}  # prim_id -> [minx,miny,maxx,maxy]
+        prim_to_net: dict[int, str] = {}  # prim_id -> net name
 
         # Extract primitives (only basic python types)
         for net in all_nets:
@@ -534,7 +797,7 @@ class Drc:
 
         # === SINGLE-THREADED: Precompute index intersections for each primitive id ===
         # intersections_map[prim_id] = set(intersecting_prim_ids)
-        intersections_map: Dict[int, Set[int]] = {}
+        intersections_map: dict[int, Set[int]] = {}
 
         idx = self.idx_primitives  # Rtree index (not thread-safe)
         if not chunked_precompute:
@@ -613,9 +876,26 @@ class Drc:
         self.violations = violations
 
     def _rule_min_annular_ring(self, rule: MinAnnularRing, max_workers: int = None):
-        """
-        Thread-safe min-annular-ring check with auto core detection.
-        Skips padstack instances without a hole.
+        """Check minimum annular ring for drilled padstacks.
+
+        This thread-safe check validates that copper rings around drilled holes
+        meet minimum width requirements. Automatically skips padstacks without
+        holes (non-drilled).
+
+        Parameters
+        ----------
+        rule : MinAnnularRing
+            Rule configuration with minimum ring width constraint.
+        max_workers : int or None, optional
+            Number of worker threads. If ``None``, uses CPU count minus 1.
+            The default is ``None``.
+
+        Examples
+        --------
+        >>> rule = MinAnnularRing(name="via_ring", value="2mil")
+        >>> drc._rule_min_annular_ring(rule)
+        >>> len(drc.violations)
+        2
         """
         # === Determine optimal worker count ===
         if max_workers is None:
@@ -627,7 +907,9 @@ class Drc:
         # === STEP 1: Extract all EDB data in single-thread ===
         padstacks_definitions = self.edb.padstacks.definitions
         via_data = []
-        for via in self.edb.padstacks.instances.values():
+        for via in self.edb.layout.padstack_instances:
+            if not via.padstack_definition in padstacks_definitions:
+                continue
             via_def = padstacks_definitions[via.padstack_definition]
 
             # Skip if no hole properties (non-drilled padstack)
@@ -669,36 +951,72 @@ class Drc:
         self.violations = list(results_queue.queue)
 
     def _rule_copper_balance(self, rule: CopperBalance):
+        """Check copper density balance across layers.
+
+        This rule validates that copper distribution stays within acceptable
+        balance limits to prevent board warping during fabrication.
+
+        Parameters
+        ----------
+        rule : CopperBalance
+            Rule configuration with balance limits and target layers.
+
+        Examples
+        --------
+        >>> rule = CopperBalance(name="top_bal", max_percent=10, layers=["TOP"])
+        >>> drc._rule_copper_balance(rule)
+        >>> len(drc.violations)
+        1
+        """
         max_imbalance = self.edb.value(rule.max_percent)
 
         # Snapshot data
         primitives_by_layer = dict(self.edb.modeler.primitives_by_layer)
         layout_outline = [prim for prim in self.edb.modeler.primitives if prim.layer.name.lower() == "outline"]
-        if not layout_outline:
-            raise ValueError("No outline primitive found in the layout.")
-        if self.edb.grpc:
-            area_board = layout_outline[0].polygon_data.area()
-        else:
-            area_board = layout_outline[0].polygon_data.area
-
-        for layer, prim_list in primitives_by_layer.items():
+        if layout_outline:
             if self.edb.grpc:
-                area_copper = sum(prim.polygon_data.area() for prim in prim_list)
+                area_board = layout_outline[0].polygon_data.area()
             else:
-                area_copper = sum(prim.polygon_data.area for prim in prim_list)
-            imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
-            if imbalance > max_imbalance:
-                self.violations.append(
-                    {
-                        "rule": "copper_balance",
-                        "layer": layer,
-                        "imbalance_pct": imbalance,
-                        "limit_pct": max_imbalance,
-                    }
-                )
+                area_board = layout_outline[0].polygon_data.area
+
+            for layer, prim_list in primitives_by_layer.items():
+                if self.edb.grpc:
+                    area_copper = sum(prim.polygon_data.area() for prim in prim_list)
+                else:
+                    area_copper = sum(prim.polygon_data.area for prim in prim_list)
+                imbalance = abs(area_copper - area_board / 2) / (area_board / 2) * 100
+                if imbalance > max_imbalance:
+                    self.violations.append(
+                        {
+                            "rule": "copper_balance",
+                            "layer": layer,
+                            "imbalance_pct": imbalance,
+                            "limit_pct": max_imbalance,
+                        }
+                    )
+        else:
+            self.edb.logger.warning("No outline primitive found in the layout.")
 
     # High-speed rules
     def _rule_diff_pair_length_match(self, rule: DiffPairLengthMatch):
+        """Check differential pair length matching constraints.
+
+        This multi-threaded check validates that positive and negative traces
+        in differential pairs have matched lengths within tolerance.
+
+        Parameters
+        ----------
+        rule : DiffPairLengthMatch
+            Rule configuration with tolerance and pair definitions.
+
+        Examples
+        --------
+        >>> pair = DiffPair(positive="USB_DP", negative="USB_DN")
+        >>> rule = DiffPairLengthMatch(name="usb", tolerance="0.1mm", pairs=[pair])
+        >>> drc._rule_diff_pair_length_match(rule)
+        >>> len(drc.violations)
+        0
+        """
         tol = self.edb.value(rule.tolerance)
 
         # Snapshot nets for thread safety
@@ -731,6 +1049,24 @@ class Drc:
 
     # Back-drill / stub rules
     def _rule_back_drill_stub_length(self, rule: BackDrillStubLength):
+        """Check maximum back-drill stub length constraints.
+
+        This rule validates that remaining stub lengths after back-drilling
+        stay below maximum values to minimize signal reflections in high-speed
+        designs.
+
+        Parameters
+        ----------
+        rule : BackDrillStubLength
+            Rule configuration with maximum stub length constraint.
+
+        Examples
+        --------
+        >>> rule = BackDrillStubLength(name="max_stub", value="6mil")
+        >>> drc._rule_back_drill_stub_length(rule)
+        >>> len(drc.violations)
+        3
+        """
         max_stub = self.edb.value(rule.value)
 
         # Snapshot data for safety
@@ -768,17 +1104,36 @@ class Drc:
 
     # Export utilities
     def to_ipc356a(self, file_path: str) -> None:
-        """
-        Write a complete IPC-D-356A netlist plus DRC comments for fab review.
+        """Write a complete IPC-D-356A netlist with DRC annotations.
 
-        The file can be imported by any CAM tool that supports IPC-D-356A
-        (Valor, Genesis, etc.).  Violations are appended as comment lines
-        starting with ``C``.
+        This method exports the full netlist in IPC-D-356A format with all
+        detected violations appended as comment lines. The file can be imported
+        by CAM tools (Valor, Genesis, etc.) for fabrication review.
 
         Parameters
         ----------
-        file_path : str | os.PathLike
-            Output path.  Overwrites existing files without warning.
+        file_path : str
+            Output file path. Overwrites existing files without warning.
+
+        Examples
+        --------
+        >>> drc = Drc(edb)
+        >>> violations = drc.check(rules)
+        >>> drc.to_ipc356a("fab_review.ipc")
+
+        Export with violations:
+
+        >>> rules = Rules().add_min_line_width("trace", "3mil")
+        >>> drc = Drc(edb)
+        >>> drc.check(rules)
+        >>> drc.to_ipc356a("review_with_violations.ipc")
+
+        Notes
+        -----
+        - File format follows IPC-D-356A specification
+        - Violations are appended as comment lines starting with ``C``
+        - Includes netlist information (nets, primitives, padstack instances)
+        - Compatible with major CAM software packages
         """
         with open(file_path, "w") as f:
             f.write("IPC-D-356A\n")

@@ -26,7 +26,7 @@ This module contains the `EdbPadstacks` class.
 
 from collections import defaultdict
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
 
 from ansys.edb.core.definition.padstack_def_data import (
@@ -40,14 +40,17 @@ from ansys.edb.core.definition.padstack_def_data import (
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 import numpy as np
-import rtree
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.modeler.geometry_operators import GeometryOperators
+
+if TYPE_CHECKING:
+    import rtree
+
 
 GEOMETRY_MAP = {
     0: CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
@@ -102,18 +105,16 @@ class Padstacks(object):
         elif name in self.definitions:
             return self.definitions.get(name, None)
         else:
-            return next((i for i in list(self.instances.values()) if i.name == name or i.aedt_name == name), None)
+            return next((i for i in self.instances.values() if i.name == name or i.aedt_name == name), None)
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
         self.__definitions: Dict[str, Any] = {}
-        self._instances = None
         self._instances_by_name = {}
         self._instances_by_net = {}
 
     def clear_instances_cache(self):
         """Clear the cached padstack instances."""
-        self._instances = None
         self._instances_by_name = {}
         self._instances_by_net = {}
 
@@ -228,16 +229,15 @@ class Padstacks(object):
         >>> for inst_id, instance in all_instances.items():
         ...     print(f"Instance {inst_id}: {instance.name}")
         """
-        if self._instances is None:
-            self._instances = self._pedb.layout.padstack_instances
-        return self._instances
+        return {i.id: i for i in self._pedb.layout.padstack_instances}
 
     @property
     def instances_by_net(self) -> Dict[Any, PadstackInstance]:
         if not self._instances_by_net:
-            for edb_padstack_instance in self.instances.values():
-                if edb_padstack_instance.net_name:
-                    self._instances_by_net.setdefault(edb_padstack_instance.net_name, []).append(edb_padstack_instance)
+            for instance in self._pedb.layout.padstack_instances:
+                net_name = instance.net_name
+                if net_name:
+                    self._instances_by_net.setdefault(net_name, []).append(instance)
         return self._instances_by_net
 
     @property
@@ -257,11 +257,12 @@ class Padstacks(object):
         >>> for name, instance in named_instances.items():
         ...     print(f"Instance named {name}")
         """
-        if not self._instances_by_name:
-            for _, edb_padstack_instance in self.instances.items():
-                if edb_padstack_instance.aedt_name:
-                    self._instances_by_name[edb_padstack_instance.aedt_name] = edb_padstack_instance
-        return self._instances_by_name
+        if not self._instances_by_net:
+            for pds in self._pedb.layout.padstack_instances:
+                name = pds.aedt_name
+                if name:
+                    self._instances_by_net[name] = pds
+        return self._instances_by_net
 
     def find_instance_by_id(self, value: int) -> Optional[PadstackInstance]:
         """Find a padstack instance by database ID.
@@ -284,7 +285,7 @@ class Padstacks(object):
         >>> if via:
         ...     print(f"Found via: {via.name}")
         """
-        return self._pedb.modeler.find_object_by_id(value)
+        return next(i for i in self._pedb.layout.padstack_instances if i.id == value)
 
     @property
     def pins(self) -> Dict[int, PadstackInstance]:
@@ -304,9 +305,9 @@ class Padstacks(object):
         ...     print(f"Pin {pin_id} belongs to {pin.component.refdes}")
         """
         pins = {}
-        for instancename, instance in self.instances.items():
+        for instance in self.instances.values():
             if instance.is_pin and instance.component:
-                pins[instancename] = instance
+                pins[instance.name] = instance
         return pins
 
     @property
@@ -327,7 +328,7 @@ class Padstacks(object):
         ...     print(f"Via {via_id} on net {via.net_name}")
         """
         pnames = list(self.pins.keys())
-        vias = {i: j for i, j in self.instances.items() if i not in pnames}
+        vias = {i_id: i for i_id, i in self.instances.items() if i not in pnames}
         return vias
 
     @property
@@ -659,7 +660,7 @@ class Padstacks(object):
     def delete_batch_instances(self, instances_to_delete):
         for inst in instances_to_delete:
             inst.core.delete()
-        self.clear_instances_cache()
+        self._instances = None
 
     def delete_padstack_instances(self, net_names: Union[str, List[str]]) -> bool:
         """Delete padstack instances by net names.
@@ -687,7 +688,6 @@ class Padstacks(object):
             if p.net_name in net_names:
                 if not p.core.delete():  # pragma: no cover
                     return False
-        self.clear_instances_cache()
         return True
 
     @deprecate_argument_name(
@@ -770,7 +770,7 @@ class Padstacks(object):
             "`pyedb.grpc.core.excitations.create_coax_port` instead.",
             DeprecationWarning,
         )
-        self._pedb.source_excitation.create_coax_port(
+        self._pedb.excitation_manager.create_coax_port(
             self, padstackinstance, use_dot_separator=use_dot_separator, name=name
         )
 
@@ -1023,7 +1023,7 @@ class Padstacks(object):
         if net_list and not isinstance(net_list, list):
             net_list = [net_list]
         via_list = []
-        for inst_id, inst in self._layout.padstack_instances.items():
+        for inst in self.instances.values():
             pad_layers_name = inst.padstack_def.data.layer_names
             if len(pad_layers_name) > 1:
                 if not net_list:
@@ -1167,7 +1167,7 @@ class Padstacks(object):
                 offset_y=value0,
                 rotation=value0,
                 type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
-                fp=polygon_hole,
+                poly=polygon_hole,
             )
             padstack_data.plating_percentage = Value(20.0)
         else:
@@ -1229,7 +1229,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=pad_polygon.core,
+                    poly=pad_polygon.core,
                 )
                 padstack_data.set_pad_parameters(
                     layer=layer,
@@ -1237,7 +1237,7 @@ class Padstacks(object):
                     offset_x=pad_offset_x,
                     offset_y=pad_offset_y,
                     rotation=pad_rotation,
-                    fp=antipad_polygon.core,
+                    poly=antipad_polygon.core,
                 )
         else:
             for layer in layers:
@@ -1263,7 +1263,7 @@ class Padstacks(object):
 
         padstack_definition = PadstackDef.create(self._pedb, padstackname)
         padstack_definition.data = padstack_data
-        self._logger.info(f"Padstack {padstackname} create correctly")
+        self._logger.info(f"Padstack {padstackname} successfully created.")
         return padstackname
 
     def _get_pin_layer_range(self, pin: PadstackInstance) -> Union[Tuple[str, str], bool]:
@@ -1294,6 +1294,7 @@ class Padstacks(object):
         padstack_definition.data = self.definitions[target_padstack_name].core.data
         return new_padstack_name
 
+    @deprecate_argument_name({"fromlayer": "from_layer", "tolayer": "to_layer", "solderlayer": "solder_ball_layer"})
     def place(
         self,
         position: List[float],
@@ -1301,9 +1302,9 @@ class Padstacks(object):
         net_name: str = "",
         via_name: str = "",
         rotation: float = 0.0,
-        fromlayer: Optional[str] = None,
-        tolayer: Optional[str] = None,
-        solderlayer: Optional[str] = None,
+        from_layer: Optional[str] = None,
+        to_layer: Optional[str] = None,
+        solder_ball_layer: Optional[str] = None,
         is_pin: bool = False,
         layer_map: str = "two_way",
     ) -> PadstackInstance:
@@ -1321,11 +1322,11 @@ class Padstacks(object):
             Instance name. Default is ``""``.
         rotation : float, optional
             Rotation in degrees. Default is ``0.0``.
-        fromlayer : str, optional
+        from_layer : str, optional
             Starting layer name.
-        tolayer : str, optional
+        to_layer : str, optional
             Ending layer name.
-        solderlayer : str, optional
+        solder_ball_layer : str, optional
             Solder ball layer name.
         is_pin : bool, optional
             Whether the instance is a pin. Default is ``False``.
@@ -1345,27 +1346,27 @@ class Padstacks(object):
         position = CorePointData(
             [Value(position[0], self._pedb.active_cell), Value(position[1], self._pedb.active_cell)]
         )
-        net = self._pedb.nets.find_or_create_net(net_name)
+        self._pedb.nets.find_or_create_net(net_name)
         rotation = Value(rotation * math.pi / 180)
         sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
         sign_layers = list(sign_layers_values.keys())
-        if not fromlayer:
+        if not from_layer:
             try:
-                fromlayer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[0]]
+                from_layer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[0]]
             except KeyError:
-                fromlayer = sign_layers_values[sign_layers[0]]
+                from_layer = sign_layers_values[sign_layers[0]]
         else:
-            fromlayer = sign_layers_values[fromlayer]
+            from_layer = sign_layers_values[from_layer]
 
-        if not tolayer:
+        if not to_layer:
             try:
-                tolayer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[-1]]
+                to_layer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[-1]]
             except KeyError:
-                tolayer = sign_layers_values[sign_layers[-1]]
+                to_layer = sign_layers_values[sign_layers[-1]]
         else:
-            tolayer = sign_layers_values[tolayer]
-        if solderlayer:
-            solderlayer = sign_layers_values[solderlayer]
+            to_layer = sign_layers_values[to_layer]
+        if solder_ball_layer:
+            solder_ball_layer = sign_layers_values[solder_ball_layer]
         if not via_name:
             via_name = generate_unique_name(padstack_def.name)
         if padstack_def:
@@ -1376,14 +1377,13 @@ class Padstacks(object):
                 position_x=position.x.value,
                 position_y=position.y.value,
                 rotation=rotation,
-                top_layer=fromlayer,
-                bottom_layer=tolayer,
+                top_layer=from_layer,
+                bottom_layer=to_layer,
                 name=via_name,
-                solder_ball_layer=solderlayer,
+                solder_ball_layer=solder_ball_layer,
                 layer_map=layer_map,
             )
             padstack_instance.is_pin = is_pin
-            self.clear_instances_cache()
             return padstack_instance
         else:
             raise RuntimeError("Place padstack failed")
@@ -1523,28 +1523,6 @@ class Padstacks(object):
         self.definitions[padstack_name].data = cloned_padstack_def_data
         return True
 
-    def get_padstack_instance_by_net_name(self, net: str):
-        """Get padstack instances by net name.
-
-        .. deprecated:: 0.55.0
-        Use: :func:`get_instances` with `net_name` parameter instead.
-
-        Parameters
-        ----------
-        net : str
-            Net name to filter padstack instances.
-
-        Returns
-        -------
-        list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
-            List of padstack instances associated with the specified net.
-        """
-        warnings.warn(
-            "`get_padstack_instance_by_net_name` is deprecated, use `get_instances` with `net_name` parameter instead.",
-            DeprecationWarning,
-        )
-        return self.get_instances(net_name=net)
-
     def get_instances(
         self,
         name: Optional[str] = None,
@@ -1576,31 +1554,31 @@ class Padstacks(object):
         list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             List of matching padstack instances.
         """
-        instances_by_id = self.instances
+        instances_dict = self.instances
+        instances = []
         if pid:
-            instance = instances_by_id.get(pid)
+            instance = instances_dict.get(pid, None)
             return [instance] if instance is not None else []
         elif name:
-            instances = [inst for inst in list(self.instances.values()) if inst.aedt_name == name]
+            instances = [inst for inst in self.instances.values() if inst.aedt_name == name]
             if instances:
                 return instances
             else:
                 return []
         else:
-            instances = list(instances_by_id.values())
             if definition_name:
                 definition_name = definition_name if isinstance(definition_name, list) else [definition_name]
-                instances = [inst for inst in instances if inst.padstack_def.name in definition_name]
+                instances = [inst for inst in instances_dict.values() if inst.padstack_def.name in definition_name]
             if net_name:
                 net_name = net_name if isinstance(net_name, list) else [net_name]
-                instances = [inst for inst in instances if inst.net_name in net_name]
+                instances = [inst for inst in instances_dict.values() if inst.net_name in net_name]
             if component_reference_designator:
                 refdes = (
                     component_reference_designator
                     if isinstance(component_reference_designator, list)
                     else [component_reference_designator]
                 )
-                instances = [inst for inst in instances if inst.component]
+                instances = [inst for inst in instances_dict.values() if inst.component]
                 instances = [inst for inst in instances if inst.component.refdes in refdes]
                 if component_pin:
                     component_pin = component_pin if isinstance(component_pin, list) else [component_pin]
@@ -1614,6 +1592,7 @@ class Padstacks(object):
         search_radius: float = 5e-3,
         max_limit: int = 0,
         component_only: bool = True,
+        pinlist_position: dict = None,
     ) -> List[PadstackInstance]:
         """Find reference pins near a specified pin.
 
@@ -1635,34 +1614,37 @@ class Padstacks(object):
         list[:class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`]
             List of reference pins.
         """
-        pinlist = []
-        if not positive_pin:
-            search_radius = 10e-2
-            component_only = True
-        if component_only:
-            references_pins = [
-                pin
-                for pin in list(positive_pin.component.pins.values())
-                if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
-            ]
-            references_pins = [pin for pin in references_pins if not pin.terminal]
-            if not references_pins:
-                return pinlist
-        else:
-            references_pins = self.get_instances(net_name=reference_net)
-            if not references_pins:
-                return pinlist
+        if not pinlist_position:
+            pinlist = []
+            if not positive_pin:
+                search_radius = 10e-2
+                component_only = True
+            if component_only:
+                references_pins = [
+                    pin
+                    for pin in list(positive_pin.component.pins.values())
+                    if pin.net_name == reference_net and isinstance(pin, PadstackInstance)
+                ]
+                references_pins = [pin for pin in references_pins if not pin.terminal]
+                if not references_pins:
+                    return pinlist
+            else:
+                references_pins = self.get_instances(net_name=reference_net)
+                if not references_pins:
+                    return pinlist
+            pinlist_position = {p: p.position for p in references_pins}
+        pos_position = positive_pin.position
         pinlist = [
             p
-            for p in references_pins
-            if GeometryOperators.points_distance(positive_pin.position, p.position) <= search_radius
+            for p, pos in pinlist_position.items()
+            if GeometryOperators.points_distance(pos_position, pos) <= search_radius
         ]
         if max_limit and len(pinlist) > max_limit:
-            pin_dict = {GeometryOperators.points_distance(positive_pin.position, p.position): p for p in pinlist}
+            pin_dict = {GeometryOperators.points_distance(pos_position, p.position): p for p in pinlist}
             pinlist = [pin[1] for pin in sorted(pin_dict.items())[:max_limit]]
         return pinlist
 
-    def get_padstack_instances_rtree_index(self, nets: Optional[Union[str, List[str]]] = None) -> rtree.index.Index:
+    def get_padstack_instances_rtree_index(self, nets: Optional[Union[str, List[str]]] = None) -> "rtree.index.Index":
         """Returns padstack instances Rtree index.
 
         Parameters
@@ -1676,15 +1658,23 @@ class Padstacks(object):
         Rtree index object.
 
         """
+        try:
+            import rtree
+        except ImportError:
+            raise ImportError(
+                "Rtree library is required for spatial indexing. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+            )
+
         if isinstance(nets, str):
             nets = [nets]
         padstack_instances_index = rtree.index.Index()
         if nets:
-            instances = [inst for inst in list(self.instances.values()) if inst.net_name in nets]
+            instances = [inst for inst in self.instances.values() if inst.net_name in nets]
         else:
-            instances = list(self.instances.values())
+            instances = self.instances.values()
         for inst in instances:
-            padstack_instances_index.insert(inst.edb_uid, inst.position)
+            padstack_instances_index.insert(inst.id, inst.position)
         return padstack_instances_index
 
     def get_padstack_instances_id_intersecting_polygon(
@@ -1714,8 +1704,8 @@ class Padstacks(object):
             raise Exception("No points defining polygon was provided")
         if not padstack_instances_index:
             padstack_instances_index = {}
-            for inst_id, inst in self.instances.items():
-                padstack_instances_index[inst_id] = inst.position
+            for inst in self.instances:
+                padstack_instances_index[inst.id] = inst.position
         _x = [pt[0] for pt in points]
         _y = [pt[1] for pt in points]
         points = [_x, _y]
@@ -1727,7 +1717,7 @@ class Padstacks(object):
         self,
         bounding_box: List[float],
         nets: Optional[Union[str, List[str]]] = None,
-        padstack_instances_index: Optional[rtree.index.Index] = None,
+        padstack_instances_index: Optional["rtree.index.Index"] = None,
     ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
         Parameters
@@ -1857,7 +1847,7 @@ class Padstacks(object):
         net_filter: Optional[Union[str, List[str]]] = None,
         start_layer: Optional[str] = None,
         stop_layer: Optional[str] = None,
-    ) -> List[str]:
+    ) -> List[PadstackInstance]:
         """Evaluate pad-stack instances included on the provided point list and replace all by single instance.
 
         Parameters
@@ -1876,23 +1866,29 @@ class Padstacks(object):
         List[str], list of created pad-stack instances ID.
 
         """
+        try:
+            from scipy.spatial import ConvexHull
+        except ImportError:
+            raise ImportError(
+                "Scipy library is required for convex hull calculations. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install scipy'."
+            )
 
-        from scipy.spatial import ConvexHull
-
-        merged_via_ids = []
+        merged_vias = []
         if not contour_boxes:
             raise Exception("No contour box provided, you need to pass a nested list as argument.")
         instances_index = {}
-        for id, inst in self.instances.items():
+        instances_dict = self.instances
+        for id, inst in instances_dict.items():
             instances_index[id] = inst.position
         for contour_box in contour_boxes:
             instances = self.get_padstack_instances_id_intersecting_polygon(
                 points=[tuple(pt) for pt in contour_box], padstack_instances_index=instances_index
             )
             if net_filter:
-                instances = [id for id in instances if not self.instances[id].net.name in net_filter]
-            net = self.instances[instances[0]].net.name
-            instances_pts = np.array([self.instances[inst].position for inst in instances])
+                instances = [id for id in instances if not instances_dict[id].net.name in net_filter]
+            net = instances_dict[instances[0]].net.name
+            instances_pts = np.array([instances_dict[inst].position for inst in instances])
             convex_hull_contour = ConvexHull(instances_pts)
             contour_points = list(instances_pts[convex_hull_contour.vertices])
             layer = list(self._pedb.stackup.layers.values())[0].name
@@ -1918,10 +1914,9 @@ class Padstacks(object):
                 fromlayer=start_layer,
                 tolayer=stop_layer,
             )
-            merged_via_ids.append(merged_instance.edb_uid)
-            [self.instances[inst].delete() for inst in instances]
-        self.clear_instances_cache()
-        return merged_via_ids
+            merged_vias.append(merged_instance)
+            [instances_dict[inst].delete() for inst in instances]
+        return merged_vias
 
     def reduce_via_in_bounding_box(
         self, bounding_box: List[float], x_samples: int, y_samples: int, nets: Optional[Union[str, List[str]]] = None
@@ -1972,11 +1967,9 @@ class Padstacks(object):
                     for _x, _y in zip(x_grid.ravel(), y_grid.ravel())
                 }
 
-                all_instances = self.instances
                 for item in padstacks_inbox:
                     if item not in to_keep:
-                        all_instances[item].delete()
-                self.clear_instances_cache()
+                        self.instances[item].delete()
                 return True
 
     @staticmethod
@@ -2132,5 +2125,4 @@ class Padstacks(object):
             to_delete = set(padstacks) - to_keep
             for _id in to_delete:
                 all_instances[_id].delete()
-        self.clear_instances_cache()
         return list(to_keep), grid

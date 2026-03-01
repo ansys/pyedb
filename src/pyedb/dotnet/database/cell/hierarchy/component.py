@@ -59,7 +59,7 @@ class ICDieProperties:
     @property
     def die_type(self):
         if str(self._edb_object.GetType()) == "NoDie":
-            return "none"
+            return "no_die"
         elif str(self._edb_object.GetType()) == "FlipChip":
             return "flip_chip"
         return "none"
@@ -71,6 +71,32 @@ class ICDieProperties:
     @height.setter
     def height(self, value):
         self._edb_object.SetHeight(self._pedb.edb_value(value))
+
+
+class PortProperty:
+    def __init__(self, edbobj):
+        self.core = edbobj
+
+    @property
+    def reference_height(self):
+        return self.core.GetReferenceHeightValue()
+
+    def get_reference_size(self):
+        _, reference_size_x, reference_size_y = self.core.GetReferenceSize()
+        return reference_size_x, reference_size_y
+
+    @property
+    def reference_size_auto(self):
+        return self.core.GetReferenceSizeAuto()
+
+
+class ComponentProperties:
+    def __init__(self, edbobj):
+        self.core = edbobj
+
+    @property
+    def port_property(self):
+        return PortProperty(self.core.GetPortProperty().Clone())
 
 
 class EDBComponent(Group):
@@ -124,7 +150,7 @@ class EDBComponent(Group):
     @property
     def component_property(self):
         """``ComponentProperty`` object."""
-        return self.edbcomponent.GetComponentProperty().Clone()
+        return ComponentProperties(self.edbcomponent.GetComponentProperty().Clone())
 
     @component_property.setter
     def component_property(self, value):
@@ -133,11 +159,11 @@ class EDBComponent(Group):
 
     @property
     def _edb_model(self):  # pragma: no cover
-        return self.component_property.GetModel().Clone()
+        return self.component_property.core.GetModel().Clone()
 
     @property  # pragma: no cover
     def _pin_pairs(self):
-        edb_comp_prop = self.component_property
+        edb_comp_prop = self.component_property.core
         edb_model = self._edb_model
         return [
             PinPair(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
@@ -145,9 +171,16 @@ class EDBComponent(Group):
         ]
 
     @property
+    def pin_pairs(self):
+        """Pin pair model if assigned."""
+        if self.model_type == "RLC":
+            return self._pin_pairs
+        return []
+
+    @property
     def model(self):
         """Component model."""
-        edb_object = self.component_property.GetModel().Clone()
+        edb_object = self.component_property.core.GetModel().Clone()
         model_type = edb_object.GetModelType().ToString()
         if model_type == "PinPairModel":
             return PinPairModel(self._pedb, edb_object)
@@ -161,14 +194,14 @@ class EDBComponent(Group):
         if not isinstance(value, PinPairModel):
             self._pedb.logger.error("Invalid input. Set model failed.")
 
-        comp_prop = self.component_property
+        comp_prop = self.component_property.core
         comp_prop.SetModel(value._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
     @property
     def package_def(self):
         """Package definition."""
-        edb_object = self.component_property.GetPackageDef()
+        edb_object = self.component_property.core.GetPackageDef()
 
         package_def = PackageDef(self._pedb, edb_object)
         if not package_def.is_null:
@@ -177,7 +210,7 @@ class EDBComponent(Group):
     @package_def.setter
     def package_def(self, value):
         package_def = self._pedb.definitions.package[value]
-        comp_prop = self.component_property
+        comp_prop = self.component_property.core
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -186,15 +219,18 @@ class EDBComponent(Group):
         """Adding IC properties for grpc compatibility."""
         if self.type == "IC":
             if not self._ic_die_properties:
-                self._ic_die_properties = ICDieProperties(self._pedb, self.component_property.GetDieProperty().Clone())
+                self._ic_die_properties = ICDieProperties(
+                    self._pedb, self.component_property.core.GetDieProperty().Clone()
+                )
             return self._ic_die_properties
         return None
 
     @ic_die_properties.setter
     def ic_die_properties(self, value):
-        component_property = self.component_property
-        component_property.SetDieProperties(value)
+        component_property = self.component_property.core
+        component_property.SetDieProperty(value)
         self.component_property = component_property
+        self._ic_die_properties = None
 
     def create_package_def(self, name="", component_part_name=None):
         """Create a package definition and assign it to the component.
@@ -247,13 +283,13 @@ class EDBComponent(Group):
     def enabled(self):
         """Get or Set the component to active mode."""
         if self.type.lower() in ["resistor", "capacitor", "inductor"]:
-            return self.component_property.IsEnabled()
+            return self.component_property.core.IsEnabled()
         else:
             return
 
     @enabled.setter
     def enabled(self, value):
-        cmp_prop = self.component_property.Clone()
+        cmp_prop = self.component_property.core.Clone()
         cmp_prop.SetEnabled(value)
         self.edbcomponent.SetComponentProperty(cmp_prop)
 
@@ -284,25 +320,25 @@ class EDBComponent(Group):
     @property
     def solder_ball_height(self):
         """Solder ball height if available."""
-        if "GetSolderBallProperty" in dir(self.component_property):
-            return self.component_property.GetSolderBallProperty().GetHeight()
+        if "GetSolderBallProperty" in dir(self.component_property.core):
+            return self.component_property.core.GetSolderBallProperty().GetHeight()
         return None
 
     @solder_ball_height.setter
     def solder_ball_height(self, value):
-        if "GetSolderBallProperty" in dir(self.component_property):
+        if "GetSolderBallProperty" in dir(self.component_property.core):
             sball_height = round(self._pedb.edb_value(value).ToDouble(), 9)
-            cmp_property = self.component_property
+            cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
             cmp_property.SetSolderBallProperty(solder_ball_prop)
-            self.component_property = cmp_property
+            self.edbcomponent.SetComponentProperty(cmp_property)
 
     @property
     def solder_ball_shape(self):
         """Solder ball shape."""
-        if "GetSolderBallProperty" in dir(self.component_property):
-            shape = self.component_property.GetSolderBallProperty().GetShape()
+        if "GetSolderBallProperty" in dir(self.component_property.core):
+            shape = self.component_property.core.GetSolderBallProperty().GetShape()
             if shape.value__ == 0:
                 return "none"
             elif shape.value__ == 1:
@@ -328,17 +364,17 @@ class EDBComponent(Group):
             elif value == 2:
                 shape = self._edb.Definition.SolderballShape.Spheroid
         if shape:
-            cmp_property = self.component_property
+            cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetShape(shape)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
-            self.component_property = cmp_property
+            self.edbcomponent.SetComponentProperty(cmp_property)
 
     @property
     def solder_ball_diameter(self):
         """Solder ball diameter."""
-        if "GetSolderBallProperty" in dir(self.component_property):
-            result = self.component_property.GetSolderBallProperty().GetDiameter()
+        if "GetSolderBallProperty" in dir(self.component_property.core):
+            result = self.component_property.core.GetSolderBallProperty().GetDiameter()
             succeed = result[0]
             diameter = result[1]
             mid_diameter = result[2]
@@ -360,18 +396,29 @@ class EDBComponent(Group):
             diameter = self._get_edb_value(value)
             mid_diameter = self._get_edb_value(value)
         if diameter and mid_diameter:
-            cmp_property = self.component_property
+            cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetDiameter(diameter, mid_diameter)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
             self.component_property = cmp_property
 
     @property
+    def uses_solderball(self) -> bool:
+        """Whether if solderball is enabled or not."""
+        return self.component_property.core.GetSolderBallProperty().UsesSolderball()
+
+    @property
     def solder_ball_placement(self):
         """Solder ball placement if available.."""
-        if "GetSolderBallProperty" in dir(self.component_property):
-            return int(self.component_property.GetSolderBallProperty().GetPlacement())
+        if "GetSolderBallProperty" in dir(self.component_property.core):
+            return int(self.component_property.core.GetSolderBallProperty().GetPlacement())
         return 2
+
+    @property
+    def solder_ball_material(self):
+        if "GetMaterialName" in dir(self.component_property.core):
+            return self.component_property.core.GetSolderBallProperty().GetMaterialName()
+        return ""
 
     @property
     def refdes(self):
@@ -403,7 +450,7 @@ class EDBComponent(Group):
             ``True`` if current object is enabled, ``False`` otherwise.
         """
         if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            return self.component_property.IsEnabled()
+            return self.component_property.core.IsEnabled()
         else:  # pragma: no cover
             return True
 
@@ -411,7 +458,7 @@ class EDBComponent(Group):
     def is_enabled(self, enabled):
         """Enables the current object."""
         if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            component_property = self.component_property
+            component_property = self.component_property.core
             component_property.SetEnabled(enabled)
             self.edbcomponent.SetComponentProperty(component_property)
 
@@ -497,16 +544,8 @@ class EDBComponent(Group):
         str
             Resistance value or ``None`` if not an RLC type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
-        if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.R.ToDouble()
+        if self._pin_pairs:
+            return self._pin_pairs[0].resistance
         return None
 
     @res_value.setter
@@ -518,6 +557,28 @@ class EDBComponent(Group):
                 self.rlc_values = [value, self.rlc_values[1], self.rlc_values[2]]
 
     @property
+    def rlc_enable(self):
+        if self._pin_pairs:
+            return self._pin_pairs[0].rlc_enable
+
+    @rlc_enable.setter
+    def rlc_enable(self, value):
+        if self._pin_pairs:
+            self._pin_pairs[0].rlc_enable = value
+
+    @property
+    def first_pin(self):
+        if self._pin_pairs:
+            return self._pin_pairs[0].first_pin
+        return None
+
+    @property
+    def second_pin(self):
+        if self._pin_pairs:
+            return self._pin_pairs[0].second_pin
+        return None
+
+    @property
     def cap_value(self):
         """Capacitance Value.
 
@@ -526,16 +587,8 @@ class EDBComponent(Group):
         str
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
-        if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.C.ToDouble()
+        if self._pin_pairs:
+            return self._pin_pairs[0].capacitance
         return None
 
     @cap_value.setter
@@ -555,16 +608,8 @@ class EDBComponent(Group):
         str
             Inductance Value. ``None`` if not an RLC Type.
         """
-        cmp_type = int(self.edbcomponent.GetComponentType())
-        if 0 < cmp_type < 4:
-            componentProperty = self.edbcomponent.GetComponentProperty()
-            model = componentProperty.GetModel().Clone()
-            pinpairs = model.PinPairs
-            if not list(pinpairs):
-                return "0"
-            for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
-                return pair.L.ToDouble()
+        if self._pin_pairs:
+            return self._pin_pairs[0].inductance
         return None
 
     @ind_value.setter
@@ -586,7 +631,7 @@ class EDBComponent(Group):
         """
         cmp_type = int(self.edbcomponent.GetComponentType())
         if 0 < cmp_type < 4:
-            model = self.component_property.GetModel().Clone()
+            model = self.component_property.core.GetModel().Clone()
             pinpairs = model.PinPairs
             for pinpair in pinpairs:
                 pair = model.GetPinPairRlc(pinpair)
@@ -609,7 +654,7 @@ class EDBComponent(Group):
                     pin_pair_rlc.IsParallel = value
                     pin_pair_model = self._edb_model
                     pin_pair_model.SetPinPairRlc(pin_pair, pin_pair_rlc)
-                    comp_prop = self.component_property
+                    comp_prop = self.component_property.core
                     comp_prop.SetModel(pin_pair_model)
                     self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -863,7 +908,7 @@ class EDBComponent(Group):
         return self._pedb.edb_value(value)
 
     def _set_model(self, model):  # pragma: no cover
-        comp_prop = self.component_property
+        comp_prop = self.component_property.core
         comp_prop.SetModel(model)
         if not self.edbcomponent.SetComponentProperty(comp_prop):
             logging.error("Fail to assign model on {}.".format(self.refdes))

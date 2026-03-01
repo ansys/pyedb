@@ -39,7 +39,7 @@ from ansys.edb.core.simulation_setup.hfss_simulation_setup import (
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_general_settings import HFSSGeneralSettings
 from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSimulationSettings
-from pyedb.grpc.database.simulation_setup.length_mesh_operation import LengthMeshOperation
+from pyedb.grpc.database.simulation_setup.mesh_operation import LengthMeshOperation
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.skin_depth_mesh_operation import SkinDepthMeshOperation
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
@@ -167,7 +167,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
 
-        return HFSSSimulationSettings(self, self.core.settings)
+        return HFSSSimulationSettings(self._pedb, self.core.settings)
 
     @property
     def adaptive_settings(self):
@@ -183,7 +183,7 @@ class HfssSimulationSetup(SimulationSetup):
             "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
             DeprecationWarning,
         )
-        return HFSSGeneralSettings(self, self.core.settings.general)
+        return HFSSGeneralSettings(self._pedb, self.core.settings.general)
 
     @property
     def curve_approx_settings(self):
@@ -229,32 +229,6 @@ class HfssSimulationSetup(SimulationSetup):
             "The 'hfss_port_settings' property is deprecated. Use 'settings' property instead.", DeprecationWarning
         )
         return self.settings.solver
-
-    @property
-    def sweep_data(self) -> list[SweepData]:
-        """List of HFSS sweep data.
-
-        Returns
-        -------
-        list[:class:`SweepData <pyedb.grpc.database.simulation_setup.sweep_data.SweepData>`]
-            List of sweep data.
-
-        """
-        return [SweepData(self, core=sweep) for sweep in self.core.sweep_data]
-
-    @sweep_data.setter
-    def sweep_data(self, value: list[SweepData]):
-        """Set the HFSS sweep data list.
-
-        Accepts a list of SweepData wrapper objects or raw core sweep objects. The underlying
-        core.sweep_data is updated with core objects extracted from the wrappers.
-        """
-        # Normalize incoming values to core objects
-        core_list = []
-        for item in value:
-            # If a wrapper with .core attribute is provided, use that; otherwise assume it's already a core object
-            core_list.append(item.core if hasattr(item, "core") else item)
-        self.core.sweep_data = core_list
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
         """Set HFSS single frequency solution.
@@ -328,17 +302,14 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        try:
-            self.settings.general.adaptive_solution_type = "broad_band"
-            bfs = self.settings.general.broadband_adaptive_solution
-            bfs.low_frequency = low_frequency
-            bfs.high_frequency = high_frequency
-            bfs.max_delta = max_delta_s
-            bfs.max_num_passes = max_num_passes
-            self.core.settings.general.broadband_adaptive_solution = bfs
-            return True
-        except:
-            return False
+        self.settings.general.adaptive_solution_type = "broadband"
+        bfs = self.settings.general.broadband_adaptive_solution
+        bfs.low_frequency = low_frequency
+        bfs.high_frequency = high_frequency
+        bfs.max_delta = max_delta_s
+        bfs.max_num_passes = max_num_passes
+        self.core.settings.general.broadband_adaptive_solution = bfs
+        return True
 
     def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
         """Add adaptive frequency data to simulation setup.
@@ -356,13 +327,10 @@ class HfssSimulationSetup(SimulationSetup):
         bool.
 
         """
-        try:
-            adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
-            adapt_frequencies.append(CoreAdaptiveFrequency(frequency, str(max_delta_s)))
-            self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
-            return True
-        except:
-            return False
+
+        adapt_frequencies = self.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies
+        adapt_frequencies.append(CoreAdaptiveFrequency(frequency, str(max_delta_s)))
+        self.core.settings.general.multi_frequency_adaptive_solution.adaptive_frequencies = adapt_frequencies
 
     def add_length_mesh_operation(
         self,

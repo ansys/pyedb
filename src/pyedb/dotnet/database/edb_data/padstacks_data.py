@@ -38,7 +38,7 @@ from pyedb.dotnet.database.general import (
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class EDBPadProperties(object):
@@ -492,6 +492,17 @@ class EDBPadstack(object):
         pstack_data = self._edb_object.GetData()
         return self._edb.Definition.PadstackDefData(pstack_data)
 
+    @property
+    def data(self):
+        """Get padstack definition data.
+
+        Returns
+        -------
+        PadstackDefData
+            Padstack definition data object.
+        """
+        return self._padstack_def_data
+
     @_padstack_def_data.setter
     def _padstack_def_data(self, value):
         self._edb_object.SetData(value)
@@ -499,8 +510,7 @@ class EDBPadstack(object):
     @property
     def instances(self):
         """Definitions Instances."""
-        name = self.name
-        return [i for i in self._ppadstack.instances.values() if i.padstack_definition == name]
+        return [inst for inst in self._ppadstack.instances.values() if inst.padstack_definition == self.name]
 
     @property
     def name(self):
@@ -800,7 +810,9 @@ class EDBPadstack(object):
         -------
         dict
         """
-        return {id: via for id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name}
+        return {
+            via_id: via for via_id, via in self._ppadstack.instances.items() if via.padstack_definition == self.name
+        }
 
     @property
     def hole_range(self):
@@ -856,7 +868,7 @@ class EDBPadstack(object):
         layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
         i = 0
-        for via in list(self.padstack_instances.values()):
+        for via in self.padstack_instances.values():
             if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
                 pos = via.position
                 started = False
@@ -1055,7 +1067,7 @@ class EDBPadstack(object):
             if self.via_stop_layer == stop:
                 break
         i = 0
-        for via in list(self.padstack_instances.values()):
+        for via in self.padstack_instances.values():
             for inst in new_instances:
                 instance = inst.edb_padstack
                 from_layer = [
@@ -1412,6 +1424,36 @@ class EDBPadstackInstance(Connectable):
         self._position = []
         self._pdef = None
 
+    @property
+    def layer_map(self):
+        """Edb layer map."""
+        return self._edb_object.GetLayerMap()
+
+    def get_hole_overrides(self):
+        return self._edb_object.GetHoleOverrideValue()
+
+    def set_hole_overrides(self, is_hole_override, hole_override):
+        """Set the hole overrides of Padstack Instance.
+
+        Parameters
+        ----------
+        is_hole_override : bool
+            If padstack instance is hole override.
+        hole_override : :class:`Value <ansys.edb.utility.Value>`
+            Hole override diameter of this padstack instance.
+        """
+        if isinstance(hole_override, (int, str, float)):
+            hole_override = self._pedb.edb_value(hole_override)
+        self.core.SetHoleOverride(is_hole_override, hole_override)
+
+    @property
+    def solderball_layer(self):
+        return self.core.GetSolderBallLayer().GetName()
+
+    @solderball_layer.setter
+    def solderball_layer(self, solderball_layer):
+        self.core.SetSolderBallLayer(solderball_layer)
+
     def get_terminal(self, name=None, create_new_terminal=False):
         """Get PadstackInstanceTerminal object.
 
@@ -1533,17 +1575,28 @@ class EDBPadstackInstance(Connectable):
 
         return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
 
-    def _set_equipotential(self, contact_radius=None):
-        """Workaround solution. Remove when EDBAPI bug is fixed for dcir_equipotential_region."""
-        pad = self.definition.pad_by_layer[self.start_layer]
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
+        pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
+
+        Parameters
+        ----------
+        contact_radius : float, optional
+            Radius of the contact circle. The default is ``None```, in which case the
+            method will use the pad size.
+        layer_name : str, optional
+            Layer name to set the equipotential region. The default is ``None``, in which case the method will use the
+            start layer of the padstack definition.
+        """
+        layer_name = layer_name if layer_name else self.start_layer
+        pad = self.definition.pad_by_layer[layer_name]
 
         pos_x, pos_y = self.position
 
         if contact_radius is not None:
             prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
             prim.dcir_equipotential_region = True
-            return
-
         elif pad.shape.lower() == "circle":
             ra = self._pedb.edb_value(pad.parameters_values[0] / 2)
             pos = self.position
@@ -1570,8 +1623,10 @@ class EDBPadstackInstance(Connectable):
             )
             prim.move(self.position)
         else:
-            return
+            raise AttributeError(f"Unsupported pad shape {pad.shape} for DCIR equipotential region.")
+
         prim.dcir_equipotential_region = True
+        return prim
 
     @property
     def object_instance(self):
@@ -1663,7 +1718,7 @@ class EDBPadstackInstance(Connectable):
         return self.definition.name
 
     @property
-    def definition(self):
+    def definition(self) -> EDBPadstack:
         """Padstack definition.
 
         Returns
@@ -1769,10 +1824,13 @@ class EDBPadstackInstance(Connectable):
     @property
     def backdrill_parameters(self):
         data = {}
+        value_0 = self._pedb.edb_value(0)
+        value_00 = self._pedb.edb_value(0.0)
+        value_signal = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer),
-            self._pedb.edb_value(0),
-            self._pedb.edb_value(0.0),
+            value_signal,
+            value_0,
+            value_00,
             True,
         )
         if flag:
@@ -1783,9 +1841,9 @@ class EDBPadstackInstance(Connectable):
                     "stub_length": offset.ToString(),
                 }
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
-            self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer),
-            self._pedb.edb_value(0),
-            self._pedb.edb_value(0.0),
+            value_signal,
+            value_0,
+            value_00,
             False,
         )
         if flag:
@@ -1816,12 +1874,19 @@ class EDBPadstackInstance(Connectable):
                 False,
             )
 
-    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True):
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
         """Method added to bring compatibility with grpc."""
+        if fill_material:
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
+
         if from_bottom:
-            if not isinstance(drill_to_layer, str):
-                drill_to_layer = drill_to_layer.name
             self.set_backdrill_bottom(drill_depth=drill_to_layer, drill_diameter=diameter, offset=offset)
+        else:
+            self.set_backdrill_top(drill_depth=drill_to_layer, drill_diameter=diameter, offset=offset)
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
@@ -1969,6 +2034,47 @@ class EDBPadstackInstance(Connectable):
             self._pedb, pos[0], pos[1]
         )
         self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, self._pedb.edb_value(self.rotation))
+
+    @property
+    def position_and_rotation(self):
+        """Padstack instance position and rotation.
+
+        Returns
+        -------
+        list
+            List of ``[x, y]`` coordinates for the padstack instance position.
+        """
+        _position_and_rotation = []
+        out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        if self._edb_padstackinstance.GetComponent():
+            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
+            _position_and_rotation = [
+                round(out2.X.ToDouble(), 6),
+                round(out2.Y.ToDouble(), 6),
+                round(out[2].ToDouble(), 6),
+            ]
+        elif out[0]:
+            _position_and_rotation = [
+                round(out[1].X.ToDouble(), 6),
+                round(out[1].Y.ToDouble(), 6),
+                round(out[2].ToDouble(), 6),
+            ]
+        _position_and_rotation.append(round(out[2].ToDouble(), 6))
+
+        return _position_and_rotation
+
+    @position_and_rotation.setter
+    def position_and_rotation(self, value):
+        pos = []
+        for v in value:
+            if isinstance(v, (float, int, str)):
+                pos.append(self._pedb.edb_value(v))
+            else:
+                pos.append(v)
+        point_data = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
+            self._pedb, pos[0], pos[1]
+        )
+        self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, pos[2])
 
     @property
     def rotation(self):
@@ -2381,7 +2487,14 @@ class EDBPadstackInstance(Connectable):
             created_polygon = self._pedb.modeler.create_polygon(path, layer_name)
             return created_polygon
 
-    def get_reference_pins(self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True):
+    def get_reference_pins(
+        self,
+        reference_net="GND",
+        search_radius=5e-3,
+        max_limit=0,
+        component_only=True,
+        pinlist_position: dict = None,
+    ):
         """Search for reference pins using given criteria.
 
         Parameters
@@ -2416,6 +2529,7 @@ class EDBPadstackInstance(Connectable):
             search_radius=search_radius,
             max_limit=max_limit,
             component_only=component_only,
+            pinlist_position=pinlist_position,
         )
 
     def split(self) -> list:

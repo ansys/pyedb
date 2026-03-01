@@ -261,32 +261,32 @@ class Layout(ObjBase):
         return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
 
     @property
-    def pin_groups(self):
+    def pin_groups(self) -> List[PinGroup]:
         return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.GetName()) for i in self._edb_object.PinGroups]
 
     @property
-    def net_classes(self):
+    def net_classes(self) -> List[EDBNetClassData]:
         return [EDBNetClassData(self._pedb, i) for i in list(self._edb_object.NetClasses)]
 
     @property
-    def extended_nets(self):
+    def extended_nets(self) -> List[EDBExtendedNetData]:
         return [EDBExtendedNetData(self._pedb, i) for i in self._edb_object.ExtendedNets]
 
     @property
-    def differential_pairs(self):
+    def differential_pairs(self) -> List[EDBDifferentialPairData]:
         return [EDBDifferentialPairData(self._pedb, i) for i in list(self._edb_object.DifferentialPairs)]
 
     @property
-    def padstack_instances(self):
+    def padstack_instances(self) -> List[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     @property
-    def voltage_regulators(self):
+    def voltage_regulators(self) -> List[VoltageRegulator]:
         return [VoltageRegulator(self._pedb, i) for i in list(self._edb_object.VoltageRegulators)]
 
     @property
-    def port_reference_terminals_connected(self):
+    def port_reference_terminals_connected(self) -> bool:
         """:obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
 
         True if they are connected, False otherwise.
@@ -294,7 +294,9 @@ class Layout(ObjBase):
         """
         return self._edb_object.ArePortReferenceTerminalsConnected()
 
-    def find_object_by_id(self, value: int):
+    def find_object_by_id(
+        self, value: int
+    ) -> Union[EDBPadstackInstance, EdbRectangle, EdbPolygon, EdbText, EdbCircle, Path]:
         """Find a layout object by Database ID.
 
         Parameters
@@ -330,7 +332,7 @@ class Layout(ObjBase):
         else:
             return EDBNetsData(obj, self._pedb)
 
-    def find_component_by_name(self, value: str):
+    def find_component_by_name(self, value: str) -> EDBComponent | None:
         """Find a component object by name. Component name is the reference designator in layout.
 
         Parameters
@@ -342,7 +344,7 @@ class Layout(ObjBase):
 
         """
         obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
-        return EDBComponent(self._pedb, obj) if obj is not None else None
+        return EDBComponent(self._pedb, obj) if not obj.IsNull() else None
 
     def find_primitive(
         self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
@@ -381,7 +383,7 @@ class Layout(ObjBase):
         component_pin_name: Union[str, List[str]] = None,
         net_name: Union[str, List[str]] = None,
         instance_id: Union[int, List[int]] = None,
-    ) -> List:
+    ) -> List[EDBPadstackInstance]:
         """
         Finds padstack instances matching the specified criteria.
 
@@ -408,27 +410,64 @@ class Layout(ObjBase):
         List
             A list of padstack instances matching the specified criteria.
         """
-        candidates = self.padstack_instances
+        candidates = self.padstack_instances  # make a copy of the list to filter down
         if instance_id is not None:
-            value = instance_id if isinstance(instance_id, list) else [instance_id]
-            value = [int(i) for i in value]
-            candidates = [i for i in candidates if i.id in value]
+            id_set = instance_id if isinstance(instance_id, list) else [instance_id]
+            id_set = {int(i) for i in id_set}
+            id_found = []
+            remaining = set(id_set)
+            for c in candidates:
+                cid = c.id
+                if cid in remaining:
+                    id_found.append(c)
+                    remaining.remove(cid)
+                    if not remaining:  # all ids found
+                        break
+            candidates = id_found
 
         if aedt_name is not None:
-            name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
-            candidates = [i for i in candidates if i.aedt_name in name]
+            name_set = set(aedt_name) if isinstance(aedt_name, list) else {aedt_name}
+            name_found = []
+            remaining = set(name_set)
+            for c in candidates:
+                cname = c.aedt_name
+                if cname in remaining:
+                    name_found.append(c)
+                    remaining.remove(cname)
+                    if not remaining:  # all names found
+                        break
+            candidates = name_found
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
             candidates = [i for i in candidates if i.component_name in value]
 
         if net_name is not None:
-            value = net_name if isinstance(net_name, list) else [net_name]
-            candidates = [i for i in candidates if i.net_name in value]
+            net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}
+            net_name_found = []
+            remaining = set(net_name_set)
+            for c in candidates:
+                n_name = c.net_name
+                if n_name in remaining:
+                    net_name_found.append(c)
+                    remaining.remove(n_name)
+                    if not remaining:  # all net names found
+                        break
+            candidates = net_name_found
 
         if component_pin_name is not None:
-            value = component_pin_name if isinstance(component_pin_name, list) else [component_pin_name]
-            candidates = [i for i in candidates if i.name in value]
+            c_pin_name_set = set(component_pin_name) if isinstance(component_pin_name, list) else {component_pin_name}
+            c_pin_name_found = []
+            remaining = set(c_pin_name_set)
+            for c in candidates:
+                p_name = c.name
+                if p_name in remaining:
+                    c_pin_name_found.append(c)
+                    remaining.remove(p_name)
+                    if not remaining:  # all component pin names found
+                        break
+            candidates = c_pin_name_found
+
         if not candidates:  # pragma: no cover
             raise ValueError(
                 f"Failed to find padstack instances with aedt_name={aedt_name}, component_name={component_name}, "

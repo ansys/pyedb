@@ -100,6 +100,22 @@ class BroadbandAdaptiveSolution:
     def max_num_passes(self, value):
         self.core.max_num_passes = value
 
+    @property
+    def max_passes(self) -> int:
+        """Maximum number of passes for broadband adaptive solution.
+
+        Returns
+        -------
+        int
+            Maximum number of passes.
+
+        """
+        return self.max_num_passes
+
+    @max_passes.setter
+    def max_passes(self, value):
+        self.max_num_passes = value
+
 
 class AdaptiveFrequency:
     def __init__(self, pedb, core):
@@ -543,6 +559,10 @@ class HFSSGeneralSettings:
         except Exception:
             return str(val).lower()
 
+    @adapt_type.setter
+    def adapt_type(self, value):
+        self.adaptive_solution_type = value
+
     @property
     def adaptive_solution_type(self) -> str:
         """Adaptive solution type.
@@ -550,7 +570,7 @@ class HFSSGeneralSettings:
         Returns
         -------
         str
-            Adaptive solution type name. Returned values are `single`, `multi_frequencies`, `broad_band`,
+            Adaptive solution type name. Returned values are `single`, `multi_frequencies`, `broadband`,
             or `num_adapt_type`.
 
         """
@@ -563,10 +583,12 @@ class HFSSGeneralSettings:
                 self.core.adaptive_solution_type = CoreAdaptType.SINGLE
             elif value.lower() == "multi_frequencies":
                 self.core.adaptive_solution_type = CoreAdaptType.MULTI_FREQUENCIES
-            elif value.lower() == "broad_band":
+            elif value.lower() == "broadband":
                 self.core.adaptive_solution_type = CoreAdaptType.BROADBAND
             elif value.lower() == "num_adapt_type":
                 self.core.adaptive_solution_type = CoreAdaptType.NUM_ADAPT_TYPE
+            else:
+                raise ValueError(f"Invalid adaptive solution type: {value}")
 
     @property
     def broadband_adaptive_solution(self) -> BroadbandAdaptiveSolution:

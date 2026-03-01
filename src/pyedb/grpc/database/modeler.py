@@ -41,6 +41,7 @@ from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecate_argument_name
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -98,10 +99,6 @@ class Modeler(object):
         """Initialize Modeler instance."""
         self._pedb = p_edb
         # Core cache
-        self._primitives: dict[str, Primitive] = {}
-
-        # Lazy indexes
-        self.primitives  # type: ignore  # Force initial load
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
@@ -112,98 +109,16 @@ class Modeler(object):
     # Cache management
     # ============================================================
 
-    def _reload_all(self):
+    def clear_cache(self):
         """Force reload of all primitives and reset indexes."""
-        self._primitives = {p.edb_uid: p for p in self._pedb.layout.primitives}
         self._primitives_by_name = None
         self._primitives_by_net = None
         self._primitives_by_layer = None
         self._primitives_by_layer_and_net = None
 
-    def _add_primitive(self, prim: Any):
-        """Add primitive wrapper to caches."""
-        try:
-            self._primitives[prim.id] = prim
-            if self._primitives_by_name is not None:
-                self._primitives_by_name[prim.aedt_name] = prim
-            if self._primitives_by_net is not None and hasattr(prim, "net"):
-                self._primitives_by_net.setdefault(prim.net, []).append(prim)
-            if hasattr(prim, "layer"):
-                if self._primitives_by_layer is not None and prim.layer_name:
-                    self._primitives_by_layer.setdefault(prim.layer_name, []).append(prim)
-        except:
-            self._reload_all()
-
-    def _remove_primitive(self, prim: Primitive):
-        """Remove primitive wrapper from all caches efficiently and safely."""
-        uid = prim.edb_uid
-
-        # 1. Remove from primary cache
-        self._primitives.pop(uid, None)
-
-        # 2. Remove from name cache if initialized
-        if self._primitives_by_name is not None:
-            self._primitives_by_name.pop(prim.aedt_name, None)
-
-        # 3. Remove from net cache if initialized
-        if self._primitives_by_net is not None and hasattr(prim, "net") and not prim.net.is_null:
-            net_name = prim.net.name
-            net_prims = self._primitives_by_net.get(net_name)
-            if net_prims:
-                try:
-                    net_prims.remove(prim)
-                except ValueError:
-                    pass  # Not found, skip
-                if not net_prims:
-                    self._primitives_by_net.pop(net_name, None)
-
-        # 4. Remove from layer cache if initialized
-        if self._primitives_by_layer is not None and hasattr(prim, "layer") and prim.layer_name:
-            layer_name = prim.layer.name
-            layer_prims = self._primitives_by_layer.get(layer_name)
-            if layer_prims:
-                try:
-                    layer_prims.remove(prim)
-                except ValueError:
-                    pass
-                if not layer_prims:
-                    self._primitives_by_layer.pop(layer_name, None)
-
-        # 5. Remove from layer+net cache if initialized
-        if self._primitives_by_layer_and_net is not None:
-            if hasattr(prim, "layer") and hasattr(prim, "net") and not prim.net.is_null:
-                layer_name = prim.layer.name
-                net_name = prim.net.name
-                layer_dict = self._primitives_by_layer_and_net.get(layer_name)
-                if layer_dict:
-                    net_list = layer_dict.get(net_name)
-                    if net_list:
-                        try:
-                            net_list.remove(prim)
-                        except ValueError:
-                            pass
-                        if not net_list:
-                            layer_dict.pop(net_name, None)
-                        if not layer_dict:
-                            self._primitives_by_layer_and_net.pop(layer_name, None)
-
-    def delete_batch_primitives(self, prim_list: List[Primitive]) -> None:
-        """Delete a batch of primitives and update caches.
-
-        Parameters
-        ----------
-        prim_list : list
-            List of primitive objects to delete.
-        """
-        for prim in prim_list:
-            prim.core.delete()
-        self._reload_all()
-
     @property
     def primitives(self) -> list[Primitive]:
-        if not self._primitives:
-            self._reload_all()
-        return list(self._primitives.values())
+        return self._pedb.layout.primitives
 
     @property
     def primitives_by_name(self):
@@ -518,7 +433,12 @@ class Modeler(object):
             Bounding box coordinates [min_x, min_y, max_x, max_y].
         """
         bounding_box = polygon.polygon_data.bbox()
-        return [Value(bounding_box[0].x), Value(bounding_box[0].y), Value(bounding_box[1].x), Value(bounding_box[1].y)]
+        return [
+            self._pedb.value(bounding_box[0].x),
+            self._pedb.value(bounding_box[0].y),
+            self._pedb.value(bounding_box[1].x),
+            self._pedb.value(bounding_box[1].y),
+        ]
 
     @staticmethod
     def get_polygon_points(polygon) -> List[List[float]]:
@@ -543,9 +463,9 @@ class Modeler(object):
                 point = polygon.polygon_data.points[i]
                 if prev_point != point:
                     if point.is_arc:
-                        points.append([Value(point.x)])
+                        points.append([self._pedb.value(point.x)])
                     else:
-                        points.append([Value(point.x), Value(point.y)])
+                        points.append([self._pedb.value(point.x), self._pedb.value(point.y)])
                     prev_point = point
                     i += 1
                 else:
@@ -601,8 +521,8 @@ class Modeler(object):
         polygon_data = polygon.polygon_data
         bound_center = polygon_data.bounding_circle()[0]
         bound_center2 = selection_polygon_data.bounding_circle()[0]
-        center = [Value(bound_center[0]), Value(bound_center[1])]
-        center2 = [Value(bound_center2[0]), Value(bound_center2[1])]
+        center = [self._pedb.value(bound_center[0]), self._pedb.value(bound_center[1])]
+        center2 = [self._pedb.value(bound_center2[0]), self._pedb.value(bound_center2[1])]
         x1, y1 = calc_slope(center2, center)
 
         if not origin:
@@ -617,12 +537,12 @@ class Modeler(object):
                 if prev_point != point:
                     check_inside = selection_polygon_data.is_inside(point)
                     if check_inside:
-                        xcoeff, ycoeff = calc_slope([Value(point.x), Value(point.x)], origin)
+                        xcoeff, ycoeff = calc_slope([self._pedb.value(point.x), self._pedb.value(point.x)], origin)
 
                         new_points = CorePointData(
                             [
-                                Value(str(Value(point.x) + f"{xcoeff}*{offset_name}")),
-                                Value(str(Value(point.y)) + f"{ycoeff}*{offset_name}"),
+                                self._pedb.value(str(self._pedb.value(point.x) + f"{xcoeff}*{offset_name}")),
+                                self._pedb.value(str(self._pedb.value(point.y)) + f"{ycoeff}*{offset_name}"),
                             ]
                         )
                         polygon_data.points[i] = new_points
@@ -682,11 +602,11 @@ class Modeler(object):
             for pt in points:
                 _pt = []
                 for coord in pt:
-                    coord = Value(coord, self._pedb.active_cell)
+                    coord = self._pedb.value(coord)
                     _pt.append(coord)
                 _points.append(_pt)
             points = _points
-            width = Value(width, self._pedb.active_cell)
+            width = self._pedb.value(width)
             polygon_data = CorePolygonData(points)
         elif isinstance(points, CorePolygonData):
             polygon_data = points
@@ -752,16 +672,16 @@ class Modeler(object):
             end_cap_style=end_cap_style,
             corner_style=corner_style,
         )
-        self._add_primitive(primitive)  # update cache
         return primitive
 
+    @deprecate_argument_name({"main_shape": "points"})
     def create_polygon(
         self,
         points: Union[List[List[float]], CorePolygonData],
         layer_name: str,
         voids: Optional[List[Any]] = [],
         net_name: str = "",
-    ) -> Optional[Primitive]:
+    ) -> Union[Optional[Primitive], bool]:
         """Create polygon primitive.
 
         Parameters
@@ -784,9 +704,7 @@ class Modeler(object):
         if isinstance(points, list):
             new_points = []
             for idx, i in enumerate(points):
-                new_points.append(
-                    CorePointData([Value(i[0], self._pedb.active_cell), Value(i[1], self._pedb.active_cell)])
-                )
+                new_points.append(CorePointData([self._pedb.value(i[0]), self._pedb.value(i[1])]))
             polygon_data = CorePolygonData(points=new_points)
 
         elif isinstance(points, CorePolygonData):
@@ -811,7 +729,6 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._logger.error("Null polygon created")
             return False
-        self._add_primitive(polygon)
         return polygon
 
     def create_rectangle(
@@ -864,43 +781,42 @@ class Modeler(object):
                 layer=layer_name,
                 net=net,
                 rep_type=representation_type,
-                param1=Value(lower_left_point[0]),
-                param2=Value(lower_left_point[1]),
-                param3=Value(upper_right_point[0]),
-                param4=Value(upper_right_point[1]),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=self._pedb.value(lower_left_point[0]),
+                param2=self._pedb.value(lower_left_point[1]),
+                param3=self._pedb.value(upper_right_point[0]),
+                param4=self._pedb.value(upper_right_point[1]),
+                corner_rad=self._pedb.value(corner_radius),
+                rotation=self._pedb.value(rotation),
             )
         else:
             rep_type = "center_width_height"
             if isinstance(width, str):
                 if width in self._pedb.variables:
-                    width = Value(width, self._pedb.active_cell)
+                    width = self._pedb.value(width, self._pedb.active_cell)
                 else:
-                    width = Value(width)
+                    width = self._pedb.value(width)
             else:
-                width = Value(width)
+                width = self._pedb.value(width)
             if isinstance(height, str):
                 if height in self._pedb.variables:
-                    height = Value(height, self._pedb.active_cell)
+                    height = self._pedb.value(height, self._pedb.active_cell)
                 else:
-                    height = Value(width)
+                    height = self._pedb.value(width)
             else:
-                height = Value(width)
+                height = self._pedb.value(width)
             rect = Rectangle.create(
                 layout=self._active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=rep_type,
-                param1=Value(center_point[0]),
-                param2=Value(center_point[1]),
-                param3=Value(width),
-                param4=Value(height),
-                corner_rad=Value(corner_radius),
-                rotation=Value(rotation),
+                param1=self._pedb.value(center_point[0]),
+                param2=self._pedb.value(center_point[1]),
+                param3=self._pedb.value(width),
+                param4=self._pedb.value(height),
+                corner_rad=self._pedb.value(corner_radius),
+                rotation=self._pedb.value(rotation),
             )
         if not rect.is_null:
-            self._add_primitive(rect)
             return rect
         return False
 
@@ -933,12 +849,11 @@ class Modeler(object):
             layout=self._active_layout,
             layer=layer_name,
             net=edb_net,
-            center_x=Value(x),
-            center_y=Value(y),
-            radius=Value(radius),
+            center_x=self._pedb.value(x),
+            center_y=self._pedb.value(y),
+            radius=self._pedb.value(radius),
         )
         if not circle.is_null:
-            self._add_primitive(circle)
             return circle
         return False
 
@@ -1023,9 +938,9 @@ class Modeler(object):
                 layout=self._active_layout,
                 layer=void_circle.layer_name,
                 net=void_circle.net,
-                center_x=Value(circ_params[0]),
-                center_y=Value(circ_params[1]),
-                radius=Value(circ_params[2]),
+                center_x=self._pedb.value(circ_params[0]),
+                center_y=self._pedb.value(circ_params[1]),
+                radius=self._pedb.value(circ_params[2]),
             )
             if not cloned_circle.is_null:
                 cloned_circle.is_negative = True
@@ -1117,14 +1032,14 @@ class Modeler(object):
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.active_cell.add_variable(
-                                name=_parameter_name, value=Value(variable_value), is_param=True
+                                name=_parameter_name, value=self._pedb.value(variable_value), is_param=True
                             )
-                            p.width = Value(_parameter_name, self._pedb.active_cell)
+                            p.width = self._pedb.value(_parameter_name)
                         elif p.layer.name in layers_name:
                             if not variable_value:
                                 variable_value = p.width
                             self._pedb.add_design_variable(parameter_name, variable_value, True)
-                            p.width = Value(_parameter_name, self._pedb.active_cell)
+                            p.width = self._pedb.value(_parameter_name)
         return True
 
     def unite_polygons_on_layer(
@@ -1168,34 +1083,35 @@ class Modeler(object):
             for net, polys in poly_by_nets.items():
                 if net in net_names_list or not net_names_list:
                     for p in polys:
-                        list_polygon_data.append(p.polygon_data)
+                        list_polygon_data.append(p.core.polygon_data)
                         delete_list.append(p)
-                        all_voids.extend(p.voids)
+                        all_voids.extend([v for v in p.voids])
             united = CorePolygonData.unite(list_polygon_data)
             for item in united:
+                _added_voids = []
                 for void in all_voids:
-                    if item.intersection_type(void.polygon_data) == 2:
-                        item.add_hole(void.polygon_data)
-                self.create_polygon(item, layer_name=lay, voids=[], net_name=net)
+                    if item.intersection_type(void.core.polygon_data).value == 2:
+                        _added_voids.append(void)
+                self.create_polygon(item, layer_name=lay, voids=_added_voids, net_name=net)
             for void in all_voids:
                 for poly in poly_by_nets[net]:  # pragma no cover
-                    if void.polygon_data.intersection_type(poly.polygon_data) >= 2:
+                    if void.core.polygon_data.intersection_type(poly.core.polygon_data).value >= 2:
                         try:
                             id = delete_list.index(poly)
                         except ValueError:
                             id = -1
                         if id >= 0:
                             delete_list.pop(id)
-            for poly in list(set(delete_list)):
+            self.clear_cache()
+            for poly in delete_list:
                 poly.delete()
-
         if delete_padstack_gemometries:
             self._logger.info("Deleting Padstack Definitions")
             for pad in self._pedb.padstacks.definitions:
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
                 if len(p1.get_layer_names()) > 1:
                     self._pedb.padstacks.remove_pads_from_padstack(pad)
-        self._reload_all()
+        self.clear_cache()
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
@@ -1268,7 +1184,7 @@ class Modeler(object):
                     primitives = self.primitives_by_layer[layer]
                     for prim in primitives:
                         if prim.primitive_type.name == "PATH":
-                            surface += Path(self._pedb, prim).length * Value(prim.cast().width)
+                            surface += Path(self._pedb, prim).length * self._pedb.value(prim.cast().width)
                         if prim.primitive_type.name == "POLYGON":
                             surface += prim.polygon_data.area()
                             stat_model.occupying_surface[layer] = round(surface, 6)
@@ -1358,19 +1274,18 @@ class Modeler(object):
             bondwire_type=bondwire_type,
             definition_name=definition_name,
             placement_layer=placement_layer,
-            width=Value(width),
+            width=self._pedb.value(width),
             material=material,
             start_layer_name=start_layer_name,
-            start_x=Value(start_x),
-            start_y=Value(start_y),
+            start_x=self._pedb.value(start_x),
+            start_y=self._pedb.value(start_y),
             end_layer_name=end_layer_name,
-            end_x=Value(end_x),
-            end_y=Value(end_y),
+            end_x=self._pedb.value(end_x),
+            end_y=self._pedb.value(end_y),
             net=net,
             end_cell_inst=end_cell_inst,
             start_cell_inst=start_cell_inst,
         )
-        self._add_primitive(bw)
         return bw
 
     def create_pin_group(
@@ -1419,11 +1334,7 @@ class Modeler(object):
             if isinstance(pins_by_name, str):
                 pins_by_name = [pins_by_name]
             p_inst = self._pedb.layout.padstack_instances
-            _pins = {
-                pin_id: pin
-                for pin_id, pin in p_inst.items()
-                if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name
-            }
+            _pins = {pin.id: pin for pin in p_inst if pin.aedt_name in pins_by_aedt_name or pin.name in pins_by_name}
             if not pins:
                 pins = _pins
             else:
@@ -1589,9 +1500,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1),
-            (self._pedb.value(local_origin_y) * -1),
-            (self._pedb.value(local_origin_z) * -1),
+            (self._pedb.value(local_origin_x * -1)),
+            (self._pedb.value(local_origin_y * -1)),
+            (self._pedb.value(local_origin_z * -1)),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1615,9 +1526,7 @@ class Modeler(object):
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(
-            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
-        )
+        location = GrpcPoint3DData(self._pedb.value(x).core, self._pedb.value(y).core, self._pedb.value(z).core)
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 
@@ -1673,9 +1582,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x) * -1)._edb_object,
-            (self._pedb.value(local_origin_y) * -1)._edb_object,
-            (self._pedb.value(local_origin_z) * -1)._edb_object,
+            (self._pedb.value(local_origin_x * -1)).core,
+            (self._pedb.value(local_origin_y * -1)).core,
+            (self._pedb.value(local_origin_z * -1)).core,
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
@@ -1699,9 +1608,7 @@ class Modeler(object):
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(
-            self._pedb.value(x)._edb_object, self._pedb.value(y)._edb_object, self._pedb.value(z)._edb_object
-        )
+        location = GrpcPoint3DData(self._pedb.value(x).core, self._pedb.value(y).core, self._pedb.value(z).core)
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 

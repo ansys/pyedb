@@ -28,6 +28,7 @@ from pathlib import Path
 import pytest
 
 from tests.conftest import config
+from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
 
@@ -35,16 +36,11 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch, target_path, target_path2, target_path4):
-        self.local_scratch = local_scratch
-
-    @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_hfss_log_parser(self, edb_examples):
+class TestClass(BaseTestClass):
+    def test_hfss_log_parser(self):
         from pyedb.workflows.utilities.hfss_log_parser import HFSSLogParser
 
-        log_file = edb_examples.get_log_file_example()
+        log_file = self.edb_examples.get_log_file_example()
         log_parser = HFSSLogParser(log_file).parse()
         for nr, line in enumerate(Path(log_file).read_text(encoding="utf-8", errors="ignore").splitlines(), 1):
             if "converge" in line.lower():
@@ -63,10 +59,10 @@ class TestClass:
         assert log_parser.adaptive_passes()
         assert log_parser.memory_on_convergence() == 263
 
-    def test_hfss_auto_setup(self, edb_examples):
+    def test_hfss_auto_setup(self):
         from pyedb.workflows.sipi.hfss_auto_configuration import create_hfss_auto_configuration
 
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse()
         hfss_auto_config = create_hfss_auto_configuration(source_edb_path=edbapp.edbpath, edb=edbapp)
         hfss_auto_config.grpc = edbapp.grpc
         hfss_auto_config.ansys_version = edbapp.version
@@ -77,7 +73,6 @@ class TestClass:
         hfss_auto_config.create_projects()
         assert sum(1 for item in Path(hfss_auto_config.batch_group_folder).iterdir() if item.is_dir()) == 2
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
     def test_drc_rules(self):
         from pyedb.workflows.drc.drc import Rules
 
@@ -106,8 +101,11 @@ class TestClass:
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_drc_rules_from_file(self, edb_examples):
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
+    def test_drc_rules_from_file(self):
         from pyedb.workflows.drc.drc import Drc, Rules
 
         RULES_DICT = {
@@ -118,26 +116,25 @@ class TestClass:
                 {
                     "name": "DPMATCH",
                     "tolerance": "5mil",
-                    "pairs": [{"positive": "PCIe_Gen4_TX3_CAP_P", "negative": "PCIe_Gen4_TX3_CAP_N"}],
+                    "pairs": [{"positive": "SFPA_TX_P", "negative": "SFPA_TX_N"}],
                 }
             ],
             "back_drill_stub_length": [{"name": "STUB", "value": "6mil"}],
             "copper_balance": [{"name": "CB", "max_percent": 15, "layers": ["L3", "L4"]}],
         }
-        edbapp = edb_examples.get_si_verse()
+        edbapp = self.edb_examples.get_si_verse_sfp()
         rules = Rules.from_dict(RULES_DICT)
         drc = Drc(edbapp)
         drc.check(rules)
-        output_file = os.path.join(self.local_scratch.path, "drc_results.ipc356a")
+        output_file = os.path.join(self.edb_examples.example_models_path, "drc_results.ipc356a")
         drc.to_ipc356a(file_path=output_file)
         assert os.path.isfile(output_file)
         edbapp.close()
 
-    @pytest.mark.skipif(True, reason="Unstable test.")
-    def test_siwave_log_parser(self, edb_examples):
+    def test_siwave_log_parser(self):
         from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
 
-        log_file = edb_examples.get_siwave_log_file_example()
+        log_file = self.edb_examples.get_siwave_log_file_example()
         parser = SiwaveLogParser(log_file)
         log_parser = parser.parse()
         assert log_parser.aedt
@@ -149,3 +146,19 @@ class TestClass:
         # Test helper methods
         assert log_parser.is_completed()
         assert not log_parser.is_aborted()
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Only implemented in gRPC")
+    def test_physical_merge(self):
+        main_board = self.edb_examples.get_si_verse()
+        merged_package = self.edb_examples.get_package()
+        main_board.physical_merge(merged_edb=merged_package, vector=(0, 0.4e-3), prefix="test_")
+        assert len(main_board.stackup.layers) == 24  # nosec: B101
+        assert "test_TOP" in main_board.stackup.layers  # nosec: B101
+        assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424  # nosec: B101
+        component_on_merged_layer = [
+            comp for comp in list(main_board.components.instances.values()) if comp.placement_layer == "test_TOP"
+        ]
+        assert len(component_on_merged_layer) == 1  # nosec: B101
+        assert not component_on_merged_layer[0].is_null  # nosec: B101
+        assert component_on_merged_layer[0].type == "other"  # nosec: B101
+        main_board.close()

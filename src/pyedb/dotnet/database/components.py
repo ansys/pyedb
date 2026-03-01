@@ -26,9 +26,12 @@ import codecs
 import json
 import math
 import os
+from pathlib import Path
 import re
 from typing import List, Set, Union
 import warnings
+
+import skrf
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
@@ -43,20 +46,21 @@ from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.sources import Source, SourceType
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.padstack import EdbPadstacks
+from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import (
     _retry_ntimes,
     generate_unique_name,
     get_filename_without_extension,
 )
-from pyedb.modeler.geometry_operators import GeometryOperators
+from pyedb.generic.geometry_operators import GeometryOperators
 
 
-def resistor_value_parser(RValue):
+def resistor_value_parser(RValue: str | float) -> float:
     """Convert a resistor value.
 
     Parameters
     ----------
-    RValue : float
+    RValue : str | float
         Resistor value.
 
     Returns
@@ -67,7 +71,7 @@ def resistor_value_parser(RValue):
     """
     if isinstance(RValue, str):
         RValue = RValue.replace(" ", "")
-        RValue = RValue.replace("meg", "m")
+        RValue = RValue.replace("meg", "M")
         RValue = RValue.replace("Ohm", "")
         RValue = RValue.replace("ohm", "")
         RValue = RValue.replace("k", "e3")
@@ -91,7 +95,7 @@ class Components(object):
     >>> edbapp.components
     """
 
-    def __getitem__(self, name):
+    def __getitem__(self, name) -> EDBComponent | EDBComponentDef:
         """Get  a component or component definition from the Edb project.
 
         Parameters
@@ -118,7 +122,7 @@ class Components(object):
         self._padstack = EdbPadstacks(self._pedb)
 
     @property
-    def _logger(self):
+    def _logger(self) -> EdbLogger:
         """Logger."""
         return self._pedb.logger
 
@@ -148,29 +152,6 @@ class Components(object):
     @property
     def _db(self):
         return self._pedb._db
-
-    @property
-    def components(self):
-        """Component setup information.
-
-        .. deprecated:: 0.6.62
-           Use new property :func:`instances` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
-            Default dictionary for the EDB component.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.components
-
-        """
-        warnings.warn("Use new property :func:`instances` instead.", DeprecationWarning)
-        return self.instances
 
     @property
     def instances(self):
@@ -206,15 +187,16 @@ class Components(object):
         m = "Ansys.Ansoft.Edb.Definition.NPortComponentModel"
         return {name: l for name, l in self.definitions.items() if m in [i.ToString() for i in l._comp_model]}
 
-    def import_definition(self, file_path):
+    def import_definition(self, file_path: Path) -> bool:
         """Import component definition from json file.
 
         Parameters
         ----------
-        file_path : str
+        file_path : Path
             File path of json file.
         """
-        with codecs.open(file_path, "r", encoding="utf-8") as f:
+        file_path_str = str(file_path)
+        with codecs.open(file_path_str, "r", encoding="utf-8") as f:
             data = json.load(f)
             for part_name, p in data["Definitions"].items():
                 model_type = p["Model_type"]
@@ -227,25 +209,25 @@ class Components(object):
                     comp_definition.assign_rlc_model(p["Res"], p["Ind"], p["Cap"], p["Is_parallel"])
                 else:
                     model_name = p["Model_name"]
-                    file_path = data[model_type][model_name]
+                    file_path_str = data[model_type][model_name]
                     if model_type == "SParameterModel":
                         if "Reference_net" in p:
                             reference_net = p["Reference_net"]
                         else:
                             reference_net = None
-                        comp_definition.assign_s_param_model(file_path, model_name, reference_net)
+                        comp_definition.assign_s_param_model(file_path_str, model_name, reference_net)
                     elif model_type == "SPICEModel":
-                        comp_definition.assign_spice_model(file_path, model_name)
+                        comp_definition.assign_spice_model(file_path_str, model_name)
                     else:
                         pass
         return True
 
-    def export_definition(self, file_path):
+    def export_definition(self, file_path: Path) -> str:
         """Export component definitions to json file.
 
         Parameters
         ----------
-        file_path : str
+        file_path : Path
             File path of json file.
 
         Returns
@@ -257,6 +239,7 @@ class Components(object):
             "SPICEModel": {},
             "Definitions": {},
         }
+        file_path_str = str(file_path)
         for part_name, props in self.definitions.items():
             comp_list = list(props.components.values())
             if comp_list:
@@ -276,21 +259,21 @@ class Components(object):
                         data["Definitions"][part_name]["Model_name"] = model.name
                         data["Definitions"][part_name]["Reference_net"] = model.reference_net
                         if not model.name in data["SParameterModel"]:
-                            data["SParameterModel"][model.name] = model.file_path
+                            data["SParameterModel"][model.name] = model.file_path_str
                     elif comp.model_type == "SPICEModel":
                         model = comp.spice_model
                         data["Definitions"][part_name]["Model_name"] = model.name
                         if not model.name in data["SPICEModel"]:
-                            data["SPICEModel"][model.name] = model.file_path
+                            data["SPICEModel"][model.name] = model.file_path_str
                     else:
                         model = comp.netlist_model
                         data["Definitions"][part_name]["Model_name"] = model.netlist
 
-        with codecs.open(file_path, "w", encoding="utf-8") as f:
+        with codecs.open(file_path_str, "w", encoding="utf-8") as f:
             json.dump(data, f, ensure_ascii=False, indent=4)
-        return file_path
+        return file_path_str
 
-    def refresh_components(self):
+    def refresh_components(self) -> bool:
         """Refresh the component dictionary."""
         self._cmp = {}
         self._res = {}
@@ -318,7 +301,7 @@ class Components(object):
         return True
 
     @property
-    def resistors(self):
+    def resistors(self) -> dict[str, dict]:
         """Resistors.
 
         Returns
@@ -336,7 +319,7 @@ class Components(object):
         return self._res
 
     @property
-    def capacitors(self):
+    def capacitors(self) -> dict[str, dict]:
         """Capacitors.
 
         Returns
@@ -354,7 +337,7 @@ class Components(object):
         return self._cap
 
     @property
-    def inductors(self):
+    def inductors(self) -> dict[str, dict]:
         """Inductors.
 
         Returns
@@ -373,7 +356,7 @@ class Components(object):
         return self._ind
 
     @property
-    def ICs(self):
+    def ICs(self) -> dict[str, dict]:
         """Integrated circuits.
 
         Returns
@@ -392,7 +375,7 @@ class Components(object):
         return self._ics
 
     @property
-    def IOs(self):
+    def IOs(self) -> dict[str, dict]:
         """Circuit inupts and outputs.
 
         Returns
@@ -411,7 +394,7 @@ class Components(object):
         return self._ios
 
     @property
-    def Others(self):
+    def Others(self) -> dict[str, dict]:
         """Other core components.
 
         Returns
@@ -430,7 +413,7 @@ class Components(object):
         return self._others
 
     @property
-    def components_by_partname(self):
+    def components_by_partname(self) -> dict:
         """Components by part name.
 
         Returns
@@ -454,7 +437,7 @@ class Components(object):
                 self._comps_by_part[val.partname] = [val]
         return self._comps_by_part
 
-    def get_component_by_name(self, name):
+    def get_component_by_name(self, name) -> bool:
         """Retrieve a component by name.
 
         Parameters
@@ -470,7 +453,7 @@ class Components(object):
         """
         return self._pedb.layout.find_component_by_name(name)
 
-    def get_components_from_nets(self, netlist=None):
+    def get_components_from_nets(self, netlist=None) -> list:
         """Retrieve components from a net list.
 
         Parameters
@@ -494,7 +477,7 @@ class Components(object):
                 cmp_list.append(refdes)
         return cmp_list
 
-    def _get_edb_pin_from_pin_name(self, cmp, pin):
+    def _get_edb_pin_from_pin_name(self, cmp, pin) -> bool:
         if not isinstance(cmp, self._pedb.core.Cell.Hierarchy.Component):
             return False
         if not isinstance(pin, str):
@@ -513,7 +496,7 @@ class Components(object):
         hosting_component_pin1,
         hosting_component_pin2,
         flipped=False,
-    ):
+    ) -> tuple:
         """Get the placement vector between 2 components.
 
         Parameters
@@ -604,7 +587,7 @@ class Components(object):
         self._logger.warning("Failed to compute vector.")
         return False, [0, 0], 0, 0
 
-    def get_solder_ball_height(self, cmp):
+    def get_solder_ball_height(self, cmp) -> float | bool:
         """Get component solder ball height.
 
         Parameters
@@ -625,7 +608,7 @@ class Components(object):
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
-    def get_vendor_libraries(self):
+    def get_vendor_libraries(self) -> dict[str, dict[str, dict[str]]]:
         """Retrieve all capacitors and inductors libraries from ANSYS installation (used by Siwave).
 
         Returns
@@ -669,7 +652,7 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-    def create_source_on_component(self, sources=None):
+    def create_source_on_component(self, sources=None) -> bool:
         """Create voltage, current source, or resistor on component.
 
         Parameters
@@ -759,118 +742,25 @@ class Components(object):
         pec_boundary=False,
         pingroup_on_single_pin=False,
     ):
-        """Create circuit port between pins and reference ones.
-
-        Parameters
-        ----------
-        refdes : Component reference designator
-            str or EDBComponent object.
-        pins : pin specifier(s) or instance(s) where the port terminal is to be created. Single pin name or a list of
-        several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the
-        global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances
-        can be provided as ``EDBPadstackInstance`` objects.
-        For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with
-        ``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be
-        provided.
-            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
-        reference_pins : reference pin specifier(s) or instance(s) for the port reference terminal. Allowed values are
-        the same as for the ``pins`` parameter.
-            Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
-        impedance : Port impedance
-            str, float
-        port_name : str, optional
-            Port name. The default is ``None``, in which case a name is automatically assigned.
-        pec_boundary : bool, optional
-        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-        a perfect short is created between the pin and impedance is ignored. This
-        parameter is only supported on a port created between two pins, such as
-        when there is no pin group.
-        pingroup_on_single_pin : bool
-            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
-            ``False`` the port is created at the pad edge. Default value is ``False``.
-
-        Returns
-        -------
-        EDB terminal created, or False if failed to create.
-
-        Example:
-        >>> from pyedb import Edb
-        >>> edb = Edb(path_to_edb_file)
-        >>> pin = "AJ6"
-        >>> ref_pins = ["AM7", "AM4"]
-        Or to take all reference pins
-        >>> ref_pins = [pin for pin in list(edb.components["U2A5"].pins.values()) if pin.net_name == "GND"]
-        >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
-        """
-
-        if isinstance(refdes, str):
-            refdes = self.instances[refdes]
-        elif isinstance(refdes, self._pedb._edb.Cell.Hierarchy.Component):
-            refdes = EDBComponent(self._pedb, refdes)
-        pins = self._get_pins_for_ports(pins, refdes)
-        if not pins:  # pragma: no cover
-            raise RuntimeError("No pins found during port creation. Port is not defined.")
-        reference_pins = self._get_pins_for_ports(reference_pins, refdes)
-        if not reference_pins:
-            raise RuntimeError("No reference pins found during port creation. Port is not defined.")
-        if not pins:
-            raise RuntimeWarning("No pins found during port creation. Port is not defined.")
-        if reference_pins:
-            reference_pins = self._get_pins_for_ports(reference_pins, refdes)
-            if not reference_pins:
-                raise RuntimeWarning("No reference pins found during port creation. Port is not defined.")
-        if refdes and any(refdes.rlc_values):
-            return self.deactivate_rlc_component(component=refdes, create_circuit_port=True)
-        if not port_name:
-            port_name = f"Port_{pins[0].net_name}_{pins[0].aedt_name}".replace("-", "_")
-
-        if len(pins) > 1 or pingroup_on_single_pin:
-            if pec_boundary:
-                pec_boundary = False
-                self._logger.info(
-                    "Disabling PEC boundary creation, this feature is supported on single pin "
-                    f"ports only, {len(pins)} pins found (pingroup_on_single_pin: {pingroup_on_single_pin})."
-                )
-            group_name = "group_{}".format(port_name)
-            pin_group = self.create_pingroup_from_pins(pins, group_name)
-            term = self._create_pin_group_terminal(pingroup=pin_group, term_name=port_name)
-        else:
-            term = self._create_terminal(pins[0]._edb_object, term_name=port_name)
-        term.SetIsCircuitPort(True)
-
-        if len(reference_pins) > 1 or pingroup_on_single_pin:
-            if pec_boundary:
-                pec_boundary = False
-                self._logger.info(
-                    "Disabling PEC boundary creation. This feature is supported on single pin "
-                    f"ports only, {len(reference_pins)} reference pins found "
-                    f"(pingroup_on_single_pin: {pingroup_on_single_pin})."
-                )
-            ref_group_name = f"group_{port_name}_ref"
-            ref_pin_group = self.create_pingroup_from_pins(reference_pins, ref_group_name)
-            ref_term = self._create_pin_group_terminal(pingroup=ref_pin_group, term_name=port_name + "_ref")
-        else:
-            ref_term = self._create_terminal(reference_pins[0]._edb_object, term_name=port_name + "_ref")
-        ref_term.SetIsCircuitPort(True)
-
-        term.SetImpedance(self._edb.Utility.Value(impedance))
-        term.SetReferenceTerminal(ref_term)
-        if pec_boundary:
-            term.SetIsCircuitPort(False)
-            ref_term.SetIsCircuitPort(False)
-            term.SetBoundaryType(self._edb.Cell.Terminal.BoundaryType.PecBoundary)
-            ref_term.SetBoundaryType(self._edb.Cell.Terminal.BoundaryType.PecBoundary)
-            self._logger.info(
-                f"PEC boundary created between pin {pins[0].name} and reference pin {reference_pins[0].name}"
-            )
-
-        return term or False
+        warnings.warn(
+            "`create_port_on_pins` is deprecated and will be removed in future versions. "
+            "Please use `create_port_on_component` from edb.excitation_manager instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        self._pedb.source_excitation.create_port_on_pins(
+            refdes,
+            pins,
+            reference_pins,
+            impedance,
+            port_name,
+            pec_boundary,
+            pingroup_on_single_pin,
+        )
 
     def _get_pins_for_ports(
         self, pins: Union[int, str, EDBPadstackInstance, List[Union[int, str, EDBPadstackInstance]]], comp: EDBComponent
-    ) -> List[EDBPadstackInstance]:
+    ) -> list[EDBPadstackInstance]:
         if not pins:
             raise ValueError("No pins provided for port creation.")
         elif not isinstance(pins, List):
@@ -906,7 +796,7 @@ class Components(object):
         solder_balls_size=None,
         solder_balls_mid_size=None,
         extend_reference_pins_outside_component=False,
-    ):
+    ) -> float | bool:
         """Create ports on a component.
 
         Parameters
@@ -922,7 +812,7 @@ class Components(object):
         do_pingroup : bool
             True activate pingroup during port creation (only used with combination of CircPort),
             False will take the closest reference pin and generate one port per signal pin.
-        refnet : string or list of string.
+        reference_net : string or list of string.
             list of the reference net.
         port_name : str
             Port name for overwriting the default port-naming convention,
@@ -953,8 +843,8 @@ class Components(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder")
         >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
-        >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
-        >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
+        >>> edbapp.components.create_port_on_component(component="U2A5", net_list=net_list,
+        >>> port_type=SourceType.CoaxPort, do_pingroup=False, reference_net="GND")
 
         """
         # Adding grpc compatibility
@@ -1679,48 +1569,6 @@ class Components(object):
         self._cmp[new_cmp.GetName()] = new_edb_comp
         return new_edb_comp
 
-    def create_component_from_pins(
-        self, pins, component_name, placement_layer=None, component_part_name=None
-    ):  # pragma: no cover
-        """Create a component from pins.
-
-        .. deprecated:: 0.6.62
-           Use :func:`create` method instead.
-
-        Parameters
-        ----------
-        pins : list
-            List of EDB core pins.
-        component_name : str
-            Name of the reference designator for the component.
-        placement_layer : str, optional
-            Name of the layer used for placing the component.
-        component_part_name : str, optional
-            Part name of the component. It's created a new definition if doesn't exists.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> pins = edbapp.components.get_pin_from_component("A1")
-        >>> edbapp.components.create(pins, "A1New")
-
-        """
-        warnings.warn("`create_component_from_pins` is deprecated. Use `create` method instead.", DeprecationWarning)
-        return self.create(
-            pins=pins,
-            component_name=component_name,
-            placement_layer=placement_layer,
-            component_part_name=component_part_name,
-            is_rlc=False,
-        )
-
     def set_component_model(self, componentname, model_type="Spice", modelpath=None, modelname=None):
         """Assign a Spice or Touchstone model to a component.
 
@@ -1753,9 +1601,10 @@ class Components(object):
         """
         if not modelname:
             modelname = get_filename_without_extension(modelpath)
-        edbComponent = self.get_component_by_name(componentname)._edb_object
-        if str(edbComponent.EDBHandle) == "0":
-            return False
+        edbComponent = self._pedb.layout.find_component_by_name(componentname)
+        if edbComponent is None:
+            raise ValueError(f"Component {componentname} not found in the layout.")
+        edbComponent = edbComponent._edb_object
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
 
         componentPins = self.get_pin_from_component(componentname)
@@ -1916,33 +1765,6 @@ class Components(object):
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
 
         return deleted_comps
-
-    def delete_component(self, component_name):  # pragma: no cover
-        """Delete a component.
-
-        .. deprecated:: 0.6.62
-           Use :func:`delete` method instead.
-
-        Parameters
-        ----------
-        component_name : str
-            Name of the component.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder")
-        >>> edbapp.components.delete("A1")
-
-        """
-        warnings.warn("`delete_component` is deprecated. Use `delete` property instead.", DeprecationWarning)
-        return self.delete(component_name=component_name)
 
     def delete(self, component_name):
         """Delete a component.

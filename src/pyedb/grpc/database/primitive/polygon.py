@@ -153,16 +153,7 @@ class Polygon(Primitive):
             net = net.core
         edb_object = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
         new_polygon = cls(layout._pedb, edb_object)
-        # keep modeler cache in sync
-        layout._pedb.modeler._add_primitive(new_polygon)
-
         return new_polygon
-
-    def delete(self):
-        """Delete polygon from layout."""
-        # keeping cache in sync
-        self._pedb.modeler._remove_primitive(self)
-        self.core.delete()
 
     def fix_self_intersections(self) -> list[any]:
         """Remove self intersections if they exist.
@@ -335,7 +326,7 @@ class Polygon(Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            self.layer = self._pedb.stackup.layers.get(layer, None)
+            self.layer = layer
             if layer:
                 return True
         return False
