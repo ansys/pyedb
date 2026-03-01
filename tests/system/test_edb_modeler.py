@@ -566,7 +566,7 @@ class TestClass(BaseTestClass):
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_layout_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -577,7 +577,7 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_layout_instance_place_on_bottom(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -592,7 +592,7 @@ class TestClass(BaseTestClass):
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_layout_instance_placement_3d(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -607,7 +607,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_placement_3d(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
@@ -624,7 +624,7 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_on_layer(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
@@ -640,13 +640,4 @@ class TestClass(BaseTestClass):
             place_on_bottom=True,
         )
         assert not cell_inst_2.is_null
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="issue #1803 fix grpc consolidation")
-    def test_modeler_get_primitives(self):
-        edbapp = self.edb_examples.get_si_verse()
-        paths = edbapp.modeler.get_primitives(net_name="GND", prim_type="path")
-        assert len(paths) == 407
-        polygons = edbapp.modeler.get_primitives(net_name="GND", prim_type="polygon")
-        assert len(polygons) == 39
         edbapp.close(terminate_rpc_session=False)

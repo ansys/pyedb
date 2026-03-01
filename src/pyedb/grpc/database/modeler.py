@@ -878,49 +878,6 @@ class Modeler(object):
                 p.delete()
         return True
 
-    def get_primitives(
-        self,
-        net_name: Optional[str] = None,
-        layer_name: Optional[str] = None,
-        prim_type: Optional[str] = None,
-        is_void: bool = False,
-    ) -> List[Primitive]:
-        """Get primitives with filtering.
-
-        Parameters
-        ----------
-        net_name : str, optional
-            Net name filter.
-        layer_name : str, optional
-            Layer name filter.
-        prim_type : str, optional
-            Primitive type filter.
-        is_void : bool, optional
-            Void primitive filter.
-
-        Returns
-        -------
-        list
-            List of filtered primitives.
-        """
-        prims = []
-        for el in self.primitives:
-            if not el.primitive_type:
-                continue
-            if net_name:
-                if not el.net.name == net_name:
-                    continue
-            if layer_name:
-                if not el.layer.name == layer_name:
-                    continue
-            if prim_type:
-                if not el.primitive_type == prim_type:
-                    continue
-            if not el.is_void == is_void:
-                continue
-            prims.append(el)
-        return prims
-
     def fix_circle_void_for_clipping(self) -> bool:
         """Fix circle void clipping issues.
 

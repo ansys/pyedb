@@ -874,16 +874,16 @@ class Modeler(object):
         list
             List of filtered primitives
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead",
+                      DeprecationWarning, stacklevel=2)
+        primitives = self._pedb.layout.find_primitive(
+            layer_name=layer_name,
+            net_name=net_name,
+        )
         prims = []
-        for el in self.primitives:
+        for el in primitives:
             if not el.type:
                 continue
-            if net_name:
-                if not el.net_name == net_name:
-                    continue
-            if layer_name:
-                if not el.layer_name == layer_name:
-                    continue
             if prim_type:
                 if not el.type == prim_type:
                     continue
