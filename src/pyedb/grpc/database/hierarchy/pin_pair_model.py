@@ -106,33 +106,6 @@ class PinPairModel:
         return pp[0][1] if pp else None
 
     @property
-    def rlc(self, pin_pair: tuple[str, str] = None) -> tuple[str, str] | None:
-        """Rlc mdodel.
-
-        Parameters
-        ----------
-        pin_pair : Tuple[str, str], optional
-            Tuple of pin names (first_pin, second_pin). If not provided, the first pin pair will be used by default.
-            If not provided and there is no pin pair, the first pin will be taken.
-
-        Returns
-        -------
-        Tuple [str, str] | None
-            Tuple of pin names (first_pin, second_pin) if pin pair exists, None otherwise
-        """
-        pp = self.core.pin_pairs()
-        if not pp:
-            return None
-        if pin_pair:
-            for p in pp:
-                if p[0] == pin_pair[0] and p[1] == pin_pair[1]:
-                    pin_pair = self.core.rlc(pp)
-            raise ValueError(f"Pin pair {pin_pair} not found.")
-        else:
-            pin_pair = pp[0]
-        return self.core.rlc(pin_pair)
-
-    @property
     def rlc_enable(self) -> tuple[bool, bool, bool]:
         """Enable model.
 
@@ -242,3 +215,68 @@ class PinPairModel:
     @is_parallel.setter
     def is_parallel(self, value):
         self.core.is_parallel = value
+
+    def pin_pairs(self) -> list[tuple[str, str]]:
+        """Get all pin pairs.
+
+        Returns
+        -------
+        List[Tuple[str, str]]
+            List of pin pairs.
+
+        """
+        return self.core.pin_pairs()
+
+    @property
+    def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
+        """Retrieve RLC model given pin pair. If pin pair is not provided, the first pin pair will be used by default.
+        If there is no pin pair, None will be returned.
+
+        Parameters
+        ----------
+        pin_pair : Tuple[str, str], optional
+            Tuple of pin names (first_pin, second_pin). If not provided, the first pin pair will be used by default.
+            If not provided and there is no pin pair, the first pin will be taken.
+
+        Returns
+        -------
+        CoreRlc
+            RLC model for the pin pair.
+        """
+        pp = self.core.pin_pairs()
+        if not pp:
+            return None
+        if pin_pair:
+            for p in pp:
+                if p[0] == pin_pair[0] and p[1] == pin_pair[1]:
+                    pin_pair = self.core.rlc(pp)
+            raise ValueError(f"Pin pair {pin_pair} not found.")
+        else:
+            pin_pair = pp[0]
+        return self.core.rlc(pin_pair)
+
+    def set_rlc(self, pin_pair: tuple[str, str], rlc: CoreRlc):
+        """Set RLC model for the pin pair.
+
+        Parameters
+        ----------
+        pin_pair : Tuple[str, str]
+            Tuple of pin names (first_pin, second_pin).
+        rlc : CoreRlc
+            RLC model to set for the pin pair.
+
+        """
+        if pin_pair in self.pin_pairs():
+            self.core.set_rlc(pin_pair=pin_pair, rlc=rlc)
+
+    def delete_rlc(self, pin_pair: tuple[str, str]):
+        """Delete RLC model for the pin pair.
+
+        Parameters
+        ----------
+        pin_pair : Tuple[str, str]
+            Tuple of pin names (first_pin, second_pin).
+
+        """
+        if pin_pair in self.pin_pairs():
+            self.core.delete_rlc(pin_pair=pin_pair)

@@ -170,7 +170,7 @@ class CfgComponent(CfgBase):
                     rlc.c = i.get("capacitance")
                     rlc.c_enabled = i.get("capacitance_enabled", False)
                     rlc.is_parallel = i.get("is_parallel", False)
-                    m.core.set_rlc(pin_pair=(str(i["first_pin"]), str(i["second_pin"])), rlc=rlc)
+                    m.set_rlc(pin_pair=(str(i["first_pin"]), str(i["second_pin"])), rlc=rlc)
                 c_p.model = m.core
 
             else:
