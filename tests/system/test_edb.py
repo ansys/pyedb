@@ -351,6 +351,7 @@ class TestClass(BaseTestClass):
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
         assert gap_port.renormalization_impedance == 50
+        assert not gap_port.renormalize
         gap_port.is_circuit_port = True
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)
@@ -1164,6 +1165,8 @@ class TestClass(BaseTestClass):
         setup = edbapp.simulation_setups.create_hfss_setup(
             name="test_hfss_setup", distribution="log_scale", start_freq="0GHz", stop_freq="1GHz", freq_step="10"
         )
+        assert setup.sim_setup_info.name == "test_hfss_setup"
+        assert setup.sim_setup_info.position == 0
         sweep = setup.sweep_data[0]
         sweep.compute_dc_point = True
         assert sweep.compute_dc_point

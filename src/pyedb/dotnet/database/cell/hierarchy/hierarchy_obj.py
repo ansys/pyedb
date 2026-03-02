@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from typing import List
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 
@@ -30,13 +31,25 @@ class HierarchyObj(Connectable):
         super().__init__(pedb, edb_object)
 
     @property
-    def component_def(self):
-        """Component definition."""
+    def component_def(self) -> str:
+        """Return the name of the component definition.
+
+        Returns
+        -------
+        str
+            Name of the component definition.
+        """
         return self._edb_object.GetComponentDef().GetName()
 
     @property
-    def location(self):
-        """XY Coordinates."""
+    def location(self) -> List | None:
+        """Return XY coordinates if available.
+
+        Returns
+        -------
+        list or None
+            [x, y] if available, else None.
+        """
         flag, x, y = self._edb_object.GetLocation()
         if flag:
             return [x, y]
@@ -49,13 +62,13 @@ class Group(HierarchyObj):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
 
-    def ungroup(self, recursive=False):
+    def ungroup(self, recursive=False) -> bool:
         """Dissolve a group.
 
         Parameters
         ----------
         recursive : bool, optional
-         If True, all subgroups will also be dissolved.
+            If True, all subgroups will also be dissolved.
 
         """
         return self._edb_object.Ungroup(recursive)

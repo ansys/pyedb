@@ -627,8 +627,8 @@ class SourceExcitation(SourceExcitationInternal):
         Or to take all reference pins
         >>> ref_pins = [pin for pin in list(edb.components["U2A5"].pins.values()) if pin.net_name == "GND"]
         >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
-        >>> edb.save_edb()
-        >>> edb.close_edb()
+        >>> edb.save()
+        >>> edb.close()
         """
 
         if isinstance(refdes, str):
