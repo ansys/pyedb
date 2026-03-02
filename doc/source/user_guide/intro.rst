@@ -1,16 +1,16 @@
 Basic tutorial
 ==============
 
-This tutorial walks you through creating a simple EDB from scratch using the pure Python client connected to the
-``ansys-edb-core`` gRPC service.
+This tutorial walks you through creating a simple EDB from scratch using the pure Python client connected to
+``ansys-edb-core``.
 
 Prerequisites
 -------------
-*   The PyEDB client is installed (`pip install pyedb`).
+*   PyEDB library is installed (`pip install pyedb`).
 *   The ``ansys-edb-core`` service is installed and available (see :doc:`../installation`).
 
-Import and Initialize with a Context Manager
---------------------------------------------
+Import and initialize
+---------------------
 
 .. code-block:: python
 
@@ -21,7 +21,7 @@ Import and Initialize with a Context Manager
    edb_path = "/tmp/my_first_project.aedb"  # Note: Using a Linux path!
 
    # Create a new EDB project using a context manager
-   edb = Edb(edbversion="2025.2")
+   edb = Edb(version="2025.2")
 
    # Define materials and stackup
    edb.materials.add_conductor_material(name="gold", conductivity=4.1e7)
