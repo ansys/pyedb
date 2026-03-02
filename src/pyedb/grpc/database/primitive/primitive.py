@@ -28,10 +28,10 @@ from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.layer.layer import LayerType as CoreLayerType
 from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 layer_type_mapping = {
     "conducting": CoreLayerType.CONDUCTING_LAYER,
@@ -133,7 +133,7 @@ class Primitive:
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -152,7 +152,7 @@ class Primitive:
     @net_name.setter
     def net_name(self, value):
         if value in self._pedb.nets.nets:
-            self.core.net = self._pedb.nets.nets[value]
+            self.core.net = self._pedb.nets.nets[value].core
 
     @property
     def layer_name(self) -> str:

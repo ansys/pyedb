@@ -127,36 +127,6 @@ class EdbNets(CommonNets):
         return list(self.nets.keys())
 
     @property
-    def signal_nets(self):
-        """Signal nets.
-
-        .. deprecated:: 0.6.62
-           Use :func:`signal` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.dotnet.database.edb_data.EDBNetsData`]
-            Dictionary of signal nets.
-        """
-        warnings.warn("Use :func:`signal` instead.", DeprecationWarning)
-        return self.signal
-
-    @property
-    def power_nets(self):
-        """Power nets.
-
-        .. deprecated:: 0.6.62
-           Use :func:`power` instead.
-
-        Returns
-        -------
-        dict[str, :class:`pyedb.dotnet.database.edb_data.EDBNetsData`]
-            Dictionary of power nets.
-        """
-        warnings.warn("Use :func:`power` instead.", DeprecationWarning)
-        return self.power
-
-    @property
     def signal(self):
         """Signal nets.
 
@@ -563,30 +533,6 @@ class EdbNets(CommonNets):
         edb_net = self._edb.Cell.Net.FindByName(self._active_layout, net_name)
         if not edb_net.IsNull():
             return self._pedb.pedb_class.database.edb_data.nets_data.EDBNetsData(edb_net, self._pedb)
-
-    def delete_nets(self, netlist):
-        """Delete one or more nets from EDB.
-
-        .. deprecated:: 0.6.62
-           Use :func:`delete` method instead.
-
-        Parameters
-        ----------
-        netlist : str or list
-            One or more nets to delete.
-
-        Returns
-        -------
-        list
-            List of nets that were deleted.
-
-        Examples
-        --------
-
-        >>> deleted_nets = database.nets.delete(["Net1", "Net2"])
-        """
-        warnings.warn("Use :func:`delete` method instead.", DeprecationWarning)
-        return self.delete(netlist=netlist)
 
     def delete(self, netlist):
         """Delete one or more nets from EDB.

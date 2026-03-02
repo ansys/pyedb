@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import TYPE_CHECKING, Union
+from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
 if TYPE_CHECKING:
@@ -41,7 +41,9 @@ from ansys.edb.core.terminal.pin_group_terminal import (
 )
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
+from pyedb.grpc.database.inner import conn_obj
 from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -49,10 +51,9 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 
-class PadstackInstance:
+class PadstackInstance(conn_obj.ConnObj):
     """Manages EDB functionalities for a padstack.
 
     Parameters
@@ -150,6 +151,80 @@ class PadstackInstance:
         return cls(layout._pedb, inst)
 
     @property
+    def layer_map(self):
+        return self.core.layer_map
+
+    @layer_map.setter
+    def layer_map(self, layer_map):
+        self.core.layer_map = layer_map
+
+    @property
+    def solderball_layer(self):
+        return self.core.solderball_layer
+
+    @solderball_layer.setter
+    def solderball_layer(self, solderball_layer):
+        self.core.solderball_layer = solderball_layer
+
+    def get_hole_overrides(self):
+        return self.core.get_hole_overrides()
+
+    def set_hole_overrides(self, enabled, diameter):
+        if isinstance(diameter, (float, int)):
+            diameter = Value(diameter)
+        self.core.set_hole_overrides(enabled, Value(diameter))
+
+    @property
+    def backdrill_parameters(self):
+        data = {}
+        drill_to_layer, offset, diameter = self.get_back_drill_by_layer(True)
+
+        if drill_to_layer:
+            data["from_bottom"] = {
+                "drill_to_layer": drill_to_layer,
+                "diameter": str(diameter),
+                "stub_length": str(offset),
+            }
+        drill_to_layer, offset, diameter = self.get_back_drill_by_layer(False)
+
+        if drill_to_layer:
+            data["from_top"] = {
+                "drill_to_layer": drill_to_layer,
+                "diameter": str(diameter),
+                "stub_length": str(offset),
+            }
+        return data
+
+    @backdrill_parameters.setter
+    def backdrill_parameters(self, params):
+        from_bottom = params.get("from_bottom")
+        if from_bottom:
+            if from_bottom.get("drill_to_layer"):
+                self.set_back_drill_by_layer(
+                    drill_to_layer=from_bottom.get("drill_to_layer"),
+                    offset=Value(from_bottom.get("stub_length", 0)),
+                    diameter=Value(from_bottom.get("diameter", 0)),
+                    from_bottom=True,
+                )
+            else:
+                self.set_back_drill_by_depth(
+                    Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)), from_bottom=True
+                )
+        from_bottom = params.get("from_top")
+        if from_bottom:
+            if from_bottom.get("drill_to_layer"):
+                self.set_back_drill_by_layer(
+                    drill_to_layer=from_bottom.get("drill_to_layer"),
+                    offset=Value(from_bottom.get("stub_length", 0)),
+                    diameter=Value(from_bottom.get("diameter", 0)),
+                    from_bottom=False,
+                )
+            else:
+                self.set_back_drill_by_depth(
+                    Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)), from_bottom=False
+                )
+
+    @property
     def is_pin(self):
         """Property added for backward compatibility with earlier versions of pyEDB."""
         return self.core.is_layout_pin
@@ -194,17 +269,6 @@ class PadstackInstance:
             Layout object.
         """
         return self._pedb.active_layout
-
-    @property
-    def is_null(self):
-        """Check if the padstack instance is null.
-
-        Returns
-        -------
-        bool
-            True if the padstack instance is null, False otherwise.
-        """
-        return self.core.is_null
 
     @property
     def definition(self) -> PadstackDef:
@@ -311,7 +375,7 @@ class PadstackInstance:
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(
-                    drill_to_layer=self._pedb.stackup.layers[drill_depth],
+                    drill_to_layer=drill_depth,
                     offset=Value(offset),
                     diameter=Value(drill_diameter),
                     from_bottom=False,
@@ -485,71 +549,6 @@ class PadstackInstance:
             positive_terminal.is_circuit_port = is_circuit_port
             negative_terminal.is_circuit_port = is_circuit_port
             return positive_terminal
-
-    @property
-    def _em_properties(self):
-        """Get EM properties."""
-        from ansys.edb.core.database import ProductIdType
-
-        default = (
-            r"$begin 'EM properties'\n"
-            r"\tType('Mesh')\n"
-            r"\tDataId='EM properties1'\n"
-            r"\t$begin 'Properties'\n"
-            r"\t\tGeneral=''\n"
-            r"\t\tModeled='true'\n"
-            r"\t\tUnion='true'\n"
-            r"\t\t'Use Precedence'='false'\n"
-            r"\t\t'Precedence Value'='1'\n"
-            r"\t\tPlanarEM=''\n"
-            r"\t\tRefined='true'\n"
-            r"\t\tRefineFactor='1'\n"
-            r"\t\tNoEdgeMesh='false'\n"
-            r"\t\tHFSS=''\n"
-            r"\t\t'Solve Inside'='false'\n"
-            r"\t\tSIwave=''\n"
-            r"\t\t'DCIR Equipotential Region'='false'\n"
-            r"\t$end 'Properties'\n"
-            r"$end 'EM properties'\n"
-        )
-
-        p = self.core.get_product_property(ProductIdType.DESIGNER, 18)
-        if p:
-            return p
-        else:
-            return default
-
-    @_em_properties.setter
-    def _em_properties(self, em_prop):
-        """Set EM properties"""
-        pid = self._pedb.core.ProductId.Designer
-        self.core.set_product_property(pid, 18, em_prop)
-
-    @property
-    def dcir_equipotential_region(self) -> bool:
-        """Check whether dcir equipotential region is enabled.
-
-        Returns
-        -------
-        bool
-
-        """
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        em_pp = self._em_properties
-        result = re.search(pattern, em_pp).group(1)
-        if result == "true":
-            return True
-        else:
-            return False
-
-    @dcir_equipotential_region.setter
-    def dcir_equipotential_region(self, value):
-        """Set dcir equipotential region."""
-        pp = r"'DCIR Equipotential Region'='true'" if value else r"'DCIR Equipotential Region'='false'"
-        em_pp = self._em_properties
-        pattern = r"'DCIR Equipotential Region'='([^']+)'"
-        new_em_pp = re.sub(pattern, pp, em_pp)
-        self._em_properties = new_em_pp
 
     @property
     def object_instance(self):
@@ -759,7 +758,10 @@ class PadstackInstance:
         position = self.core.get_position_and_rotation()
         if self.component:
             out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
-            self._position = [Value(out2[0]), Value(out2[1])]
+            if hasattr(out2, "x"):
+                self._position = [out2.x.value, out2.y.value]
+            else:
+                self._position = [out2[0].value, out2[1].value]
         else:
             self._position = [Value(pt).value for pt in position[:2]]
         return self._position
@@ -787,6 +789,50 @@ class PadstackInstance:
             Rotatation value for the padstack instance.
         """
         return Value(self.core.get_position_and_rotation()[-1])
+
+    @rotation.setter
+    def rotation(self, value):
+        pos = []
+        if isinstance(value, (float, int, str)):
+            pos.append(Value(value, self._pedb.active_cell))
+        else:
+            pos.append(value)
+        pos = self.position
+        point_data = CorePointData(pos[0], pos[1])
+        self.core.set_position_and_rotation(
+            x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
+        )
+
+    @property
+    def position_and_rotation(self) -> list[float]:
+        """Padstack instance position.
+
+        Returns
+        -------
+        list
+            List of ``[x, y,r]`` coordinates for the padstack instance position and rotation.
+        """
+        position = self.core.get_position_and_rotation()
+        if self.component:
+            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
+            _position_and_rotation = [out2.x.value, out2.y.value]
+            _position_and_rotation.append(Value(position[-1]).value)
+        else:
+            _position_and_rotation = [Value(pt).value for pt in position]
+        return _position_and_rotation
+
+    @position_and_rotation.setter
+    def position_and_rotation(self, value):
+        pos = []
+        for v in value:
+            if isinstance(v, (float, int, str)):
+                pos.append(Value(v, self._pedb.active_cell))
+            else:
+                pos.append(v)
+        point_data = CorePointData(pos[0], pos[1])
+        self.core.set_position_and_rotation(
+            x=point_data.x, y=point_data.y, rotation=Value(pos[2], self._pedb.active_cell)
+        )
 
     @property
     def name(self) -> str:
@@ -1139,42 +1185,59 @@ class PadstackInstance:
         """
         return self.core.get_back_drill_type(from_bottom).name.lower()
 
-    def get_back_drill_by_layer(self, from_bottom=True) -> tuple[str, float, float]:
-        """Get backdrill by layer.
+    @overload
+    def get_back_drill_by_depth(
+        self, from_bottom: bool, include_fill_material: Literal[False] = False
+    ) -> tuple[Value, Value]: ...
+
+    @overload
+    def get_back_drill_by_depth(
+        self, from_bottom: bool, include_fill_material: Literal[True]
+    ) -> tuple[Value, Value, str]: ...
+
+    def get_back_drill_by_depth(
+        self, from_bottom: bool, include_fill_material: bool = False
+    ) -> tuple[float | Value, float | Value] | tuple[float | Value, float | Value, str]:
+        """Get the back drill type by depth.
 
         Parameters
         ----------
-        from_bottom : bool, optional.
-         Default value is `True`.
+        from_bottom : bool
+            Whether to get the back drill type from the bottom.
+        include_fill_material : bool, optional
+            Input flag to obtain fill material as well as other parameters.
+            If false, the return tuple does not include fill material and is backward compatible with previous versions.
+        Returns
+        -------
+        tuple of (.Value, .Value, str)
+            Tuple containing:
 
-         Return
-         ------
-         tuple (layer, offset, diameter) (str, [float, float], float).
+            - **drill_depth** : Drilling depth, may not align with layer.
+            - **diameter** : Drilling diameter.
+            - **fill_material** : Fill material name (empty string if no fill),
+              only included when ``include_fill_material`` is True.
 
         """
-        back_drill = self.core.get_back_drill_by_layer(from_bottom)
-        layer = back_drill[0].name
-        offset = Value(back_drill[1])
-        diameter = Value(back_drill[2])
-        return layer, offset, diameter
+        if float(self._pedb.version) < 2027.1 and include_fill_material:
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
 
-    def get_back_drill_by_depth(self, from_bottom=True) -> tuple[float, float]:
-        """Get back drill by depth parameters
-        Parameters
-        ----------
-        from_bottom : bool, optional
-            Default value is `True`.
+        if float(self._pedb.version) < 2027.1:
+            drill_depth, drill_diameter = self.core.get_back_drill_by_depth(from_bottom)
+            return Value(drill_depth), Value(drill_diameter)
+        else:
+            params = self.core.get_back_drill_by_depth(from_bottom, include_fill_material)
+            if include_fill_material:
+                drill_depth, drill_diameter, fill_material = params
+                return Value(drill_depth), Value(drill_diameter), fill_material
+            else:
+                drill_depth, drill_diameter = params
+                return Value(drill_depth), Value(drill_diameter)
 
-        Return
-        ------
-        tuple (drill_depth, drill_diameter) (float, float)
-        """
-        back_drill = self.core.get_back_drill_by_depth(from_bottom)
-        drill_depth = Value(back_drill[0])
-        drill_diameter = Value(back_drill[1])
-        return drill_depth, drill_diameter
-
-    def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True):
+    def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True, fill_material=""):
         """Set back drill by depth.
 
         Parameters
@@ -1185,17 +1248,95 @@ class PadstackInstance:
             drill diameter
         from_bottom : bool, optional
             Default value is `True`.
+        fill_material : str, optional
         """
-        self.core.set_back_drill_by_depth(
-            drill_depth=Value(drill_depth), diameter=Value(diameter), from_bottom=from_bottom
-        )
+        if float(self._pedb.version) < 2027.1 and fill_material:
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
 
-    def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom=True):
+        if float(self._pedb.version) < 2027.1:
+            self.core.set_back_drill_by_depth(
+                drill_depth=Value(drill_depth),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+            )
+        else:
+            self.core.set_back_drill_by_depth(
+                drill_depth=Value(drill_depth),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+                fill_material=fill_material,
+            )
+
+    @overload
+    def get_back_drill_by_layer(
+        self, from_bottom: bool, include_fill_material: Literal[False] = False
+    ) -> tuple[str, Value, Value]: ...
+
+    @overload
+    def get_back_drill_by_layer(
+        self, from_bottom: bool, include_fill_material: Literal[True]
+    ) -> tuple[str, Value, Value, str]: ...
+
+    def get_back_drill_by_layer(
+        self, from_bottom: bool, include_fill_material: bool = False
+    ) -> tuple[str, float | Value, float | Value] | tuple[str, float | Value, float | Value, str]:
+        """Get the back drill type by the layer.
+
+        Parameters
+        ----------
+        from_bottom : bool
+            Whether to get the back drill type from the bottom.
+        include_fill_material : bool, optional
+            Input flag to obtain fill material as well as other parameters.
+            If false, the return tuple does not include fill material and is backward compatible with previous versions.
+        Returns
+        -------
+        tuple of (.Layer, .Value, .Value, str)
+            Returns a tuple in this format:
+
+            **(drill_to_layer, offset, diameter, fill_material)**
+
+            - **drill_to_layer** : Layer drills to. If drill from top, drill stops at the upper elevation of the layer.
+                                   If from bottom, drill stops at the lower elevation of the layer.
+            - **offset** : Layer offset (or depth if layer is empty).
+            - **diameter** : Drilling diameter.
+            - **fill_material** : Fill material name (empty string if no fill).
+                                  Returned only when include_fill_material is true.
+
+        """
+        if float(self._pedb.version) < 2027.1 and include_fill_material:
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2026 R1 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
+        if float(self._pedb.version) < 2027.1:
+            if self.backdrill_type == "no_drill":
+                return "", Value(0), Value(0)
+            else:
+                drill_to_layer, offset, diameter = self.core.get_back_drill_by_layer(from_bottom)
+                return drill_to_layer.name, Value(offset), Value(diameter)
+        else:
+            # Todo include_fill_material is not merged in core yet.
+            # params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
+            params = self.core.get_back_drill_by_layer(from_bottom, include_fill_material)
+            if include_fill_material:
+                drill_to_layer, offset, diameter, fill_material = params
+                return drill_to_layer.name, Value(offset), Value(diameter), fill_material
+            else:
+                drill_to_layer, offset, diameter = params
+                return drill_to_layer.name, Value(offset), Value(diameter)
+
+    def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
         """Set back drill layer.
 
         Parameters
         ----------
-        drill_to_layer : str, Layer
+        drill_to_layer : str
             Layer to drill to.
         offset : str, float
             Offset value
@@ -1203,15 +1344,34 @@ class PadstackInstance:
             Drill diameter
         from_bottom : bool, optional
             Default value is `True`
+        fill_material : str, optional
+            Fill material name
         """
-        if isinstance(drill_to_layer, str):
-            drill_to_layer = self._pedb.stackup.layers[drill_to_layer]
-        self.core.set_back_drill_by_layer(
-            drill_to_layer=drill_to_layer.core,
-            offset=Value(offset),
-            diameter=Value(diameter),
-            from_bottom=from_bottom,
+        if float(self._pedb.version) < 2027.1 and fill_material:
+            warnings.warn(
+                "Backdrill fill material is not supported by AEDT 2025.2 and below. The parameter will be ignored.",
+                UserWarning,
+                stacklevel=2,
+            )
+
+        drill_to_layer = (
+            self._pedb.stackup.layers[drill_to_layer] if isinstance(drill_to_layer, str) else drill_to_layer
         )
+        if float(self._pedb.version) < 2027.1:
+            self.core.set_back_drill_by_layer(
+                drill_to_layer=drill_to_layer.core,
+                offset=Value(offset),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+            )
+        else:
+            self.core.set_back_drill_by_layer(
+                drill_to_layer=drill_to_layer.core,
+                offset=Value(offset),
+                diameter=Value(diameter),
+                from_bottom=from_bottom,
+                fill_material=fill_material,
+            )
 
     def parametrize_position(self, prefix=None) -> list[str]:
         """Parametrize the instance position.
@@ -1526,7 +1686,7 @@ class PadstackInstance:
         for point in path.points:
             if self.component:
                 p_transf = self.component.transform.transform_point(point)
-                new_rect.append([Value(p_transf.x), Value(p_transf.y)])
+                new_rect.append([p_transf.x, p_transf.y])
         if return_points:
             return new_rect
         else:
@@ -1534,7 +1694,7 @@ class PadstackInstance:
             return created_polygon
 
     def get_reference_pins(
-        self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True
+        self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True, pinlist_position=None
     ) -> list[any]:
         """Search for reference pins using given criteria.
 
@@ -1569,6 +1729,7 @@ class PadstackInstance:
             search_radius=search_radius,
             max_limit=max_limit,
             component_only=component_only,
+            pinlist_position=pinlist_position,
         )
 
     def get_connected_objects(self):
@@ -1579,3 +1740,56 @@ class PadstackInstance:
         List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
         """
         return self._pedb.get_connected_objects(self.object_instance)
+
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
+        pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
+
+        Parameters
+        ----------
+        contact_radius : float, optional
+            Radius of the contact circle. The default is ``None```, in which case the
+            method will use the pad size.
+        layer_name : str, optional
+            Layer name to set the equipotential region. The default is ``None``, in which case the method will use the
+            start layer of the padstack definition.
+        """
+        layer_name = layer_name if layer_name else self.start_layer
+        pad = self.definition.pad_by_layer[layer_name]
+
+        pos_x, pos_y = self.position
+
+        if contact_radius is not None:
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos_x, pos_y, contact_radius, self.net_name)
+            prim.dcir_equipotential_region = True
+        elif pad.shape.lower() == "circle":
+            ra = self._pedb.value(pad.parameters_values[0] / 2)
+            pos = self.position
+            prim = self._pedb.modeler.create_circle(pad.layer_name, pos[0], pos[1], ra, self.net_name)
+        elif pad.shape.lower() == "rectangle":
+            width, height = pad.parameters_values
+            prim = self._pedb.modeler.create_rectangle(
+                pad.layer_name,
+                self.net_name,
+                width=width,
+                height=height,
+                representation_type="CenterWidthHeight",
+                center_point=self.position,
+                rotation=self.component.rotation,
+            )
+        elif pad.shape.lower() == "oval":
+            width, height, _ = pad.parameters_values
+            prim = self._pedb.modeler.create_circle(
+                pad.layer_name, self.position[0], self.position[1], height / 2, self.net_name
+            )
+        elif pad.polygon_data:
+            prim = self._pedb.modeler.create_polygon(
+                pad.polygon_data._edb_object, self.start_layer, net_name=self.net_name
+            )
+            prim.move(self.position)
+        else:
+            raise AttributeError(f"Unsupported pad shape {pad.shape} for DCIR equipotential region.")
+
+        prim.dcir_equipotential_region = True
+        return prim

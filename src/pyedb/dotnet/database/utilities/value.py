@@ -25,10 +25,19 @@ class Value(float):
     """Class defining Edb Value properties."""
 
     def __new__(cls, pedb, edb_obj):
-        temp = super().__new__(cls, float(round(edb_obj.ToDouble(), 9)))
+        temp = super().__new__(cls, edb_obj.ToDouble())
         temp._pedb = pedb
         temp._edb_obj = edb_obj
+        temp.__core = edb_obj
         return temp
+
+    @property
+    def core(self):
+        return self.__core
+
+    @property
+    def value(self) -> float:
+        return float(round(self._edb_obj.ToDouble(), 9))
 
     def __str__(self):
         """Returns the string of the variable.
@@ -76,41 +85,73 @@ class Value(float):
         return self.__class__(self._pedb, edb_object)
 
     def sqrt(self):
-        """Square root of the value."""
+        """Square root of the value.
+        Returns
+        -------
+        Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"({self._edb_obj.ToString()})**0.5")
         return self.__class__(self._pedb, edb_object)
 
     def log10(self):
-        """Base-10 logarithm of the value."""
+        """Base-10 logarithm of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"log10({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def sin(self):
-        """Sine of the value."""
+        """Sine of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"sin({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def cos(self):
-        """Cosine of the value."""
+        """Cosine of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"cos({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def asin(self):
-        """Arcsine of the value."""
+        """Arcsine of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"asin({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def acos(self):
-        """Arccosine of the value."""
+        """Arccosine of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"acos({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def tan(self):
-        """Tangent of the value."""
+        """Tangent of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"tan({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)
 
     def atan(self):
-        """Arctangent of the value."""
+        """Arctangent of the value.
+        Returns
+        -------
+            Value object
+        """
         edb_object = self._pedb.core.Utility.Value(f"atan({self._edb_obj.ToString()})")
         return self.__class__(self._pedb, edb_object)

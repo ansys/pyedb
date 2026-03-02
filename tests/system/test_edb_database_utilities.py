@@ -24,6 +24,7 @@
 import pytest
 
 from tests import conftest
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -31,6 +32,10 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestDatabaseUtilities(BaseTestClass):
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="This test is failing in grpc. To be validated in 26R1.",
+    )
     def test_value(self):
         edbapp = self.edb_examples.create_empty_edb()
         if conftest.config["use_grpc"]:

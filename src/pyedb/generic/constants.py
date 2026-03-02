@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import math
+import re
 import warnings
 
 RAD2DEG = 180.0 / math.pi
@@ -162,6 +163,67 @@ def _resolve_unit_system(unit_system_1, unit_system_2, operation):  # pragma: no
         return SI_UNITS[result_unit_system]
     except KeyError:
         return ""
+
+
+def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pragma: no cover
+    m2 = re.findall(r"[0-9.]+ *([a-z_A-Z]+)", variable_value)
+    if len(m2) > 0:
+        if len(set(m2)) <= 1:
+            return m2[0]
+        else:
+            if unit_system(m2[0]):
+                return SI_UNITS[unit_system(m2[0])]
+    else:
+        m1 = re.findall(r"(?<=[/+-/*//^/(/[])([a-z_A-Z/$]\w*)", variable_value.replace(" ", ""))
+        m2 = re.findall(r"^([a-z_A-Z/$]\w*)", variable_value.replace(" ", ""))
+        m = list(set(m1).union(m2))
+        for i, v in full_variables.items():
+            if i in m and _find_units_in_dependent_variables(v):
+                return _find_units_in_dependent_variables(v)
+    return ""
+
+
+def decompose_variable_value(variable_value, full_variables={}):  # pragma: no cover
+    """Decompose a variable value.
+
+    Parameters
+    ----------
+    variable_value : str
+    full_variables : dict
+
+    Returns
+    -------
+    tuples
+        Tuples made of the float value of the variable and the units exposed as a string.
+    """
+    # set default return values - then check for valid units
+    float_value = variable_value
+    units = ""
+    from pyedb.generic.general_methods import is_number
+
+    if is_number(variable_value):
+        float_value = float(variable_value)
+    elif isinstance(variable_value, str) and variable_value != "nan":
+        try:
+            # Handle a numerical value in string form
+            float_value = float(variable_value)
+        except ValueError:
+            # search for a valid units string at the end of the variable_value
+            loc = re.search("[-+]?(\d+(\.\d*)?|\.\d+)([eE][-+]?\d+)?", variable_value)
+            units = _find_units_in_dependent_variables(variable_value, full_variables)
+            if loc:
+                loc_units = loc.span()[1]
+                extract_units = variable_value[loc_units:]
+                chars = set("+*/()[]")
+                if any((c in chars) for c in extract_units):
+                    return variable_value, units
+                try:
+                    float_value = float(variable_value[0:loc_units])
+                    units = extract_units
+                except ValueError:
+                    float_value = variable_value
+
+    return float_value, units
 
 
 def unit_converter(values, unit_system="Length", input_units="meter", output_units="mm"):  # pragma: no cover
@@ -885,3 +947,41 @@ class MeshOperationTypeMapper(CommonMapper):
 
     class DOTNET(Enum):
         (BASE, LENGTH, SKIN_DEPTH) = ("kMeshSetupBase", "kMeshSetupLength", "kMeshSetupSkinDepth")
+
+
+class DCBehaviorMapper(CommonMapper):
+    class GRPC(Enum):
+        (zero, same, linear, constant, one_port_capacitor, open) = (
+            "zero",
+            "same",
+            "linear",
+            "constant",
+            "one_port_capacitor",
+            "open",
+        )
+
+    class DOTNET(Enum):
+        (zero, same, linear, constant, one_port_capacitor, open) = (
+            "kZeroDC",
+            "kSameDC",
+            "kLinearDC",
+            "kConstantDC",
+            "kOnePortCapacitorDC",
+            "kOpenDC",
+        )
+
+
+class SParamExtrapolationMapper(CommonMapper):
+    class GRPC(Enum):
+        (zero, same, linear, constant) = ("zero", "same", "linear", "constant")
+
+    class DOTNET(Enum):
+        (zero, same, linear, constant) = ("kZeroEx", "kSameEx", "kLinearEx", "kConstantEx")
+
+
+class SparamInterpolationMapper(CommonMapper):
+    class GRPC(Enum):
+        (point, linear, step) = ("point", "linear", "step")
+
+    class DOTNET(Enum):
+        (point, linear, step) = ("kPointIn", "kLinearIn", "kStepIn")

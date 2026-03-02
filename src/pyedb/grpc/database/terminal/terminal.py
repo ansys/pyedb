@@ -30,6 +30,7 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
+import warnings
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
@@ -119,6 +120,58 @@ class Terminal(ConnObj):
             p["Radial Extent Factor"] = ""
             p["PEC Launch Width"] = ""
         return p
+
+    @property
+    def horizontal_extent_factor(self) -> float:
+        """Horizontal extent factor.
+
+        Returns
+        -------
+        float
+            Extent value.
+        """
+        return self._hfss_port_property["Horizontal Extent Factor"]
+
+    @horizontal_extent_factor.setter
+    def horizontal_extent_factor(self, value):
+        p = self._hfss_port_property
+        p["Horizontal Extent Factor"] = value
+        self._hfss_port_property = p
+
+    @property
+    def vertical_extent_factor(self) -> float:
+        """Vertical extent factor.
+
+        Returns
+        -------
+        float
+            Vertical extent value.
+
+        """
+        return self._hfss_port_property["Vertical Extent Factor"]
+
+    @vertical_extent_factor.setter
+    def vertical_extent_factor(self, value):
+        p = self._hfss_port_property
+        p["Vertical Extent Factor"] = value
+        self._hfss_port_property = p
+
+    @property
+    def pec_launch_width(self) -> float:
+        """Launch width for the printed electronic component (PEC).
+
+        Returns
+        -------
+        float
+            Pec launch width value.
+        """
+        return self._hfss_port_property["PEC Launch Width"]
+
+    @pec_launch_width.setter
+    def pec_launch_width(self, value):
+        p = self._hfss_port_property
+        p["PEC Launch Width"] = value
+        self._hfss_port_property = p
 
     @property
     def reference_layer(self):
@@ -581,3 +634,53 @@ class Terminal(ConnObj):
     @name.setter
     def name(self, value):
         self.core.name = value
+
+    @property
+    def is_circuit_port(self) -> bool:
+        """Whether the terminal is a circuit port.
+
+        Returns
+        -------
+        bool
+
+        """
+        if hasattr(self.core, "is_circuit_port"):
+            return self.core.is_circuit_port
+        return False
+
+    @is_circuit_port.setter
+    def is_circuit_port(self, value):
+        if hasattr(self.core, "is_circuit_port"):
+            self.core.is_circuit_port = value
+        else:
+            self._pedb.logger.warning("Terminal does not support circuit port property.")
+
+    @property
+    def is_circuit(self) -> bool:
+        """Check if the terminal is a circuit terminal.
+
+        .. deprecated:: 0.70.0
+            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a circuit terminal, False otherwise.
+        """
+        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
+        return self.is_circuit_port
+
+    @is_circuit.setter
+    def is_circuit(self, value: bool):
+        """Set whether the terminal is a circuit terminal.
+
+        .. deprecated:: 0.70.0
+            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+
+        Parameters
+        ----------
+        value : bool
+            True to set the terminal as a circuit terminal, False otherwise.
+        """
+        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
+        self.is_circuit_port = value

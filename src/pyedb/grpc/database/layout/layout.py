@@ -26,10 +26,11 @@ This module contains these classes: `EdbLayout` and `Shape`.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from pyedb.dotnet.database.general import Primitives
+    from ansys.edb.core.layout.layout import Layout as CoreLayout
+
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -80,14 +81,15 @@ def _get_wrapper_class(prim_type: str):
 class Layout:
     """Manage Layout class."""
 
-    def __init__(self, pedb, core):
+    def __init__(self, pedb, core: CoreLayout):
         self.core = core
         self._pedb = pedb
         self.__primitives = []
         self.__padstack_instances = {}
 
     @property
-    def layout_instance(self):
+    def layout_instance(self) -> Any:
+        # TODO: The return should be a LayoutInstance class.
         return self.core.layout_instance
 
     @property
@@ -210,13 +212,11 @@ class Layout:
         return [DifferentialPair(self._pedb, i) for i in self._pedb.active_cell.layout.differential_pairs]
 
     @property
-    def padstack_instances(self) -> dict[int, PadstackInstance]:
+    def padstack_instances(self) -> list[PadstackInstance]:
         """Get all padstack instances in a list."""
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
-        pad_stack_inst = self.core.padstack_instances
-        self.__padstack_instances = {i.edb_uid: PadstackInstance(self._pedb, i) for i in pad_stack_inst}
-        return self.__padstack_instances
+        return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
@@ -292,41 +292,67 @@ class Layout:
         List
             A list of padstack instances matching the specified criteria.
         """
-        padstack_instances = self._pedb.padstacks.instances
-        instances_found = []
+        candidates = self.padstack_instances  # make a copy of the list to filter down
         if instance_id is not None:
-            instance_ids = instance_id if isinstance(instance_id, list) else [instance_id]
-            for pid, i in padstack_instances.items():
-                if i.id in instance_ids:
-                    instances_found.append(i)
+            id_set = instance_id if isinstance(instance_id, list) else [instance_id]
+            id_set = {int(i) for i in id_set}
+            id_found = []
+            remaining = set(id_set)
+            for c in candidates:
+                cid = c.id
+                if cid in remaining:
+                    id_found.append(c)
+                    remaining.remove(cid)
+                    if not remaining:  # all ids found
+                        break
+            candidates = id_found
+
         if aedt_name is not None:
-            name = aedt_name if isinstance(aedt_name, list) else [aedt_name]
-            [instances_found.append(i) for i in padstack_instances.values() if i.aedt_name in name]
+            name_set = set(aedt_name) if isinstance(aedt_name, list) else {aedt_name}
+            name_found = []
+            remaining = set(name_set)
+            for c in candidates:
+                cname = c.aedt_name
+                if cname in remaining:
+                    name_found.append(c)
+                    remaining.remove(cname)
+                    if not remaining:  # all names found
+                        break
+            candidates = name_found
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
-            for pid, inst in padstack_instances.items():
-                if inst.component:
-                    if inst.component.name in value:
-                        instances_found.append(inst)
+            candidates = [i for i in candidates if i.component.name in value]
 
         if net_name is not None:
-            value = net_name if isinstance(net_name, list) else [net_name]
-            for inst in padstack_instances.values():
-                if inst.net:
-                    if inst.net.name in value:
-                        instances_found.append(inst)
+            net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}
+            net_name_found = []
+            remaining = set(net_name_set)
+            for c in candidates:
+                n_name = c.net_name
+                if n_name in remaining:
+                    net_name_found.append(c)
+                    remaining.remove(n_name)
+                    if not remaining:  # all net names found
+                        break
+            candidates = net_name_found
 
         if component_pin_name is not None:
-            value = component_pin_name if isinstance(component_name, list) else [component_pin_name]
-            for inst in padstack_instances.values():
-                if inst.component:
-                    if hasattr(inst, "name"):
-                        if inst.name in value:
-                            instances_found.append(inst)
-        if not instances_found:  # pragma: no cover
+            c_pin_name_set = set(component_pin_name) if isinstance(component_pin_name, list) else {component_pin_name}
+            c_pin_name_found = []
+            remaining = set(c_pin_name_set)
+            for c in candidates:
+                p_name = c.name
+                if p_name in remaining:
+                    c_pin_name_found.append(c)
+                    remaining.remove(p_name)
+                    if not remaining:  # all component pin names found
+                        break
+            candidates = c_pin_name_found
+
+        if not candidates:  # pragma: no cover
             raise ValueError(
                 f"Failed to find padstack instances with aedt_name={aedt_name}, component_name={component_name}, "
                 f"net_name={net_name}, component_pin_name={component_pin_name}"
             )
-        return instances_found
+        return candidates

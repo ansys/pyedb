@@ -584,30 +584,6 @@ class Stackup(LayerCollection):
         self.update_layout()
 
     @property
-    def stackup_mode(self):
-        """Stackup mode.
-
-        .. deprecated:: 0.6.52
-           Use :func:`mode` method instead.
-
-        Returns
-        -------
-        int, str
-            Type of the stackup mode, where:
-
-            * 0 - Laminate
-            * 1 - Overlapping
-            * 2 - MultiZone
-        """
-        warnings.warn("`stackup_mode` is deprecated. Use `mode` method instead.", DeprecationWarning)
-        return self.mode
-
-    @stackup_mode.setter
-    def stackup_mode(self, value):
-        warnings.warn("`stackup_mode` is deprecated. Use `mode` method instead.", DeprecationWarning)
-        self.mode = value
-
-    @property
     def _edb_layer_list(self):
         layer_list = list(self._layer_collection.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet))
         return [i.Clone() for i in layer_list]
@@ -926,34 +902,6 @@ class Stackup(LayerCollection):
             self._logger.warning("Layer stackup format is not supported. Skipping import.")
             return False
 
-    def export_stackup(self, fpath, file_format="xml", include_material_with_layer=False):
-        """Export stackup definition to a CSV or JSON file.
-
-        .. deprecated:: 0.6.61
-           Use :func:`export` instead.
-
-        Parameters
-        ----------
-        fpath : str
-            File path to CSV or JSON file.
-        file_format : str, optional
-            Format of the file to export. The default is ``"csv"``. Options are ``"csv"``, ``"xlsx"``
-            and ``"json"``.
-        include_material_with_layer : bool, optional.
-            Whether to include the material definition inside layer objects. This parameter is only used
-            when a JSON file is exported. The default is ``False``, which keeps the material definition
-            section in the JSON file. If ``True``, the material definition is included inside the layer ones.
-
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edb = Edb()
-        >>> edb.stackup.export_stackup("stackup.xml")
-        """
-
-        self._logger.warning("Method export_stackup is deprecated. Use .export.")
-        return self.export(fpath, file_format=file_format, include_material_with_layer=include_material_with_layer)
-
     def _export_layer_stackup_to_csv_xlsx(self, fpath=None, file_format=None):
         try:
             import pandas as pd
@@ -998,6 +946,10 @@ class Stackup(LayerCollection):
             # FIXME: Update the API to avoid providing following information to our users
             del data["pedb"]
             del data["edb_object"]
+            if "ore" in data:
+                del data["ore"]
+            if "core" in data:
+                del data["core"]
             layers_out[k] = data
             if v.material in self._pedb.materials.materials:
                 layer_material = self._pedb.materials.materials[v.material]
@@ -1072,25 +1024,6 @@ class Stackup(LayerCollection):
                             self.layers[layer["name"]]._load_layer(layer)
             self.refresh_layer_collection()
             return True
-
-    def stackup_limits(self, only_metals=False):
-        """Retrieve stackup limits.
-
-        .. deprecated:: 0.6.62
-           Use :func:`Edb.stackup.limits` function instead.
-
-        Parameters
-        ----------
-        only_metals : bool, optional
-            Whether to retrieve only metals. The default is ``False``.
-
-        Returns
-        -------
-        bool
-            ``True`` when successful, ``False`` when failed.
-        """
-        warnings.warn("`stackup_limits` is deprecated. Use `limits` property instead.", DeprecationWarning)
-        return self.limits(only_metals=only_metals)
 
     def limits(self, only_metals=False):
         """Retrieve stackup limits.
@@ -1267,7 +1200,7 @@ class Stackup(LayerCollection):
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
-                comp_prop = val.component_property
+                comp_prop = val.component_property.core
                 port_property = comp_prop.GetPortProperty().Clone()
                 port_property.SetReferenceSizeAuto(False)
                 port_property.SetReferenceSize(self._edb_value(0.0), self._edb_value(0.0))

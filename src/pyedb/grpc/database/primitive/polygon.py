@@ -326,7 +326,7 @@ class Polygon(Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            self.layer = self._pedb.stackup.layers.get(layer, None)
+            self.layer = layer
             if layer:
                 return True
         return False

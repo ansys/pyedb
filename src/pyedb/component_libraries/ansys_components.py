@@ -21,8 +21,15 @@
 # SOFTWARE.
 
 import struct
+from typing import TYPE_CHECKING
 
 import numpy as np
+
+if TYPE_CHECKING:
+    try:
+        from skrf.network import Network
+    except ModuleNotFoundError:
+        Network = None
 
 
 class ComponentLib:
@@ -57,7 +64,7 @@ class ComponentPart:
         self.type = ""
 
     @property
-    def s_parameters(self):
+    def s_parameters(self) -> "Network":
         """Return a skrf.network.Network object.
 
         See `scikit-rf documentation <https://scikit-rf.readthedocs.io/en/latest/api/network.html#network-class>`_.
@@ -67,7 +74,7 @@ class ComponentPart:
         return self._s_parameters
 
     @property
-    def esr(self):
+    def esr(self) -> float:
         """Return the equivalent serial resistor for capacitor only."""
         if self.type == "Capacitor":
             z11 = 1 / self.s_parameters.y[:, 0, 0]
@@ -76,7 +83,7 @@ class ComponentPart:
             return 0.0
 
     @property
-    def f0(self):
+    def f0(self) -> float:
         """Return the capacitor self resonant frequency in Hz."""
         if self.type == "Capacitor":
             z11 = 1 / self.s_parameters.y[:, 0, 0]
@@ -86,7 +93,7 @@ class ComponentPart:
             return None
 
     @property
-    def esl(self):
+    def esl(self) -> float:
         """Return the equivalent serial inductor for capacitor only."""
         if self.type == "Capacitor":
             omega_r = 2 * np.pi * self.f0
@@ -95,7 +102,7 @@ class ComponentPart:
             return 0.0
 
     @property
-    def cap_value(self):
+    def cap_value(self) -> float:
         """Returns the capacitance value."""
         if self.type == "Capacitor":
             return round(np.imag(self.s_parameters.y[0, 0, 0]) / (2 * np.pi * self._s_parameters.f[0]), 15)
@@ -103,7 +110,7 @@ class ComponentPart:
             return 0.0
 
     @property
-    def ind_value(self):
+    def ind_value(self) -> float:
         """Return the inductance value."""
         if self.type == "Inductor":
             return round(np.imag(1 / self.s_parameters.y[0, 0, 0]) / (2 * np.pi * self._s_parameters.f[0]), 15)

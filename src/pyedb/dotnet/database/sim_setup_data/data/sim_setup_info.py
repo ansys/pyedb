@@ -35,6 +35,7 @@ class SimSetupInfo:
         setup_type: str = None,
         name: str = None,
     ):
+        self.core = edb_object
         self._pedb = pedb
         self.sim_setup = sim_setup
         simulation_setup_type = {
@@ -54,7 +55,13 @@ class SimSetupInfo:
             "kQ3D": None,
             "kNumSetupTypes": None,
         }
-
+        if float(self._pedb.version) >= 2024.2:
+            simulation_setup_type.update(
+                {
+                    "kRaptorX": self._pedb.simsetupdata.RaptorX.RaptorXSimulationSettings,
+                    "kHFSSPI": self._pedb.simsetupdata.HFSSPISimulationSettings,
+                }
+            )
         if edb_object is None:
             self._edb_object = self._pedb.simsetupdata.SimSetupInfo[simulation_setup_type[setup_type]]()
             self._edb_object.Name = name

@@ -25,26 +25,41 @@
 import math
 
 
-def compute_arc_points(p1, p2, h, n=6, tol=1e-12):
+def compute_arc_points(
+    p1: list[float], p2: list[float], h: float, n: int = 6, tol: float = 1e-12
+) -> tuple[list[float], list[float]]:
     """Get the points of the arc.
 
     Parameters
     ----------
-    p1 : list
+    p1 : list[float]
         Arc starting point.
-    p2 : list
+    p2 : list[float]
         Arc ending point.
     h : float
         Arc height.
-    n : int
+    n : int, optional
         Number of points to generate along the arc.
-    tol : float
+        The default is ``6``.
+    tol : float, optional
         Geometric tolerance.
+        The default is ``1e-12``.
 
     Returns
     -------
-    list, list
-        Points generated along the arc.
+    tuple[list[float], list[float]]
+        Points generated along the arc as (x_coordinates, y_coordinates).
+
+    Examples
+    --------
+    >>> from pyedb.misc.utilities import compute_arc_points
+    >>> p1 = [0.0, 0.0]
+    >>> p2 = [1.0, 0.0]
+    >>> h = 0.2
+    >>> xr, yr = compute_arc_points(p1, p2, h, n=6)
+    >>> len(xr) == len(yr) == 6
+    True
+
     """
     if abs(h) < tol:
         return [], []
