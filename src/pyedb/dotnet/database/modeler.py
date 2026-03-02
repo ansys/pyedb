@@ -35,6 +35,7 @@ from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.decorators import deprecate_argument_name
 
+
 class DeprecatedModeler(object):
     @property
     def _edb(self):
@@ -278,7 +279,7 @@ class DeprecatedModeler(object):
                 obj.GetLayoutObj()
                 for obj in _obj_instances
                 if layer in [lay.GetName() for lay in list(obj.GetLayers())]
-                   and "Terminal" not in str(obj.GetLayoutObj())
+                and "Terminal" not in str(obj.GetLayoutObj())
             ]
             for prim in selected_prim:
                 obj_id = prim.GetId()
@@ -455,8 +456,6 @@ class Modeler(DeprecatedModeler):
 
     def __init__(self, p_edb):
         self._pedb = p_edb
-
-
 
     @property
     def primitives(self):
@@ -1506,4 +1505,3 @@ class Modeler(DeprecatedModeler):
             if net_obj:
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
-
