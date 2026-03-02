@@ -2589,7 +2589,7 @@ class SourceExcitation(SourceExcitationInternal):
         )
 
         point_on_edge = CorePointData([self._pedb.value(i) for i in location])
-        primitive = self._pedb.modeler.primitives_by_name[primitive_name]
+        primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
         pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)
         edge_term = GrpcEdgeTerminal.create(
             layout=primitive.core.layout, edges=[pos_edge], net=primitive.core.net, name=name, is_ref=False

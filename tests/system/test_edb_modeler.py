@@ -340,7 +340,8 @@ class TestClass(BaseTestClass):
     def test_modeler_defeature(self):
         """Defeature the polygon."""
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
+        net_obj = edbapp.layout.find_primitive(net_name="GND")
+        assert edbapp.modeler.defeature_polygon(net_obj[-1], 0.0001)
         edbapp.close(terminate_rpc_session=False)
 
     def test_modeler_primitives_boolean_operation(self):
