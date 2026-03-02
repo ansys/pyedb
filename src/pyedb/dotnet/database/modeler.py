@@ -35,42 +35,7 @@ from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.decorators import deprecate_argument_name
 
-
-class Modeler(object):
-    """Manages EDB methods for primitives management accessible from `Edb.modeler` property.
-
-    Examples
-    --------
-    >>> from pyedb import Edb
-    >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
-    >>> edb_layout = edbapp.modeler
-    """
-
-    def __getitem__(self, name):
-        """Get  a layout instance from the Edb project.
-
-        Parameters
-        ----------
-        name : str, int
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
-
-        """
-        for i in self.primitives:
-            if (
-                (isinstance(name, str) and i.aedt_name == name)
-                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
-                or (isinstance(name, int) and i.id == name)
-            ):
-                return i
-        self._pedb.logger.error("Primitive not found.")
-        return
-
-    def __init__(self, p_edb):
-        self._pedb = p_edb
-
+class DeprecatedModeler(object):
     @property
     def _edb(self):
         return self._pedb.core
@@ -113,6 +78,7 @@ class Modeler(object):
         dict
             Dictionary of layers.
         """
+        warnings.warn("Deprecated. Use `edb.stackup.layers` instead.", DeprecationWarning, stacklevel=2)
         return self._pedb.stackup.layers
 
     def get_primitive(self, primitive_id):
@@ -128,6 +94,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_object_by_id` instead.", DeprecationWarning, stacklevel=2)
         for p in self._layout.primitives:
             if p.id == primitive_id:
                 return p
@@ -135,17 +102,6 @@ class Modeler(object):
             for v in p.voids:
                 if v.id == primitive_id:
                     return v
-
-    @property
-    def primitives(self):
-        """Primitives.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of primitives.
-        """
-        return self._pedb.layout.primitives
 
     @property
     def polygons_by_layer(self):
@@ -156,6 +112,7 @@ class Modeler(object):
         dict
             Dictionary of primitives with layer names as keys.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         _primitives_by_layer = {}
         for lay in self.layers:
             _primitives_by_layer[lay] = self.get_polygons_by_layer(lay)
@@ -170,6 +127,7 @@ class Modeler(object):
         dict
             Dictionary of primitives with nat names as keys.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         _prim_by_net = {}
         for net, net_obj in self._pedb.nets.nets.items():
             _prim_by_net[net] = [i for i in net_obj.primitives]
@@ -184,6 +142,7 @@ class Modeler(object):
         dict
             Dictionary of primitives with layer names as keys.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         _primitives_by_layer = {}
         for lay in self.layers:
             _primitives_by_layer[lay] = []
@@ -208,6 +167,7 @@ class Modeler(object):
             List of rectangles.
 
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
 
     @property
@@ -220,6 +180,7 @@ class Modeler(object):
             List of circles.
 
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if isinstance(i, CircleDotNet)]
 
     @property
@@ -231,6 +192,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of paths.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
@@ -242,6 +204,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of polygons.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name, net_list=None):
@@ -259,6 +222,7 @@ class Modeler(object):
         list
             List of primitive objects.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         objinst = []
         for el in self.polygons:
             if el.layer.name == layer_name:
@@ -287,6 +251,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives, polygons, paths and rectangles.
         """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
             layer = None
         if not isinstance(point, list) and len(point) == 2:
@@ -313,7 +278,7 @@ class Modeler(object):
                 obj.GetLayoutObj()
                 for obj in _obj_instances
                 if layer in [lay.GetName() for lay in list(obj.GetLayers())]
-                and "Terminal" not in str(obj.GetLayoutObj())
+                   and "Terminal" not in str(obj.GetLayoutObj())
             ]
             for prim in selected_prim:
                 obj_id = prim.GetId()
@@ -348,6 +313,8 @@ class Modeler(object):
         >>> poly = database.modeler.get_polygons_by_layer("GND")
         >>> bounding = database.modeler.get_polygon_bounding_box(poly[0])
         """
+        warnings.warn("Deprecated.", DeprecationWarning, stacklevel=2)
+
         bounding = []
         try:
             bounding_box = polygon.GetPolygonData().GetBBox()
@@ -410,6 +377,98 @@ class Modeler(object):
             except:
                 continue_iterate = False
         return points
+
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
+        """Get primitives by conditions.
+
+        Parameters
+        ----------
+        net_name : str, optional
+            Set filter on net_name. Default is `None`.
+        layer_name : str, optional
+            Set filter on layer_name. Default is `None`.
+        prim_type :  str, optional
+            Set filter on primitive type. Default is `None`.
+        is_void : bool
+            Set filter on is_void. Default is 'False'
+        Returns
+        -------
+        list
+            List of filtered primitives
+        """
+        prims = []
+        for el in self.primitives:
+            if not el.type:
+                continue
+            if net_name:
+                if not el.net_name == net_name:
+                    continue
+            if layer_name:
+                if not el.layer_name == layer_name:
+                    continue
+            if prim_type:
+                if not el.type == prim_type:
+                    continue
+            if not el.is_void == is_void:
+                continue
+            prims.append(el)
+        return prims
+
+    @staticmethod
+    def clear_cache():
+        """Force reload of all primitives and reset indexes."""
+        warnings.warn("Redundant methods. Not use.", DeprecationWarning)
+        pass
+
+
+class Modeler(DeprecatedModeler):
+    """Manages EDB methods for primitives management accessible from `Edb.modeler` property.
+
+    Examples
+    --------
+    >>> from pyedb import Edb
+    >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
+    >>> edb_layout = edbapp.modeler
+    """
+
+    def __getitem__(self, name):
+        """Get  a layout instance from the Edb project.
+
+        Parameters
+        ----------
+        name : str, int
+
+        Returns
+        -------
+        :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
+
+        """
+        for i in self.primitives:
+            if (
+                (isinstance(name, str) and i.aedt_name == name)
+                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
+                or (isinstance(name, int) and i.id == name)
+            ):
+                return i
+        self._pedb.logger.error("Primitive not found.")
+        return
+
+    def __init__(self, p_edb):
+        self._pedb = p_edb
+
+
+
+    @property
+    def primitives(self):
+        """Primitives.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of primitives.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.primitives` instead.", DeprecationWarning, stacklevel=2)
+        return self._pedb.layout.primitives
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
         """Parametrize pieces of a polygon based on another polygon.
@@ -855,42 +914,6 @@ class Modeler(object):
             if p.net_name in net_names:
                 p.delete()
         return True
-
-    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
-        """Get primitives by conditions.
-
-        Parameters
-        ----------
-        net_name : str, optional
-            Set filter on net_name. Default is `None`.
-        layer_name : str, optional
-            Set filter on layer_name. Default is `None`.
-        prim_type :  str, optional
-            Set filter on primitive type. Default is `None`.
-        is_void : bool
-            Set filter on is_void. Default is 'False'
-        Returns
-        -------
-        list
-            List of filtered primitives
-        """
-        prims = []
-        for el in self.primitives:
-            if not el.type:
-                continue
-            if net_name:
-                if not el.net_name == net_name:
-                    continue
-            if layer_name:
-                if not el.layer_name == layer_name:
-                    continue
-            if prim_type:
-                if not el.type == prim_type:
-                    continue
-            if not el.is_void == is_void:
-                continue
-            prims.append(el)
-        return prims
 
     def fix_circle_void_for_clipping(self):
         """Fix issues when circle void are clipped due to a bug in EDB.
@@ -1484,8 +1507,3 @@ class Modeler(object):
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
 
-    @staticmethod
-    def clear_cache():
-        """Force reload of all primitives and reset indexes."""
-        warnings.warn("Redundant methods. Not use.", DeprecationWarning)
-        pass
