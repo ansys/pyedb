@@ -27,6 +27,7 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 """
 
 from datetime import datetime
+import gc
 from itertools import combinations
 import os
 from pathlib import Path
@@ -1499,12 +1500,18 @@ class Edb:
             ``True`` when successful, ``False`` when failed.
 
         """
-        self._db.Close()
+        try:
+            self._db.Close()
+        except Exception as e:
+            self.logger.error(f"Error closing EDB: {e}")
+            return False
 
         if self.log_name and settings.enable_local_log_file:
             self.logger.remove_all_file_loggers()
         self._wait_for_file_release()
         self._clean_variables()
+        gc.collect()
+        gc.collect()
         return True
 
     def save_edb(self) -> bool:
