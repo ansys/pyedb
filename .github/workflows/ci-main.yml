@@ -138,7 +138,7 @@ jobs:
       - name: Run unit tests
         run: |
           source .venv/bin/activate
-          pytest tests/unit -vvv --cov
+          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -197,7 +197,7 @@ jobs:
       - name: Run unit tests
         run: |
           source .venv/bin/activate
-          pytest tests/unit -vvv --cov
+          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -266,7 +266,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -vvv --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -335,7 +335,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -vvv --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -410,7 +410,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv/bin/activate
-            pytest tests/system -vvv --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -485,7 +485,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv/bin/activate
-            pytest tests/system -vvv --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
