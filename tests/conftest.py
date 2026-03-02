@@ -164,8 +164,10 @@ class EdbExamples:
             return target_file
 
     def create_empty_edb(self):
-        aedb = os.path.join(self.test_folder, "new_layout.aedb")
-        return Edb(aedb, version=desktop_version, grpc=self.grpc)
+        aedb = os.path.join(self.test_folder, "new_layout_{generate_random_string(6)}.aedb")
+        edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
+        edbapp.save_edb()
+        return edbapp
 
     def get_multizone_pcb(self, version=None):
         target_file = self.copy_test_files_into_local_folder("multi_zone_project.aedb")[0]

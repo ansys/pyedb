@@ -27,7 +27,6 @@ This module is implicitly loaded in HFSS 3D Layout when launched.
 """
 
 from datetime import datetime
-import gc
 from itertools import combinations
 import os
 from pathlib import Path
@@ -1510,8 +1509,6 @@ class Edb:
             self.logger.remove_all_file_loggers()
         self._wait_for_file_release()
         self._clean_variables()
-        gc.collect()
-        gc.collect()
         return True
 
     def save_edb(self) -> bool:
