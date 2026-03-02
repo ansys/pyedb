@@ -147,4 +147,7 @@ Cohn
 Pydantic
 Drc
 SIPI
+API
+interdigital
 ore
+.NET

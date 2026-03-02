@@ -20,17 +20,27 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from pathlib import Path
+import secrets
 
 import pytest
 
 from pyedb.xml_parser.xml_parser import XmlParser
-from tests.conftest import example_models_path
-from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
-class TestClass(BaseTestClass):
+class TestClass:
+    @pytest.fixture(autouse=True)
+    def init(self, local_scratch, get_edb_examples, request):
+        """init runs before each test."""
+        temp = Path(local_scratch.path) / f"{request.node.name}_{secrets.token_hex(2)}"
+        temp.mkdir(parents=True)
+        self.edb_examples = get_edb_examples
+        self.edb_examples.test_folder = temp
+        yield
+        del temp
+        del self.edb_examples
+
     def test_create(self, get_edb_examples):
         xml_parser = XmlParser()
         xml_stackup = xml_parser.add_stackup()
