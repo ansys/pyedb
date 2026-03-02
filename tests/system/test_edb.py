@@ -675,7 +675,9 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="This method is not yet implemented in grpc.")
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] > "2026.1", reason="working with latest release"
+    )
     def test_hfss_simulation_setups_consolidation(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
