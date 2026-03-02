@@ -382,9 +382,9 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"], reason="issue #687 resolved  (wave ports) but need new pyedb-core release published"
-    )
+    # @pytest.mark.skipif(
+    #     config["use_grpc"], reason="issue #687 resolved  (wave ports) but need new pyedb-core release published"
+    # )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
