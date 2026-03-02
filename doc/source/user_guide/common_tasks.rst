@@ -9,7 +9,7 @@ Accessing and Modifying Nets
 
    from pyedb import Edb
 
-   edb = Edb(edbpath=edb_path, version="2025.2", grpc=True)
+   edb = Edb(edbpath=edb_path, version="2025.2", grpc=False)
    # Get a net by name
    net = edb.nets["DDR0_DQ0"]
 
@@ -41,7 +41,7 @@ Creating a Simple Simulation Setup
 
    from pyedb import Edb
 
-   edb = Edb(edbpath=edb_path, version="2025.2", grpc=True)
+   edb = Edb(edbpath=edb_path, version="2025.2", grpc=False)
    # Create a SIwave DC IR analysis setup
    setup = edb.create_siwave_dc_setup("my_dc_analysis")
 
