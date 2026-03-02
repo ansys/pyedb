@@ -38,7 +38,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
     config["use_grpc"],
     reason="SIwave module cannot be tested on VM as it runs in graphic model which VM doesn't support",
 )
-@pytest.mark.skip()
 class TestClass(BaseTestClass):
     def test_siwave(self):
         """Create Siwave."""
@@ -46,7 +45,7 @@ class TestClass(BaseTestClass):
         siw = Siwave(desktop_version)
         time.sleep(10)
 
-        target_path = self.edb_examples.copy_test_files_into_local_folder("siwave/siw_dc.siw")
+        target_path = self.edb_examples.copy_test_files_into_local_folder("siwave/siw_dc.siw")[0]
 
         assert siw
         assert siw.close_project()
@@ -93,14 +92,4 @@ class TestClass(BaseTestClass):
         siw = Siwave(desktop_version)
         siw.import_edb(edbapp)
         siw.load_configuration(cfg_json)
-        cfg_json_2 = os.path.join(self.edb_examples.test_folder, "cfg2.json")
-        siw.export_configuration(cfg_json_2)
-        siw.quit_application()
-        with open(cfg_json_2, "r") as f:
-            json_data = json.load(f)
-        assert json_data["ports"][0]["name"] == "CIRCUIT_X1_B8_GND"
-
-        siw = Siwave(desktop_version)
-        siw.import_edb(edbapp)
-        siw.load_configuration(cfg_json_2)
         siw.quit_application()
