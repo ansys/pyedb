@@ -265,7 +265,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
@@ -334,7 +334,7 @@ jobs:
           timeout_minutes: 30
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
@@ -409,7 +409,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv/bin/activate
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
@@ -484,7 +484,7 @@ jobs:
           timeout_minutes: 30
           command: |
             . .venv/bin/activate
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov
 
       - name: Create coverage files
         run: |
