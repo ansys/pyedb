@@ -117,9 +117,11 @@ class EdbExamples:
         source_folder = Path(__file__).parent / "example_models"
         files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
         target_files = []
+        random_folder_name = "test_" + generate_random_string(6)
+        os.makedirs(os.path.join(self.test_folder, random_folder_name), exist_ok=True)
         for f in files:
             src_files = source_folder / f
-            target_file_folder_name = os.path.join(self.test_folder, src_files.name)
+            target_file_folder_name = os.path.join(self.test_folder, random_folder_name, src_files.name)
 
             if not src_files.exists():
                 raise FileNotFoundError(f"Source file or folder {src_files} does not exist.")
