@@ -231,7 +231,7 @@ class LayoutValidation:
                                 if not getattr(obj, "is_void", False):
                                     total += obj.area()
                         except Exception as e:
-                            self._pedb._logger.warning(
+                            self._pedb.logger.warning(
                                 f"A(n) {type(e).__name__} error occurred while calculating area "
                                 f"for element {el_id} - Default value of 0 is used: {str(e)}"
                             )
@@ -279,8 +279,8 @@ class LayoutValidation:
                                 except KeyError:
                                     pass
                             disjoints_objects.extend(disjoints)
-        self._pedb._logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
-        self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
+        self._pedb.logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
+        self._pedb.logger.info_timer("Disjoint Cleanup Completed.", timer_start)
 
         return new_nets
 
