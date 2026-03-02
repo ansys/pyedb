@@ -1,4 +1,4 @@
-SIPI Workflows
+SIPI workflows
 ==============
 
 This section describes SIPI workflows features.
