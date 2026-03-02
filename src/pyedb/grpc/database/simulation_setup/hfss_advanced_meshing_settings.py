@@ -30,8 +30,9 @@ if TYPE_CHECKING:
 
 
 class HFSSAdvancedMeshingSettings:
-    def __init__(self, pedb, core: "CoreHFSSAdvancedMeshingSettings"):
+    def __init__(self, parent, pedb, core: "CoreHFSSAdvancedMeshingSettings"):
         """PyEDB HFSS advanced meshing settings class."""
+        self._parent = parent
         self.core = core
         self._pedb = pedb
 

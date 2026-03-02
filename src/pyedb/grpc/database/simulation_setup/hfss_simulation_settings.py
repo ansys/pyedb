@@ -47,7 +47,8 @@ from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolver
 class HFSSSimulationSettings:
     """PyEDB-core HFSS simulation settings class."""
 
-    def __init__(self, pedb, core: "CoreHFSSSimulationSettings"):
+    def __init__(self, parent, pedb, core: "CoreHFSSSimulationSettings"):
+        self._parent = parent
         self.core = core
         self._pedb = pedb
 
@@ -61,7 +62,7 @@ class HFSSSimulationSettings:
         :class:`HFSSAdvancedSettings <pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings>`
 
         """
-        return HFSSAdvancedSettings(self._pedb, self.core.advanced)
+        return HFSSAdvancedSettings(self, self._pedb, self.core.advanced)
 
     @property
     def advanced_meshing(self) -> HFSSAdvancedMeshingSettings:
@@ -73,7 +74,7 @@ class HFSSSimulationSettings:
         hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings>`
 
         """
-        return HFSSAdvancedMeshingSettings(self._pedb, self.core.advanced_meshing)
+        return HFSSAdvancedMeshingSettings(self, self._pedb, self.core.advanced_meshing)
 
     @property
     def dcr(self) -> HFSSDCRSettings:
@@ -84,7 +85,7 @@ class HFSSSimulationSettings:
         :class:`HFSSDCRSettings <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings>`
 
         """
-        return HFSSDCRSettings(self._pedb, self.core.dcr)
+        return HFSSDCRSettings(self, self._pedb, self.core.dcr)
 
     @property
     def general(self) -> HFSSGeneralSettings:
@@ -95,7 +96,7 @@ class HFSSSimulationSettings:
         :class:`HFSSGeneralSettings <pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings>`
 
         """
-        return HFSSGeneralSettings(self._pedb, self.core.general)
+        return HFSSGeneralSettings(self, self._pedb, self.core.general)
 
     @property
     def options(self) -> HFSSSettingsOptions:
@@ -106,7 +107,7 @@ class HFSSSimulationSettings:
         :class:`HFSSSettingsOptions <pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions>`
 
         """
-        return HFSSSettingsOptions(self._pedb, self.core.options)
+        return HFSSSettingsOptions(self, self._pedb, self.core.options)
 
     @property
     def solver(self) -> HFSSSolverSettings:

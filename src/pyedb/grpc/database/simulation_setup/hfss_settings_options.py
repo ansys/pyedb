@@ -37,9 +37,10 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 class HFSSSettingsOptions:
     """PyEDB-core HFSS settings options class."""
 
-    def __init__(self, _pedb, core: "CoreHFSSSettingsOptions"):
+    def __init__(self, parent, pedb, core: "CoreHFSSSettingsOptions"):
+        self._parent = parent
         self.core = core
-        self._pedb = _pedb
+        self._pedb = pedb
 
     @property
     def do_lambda_refine(self) -> bool:

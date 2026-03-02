@@ -531,7 +531,8 @@ class SingleFrequencyAdaptiveSolution:
 class HFSSGeneralSettings:
     """PyEDB-core HFSS general settings class."""
 
-    def __init__(self, pedb, core: "CoreHFSSGeneralSettings"):
+    def __init__(self, parent, pedb, core: "CoreHFSSGeneralSettings"):
+        self._parent = parent
         self.core = core
         self._pedb = pedb
 
@@ -730,11 +731,11 @@ class HFSSGeneralSettings:
             "Use 'settings.options.max_refinement_per_pass' instead.",
             DeprecationWarning,
         )
-        return self._pedb.settings.options.max_refinement_per_pass
+        return self._parent.settings.options.max_refinement_per_pass
 
     @max_refine_per_pass.setter
     def max_refine_per_pass(self, value: float):
-        self._pedb.settings.options.max_refinement_per_pass = value
+        self._parent.settings.options.max_refinement_per_pass = value
 
     @property
     def min_passes(self) -> int:
@@ -750,11 +751,11 @@ class HFSSGeneralSettings:
             "Use 'settings.options.min_passes' instead.",
             DeprecationWarning,
         )
-        return self._pedb.settings.options.min_passes
+        return self._parent.settings.options.min_passes
 
     @min_passes.setter
     def min_passes(self, value: int):
-        self._pedb.settings.options.min_passes = value
+        self._parent.settings.options.min_passes = value
 
     @property
     def use_max_refinement(self) -> bool:
@@ -770,8 +771,8 @@ class HFSSGeneralSettings:
             "Use 'settings.options.use_max_refinement' instead.",
             DeprecationWarning,
         )
-        return self._pedb.settings.options.use_max_refinement
+        return self._parent.settings.options.use_max_refinement
 
     @use_max_refinement.setter
     def use_max_refinement(self, value: bool):
-        self._pedb.settings.options.use_max_refinement = value
+        self._parent.settings.options.use_max_refinement = value

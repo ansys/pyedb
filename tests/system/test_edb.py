@@ -586,7 +586,7 @@ class TestClass(BaseTestClass):
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="This method is not yet implemented in grpc.")
+    # @pytest.mark.skipif(config["use_grpc"], reason="This method is not yet implemented in grpc.")
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()

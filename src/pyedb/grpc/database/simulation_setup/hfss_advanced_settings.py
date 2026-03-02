@@ -31,8 +31,9 @@ from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as Core
 
 
 class HFSSAdvancedSettings:
-    def __init__(self, pedb, core: "CoreHFSSAdvancedSettings"):
+    def __init__(self, parent, pedb, core: "CoreHFSSAdvancedSettings"):
         """PyEDB HFSS advanced settings class."""
+        self._parent = parent
         self.core = core
         self._pedb = pedb
 
@@ -251,7 +252,7 @@ class HFSSAdvancedSettings:
 
     @small_void_area.setter
     def small_void_area(self, value: float):
-        self.core.small_void_area = value
+        self.core.small_void_area = self._pedb.value(value)
 
     @property
     def union_polygons(self) -> bool:

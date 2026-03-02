@@ -32,7 +32,8 @@ if TYPE_CHECKING:
 class HFSSDCRSettings:
     """PyEDB HFSS DC settings class."""
 
-    def __init__(self, pedb, core: "CoreHFSSDCRSettings"):
+    def __init__(self, parent, pedb, core: "CoreHFSSDCRSettings"):
+        self._parent = parent
         self.core = core
         self._pedb = pedb
 
