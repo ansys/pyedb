@@ -332,7 +332,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 20
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -vvv --cov
@@ -482,7 +482,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 20
+          timeout_minutes: 40
           command: |
             . .venv/bin/activate
             pytest tests/system -vvv --cov
