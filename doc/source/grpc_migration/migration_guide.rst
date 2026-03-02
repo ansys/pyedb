@@ -28,7 +28,7 @@ Side-by-Side Code Comparison
 
 
    .. code-block:: python
-      :caption: Modern gRPC (Recommended)
+      :caption: Modern gRPC
 
        # This connects to the standalone ansys-edb-core service
        from pyedb import Edb
