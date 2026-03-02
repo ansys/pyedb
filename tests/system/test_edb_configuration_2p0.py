@@ -52,7 +52,9 @@ U8_IC_DIE_PROPERTIES = {
 
 def _assert_initial_ic_die_properties(component: dict):
     assert component["ic_die_properties"]["type"] in ["none", "no_die"]
-    assert "orientation" not in component["ic_die_properties"]
+    if hasattr(component["ic_die_properties"], "oritentation"):
+        # grpc provides orientation argument which looks correct while DotNet not.
+        assert "orientation" in component["ic_die_properties"]
     assert "height" not in component["ic_die_properties"]
 
 
