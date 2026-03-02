@@ -43,6 +43,7 @@ class TestClass:
 
     def test_create(self, get_edb_examples):
         xml_parser = XmlParser()
+        assert xml_parser.to_dict()
         xml_stackup = xml_parser.add_stackup()
         xml_materials = xml_stackup.add_materials()
 
@@ -77,7 +78,6 @@ class TestClass:
         assert xml_parser.stackup.layers.layer[1].material == "fr4"
 
         assert Path(xml_parser.to_xml_file(Path(get_edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
-        assert xml_parser.to_dict()
 
     def test_load_from_xml(self):
         xml_file = self.edb_examples.copy_test_files_into_local_folder(

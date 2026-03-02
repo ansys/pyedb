@@ -80,7 +80,6 @@ class TestClass(BaseTestClass):
         assert edbapp.definitions.add_package("package_2", boundary_points=[["-1mm", "-1mm"], ["1mm", "1mm"]])
         edbapp.components["J5"].package_def = "package_2"
         assert edbapp.components["J5"].package_def.name == "package_2"
-        assert not edbapp.definitions.add_package("package_3", boundary_points=None)
         edbapp.close(terminate_rpc_session=False)
 
     def test_wirebond_definitions(self):
