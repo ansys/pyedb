@@ -586,7 +586,7 @@ class TestClass(BaseTestClass):
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(config["use_grpc"], reason="This method is not yet implemented in grpc.")
+    @pytest.mark.skipif(config["use_grpc"], reason="This method is not yet implemented in grpc.")
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
@@ -763,16 +763,13 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] > "2026.1", reason="working with latest release"
+    )
     def test_siwaves_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_setup()
         setup = edbapp.setups[setup.name]
-
-        # -------------------------
-        # SETTERS
-        # -------------------------
-
         setup.name = "test_siwave_setup"
 
         # Advanced settings
@@ -785,8 +782,7 @@ class TestClass(BaseTestClass):
         adv_settings.include_inter_plane_coupling = True
         adv_settings.include_split_plane_coupling = False
         adv_settings.inf_gnd_location = 1e-3
-        # TODO check pyedb-core bug #681 -> setter is not working
-        # adv_settings.max_coupled_lines = 30
+        adv_settings.max_coupled_lines = 30
         adv_settings.mesh_automatic = False
         adv_settings.mesh_frequency = 30e9
         adv_settings.min_pad_area_to_mesh = 1e-5
