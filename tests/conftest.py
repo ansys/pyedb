@@ -164,7 +164,7 @@ class EdbExamples:
             return target_file
 
     def create_empty_edb(self):
-        aedb = os.path.join(self.test_folder, "new_layout_{generate_random_string(6)}.aedb")
+        aedb = os.path.join(self.test_folder, f"new_layout_{generate_random_string(6)}.aedb")
         edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
         edbapp.save_edb()
         return edbapp
