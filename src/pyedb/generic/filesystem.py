@@ -28,8 +28,10 @@ import string
 from types import TracebackType
 
 from pyedb.generic.settings import settings
+from pyedb.misc.decorators import deprecated, deprecated_class
 
 
+@deprecated("Please use pathlib.Path.glob for file searching.")
 def search_files(dirname: str, pattern: str = "*") -> list[str]:
     """Search for files inside a directory given a specific pattern.
 
@@ -47,11 +49,13 @@ def search_files(dirname: str, pattern: str = "*") -> list[str]:
     return [os.path.abspath(i) for i in pathlib.Path(dirname).glob(pattern)]
 
 
+@deprecated("Please use pathlib.Path(__file__).parent.resolve() for current file location.")
 def my_location():
     """Get the normalized path of the current file's directory."""
     return os.path.normpath(os.path.dirname(__file__))
 
 
+@deprecated_class("This class should only be used for testing purposes.")
 class Scratch:
     """Class for managing a scratch directory."""
 
@@ -160,6 +164,7 @@ class Scratch:
         return destfolder
 
 
+@deprecated("Please use pathlib.Path.glob for file searching.")
 def get_json_files(start_folder):
     """Get the absolute path to all JSON files in start_folder.
 
