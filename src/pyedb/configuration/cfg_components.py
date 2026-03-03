@@ -184,7 +184,6 @@ class CfgComponent(CfgBase):
                         en_res = False
                     else:
                         # If resistance is defined, use the provided value and enabled status
-                        res = i["resistance"]
                         en_res = i.get("resistance_enabled", True)
                     ind = i.get("inductance")
                     if ind is None:
