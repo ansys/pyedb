@@ -21,6 +21,7 @@
 # SOFTWARE.
 from collections import Counter
 import json
+import os
 from pathlib import Path
 
 import pytest
@@ -160,12 +161,13 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_03_spice_models(self):
-        self.edb_examples.copy_test_files_into_local_folder(
+        files = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
         )
+        spice_dir = os.path.dirname(files[0])
         edbapp = self.edb_examples.get_si_verse()
         data = {
-            "general": {"spice_model_library": self.edb_examples.test_folder},
+            "general": {"spice_model_library": spice_dir},
             "spice_models": [
                 {
                     "name": "GRM32ER72A225KA35_25C_0V",
