@@ -42,7 +42,7 @@ class VoltageRegulator(Connectable):
         return self._edb_object.GetLoadRegulationCurrent().ToDouble()
 
     @load_regulator_current.setter
-    def load_regulator_current(self, value):
+    def load_regulator_current(self, value: float):
         """Set load regulator current value.
 
         Parameters
@@ -89,7 +89,7 @@ class VoltageRegulator(Connectable):
         return self._pedb.padstacks.instances[edb_pin.GetId()]
 
     @negative_remote_sense_pin.setter
-    def negative_remote_sense_pin(self, value):
+    def negative_remote_sense_pin(self, value: EDBPadstackInstance):
         """Set negative remote sense pin.
 
         Parameters
@@ -119,7 +119,7 @@ class VoltageRegulator(Connectable):
         return self._pedb.padstacks.instances[edb_pin.GetId()]
 
     @positive_remote_sense_pin.setter
-    def positive_remote_sense_pin(self, value):
+    def positive_remote_sense_pin(self, value: int | EDBPadstackInstance):
         """Set positive remote sense pin.
 
         Parameters
