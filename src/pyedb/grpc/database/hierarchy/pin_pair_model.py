@@ -233,8 +233,10 @@ class PinPairModel:
 
     @property
     def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
-        """Retrieve RLC model given pin pair. If pin pair is not provided, the first pin pair will be used by default.
-        If there is no pin pair, None will be returned.
+        """Retrieve RLC model given pin pair.
+        
+        If pin pair is not provided, the first pin pair will be used by default.
+        If there is no pin pair, ``None`` will be returned.
 
         Parameters
         ----------
