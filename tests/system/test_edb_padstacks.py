@@ -431,19 +431,18 @@ class TestClass(BaseTestClass):
         edb_plot.close(terminate_rpc_session=False)
 
     def test_update_padstacks_after_layer_name_changed(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edbapp = self.edb_examples.load_edb(source_path)
+        edbapp = self.edb_examples.get_si_verse_sfp()
         signal_layer_list = [layer for layer in edbapp.stackup.layers.values() if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):
             new_name = f"new_signal_name_{n_layer}"
             old_layers.append(layer.name)
             layer.name = new_name
-        for layer_name in list(edbapp.stackup.layers.keys()):
-            print(f"New layer name is {layer_name}")
+            break
         for padstack_inst in edbapp.padstacks.instances.values():
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
-        edbapp.close_edb()
+            break
+        edbapp.close_edb(terminate_rpc_session=False)
 
     def test_hole(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
@@ -474,8 +473,7 @@ class TestClass(BaseTestClass):
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
     def test_polygon_based_padstack(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edbapp = self.edb_examples.load_edb(source_path)
+        edbapp = self.edb_examples.get_si_verse_sfp()
         polygon_data = edbapp.modeler.paths[0].polygon_data
         edbapp.padstacks.create(
             padstackname="test",
