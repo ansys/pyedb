@@ -26,6 +26,7 @@ import codecs
 import json
 import math
 import os
+from pathlib import Path
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
@@ -42,10 +43,7 @@ from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
 )
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    get_filename_without_extension,
-)
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.component_pin import ComponentPin
@@ -1021,7 +1019,7 @@ class Components(object):
         >>> edbapp.components.set_component_model("U1", "Spice", "path/to/model.sp")
         """
         if not modelname:
-            modelname = get_filename_without_extension(modelpath)
+            modelname = Path(modelpath).stem
         if componentname not in self.instances:
             self._pedb.logger.error(f"Component {componentname} not found.")
             return False
