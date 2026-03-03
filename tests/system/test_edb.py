@@ -587,7 +587,7 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] > "2026.1", reason="working with latest release"
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
     )
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
