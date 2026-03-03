@@ -28,7 +28,7 @@ dependencies = [
     # .NET interface dependencies
     "cffi>=1.16.0,<2.1; platform_system=='Linux'",
     "pywin32>=308;platform_system=='Windows'",
-    "ansys-pythonnet>=3.1.0rc7",
+    "ansys-pythonnet>=3.1.0rc6",
     "dotnetcore2==3.1.23;platform_system=='Linux'",
     # Core dependencies
     "numpy>=1.20.0,<3",
