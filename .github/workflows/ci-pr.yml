@@ -6,7 +6,7 @@ on:
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_CI_NO_DISPLAY: '1'
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.12'
   PACKAGE_NAME: 'pyedb'
   ON_CI: True
 

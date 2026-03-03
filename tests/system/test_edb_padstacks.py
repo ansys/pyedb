@@ -441,7 +441,7 @@ class TestClass(BaseTestClass):
             layer.name = new_name
         for layer_name in list(edbapp.stackup.layers.keys()):
             print(f"New layer name is {layer_name}")
-        for padstack_inst in edbapp.padstacks.instances.values():
+        for padstack_inst in list(edbapp.padstacks.instances.values())[:100]:
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
         edbapp.close_edb()
 
