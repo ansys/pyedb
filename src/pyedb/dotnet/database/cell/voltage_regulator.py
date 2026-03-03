@@ -174,7 +174,7 @@ class VoltageRegulator(Connectable):
         return self._edb_object.IsActive()
 
     @is_active.setter
-    def is_active(self, value):
+    def is_active(self, value: bool):
         """Set voltage regulator active state.
 
         Parameters
