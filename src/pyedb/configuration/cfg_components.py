@@ -200,7 +200,6 @@ class CfgComponent(CfgBase):
                         en_cap = False
                     else:
                         # If capacitance is defined, use the provided value and enabled status
-                        cap = i["capacitance"]
                         en_cap = i.get("capacitance_enabled", True)
 
                     rlc = self._pedb._edb.Utility.Rlc(
