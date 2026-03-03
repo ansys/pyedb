@@ -441,7 +441,7 @@ class TestClass(BaseTestClass):
         for padstack_inst in edbapp.padstacks.instances.values():
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
             break
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     def test_hole(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
