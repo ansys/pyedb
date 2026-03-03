@@ -65,7 +65,7 @@ class VoltageRegulator(Connectable):
         return self._edb_object.GetLoadRegulationPercent().ToDouble()
 
     @load_regulation_percent.setter
-    def load_regulation_percent(self, value):
+    def load_regulation_percent(self, value: float):
         """Set load regulation percent value.
 
         Parameters
@@ -152,7 +152,7 @@ class VoltageRegulator(Connectable):
         return self._edb_object.GetVoltage().ToDouble()
 
     @voltage.setter
-    def voltage(self, value):
+    def voltage(self, value: float):
         """Set voltage value.
 
         Parameters
