@@ -192,7 +192,6 @@ class CfgComponent(CfgBase):
                         en_ind = False
                     else:
                         # If inductance is defined, use the provided value and enabled status
-                        ind = i["inductance"]
                         en_ind = i.get("inductance_enabled", True)
                     cap = i.get("capacitance")
                     if cap is None:
