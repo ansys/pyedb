@@ -385,7 +385,7 @@ class DeprecatedModeler(object):
         Parameters
         ----------
         net_name : str, optional
-            Set filter on net_name. Default is `None`.
+            Set filter on net_name. Default is ``None``.
         layer_name : str, optional
             Set filter on layer_name. Default is `None`.
         prim_type :  str, optional
