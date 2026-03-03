@@ -401,15 +401,12 @@ class DeprecatedModeler(object):
         for el in self.primitives:
             if not el.type:
                 continue
-            if net_name:
-                if not el.net_name == net_name:
-                    continue
-            if layer_name:
-                if not el.layer_name == layer_name:
-                    continue
-            if prim_type:
-                if not el.type == prim_type:
-                    continue
+            if net_name and not el.net_name == net_name:
+                continue
+            if layer_name and not el.layer_name == layer_name:
+                continue
+            if prim_type and not el.type == prim_type:
+                continue
             if not el.is_void == is_void:
                 continue
             prims.append(el)
