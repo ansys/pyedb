@@ -95,7 +95,9 @@ class PinPairModel:
 
     @property
     def second_pin(self) -> str:
-        """Second pin name. This attribute is read-only since pin pair model is defined between two pins,
+        """Second pin name.
+        
+        This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
 
         Returns
