@@ -27,6 +27,55 @@ import warnings
 from pyedb.generic.settings import settings
 
 
+def deprecated(reason: str = ""):
+    """Decorator to mark functions or methods as deprecated.
+
+    Parameters
+    ----------
+    reason : str, optional
+        Message to display with the deprecation warning.
+    """
+
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            msg = f"Call to deprecated function {func.__qualname__}."
+            if reason:
+                msg += f" {reason}"
+            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            return func(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
+
+def deprecated_class(reason: str = ""):
+    """Decorator to mark a class as deprecated.
+
+    Parameters
+    ----------
+    reason : str, optional
+        Message to display with the deprecation warning.
+    """
+
+    def decorator(cls):
+        orig_init = cls.__init__
+
+        @functools.wraps(orig_init)
+        def new_init(self, *args, **kwargs):
+            msg = f"Call to deprecated class {cls.__qualname__}."
+            if reason:
+                msg += f" {reason}"
+            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            orig_init(self, *args, **kwargs)
+
+        cls.__init__ = new_init
+        return cls
+
+    return decorator
+
+
 def deprecated_property(func):
     """
     This decorator marks a property as deprecated.
