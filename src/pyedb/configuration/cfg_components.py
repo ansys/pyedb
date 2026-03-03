@@ -25,7 +25,8 @@ from ansys.edb.core.definition.solder_ball_property import SolderballShape as Co
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.database.general import pascal_to_snake, snake_to_pascal
+from pyedb.dotnet.database.general import snake_to_pascal
+from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 
 _solder_shape_mapping = {
     "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,
@@ -43,7 +44,6 @@ _die_orientation_mapping = {
     "chip_up": CoreDieOrientation.CHIP_UP,
     "chip_down": CoreDieOrientation.CHIP_DOWN,
 }
-from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 
 
 class CfgComponent(CfgBase):

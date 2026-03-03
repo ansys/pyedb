@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
@@ -30,12 +29,18 @@ from pyedb.grpc.database.utility.value import Value
 class PinPairModel:
     """Manage pin-pair model."""
 
-    def __init__(self, edb_object):
-        self.core = edb_object
+    def __init__(self, pedb, core):
+        self._pedb = pedb
+        self.core = core
 
     @classmethod
     def create(
-        cls, r: float = None, l: float = None, c: float = None, pin1_name: str = None, pin2_name: str = None
+        cls,
+        r: float | None = None,
+        l: float | None = None,
+        c: float | None = None,
+        pin1_name: str | None = None,
+        pin2_name: str | None = None,
     ) -> "PinPairModel":
         """Create pin pair model. Pin pair model is defined between two pins, and it can be used to define the RLC model
         between two pins. Adding optional RLC values will enable the RLC model for the pin pair.
@@ -80,7 +85,7 @@ class PinPairModel:
     @property
     def first_pin(self) -> str:
         """First pin name.
-        
+
         This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
 
@@ -96,7 +101,7 @@ class PinPairModel:
     @property
     def second_pin(self) -> str:
         """Second pin name.
-        
+
         This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
 
@@ -234,7 +239,7 @@ class PinPairModel:
     @property
     def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
         """Retrieve RLC model given pin pair.
-        
+
         If pin pair is not provided, the first pin pair will be used by default.
         If there is no pin pair, ``None`` will be returned.
 
@@ -251,12 +256,17 @@ class PinPairModel:
         """
         pp = self.core.pin_pairs()
         if not pp:
+            self._pedb.logger.warning("No pin pair found. Returning None.")
             return None
         if pin_pair:
             for p in pp:
                 if p[0] == pin_pair[0] and p[1] == pin_pair[1]:
                     pin_pair = self.core.rlc(pp)
-            raise ValueError(f"Pin pair {pin_pair} not found.")
+                else:
+                    self._pedb.logger.warning(
+                        f"Pin pair {pin_pair} not found. Returning RLC for the first pin pair {pp[0]}."
+                    )
+                    pin_pair = pp[0]
         else:
             pin_pair = pp[0]
         return self.core.rlc(pin_pair)
