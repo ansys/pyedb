@@ -416,7 +416,6 @@ class DeprecatedModeler(object):
     def clear_cache():
         """Force reload of all primitives and reset indexes."""
         warnings.warn("Redundant methods. Not use.", DeprecationWarning)
-        pass
 
 
 class Modeler(DeprecatedModeler):
