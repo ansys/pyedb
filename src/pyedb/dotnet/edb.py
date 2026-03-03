@@ -1499,7 +1499,11 @@ class Edb:
             ``True`` when successful, ``False`` when failed.
 
         """
-        self._db.Close()
+        try:
+            self._db.Close()
+        except Exception as e:
+            self.logger.error(f"Error closing EDB: {e}")
+            return False
 
         if self.log_name and settings.enable_local_log_file:
             self.logger.remove_all_file_loggers()

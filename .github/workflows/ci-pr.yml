@@ -6,7 +6,7 @@ on:
 env:
   ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
   PYEDB_CI_NO_DISPLAY: '1'
-  MAIN_PYTHON_VERSION: '3.10'
+  MAIN_PYTHON_VERSION: '3.12'
   PACKAGE_NAME: 'pyedb'
   ON_CI: True
 
@@ -133,7 +133,7 @@ jobs:
       - name: Run unit tests
         run: |
           source .venv/bin/activate
-          pytest tests/unit -vvv --cov
+          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -192,7 +192,7 @@ jobs:
       - name: Run unit tests
         run: |
           source .venv/bin/activate
-          pytest tests/unit -vvv --cov
+          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -261,7 +261,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -327,10 +327,10 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 30
+          timeout_minutes: 40
           command: |
             . .venv\Scripts\Activate.ps1
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -405,7 +405,7 @@ jobs:
           timeout_minutes: 40
           command: |
             . .venv/bin/activate
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
@@ -477,10 +477,10 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 30
+          timeout_minutes: 40
           command: |
             . .venv/bin/activate
-            pytest tests/system -n auto --dist loadfile -v --cov
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
 
       - name: Create coverage files
         run: |
