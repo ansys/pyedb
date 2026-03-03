@@ -42,7 +42,7 @@ To enable PyEDB gRPC you have two options.
    # Using grpc flag
    from pyedb import Edb
 
-   edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=True)
+   edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=False)
 
 
 API documentation

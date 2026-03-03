@@ -29,7 +29,7 @@ import pytest
 from pyedb import Edb
 from tests.conftest import desktop_version
 
-pytestmark = [pytest.mark.unit, pytest.mark.legacy]
+pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
 
 class TestClass:
