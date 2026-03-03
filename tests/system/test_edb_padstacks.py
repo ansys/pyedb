@@ -376,10 +376,9 @@ class TestClass(BaseTestClass):
 
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edb_plot = self.edb_examples.load_edb(source_path)
+        edb_plot = self.edb_examples.get_si_verse_sfp()
 
-        local_png1 = os.path.join(source_path, "test1.png")
+        local_png1 = os.path.join(self.edb_examples.test_folder, "test1.png")
         edb_plot.nets.plot(
             nets=None,
             layers=None,
@@ -390,10 +389,10 @@ class TestClass(BaseTestClass):
         )
         assert os.path.exists(local_png1)
 
-        local_png2 = os.path.join(source_path, "test2.png")
+        local_png2 = os.path.join(self.edb_examples.test_folder, "test2.png")
 
         edb_plot.nets.plot(
-            nets="DDR4_DQS7_N",
+            nets="SFPA_RX_N",
             layers=None,
             save_plot=local_png2,
             plot_components_on_top=True,
@@ -403,10 +402,10 @@ class TestClass(BaseTestClass):
         edb_plot.modeler.create_polygon(
             [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
         )
-        local_png3 = os.path.join(source_path, "test3.png")
+        local_png3 = os.path.join(self.edb_examples.test_folder, "test3.png")
         edb_plot.nets.plot(
-            nets=["DDR4_DQ57", "DDR4_DQ56"],
-            layers="1_Top",
+            nets=["SFPA_RX_P", "SFPA_RX_N"],
+            layers="Top",
             color_by_net=True,
             save_plot=local_png3,
             plot_components=True,
@@ -414,14 +413,14 @@ class TestClass(BaseTestClass):
         )
         assert os.path.exists(local_png3)
 
-        local_png4 = os.path.join(source_path, "test4.png")
+        local_png4 = os.path.join(self.edb_examples.test_folder, "test4.png")
         edb_plot.stackup.plot(
             save_plot=local_png4,
             plot_definitions=list(edb_plot.padstacks.definitions.keys())[0],
         )
         assert os.path.exists(local_png4)
 
-        local_png5 = os.path.join(source_path, "test5.png")
+        local_png5 = os.path.join(self.edb_examples.test_folder, "test5.png")
         edb_plot.stackup.plot(
             scale_elevation=False,
             save_plot=local_png5,
