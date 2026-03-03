@@ -80,7 +80,7 @@ class PinPairModel:
     @property
     def first_pin(self) -> str:
         """First pin name.
-        
+
         This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
 
@@ -96,7 +96,7 @@ class PinPairModel:
     @property
     def second_pin(self) -> str:
         """Second pin name.
-        
+
         This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
 
@@ -234,7 +234,7 @@ class PinPairModel:
     @property
     def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
         """Retrieve RLC model given pin pair.
-        
+
         If pin pair is not provided, the first pin pair will be used by default.
         If there is no pin pair, ``None`` will be returned.
 
