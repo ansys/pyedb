@@ -83,12 +83,14 @@ class TestClass:
             "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
         )[0]
         xml_parser = XmlParser.load_xml_file(str(xml_file))
-        assert xml_parser.to_dict()
         assert len(xml_parser.stackup.materials.material) == 8
         assert xml_parser.stackup.materials.material[1].name == "copper"
 
         assert len(xml_parser.stackup.layers.layer) == 20
         assert xml_parser.stackup.layers.layer[0].name == "top_soldermask"
+
+        if not xml_parser.to_dict():
+            raise AssertionError("xml not loaded to dict")
 
     def test_load_from_cfg(self):
         from pyedb.configuration.cfg_data import CfgStackup
