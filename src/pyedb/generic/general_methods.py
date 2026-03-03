@@ -40,7 +40,7 @@ import sys
 import tempfile
 import time
 from typing import IO, TYPE_CHECKING, Any
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # nosec B405
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
