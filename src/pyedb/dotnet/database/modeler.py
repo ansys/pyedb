@@ -67,7 +67,6 @@ class Modeler(object):
                 return i
         raise ValueError(f"Primitive {name} not found.")
 
-
     def __init__(self, p_edb):
         self._pedb = p_edb
 
@@ -1119,7 +1118,6 @@ class Modeler(object):
             if net_obj:
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
-
 
     @property
     def _edb(self):
