@@ -40,6 +40,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.grpc.database.definition.padstack_def import PadstackDef
 
 
 class EdbPadstacks(object):
@@ -1186,15 +1187,15 @@ class EdbPadstacks(object):
 
     def place(
         self,
-        position,
-        definition_name,
-        net_name="",
-        via_name="",
-        rotation=0.0,
-        fromlayer=None,
-        tolayer=None,
-        solderlayer=None,
-        is_pin=False,
+        position: list,
+        definition_name: str | PadstackDef,
+        net_name: str = "",
+        via_name: str = "",
+        rotation: float = 0.0,
+        fromlayer: str = None,
+        tolayer: str = None,
+        solderlayer: str = None,
+        is_pin: bool = False,
     ):
         """Place a via.
 
@@ -1225,9 +1226,12 @@ class EdbPadstacks(object):
         :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
         """
         padstack = None
-        for pad in list(self.definitions.keys()):
-            if pad == definition_name:
-                padstack = self.definitions[pad].edb_padstack
+        if isinstance(definition_name, PadstackDef):
+            padstack = definition_name.edb_padstack
+        else:
+            for pad in list(self.definitions.keys()):
+                if pad == definition_name:
+                    padstack = self.definitions[pad].edb_padstack
         # position = self._edb.Geometry.PointData(position[0], position[1])
         position = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, *position)
         net = self._pedb.nets.find_or_create_net(net_name)

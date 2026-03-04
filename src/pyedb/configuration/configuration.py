@@ -757,13 +757,13 @@ class Configuration:
     @execution_timer("Applying padstack definitions and instances")
     def apply_padstacks(self):
         padstacks = self.cfg_data.padstacks
-
+        p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
         for pdef in padstacks.definitions:
-            pdef_obj = self._pedb.padstacks.definitions[pdef.name]
+            pdef_obj = p_d[pdef.name]
             set_padstack_definition(pdef, pdef_obj)
 
         if padstacks.instances:
-            insts_by_name = self._pedb.padstacks.instances_by_name
+            insts_by_name = {i: j for i, j in self._pedb.padstacks.instances_by_name.items()}
         for inst in padstacks.instances:
             inst_obj = insts_by_name[inst.name]
             set_padstack_instance(inst, inst_obj)

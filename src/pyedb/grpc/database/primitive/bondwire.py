@@ -115,14 +115,14 @@ class Bondwire:
             bondwire_type=bondwire_type,
             definition_name=definition_name,
             placement_layer=placement_layer,
-            width=Value(width),
+            width=layout._pedb._value_setter(width),
             material=material,
             start_layer_name=start_layer_name,
-            start_x=Value(start_x),
-            start_y=Value(start_y),
+            start_x=layout._pedb._value_setter(start_x),
+            start_y=layout._pedb._value_setter(start_y),
             end_layer_name=end_layer_name,
-            end_x=Value(end_x),
-            end_y=Value(end_y),
+            end_x=layout._pedb._value_setter(end_x),
+            end_y=layout._pedb._value_setter(end_y),
             net=net,
             end_context=end_cell_inst,
             start_context=start_cell_inst,
@@ -200,7 +200,7 @@ class Bondwire:
 
     @cross_section_height.setter
     def cross_section_height(self, cross_section_height):
-        self.core.cross_section_height = Value(cross_section_height)
+        self.core.cross_section_height = self._pedb._value_setter(cross_section_height)
 
     @property
     def width(self):
@@ -215,7 +215,7 @@ class Bondwire:
 
     @width.setter
     def width(self, width):
-        self.core.width = Value(width)
+        self.core.width = self._pedb._value_setter(width)
 
     def get_material(self):
         """Get the bondwire material.
