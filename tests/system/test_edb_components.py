@@ -551,7 +551,6 @@ class TestClass(BaseTestClass):
 
     def test_instances(self):
         """Check instances access and values."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         comp_pins = edbapp.components.instances["U1"].pins
         pins = [comp_pins["AM38"], comp_pins["AL37"]]
@@ -674,7 +673,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_rlc_component_302(self):
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("C31")
         component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)
