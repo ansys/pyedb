@@ -192,7 +192,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
-        return [i for i in self.primitives if i.primitive_type == "path"]
+        return [i for i in self._pedb.layout.primitives if i.primitive_type == "path"]
 
     @property
     def polygons(self) -> List[Union[Polygon, Primitive]]:
@@ -203,7 +203,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
         """
-        return [i for i in self.primitives if i.primitive_type == "polygon"]
+        return [i for i in self._pedb.layout.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
         """Retrieve polygons by layer.
@@ -294,8 +294,7 @@ class Modeler(object):
                 returned_obj.append(Circle(self._pedb, primitive))
         return returned_obj
 
-    @staticmethod
-    def get_polygon_bounding_box(polygon: Primitive) -> List[float]:
+    def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
         """Get bounding box of polygon.
 
         Parameters
@@ -780,7 +779,7 @@ class Modeler(object):
             List of filtered primitives.
         """
         prims = []
-        for el in self.primitives:
+        for el in self._pedb.layout.primitives:
             if not el.primitive_type:
                 continue
             if net_name:

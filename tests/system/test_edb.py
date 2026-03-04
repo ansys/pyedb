@@ -422,7 +422,7 @@ class TestClass(BaseTestClass):
         target_path = self.edb_examples.copy_test_files_into_local_folder("edb_edge_ports.aedb")[0]
         edb = self.edb_examples.load_edb(target_path)
         if edb.grpc:
-            prim_1_id = [i.edb_uid for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
+            prim_1_id = [i.edb_uid for i in edb.layout.primitives if i.net.name == "trace_2"][0]
             assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         else:
             # This method is also available at same location in grpc but is deprecated.

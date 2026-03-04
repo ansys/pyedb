@@ -217,7 +217,7 @@ class SourceExcitationInternal:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = CorePointData(point_on_edge)
-        prim = [i for i in self._pedb.modeler.primitives if i.edb_uid == prim_id]
+        prim = [i for i in self._pedb.layout.primitives if i.edb_uid == prim_id]
         if not prim:
             self._pedb.logger.error(f"No primitive found for ID {prim_id}")
             return False

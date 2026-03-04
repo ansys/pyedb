@@ -529,7 +529,7 @@ class HfssSimulationSetup(SimulationSetup):
         layer_info = []
         smallest_width = 1e3
         for net in net_for_mesh_seeding:
-            net_obj = self._pedb.find_primitive(net_name=net)
+            net_obj = self._pedb.layout.find_primitive(net_name=net)
             traces = [prim for prim in net_obj if prim.type == "path"]
             _width = min([trace.width for trace in traces], default=1e3)
             if _width < smallest_width:
