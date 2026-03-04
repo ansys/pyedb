@@ -21,9 +21,8 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
-import warnings
-
 from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
+import warnings
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
@@ -40,7 +39,6 @@ class SiwaveSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "CoreSIWaveSimulationSetup"):
         super().__init__(pedb, core)
-        # give static analyzers a concrete type for core
         self.core: CoreSIWaveSimulationSetup = core
         self._pedb = pedb
 
