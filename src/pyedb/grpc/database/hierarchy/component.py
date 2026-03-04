@@ -112,7 +112,7 @@ class Component:
         self._package_def = None
 
     @property
-    def pin_pairs(self) -> List[PinPairModel]:
+    def pin_pairs(self) -> List[PinPairModel] | None:
         """Pinpairs of the model."""
         if "PinPairModel" in str(self.model):
             return [PinPairModel(self._pedb, self.model)]
