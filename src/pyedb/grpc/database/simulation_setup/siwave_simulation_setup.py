@@ -21,8 +21,9 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
-from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
 import warnings
+
+from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
 
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings

@@ -21,9 +21,11 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.siwave_simulation_settings import (SIWaveAdvancedSettings
-                                                                            as CoreSIWaveAdvancedSettings)
+    from ansys.edb.core.simulation_setup.siwave_simulation_settings import (
+        SIWaveAdvancedSettings as CoreSIWaveAdvancedSettings,
+    )
 
 
 class SIWaveAdvancedSettings:
