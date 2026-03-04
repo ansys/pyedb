@@ -229,7 +229,7 @@ class Layout:
         return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
     def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None,
     ) -> list[any]:
         """Find a primitive objects by layer name.
         Parameters
@@ -238,32 +238,25 @@ class Layout:
         layer_name : str, list, optional
             Name of the layer.
         name : str, list, optional
-            Name of the primitive
+            Name of the primitive.
         net_name : str, list, optional
-            Name of the primitive
+            Name of the primitive.
         Returns
         -------
         List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
             List of Primitive.
         """
-        # Improves performances on large designs by avoiding multiple passes and using sets for membership testing
+        if layer_name:
+            layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
+        if name:
+            name = name if isinstance(name, list) else [name]
+        if net_name:
+            net_name = net_name if isinstance(net_name, list) else [net_name]
         prims = self.primitives
-        # Convert to sets once membership testing
-        name_set = set(name) if name is not None else None
-        layer_set = set(layer_name) if layer_name is not None else None
-        net_set = set(net_name) if net_name is not None else None
-
-        # Single filter pass
-        def match(p):
-            if name_set is not None and p.aedt_name not in name_set:
-                return False
-            if layer_set is not None and p.layer_name not in layer_set:
-                return False
-            if net_set is not None and p.net_name not in net_set:
-                return False
-            return True
-
-        return list(filter(match, prims))
+        prims = [i for i in prims if i.aedt_name in name] if name is not None else prims
+        prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
+        prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
+        return prims
 
     def find_padstack_instances(
         self,
@@ -329,7 +322,7 @@ class Layout:
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
-            candidates = [i for i in candidates if i.component.name in value]
+            candidates = [i for i in candidates if i.component and i.component.name in value]
 
         if net_name is not None:
             net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}
