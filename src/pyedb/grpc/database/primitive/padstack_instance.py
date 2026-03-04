@@ -130,7 +130,7 @@ class PadstackInstance(conn_obj.ConnObj):
             padstack_def = padstack_definition.core
             padstack_definition = padstack_definition.name
 
-        elif not padstack_definition in layout._pedb.padstacks.definitions:
+        elif padstack_definition not in layout._pedb.padstacks.definitions:
             raise Exception(f"Padstack definition {padstack_definition} not found in layout.")
         else:
             padstack_def = layout._pedb.padstacks.definitions[padstack_definition].core

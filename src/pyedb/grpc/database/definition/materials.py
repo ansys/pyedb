@@ -1099,7 +1099,7 @@ class Materials(object):
         materials_dict = self.read_materials(amat_file)
         local_materials = list(self.materials.keys())
         for material_name, material_properties in materials_dict.items():
-            if not material_name in local_materials:
+            if material_name not in local_materials:
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
