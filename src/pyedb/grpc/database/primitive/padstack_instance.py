@@ -773,7 +773,8 @@ class PadstackInstance(conn_obj.ConnObj):
         """
         position = self.core.get_position_and_rotation()
         if self.component:
-            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
+            point = CorePointData(position[:2])
+            out2 = self.component.core.transform.transform_point(point)
             if hasattr(out2, "x"):
                 self._position = [Value(out2.x), Value(out2.y)]
             else:
@@ -834,7 +835,8 @@ class PadstackInstance(conn_obj.ConnObj):
         """
         position = self.core.get_position_and_rotation()
         if self.component:
-            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
+            point = CorePointData(position[:2])
+            out2 = self.component.core.transform.transform_point(point)
             _position_and_rotation = [out2.x.value, out2.y.value]
             _position_and_rotation.append(Value(position[-1]).value)
         else:

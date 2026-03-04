@@ -39,6 +39,7 @@ from ansys.edb.core.definition.padstack_def_data import (
 )
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.inner.exceptions import InvalidArgumentException
 import numpy as np
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -205,11 +206,13 @@ class Padstacks(object):
         >>> for name, definition in all_definitions.items():
         ...     print(f"Padstack: {name}")
         """
-        padstack_defs = self._pedb.db.padstack_defs
         self.__definitions = {}
-        for padstack_def in padstack_defs:
-            if len(padstack_def.data.layer_names) >= 1:
-                self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+        for padstack_def in self._pedb.db.padstack_defs:
+            try:
+                if len(padstack_def.data.layer_names) >= 1:
+                    self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+            except (Exception, InvalidArgumentException) as e:
+                self._logger.warning(f"Error processing padstack definition {padstack_def.name}: {e}")
         return self.__definitions
 
     @property
@@ -1502,7 +1505,7 @@ class Padstacks(object):
         antipad_shape = shape_dict[antipad_shape]
         if not isinstance(antipad_params, list):
             antipad_params = [antipad_params]
-        antipad_params = [self._pedb.__value_setterValue(i) for i in antipad_params]
+        antipad_params = [self._pedb._value_setter(i) for i in antipad_params]
         antipad_x_offset = self._pedb._value_setter(antipad_x_offset)
         antipad_y_offset = self._pedb._value_setter(antipad_y_offset)
         antipad_rotation = self._pedb._value_setter(antipad_rotation)
