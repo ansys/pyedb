@@ -429,7 +429,7 @@ class TestClass(BaseTestClass):
             prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
             assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
 
-        prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]
+        prim_2_id = [i.id for i in edb.layout.primitives if i.net.name == "trace_3"][0]
         if edb.grpc:
             assert edb.excitation_manager.create_edge_port_horizontal(
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"

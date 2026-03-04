@@ -119,7 +119,7 @@ def __add_primitives(
     show_progress,
 ):
     # adding primitives
-    primitives = merged_edb.modeler.primitives
+    primitives = merged_edb.layout.primitives
     hosting_edb.logger.info(f"Merging primitives from merged EDB. Total primitives to merge: {len(primitives)}.")
     start = time()
     total_primitives = len(primitives)

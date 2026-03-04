@@ -472,7 +472,7 @@ class StackupLayer:
         if not self.roughness_enabled:
             return 0.0
         bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
-        return self._pedb.value(bottom_roughness_model[-1])
+        return self._pedb.value(bottom_roughness_model)
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):

@@ -92,8 +92,8 @@ class Modeler(object):
         """
 
         if isinstance(name, int):
-            return self._primitives.get(name)
-        return self.primitives_by_name.get(name)
+            return self._pedb.core.layout.layout.Primitive.find_by_id(name)
+        return self._pedb.layout.find_primitive(name=name)[0]
 
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
@@ -118,7 +118,7 @@ class Modeler(object):
     def primitives_by_layer(self):
         if self._primitives_by_layer is None:
             d = {}
-            for p in self.primitives:
+            for p in self._pedb.layout.primitives:
                 if p.layer_name:
                     d.setdefault(p.layer_name, []).append(p)
             self._primitives_by_layer = d
@@ -154,11 +154,8 @@ class Modeler(object):
             Dictionary where keys are layer names and values are lists of polygons.
         """
         polygon_by_layer = {}
-        for lay in self.layers:
-            if lay in self.primitives_by_layer:
-                polygon_by_layer[lay] = [prim for prim in self.primitives_by_layer[lay] if prim.type == "polygon"]
-            else:
-                polygon_by_layer[lay] = []
+        for lay in self._pedb.stackup.layers:
+            polygon_by_layer[lay] = [i for i in self._pedb.layout.find_primitive(layer_name=lay) if i.type == "polygon"]
         return polygon_by_layer
 
     @property
@@ -170,7 +167,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
         """
-        return [i for i in self.primitives if i.type == "rectangle"]
+        return [i for i in self._pedb.layout.primitives if i.type == "rectangle"]
 
     @property
     def circles(self) -> List[Union[Circle, Primitive]]:
@@ -181,7 +178,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
         """
-        return [i for i in self.primitives if i.type == "circle"]
+        return [i for i in self._pedb.layout.primitives if i.type == "circle"]
 
     @property
     def paths(self) -> List[Union[Path, Primitive]]:

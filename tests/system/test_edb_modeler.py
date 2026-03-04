@@ -110,17 +110,17 @@ class TestClass(BaseTestClass):
         assert path.width == 0.001
         assert edbapp.modeler["line_167"].type.lower() == "path"
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
-        line_number = len(edbapp.modeler.primitives)
+        line_number = len(edbapp.layout.primitives)
         edbapp.modeler["line_167"].delete()
-        assert edbapp.modeler.primitives
-        assert line_number == len(edbapp.modeler.primitives) + 1
+        assert edbapp.layout.primitives
+        assert line_number == len(edbapp.layout.primitives) + 1
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close(terminate_rpc_session=False)
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         edbapp = self.edb_examples.get_si_verse()
-        primmitive = edbapp.modeler.primitives_by_layer["1_Top"][0]
+        primmitive = edbapp.layout.find_primitive(layer_name="1_Top")[0]
         assert primmitive.layer_name == "1_Top"
         assert not primmitive.is_negative
         assert not primmitive.is_void
@@ -285,7 +285,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         i = 0
         while i < 2:
-            prim = edbapp.modeler.primitives[i]
+            prim = edbapp.layout.primitives[i]
             assert prim.area(True) > 0
             i += 1
         assert prim.bbox
@@ -451,9 +451,9 @@ class TestClass(BaseTestClass):
         assert r2
         assert r1.subtract(r2)
         lay_list = ["bot_gnd", "mid_gnd"]
-        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
-        assert edbapp.modeler.primitives_by_layer["mid_gnd"]
-        assert edbapp.modeler.primitives_by_layer["bot_gnd"]
+        assert edbapp.layout.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.layout.find_primitive(layer_name="mid_gnd")
+        assert edbapp.layout.find_primitive(layer_name="bot_gnd")
         edbapp.close(terminate_rpc_session=False)
 
     def test_unite_polygon(self):
@@ -563,7 +563,7 @@ class TestClass(BaseTestClass):
 
     def test_aedt_name(self):
         edbapp = self.edb_examples.get_si_verse()
-        primitives = edbapp.modeler.primitives
+        primitives = edbapp.layout.primitives
         assert primitives[0].aedt_name == "line_0"
         edbapp.close(terminate_rpc_session=False)
 
