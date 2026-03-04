@@ -140,9 +140,9 @@ class PadstackInstance(conn_obj.ConnObj):
         layer_map = LayerMap.create(layer_map)
 
         if isinstance(top_layer, StackupLayer):
-            top_layer = top_layer.name
+            top_layer = top_layer.core
         if isinstance(bottom_layer, StackupLayer):
-            bottom_layer = bottom_layer.name
+            bottom_layer = bottom_layer.core
         inst = CorePadstackInstance.create(
             layout=layout.core,
             net=net.core,
