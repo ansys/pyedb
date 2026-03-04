@@ -141,8 +141,12 @@ class PadstackInstance(conn_obj.ConnObj):
 
         if isinstance(top_layer, StackupLayer):
             top_layer = top_layer.core
+        else:
+            top_layer = layout._pedb.stackup.layers[top_layer].core
         if isinstance(bottom_layer, StackupLayer):
             bottom_layer = bottom_layer.core
+        else:
+            bottom_layer = layout._pedb.stackup.layers[bottom_layer].core
         inst = CorePadstackInstance.create(
             layout=layout.core,
             net=net.core,
