@@ -1512,7 +1512,7 @@ class Component:
         else:
             soldermask_layer = layer_names[layer_index + 1]
 
-        if not self._pedb.modeler.get_primitives(layer_name=soldermask_layer):
+        if not self._pedb.layout.find_primitive(layer_name=soldermask_layer):
             all_nets = list(self._pedb.nets.nets.values())
             poly = self._pedb._create_conformal(all_nets, 0, 1e-12, False, 0)
             self._pedb.modeler.create_polygon(poly, soldermask_layer, [], "")

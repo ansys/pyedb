@@ -246,17 +246,24 @@ class Layout:
         List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
             List of Primitive.
         """
-        if layer_name:
-            layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
-        if name:
-            name = name if isinstance(name, list) else [name]
-        if net_name:
-            net_name = net_name if isinstance(net_name, list) else [net_name]
+        # Improves performances on large designs by avoiding multiple passes and using sets for membership testing
         prims = self.primitives
-        prims = [i for i in prims if i.aedt_name in name] if name is not None else prims
-        prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
-        prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
-        return prims
+        # Convert to sets once membership testing
+        name_set = set(name) if name is not None else None
+        layer_set = set(layer_name) if layer_name is not None else None
+        net_set = set(net_name) if net_name is not None else None
+
+        # Single filter pass
+        def match(p):
+            if name_set is not None and p.aedt_name not in name_set:
+                return False
+            if layer_set is not None and p.layer_name not in layer_set:
+                return False
+            if net_set is not None and p.net_name not in net_set:
+                return False
+            return True
+
+        return list(filter(match, prims))
 
     def find_padstack_instances(
         self,

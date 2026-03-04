@@ -1417,7 +1417,8 @@ class PadstackInstance(conn_obj.ConnObj):
         point_data = CorePointData([x_pos, y_pos])
 
         voids = []
-        for prim in self._pedb.modeler.get_primitives(net_name, layer_name, is_void=True):
+        prims = [i for i in self._pedb.layout.find_primitive(net_name=net_name, layer_name=layer_name) if i.is_void]
+        for prim in prims:
             if prim.polygon_data.point_in_polygon(point_data):
                 voids.append(prim)
         return voids

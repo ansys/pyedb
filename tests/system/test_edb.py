@@ -763,7 +763,6 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_setup()
@@ -911,7 +910,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_dcir_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup()
@@ -991,7 +989,6 @@ class TestClass(BaseTestClass):
         assert not general.user_si_settings
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_raptor_x_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_raptor_x_setup(name="test_raptorx_setup")
@@ -1158,7 +1155,6 @@ class TestClass(BaseTestClass):
         assert general.solution_frequency == 20e9
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_sweep(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_hfss_setup(
@@ -1188,7 +1184,6 @@ class TestClass(BaseTestClass):
         assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(True, reason="Safeguard test for dotnet compatibility with grpc")
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
