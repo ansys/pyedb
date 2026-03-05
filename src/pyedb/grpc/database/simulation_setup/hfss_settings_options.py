@@ -20,14 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
-
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        BasisFunctionOrder as CoreBasisFunctionOrder,
-        HFSSSettingsOptions as CoreHFSSSettingsOptions,
-        SolverType as CoreSolverType,
-    )
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
     BasisFunctionOrder as CoreBasisFunctionOrder,
     SolverType as CoreSolverType,
@@ -37,10 +29,10 @@ from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
 class HFSSSettingsOptions:
     """PyEDB-core HFSS settings options class."""
 
-    def __init__(self, parent, pedb, core: "CoreHFSSSettingsOptions"):
+    def __init__(self, parent):
         self._parent = parent
-        self.core = core
-        self._pedb = pedb
+        self.core = parent.core.options
+        self._pedb = parent._pedb
 
     @property
     def do_lambda_refine(self) -> bool:

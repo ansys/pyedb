@@ -20,21 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
 import warnings
-
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSAdvancedMeshingSettings as CoreHFSSAdvancedMeshingSettings,
-    )
 
 
 class HFSSAdvancedMeshingSettings:
-    def __init__(self, parent, pedb, core: "CoreHFSSAdvancedMeshingSettings"):
+    def __init__(self, parent):
         """PyEDB HFSS advanced meshing settings class."""
         self._parent = parent
-        self.core = core
-        self._pedb = pedb
+        self.core = parent.core.advanced_meshing
+        self._pedb = parent._pedb
 
     @property
     def arc_step_size(self) -> str:
