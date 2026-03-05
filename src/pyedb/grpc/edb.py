@@ -459,6 +459,14 @@ class Edb(EdbInit):
         """Convert a value into a pyedb value."""
         return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
 
+    def _value_setter(self, val) -> Value | float | str:
+        """Helper for setting variable values with unit handling."""
+        try:
+            float(val)
+            return float(val) if isinstance(val, float) else val  # Return numeric values as-is
+        except (ValueError, TypeError):
+            return self.value(val)  # Convert strings with units or variables to Value objects
+
     @property
     def cell_names(self) -> List[str]:
         """List of all cell names in the database.
@@ -1386,8 +1394,7 @@ class Edb(EdbInit):
 
         return Point3DData(x, y, z)
 
-    @staticmethod
-    def point_data(x, y=None):
+    def point_data(self, x, y=None):
         """Create 2D point.
 
         This method does not use instance state and is therefore a staticmethod.
@@ -1420,16 +1427,16 @@ class Edb(EdbInit):
 
         # If x is an iterable (list/tuple) assume coordinates sequence
         if y is None and isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-            core_pd = GrpcPointData([Value(i) for i in x])
+            core_pd = GrpcPointData([self._pedb._value_setter(i) for i in x])
             return PointData(core_pd)
 
         # If numeric x and y provided
         if y is not None:
-            core_pd = GrpcPointData([Value(x), Value(y)])
+            core_pd = GrpcPointData([self._pedb._value_setter(x), self._pedb._value_setter(y)])
             return PointData(core_pd)
 
         # Fallback: single value
-        core_pd = GrpcPointData([Value(x)])
+        core_pd = GrpcPointData([self._pedb._value_setter(x)])
         return PointData(core_pd)
 
     @staticmethod
@@ -2187,7 +2194,7 @@ class Edb(EdbInit):
         except (AttributeError, ValueError) as exc:
             raise ValueError("Value must be 'general' or 'ic' (case-insensitive)") from exc
 
-    def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
+    def get_bounding_box(self) -> tuple[tuple[Value, Value], tuple[Value, Value]]:
         """Get layout bounding box.
 
         Returns
@@ -2915,7 +2922,11 @@ class Edb(EdbInit):
                     via_to_parametrize[via] = via.position_and_rotation
 
             for via, pos in via_to_parametrize.items():
-                via.position_and_rotation = [f"{pos[0]}+via_offset_x", f"{pos[1]}+via_offset_y", pos[2]]
+                via.position_and_rotation = [
+                    self.value(f"{pos[0]}+via_offset_x"),
+                    self.value(f"{pos[1]}+via_offset_y"),
+                    self.value(pos[2]),
+                ]
 
         if expand_polygons_size:
             for poly in self.modeler.polygons:

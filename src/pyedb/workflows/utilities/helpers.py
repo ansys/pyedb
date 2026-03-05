@@ -144,7 +144,7 @@ def print_progress(current: int, total: int, start_time: float, prefix_desc: str
             f" eta={eta_str}"
         )
         sys.stdout.flush()
-    except Exception:
+    except Exception:  # nosec B110
         # if stdout isn't available or any error occurs, just ignore
         pass
 

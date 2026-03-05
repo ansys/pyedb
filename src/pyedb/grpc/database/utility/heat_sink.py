@@ -57,7 +57,7 @@ class HeatSink:
 
     @fin_base_height.setter
     def fin_base_height(self, value):
-        self._edb_object.fin_base_height = CoreValue(value)
+        self._edb_object.fin_base_height = self._pedb._value_setter(value)
 
     @property
     def fin_height(self) -> float:
@@ -73,7 +73,7 @@ class HeatSink:
 
     @fin_height.setter
     def fin_height(self, value):
-        self._edb_object.fin_height = CoreValue(value)
+        self._edb_object.fin_height = self._pedb._value_setter(value)
 
     @property
     def fin_orientation(self) -> str:
@@ -104,7 +104,7 @@ class HeatSink:
 
     @fin_spacing.setter
     def fin_spacing(self, value):
-        self._edb_object.fin_spacing = CoreValue(value)
+        self._edb_object.fin_spacing = self._pedb._value_setter(value)
 
     @property
     def fin_thickness(self) -> float:
@@ -120,4 +120,4 @@ class HeatSink:
 
     @fin_thickness.setter
     def fin_thickness(self, value):
-        self._edb_object.fin_thickness = CoreValue(value)
+        self._edb_object.fin_thickness = self._pedb._value_setter(value)

@@ -422,6 +422,7 @@ class TestClass(BaseTestClass):
         assert edbapp.excitation_manager.create_port_on_pins(refdes="U1", pins=["A28"], reference_pins=["A11", "A16"])
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["desktopVersion"] < "2026.1" and config["use_grpc"], reason="Requires 2026R1")
     def test_replace_rlc_by_gap_boundaries(self):
         """Replace RLC component by RLC gap boundaries."""
         # TODO check how we can return same boundary_type between grpc and dotnet.
@@ -549,7 +550,6 @@ class TestClass(BaseTestClass):
 
     def test_instances(self):
         """Check instances access and values."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         comp_pins = edbapp.components.instances["U1"].pins
         pins = [comp_pins["AM38"], comp_pins["AL37"]]
@@ -672,7 +672,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_rlc_component_302(self):
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("C31")
         component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)

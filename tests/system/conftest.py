@@ -27,11 +27,10 @@ from pathlib import Path
 import pytest
 
 from pyedb.generic.design_types import Edb
-from pyedb.generic.filesystem import Scratch
-from tests.conftest import GRPC, desktop_version, generate_random_string
+from tests.conftest import GRPC, Scratch, desktop_version, generate_random_string
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="class", autouse=True)
 def close_rpc_session(init_scratch):
     """Provide a module-scoped scratch directory."""
     yield
