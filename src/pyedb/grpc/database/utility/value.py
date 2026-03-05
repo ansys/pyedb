@@ -28,47 +28,110 @@ class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
-        core = val if isinstance(val, CoreValue) else CoreValue(val, owner)
-        inst = super().__new__(cls, core.value)
-        inst.core = core
+        if isinstance(val, (int, float)):
+            inst = super().__new__(cls, val)
+            inst.__core = None
+            inst.is_core = False
+        elif isinstance(val, CoreValue):
+            try:
+                inst = super().__new__(cls, float(str(val)))
+                inst.__core = None
+                inst.is_core = False
+            except ValueError:
+                core = val if isinstance(val, CoreValue) else CoreValue(val, owner)
+                inst = super().__new__(cls, core.value)
+                inst.__core = core
+        else:
+            core = val if isinstance(val, CoreValue) else CoreValue(val, owner)
+            inst = super().__new__(cls, core.value)
+            inst.__core = core
         inst.owner = owner
+
         return inst
+
+    @property
+    def core(self):
+        if self.__core is None:
+            self.__core = CoreValue(self, self.owner)
+        return self.__core
+
+    @core.setter
+    def core(self, value):
+        self.__core = value
+
+    @property
+    def value(self):
+        if self.__core is None:
+            return self
+        return super().value
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        res = self.core.value + other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(self) + float(other))
+        core = CoreValue(f"({str(self.core)})+({str(other)})", self.owner)
+        return self.__class__(core)
 
     def __radd__(self, other):
-        res = self.core.value + other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(self) + float(other))
+        core = CoreValue(f"({str(other)})+({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        res = self.core.value - other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(self) - float(other))
+        core = CoreValue(f"({str(self.core)})-({str(other)})", self.owner)
+        return self.__class__(core)
 
     def __rsub__(self, other):
-        res = -self.core.value + other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(other) - float(self))
+        core = CoreValue(f"({str(other)})-({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        res = self.core.value * other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(self) * float(other))
+        core = CoreValue(f"({str(self.core)})*({str(other)})", self.owner)
+        return self.__class__(core)
 
     def __rmul__(self, other):
-        res = self.core.value * other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(other) * float(self))
+        core = CoreValue(f"({str(other)})*({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        res = self.core.value / other
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(self) / float(other))
+        core = CoreValue(f"({str(self.core)})/({str(other)})", self.owner)
+        return self.__class__(core)
 
     def __rtruediv__(self, other):
-        res = other / self.core.value
-        return res
+        if self.__core is None and (
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(other) / float(self))
+        core = CoreValue(f"({str(other)})/({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     @property
     def expression(self):
@@ -76,45 +139,63 @@ class Value(float, CoreValue):
 
     def sqrt(self):
         """Square root of the value."""
-        res = self.core.value**0.5
-        return res
+        if self.__core is None:
+            return self.__class__(float(self) ** 0.5)
+        core = CoreValue(f"({str(self.core)})**0.5", self.owner)
+        return self.__class__(core)
 
     def log10(self):
         """Base-10 logarithm of the value."""
-        res = math.log10(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.log10(float(self)))
+        core = CoreValue(f"log10({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def sin(self):
         """Sine of the value."""
-        res = math.sin(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.sin(float(self)))
+        core = CoreValue(f"sin({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def cos(self):
         """Cosine of the value."""
-        res = math.cos(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.cos(float(self)))
+        core = CoreValue(f"cos({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def asin(self):
         """Arcsine of the value."""
-        res = math.asin(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.asin(float(self)))
+        core = CoreValue(f"asin({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def acos(self):
         """Arccosine of the value."""
-        res = math.acos(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.acos(float(self)))
+        core = CoreValue(f"acos({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def tan(self):
         """Tangent of the value."""
-        res = math.tan(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.tan(float(self)))
+        core = CoreValue(f"tan({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def atan(self):
         """Arctangent of the value."""
-        res = math.atan(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.atan(float(self)))
+        core = CoreValue(f"atan({str(self.core)})", self.owner)
+        return self.__class__(core)
 
     def __abs__(self):
         """Abs of the value."""
-        res = math.fabs(self.core.value)
-        return res
+        if self.__core is None:
+            return self.__class__(math.fabs(float(self)))
+        core = CoreValue(f"abs({str(self.core)})", self.owner)
+        return self.__class__(core)

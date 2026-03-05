@@ -238,27 +238,27 @@ class PadProperties:
         if params is None:
             params = self._pad_parameter_value[1]
         elif isinstance(params, list):
-            offsetx = [Value(i, self._pedbpadstack._pedb.db) for i in params]
+            offsetx = [self._pedbpadstack._pedb._value_setter(i) for i in params]
         if rotation is None:
             rotation = self._pad_parameter_value[4]
         elif isinstance(rotation, (str, float, int)):
-            rotation = Value(rotation, self._pedbpadstack._pedb.db)
+            rotation = self._pedbpadstack._pedb._value_setter(rotation)
         if offsetx is None:
             offsetx = self._pad_parameter_value[2]
         elif isinstance(offsetx, (str, float, int)):
-            offsetx = Value(offsetx, self._pedbpadstack._pedb.db)
+            offsetx = self._pedbpadstack._pedb._value_setter(offsetx)
         if offsety is None:
             offsety = self._pad_parameter_value[3]
         elif isinstance(offsety, (str, float, int)):
-            offsety = Value(offsety, self._pedbpadstack._pedb.db)
+            offsety = self._pedbpadstack._pedb._value_setter(offsety)
         self._edb_padstack.set_pad_parameters(
             layer=layer_name,
             pad_type=pad_type,
             type_geom=geom_type,
-            offset_x=Value(offsetx, self._pedbpadstack._pedb.db),
-            offset_y=Value(offsety, self._pedbpadstack._pedb.db),
-            rotation=Value(rotation, self._pedbpadstack._pedb.db),
-            sizes=[Value(i, self._pedbpadstack._pedb.db) for i in params],
+            offset_x=self._pedbpadstack._pedb._value_setter(offsetx),
+            offset_y=self._pedbpadstack._pedb._value_setter(offsety),
+            rotation=self._pedbpadstack._pedb._value_setter(rotation),
+            sizes=[self._pedbpadstack._pedb._value_setter(i) for i in params],
         )
 
 
@@ -439,9 +439,9 @@ class PadstackDef:
     def hole_diameter(self, value):
         hole_parameter = self.core.data.get_hole_parameters()
         if not isinstance(value, list):
-            value = [Value(value)]
+            value = [self._pedb._value_setter(value)]
         else:
-            value = [Value(p) for p in value]
+            value = [self._pedb._value_setter(p) for p in value]
         hole_size = value
         geometry_type = hole_parameter[0]
         hole_offset_x = hole_parameter[2]
@@ -497,7 +497,7 @@ class PadstackDef:
     @hole_offset_x.setter
     def hole_offset_x(self, value):
         hole_parameter = list(self.core.data.get_hole_parameters())
-        hole_parameter[2] = Value(value, self._pedb.db)
+        hole_parameter[2] = self._pedb._value_setter(value)
         self.core.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -523,7 +523,7 @@ class PadstackDef:
     @hole_offset_y.setter
     def hole_offset_y(self, value):
         hole_parameter = list(self.core.data.get_hole_parameters())
-        hole_parameter[3] = Value(value, self._pedb.db)
+        hole_parameter[3] = self._pedb._value_setter(value)
         self.core.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -549,7 +549,9 @@ class PadstackDef:
     @hole_rotation.setter
     def hole_rotation(self, value):
         hole_parameter = list(self.core.data.get_hole_parameters())
-        hole_parameter[4] = Value(value, self._pedb.db)
+        hole_parameter[4] = self._pedb._value_setter(
+            value,
+        )
         self.core.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -622,7 +624,7 @@ class PadstackDef:
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
-        self.core.data.plating_percentage = Value(ratio)
+        self.core.data.plating_percentage = self._pedb._value_setter(ratio)
 
     @property
     def hole_plating_thickness(self) -> float:
@@ -650,7 +652,7 @@ class PadstackDef:
         float
             Thickness of the hole plating if present.
         """
-        hr = 200 * Value(value) / self.hole_diameter
+        hr = 200 * self._pedb.value(value).value / self.hole_diameter
         self.hole_plating_ratio = hr
 
     @property
@@ -769,9 +771,9 @@ class PadstackDef:
                         layout,
                         self.start_layer,
                         via.net,
-                        Value(pos[0]),
-                        Value(pos[1]),
-                        Value(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
+                        self._pedb._value_setter(pos[0]),
+                        self._pedb._value_setter(pos[1]),
+                        self._pedb._value_setter(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
                 if len(self.pad_by_layer[self.stop_layer].parameters_values) == 0:
                     self._pedb.modeler.create_polygon(
@@ -784,9 +786,9 @@ class PadstackDef:
                         layout,
                         self.stop_layer,
                         via.net,
-                        Value(pos[0]),
-                        Value(pos[1]),
-                        Value(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
+                        self._pedb._value_setter(pos[0]),
+                        self._pedb._value_setter(pos[1]),
+                        self._pedb._value_setter(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
                     )
                 for layer_name in layer_names:
                     stop = ""
@@ -797,17 +799,17 @@ class PadstackDef:
                             layout,
                             start,
                             via.net,
-                            Value(pos[0]),
-                            Value(pos[1]),
-                            Value(rad1),
+                            self._pedb._value_setter(pos[0]),
+                            self._pedb._value_setter(pos[1]),
+                            self._pedb._value_setter(rad1),
                         )
                         cloned_circle2 = Circle(self._pedb).create(
                             layout,
                             stop,
                             via.net,
-                            Value(pos[0]),
-                            Value(pos[1]),
-                            Value(rad2),
+                            self._pedb._value_setter(pos[0]),
+                            self._pedb._value_setter(pos[1]),
+                            self._pedb._value_setter(rad2),
                         )
                         s3d = CoreStructure3D.create(
                             layout.core, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
@@ -869,9 +871,15 @@ class PadstackDef:
                     new_padstack_definition.data.set_pad_parameters(
                         layer=layer,
                         pad_type=CorePadType.REGULAR_PAD,
-                        offset_x=Value(pl.offset_x, self._pedb.db),
-                        offset_y=Value(pl.offset_y, self._pedb.db),
-                        rotation=Value(pl.rotation, self._pedb.db),
+                        offset_x=self._pedb._value_setter(
+                            pl.offset_x,
+                        ),
+                        offset_y=self._pedb._value_setter(
+                            pl.offset_y,
+                        ),
+                        rotation=self._pedb._value_setter(
+                            pl.rotation,
+                        ),
                         type_geom=pl._edb_geometry_type,
                         sizes=pl.parameters_values,
                     )
@@ -881,9 +889,11 @@ class PadstackDef:
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
                             pad_type=CorePadType.ANTI_PAD,
-                            offset_x=Value(pl.offset_x, self._pedb.db),
-                            offset_y=Value(pl.offset_y, self._pedb.db),
-                            rotation=Value(pl.rotation, self._pedb.db),
+                            offset_x=self._pedb._value_setter(
+                                pl.offset_x,
+                            ),
+                            offset_y=self._pedb._value_setter(pl.offset_y),
+                            rotation=self._pedb._value_setter(pl.rotation),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
@@ -893,21 +903,25 @@ class PadstackDef:
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
                             pad_type=CorePadType.THERMAL_PAD,
-                            offset_x=Value(pl.offset_x, self._pedb.db),
-                            offset_y=Value(pl.offset_y, self._pedb.db),
-                            rotation=Value(pl.rotation, self._pedb.db),
+                            offset_x=self._pedb._value_setter(
+                                pl.offset_x,
+                            ),
+                            offset_y=self._pedb._value_setter(
+                                pl.offset_y,
+                            ),
+                            rotation=self._pedb._value_setter(pl.rotation),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
                 new_padstack_definition.data.set_hole_parameters(
-                    offset_x=Value(self.hole_offset_x, self._pedb.db),
-                    offset_y=Value(self.hole_offset_y, self._pedb.db),
-                    rotation=Value(self.hole_rotation, self._pedb.db),
+                    offset_x=self.hole_offset_x,
+                    offset_y=self.hole_offset_y,
+                    rotation=self.hole_rotation,
                     type_geom=self.edb_hole_type,
                     sizes=[self.hole_diameter],
                 )
                 new_padstack_definition.data.material = self.material
-                new_padstack_definition.data.plating_percentage = Value(self.hole_plating_ratio, self._pedb.db)
+                new_padstack_definition.data.plating_percentage = self._pedb._value_setter(self.hole_plating_ratio)
                 new_instances.append(PadstackDef(self._pedb, new_padstack_definition))
                 started = True
             if self.stop_layer == stop:
@@ -1067,9 +1081,9 @@ class PadstackDef:
                 pdef_data.set_pad_parameters(
                     layer=layer_data["layer_name"],
                     pad_type=pad_type,
-                    offset_x=Value(layer_data.get("offset_x", 0)),
-                    offset_y=Value(layer_data.get("offset_y", 0)),
-                    rotation=Value(layer_data.get("rotation", 0)),
+                    offset_x=self._pedb._value_setter(layer_data.get("offset_x", 0)),
+                    offset_y=self._pedb._value_setter(layer_data.get("offset_y", 0)),
+                    rotation=self._pedb._value_setter(layer_data.get("rotation", 0)),
                     type_geom=pad_shape,
                     sizes=temp_param,
                 )
@@ -1103,13 +1117,13 @@ class PadstackDef:
         if shape == "padgeomtype_no_geometry":
             return  # .net api doesn't tell how to set no_geometry shape.
         for i in self.PAD_SHAPE_PARAMETERS[shape]:
-            temp_param.append(Value(params[i]))
+            temp_param.append(self._pedb._value_setter(params[i]))
             pedb_shape = shape
 
         pdef_data.set_hole_parameters(
-            Value(params.get("offset_x", original_params.get("offset_x", 0))),
-            Value(params.get("offset_y", original_params.get("offset_y", 0))),
-            Value(params.get("rotation", original_params.get("rotation", 0))),
+            self._pedb._value_setter(params.get("offset_x", original_params.get("offset_x", 0))),
+            self._pedb._value_setter(params.get("offset_y", original_params.get("offset_y", 0))),
+            self._pedb._value_setter(params.get("rotation", original_params.get("rotation", 0))),
             self.PAD_SHAPE_KEYS[shape],
             temp_param,
         )
@@ -1147,8 +1161,11 @@ class PadstackDef:
 
         pdef_data.solder_ball_shape = self.SOLDER_SHAPE_TYPE[shape]
         if not shape == "no_solder_ball":
-            pdef_data.solder_ball_parameters = (Value(diameter), Value(mid_diameter))
-            pdef_data.solder_ball_param = (Value(diameter), Value(mid_diameter))
+            pdef_data.solder_ball_parameters = (
+                self._pedb._value_setter(diameter),
+                self._pedb._value_setter(mid_diameter),
+            )
+            pdef_data.solder_ball_param = (self._pedb._value_setter(diameter), self._pedb._value_setter(mid_diameter))
             pdef_data.solder_ball_placement = self.SOLDER_PLACEMENT[placement]
         if material:
             pdef_data.solder_ball_material = material

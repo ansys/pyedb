@@ -23,6 +23,7 @@
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
+from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.utility.value import Value
 
 
@@ -36,6 +37,7 @@ class PinPairModel:
     @classmethod
     def create(
         cls,
+        layout: Layout,
         r: float | None = None,
         l: float | None = None,
         c: float | None = None,
@@ -80,7 +82,7 @@ class PinPairModel:
         if not pin2_name:
             pin2_name = "2"
         core.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
-        return cls(core)
+        return cls(layout._pedb, core)
 
     @property
     def first_pin(self) -> str:
@@ -127,9 +129,9 @@ class PinPairModel:
 
     @rlc_enable.setter
     def rlc_enable(self, value):
-        self.core.r_enabled = Value(value[0])
-        self.core.l_enabled = Value(value[1])
-        self.core.c_enabled = Value(value[2])
+        self.core.r_enabled = self._pedb._value_setter(value[0])
+        self.core.l_enabled = self._pedb._value_setter(value[1])
+        self.core.c_enabled = self._pedb._value_setter(value[2])
 
     @property
     def resistance(self) -> float:
@@ -145,7 +147,7 @@ class PinPairModel:
 
     @resistance.setter
     def resistance(self, value):
-        self.rlc.r = Value(value)
+        self.rlc.r = self._pedb._value_setter(value)
 
     @property
     def inductance(self) -> float:
@@ -161,7 +163,7 @@ class PinPairModel:
 
     @inductance.setter
     def inductance(self, value):
-        self.rlc.l = Value(value)
+        self.rlc.l = self._pedb._value_setter(value)
 
     @property
     def capacitance(self) -> float:
@@ -177,7 +179,7 @@ class PinPairModel:
 
     @capacitance.setter
     def capacitance(self, value):
-        self.rlc.c = Value(value)
+        self.rlc.c = self._pedb._value_setter(value)
 
     @property
     def rlc_values(self) -> list[float]:

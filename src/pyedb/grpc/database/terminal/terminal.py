@@ -368,7 +368,7 @@ class Terminal(ConnObj):
 
     @impedance.setter
     def impedance(self, value):
-        self.core.impedance = Value(value)
+        self.core.impedance = self._pedb._value_setter(value)
 
     @property
     def reference_object(self) -> any:
@@ -578,7 +578,7 @@ class Terminal(ConnObj):
 
     @magnitude.setter
     def magnitude(self, value):
-        self.core.source_amplitude = Value(value)
+        self.core.source_amplitude = self._pedb._value_setter(value)
 
     @property
     def phase(self) -> float:
@@ -593,7 +593,7 @@ class Terminal(ConnObj):
 
     @phase.setter
     def phase(self, value):
-        self.core.source_phase = Value(value)
+        self.core.source_phase = self._pedb._value_setter(value)
 
     @property
     def terminal_to_ground(self):
