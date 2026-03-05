@@ -161,7 +161,7 @@ class CfgComponent(CfgBase):
             if self._pedb.grpc:
                 m = None
                 for i in self.pin_pair_model:
-                    m = PinPairModel.create()
+                    m = PinPairModel.create(self._pedb.layout)
                     rlc = CoreRlc()
                     rlc.r = i.get("resistance")
                     rlc.r_enabled = i.get("resistance_enabled", False)

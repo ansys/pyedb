@@ -418,8 +418,7 @@ class Modeler(object):
                 returned_obj.append(Circle(self._pedb, primitive))
         return returned_obj
 
-    @staticmethod
-    def get_polygon_bounding_box(polygon: Primitive) -> List[float]:
+    def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
         """Get bounding box of polygon.
 
         Parameters
@@ -440,8 +439,7 @@ class Modeler(object):
             self._pedb.value(bounding_box[1].y),
         ]
 
-    @staticmethod
-    def get_polygon_points(polygon) -> List[List[float]]:
+    def get_polygon_points(self, polygon) -> List[List[float]]:
         """Get points defining a polygon.
 
         Parameters
