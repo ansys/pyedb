@@ -169,9 +169,6 @@ class TestClass(BaseTestClass):
         assert len(edb.components.get_component_net_connection_info("U1")) > 0
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with 2026.1 and latest pyedb-core."
-    )
     def test_components_get_pin_name_and_position(self):
         """Retrieve component name and position."""
         edb = self.edb_examples.get_si_verse()

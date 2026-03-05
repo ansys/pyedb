@@ -41,7 +41,7 @@ class PinPairModel:
     @classmethod
     def create(
         cls,
-        edb: Edb,
+        edb: "Edb",
         r: float | None = None,
         l: float | None = None,
         c: float | None = None,
