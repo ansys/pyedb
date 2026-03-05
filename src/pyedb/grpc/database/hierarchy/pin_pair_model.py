@@ -135,9 +135,9 @@ class PinPairModel:
 
     @rlc_enable.setter
     def rlc_enable(self, value):
-        self.core.r_enabled = Value(value[0])
-        self.core.l_enabled = Value(value[1])
-        self.core.c_enabled = Value(value[2])
+        self.core.r_enabled = self._pedb._value_setter(value[0])
+        self.core.l_enabled = self._pedb._value_setter(value[1])
+        self.core.c_enabled = self._pedb._value_setter(value[2])
 
     @property
     def resistance(self) -> float:
@@ -153,7 +153,7 @@ class PinPairModel:
 
     @resistance.setter
     def resistance(self, value):
-        self.rlc.r = Value(value)
+        self.rlc.r = self._pedb._value_setter(value)
 
     @property
     def inductance(self) -> float:
@@ -169,7 +169,7 @@ class PinPairModel:
 
     @inductance.setter
     def inductance(self, value):
-        self.rlc.l = Value(value)
+        self.rlc.l = self._pedb._value_setter(value)
 
     @property
     def capacitance(self) -> float:
@@ -185,7 +185,7 @@ class PinPairModel:
 
     @capacitance.setter
     def capacitance(self, value):
-        self.rlc.c = Value(value)
+        self.rlc.c = self._pedb._value_setter(value)
 
     @property
     def rlc_values(self) -> list[float]:

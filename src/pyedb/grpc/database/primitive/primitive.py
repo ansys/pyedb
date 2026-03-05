@@ -514,7 +514,7 @@ class Primitive:
         """
         if hasattr(self, "polygon_data"):
             if vector and isinstance(vector, list) and len(vector) == 2:
-                _vector = [Value(pt) for pt in vector]
+                _vector = [self._pedb._value_setter(pt) for pt in vector]
                 self.core.cast().polygon_data = self.core.cast().polygon_data.move(_vector)
                 return True
         return False
@@ -539,7 +539,7 @@ class Primitive:
             if not center:
                 center = self.core.cast().polygon_data.bounding_circle()[0]
             elif isinstance(center, list) and len(center) == 2:
-                center = CorePointData([Value(center[0]), Value(center[1])])
+                center = CorePointData([self._pedb._value_setter(center[0]), self._pedb._value_setter(center[1])])
             else:
                 self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             self.core.cast().polygon_data = self.polygon_data.scale(factor, center)

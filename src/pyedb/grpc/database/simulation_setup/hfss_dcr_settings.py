@@ -20,22 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
 import warnings
-
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSDCRSettings as CoreHFSSDCRSettings,
-    )
 
 
 class HFSSDCRSettings:
     """PyEDB HFSS DC settings class."""
 
-    def __init__(self, parent, pedb, core: "CoreHFSSDCRSettings"):
+    def __init__(self, parent):
         self._parent = parent
-        self.core = core
-        self._pedb = pedb
+        self.core = parent.core.dcr
+        self._pedb = parent._pedb
 
     @property
     def conduction_max_passes(self) -> int:

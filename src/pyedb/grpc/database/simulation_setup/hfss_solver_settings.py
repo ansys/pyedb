@@ -20,21 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
 import warnings
-
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSSolverSettings as CoreHFSSSolverSettings,
-    )
 
 
 class HFSSSolverSettings:
     """HFSS solver settings class."""
 
-    def __init__(self, pedb, core: "CoreHFSSSolverSettings"):
-        self.core = core
-        self._pedb = pedb
+    def __init__(self, parent):
+        self.core = parent.core.solver
+        self._pedb = parent._pedb
 
     @property
     def enable_intra_plane_coupling(self) -> bool:

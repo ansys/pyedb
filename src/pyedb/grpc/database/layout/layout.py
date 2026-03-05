@@ -322,7 +322,7 @@ class Layout:
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
-            candidates = [i for i in candidates if i.component.name in value]
+            candidates = [i for i in candidates if i.component and i.component.name in value]
 
         if net_name is not None:
             net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}

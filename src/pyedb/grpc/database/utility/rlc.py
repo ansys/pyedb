@@ -45,7 +45,7 @@ class Rlc(CoreRlc):
 
     @r.setter
     def r(self, value):
-        self.r = CoreValue(value)
+        self.r = self._pedb._value_setter(value)
 
     @property
     def l(self) -> float:
@@ -61,7 +61,7 @@ class Rlc(CoreRlc):
 
     @l.setter
     def l(self, value):
-        self.l = CoreValue(value)
+        self.l = self._pedb._value_setter(value)
 
     @property
     def c(self) -> float:
@@ -77,4 +77,4 @@ class Rlc(CoreRlc):
 
     @c.setter
     def c(self, value):
-        self.c = CoreValue(value)
+        self.c = self._pedb._value_setter(value)
