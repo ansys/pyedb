@@ -20,10 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
+
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.grpc.database.utility.value import Value
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 
 
 class PinPairModel:
@@ -36,6 +41,7 @@ class PinPairModel:
     @classmethod
     def create(
         cls,
+        edb: Edb,
         r: float | None = None,
         l: float | None = None,
         c: float | None = None,
@@ -47,6 +53,8 @@ class PinPairModel:
 
         Parameters
         ----------
+        edb : Edb
+            Edb instance.
         r : float, optional
             Resistance value. If not provided, the default value will be used. Default value is 0.
         l : float, optional
@@ -80,7 +88,7 @@ class PinPairModel:
         if not pin2_name:
             pin2_name = "2"
         core.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
-        return cls(core)
+        return cls(edb, core)
 
     @property
     def first_pin(self) -> str:
