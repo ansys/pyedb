@@ -312,8 +312,7 @@ class Modeler(object):
             self._pedb.value(bounding_box[1].y),
         ]
 
-    @staticmethod
-    def get_polygon_points(polygon) -> List[List[float]]:
+    def get_polygon_points(self, polygon) -> List[List[float]]:
         """Get points defining a polygon.
 
         Parameters
