@@ -1606,10 +1606,6 @@ class Stackup:
                     solder_height = max(lay_solder_height, solder_height)
                     self._remove_solder_pec(lay.name)
 
-        rotation = 0.0
-        if flipped_stackup:
-            rotation = math.pi
-
         edb_cell = edb.active_cell
         _offset_x = self._pedb._value_setter(offset_x)
         _offset_y = self._pedb._value_setter(offset_y)

@@ -1394,8 +1394,7 @@ class Edb(EdbInit):
 
         return Point3DData(x, y, z)
 
-    @staticmethod
-    def point_data(x, y=None):
+    def point_data(self, x, y=None):
         """Create 2D point.
 
         This method does not use instance state and is therefore a staticmethod.
