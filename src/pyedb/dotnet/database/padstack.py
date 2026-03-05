@@ -40,7 +40,6 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
-from pyedb.grpc.database.definition.padstack_def import PadstackDef
 
 
 class EdbPadstacks(object):
@@ -1188,7 +1187,7 @@ class EdbPadstacks(object):
     def place(
         self,
         position: list,
-        definition_name: str | PadstackDef,
+        definition_name: str | EDBPadstack,
         net_name: str = "",
         via_name: str = "",
         rotation: float = 0.0,
@@ -1226,7 +1225,7 @@ class EdbPadstacks(object):
         :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
         """
         padstack = None
-        if isinstance(definition_name, PadstackDef):
+        if isinstance(definition_name, EDBPadstack):
             padstack = definition_name.edb_padstack
         else:
             for pad in list(self.definitions.keys()):
