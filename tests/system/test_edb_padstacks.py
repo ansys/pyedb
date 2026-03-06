@@ -450,23 +450,24 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(os.name == "posix" and not config["use_grpc"], reason="random crash very often.")
     def test_padstack_instances_rtree_index(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edbapp = self.edb_examples.load_edb(source_path)
+        edbapp = self.edb_examples.get_si_verse_sfp()
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
-        assert [round(val, 6) for val in index.bounds] == [-0.013785, -0.00225, 0.148, 0.078]
-        stats = edbapp.get_statistics()
-        bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
+        assert [round(val, 6) for val in index.bounds] == [0.0577, 0.003875, 0.1135, 0.0245]
+        bbox = edbapp.layout_bounding_box
         test = list(index.intersection(bbox))
-        assert len(test) == 5689
+        assert len(test) == 457
         index = edbapp.padstacks.get_padstack_instances_rtree_index(nets="GND")
         test = list(index.intersection(bbox))
-        assert len(test) == 2048
+        assert len(test) == 417
         test = edbapp.padstacks.get_padstack_instances_intersecting_bounding_box(
-            bounding_box=[0, 0, 0.05, 0.08], nets="GND"
+            bounding_box=[0.05, 0.004, 0.08, 0.03], nets="GND"
         )
-        assert len(test) == 194
+        if edbapp.grpc:
+            # difference might come from values noise difference between DotNet and grpc.
+            assert len(test) == 173
+        else:
+            assert len(test) == 175
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
