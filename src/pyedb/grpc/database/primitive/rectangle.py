@@ -29,6 +29,7 @@ from ansys.edb.core.primitive.rectangle import (
 )
 
 from pyedb.grpc.database.layers.layer import Layer
+from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 

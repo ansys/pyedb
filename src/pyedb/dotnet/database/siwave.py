@@ -53,6 +53,7 @@ from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfi
 if TYPE_CHECKING:
     from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
     from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+    from pyedb.dotnet.database.edb_data.ports import ExcitationSources
 
 
 class EdbSiwave(object):
@@ -431,7 +432,7 @@ class EdbSiwave(object):
         return self._pedb.excitation_manager.create_current_source_on_pin(
             pos_pin=pos_pin,
             neg_pin=neg_pin,
-            voltage_value=voltage_value,
+            current_value=current_value,
             phase_value=phase_value,
             source_name=source_name,
         )
@@ -474,9 +475,8 @@ class EdbSiwave(object):
         return self._pedb.excitation_manager.create_resistor_on_pin(
             pos_pin=pos_pin,
             neg_pin=neg_pin,
-            voltage_value=voltage_value,
-            phase_value=phase_value,
-            source_name=source_name,
+            rvalue=rvalue,
+            resistor_name=resistor_name,
         )
 
     def create_circuit_port_on_net(
@@ -592,8 +592,9 @@ class EdbSiwave(object):
             positive_net_name=positive_net_name,
             negative_component_name=negative_component_name,
             negative_net_name=negative_net_name,
-            impedance_value=impedance_value,
-            port_name=port_name,
+            voltage_value=voltage_value,
+            phase_value=phase_value,
+            source_name=source_name,
         )
 
     def create_current_source_on_net(
@@ -651,8 +652,9 @@ class EdbSiwave(object):
             positive_net_name=positive_net_name,
             negative_component_name=negative_component_name,
             negative_net_name=negative_net_name,
-            impedance_value=impedance_value,
-            port_name=port_name,
+            current_value=current_value,
+            phase_value=phase_value,
+            source_name=source_name,
         )
 
     def create_dc_terminal(
