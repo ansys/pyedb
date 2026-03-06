@@ -20,14 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
 from pathlib import Path
-import shutil
-import tempfile
-from unittest import mock
-import zipfile
-
-import pytest
 
 from pyedb.misc.downloads import (
     download_aedb,
