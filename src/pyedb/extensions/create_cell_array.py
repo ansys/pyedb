@@ -147,7 +147,7 @@ def __create_array_from_unit_cell_impl(
 
     if not offset_x and not offset_y:
         edb.logger.info("Auto-detecting outline extents")
-        outline_prims = [p for p in edb.modeler.primitives if p.layer_name.lower() == "outline"]
+        outline_prims = [p for p in edb.layout.primitives if p.layer_name.lower() == "outline"]
         if not outline_prims:
             raise RuntimeError("No outline found. Provide offset_x / offset_y or add an 'Outline' layer primitive.")
         outline = outline_prims[0]
@@ -158,7 +158,7 @@ def __create_array_from_unit_cell_impl(
     offset_y = edb.value(offset_y)
 
     # ---------- Collect everything we have to replicate ----------
-    primitives = [p for p in edb.modeler.primitives if adapter.is_primitive_to_copy(p)]
+    primitives = [p for p in edb.layout.primitives if adapter.is_primitive_to_copy(p)]
     paths = list(edb.modeler.paths)
     vias = edb.padstacks.vias
     components = list(edb.components.instances.values())
