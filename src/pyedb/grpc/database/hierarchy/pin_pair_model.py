@@ -28,15 +28,172 @@ from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 from pyedb.grpc.database.utility.value import Value
 
 if TYPE_CHECKING:
+    from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
+
+    from pyedb.grpc.database.components import Component
     from pyedb.grpc.edb import Edb
+
+
+class PinPair:
+    def __init__(self, model, edb_pin_pair):
+        self._edb_pin_pair = edb_pin_pair
+        self._model = model
+        self.core = model.core
+
+    @property
+    def first_pin(self) -> str:
+        """First pin name.
+
+        This attribute is read-only since pin pair model is defined between two pins,
+        and changing pin names will change the pin pair itself.
+
+        Returns
+        -------
+        str
+            First pin name.
+
+        """
+        return self._edb_pin_pair[0]
+
+    @property
+    def second_pin(self) -> str:
+        """Second pin name.
+
+        This attribute is read-only since pin pair model is defined between two pins,
+        and changing pin names will change the pin pair itself.
+
+        Returns
+        -------
+        str
+            Second pin name.
+
+        """
+        return self._edb_pin_pair[1]
+
+    @property
+    def rlc_enable(self) -> tuple[bool, bool, bool]:
+        """Enable model.
+
+        Returns
+        -------
+        tuple[r_enabled(bool), l_enabled(bool), c_enabled(bool)].
+
+        """
+        rlc = self.core.rlc(self._edb_pin_pair)
+        return rlc.r_enabled, rlc.l_enabled, rlc.c_enabled
+
+    @rlc_enable.setter
+    def rlc_enable(self, value):
+        rlc = self.core.rlc(self._edb_pin_pair)
+        rlc.r_enabled = value
+        self._model.set_rlc(self._edb_pin_pair, rlc)
+
+    @property
+    def resistance(self) -> float:
+        """Resistance.
+
+        Returns
+        -------
+        float
+            Resistance value.
+
+        """
+        rlc = self.core.rlc(self._edb_pin_pair)
+        return rlc.r
+
+    @resistance.setter
+    def resistance(self, value):
+        rlc = self.core.rlc(self._edb_pin_pair)
+        rlc.r = value
+        self._model.set_rlc(self._edb_pin_pair, rlc)
+
+    @property
+    def inductance(self) -> float:
+        """Inductance.
+
+        Returns
+        -------
+        float
+            Inductance value.
+
+        """
+        rlc = self.core.rlc(self._edb_pin_pair)
+        return rlc.l
+
+    @inductance.setter
+    def inductance(self, value):
+        rlc = self.core.rlc(self._edb_pin_pair)
+        rlc.l = value
+        self._model.set_rlc(self._edb_pin_pair, rlc)
+
+    @property
+    def capacitance(self) -> float:
+        """Capacitance.
+
+        Returns
+        -------
+        float
+            Capacitance value.
+
+        """
+        rlc = self.core.rlc(self._edb_pin_pair)
+        return rlc.c
+
+    @capacitance.setter
+    def capacitance(self, value):
+        rlc = self.core.rlc(self._edb_pin_pair)
+        rlc.c = value
+        self._model.set_rlc(self._edb_pin_pair, rlc)
+
+    @property
+    def rlc_values(self) -> list[float]:
+        """Rlc value.
+
+        Returns
+        -------
+        List[float, float, float]
+            [R value, L value, C value].
+
+        """
+        rlc = self.core.rlc(self._edb_pin_pair)
+
+        return [Value(rlc.r), Value(rlc.l), Value(rlc.c)]
+
+    @rlc_values.setter
+    def rlc_values(self, values):  # pragma: no cover
+        rlc = self.core.rlc(self._edb_pin_pair)
+        rlc.r = Value(values[0])
+        rlc.l = Value(values[1])
+        rlc.c = Value(values[2])
+        self._model.set_rlc(self._edb_pin_pair, rlc)
+
+    @property
+    def is_parallel(self) -> bool:
+        """Check if the pin pair model is parallel.
+
+        Returns
+        -------
+        bool
+            True if the pin pair model is parallel, False otherwise.
+
+        """
+        rlc = self.core.rlc(self._edb_pin_pair)
+        return rlc.is_parallel
+
+    @is_parallel.setter
+    def is_parallel(self, value):
+        rlc = self.core.rlc(self._edb_pin_pair)
+        rlc.is_parallel = value
+        self._model.set_rlc(self._edb_pin_pair, rlc)
 
 
 class PinPairModel:
     """Manage pin-pair model."""
 
-    def __init__(self, pedb, core):
-        self._pedb = pedb
-        self.core = core
+    def __init__(self, component: "Component"):
+        self._component = component
+        self._pedb = component._pedb
+        self.core = self._component.component_property.model
 
     @classmethod
     def create(
@@ -47,6 +204,7 @@ class PinPairModel:
         c: float | None = None,
         pin1_name: str | None = None,
         pin2_name: str | None = None,
+        is_parallel: bool = False,
     ) -> "PinPairModel":
         """Create pin pair model. Pin pair model is defined between two pins, and it can be used to define the RLC model
         between two pins. Adding optional RLC values will enable the RLC model for the pin pair.
@@ -83,6 +241,7 @@ class PinPairModel:
         if c is not None:
             rlc.c_enabled = True
             rlc.c = Value(c)
+        rlc.is_parallel = is_parallel
         if not pin1_name:
             pin1_name = "1"
         if not pin2_name:
@@ -91,119 +250,16 @@ class PinPairModel:
         return cls(edb, core)
 
     @property
-    def first_pin(self) -> str:
-        """First pin name.
-
-        This attribute is read-only since pin pair model is defined between two pins,
-        and changing pin names will change the pin pair itself.
+    def pin_pairs(self) -> list[tuple[str, str]]:
+        """Get all pin pairs.
 
         Returns
         -------
-        str
-            First pin name.
+        List[Tuple[str, str]]
+            List of pin pairs.
 
         """
-        pp = self.core.pin_pairs()
-        return pp[0][0] if pp else None
-
-    @property
-    def second_pin(self) -> str:
-        """Second pin name.
-
-        This attribute is read-only since pin pair model is defined between two pins,
-        and changing pin names will change the pin pair itself.
-
-        Returns
-        -------
-        str
-            Second pin name.
-
-        """
-        pp = self.core.pin_pairs()
-        return pp[0][1] if pp else None
-
-    @property
-    def rlc_enable(self) -> tuple[bool, bool, bool]:
-        """Enable model.
-
-        Returns
-        -------
-        tuple[r_enabled(bool), l_enabled(bool), c_enabled(bool)].
-
-        """
-        return self.core.r_enabled, self.core.l_enabled, self.core.c_enabled
-
-    @rlc_enable.setter
-    def rlc_enable(self, value):
-        self.core.r_enabled = self._pedb._value_setter(value[0])
-        self.core.l_enabled = self._pedb._value_setter(value[1])
-        self.core.c_enabled = self._pedb._value_setter(value[2])
-
-    @property
-    def resistance(self) -> float:
-        """Resistance.
-
-        Returns
-        -------
-        float
-            Resistance value.
-
-        """
-        return Value(self.rlc.r)
-
-    @resistance.setter
-    def resistance(self, value):
-        self.rlc.r = self._pedb._value_setter(value)
-
-    @property
-    def inductance(self) -> float:
-        """Inductance.
-
-        Returns
-        -------
-        float
-            Inductance value.
-
-        """
-        return Value(self.rlc.l)
-
-    @inductance.setter
-    def inductance(self, value):
-        self.rlc.l = self._pedb._value_setter(value)
-
-    @property
-    def capacitance(self) -> float:
-        """Capacitance.
-
-        Returns
-        -------
-        float
-            Capacitance value.
-
-        """
-        return Value(self.rlc.c)
-
-    @capacitance.setter
-    def capacitance(self, value):
-        self.rlc.c = self._pedb._value_setter(value)
-
-    @property
-    def rlc_values(self) -> list[float]:
-        """Rlc value.
-
-        Returns
-        -------
-        List[float, float, float]
-            [R value, L value, C value].
-
-        """
-        return [Value(self.rlc.r), Value(self.rlc.l), Value(self.rlc.c)]
-
-    @rlc_values.setter
-    def rlc_values(self, values):  # pragma: no cover
-        self.rlc.r = Value(values[0])
-        self.rlc.l = Value(values[1])
-        self.rlc.c = Value(values[2])
+        return [PinPair(self, i) for i in self.core.pin_pairs()]
 
     @property
     def is_null(self) -> bool:
@@ -216,33 +272,6 @@ class PinPairModel:
 
         """
         return self.core.is_null
-
-    @property
-    def is_parallel(self) -> bool:
-        """Check if the pin pair model is parallel.
-
-        Returns
-        -------
-        bool
-            True if the pin pair model is parallel, False otherwise.
-
-        """
-        return self.core.is_parallel
-
-    @is_parallel.setter
-    def is_parallel(self, value):
-        self.core.is_parallel = value
-
-    def pin_pairs(self) -> list[tuple[str, str]]:
-        """Get all pin pairs.
-
-        Returns
-        -------
-        List[Tuple[str, str]]
-            List of pin pairs.
-
-        """
-        return self.core.pin_pairs()
 
     @property
     def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
@@ -290,8 +319,10 @@ class PinPairModel:
             RLC model to set for the pin pair.
 
         """
-        if pin_pair in self.pin_pairs():
-            self.core.set_rlc(pin_pair=pin_pair, rlc=rlc)
+        self.core.set_rlc(pin_pair=pin_pair, rlc=rlc)
+        component_property = self._component.component_property
+        component_property.model = self.core
+        self._component.component_property = component_property
 
     def delete_rlc(self, pin_pair: tuple[str, str]):
         """Delete RLC model for the pin pair.
@@ -304,3 +335,69 @@ class PinPairModel:
         """
         if pin_pair in self.pin_pairs():
             self.core.delete_rlc(pin_pair=pin_pair)
+
+    def add_pin_pair(
+        self,
+        r: float | None = None,
+        l: float | None = None,
+        c: float | None = None,
+        r_enabled: bool | None = None,
+        l_enabled: bool | None = None,
+        c_enabled: bool | None = None,
+        fisrt_pin: str | None = None,
+        second_pin: str | None = None,
+        is_parallel: bool = False,
+    ):
+        """
+        Add a pin pair definition.
+
+        Parameters
+        ----------
+        r: float | None
+        l: float | None
+        c: float | None
+        r_enabled: bool
+        l_enabled: bool
+        c_enabled: bool
+        fisrt_pin: str
+        second_pin: str
+        is_parallel: bool
+
+        Returns
+        -------
+
+        """
+        m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
+        p = self._pedb._edb.Utility.PinPair(fisrt_pin, second_pin)
+        if r is None:
+            # If resistance is not defined, set it to 0 and disable it
+            r = "0ohm"
+            en_res = False
+        else:
+            # If resistance is defined, use the provided value and enabled status
+            en_res = True if r_enabled is True or r_enabled is None else False
+        if l is None:
+            # If inductance is not defined, set it to 0 and disable it
+            l = "0nH"
+            en_ind = False
+        else:
+            # If inductance is defined, use the provided value and enabled status
+            en_ind = True if l_enabled is True or l_enabled is None else False
+        if c is None:
+            # If capacitance is not defined, set it to 0 and disable it
+            c = "0pF"
+            en_cap = False
+        else:
+            # If capacitance is defined, use the provided value and enabled status
+            en_cap = True if c_enabled is True or c_enabled is None else False
+
+        rlc = CoreRlc(
+            r,
+            en_res,
+            l,
+            en_ind,
+            c,
+            en_cap,
+            is_parallel,
+        )
+        self.set_rlc((first_pin, second_pin), rlc)

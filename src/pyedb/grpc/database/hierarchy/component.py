@@ -115,7 +115,7 @@ class Component:
     def pin_pairs(self) -> List[PinPairModel] | None:
         """Pinpairs of the model."""
         if "PinPairModel" in str(self.model):
-            return [PinPairModel(self._pedb, self.model)]
+            return self.model.pin_pairs
         return None
 
     @property
@@ -256,7 +256,7 @@ class Component:
                 rlc = CoreRlc()
                 pins = list(self.pins.keys())
                 pin_pair = (pins[0], pins[1])
-                rlc_model = PinPairModel(self._pedb, CorePinPairModel.create())
+                rlc_model = PinPairModel(self)
                 rlc_model.core.set_rlc(pin_pair, rlc)
                 component_property = self.component_property
                 component_property.model = rlc_model.core
@@ -330,7 +330,7 @@ class Component:
         elif isinstance(self.component_property.model, CoreSParameterModel):
             return SparamModel(edb_object=self.component_property.model)
         else:
-            return self.component_property.model
+            return PinPairModel(self)
 
     @model.setter
     def model(self, value):
@@ -1468,7 +1468,7 @@ class Component:
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
         res, ind, cap = Value(res), Value(ind), Value(cap)
-        model = PinPairModel(self._pedb, self._edb_model)
+        model = PinPairModel(self)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
             # pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])
