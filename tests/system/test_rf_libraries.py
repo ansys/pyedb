@@ -245,7 +245,6 @@ class TestClass(BaseTestClass):
         assert patch_antenna.radius == 0.0174
         edb.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Need to check variable with grpc")
     def test_triangular_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
