@@ -1,4 +1,4 @@
-name: GitHub CI - PR
+name: GitHub CI - Main
 
 on:
   push:
