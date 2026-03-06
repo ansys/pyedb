@@ -586,6 +586,17 @@ class HFSSGeneralSettings:
                 raise ValueError(f"Invalid adaptive solution type: {value}")
 
     @property
+    def adaptive_frequency_data_list(self):
+        """Returns the list of adaptive frequency data entries for multi-frequency adaptive solution.
+
+        Returns
+        -------
+        list[AdaptiveFrequency]
+            List of adaptive frequency data entries.
+        """
+        return self.multi_frequency_adaptive_solution.adaptive_frequencies
+
+    @property
     def broadband_adaptive_solution(self) -> BroadbandAdaptiveSolution:
         """Settings for a broadband adaptive solution.
 
