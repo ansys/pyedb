@@ -133,7 +133,7 @@ class TestClass(BaseTestClass):
     def test_components_create_clearance_on_component(self):
         """Evaluate the creation of a clearance on soldermask."""
         # Done
-        edb = self.edb_examples.get_si_verse()
+        edb = self.edb_examples.get_si_verse_sfp()
         comp = edb.components.instances["U1"]
         assert comp.create_clearance_on_component()
         edb.close(terminate_rpc_session=False)

@@ -20,8 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-
 from typing import TYPE_CHECKING, Union
+
+from pyedb.misc.decorators import deprecated_class
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
@@ -44,6 +45,7 @@ _mapping_simulation_types = {
 }
 
 
+@deprecated_class("The 'SimulationSetupDeprecated' class is deprecated. Please use 'SimulationSetup' instead.")
 class SimulationSetupDeprecated:
     @property
     def type(self):
@@ -53,6 +55,10 @@ class SimulationSetupDeprecated:
     @property
     def sweeps(self):
         return {i.name: i for i in self.sweep_data}
+
+    @property
+    def frequency_sweeps(self):
+        return self.sweeps
 
 
 class SimulationSetup(SimulationSetupDeprecated):
@@ -240,6 +246,27 @@ class SimulationSetup(SimulationSetupDeprecated):
         """
         self.core.sweep_data = self.core.sweep_data + [sweep.core]
         return self.sweep_data[-1]
+
+    @deprecated_class(
+        "The 'add_frequency_sweep' method is deprecated. Please use 'add_sweep' with appropriate parameters instead."
+    )
+    def add_frequency_sweep(self, frequency_sweep: list[str]):
+        """This method is deprecated. Please use 'add_sweep' with appropriate parameters instead."""
+        # converting frequency sweep to frequency set
+        mapping_distribution = {
+            "LIN": "linear_scale",
+            "LINC": "linear_count",
+            "ESTP": "exponential",
+            "DEC": "log_scale",
+            "OCT": "octave_count",
+        }
+        frequency_sweep[0] = mapping_distribution[self._normalize_distribution(frequency_sweep[0])]
+        self.add_sweep(
+            distribution=frequency_sweep[0],
+            start_freq=frequency_sweep[1],
+            stop_freq=frequency_sweep[2],
+            step=frequency_sweep[3],
+        )
 
     def add_sweep(
         self,

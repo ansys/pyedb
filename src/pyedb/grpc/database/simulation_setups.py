@@ -131,12 +131,11 @@ class SimulationSetups:
         List[:class:`RaptorXSimulationSetup <pyedb.grpc.database.simulation_setup.
         raptor_x_simulation_setup.RaptorXSimulationSetup>`]
         """
-        if self._raptorx_setups is None:
-            self._raptorx_setups = {
-                setup.name: RaptorXSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.active_cell.simulation_setups
-                if setup.type.name.lower() == "raptor_x"
-            }
+        self._raptorx_setups = {
+            setup.name: RaptorXSimulationSetup(self._pedb, setup)
+            for setup in self._pedb.active_cell.simulation_setups
+            if setup.type.name.lower() == "raptor_x"
+        }
         return self._raptorx_setups
 
     @property
@@ -148,12 +147,11 @@ class SimulationSetups:
         List[:class:`Q3DSimulationSetup <pyedb.grpc.database.simulation_setup.
         q3d_simulation_setup.Q3DSimulationSetup>`]
         """
-        if self._q3d_setups is None:
-            self._q3d_setups = {
-                setup.name: Q3DSimulationSetup(self._pedb, setup)
-                for setup in self._pedb.active_cell.simulation_setups
-                if setup.type == "q3d_sim"
-            }
+        self._q3d_setups = {
+            setup.name: Q3DSimulationSetup(self._pedb, setup)
+            for setup in self._pedb.active_cell.simulation_setups
+            if setup.type == "q3d_sim"
+        }
         return self._q3d_setups
 
     @property
@@ -405,7 +403,7 @@ class SimulationSetups:
             name=name,
             solver="raptor_x",
         )
-        if start_freq and stop_freq and step_freq:
+        if start_freq is not None and stop_freq and step_freq:
             setup.add_sweep(
                 name=sweep_name,
                 distribution=distribution,
