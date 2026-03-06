@@ -821,7 +821,7 @@ class Modeler(object):
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width
-                            result, var_server = self._pedb.add_design_variable(
+                            _, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
                         p.width = self._pedb.edb_value(parameter_name)
@@ -829,7 +829,7 @@ class Modeler(object):
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width
-                            result, var_server = self._pedb.add_design_variable(
+                            _, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
                         p.width = self._pedb.edb_value(parameter_name)
@@ -1102,7 +1102,7 @@ class Modeler(object):
                 pins = _pins
             else:
                 for id, pin in _pins.items():
-                    if not id in pins:
+                    if id not in pins:
                         pins[id] = pin
         if not pins:
             self._logger.error("No pin found.")
