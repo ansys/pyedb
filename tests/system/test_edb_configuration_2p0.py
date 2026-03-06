@@ -856,7 +856,6 @@ class TestClass(BaseTestClass):
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
         "name": "terminal1",
@@ -1699,7 +1698,6 @@ class TestClassPadstacks(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_18_modeler(self):
         data = {
             "modeler": {
@@ -1846,7 +1844,6 @@ class TestModeler(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_modeler_delete(self):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(name="line_163")
