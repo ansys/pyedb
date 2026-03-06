@@ -151,10 +151,7 @@ class CfgComponent(CfgBase):
             # grpc is returning pyedb-core object directly as it is internal.
             c_p = self.pyedb_obj.component_property
         if self.netlist_model:
-            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
-            m.SetNetlist(self.netlist_model["netlist"])
-            c_p.SetModel(m)
-            self.pyedb_obj.component_property = c_p
+            self.pyedb_obj.assign_netlist_model(self.netlist_model["netlist"])
         elif self.pin_pair_model:
             m = self.pyedb_obj.model
             for i in self.pin_pair_model:
@@ -163,18 +160,18 @@ class CfgComponent(CfgBase):
                     l=i.get("inductance"),
                     c=i.get("capacitance"),
                     is_parallel=i.get("is_parallel", False),
-                    fisrt_pin=str(i["first_pin"]),
+                    first_pin=str(i["first_pin"]),
                     second_pin=str(i["second_pin"]),
                     r_enabled=i.get("resistance_enabled", False),
                     l_enabled=i.get("inductance_enabled", False),
                     c_enabled=i.get("capacitance_enabled", False),
                 )
         elif self.s_parameter_model:
-            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
-            m.SetComponentModelName(self.s_parameter_model["model_name"])
-            m.SetReferenceNet(self.s_parameter_model["reference_net"])
-            c_p.SetModel(m)
-            self.pyedb_obj.component_property = c_p
+            self.pyedb_obj.assign_s_param_model(
+                self.s_parameter_model["model_path"],
+                self.s_parameter_model["model_name"],
+                self.s_parameter_model["reference_net"],
+            )
         elif self.spice_model:
             self.pyedb_obj.assign_spice_model(
                 self.spice_model["model_path"],

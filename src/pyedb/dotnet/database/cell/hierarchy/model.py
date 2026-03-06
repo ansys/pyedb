@@ -84,7 +84,7 @@ class PinPairModel(Model):
         r_enabled: bool | None = None,
         l_enabled: bool | None = None,
         c_enabled: bool | None = None,
-        fisrt_pin: str | None = None,
+        first_pin: str | None = None,
         second_pin: str | None = None,
         is_parallel: bool = False,
     ):
@@ -99,7 +99,7 @@ class PinPairModel(Model):
         r_enabled: bool
         l_enabled: bool
         c_enabled: bool
-        fisrt_pin: str
+        first_pin: str
         second_pin: str
         is_parallel: bool
 
@@ -108,7 +108,7 @@ class PinPairModel(Model):
 
         """
         m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
-        p = self._pedb._edb.Utility.PinPair(fisrt_pin, second_pin)
+        p = self._pedb._edb.Utility.PinPair(first_pin, second_pin)
         if r is None:
             # If resistance is not defined, set it to 0 and disable it
             r = "0ohm"

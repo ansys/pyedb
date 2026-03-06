@@ -962,6 +962,27 @@ class EDBComponent(Group):
 
         return self._set_model(model)
 
+    def assign_netlist_model(
+        self,
+        netlist,
+    ):
+        """Assign Netlist to this component.
+
+        Parameters
+        ----------
+        netlist : str
+           Netlist.
+
+        Returns
+        -------
+
+        """
+
+        model = self._edb.Cell.Hierarchy.NetlistModel()
+        model.SetNetlist(netlist)
+
+        return self._set_model(model)
+
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to this component.
 
