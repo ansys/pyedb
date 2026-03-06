@@ -31,10 +31,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
-# @pytest.mark.skipif(
-#     config["use_grpc"] and config["desktopVersion"] > "2025.2",
-#     reason="This test is failing in grpc. To be validated in 26R1.",
-# )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_add_raptorx_setup(self):
