@@ -587,7 +587,7 @@ class HFSSGeneralSettings:
 
     @property
     def adaptive_frequency_data_list(self):
-        """Returns the list of adaptive frequency data entries for multi-frequency adaptive solution.
+        """List the adaptive frequency data entries for multi-frequency adaptive solution.
 
         Returns
         -------
