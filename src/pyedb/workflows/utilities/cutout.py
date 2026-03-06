@@ -249,7 +249,7 @@ class GrpcCutout:
                 pts = [pos_1, pos_2, pos_3, pos_4, pos_1]
                 rectangle_data = GrpcPolygonData(points=pts)
                 _polys.append(rectangle_data)
-        for prim in self._edb.modeler.primitives:
+        for prim in self._edb.layout.primitives:
             if prim is not None and prim.net_name in self.signals:
                 _polys.append(prim.core.polygon_data)
         if self.smart_cutout:
@@ -294,7 +294,7 @@ class GrpcCutout:
                 rectangle_data = plane.polygon_data
                 _polys.append(rectangle_data)
 
-        for prim in self._edb.modeler.primitives:
+        for prim in self._edb.layout.primitives:
             if prim is not None and prim.net_name in self.signals:
                 _polys.append(prim)
         if self.smart_cutout:
@@ -631,7 +631,7 @@ class GrpcCutout:
         _t = time.time()
         all_nets = {net.name: net for net in self._edb.nets.nets.values()}
         all_padstack_instances = self._edb.padstacks.instances
-        all_primitives = list(self._edb.modeler.primitives)
+        all_primitives = self._edb.layout.primitives
         all_components = list(self._edb.components.instances.values())
         nets_num = len(all_nets)
         inst_num = len(all_padstack_instances)

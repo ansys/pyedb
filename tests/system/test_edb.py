@@ -422,14 +422,14 @@ class TestClass(BaseTestClass):
         target_path = self.edb_examples.copy_test_files_into_local_folder("edb_edge_ports.aedb")[0]
         edb = self.edb_examples.load_edb(target_path)
         if edb.grpc:
-            prim_1_id = [i.edb_uid for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
+            prim_1_id = [i.edb_uid for i in edb.layout.primitives if i.net.name == "trace_2"][0]
             assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
         else:
             # This method is also available at same location in grpc but is deprecated.
             prim_1_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_2"][0]
             assert edb.excitation_manager.create_edge_port_vertical(prim_1_id, ["-66mm", "-4mm"], "port_ver")
 
-        prim_2_id = [i.id for i in edb.modeler.primitives if i.net.name == "trace_3"][0]
+        prim_2_id = [i.id for i in edb.layout.primitives if i.net.name == "trace_3"][0]
         if edb.grpc:
             assert edb.excitation_manager.create_edge_port_horizontal(
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
@@ -897,7 +897,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_siwaves_dcir_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup()
@@ -977,7 +976,6 @@ class TestClass(BaseTestClass):
         assert not general.user_si_settings
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_raptor_x_simulation_setups_consolidation(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_raptor_x_setup(name="test_raptorx_setup")
@@ -1144,7 +1142,6 @@ class TestClass(BaseTestClass):
         assert general.solution_frequency == 20e9
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(not config["use_grpc"], reason="grpc consolidated sources only")
     def test_sweep(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_hfss_setup(
@@ -1174,7 +1171,6 @@ class TestClass(BaseTestClass):
         assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(True, reason="Safeguard test for dotnet compatibility with grpc")
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
