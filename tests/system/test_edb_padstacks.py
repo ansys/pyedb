@@ -450,6 +450,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(os.name == "posix" and not config["use_grpc"], reason="random crash very often.")
     def test_padstack_instances_rtree_index(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)

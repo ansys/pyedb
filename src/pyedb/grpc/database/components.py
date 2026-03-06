@@ -1700,7 +1700,12 @@ class Components(object):
             transformed_pt_pos = pt_pos
         else:
             transformed_pt_pos = pin.component.core.transform.transform_point(pt_pos)
-        return [Value(transformed_pt_pos.x), Value(transformed_pt_pos.y)]
+        try:
+            # Latest pyedb-core changed with returning PointData object.
+            return [Value(transformed_pt_pos.x), Value(transformed_pt_pos.y)]
+        except AttributeError:
+            # legacy support for older pyedb-core versions where transform_point returns a list
+            return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
     def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
         """Get pin names from net.

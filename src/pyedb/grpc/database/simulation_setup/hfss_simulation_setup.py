@@ -167,7 +167,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
 
-        return HFSSSimulationSettings(self._pedb, self.core.settings)
+        return HFSSSimulationSettings(self)
 
     @property
     def adaptive_settings(self):
@@ -183,7 +183,7 @@ class HfssSimulationSetup(SimulationSetup):
             "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
             DeprecationWarning,
         )
-        return HFSSGeneralSettings(self._pedb, self.core.settings.general)
+        return HFSSGeneralSettings(self.settings)
 
     @property
     def curve_approx_settings(self):
