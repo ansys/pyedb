@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from pathlib import Path
 import re
 from typing import List, Optional, Union
 import warnings
@@ -47,7 +48,6 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 import numpy as np
 
-from pyedb.generic.general_methods import get_filename_without_extension
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
@@ -112,7 +112,7 @@ class Component:
         self._package_def = None
 
     @property
-    def pin_pairs(self) -> List[PinPairModel]:
+    def pin_pairs(self) -> List[PinPairModel] | None:
         """Pinpairs of the model."""
         if "PinPairModel" in str(self.model):
             return [PinPairModel(self._pedb, self.model)]
@@ -1333,7 +1333,7 @@ class Component:
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
 
         with open(file_path, "r") as f:
             for line in f:
@@ -1385,7 +1385,7 @@ class Component:
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
         for model in self.core.component_def.component_models:
             if model.model_name == name:
                 self._pedb.logger.error(f"Model {name} already defined for component {self.refdes}")

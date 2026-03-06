@@ -37,7 +37,14 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 class TestClass(BaseTestClass):
     def test_disjoint_nets(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
-        edbapp.layout_validation.disjoint_nets()
+        disjoints = edbapp.layout_validation.disjoint_nets()
+        assert len(disjoints) == 0
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_disjoint_nets_2(self):
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        disjoints = edbapp.layout_validation.disjoint_nets(keep_disjoint_pins=True)
+        assert len(disjoints) == 4
         edbapp.close(terminate_rpc_session=False)
 
     def test_dc_shorts(self):

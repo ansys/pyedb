@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from pathlib import Path
 import re
 from typing import Optional
 import warnings
@@ -35,7 +36,6 @@ from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SParameterMod
 from pyedb.dotnet.database.cell.hierarchy.spice_model import SPICEModel
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.generic.general_methods import get_filename_without_extension
 
 
 class ICDieProperties:
@@ -940,7 +940,7 @@ class EDBComponent(Group):
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
 
         with open(file_path, "r") as f:
             for line in f:
@@ -987,7 +987,7 @@ class EDBComponent(Group):
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
 
         edbComponentDef = self.edbcomponent.GetComponentDef()
         nPortModel = self._edb.Definition.NPortComponentModel.FindByName(edbComponentDef, name)

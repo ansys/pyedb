@@ -31,8 +31,6 @@ from pyedb.generic.settings import settings
 from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
-
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
@@ -551,6 +549,7 @@ class TestClass(BaseTestClass):
         # https://github.com/ansys/pyedb-core/issues/457
         # edb.modeler.paths[0].set_center_line([[0.0, 0.0], [0.0, 5e-3]]) # Path does not have center_lin setter.
         # assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
+        edb.close(terminate_rpc_session=False)
 
     def test_polygon_data_refactoring_bounding_box(self):
         # Done
@@ -565,6 +564,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         primitives = edbapp.modeler.primitives
         assert primitives[0].aedt_name == "line_0"
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config.get("use_grpc"), reason="Only implemented in gRPC")
     def test_insert_layout_instance(self):
@@ -633,7 +633,7 @@ class TestClass(BaseTestClass):
         )
         assert not cell_inst_1.is_null
         cell_inst_2 = edbapp.modeler.insert_3d_component_on_layer(
-            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            a3dcomp_path=fpath,
             x="5mm",
             y="2mm",
             placement_layer="s3",

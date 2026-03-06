@@ -418,8 +418,7 @@ class Modeler(object):
                 returned_obj.append(Circle(self._pedb, primitive))
         return returned_obj
 
-    @staticmethod
-    def get_polygon_bounding_box(polygon: Primitive) -> List[float]:
+    def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
         """Get bounding box of polygon.
 
         Parameters
@@ -440,8 +439,7 @@ class Modeler(object):
             self._pedb.value(bounding_box[1].y),
         ]
 
-    @staticmethod
-    def get_polygon_points(polygon) -> List[List[float]]:
+    def get_polygon_points(self, polygon) -> List[List[float]]:
         """Get points defining a polygon.
 
         Parameters
@@ -1500,9 +1498,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x * -1)),
-            (self._pedb.value(local_origin_y * -1)),
-            (self._pedb.value(local_origin_z * -1)),
+            (self._pedb.value(local_origin_x).core * -1),
+            (self._pedb.value(local_origin_y).core * -1),
+            (self._pedb.value(local_origin_z).core * -1),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset

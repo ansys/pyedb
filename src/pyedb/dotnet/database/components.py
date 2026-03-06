@@ -50,7 +50,6 @@ from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import (
     _retry_ntimes,
     generate_unique_name,
-    get_filename_without_extension,
 )
 from pyedb.generic.geometry_operators import GeometryOperators
 
@@ -1600,7 +1599,7 @@ class Components(object):
 
         """
         if not modelname:
-            modelname = get_filename_without_extension(modelpath)
+            modelname = Path(modelpath).stem
         edbComponent = self._pedb.layout.find_component_by_name(componentname)
         if edbComponent is None:
             raise ValueError(f"Component {componentname} not found in the layout.")

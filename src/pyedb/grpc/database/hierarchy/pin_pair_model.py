@@ -20,23 +20,82 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from typing import TYPE_CHECKING
 
-# from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel
 from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
+from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.grpc.database.utility.value import Value
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 
 
 class PinPairModel:
     """Manage pin-pair model."""
 
-    def __init__(self, pedb, edb_object):
-        self.core = edb_object
-        self._pedb_comp = pedb
+    def __init__(self, pedb, core):
+        self._pedb = pedb
+        self.core = core
+
+    @classmethod
+    def create(
+        cls,
+        edb: "Edb",
+        r: float | None = None,
+        l: float | None = None,
+        c: float | None = None,
+        pin1_name: str | None = None,
+        pin2_name: str | None = None,
+    ) -> "PinPairModel":
+        """Create pin pair model. Pin pair model is defined between two pins, and it can be used to define the RLC model
+        between two pins. Adding optional RLC values will enable the RLC model for the pin pair.
+
+        Parameters
+        ----------
+        edb : Edb
+            Edb instance.
+        r : float, optional
+            Resistance value. If not provided, the default value will be used. Default value is 0.
+        l : float, optional
+            Inductance value. If not provided, the default value will be used. Default value is 0.
+        c : float, optional
+            Capacitance value. If not provided, the default value will be used. Default value is 0.
+        pin1_name : str, optional
+            First pin name. If not provided, the default name will be used. Default name is `1`.
+        pin2_name : str, optional
+            Second pin name. If not provided, the default name will be used. Default name is `2`.
+
+        Returns
+        -------
+        PinPairModel
+            The created pin pair model.
+
+        """
+        core = CorePinPairModel.create()
+        rlc = CoreRlc()
+        if r is not None:
+            rlc.r_enabled = True
+            rlc.r = Value(r)
+        if l is not None:
+            rlc.l_enabled = True
+            rlc.l = Value(l)
+        if c is not None:
+            rlc.c_enabled = True
+            rlc.c = Value(c)
+        if not pin1_name:
+            pin1_name = "1"
+        if not pin2_name:
+            pin2_name = "2"
+        core.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
+        return cls(edb, core)
 
     @property
     def first_pin(self) -> str:
         """First pin name.
+
+        This attribute is read-only since pin pair model is defined between two pins,
+        and changing pin names will change the pin pair itself.
 
         Returns
         -------
@@ -51,6 +110,9 @@ class PinPairModel:
     def second_pin(self) -> str:
         """Second pin name.
 
+        This attribute is read-only since pin pair model is defined between two pins,
+        and changing pin names will change the pin pair itself.
+
         Returns
         -------
         str
@@ -61,32 +123,21 @@ class PinPairModel:
         return pp[0][1] if pp else None
 
     @property
-    def rlc(self) -> tuple[str, str]:
-        """Rlc mdodel.
-
-        Returns
-        -------
-        Tuple
-
-        """
-        return self.core.rlc(self.core.pin_pairs()[0])
-
-    @property
-    def rlc_enable(self) -> list[bool]:
+    def rlc_enable(self) -> tuple[bool, bool, bool]:
         """Enable model.
 
         Returns
         -------
-        List[Renabled(bool), Lenabled(bool), Cenabled(bool)].
+        tuple[r_enabled(bool), l_enabled(bool), c_enabled(bool)].
 
         """
-        return [self.rlc.r_enabled, self.rlc.l_enabled, self.rlc.c_enabled]
+        return self.core.r_enabled, self.core.l_enabled, self.core.c_enabled
 
     @rlc_enable.setter
     def rlc_enable(self, value):
-        self.rlc.r_enabled = Value(value[0])
-        self.rlc.l_enabled = Value(value[1])
-        self.rlc.c_enabled = Value(value[2])
+        self.core.r_enabled = self._pedb._value_setter(value[0])
+        self.core.l_enabled = self._pedb._value_setter(value[1])
+        self.core.c_enabled = self._pedb._value_setter(value[2])
 
     @property
     def resistance(self) -> float:
@@ -102,7 +153,7 @@ class PinPairModel:
 
     @resistance.setter
     def resistance(self, value):
-        self.rlc.r = Value(value)
+        self.rlc.r = self._pedb._value_setter(value)
 
     @property
     def inductance(self) -> float:
@@ -118,7 +169,7 @@ class PinPairModel:
 
     @inductance.setter
     def inductance(self, value):
-        self.rlc.l = Value(value)
+        self.rlc.l = self._pedb._value_setter(value)
 
     @property
     def capacitance(self) -> float:
@@ -134,7 +185,7 @@ class PinPairModel:
 
     @capacitance.setter
     def capacitance(self, value):
-        self.rlc.c = Value(value)
+        self.rlc.c = self._pedb._value_setter(value)
 
     @property
     def rlc_values(self) -> list[float]:
@@ -153,3 +204,103 @@ class PinPairModel:
         self.rlc.r = Value(values[0])
         self.rlc.l = Value(values[1])
         self.rlc.c = Value(values[2])
+
+    @property
+    def is_null(self) -> bool:
+        """Check if the pin pair model is null.
+
+        Returns
+        -------
+        bool
+            True if the pin pair model is null, False otherwise.
+
+        """
+        return self.core.is_null
+
+    @property
+    def is_parallel(self) -> bool:
+        """Check if the pin pair model is parallel.
+
+        Returns
+        -------
+        bool
+            True if the pin pair model is parallel, False otherwise.
+
+        """
+        return self.core.is_parallel
+
+    @is_parallel.setter
+    def is_parallel(self, value):
+        self.core.is_parallel = value
+
+    def pin_pairs(self) -> list[tuple[str, str]]:
+        """Get all pin pairs.
+
+        Returns
+        -------
+        List[Tuple[str, str]]
+            List of pin pairs.
+
+        """
+        return self.core.pin_pairs()
+
+    @property
+    def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
+        """Retrieve RLC model given pin pair.
+
+        If pin pair is not provided, the first pin pair will be used by default.
+        If there is no pin pair, ``None`` will be returned.
+
+        Parameters
+        ----------
+        pin_pair : Tuple[str, str], optional
+            Tuple of pin names (first_pin, second_pin). If not provided, the first pin pair will be used by default.
+            If not provided and there is no pin pair, the first pin will be taken.
+
+        Returns
+        -------
+        CoreRlc
+            RLC model for the pin pair.
+        """
+        pp = self.core.pin_pairs()
+        if not pp:
+            self._pedb.logger.warning("No pin pair found. Returning None.")
+            return None
+        if pin_pair:
+            for p in pp:
+                if p[0] == pin_pair[0] and p[1] == pin_pair[1]:
+                    pin_pair = self.core.rlc(pp)
+                else:
+                    self._pedb.logger.warning(
+                        f"Pin pair {pin_pair} not found. Returning RLC for the first pin pair {pp[0]}."
+                    )
+                    pin_pair = pp[0]
+        else:
+            pin_pair = pp[0]
+        return self.core.rlc(pin_pair)
+
+    def set_rlc(self, pin_pair: tuple[str, str], rlc: CoreRlc):
+        """Set RLC model for the pin pair.
+
+        Parameters
+        ----------
+        pin_pair : Tuple[str, str]
+            Tuple of pin names (first_pin, second_pin).
+        rlc : CoreRlc
+            RLC model to set for the pin pair.
+
+        """
+        if pin_pair in self.pin_pairs():
+            self.core.set_rlc(pin_pair=pin_pair, rlc=rlc)
+
+    def delete_rlc(self, pin_pair: tuple[str, str]):
+        """Delete RLC model for the pin pair.
+
+        Parameters
+        ----------
+        pin_pair : Tuple[str, str]
+            Tuple of pin names (first_pin, second_pin).
+
+        """
+        if pin_pair in self.pin_pairs():
+            self.core.delete_rlc(pin_pair=pin_pair)

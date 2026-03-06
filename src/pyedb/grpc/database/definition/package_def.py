@@ -125,7 +125,7 @@ class PackageDef:
 
     @maximum_power.setter
     def maximum_power(self, value):
-        self.core.maximum_power = Value(value)
+        self.core.maximum_power = self._pedb._value_setter(value)
 
     @property
     def thermal_conductivity(self) -> float:
@@ -141,7 +141,7 @@ class PackageDef:
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
-        self.core.thermal_conductivity = Value(value)
+        self.core.thermal_conductivity = self._pedb._value_setter(value)
 
     @property
     def theta_jb(self) -> float:
@@ -156,7 +156,7 @@ class PackageDef:
 
     @theta_jb.setter
     def theta_jb(self, value):
-        self.core.theta_jb = Value(value)
+        self.core.theta_jb = self._pedb._value_setter(value)
 
     @property
     def theta_jc(self) -> float:
@@ -171,7 +171,7 @@ class PackageDef:
 
     @theta_jc.setter
     def theta_jc(self, value):
-        self.core.theta_jc = Value(value)
+        self.core.theta_jc = self._pedb._value_setter(value)
 
     @property
     def height(self) -> float:
@@ -186,7 +186,7 @@ class PackageDef:
 
     @height.setter
     def height(self, value):
-        self.core.height = Value(value)
+        self.core.height = self._pedb._value_setter(value)
 
     @property
     def heat_sink(self) -> HeatSink:
@@ -263,10 +263,10 @@ class PackageDef:
         else:
             fin_orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
         self.core.heat_sink = GrpcHeatSink(
-            Value(fin_thickness),
-            Value(fin_spacing),
-            Value(fin_base_height),
-            Value(fin_height),
+            self._pedb._value_setter(fin_thickness),
+            self._pedb._value_setter(fin_spacing),
+            self._pedb._value_setter(fin_base_height),
+            self._pedb._value_setter(fin_height),
             fin_orientation,
         )
         return self.heat_sink
