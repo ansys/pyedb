@@ -530,7 +530,10 @@ class StackupLayer:
 
     @side_hallhuray_nodule_radius.setter
     def side_hallhuray_nodule_radius(self, value):
-        self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="side")
+        if value:
+            # make sure roughness is enabled to prevent crash
+            self.roughness_enabled = True
+            self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="side")
 
     @property
     def side_hallhuray_surface_ratio(self) -> float:
@@ -541,16 +544,24 @@ class StackupLayer:
         float
             surface ratio.
         """
+        if self.roughness_enabled:
+            # grpc crashes if roughness is not enabled.
+            side_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.SIDE)
+        else:
+            # grpc crashes if roughness is not enabled.
+            return 0.0
 
-        side_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.SIDE)
-        if self.roughness_enabled and isinstance(side_roughness_model, Value):
+        if self.roughness_enabled and isinstance(side_roughness_model, tuple):
             return self._pedb.value(side_roughness_model[1])
         # grpc return single value for Groisse model.
         return 0.0
 
     @side_hallhuray_surface_ratio.setter
     def side_hallhuray_surface_ratio(self, value):
-        self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="side")
+        if value:
+            # make sure roughness is enabled to prevent crash
+            self.roughness_enabled = True
+            self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="side")
 
     @property
     def top_groisse_roughness(self) -> float:
