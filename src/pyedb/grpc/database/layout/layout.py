@@ -229,7 +229,10 @@ class Layout:
         return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
     def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None,
+        self,
+        layer_name: Union[str, list] = None,
+        name: Union[str, list] = None,
+        net_name: Union[str, list] = None,
     ) -> list[any]:
         """Find a primitive objects by layer name.
         Parameters
