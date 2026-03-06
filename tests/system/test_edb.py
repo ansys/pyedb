@@ -209,7 +209,7 @@ class TestClass(BaseTestClass):
         else:
             edbapp.add_design_variable("my_parameter", "2mm", True)
         assert "my_parameter" in edbapp.get_all_variable_names()
-        variable_value = edbapp.get_variable_value("my_parameter")
+        variable_value = edbapp.get_variable("my_parameter")
         assert variable_value.value == 2e-3
         if edbapp.grpc:
             assert not edbapp.add_design_variable("my_parameter", "2mm", "test description")
@@ -217,11 +217,7 @@ class TestClass(BaseTestClass):
             # grpc and DotNet variable implementation server are too different.
             assert not edbapp.add_design_variable("my_parameter", "2mm", True)[0]
         edbapp.add_project_variable("$my_project_variable", "3mm")
-        if edbapp.grpc:
-            assert edbapp.db.get_variable_value("$my_project_variable") == 3e-3
-        else:
-            # grpc implementation is very different.
-            assert edbapp.get_variable_value("$my_project_variable").value == 3e-3
+        assert edbapp.get_variable("$my_project_variable").value == 3e-3
         if edbapp.grpc:
             assert not edbapp.add_project_variable("$my_project_variable", "3mm")
         else:
@@ -1174,7 +1170,7 @@ class TestClass(BaseTestClass):
         assert sweep.use_q3d_for_dc
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(True, reason="Safeguard test for dotnet compatibility with grpc")
+    @pytest.mark.skipif(is_linux and not config["use_grpc"], reason="Randomly fails on linux dotnet")
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")

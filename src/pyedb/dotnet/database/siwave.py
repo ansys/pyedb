@@ -38,12 +38,8 @@ from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
 from pyedb.dotnet.database.edb_data.sources import (
-    CircuitPort,
-    CurrentSource,
     DCTerminal,
-    ResistorSource,
     SourceType,
-    VoltageSource,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
@@ -1233,9 +1229,13 @@ class EdbSiwave(object):
         negative_layer : str
             Layer of the negative terminal.
         """
-        p_terminal = self._pedb.get_point_terminal(name, positive_net_name, positive_location, positive_layer)
-        n_terminal = self._pedb.get_point_terminal(name + "_ref", negative_net_name, negative_location, negative_layer)
-        return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+        p_terminal = self._pedb.excitation_manager.get_point_terminal(
+            name, positive_net_name, positive_location, positive_layer
+        )
+        n_terminal = self._pedb.excitation_manager.get_point_terminal(
+            name + "_ref", negative_net_name, negative_location, negative_layer
+        )
+        return self._pedb.excitation_manager.create_voltage_probe(p_terminal, n_terminal)
 
     def create_vrm_module(
         self,

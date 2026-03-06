@@ -23,16 +23,20 @@ import time
 from typing import Set
 
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
+from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
+from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+from pyedb.dotnet.database.cell.terminal.pingroup_terminal import PinGroupTerminal
+from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
+from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.database.edb_data.ports import BundleWavePort, ExcitationSources, GapPort, WavePort
+from pyedb.dotnet.database.edb_data.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
 from pyedb.dotnet.database.edb_data.sources import (
-    CircuitPort,
-    CurrentSource,
-    DCTerminal,
-    ResistorSource,
+    CircuitPortBuilder,
+    CurrentSourceBuilder,
+    ResistorSourceBuilder,
     SourceType,
-    VoltageSource,
+    VoltageSourceBuilder,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
@@ -118,7 +122,7 @@ class SourceExcitation:
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
         """
-        circuit_port = CircuitPort()
+        circuit_port = CircuitPortBuilder()
         if not isinstance(pos_pin, EDBPadstackInstance):
             pos_pin = EDBPadstackInstance(pos_pin, self._pedb)
         if not isinstance(neg_pin, EDBPadstackInstance):
@@ -171,7 +175,7 @@ class SourceExcitation:
         >>> edbapp.excitation_manager.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
 
-        voltage_source = VoltageSource()
+        voltage_source = VoltageSourceBuilder()
         voltage_source.positive_node.net = pos_pin.net_name
         voltage_source.negative_node.net = neg_pin.net_name
         voltage_source.magnitude = voltage_value
@@ -219,7 +223,7 @@ class SourceExcitation:
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
-        current_source = CurrentSource()
+        current_source = CurrentSourceBuilder()
         current_source.positive_node.net = pos_pin.net_name
         current_source.negative_node.net = neg_pin.net_name
         current_source.magnitude = current_value
@@ -265,7 +269,7 @@ class SourceExcitation:
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
         """
-        resistor = ResistorSource()
+        resistor = ResistorSourceBuilder()
         resistor.positive_node.net = pos_pin.net_name
         resistor.negative_node.net = neg_pin.net_name
         resistor.rvalue = rvalue
@@ -342,7 +346,7 @@ class SourceExcitation:
             negative_component_name = positive_component_name
         if not negative_net_name:
             negative_net_name = self._check_gnd(negative_component_name)
-        circuit_port = CircuitPort()
+        circuit_port = CircuitPortBuilder()
         circuit_port.positive_node.net = positive_net_name
         circuit_port.negative_node.net = negative_net_name
         circuit_port.impedance = impedance_value
@@ -410,7 +414,7 @@ class SourceExcitation:
             negative_component_name = positive_component_name
         if not negative_net_name:
             negative_net_name = self._check_gnd(negative_component_name)
-        voltage_source = VoltageSource()
+        voltage_source = VoltageSourceBuilder()
         voltage_source.positive_node.net = positive_net_name
         voltage_source.negative_node.net = negative_net_name
         voltage_source.magnitude = voltage_value
@@ -480,7 +484,7 @@ class SourceExcitation:
             negative_component_name = positive_component_name
         if not negative_net_name:
             negative_net_name = self._check_gnd(negative_component_name)
-        current_source = CurrentSource()
+        current_source = CurrentSourceBuilder()
         current_source.positive_node.net = positive_net_name
         current_source.negative_node.net = negative_net_name
         current_source.magnitude = current_value
@@ -802,7 +806,9 @@ class SourceExcitation:
                         return positive_terminal
             return False
 
-    def _create_terminal_on_pins(self, source):
+    def _create_terminal_on_pins(
+        self, source: VoltageSourceBuilder | CurrentSourceBuilder | CurrentSourceBuilder | ResistorSourceBuilder
+    ):
         """Create a terminal on pins.
 
         Parameters
@@ -2226,3 +2232,178 @@ class SourceExcitation:
             )
 
         return term or False
+
+    def create_port(
+        self,
+        terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+        ref_terminal=None,
+        is_circuit_port=False,
+        name=None,
+    ) -> CircuitPort | BundleWavePort | WavePort | CoaxPort | GapPort:
+        """Create a port.
+
+        Parameters
+        ----------
+        terminal : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+            class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+            class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+            class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+            class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+            class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+            optional
+            Negative terminal of the port.
+        is_circuit_port : bool, optional
+            Whether it is a circuit port. The default is ``False``.
+        name: str, optional
+            Name of the created port. The default is None, a random name is generated.
+        Returns
+        -------
+        list: [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
+            :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,].
+        """
+
+        terminal.boundary_type = "PortBoundary"
+        terminal.is_circuit_port = is_circuit_port
+
+        if ref_terminal:
+            ref_terminal.boundary_type = "PortBoundary"
+            terminal.reference_terminal = ref_terminal
+        if name:
+            terminal.name = name
+
+        if terminal.is_circuit_port:
+            port = CircuitPort(self._pedb, terminal._edb_object)
+        elif terminal.terminal_type == "BundleTerminal":
+            port = BundleWavePort(self._pedb, terminal._edb_object)
+        elif terminal.hfss_type == "Wave":
+            port = WavePort(self._pedb, terminal._edb_object)
+        elif terminal.terminal_type == "PadstackInstanceTerminal":
+            port = CoaxPort(self._pedb, terminal._edb_object)
+        else:
+            port = GapPort(self._pedb, terminal._edb_object)
+        return port
+
+    def create_voltage_probe(
+        self,
+        terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+        ref_terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+    ) -> Terminal:
+        """Create a voltage probe.
+
+        Parameters
+        ----------
+        terminal : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+            :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+            :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+            :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the probe.
+
+        Returns
+        -------
+        pyedb.dotnet.database.edb_data.terminals.Terminal
+        """
+        term = Terminal(self._pedb, terminal._edb_object)
+        term.boundary_type = "kVoltageProbe"
+
+        ref_term = Terminal(self._pedb, ref_terminal._edb_object)
+        ref_term.boundary_type = "kVoltageProbe"
+
+        term.reference_terminal = ref_terminal
+        return self._pedb.probes[term.name]
+
+    def create_voltage_source(
+        self,
+        terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+        ref_terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+    ) -> Terminal:
+        """Create a voltage source.
+
+        Parameters
+        ----------
+        terminal : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+            Positive terminal of the port.
+        ref_terminal : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`, \
+            :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`, \
+            :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`, \
+            :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+            Negative terminal of the source.
+
+        Returns
+        -------
+        class:`legacy.database.edb_data.ports.ExcitationSources`
+        """
+        term = Terminal(self._pedb, terminal._edb_object)
+        term.boundary_type = "kVoltageSource"
+
+        ref_term = Terminal(self._pedb, ref_terminal._edb_object)
+        ref_term.boundary_type = "kVoltageSource"
+
+        term.reference_terminal = ref_terminal
+        return self._pedb.sources[term.name]
+
+    def create_current_source(
+        self,
+        terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+        ref_terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+    ) -> Terminal:
+        """Create a current source.
+
+        Parameters
+        ----------
+        terminal : :class:`legacy.database.edb_data.terminals.EdgeTerminal`,
+            :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`legacy.database.edb_data.terminals.PointTerminal`,
+            :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+            Positive terminal of the port.
+        ref_terminal : class:`legacy.database.edb_data.terminals.EdgeTerminal`,
+            :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
+            :class:`legacy.database.edb_data.terminals.PointTerminal`,
+            :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+            Negative terminal of the source.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
+        """
+        term = Terminal(self._pedb, terminal._edb_object)
+        term.boundary_type = "kCurrentSource"
+
+        ref_term = Terminal(self._pedb, ref_terminal._edb_object)
+        ref_term.boundary_type = "kCurrentSource"
+
+        term.reference_terminal = ref_terminal
+        return self._pedb.sources[term.name]
+
+    def get_point_terminal(self, name, net_name, location, layer) -> PointTerminal:
+        """Place a voltage probe between two points.
+
+        Parameters
+        ----------
+        name : str,
+            Name of the terminal.
+        net_name : str
+            Name of the net.
+        location : list
+            Location of the terminal.
+        layer : str,
+            Layer of the terminal.
+
+        Returns
+        -------
+        :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
+        """
+        from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
+
+        point_terminal = PointTerminal(self._pedb)
+        return point_terminal.create(name, net_name, location, layer)

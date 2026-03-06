@@ -72,7 +72,7 @@ class CfgPackageDefinitions:
             pkg_attrs = {i for i in pkg_attrs if i in CfgPackage().__dict__}
             for pkg_attr_name in pkg_attrs:
                 pkg[pkg_attr_name] = getattr(pkg_obj, pkg_attr_name)
-            hs_obj = pkg_obj.heatsink
+            hs_obj = pkg_obj.heat_sink
             if hs_obj:
                 hs = {}
                 hs_attrs = [i for i in dir(hs_obj) if not i.startswith("_")]
@@ -103,8 +103,7 @@ class CfgPackageDefinitions:
 
             if pkg.heatsink:
                 attrs = pkg.heatsink.get_attributes()
-                for attr, value in attrs.items():
-                    package_def.set_heatsink(**attrs)
+                package_def.set_heatsink(**attrs)
 
             comp_list = dict()
             if pkg.apply_to_all:

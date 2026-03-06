@@ -1573,7 +1573,7 @@ class EDBPadstackInstance(Connectable):
         else:
             ref_terminal = None
 
-        return self._pedb.create_port(terminal, ref_terminal, is_circuit_port)
+        return self._pedb.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port)
 
     def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
         """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on

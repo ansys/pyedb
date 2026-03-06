@@ -90,7 +90,7 @@ class PackageDef:
         self.exterior_boundary = polygon_data
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.core.name
 
     @name.setter
@@ -189,7 +189,7 @@ class PackageDef:
         self.core.height = self._pedb._value_setter(value)
 
     @property
-    def heat_sink(self) -> HeatSink:
+    def heat_sink(self) -> "HeatSink":
         """Package heat sink.
 
         Returns
@@ -204,16 +204,6 @@ class PackageDef:
                 f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
                 f"property for object {self}: {str(e)}"
             )
-
-    @property
-    @deprecated_property
-    def heatsink(self):
-        """Property added for .NET compatibility.
-        . deprecated:: pyedb 0.43.0
-        Use :func:`heat_sink` instead.
-
-        """
-        return self.heat_sink
 
     @staticmethod
     def create(edb, name: str) -> "PackageDef":
