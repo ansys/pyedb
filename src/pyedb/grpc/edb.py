@@ -3034,8 +3034,8 @@ class Edb(EdbInit):
 
         polys = [
             poly
-            for poly in self.modeler.primitives
-            if poly.layer.name == reference_layer and self.modeler.primitives[0].type == "polygon" and poly.has_voids
+            for poly in self.layout.primitives
+            if poly.layer.name == reference_layer and self.layout.primitives[0].type == "polygon" and poly.has_voids
         ]
         if not polys:
             self.logger.error(

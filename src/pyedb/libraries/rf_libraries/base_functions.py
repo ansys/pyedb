@@ -1190,8 +1190,8 @@ class DifferentialTLine:
         float
             Differential impedance in Ohms.
         """
-        w = self._edb["diff_w"].value
-        s = self._edb["diff_s"].value
+        w = self._edb.value(self._edb["diff_w"].value)
+        s = self._edb.value(self._edb["diff_s"].value)
         z0_single = 60.0
         return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * s / w))
 
