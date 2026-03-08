@@ -14,165 +14,132 @@
 #
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNE SS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
 # AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    SimulationSetupType as GrpcSimulationSetupType,
-)
-from ansys.edb.core.simulation_setup.siwave_simulation_setup import (
-    SIWaveSimulationSetup as GrpcSIWaveSimulationSetup,
-)
+from typing import TYPE_CHECKING
+import warnings
 
-from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
+from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
+
+from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWaveAdvancedSettings
+from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
+from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
+from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 
 
-class SiwaveSimulationSetup(GrpcSIWaveSimulationSetup):
+class SiwaveSimulationSetup(SimulationSetup):
     """SIwave simulation setup class."""
 
-    def __init__(self, pedb, core=None):
-        super().__init__(core.msg if core else None)
+    def __init__(self, pedb, core: "CoreSIWaveSimulationSetup"):
+        super().__init__(pedb, core)
+        self.core: CoreSIWaveSimulationSetup = core
         self._pedb = pedb
 
+    @classmethod
+    def create(cls, edb: "Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
+        """Create a SIWave simulation setup object.
+
+        Parameters
+        ----------
+        edb : :class:`Edb`
+            Inherited object.
+
+        name : str, optional
+            Name of the simulation setup. The default is "siwave_setup".
+
+        Returns
+        -------
+        SiwaveSimulationSetup
+            The SIWave simulation setup object.
+        """
+        core = CoreSIWaveSimulationSetup.create(edb.active_cell, name)
+        return cls(edb, core)
+
     @property
-    def advanced_settings(self):
+    def settings(self) -> SIWaveSimulationSettings:
+        """Setup simulation settings."""
+        return SIWaveSimulationSettings(self._pedb, self.core.settings)
+
+    @property
+    def advanced_settings(self) -> SIWaveAdvancedSettings:
         """Setup advanced settings."""
         return self.settings.advanced
 
     @property
-    def dc_settings(self):
-        """Setup dc settings."""
+    def dc_settings(self) -> SIWaveDCSettings:
+        """Setup dc settings.
+
+        .. deprecated:: 0.70.0
+        Use :attr:`dc_advanced_settings is deprecated. Use :attr:`settings.dc instead.
+
+        """
+        warnings.warn("`dc_settings` is deprecated. Use `settings.dc` instead.", DeprecationWarning)
         return self.settings.dc
 
     @property
-    def dc_advanced_settings(self):
-        """Setup dc settings."""
+    def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
+        """Setup dc settings.
+
+        .. deprecated:: 0.70.0
+        Use :attr:`dc_advanced_settings is deprecated. Use :attr:`settings.dc_advanced instead.
+
+        """
+        warnings.warn("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` instead.", DeprecationWarning)
         return self.settings.dc_advanced
 
     @property
-    def type(self) -> str:
-        """Simulation setup type.
+    def use_si_settings(self) -> bool:
+        """Whether to use SI settings.
 
-        Returns
-        -------
-        str
-            Simulation type.
+        .. deprecated:: 0.70.0
+        Use :attr:`settings.use_si_settings is deprecated. Use :attr:`settings.general.use_si_settings` instead.
 
         """
-        return super().type.name
+        warnings.warn(
+            "`use_si_settings` is deprecated. Use `settings.general.use_si_settings` instead.", DeprecationWarning
+        )
+        return self.settings.general.use_si_settings
 
-    @type.setter
-    def type(self, value):
-        if value.upper() == "SI_WAVE":
-            super(SiwaveSimulationSetup, self.__class__).type.__set__(self, GrpcSimulationSetupType.SI_WAVE)
-        elif value.upper() == "SI_WAVE_DCIR":
-            super(SiwaveSimulationSetup, self.__class__).type.__set__(self, GrpcSimulationSetupType.SI_WAVE_DCIR)
+    @use_si_settings.setter
+    def use_si_settings(self, value: bool):
+        self.settings.general.use_si_settings = value
 
-    def add_sweep(
-        self,
-        name=None,
-        distribution="linear",
-        start_freq="0GHz",
-        stop_freq="20GHz",
-        step="10MHz",
-        discrete=False,
-        frequency_set=None,
-    ) -> bool:
-        """Add a HFSS frequency sweep.
+    @property
+    def si_slider_position(self) -> int:
+        """SI slider position.
 
-        Parameters
-        ----------
-        name : str, optional
-         Sweep name.
-        distribution : str, optional
-            Type of the sweep. The default is `"linear"`. Options are:
-            - `"linear"`
-            - `"linear_count"`
-            - `"decade_count"`
-            - `"octave_count"`
-            - `"exponential"`
-        start_freq : str, float, optional
-            Starting frequency. The default is ``1``.
-        stop_freq : str, float, optional
-            Stopping frequency. The default is ``1e9``.
-        step : str, float, int, optional
-            Frequency step. The default is ``1e6``. or used for `"decade_count"`, "linear_count"`, "octave_count"`
-            distribution. Must be integer in that case.
-        discrete : bool, optional
-            Whether the sweep is discrete. The default is ``False``.
-        frequency_set : List, optional
-            Frequency set is a list adding one or more frequency sweeps. If ``frequency_set`` is provided, the other
-            arguments are ignored except ``discrete``. Default value is ``None``.
-            example of frequency_set : [['linear_scale', '50MHz', '200MHz', '10MHz']].
-
-        Returns
-        -------
-        bool
+        .. deprecated:: 0.70.0
+        Use :attr:`settings.si_slider_position is deprecated. Use :attr:`settings.general.si_slider_position` instead.
         """
-        init_sweep_count = len(self.sweep_data)
-        if frequency_set:
-            for sweep in frequency_set:
-                if "linear_scale" in sweep:
-                    distribution = "LIN"
-                elif "linear_count" in sweep:
-                    distribution = "LINC"
-                elif "exponential" in sweep:
-                    distribution = "ESTP"
-                elif "log_scale" in sweep:
-                    distribution = "DEC"
-                elif "octave_count" in sweep:
-                    distribution = "OCT"
-                else:
-                    distribution = "LIN"
-                start_freq = self._pedb.number_with_units(sweep[1], "Hz")
-                stop_freq = self._pedb.number_with_units(sweep[2], "Hz")
-                step = str(sweep[3])
-                if not name:
-                    name = f"sweep_{init_sweep_count + 1}"
-                sweep_data = [
-                    SweepData(
-                        self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
-                    )
-                ]
-                if discrete:
-                    sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-                for sweep in self.sweep_data:
-                    sweep_data.append(sweep)
-                self.sweep_data = sweep_data
-                return sweep_data[0]
-        else:
-            start_freq = self._pedb.number_with_units(start_freq, "Hz")
-            stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-            step = str(step)
-            if distribution.lower() == "linear":
-                distribution = "LIN"
-            elif distribution.lower() == "linear_count":
-                distribution = "LINC"
-            elif distribution.lower() == "exponential":
-                distribution = "ESTP"
-            elif distribution.lower() == "decade_count":
-                distribution = "DEC"
-            elif distribution.lower() == "octave_count":
-                distribution = "OCT"
-            else:
-                distribution = "LIN"
-            if not name:
-                name = f"sweep_{init_sweep_count + 1}"
-            sweep_data = [
-                SweepData(
-                    self._pedb, name=name, distribution=distribution, start_f=start_freq, end_f=stop_freq, step=step
-                )
-            ]
-            if discrete:
-                sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-            for sweep in self.sweep_data:
-                sweep_data.append(sweep)
-            self.sweep_data = sweep_data
-            if len(self.sweep_data) == init_sweep_count + 1:
-                return sweep_data[0]
-            else:
-                self._pedb.logger.error("Failed to add frequency sweep data")
-                return False
+        warnings.warn(
+            "`si_slider_position` is deprecated. Use `settings.general.si_slider_position` instead.",
+        )
+        return self.settings.general.si_slider_position
+
+    @si_slider_position.setter
+    def si_slider_position(self, value: int):
+        self.settings.general.si_slider_position = value
+
+    @property
+    def pi_slider_position(self) -> int:
+        """I slider position.
+
+        .. deprecated:: 0.70.0
+        Use :attr:`settings.pi_slider_position is deprecated. Use :attr:`settings.general.pi_slider_position` instead.
+        """
+        warnings.warn(
+            "`pi_slider_position` is deprecated. Use `settings.general.pi_slider_position` instead.", DeprecationWarning
+        )
+        return self.settings.general.pi_slider_pos
+
+    @pi_slider_position.setter
+    def pi_slider_position(self, value: int):
+        self.settings.general.pi_slider_pos = value

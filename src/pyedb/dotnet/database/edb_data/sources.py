@@ -87,7 +87,7 @@ class Node(object):
             self.__setattr__(k, v)
 
 
-class Source(object):
+class SourceBuilder(object):
     """Provides for handling Siwave sources."""
 
     def __init__(self):
@@ -109,7 +109,7 @@ class Source(object):
 
     @property
     def name(self):  # pragma: no cover
-        """Source name."""
+        """SourceBuilder name."""
         return self._name
 
     @name.setter
@@ -119,7 +119,7 @@ class Source(object):
 
     @property
     def source_type(self):  # pragma: no cover
-        """Source type."""
+        """SourceBuilder type."""
         return self._source_type
 
     @source_type.setter
@@ -433,12 +433,12 @@ class PinGroup(object):
         return True
 
 
-class CircuitPort(Source, object):
+class CircuitPortBuilder(SourceBuilder, object):
     """Manages a circuit port."""
 
     def __init__(self, impedance="50"):
         self._impedance = impedance
-        Source.__init__(self)
+        SourceBuilder.__init__(self)
         self._source_type = SourceType.CircPort
 
     @property
@@ -456,11 +456,11 @@ class CircuitPort(Source, object):
         return self._source_type
 
 
-class VoltageSource(Source):
+class VoltageSourceBuilder(SourceBuilder):
     """Manages a voltage source."""
 
     def __init__(self):
-        super(VoltageSource, self).__init__()
+        super(VoltageSourceBuilder, self).__init__()
         self._magnitude = "1V"
         self._phase = "0Deg"
         self._impedance = "0.05"
@@ -495,15 +495,15 @@ class VoltageSource(Source):
 
     @property
     def source_type(self):
-        """Source type."""
+        """SourceBuilder type."""
         return self._source_type
 
 
-class CurrentSource(Source):
+class CurrentSourceBuilder(SourceBuilder):
     """Manages a current source."""
 
     def __init__(self):
-        super(CurrentSource, self).__init__()
+        super(CurrentSourceBuilder, self).__init__()
         self._magnitude = "0.1A"
         self._phase = "0Deg"
         self._impedance = "1e7"
@@ -538,11 +538,11 @@ class CurrentSource(Source):
 
     @property
     def source_type(self):
-        """Source type."""
+        """SourceBuilder type."""
         return self._source_type
 
 
-class DCTerminal(Source):
+class DCTerminal(SourceBuilder):
     """Manages a dc terminal source."""
 
     def __init__(self):
@@ -552,15 +552,15 @@ class DCTerminal(Source):
 
     @property
     def source_type(self):
-        """Source type."""
+        """SourceBuilder type."""
         return self._source_type
 
 
-class ResistorSource(Source):
+class ResistorSourceBuilder(SourceBuilder):
     """Manages a resistor source."""
 
     def __init__(self):
-        super(ResistorSource, self).__init__()
+        super(ResistorSourceBuilder, self).__init__()
         self._rvalue = "50"
         self._source_type = SourceType.Rlc
 
@@ -575,5 +575,5 @@ class ResistorSource(Source):
 
     @property
     def source_type(self):
-        """Source type."""
+        """SourceBuilder type."""
         return self._source_type

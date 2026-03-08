@@ -19,7 +19,6 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
 import warnings
 
 from pyedb.dotnet.database.general import (
@@ -30,6 +29,7 @@ from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInf
 from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import (
     SiwaveDCIRSettings,
 )
+from pyedb.dotnet.database.sim_setup_data.data.siwave import SIwaveSParameterSettings
 from pyedb.dotnet.database.sim_setup_data.io.siwave import (
     AdvancedSettings,
     DCAdvancedSettings,
@@ -108,7 +108,169 @@ def clone_edb_sim_setup_info(source, target):
                     )
 
 
-class SiwaveSimulationSetup(SimulationSetup):
+class DeprecatedSettings:
+    @property
+    def dc_report_config_file(self) -> str:
+        """Path to the DC report configuration file."""
+        # return self._sim_setup_info._edb_object.SimulationSettings.DCIRSettings.DCReportConfigFile
+        return self.dc_ir.dc_report_config_file
+
+    @dc_report_config_file.setter
+    def dc_report_config_file(self, value: str):
+        self.dc_ir.dc_report_config_file = value
+
+    @property
+    def dc_report_show_active_devices(self) -> bool:
+        """Flag to show active devices in the DC report."""
+        return self.dc_ir.dc_report_show_active_devices
+
+    @dc_report_show_active_devices.setter
+    def dc_report_show_active_devices(self, value: bool):
+        self.dc_ir.dc_report_show_active_devices = value
+
+    @property
+    def enabled(self) -> bool:
+        """Flag indicating if the setup is enabled."""
+        return self._parent.sim_setup_info.simulation_settings.Enabled
+
+    @enabled.setter
+    def enabled(self, value: bool):
+        sim_info = self._parent.sim_setup_info
+        sim_info.simulation_settings.Enabled = value
+        self._parent.set_sim_setup_info(sim_info)
+
+    @property
+    def export_dc_thermal_data(self) -> bool:
+        """Flag to export DC thermal data."""
+        return self.dc_ir.export_dc_thermal_data
+
+    @export_dc_thermal_data.setter
+    def export_dc_thermal_data(self, value: bool):
+        self.dc_ir.export_dc_thermal_data = value
+
+    @property
+    def full_dc_report_path(self) -> str:
+        """Full path to the DC report."""
+        return self.dc_ir.full_dc_report_path
+
+    @full_dc_report_path.setter
+    def full_dc_report_path(self, value: str):
+        self.dc_ir.full_dc_report_path = value
+
+    @property
+    def icepak_temp_file_path(self) -> str:
+        """Path to the Icepak temporary file."""
+        return self.dc_ir.icepak_temp_file_path
+
+    @icepak_temp_file_path.setter
+    def icepak_temp_file_path(self, value: str):
+        self.dc_ir.icepak_temp_file_path = value
+
+    @property
+    def icepak_temp_file(self):
+        """Icepak temporary file name."""
+        return self.dc_ir.icepak_temp_file
+
+    @icepak_temp_file.setter
+    def icepak_temp_file(self, value: str):
+        self.dc_ir.icepak_temp_file = value
+
+    @property
+    def import_thermal_data(self) -> bool:
+        """Flag to import thermal data."""
+        return self.dc_ir.import_thermal_data
+
+    @property
+    def per_pin_res_path(self):
+        """Path to the per-pin resistance data."""
+        return self.dc_ir.per_pin_res_path
+
+    @per_pin_res_path.setter
+    def per_pin_res_path(self, value: str):
+        self.dc_ir.per_pin_res_path = value
+
+    @import_thermal_data.setter
+    def import_thermal_data(self, value: bool):
+        self.dc_ir.import_thermal_data = value
+
+    @property
+    def s_parameter(self) -> SIwaveSParameterSettings:
+        """S-parameter settings."""
+        return SIwaveSParameterSettings(self._parent, self.advanced.sim_setup_info.simulation_settings.SParamSettings)
+
+    @property
+    def source_terms_to_ground(self) -> dict[str, int]:
+        """Dictionary of grounded terminals.
+
+        Returns
+        -------
+        Dictionary
+            {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
+
+        """
+        return self.dc_ir.source_terms_to_ground
+
+    @source_terms_to_ground.setter
+    def source_terms_to_ground(self, value: dict[str, int]):
+        self.dc_ir.source_terms_to_ground = value
+
+    @property
+    def use_loop_res_for_per_pin(self):
+        """Flag to use loop resistance for per-pin calculations."""
+        return self.dc_ir.use_loop_res_for_per_pin
+
+    @use_loop_res_for_per_pin.setter
+    def use_loop_res_for_per_pin(self, value: bool):
+        self.dc_ir.use_loop_res_for_per_pin = value
+
+    @property
+    def per_pin_use_pin_format(self):
+        """Flag to use pin format for per-pin calculations.
+        .. deprecated:: 0.68.2
+            Use :property:`settings.dc.per_pin_use_pin_format` property instead.
+
+        """
+        return self.dc_ir.per_pin_use_pin_format
+
+    @per_pin_use_pin_format.setter
+    def per_pin_use_pin_format(self, value: bool):
+        self.dc_ir.per_pin_use_pin_format = value
+
+    @property
+    def via_report_path(self) -> str:
+        """Path to the via report."""
+        return self.dc_ir.via_report_path
+
+    @via_report_path.setter
+    def via_report_path(self, value: str):
+        self.dc_ir.via_report_path = value
+
+    def add_source_terminal_to_ground(self, source_name, terminal=0):
+        """Add a source terminal to ground.
+
+        Parameters
+        ----------
+        source_name : str,
+            Source name.
+        terminal : int, optional
+            Terminal to assign. Options are:
+
+             - 0=Unspecified
+             - 1=Negative node
+             - 2=Positive none
+
+        Returns
+        -------
+        bool
+
+        """
+        terminals = self.dc_ir.source_terms_to_ground
+        terminals[source_name] = terminal
+        self._sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(terminals)
+        return self._update_setup()
+
+
+class SIwaveSimulationSetup(SimulationSetup):
     """Manages EDB methods for SIwave simulation setup."""
 
     def __init__(self, pedb, edb_object=None, name: str = None):
@@ -152,6 +314,10 @@ class SiwaveSimulationSetup(SimulationSetup):
         }
 
     @property
+    def settings(self):
+        return Settings(self)
+
+    @property
     def advanced_settings(self):
         """SIwave advanced settings."""
         return AdvancedSettings(self)
@@ -173,20 +339,6 @@ class SiwaveSimulationSetup(SimulationSetup):
         clone_edb_sim_setup_info(source=self._edb_object, target=sim_setup_info._edb_object)
         return sim_setup_info
 
-    def set_pi_slider(self, value):
-        """Set SIwave PI simulation accuracy level.
-        Options are:
-        - ``0``: Optimal speed
-        - ``1``:  Balanced
-        - ``2``: Optimal accuracy
-
-        .. deprecated:: 0.7.5
-           Use :property:`pi_slider_position` property instead.
-
-        """
-        warnings.warn("`set_pi_slider` is deprecated. Use `pi_slider_position` property instead.", DeprecationWarning)
-        self.pi_slider_position = value
-
     def set_si_slider(self, value):
         """Set SIwave SI simulation accuracy level.
 
@@ -201,22 +353,32 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.advanced_settings.set_si_slider(value)
 
     @property
-    def enabled(self):
-        """Flag indicating if the setup is enabled."""
-        return self.sim_setup_info.simulation_settings.Enabled
-
-    @enabled.setter
-    def enabled(self, value: bool):
-        """Set the enabled flag for the setup."""
-        self.sim_setup_info.simulation_settings.Enabled = value
-
-    @property
     def pi_slider_position(self):
         """PI solider position. Values are from ``1`` to ``3``."""
-        return self.get_sim_setup_info.simulation_settings.PISliderPos
+        warnings.warn(
+            "`pi_slider_position` is deprecated. Use `settings.advanced.pi_slider_position` property instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return self.pi_slider_pos
 
     @pi_slider_position.setter
     def pi_slider_position(self, value):
+        edb_setup_info = self.get_sim_setup_info
+        edb_setup_info.simulation_settings.PISliderPos = value
+        self._edb_object = self._set_edb_setup_info(edb_setup_info)
+        self._update_setup()
+
+        self.use_si_settings = False
+        self.use_custom_settings = False
+        self.advanced_settings.set_pi_slider(value)
+
+    @property
+    def pi_slider_pos(self):
+        return self.get_sim_setup_info.simulation_settings.PISliderPos
+
+    @pi_slider_pos.setter
+    def pi_slider_pos(self, value):
         edb_setup_info = self.get_sim_setup_info
         edb_setup_info.simulation_settings.PISliderPos = value
         self._edb_object = self._set_edb_setup_info(edb_setup_info)
@@ -348,21 +510,6 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         return self
 
     @property
-    def enabled(self):
-        """Flag indicating if the setup is enabled.
-
-        .. deprecated:: 0.57.0
-            Use :property:`settings.enabled` property instead.
-
-        Returns
-        -------
-        bool
-        """
-
-        warnings.warn("`enabled` property is deprecated. Use `settings.enabled` property instead.", DeprecationWarning)
-        return self.settings.enabled
-
-    @property
     def sim_setup_info(self):
         """Overrides the default sim_setup_info object."""
         return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self.get_sim_setup_info._edb_object)
@@ -374,7 +521,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     @property
     def get_sim_setup_info(self):  # todo remove after refactoring
         """Get simulation information from the setup."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+        self._pedb.logger.warning("Use new property :func:`sim_setup_info` instead.")
         sim_setup_info = SimSetupInfo(
             self._pedb, sim_setup=self, setup_type="kSIwaveDCIR", name=self._edb_object.GetName()
         )
@@ -382,8 +529,25 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         return sim_setup_info
 
     @property
+    def settings(self):
+        """Get the settings interface for SIwave DC simulation.
+
+        Returns
+        -------
+        Settings
+            An instance of the Settings class providing access to SIwave DC simulation settings.
+        """
+        return Settings(self)
+
+    @property
     def dc_ir_settings(self):
-        """DC IR settings."""
+        """DC IR settings.
+        ..deprecated:: 0.68.2
+
+        use :property:`settings.dc_ir` property instead.
+
+        """
+        self._pedb.logger.warning("`dc_ir_settings` is deprecated. Use `settings.dc_ir` property instead.")
         return self.settings
 
     def get_configurations(self):
@@ -420,19 +584,8 @@ class SiwaveDCSimulationSetup(SimulationSetup):
               Use :property:`settings` property instead.
 
         """
-        warnings.warn("`dc_settings` is deprecated. Use `settings.dc` property instead.", DeprecationWarning)
+        self._pedb.logger.warning("`dc_settings` is deprecated. Use `settings.dc` property instead.")
         return self.settings.dc
-
-    @property
-    def settings(self):
-        """Get the settings interface for SIwave DC simulation.
-
-        Returns
-        -------
-        Settings
-            An instance of the Settings class providing access to SIwave DC simulation settings.
-        """
-        return Settings(self, self.sim_setup_info)
 
     @property
     def dc_advanced_settings(self):
@@ -445,122 +598,78 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         -------
         :class:`pyedb.dotnet.database.edb_data.siwave_simulation_setup_data.SiwaveDCAdvancedSettings`
         """
-        warnings.warn(
-            "`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` property instead.", DeprecationWarning
-        )
+        self._pedb.logger.warning("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` property instead.")
         return self.settings.dc_advanced
 
-    @property
-    def source_terms_to_ground(self):
-        """Dictionary of grounded terminals.
 
-        .. deprecated:: 0.57.0
-            Use :property:`settings.source_terms_to_ground` property instead.
-
-        Returns
-        -------
-        Dictionary
-            {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
-
-        """
-        warnings.warn(
-            "`source_terms_to_ground` is deprecated. Use `settings.source_terms_to_ground` property instead.",
-            DeprecationWarning,
-        )
-        return self.settings.source_terms_to_ground
-
-    def add_source_terminal_to_ground(self, source_name, terminal=0):
-        """Add a source terminal to ground.
-
-        .. deprecated:: 0.57.0
-            Use :method:`settings.add_source_terminal_to_ground` method instead.
-
-        Parameters
-        ----------
-        source_name : str,
-            Source name.
-        terminal : int, optional
-            Terminal to assign. Options are:
-
-             - 0=Unspecified
-             - 1=Negative node
-             - 2=Positive none
-
-        Returns
-        -------
-        bool
-
-        """
-        warnings.warn(
-            "`add_source_terminal_to_ground` is deprecated. Use "
-            "`settings.add_source_terminal_to_ground` method instead.",
-            DeprecationWarning,
-        )
-        return self.settings.add_source_terminal_to_ground(source_name, terminal)
-
-
-class General:
+class SIWaveGeneralSettings:
     """Class to manage global settings for the Siwave simulation setup module.
     Added to be compliant with ansys-edbe-core settings structure."""
 
     def __init__(self, parent):
         self._parent = parent
 
-    @property
-    def pi_slider_pos(self):
-        return self._parent.dc_slider_position
+    def __getattribute__(self, item):
+        if item in [
+            "dc_report_config_file",
+            "dc_report_show_active_devices",
+            "enabled",
+            "export_dc_thermal_data",
+            "full_dc_report_path",
+            "icepak_temp_file_path",
+            "icepak_temp_file",
+            "import_thermal_data",
+            "per_pin_res_path",
+            "s_parameter",
+            "source_terms_to_ground",
+            "use_loop_res_for_per_pin",
+            "per_pin_use_pin_format",
+            "via_report_path",
+            "add_source_terminal_to_ground",
+        ]:
+            return object.__getattribute__(self, "_parent").settings.__getattribute__(item)
+        else:
+            return object.__getattribute__(self, item)
 
-    @property
-    def si_slider_pos(self):
-        return self._parent.si_slider_position
+    def __setattr__(self, key, value):
+        if key in [
+            "dc_report_config_file",
+            "dc_report_show_active_devices",
+            "enabled",
+            "export_dc_thermal_data",
+            "full_dc_report_path",
+            "icepak_temp_file_path",
+            "icepak_temp_file",
+            "import_thermal_data",
+            "per_pin_res_path",
+            "s_parameter",
+            "source_terms_to_ground",
+            "use_loop_res_for_per_pin",
+            "per_pin_use_pin_format",
+            "via_report_path",
+        ]:
+            return object.__getattribute__(self, "_parent").settings.__setattr__(key, value)
+        else:
+            return object.__setattr__(self, key, value)
 
-    @property
-    def use_custom_settings(self):
-        return self._parent.use_dc_custom_settings
 
-    @property
-    def use_si_settings(self):
-        return self._parent.use_si_settings
+class Settings(DeprecatedSettings):
+    """Class to reflect the same structure as gRPC."""
 
-
-class SIwaveSParameterSettings:
-    def __init__(self, parent):
+    def __init__(self, parent: SIwaveSimulationSetup):
         self._parent = parent
-
-    @property
-    def dc_behavior(self):
-        return
-
-    @property
-    def extrapolation(self):
-        return
-
-    @property
-    def interpolation(self):
-        return
-
-    @property
-    def use_state_space(self):
-        return True
-
-
-class Settings(SimulationSetup, SiwaveDCIRSettings):
-    """Class to manage global settings for the Siwave simulation setup module.
-    Added to be compliant with ansys-edbe-core settings structure."""
-
-    def __init__(self, parent, sim_setup_info):
-        SimulationSetup.__init__(self, pedb=parent._pedb, edb_object=parent._edb_object)
-        SiwaveDCIRSettings.__init__(self, parent)
-        self._parent = parent
-        self._sim_setup_info = sim_setup_info
 
     @property
     def advanced(self):
-        return True
+        return self._parent.advanced_settings
 
     @property
     def dc(self):
         return DCSettings(self._parent)
+
+    @property
+    def dc_ir(self):
+        return SiwaveDCIRSettings(self._parent)
 
     @property
     def dc_advanced(self):
@@ -568,131 +677,5 @@ class Settings(SimulationSetup, SiwaveDCIRSettings):
 
     @property
     def general(self):
-        return DCSettings(self._parent)
-
-    @property
-    def dc_report_config_file(self) -> str:
-        """Path to the DC report configuration file."""
-        # return self._sim_setup_info._edb_object.SimulationSettings.DCIRSettings.DCReportConfigFile
-        return super().dc_report_config_file
-
-    @dc_report_config_file.setter
-    def dc_report_config_file(self, value: str):
-        SiwaveDCIRSettings.dc_report_config_file = value
-
-    @property
-    def dc_report_show_active_devices(self) -> bool:
-        """Flag to show active devices in the DC report."""
-        return super().dc_report_show_active_devices
-
-    @dc_report_show_active_devices.setter
-    def dc_report_show_active_devices(self, value: bool):
-        SiwaveDCIRSettings.dc_report_show_active_devices = value
-
-    @property
-    def enabled(self) -> bool:
-        """Flag indicating if the setup is enabled."""
-        return self._sim_setup_info.simulation_settings.Enabled
-
-    @enabled.setter
-    def enabled(self, value: bool):
-        self._sim_setup_info.simulation_settings.Enabled = value
-
-    @property
-    def export_dc_thermal_data(self) -> bool:
-        """Flag to export DC thermal data."""
-        return SiwaveDCIRSettings.export_dc_thermal_data
-
-    @export_dc_thermal_data.setter
-    def export_dc_thermal_data(self, value: bool):
-        SiwaveDCIRSettings.export_dc_thermal_data = value
-
-    @property
-    def full_dc_report_path(self) -> str:
-        """Full path to the DC report."""
-        return SiwaveDCIRSettings.full_dc_report_path
-
-    @full_dc_report_path.setter
-    def full_dc_report_path(self, value: str):
-        SiwaveDCIRSettings.full_dc_report_path = value
-
-    @property
-    def icepak_temp_file_path(self) -> str:
-        """Path to the Icepak temporary file."""
-        return SiwaveDCIRSettings.icepak_temp_file_path
-
-    @icepak_temp_file_path.setter
-    def icepak_temp_file_path(self, value: str):
-        SiwaveDCIRSettings.icepak_temp_file_path = value
-
-    @property
-    def import_thermal_data(self) -> bool:
-        """Flag to import thermal data."""
-        return super().import_thermal_data
-
-    @import_thermal_data.setter
-    def import_thermal_data(self, value: bool):
-        SiwaveDCIRSettings.import_thermal_data = value
-
-    @property
-    def s_parameter(self) -> SIwaveSParameterSettings:
-        """S-parameter settings."""
-        return SIwaveSParameterSettings(self._parent)
-
-    @property
-    def source_terms_to_ground(self) -> dict[str, int]:
-        """Dictionary of grounded terminals.
-
-        Returns
-        -------
-        Dictionary
-            {str, int}, keys is source name, value int 0 unspecified, 1 negative node, 2 positive one.
-
-        """
-        return convert_netdict_to_pydict(super().source_terms_to_ground)
-
-    @source_terms_to_ground.setter
-    def source_terms_to_ground(self, value: dict[str, int]):
-        SiwaveDCIRSettings.source_terms_to_ground = convert_pydict_to_netdict(value)
-
-    @property
-    def use_loop_res_for_per_pin(self):
-        """Flag to use loop resistance for per-pin calculations."""
-        return super().use_loop_res_for_per_pin
-
-    @use_loop_res_for_per_pin.setter
-    def use_loop_res_for_per_pin(self, value: bool):
-        SiwaveDCIRSettings.use_loop_res_for_per_pin = value
-
-    @property
-    def via_report_path(self) -> str:
-        """Path to the via report."""
-        return super().via_report_path
-
-    @via_report_path.setter
-    def via_report_path(self, value: str):
-        SiwaveDCIRSettings.via_report_path = value
-
-    def add_source_terminal_to_ground(self, source_name, terminal=0):
-        """Add a source terminal to ground.
-
-        Parameters
-        ----------
-        source_name : str,
-            Source name.
-        terminal : int, optional
-            Terminal to assign. Options are:
-
-             - 0=Unspecified
-             - 1=Negative node
-             - 2=Positive none
-
-        Returns
-        -------
-        bool
-
-        """
-        terminals = self.source_terms_to_ground
-        terminals[source_name] = terminal
-        self._sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(terminals)
-        return self._update_setup()
+        warnings.warn("Deprecated: settings.dc.", DeprecationWarning)
+        return SIWaveGeneralSettings(self._parent)

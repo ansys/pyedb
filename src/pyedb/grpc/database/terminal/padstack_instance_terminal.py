@@ -24,10 +24,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
-)
-from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
+from ansys.edb.core.terminal.padstack_instance_terminal import PadstackInstanceTerminal as CorePadstackInstanceTerminal
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
@@ -35,7 +32,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated_property
 
 
 class PadstackInstanceTerminal(Terminal):
@@ -66,7 +62,7 @@ class PadstackInstanceTerminal(Terminal):
         """
         if net is None:
             net = padstack_instance.net
-        edb_terminal_inst = GrpcPadstackInstanceTerminal.create(
+        edb_terminal_inst = CorePadstackInstanceTerminal.create(
             layout=layout.core,
             name=name,
             padstack_instance=padstack_instance.core,
@@ -75,28 +71,6 @@ class PadstackInstanceTerminal(Terminal):
             is_ref=is_ref,
         )
         return cls(layout._pedb, edb_terminal_inst)
-
-    @property
-    def is_circuit_port(self) -> bool:
-        """Check if the terminal is a circuit port.
-
-        Returns
-        -------
-        bool
-            True if the terminal is a circuit port, False otherwise.
-        """
-        return self.core.is_circuit_port
-
-    @is_circuit_port.setter
-    def is_circuit_port(self, value: bool):
-        """Set whether the terminal is a circuit port.
-
-        Parameters
-        ----------
-        value : bool
-            True to set the terminal as a circuit port, False otherwise.
-        """
-        self.core.is_circuit_port = value
 
     @property
     def is_reference_terminal(self) -> bool:

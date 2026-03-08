@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.grpc.database.geometry.arc_data import ArcData
 from pyedb.grpc.database.utility.value import Value
@@ -163,11 +163,11 @@ class PolygonData:
             raise TypeError("Points must be provided as a list of PointData objects.")
         list_of_point_data = []
         for pt in points:
-            list_of_point_data.append(GrpcPointData(pt))
-        return cls(GrpcPolygonData(points=list_of_point_data, closed=closed))
+            list_of_point_data.append(CorePointData(pt))
+        return cls(CorePolygonData(points=list_of_point_data, closed=closed))
 
     @classmethod
-    def create_from_bounding_box(cls, points) -> GrpcPolygonData:
+    def create_from_bounding_box(cls, points) -> CorePolygonData:
         """Create PolygonData from point list.
 
         Returns
@@ -175,7 +175,7 @@ class PolygonData:
         :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
 
         """
-        return cls(GrpcPolygonData(points=points))
+        return cls(CorePolygonData(points=points))
 
     def has_self_intersections(self, tolerance=1e-12) -> bool:
         """Check if the polygon has self-intersections.

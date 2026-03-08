@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from pyedb.configuration.cfg_common import CfgBase
+from pyedb.generic.settings import settings
 
 
 class CfgPackage(CfgBase):
@@ -33,7 +34,7 @@ class CfgPackage(CfgBase):
         self.name = kwargs.get("name", None)
         self.component_definition = kwargs.get("component_definition", None)
         self.maximum_power = kwargs.get("maximum_power", None)
-        self.therm_cond = kwargs.get("therm_cond", None)
+        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
         self.theta_jb = kwargs.get("theta_jb", None)
         self.theta_jc = kwargs.get("theta_jc", None)
         self.height = kwargs.get("height", None)
@@ -71,7 +72,7 @@ class CfgPackageDefinitions:
             pkg_attrs = {i for i in pkg_attrs if i in CfgPackage().__dict__}
             for pkg_attr_name in pkg_attrs:
                 pkg[pkg_attr_name] = getattr(pkg_obj, pkg_attr_name)
-            hs_obj = pkg_obj.heatsink
+            hs_obj = pkg_obj.heat_sink
             if hs_obj:
                 hs = {}
                 hs_attrs = [i for i in dir(hs_obj) if not i.startswith("_")]
@@ -84,7 +85,10 @@ class CfgPackageDefinitions:
         return package_definitions
 
     def set_parameter_to_edb(self):
-        from pyedb.dotnet.database.definition.package_def import PackageDef
+        if settings.is_grpc:
+            from pyedb.grpc.database.definition.package_def import PackageDef
+        else:
+            from pyedb.dotnet.database.definition.package_def import PackageDef
 
         for pkg in self.packages:
             comp_def_from_db = self._pedb.definitions.component[pkg.component_definition]
@@ -99,8 +103,7 @@ class CfgPackageDefinitions:
 
             if pkg.heatsink:
                 attrs = pkg.heatsink.get_attributes()
-                for attr, value in attrs.items():
-                    package_def.set_heatsink(**attrs)
+                package_def.set_heatsink(**attrs)
 
             comp_list = dict()
             if pkg.apply_to_all:

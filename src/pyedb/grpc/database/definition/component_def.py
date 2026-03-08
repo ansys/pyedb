@@ -21,11 +21,19 @@
 # SOFTWARE.
 
 import os
+from typing import TYPE_CHECKING
 
-from ansys.edb.core.definition.component_def import ComponentDef as GrpcComponentDef
+from ansys.edb.core.definition.component_def import ComponentDef as CoreComponentDef
+from ansys.edb.core.definition.component_model import (
+    NPortComponentModel as CoreNPortComponentModel,
+)
 
+from pyedb.dotnet.database.definition.component_model import ComponentModel
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
+
+if TYPE_CHECKING:
+    from pyedb import Edb
 
 
 class ComponentDef:
@@ -37,7 +45,7 @@ class ComponentDef:
         Edb ComponentDef Object
     """
 
-    def __init__(self, pedb, core):
+    def __init__(self, pedb: "Edb", core: "CoreComponentDef"):
         self.core = core
         self._pedb = pedb
 
@@ -102,10 +110,10 @@ class ComponentDef:
         -------
         dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
         """
-        from ansys.edb.core.hierarchy.component_group import ComponentGroup as GrpcComponent
+        from ansys.edb.core.hierarchy.component_group import ComponentGroup as CoreComponent
 
         comp_list = [
-            Component(self._pedb, l) for l in GrpcComponent.find_by_def(self._pedb.active_layout.core, self.part_name)
+            Component(self._pedb, l) for l in CoreComponent.find_by_def(self._pedb.active_layout.core, self.part_name)
         ]
         return {comp.refdes: comp for comp in comp_list}
 
@@ -133,7 +141,7 @@ class ComponentDef:
         return [ComponentPin(pin) for pin in self.core.component_pins]
 
     @classmethod
-    def find(cls, edb, name):
+    def find(cls, edb, name) -> "ComponentDef":
         """Find component definition by name.
 
         Parameters
@@ -147,13 +155,13 @@ class ComponentDef:
         -------
         :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>` or None
         """
-        core_comp_def = GrpcComponentDef.find(edb.db, name)
+        core_comp_def = CoreComponentDef.find(edb.db, name)
         if not core_comp_def.is_null:
             return ComponentDef(edb, core_comp_def)
         return None
 
     @classmethod
-    def create(cls, edb, name, fp=None):
+    def create(cls, edb, name, fp=None) -> "ComponentDef":
         """Create a new component definition.
 
         Parameters
@@ -169,7 +177,7 @@ class ComponentDef:
         -------
         :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
         """
-        component_def = GrpcComponentDef.create(edb.db, name, fp)
+        component_def = CoreComponentDef.create(edb.db, name, fp)
         return ComponentDef(edb, component_def)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
@@ -246,15 +254,15 @@ class ComponentDef:
             List of reference files.
 
         """
-        return [model.reference_file for model in self.component_models]
+        return [model.reference_file for model in self.component_models.values()]
 
     @property
-    def component_models(self):
+    def component_models(self) -> dict[str, ComponentModel]:
         """Component models.
 
         Returns
         -------
-        list[:class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
+        dict[str, :class:`ComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`]
 
         """
         from pyedb.grpc.database.definition.component_model import ComponentModel
@@ -262,7 +270,7 @@ class ComponentDef:
         return {model.name: ComponentModel(model) for model in self.core.component_models}
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Component definition name.
 
         Returns
@@ -277,7 +285,7 @@ class ComponentDef:
     def name(self, value):
         self.core.name = value
 
-    def add_n_port_model(self, fpath, name=None):
+    def add_n_port_model(self, fpath, name=None) -> CoreNPortComponentModel:
         """Add N-port model.
 
         Returns
@@ -286,21 +294,17 @@ class ComponentDef:
 
         """
 
-        from ansys.edb.core.definition.component_model import (
-            NPortComponentModel as GrpcNPortComponentModel,
-        )
-
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
         model = [model for model in self.component_models if model.name == name]
         if model:
             raise RuntimeError(f"Model {name} already defined for component definition {self.name}")
-        n_port_model = GrpcNPortComponentModel.create(name=name)
+        n_port_model = CoreNPortComponentModel.create(name=name)
         n_port_model.reference_file = fpath
         self.core.add_component_model(n_port_model)
         return n_port_model
 
-    def get_properties(self):
+    def get_properties(self) -> dict:
         data = {}
         temp = []
         for i in self.component_pins:
@@ -312,5 +316,5 @@ class ComponentDef:
         pin_order = kwargs.get("pin_order")
         if pin_order:
             old = {i.name: i for i in self.component_pins}
-            temp = [old[str(i)] for i in pin_order]
+            temp = [old[str(i)].core for i in pin_order]
             self.core.reorder_pins(temp)

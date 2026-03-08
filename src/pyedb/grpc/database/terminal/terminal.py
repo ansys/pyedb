@@ -24,38 +24,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
 from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
+import warnings
 
-from ansys.edb.core.terminal.edge_terminal import EdgeType as GrpcEdgeType
+from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
-    BoundaryType as GrpcBoundaryType,
-    TerminalType as GrpcTerminalType,
+    BoundaryType as CoreBoundaryType,
+    TerminalType as CoreTerminalType,
 )
 
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
-
-mapping_boundary_type = {
-    "port": GrpcBoundaryType.PORT,
-    "dc_terminal": GrpcBoundaryType.DC_TERMINAL,
-    "voltage_probe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "voltage_source": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "current_source": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlc": GrpcBoundaryType.RLC,
-    "pec": GrpcBoundaryType.PEC,
-    "portboundary": GrpcBoundaryType.PORT,
-    "kdcterminal": GrpcBoundaryType.DC_TERMINAL,
-    "kvoltageprobe": GrpcBoundaryType.VOLTAGE_PROBE,
-    "kvoltagesource": GrpcBoundaryType.VOLTAGE_SOURCE,
-    "kcurrentsource": GrpcBoundaryType.CURRENT_SOURCE,
-    "rlcboundary": GrpcBoundaryType.RLC,
-    "pecboundary": GrpcBoundaryType.PEC,
-}
 
 
 class Terminal(ConnObj):
@@ -64,14 +49,45 @@ class Terminal(ConnObj):
         self.core = core
         self._reference_object = None
 
-        self._terminal_type_mapping = {
-            "edge": GrpcTerminalType.EDGE,
-            "point": GrpcTerminalType.POINT,
-            "terminal_instance": GrpcTerminalType.TERM_INST,
-            "padstack_instance": GrpcTerminalType.PADSTACK_INST,
-            "bundle": GrpcTerminalType.BUNDLE,
-            "pin_group": GrpcTerminalType.PIN_GROUP,
+        self.__terminal_type_mapping = {
+            "invalid": None,
+            "edge": CoreTerminalType.EDGE,
+            "point": CoreTerminalType.POINT,
+            "terminal_instance": CoreTerminalType.TERM_INST,
+            "padstack_inst": CoreTerminalType.PADSTACK_INST,
+            "bundle": CoreTerminalType.BUNDLE,
+            "pin_group": CoreTerminalType.PIN_GROUP,
         }
+        self.__boundary_type_mapping = {
+            "port": CoreBoundaryType.PORT,
+            "dc_terminal": CoreBoundaryType.DC_TERMINAL,
+            "voltage_probe": CoreBoundaryType.VOLTAGE_PROBE,
+            "voltage_source": CoreBoundaryType.VOLTAGE_SOURCE,
+            "current_source": CoreBoundaryType.CURRENT_SOURCE,
+            "rlc": CoreBoundaryType.RLC,
+            "pec": CoreBoundaryType.PEC,
+            "portboundary": CoreBoundaryType.PORT,
+            "kdcterminal": CoreBoundaryType.DC_TERMINAL,
+            "kvoltageprobe": CoreBoundaryType.VOLTAGE_PROBE,
+            "kvoltagesource": CoreBoundaryType.VOLTAGE_SOURCE,
+            "kcurrentsource": CoreBoundaryType.CURRENT_SOURCE,
+            "rlcboundary": CoreBoundaryType.RLC,
+            "pecboundary": CoreBoundaryType.PEC,
+        }
+
+    @property
+    def net(self):
+        """Terminal net.
+
+        Returns
+        -------
+        :class:`Net <pyedb.grpc.database.net.net.Net>`
+            Terminal Net object.
+
+        """
+        from pyedb.grpc.database.net.net import Net
+
+        return Net(self._pedb, self.core.net)
 
     @property
     def port_post_processing_prop(self):
@@ -104,6 +120,58 @@ class Terminal(ConnObj):
             p["Radial Extent Factor"] = ""
             p["PEC Launch Width"] = ""
         return p
+
+    @property
+    def horizontal_extent_factor(self) -> float:
+        """Horizontal extent factor.
+
+        Returns
+        -------
+        float
+            Extent value.
+        """
+        return self._hfss_port_property["Horizontal Extent Factor"]
+
+    @horizontal_extent_factor.setter
+    def horizontal_extent_factor(self, value):
+        p = self._hfss_port_property
+        p["Horizontal Extent Factor"] = value
+        self._hfss_port_property = p
+
+    @property
+    def vertical_extent_factor(self) -> float:
+        """Vertical extent factor.
+
+        Returns
+        -------
+        float
+            Vertical extent value.
+
+        """
+        return self._hfss_port_property["Vertical Extent Factor"]
+
+    @vertical_extent_factor.setter
+    def vertical_extent_factor(self, value):
+        p = self._hfss_port_property
+        p["Vertical Extent Factor"] = value
+        self._hfss_port_property = p
+
+    @property
+    def pec_launch_width(self) -> float:
+        """Launch width for the printed electronic component (PEC).
+
+        Returns
+        -------
+        float
+            Pec launch width value.
+        """
+        return self._hfss_port_property["PEC Launch Width"]
+
+    @pec_launch_width.setter
+    def pec_launch_width(self, value):
+        p = self._hfss_port_property
+        p["PEC Launch Width"] = value
+        self._hfss_port_property = p
 
     @property
     def reference_layer(self):
@@ -181,7 +249,7 @@ class Terminal(ConnObj):
             self.core.net.name = val
 
     @property
-    def terminal_type(self) -> str:
+    def terminal_type(self) -> str | None:
         """Terminal Type. Accepted values for setter: `"edge"`, `"point"`, `"terminal_instance"`,
         `"padstack_instance"`, `"bundle_terminal"`, `"pin_group"`.
 
@@ -189,11 +257,19 @@ class Terminal(ConnObj):
         -------
         str
         """
-        return self.core.type.name.lower()
+        return TerminalTypeMapper.get_grpc(self.core.type.name)
 
     @terminal_type.setter
     def terminal_type(self, value):
-        self.core.type = self._terminal_type_mapping[value]
+        if isinstance(value, CoreTerminalType):
+            self.core.type = value
+        else:
+            value = TerminalTypeMapper.get_grpc(value)
+            if isinstance(value, str):
+                value = self.__terminal_type_mapping.get(value, None)
+            if not isinstance(value, CoreTerminalType):
+                raise ValueError("Value must be a string or BoundaryType enum.")
+            self.core.type = value
 
     @property
     def boundary_type(self) -> str:
@@ -204,15 +280,19 @@ class Terminal(ConnObj):
         str
             port, pec, rlc, current_source, voltage_source, nexxim_ground, nexxim_pPort, dc_terminal, voltage_probe.
         """
-        return self.core.boundary_type.name.lower()
+        return BoundaryTypeMapper.get_grpc(self.core.boundary_type.name)
 
     @boundary_type.setter
     def boundary_type(self, value):
-        if isinstance(value, str):
-            value = mapping_boundary_type.get(value.lower(), None)
-        if not isinstance(value, GrpcBoundaryType):
-            raise ValueError("Value must be a string or BoundaryType enum.")
-        self.core.boundary_type = value
+        if isinstance(value, CoreBoundaryType):
+            self.core.boundary_type = value
+        else:
+            value = BoundaryTypeMapper.get_grpc(value)
+            if isinstance(value, str):
+                value = self.__boundary_type_mapping.get(value, None)
+            if not isinstance(value, CoreBoundaryType):
+                raise ValueError("Value must be a string or BoundaryType enum.")
+            self.core.boundary_type = value
 
     @property
     def source_amplitude(self) -> float:
@@ -288,7 +368,7 @@ class Terminal(ConnObj):
 
     @impedance.setter
     def impedance(self, value):
-        self.core.impedance = Value(value)
+        self.core.impedance = self._pedb._value_setter(value)
 
     @property
     def reference_object(self) -> any:
@@ -304,7 +384,7 @@ class Terminal(ConnObj):
             if self.terminal_type == "edge":
                 edges = self.core.edges
                 edge_type = edges[0].type
-                if edge_type == GrpcEdgeType.PADSTACK:
+                if edge_type == CoreEdgeType.PADSTACK:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
                     self._reference_object = self.get_edge_terminal_reference_primitive()
@@ -370,14 +450,14 @@ class Terminal(ConnObj):
         """
 
         ref_term = self.core.reference_terminal
-        if self.core.type == GrpcTerminalType.PIN_GROUP:
+        if self.core.type == CoreTerminalType.PIN_GROUP:
             padstack_instance = self.core.pin_group.pins[0]
             pingroup = ref_term.pin_group
             ref_pins = pingroup.pins
             return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
-        elif self.core.type == GrpcTerminalType.PADSTACK_INST:
+        elif self.core.type == CoreTerminalType.PADSTACK_INST:
             _, padstack_instance, _ = self.core.get_parameters()
-            if ref_term.type == GrpcTerminalType.PIN_GROUP:
+            if ref_term.type == CoreTerminalType.PIN_GROUP:
                 pingroup = ref_term.pin_group
                 ref_pins = pingroup.pins
                 return self._get_closest_pin(padstack_instance, ref_pins, gnd_net_name_preference)
@@ -498,7 +578,7 @@ class Terminal(ConnObj):
 
     @magnitude.setter
     def magnitude(self, value):
-        self.core.source_amplitude = Value(value)
+        self.core.source_amplitude = self._pedb._value_setter(value)
 
     @property
     def phase(self) -> float:
@@ -513,21 +593,17 @@ class Terminal(ConnObj):
 
     @phase.setter
     def phase(self, value):
-        self.core.source_phase = Value(value)
+        self.core.source_phase = self._pedb._value_setter(value)
 
     @property
     def terminal_to_ground(self):
-        return self.core.term_to_ground.name.lower()
+        return SourceTermMapper.get_grpc(self.core.term_to_ground.name)
 
     @terminal_to_ground.setter
     def terminal_to_ground(self, value):
-        mapping = {
-            "kNoGround": "no_ground",
-            "kNegative": "negative",
-            "kPositive": "positive",
-        }
-        key = mapping.get(value, value)
-        self.core.term_to_ground = getattr(self.core.term_to_ground, key.upper())
+        map_val = SourceTermMapper.get_grpc(value)
+
+        self.core.term_to_ground = getattr(self.core.term_to_ground, map_val.upper())
 
     @property
     def reference_terminal(self):
@@ -558,3 +634,53 @@ class Terminal(ConnObj):
     @name.setter
     def name(self, value):
         self.core.name = value
+
+    @property
+    def is_circuit_port(self) -> bool:
+        """Whether the terminal is a circuit port.
+
+        Returns
+        -------
+        bool
+
+        """
+        if hasattr(self.core, "is_circuit_port"):
+            return self.core.is_circuit_port
+        return False
+
+    @is_circuit_port.setter
+    def is_circuit_port(self, value):
+        if hasattr(self.core, "is_circuit_port"):
+            self.core.is_circuit_port = value
+        else:
+            self._pedb.logger.warning("Terminal does not support circuit port property.")
+
+    @property
+    def is_circuit(self) -> bool:
+        """Check if the terminal is a circuit terminal.
+
+        .. deprecated:: 0.70.0
+            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+
+        Returns
+        -------
+        bool
+            True if the terminal is a circuit terminal, False otherwise.
+        """
+        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
+        return self.is_circuit_port
+
+    @is_circuit.setter
+    def is_circuit(self, value: bool):
+        """Set whether the terminal is a circuit terminal.
+
+        .. deprecated:: 0.70.0
+            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+
+        Parameters
+        ----------
+        value : bool
+            True to set the terminal as a circuit terminal, False otherwise.
+        """
+        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
+        self.is_circuit_port = value

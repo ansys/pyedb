@@ -23,34 +23,34 @@
 import math
 from typing import Any
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
-from ansys.edb.core.geometry.point_data import PointData as GrpcPointData
-from ansys.edb.core.layer.layer import LayerType as GrpcLayerType
-from ansys.edb.core.primitive.circle import Circle as GrpcCircle
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.layer.layer import LayerType as CoreLayerType
+from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 layer_type_mapping = {
-    "conducting": GrpcLayerType.CONDUCTING_LAYER,
-    "air_lines": GrpcLayerType.AIRLINES_LAYER,
-    "errors": GrpcLayerType.ERRORS_LAYER,
-    "symbol": GrpcLayerType.SYMBOL_LAYER,
-    "measure": GrpcLayerType.MEASURE_LAYER,
-    "assembly": GrpcLayerType.ASSEMBLY_LAYER,
-    "silkscreen": GrpcLayerType.SILKSCREEN_LAYER,
-    "solder_mask": GrpcLayerType.SOLDER_MASK_LAYER,
-    "solder_paste": GrpcLayerType.SOLDER_PASTE_LAYER,
-    "glue": GrpcLayerType.GLUE_LAYER,
-    "wirebond": GrpcLayerType.WIREBOND_LAYER,
-    "user": GrpcLayerType.USER_LAYER,
-    "siwave_hfss_solver_regions": GrpcLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
-    "postprocessing": GrpcLayerType.POST_PROCESSING_LAYER,
-    "outline": GrpcLayerType.OUTLINE_LAYER,
-    "layer_types_count": GrpcLayerType.LAYER_TYPES_COUNT,
-    "undefined_layer_type": GrpcLayerType.UNDEFINED_LAYER_TYPE,
+    "conducting": CoreLayerType.CONDUCTING_LAYER,
+    "air_lines": CoreLayerType.AIRLINES_LAYER,
+    "errors": CoreLayerType.ERRORS_LAYER,
+    "symbol": CoreLayerType.SYMBOL_LAYER,
+    "measure": CoreLayerType.MEASURE_LAYER,
+    "assembly": CoreLayerType.ASSEMBLY_LAYER,
+    "silkscreen": CoreLayerType.SILKSCREEN_LAYER,
+    "solder_mask": CoreLayerType.SOLDER_MASK_LAYER,
+    "solder_paste": CoreLayerType.SOLDER_PASTE_LAYER,
+    "glue": CoreLayerType.GLUE_LAYER,
+    "wirebond": CoreLayerType.WIREBOND_LAYER,
+    "user": CoreLayerType.USER_LAYER,
+    "siwave_hfss_solver_regions": CoreLayerType.SIWAVE_HFSS_SOLVER_REGIONS,
+    "postprocessing": CoreLayerType.POST_PROCESSING_LAYER,
+    "outline": CoreLayerType.OUTLINE_LAYER,
+    "layer_types_count": CoreLayerType.LAYER_TYPES_COUNT,
+    "undefined_layer_type": CoreLayerType.UNDEFINED_LAYER_TYPE,
 }
 
 
@@ -133,7 +133,7 @@ class Primitive:
 
         """
         if not self._object_instance:
-            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self, None)
+            self._object_instance = self.core.layout.layout_instance.get_layout_obj_instance_in_context(self.core, None)
         return self._object_instance
 
     @property
@@ -152,7 +152,7 @@ class Primitive:
     @net_name.setter
     def net_name(self, value):
         if value in self._pedb.nets.nets:
-            self.core.net = self._pedb.nets.nets[value]
+            self.core.net = self._pedb.nets.nets[value].core
 
     @property
     def layer_name(self) -> str:
@@ -256,7 +256,7 @@ class Primitive:
             Name.
         """
         try:
-            name = self.core.get_product_property(GrpcProductIdType.DESIGNER, 1)
+            name = self.core.get_product_property(CoreProductIdType.DESIGNER, 1)
             name = name.strip("'")
         except:
             name = ""
@@ -277,7 +277,7 @@ class Primitive:
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self.core.set_product_property(GrpcProductIdType.DESIGNER, 1, value)
+        self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
     def get_connected_objects(self):
         """Get connected objects.
@@ -382,7 +382,7 @@ class Primitive:
         if self.type == "path":
             polygon = self._pedb.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
             self.core.delete()
-            self._pedb.modeler._reload_all()
+            self._pedb.modeler.clear_cache()
             return polygon
         else:
             return False
@@ -437,7 +437,7 @@ class Primitive:
 
         """
         if isinstance(point, (list, tuple)):
-            point = GrpcPointData(point)
+            point = CorePointData(point)
 
         p0 = self.core.cast().polygon_data.closest_point(point)
         return [Value(p0.x), Value(p0.y)]
@@ -512,10 +512,11 @@ class Primitive:
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
         """
-        if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = [Value(pt) for pt in vector]
-            self.core.cast().polygon_data = self.polygon_data.move(_vector)
-            return True
+        if hasattr(self, "polygon_data"):
+            if vector and isinstance(vector, list) and len(vector) == 2:
+                _vector = [self._pedb._value_setter(pt) for pt in vector]
+                self.core.cast().polygon_data = self.core.cast().polygon_data.move(_vector)
+                return True
         return False
 
     def scale(self, factor, center=None) -> bool:
@@ -538,10 +539,10 @@ class Primitive:
             if not center:
                 center = self.core.cast().polygon_data.bounding_circle()[0]
             elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData([Value(center[0]), Value(center[1])])
+                center = CorePointData([self._pedb._value_setter(center[0]), self._pedb._value_setter(center[1])])
             else:
                 self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
-            self.cast().polygon_data = self.polygon_data.scale(factor, center)
+            self.core.cast().polygon_data = self.polygon_data.scale(factor, center)
             return True
         return False
 
@@ -592,7 +593,7 @@ class Primitive:
         for prim in primitives:
             if isinstance(prim, Primitive):
                 prim.core.delete()
-        self._pedb.modeler._reload_all()
+        self._pedb.modeler.clear_cache()
         return new_polys
 
     def intersect(self, primitives) -> list[Any]:
@@ -618,7 +619,7 @@ class Primitive:
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.polygon_data)
             else:
-                if isinstance(prim, GrpcCircle):
+                if isinstance(prim, CoreCircle):
                     primi_polys.append(prim.polygon_data)
                 else:
                     primi_polys.append(prim.polygon_data)
@@ -732,7 +733,7 @@ class Primitive:
             [x, y].
         """
 
-        if isinstance(point, GrpcPointData):
+        if isinstance(point, CorePointData):
             point = [Value(point.x), Value(point.y)]
         dist = 1e12
         out = None
@@ -820,7 +821,7 @@ class Primitive:
 
     @property
     def edb_uid(self):
-        return self.core.edb_uid
+        return self.core.edb_uid  # grpc has introduced id and edb_uid while dotnet got only edb_uid equivalent.
 
     @property
     def primitive_type(self):
@@ -904,43 +905,6 @@ class Primitive:
             offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
         )
 
-    def scale(self, factor, center=None) -> bool:
-        """Scales the polygon relative to a center point by a factor.
-
-        Parameters
-        ----------
-        factor : float
-            Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
-
-        Returns
-        -------
-        bool
-           ``True`` when successful, ``False`` when failed.
-        """
-        if not isinstance(factor, str):
-            factor = float(factor)
-            from ansys.edb.core.geometry.polygon_data import (
-                PolygonData as GrpcPolygonData,
-            )
-
-            polygon_data = GrpcPolygonData(points=self.core.cast().polygon_data.points)
-            if not center:
-                center = polygon_data.bounding_circle()[0]
-                if center:
-                    polygon_data.scale(factor, center)
-                    self.core.cast().polygon_data = polygon_data
-                    return True
-                else:
-                    self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
-            elif isinstance(center, list) and len(center) == 2:
-                center = GrpcPointData(center)
-                polygon_data.scale(factor, center)
-                self.core.cast().polygon_data = polygon_data
-                return True
-        return False
-
     def plot(self, plot_net=False, show=True, save_plot=None):
         """Plot the current polygon on matplotlib.
 
@@ -958,9 +922,21 @@ class Primitive:
         (ax, fig)
             Matplotlib ax and figures.
         """
-        import matplotlib.pyplot as plt
-        from shapely.geometry import Polygon
-        from shapely.plotting import plot_polygon
+        try:
+            import matplotlib.pyplot as plt
+        except ImportError:
+            raise ImportError(
+                "Matplotlib library is required for plotting. "
+                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+            )
+        try:
+            from shapely.geometry import Polygon
+            from shapely.plotting import plot_polygon
+        except ImportError:
+            raise ImportError(
+                "Shapely library is required for plotting. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
+            )
 
         dpi = 100.0
         figsize = (2000 / dpi, 1000 / dpi)
@@ -991,3 +967,7 @@ class Primitive:
         elif show:
             plt.show()
         return ax, fig
+
+    def delete(self):
+        """Delete the primitive."""
+        self.core.delete()

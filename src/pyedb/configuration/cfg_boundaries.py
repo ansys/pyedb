@@ -19,9 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Any, Optional, Union
+from typing import Union
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 
 
 class CfgBase(BaseModel):
@@ -31,17 +31,16 @@ class CfgBase(BaseModel):
     }
 
 
-class PaddingData(CfgBase):
-    size: Union[float, str]
-    is_multiple: bool
-
-
 from typing import Any, Optional
 
 from pydantic import Field
 
 
 class CfgBoundaries(CfgBase):
+    class PaddingData(CfgBase):
+        size: Union[float, str]
+        is_multiple: bool
+
     use_open_region: Optional[bool] = Field(default=None, description="Whether to enable the use of an open region")
     open_region_type: Optional[str] = Field(
         default=None, description="Type of open region to use; e.g., `radiation` or `pml` as defined."
@@ -60,7 +59,7 @@ class CfgBoundaries(CfgBase):
             "This parameter influences how thick the PML layer is calculated. "
         ),
     )
-    radiation_level: Optional[int] = Field(
+    radiation_level: Optional[float] = Field(
         default=None,
         description=(
             "Radiation factor for PML, controlling the relative thickness of the PML boundary. "

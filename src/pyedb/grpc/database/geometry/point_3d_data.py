@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
+from ansys.edb.core.geometry.point3d_data import Point3DData as CorePoint3DData
 
 from pyedb.grpc.database.utility.value import Value
 
@@ -29,7 +29,7 @@ class Point3DData:
     """Point 3D Data."""
 
     def __init__(self, x, y, z):
-        self.core = GrpcPoint3DData.__init__(x, y, z)
+        self.core = CorePoint3DData.__init__(x, y, z)
 
     @property
     def x(self) -> float:
@@ -45,7 +45,7 @@ class Point3DData:
 
     @x.setter
     def x(self, value):
-        self.core.x = Value(value)
+        self.core.x = self._pedb._value_setter(value)
 
     @property
     def y(self) -> float:
@@ -61,7 +61,7 @@ class Point3DData:
 
     @y.setter
     def y(self, value):
-        self.core.y = Value(value)
+        self.core.y = self._pedb._value_setter(value)
 
     @property
     def z(self) -> float:
@@ -77,4 +77,4 @@ class Point3DData:
 
     @z.setter
     def z(self, value):
-        self.core.z = Value(value)
+        self.core.z = self._pedb._value_setter(value)

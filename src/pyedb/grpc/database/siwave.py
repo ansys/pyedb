@@ -26,15 +26,15 @@ This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiw
 """
 
 import os
-from typing import Any, Dict, Optional, Union
+from typing import TYPE_CHECKING, Any, Dict, Optional, Union, cast
+
+from pyedb.grpc.database.ports.ports import BundleWavePort, CircuitPort, CoaxPort, GapPort, WavePort
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
 import warnings
 
-from ansys.edb.core.database import ProductIdType as GrpcProductIdType
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    Distribution as GrpcDistribution,
-    FrequencyData as GrpcFrequencyData,
-    SweepData as GrpcSweepData,
-)
+from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
     SIWaveCPASimulationSetup,
@@ -91,16 +91,35 @@ class Siwave(object):
         return self._pedb.active_db
 
     @property
-    def excitations(self) -> Dict[str, Any]:
-        """Excitation sources in the layout.
+    def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
 
-        Examples
-        --------
-        >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
-        >>> excitations = edbapp.siwave.excitations
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
         """
-        return self._pedb.excitations
+        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
+        return self.ports
+
+    @property
+    def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
+        """Get all ports.
+
+        Returns
+        -------
+        port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
+                   :class:`pyedb.grpc.database.ports.ports.ports.WavePort`,
+                   :class:`pyedb.grpc.database.ports.ports.CircuitPort`,
+                   :class:`pyedb.grpc.database.ports.ports.CoaxPort`,
+                   :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
+
+        """
+        return self._pedb.ports
 
     @property
     def sources(self) -> Dict[str, Any]:
@@ -143,10 +162,7 @@ class Siwave(object):
         >>> for name, group in pin_groups.items():
         ...     print(f"Pin group {name} has {len(group.pins)} pins")
         """
-        _pingroups = {}
-        for el in self._pedb.layout.pin_groups:
-            _pingroups[el.name] = el
-        return _pingroups
+        return self._pedb.excitation_manager.pin_groups
 
     def _create_terminal_on_pins(self, source):
         """Create a terminal on pins.
@@ -165,7 +181,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations._create_terminal_on_pins` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation._create_terminal_on_pins(source)
+        return self._pedb.excitation_manager._create_terminal_on_pins(source)
 
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
@@ -194,7 +210,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
+        return self._pedb.excitation_manager.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
     def create_port_between_pin_and_layer(
         self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
@@ -227,7 +243,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_port_between_pin_and_layer(
+        return self._pedb.excitation_manager.create_port_between_pin_and_layer(
             component_name, pins_name, layer_name, reference_net, impedance
         )
 
@@ -261,7 +277,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_voltage_source_on_pin(
+        return self._pedb.excitation_manager.create_voltage_source_on_pin(
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
@@ -294,7 +310,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_current_source_on_pin(
+        return self._pedb.excitation_manager.create_current_source_on_pin(
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
@@ -325,7 +341,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_resistor_on_pin` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
+        return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
     def _check_gnd(self, component_name):
         """Check ground reference.
@@ -337,7 +353,7 @@ class Siwave(object):
             "`_check_gnd` is deprecated and is now located here `pyedb.grpc.core.excitations._check_gnd` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation._check_gnd(component_name)
+        return self._pedb.excitation_manager._check_gnd(component_name)
 
     def create_circuit_port_on_net(
         self,
@@ -377,10 +393,10 @@ class Siwave(object):
         """
         warnings.warn(
             "`create_circuit_port_on_net` is deprecated and is now located here "
-            "`pyedb.grpc.core.source_excitation.create_circuit_port_on_net` instead.",
+            "`pyedb.grpc.core.excitation_manager.create_circuit_port_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_circuit_port_on_net(
+        return self._pedb.excitation_manager.create_circuit_port_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -431,7 +447,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_voltage_source_on_net(
+        return self._pedb.excitation_manager.create_voltage_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -483,7 +499,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_net` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_current_source_on_net(
+        return self._pedb.excitation_manager.create_current_source_on_net(
             positive_component_name,
             positive_net_name,
             negative_component_name,
@@ -523,7 +539,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_dc_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_dc_terminal(component_name, net_name, source_name)
+        return self._pedb.excitation_manager.create_dc_terminal(component_name, net_name, source_name)
 
     def create_exec_file(
         self,
@@ -532,7 +548,7 @@ class Siwave(object):
         add_syz: bool = False,
         export_touchstone: bool = False,
         touchstone_file_path: str = "",
-    ) -> bool:
+    ) -> str:
         """Create an executable file.
 
         Parameters
@@ -551,8 +567,8 @@ class Siwave(object):
 
         Returns
         -------
-        bool
-            ``True`` if file was created, ``False`` otherwise.
+        str
+            Path to the created exec file.
 
         Examples
         --------
@@ -566,7 +582,9 @@ class Siwave(object):
         ... )
         """
         workdir = os.path.dirname(self._pedb.edbpath)
-        file_name = os.path.join(workdir, os.path.splitext(os.path.basename(self._pedb.edbpath))[0] + ".exec")
+        file_name: str = cast(
+            str, os.path.join(workdir, os.path.splitext(os.path.basename(self._pedb.edbpath))[0] + ".exec")
+        )
         if os.path.isfile(file_name):
             os.remove(file_name)
         with open(file_name, "w") as f:
@@ -586,18 +604,20 @@ class Siwave(object):
                     f.write('ExportTouchstone "{}"\n'.format(touchstone_file_path))
             f.write("SaveSiw\n")
 
-        return file_name
+        return str(file_name)
 
     def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
-        if not name:
-            from pyedb.generic.general_methods import generate_unique_name
+        """Add a SIwave CPA analysis to EDB.
 
-            if not siwave_cpa_setup_class:
-                name = generate_unique_name("cpa_setup")
-            else:
-                name = siwave_cpa_setup_class.name
-        cpa_setup = SIWaveCPASimulationSetup(self._pedb, name=name, siwave_cpa_setup_class=siwave_cpa_setup_class)
-        return cpa_setup
+        .. deprecated:: pyedb 0.77.3
+            Use :func:`pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SiwaveCPASimulationSetup.create`
+            instead.
+
+        """
+        warnings.warn(
+            "`add_cpa_analysis` is deprecated. Use `SiwaveCPASimulationSetup.create` instead.", DeprecationWarning
+        )
+        return self._pedb.simulation_setups.create_siwave_cpa_setup(name, siwave_cpa_config=siwave_cpa_setup_class)
 
     def add_siwave_syz_analysis(
         self,
@@ -607,7 +627,7 @@ class Siwave(object):
         stop_freq: Union[str, float] = 1e9,
         step_freq: Union[str, float, int] = 1e6,
         discrete_sweep: bool = False,
-    ) -> Any:
+    ) -> "SiwaveSimulationSetup":
         """Add a SIwave AC analysis to EDB.
 
         Parameters
@@ -650,37 +670,15 @@ class Siwave(object):
         ...     step_freq=10,  # 10 points per decade
         ... )
         """
-        setup = self._pedb.create_siwave_syz_setup()
-        start_freq = self._pedb.number_with_units(start_freq, "Hz")
-        stop_freq = self._pedb.number_with_units(stop_freq, "Hz")
-        setup.settings.general.si_slider_pos = accuracy_level
-        if distribution.lower() == "linear":
-            distribution = "LIN"
-        elif distribution.lower() == "linear_count":
-            distribution = "LINC"
-        elif distribution.lower() == "exponential":
-            distribution = "ESTP"
-        elif distribution.lower() == "decade_count":
-            distribution = "DEC"
-        elif distribution.lower() == "octave_count":
-            distribution = "OCT"
-        else:
-            distribution = "LIN"
-        sweep_name = f"sweep_{len(setup.sweep_data) + 1}"
-        sweep_data = [
-            GrpcSweepData(
-                name=sweep_name,
-                frequency_data=GrpcFrequencyData(
-                    distribution=GrpcDistribution[distribution], start_f=start_freq, end_f=stop_freq, step=step_freq
-                ),
-            )
-        ]
-        if discrete_sweep:
-            sweep_data[0].type = sweep_data[0].type.DISCRETE_SWEEP
-        for sweep in setup.sweep_data:
-            sweep_data.append(sweep)
-        setup.sweep_data = sweep_data
+        setup = self._pedb.simulation_setups.create_siwave_setup(
+            distribution=distribution,
+            start_freq=start_freq,
+            stop_freq=stop_freq,
+            step_freq=step_freq,
+            discrete_sweep=discrete_sweep,
+        )
         self.create_exec_file(add_ac=True)
+        setup.settings.accuracy_level = accuracy_level
         return setup
 
     def add_siwave_dc_analysis(self, name: Optional[str] = None) -> Any:
@@ -727,7 +725,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_pin_group_terminal` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation._create_pin_group_terminal2(source)
+        return self._pedb.excitation_manager._create_pin_group_terminal2(source)
 
     def create_rlc_component(
         self,
@@ -863,7 +861,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_current_source_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_current_source_on_pin_group(
+        return self._pedb.excitation_manager.create_current_source_on_pin_group(
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name
         )
 
@@ -900,7 +898,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_voltage_source_on_pin_group(
+        return self._pedb.excitation_manager.create_voltage_source_on_pin_group(
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name, impedance
         )
 
@@ -932,7 +930,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_voltage_probe_on_pin_group(
+        return self._pedb.excitation_manager.create_voltage_probe_on_pin_group(
             probe_name, pos_pin_group_name, neg_pin_group_name, impedance=impedance
         )
 
@@ -963,7 +961,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.create_circuit_port_on_pin_group(
+        return self._pedb.excitation_manager.create_circuit_port_on_pin_group(
             pos_pin_group_name, neg_pin_group_name, impedance, name
         )
 
@@ -1004,7 +1002,7 @@ class Siwave(object):
             "`pyedb.grpc.core.excitations.place_voltage_probe` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.place_voltage_probe(
+        return self._pedb.excitation_manager.place_voltage_probe(
             name,
             positive_net_name,
             positive_location,
@@ -1040,18 +1038,18 @@ class Siwave(object):
         If ``True``, only resistors are active in Icepak simulation and power dissipation
         is calculated from DC results.
         """
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 422).value
+        return self._pedb.active_cell.get_product_property(CoreProductIdType.SIWAVE, 422).value
 
     @icepak_use_minimal_comp_defaults.setter
     def icepak_use_minimal_comp_defaults(self, value):
         value = "True" if bool(value) else ""
-        self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 422, value)
+        self._pedb.active_cell.set_product_property(CoreProductIdType.SIWAVE, 422, value)
 
     @property
     def icepak_component_file(self) -> str:
         """Icepak component file path."""
-        return self._pedb.active_cell.get_product_property(GrpcProductIdType.SIWAVE, 420).value
+        return self._pedb.active_cell.get_product_property(CoreProductIdType.SIWAVE, 420).value
 
     @icepak_component_file.setter
     def icepak_component_file(self, value):
-        self._pedb.active_cell.set_product_property(GrpcProductIdType.SIWAVE, 420, value)
+        self._pedb.active_cell.set_product_property(CoreProductIdType.SIWAVE, 420, value)

@@ -21,9 +21,9 @@
 # SOFTWARE.
 
 from ansys.edb.core.definition.bondwire_def import (
-    ApdBondwireDef as GrpcApdBondwireDef,
-    Jedec4BondwireDef as GrpcJedec4BondwireDef,
-    Jedec5BondwireDef as GrpcJedec5BondwireDef,
+    ApdBondwireDef as CoreApdBondwireDef,
+    Jedec4BondwireDef as CoreJedec4BondwireDef,
+    Jedec5BondwireDef as CoreJedec5BondwireDef,
 )
 
 
@@ -101,7 +101,7 @@ class Jedec4BondwireDef(BondwireDef):
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec4BondwireDef`
             The created JEDEC 4 bondwire definition.
         """
-        grpc_bondwire_def = GrpcJedec4BondwireDef.create(edb._db, name)
+        grpc_bondwire_def = CoreJedec4BondwireDef.create(edb._db, name)
         return cls(edb, grpc_bondwire_def)
 
     @staticmethod
@@ -120,9 +120,9 @@ class Jedec4BondwireDef(BondwireDef):
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec4BondwireDef` or None
             The found JEDEC 4 bondwire definition or None if not found.
         """
-        grpc_bondwire_def = GrpcJedec4BondwireDef.find_by_name(edb._db, name)
-        if grpc_bondwire_def:
-            return Jedec4BondwireDef(edb, grpc_bondwire_def)
+        core_bondwire_def = CoreJedec4BondwireDef.find_by_name(edb._db, name)
+        if core_bondwire_def:
+            return Jedec4BondwireDef(edb, core_bondwire_def)
         return None
 
 
@@ -150,8 +150,8 @@ class Jedec5BondwireDef(BondwireDef):
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef`
             The created JEDEC 5 bondwire definition.
         """
-        grpc_bondwire_def = GrpcJedec5BondwireDef.create(edb._db, name)
-        return cls(edb, grpc_bondwire_def)
+        core_bondwire_def = CoreJedec5BondwireDef.create(edb._db, name)
+        return cls(edb, core_bondwire_def)
 
     @staticmethod
     def find_by_name(edb, name):
@@ -169,7 +169,7 @@ class Jedec5BondwireDef(BondwireDef):
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef` or None
             The found JEDEC 5 bondwire definition or None if not found.
         """
-        grpc_bondwire_def = GrpcJedec5BondwireDef.find_by_name(edb._db, name)
+        grpc_bondwire_def = CoreJedec5BondwireDef.find_by_name(edb._db, name)
         if grpc_bondwire_def:
             return Jedec5BondwireDef(edb, grpc_bondwire_def)
         return None
@@ -199,7 +199,7 @@ class ApdBondwireDef(BondwireDef):
         :class:`pyedb.grpc.database.definition.wirebond_def.ApdBondwireDef`
             The created Apd bondwire definition.
         """
-        grpc_bondwire_def = GrpcApdBondwireDef.create(edb._db, name)
+        grpc_bondwire_def = CoreApdBondwireDef.create(edb._db, name)
         return cls(edb, grpc_bondwire_def)
 
     @staticmethod
@@ -218,7 +218,7 @@ class ApdBondwireDef(BondwireDef):
         :class:`pyedb.grpc.database.definition.wirebond_def.ApdBondwireDef` or None
             The found Apd bondwire definition or None if not found.
         """
-        grpc_bondwire_def = GrpcApdBondwireDef.find_by_name(edb._db, name)
+        grpc_bondwire_def = CoreApdBondwireDef.find_by_name(edb._db, name)
         if grpc_bondwire_def:
             return ApdBondwireDef(edb, grpc_bondwire_def)
         return None

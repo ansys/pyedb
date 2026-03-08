@@ -20,22 +20,28 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 from pathlib import Path
+import secrets
 
 import pytest
 
 from pyedb.xml_parser.xml_parser import XmlParser
-from tests.conftest import example_models_path
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
 class TestClass:
     @pytest.fixture(autouse=True)
-    def init(self, edb_examples, request):
-        edb_examples._create_test_folder(request.node.name)
-        self.xml_file = example_models_path / "unit_test_xml_parser" / "ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
+    def init(self, local_scratch, get_edb_examples, request):
+        """init runs before each test."""
+        temp = Path(local_scratch.path) / f"{request.node.name}_{secrets.token_hex(2)}"
+        temp.mkdir(parents=True)
+        self.edb_examples = get_edb_examples
+        self.edb_examples.test_folder = temp
+        yield
+        del temp
+        del self.edb_examples
 
-    def test_create(self, edb_examples):
+    def test_create(self, get_edb_examples):
         xml_parser = XmlParser()
         xml_stackup = xml_parser.add_stackup()
         xml_materials = xml_stackup.add_materials()
@@ -70,10 +76,13 @@ class TestClass:
         )
         assert xml_parser.stackup.layers.layer[1].material == "fr4"
 
-        assert Path(xml_parser.to_xml_file(Path(edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
+        assert Path(xml_parser.to_xml_file(Path(get_edb_examples.test_folder) / "test_xml_parser_create.xml")).exists()
 
     def test_load_from_xml(self):
-        xml_parser = XmlParser.load_xml_file(self.xml_file)
+        xml_file = self.edb_examples.copy_test_files_into_local_folder(
+            "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
+        )[0]
+        xml_parser = XmlParser.load_xml_file(str(xml_file))
 
         assert len(xml_parser.stackup.materials.material) == 8
         assert xml_parser.stackup.materials.material[1].name == "copper"
@@ -84,7 +93,10 @@ class TestClass:
     def test_load_from_cfg(self):
         from pyedb.configuration.cfg_data import CfgStackup
 
-        xml_parser1 = XmlParser.load_xml_file(self.xml_file)
+        xml_file = self.edb_examples.copy_test_files_into_local_folder(
+            "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
+        )[0]
+        xml_parser1 = XmlParser.load_xml_file(str(xml_file))
         stackup_data = xml_parser1.stackup.to_dict()
 
         xml_parser2 = XmlParser()

@@ -25,9 +25,9 @@ from __future__ import absolute_import
 
 def layer_cast(pedb, edb_object):
     if edb_object.IsStackupLayer():
-        return StackupLayerEdbClass(pedb, edb_object.Clone(), name=edb_object.GetName())
+        return StackupLayerEdbClass(pedb, edb_object, name=edb_object.GetName())
     else:
-        return LayerEdbClass(pedb, edb_object.Clone(), name=edb_object.GetName())
+        return LayerEdbClass(pedb, edb_object, name=edb_object.GetName())
 
 
 class LayerEdbClass(object):
@@ -285,6 +285,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._material = None
         self._upper_elevation = 0.0
         self._lower_elevation = 0.0
+        self.core = edb_object
 
     def _create(self, layer_type):
         layer_type_edb_name = self._layer_name_mapping[layer_type]

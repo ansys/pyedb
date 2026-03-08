@@ -23,8 +23,8 @@
 from typing import Union
 
 from ansys.edb.core.definition.component_model import (
-    ComponentModel as GrpcComponentModel,
-    NPortComponentModel as GrpcNPortComponentModel,
+    ComponentModel as CoreComponentModel,
+    NPortComponentModel as CoreNPortComponentModel,
 )
 
 
@@ -32,10 +32,10 @@ class ComponentModel:
     """Class managing :class:`ComponentModel <pyedb.grpc.database.definition.component_model.ComponentModel>`."""
 
     def __init__(self, core):
-        self.core = GrpcComponentModel(core.msg)
+        self.core = CoreComponentModel(core.msg)
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the component model is null.
 
         Returns
@@ -47,7 +47,7 @@ class ComponentModel:
         return self.core.is_null
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Get the name of the component model.
 
         Returns
@@ -59,7 +59,7 @@ class ComponentModel:
         return self.core.name
 
     @property
-    def reference_file(self):
+    def reference_file(self) -> str:
         """Get the reference file of the component model.
 
         Returns
@@ -75,7 +75,7 @@ class NPortComponentModel:
     """Class managing :class:`NPortComponentModel <pyedb.grpc.database.definition.component_model.ComponentModel>`"""
 
     def __init__(self, core):
-        self.core = GrpcComponentModel(core.msg)
+        self.core = CoreComponentModel(core.msg)
 
     @classmethod
     def create(cls, name: str) -> "NPortComponentModel":
@@ -92,7 +92,7 @@ class NPortComponentModel:
             The created N-Port component model object.
 
         """
-        return cls(GrpcNPortComponentModel.create(name))
+        return cls(CoreNPortComponentModel.create(name))
 
     @classmethod
     def find_by_id(cls, component_definition, id: int) -> Union[None, "NPortComponentModel"]:
@@ -109,7 +109,7 @@ class NPortComponentModel:
         NPortComponentModel
             N-Port component model that is found, ``None`` otherwise.
         """
-        core_nport_model = GrpcNPortComponentModel.find_by_id(component_definition.core, id)
+        core_nport_model = CoreNPortComponentModel.find_by_id(component_definition.core, id)
         if not core_nport_model.is_null:
             return cls(core_nport_model)
         return None
@@ -130,13 +130,13 @@ class NPortComponentModel:
         NPortComponentModel
             N-Port component model that is found, ``None`` otherwise.
         """
-        core_nport_model = GrpcNPortComponentModel.find_by_name(component_definition.core, name)
+        core_nport_model = CoreNPortComponentModel.find_by_name(component_definition.core, name)
         if not core_nport_model.is_null:
             return cls(core_nport_model)
         return None
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the N-Port component model is null.
 
         Returns
@@ -148,7 +148,7 @@ class NPortComponentModel:
         return self.core.is_null
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Get the name of the N-Port component model.
 
         Returns
@@ -160,7 +160,7 @@ class NPortComponentModel:
         return self.core.name
 
     @property
-    def reference_file(self):
+    def reference_file(self) -> str:
         """Get the reference file of the N-Port component model.
 
         Returns

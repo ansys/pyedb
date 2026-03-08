@@ -27,8 +27,8 @@ from typing import TYPE_CHECKING, Union
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.circle import Circle
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from ansys.edb.core.net.net import Net as GrpcNet
-from ansys.edb.core.primitive.primitive import PrimitiveType as GrpcPrimitiveType
+from ansys.edb.core.net.net import Net as CoreNet
+from ansys.edb.core.primitive.primitive import PrimitiveType as CorePrimitiveType
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.path import Path
@@ -144,15 +144,15 @@ class Net:
         primitives = self.core.primitives
         if not len(self.__primitives) == len(primitives):
             for primitive in primitives:
-                if primitive.primitive_type == GrpcPrimitiveType.PATH:
+                if primitive.primitive_type == CorePrimitiveType.PATH:
                     self.__primitives.append(Path(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.POLYGON:
+                elif primitive.primitive_type == CorePrimitiveType.POLYGON:
                     self.__primitives.append(Polygon(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.CIRCLE:
+                elif primitive.primitive_type == CorePrimitiveType.CIRCLE:
                     self.__primitives.append(Circle(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.RECTANGLE:
+                elif primitive.primitive_type == CorePrimitiveType.RECTANGLE:
                     self.__primitives.append(Rectangle(self._pedb, primitive))
-                elif primitive.primitive_type == GrpcPrimitiveType.BONDWIRE:
+                elif primitive.primitive_type == CorePrimitiveType.BONDWIRE:
                     self.__primitives.append(Bondwire(self._pedb, primitive))
         return self.__primitives
 
@@ -207,7 +207,7 @@ class Net:
         :class:`Net <pyedb.grpc.database.net.net.Net>`
             Newly created net object.
         """
-        return cls(layout._pedb, GrpcNet.create(layout=layout.core, name=name))
+        return cls(layout._pedb, CoreNet.create(layout=layout.core, name=name))
 
     def find_dc_short(self, fix=False) -> list[list[str, str]]:
         """Find DC-shorted nets connected to this net.
@@ -314,5 +314,5 @@ class Net:
             Net found. Check the :obj:`is_null <.Net.is_null>` property
             of the returned net to see if it exists.
         """
-        net = GrpcNet.find_by_name(layout.core, name)
+        net = CoreNet.find_by_name(layout.core, name)
         return Net(layout._pedb, net)

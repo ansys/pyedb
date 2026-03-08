@@ -33,7 +33,7 @@ from pyedb.configuration.cfg_padstacks import CfgPadstacks
 from pyedb.configuration.cfg_pin_groups import CfgPinGroups
 from pyedb.configuration.cfg_ports_sources import CfgPorts, CfgProbes, CfgSources
 from pyedb.configuration.cfg_s_parameter_models import CfgSParameters
-from pyedb.configuration.cfg_setup import CfgHFSSSetup, CfgSIwaveACSetup, CfgSIwaveDCSetup
+from pyedb.configuration.cfg_setup import CfgSetups
 from pyedb.configuration.cfg_spice_models import CfgSpiceModel
 from pyedb.configuration.cfg_stackup import CfgStackup
 from pyedb.configuration.cfg_terminals import CfgTerminals
@@ -68,14 +68,7 @@ class CfgData(object):
 
         self.sources = CfgSources(self._pedb, sources_data=kwargs.get("sources", []))
 
-        for stp in kwargs.get("setups", []):
-            setup_type = stp.get("type", "hfss").lower()
-            if setup_type == "hfss":
-                self.add_hfss_setup(**stp)
-            elif setup_type in ["siwave_ac", "siwave_syz"]:
-                self.add_siwave_ac_setup(**stp)
-            elif setup_type == "siwave_dc":
-                self.add_siwave_dc_setup(**stp)
+        self.setups = CfgSetups.create(setups=kwargs.get("setups", []))
 
         self.stackup = CfgStackup(**kwargs.get("stackup", {}))
 
@@ -94,18 +87,3 @@ class CfgData(object):
         self.variables = CfgVariables(variables=kwargs.get("variables", []))
 
         self.probes = CfgProbes(self._pedb, data=kwargs.get("probes", []))
-
-    def add_hfss_setup(self, **kwargs):
-        hfss_setup = CfgHFSSSetup(**kwargs)
-        self.setups.append(hfss_setup)
-        return hfss_setup
-
-    def add_siwave_ac_setup(self, **kwargs):
-        siwave_ac_setup = CfgSIwaveACSetup(**kwargs)
-        self.setups.append(siwave_ac_setup)
-        return siwave_ac_setup
-
-    def add_siwave_dc_setup(self, **kwargs):
-        siwave_dc_setup = CfgSIwaveDCSetup(**kwargs)
-        self.setups.append(siwave_dc_setup)
-        return siwave_dc_setup

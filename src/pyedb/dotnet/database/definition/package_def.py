@@ -170,15 +170,6 @@ class PackageDef(ObjBase):
         return self._edb_object.SetHeatSink(heatsink._edb_object)
 
     @property
-    def heatsink(self):
-        """Component heatsink.
-
-        ..deprecated:: 0.48.0
-           Use: func:`heat_sink` property instead.
-        """
-        return self.heat_sink
-
-    @property
     def heat_sink(self):
         """Component heatsink."""
         from pyedb.dotnet.database.utilities.heatsink import HeatSink

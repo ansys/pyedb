@@ -29,11 +29,12 @@ import secrets
 import shutil
 import string
 import tempfile
+import time
+from types import TracebackType
 
 import pytest
 
 from pyedb.generic.design_types import Edb
-from pyedb.generic.filesystem import Scratch
 from pyedb.generic.settings import settings
 
 settings.enable_global_log_file = False
@@ -106,114 +107,101 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch: Scratch, grpc=False):
+    def __init__(self, local_scratch: "Scratch", grpc=False):
         self.grpc = grpc
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
         self.test_folder = ""
 
-    def get_local_file_folder(self, name):
-        return os.path.join(self.local_scratch.path, name)
+    def copy_test_files_into_local_folder(self, file_folder_path):
+        """Copy files or folders from example_models into local test folder."""
+        time.sleep(0.5)  # To avoid issues with rapid creation/deletion of folders in some environments.
+        source_folder = Path(__file__).parent / "example_models"
+        files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
+        target_files = []
+        random_folder_name = "test_" + generate_random_string(6)
+        os.makedirs(os.path.join(self.test_folder, random_folder_name), exist_ok=True)
+        for f in files:
+            src_files = source_folder / f
+            target_file_folder_name = os.path.join(self.test_folder, random_folder_name, src_files.name)
 
-    def _create_test_folder(self, name=None):
-        """Create a local folder under `local_scratch`."""
-        if name:
-            temp = Path(self.local_scratch.path) / name
-            temp.mkdir(parents=True, exist_ok=True)
-            self.test_folder = str(temp)
-        else:
-            self.test_folder = os.path.join(self.local_scratch.path, generate_random_string(6))
-        return self.test_folder
+            if not src_files.exists():
+                raise FileNotFoundError(f"Source file or folder {src_files} does not exist.")
+            elif os.path.isfile(src_files):
+                self.local_scratch.copyfile(src_files, target_file_folder_name)
+            else:
+                self.local_scratch.copyfolder(src_files, target_file_folder_name)
+            target_files.append(target_file_folder_name)
+        return target_files
 
-    def _copy_file_folder_into_local_folder(self, file_folder_path):
-        src = os.path.join(self.example_models_path, file_folder_path)
-        local_folder = self._create_test_folder()
-        file_folder_name = os.path.join(local_folder, os.path.split(src)[-1])
-        dst = self.local_scratch.copyfolder(src, file_folder_name)
-        return dst
-
-    def _get_test_board(self, edbapp, additional_files_folders, version, source_file_path):
-        """Copy si_verse board file into local folder. A new temporary folder will be created."""
-        aedb = self._copy_file_folder_into_local_folder(source_file_path)
-        if additional_files_folders:
-            files = (
-                additional_files_folders if isinstance(additional_files_folders, list) else [additional_files_folders]
-            )
-            for f in files:
-                src = os.path.join(self.example_models_path, f)
-                file_folder_name = os.path.join(self.test_folder, os.path.split(src)[-1])
-                if os.path.isfile(src):
-                    self.local_scratch.copyfile(src, file_folder_name)
-                else:
-                    self.local_scratch.copyfolder(src, file_folder_name)
+    def get_si_verse(self, edbapp=True, version=None):
+        target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS-HSD_V1.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(aedb, edbversion=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc)
         else:
-            return aedb
+            return target_file
 
-    def get_si_verse(self, edbapp=True, additional_files_folders="", version=None):
-        return self._get_test_board(
-            edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS-HSD_V1.aedb"
-        )
-
-    def get_wirebond_jedec4_project(self, edbapp=True, additional_files_folders="", version=None):
-        return self._get_test_board(
-            edbapp, additional_files_folders, version, source_file_path="wirebond_projects/test_wb_jedec4.aedb"
-        )
+    def get_wirebond_jedec4_project(self, edbapp=True, version=None):
+        target_file = self.copy_test_files_into_local_folder("wirebond_projects/test_wb_jedec4.aedb")[0]
+        if edbapp:
+            version = desktop_version if version is None else version
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc)
+        else:
+            return target_file
 
     def get_si_verse_sfp(self, edbapp=True, additional_files_folders="", version=None):
-        return self._get_test_board(
-            edbapp, additional_files_folders, version, source_file_path="si_verse/ANSYS_SVP_V1_1_SFP.aedb"
-        )
+        target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS_SVP_V1_1_SFP.aedb")[0]
+        if edbapp:
+            version = desktop_version if version is None else version
+            return Edb(target_file, version=version, grpc=self.grpc)
+        else:
+            return target_file
 
     def get_package(self, edbapp=True, additional_files_folders="", version=None):
         """ "Copy package board file into local folder. A new temporary folder will be created."""
-        return self._get_test_board(
-            edbapp, additional_files_folders, version, source_file_path="TEDB/example_package.aedb"
-        )
+        target_file = self.copy_test_files_into_local_folder("TEDB/example_package.aedb")[0]
+        if edbapp:
+            version = desktop_version if version is None else version
+            return Edb(target_file, version=version, grpc=self.grpc)
+        else:
+            return target_file
 
     def create_empty_edb(self):
-        local_folder = self._create_test_folder()
-        aedb = os.path.join(local_folder, "new_layout.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+        aedb = os.path.join(self.test_folder, f"new_layout_{generate_random_string(6)}.aedb")
+        edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
+        edbapp.save_edb()
+        return edbapp
 
-    def get_multizone_pcb(self):
-        aedb = self._copy_file_folder_into_local_folder("multi_zone_project.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+    def get_multizone_pcb(self, version=None):
+        target_file = self.copy_test_files_into_local_folder("multi_zone_project.aedb")[0]
+        version = desktop_version if version is None else version
+        return Edb(target_file, version=version, grpc=self.grpc)
 
-    def get_unit_cell(self):
-        aedb = self._copy_file_folder_into_local_folder("TEDB/unitcell.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+    def get_unit_cell(self, version=None):
+        target_file = self.copy_test_files_into_local_folder("TEDB/unitcell.aedb")[0]
+        version = desktop_version if version is None else version
+        return Edb(target_file, version=version, grpc=self.grpc)
 
-    def get_no_ref_pins_component(self):
-        aedb = self._copy_file_folder_into_local_folder("TEDB/component_no_ref_pins.aedb")
-        return Edb(aedb, edbversion=desktop_version, grpc=self.grpc)
+    def get_no_ref_pins_component(self, version=None):
+        target_file = self.copy_test_files_into_local_folder("TEDB/component_no_ref_pins.aedb")[0]
+        version = desktop_version if version is None else version
+        return Edb(target_file, version=version, grpc=self.grpc)
 
     def get_si_board(self, edbapp=True, additional_files_folders="", version=None):
-        return self._get_test_board(
-            edbapp,
-            additional_files_folders,
-            version,
-            source_file_path="si_board/si_board.aedb",
-        )
-
-    def load_edb(self, edb_path, copy_to_temp=True, **kwargs):
-        if copy_to_temp:
-            aedb = self._copy_file_folder_into_local_folder(edb_path)
+        target_file = self.copy_test_files_into_local_folder("si_board/si_board.aedb")[0]
+        if edbapp:
+            version = desktop_version if version is None else version
+            return Edb(target_file, version=version, grpc=self.grpc)
         else:
-            aedb = edb_path
-        return Edb(edbpath=aedb, edbversion=desktop_version, grpc=self.grpc, **kwargs)
+            return target_file
+
+    def load_edb(self, edb_path, **kwargs):
+        return Edb(edbpath=edb_path, edbversion=desktop_version, grpc=self.grpc, **kwargs)
 
     def load_dxf_edb(self):
-        aedb = self._copy_file_folder_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")
-        return Edb(edbpath=aedb, version=desktop_version, grpc=True)
-
-    def copy_project_for_job_manager(self, local_scratch):
-        example_project = os.path.join(example_models_path, "test_project_for_job_manager.aedb")
-        target_path = os.path.join(local_scratch.path, "project.aedb")
-        local_scratch.copyfolder(example_project, target_path)
-        return target_path
+        aedb = self.copy_test_files_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")[0]
+        return Edb(edbpath=aedb, version=desktop_version, grpc=self.grpc)
 
     def get_log_file_example(self):
         return os.path.join(self.example_models_path, "test.log")
@@ -223,49 +211,113 @@ class EdbExamples:
 
 
 @pytest.fixture(scope="class", autouse=True)
-def target_path(local_scratch):
-    example_project = os.path.join(example_models_path, test_subfolder, "example_package.aedb")
-    target_path = os.path.join(local_scratch.path, "example_package.aedb")
-    local_scratch.copyfolder(example_project, target_path)
-    return target_path
-
-
-@pytest.fixture(scope="class", autouse=True)
-def target_path2(local_scratch):
-    example_project2 = os.path.join(example_models_path, test_subfolder, "simple.aedb")
-    target_path2 = os.path.join(local_scratch.path, "simple_00.aedb")
-    local_scratch.copyfolder(example_project2, target_path2)
-    return target_path2
-
-
-@pytest.fixture(scope="class", autouse=True)
-def target_path3(local_scratch):
-    example_project3 = os.path.join(example_models_path, test_subfolder, "ANSYS-HSD_V1_cut.aedb")
-    target_path3 = os.path.join(local_scratch.path, "test_plot.aedb")
-    local_scratch.copyfolder(example_project3, target_path3)
-    return target_path3
-
-
-@pytest.fixture(scope="class", autouse=True)
-def target_path4(local_scratch):
-    example_project4 = os.path.join(example_models_path, test_subfolder, "Package.aedb")
-    target_path4 = os.path.join(local_scratch.path, "Package_00.aedb")
-    local_scratch.copyfolder(example_project4, target_path4)
-    return target_path4
-
-
-@pytest.fixture(scope="class", autouse=True)
-def edb_examples(local_scratch):
+def get_edb_examples(local_scratch):
     return EdbExamples(local_scratch, GRPC)
 
 
-@pytest.fixture(scope="session", autouse=True)
-def close_rpc_session(init_scratch):
-    """Provide a module-scoped scratch directory."""
+class Scratch:
+    """Class for managing a scratch directory."""
 
-    yield
-    if GRPC:
-        scratch = Scratch(init_scratch)
-        sub_folder = Path(scratch.path) / generate_random_string(6) / ".aedb"
-        dummy_edb = Edb(str(sub_folder), version=desktop_version, grpc=True)
-        dummy_edb.close(terminate_rpc_session=True)
+    def __init__(self, local_path, permission=0o777, volatile=False):
+        self._volatile = volatile
+        self._cleaned = True
+        char_set = string.ascii_uppercase + string.digits
+        generator = secrets.SystemRandom()
+        self._scratch_path = os.path.normpath(
+            os.path.join(local_path, "scratch" + "".join(secrets.SystemRandom.sample(generator, char_set, 6)))
+        )
+        if os.path.exists(self._scratch_path):
+            try:
+                self.remove()
+            except:
+                self._cleaned = False
+        if self._cleaned:
+            try:
+                os.mkdir(self.path)
+                os.chmod(self.path, permission)
+            except FileNotFoundError as fnf_error:  # Raise error if folder doesn't exist.
+                print(fnf_error)
+
+    def __enter__(self) -> "Scratch":
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if exc_type or self._volatile:
+            self.remove()
+
+    @property
+    def path(self) -> str:
+        """Get the path of the scratch directory."""
+        return self._scratch_path
+
+    @property
+    def is_empty(self) -> bool:
+        """Check if the scratch directory is empty."""
+        return self._cleaned
+
+    def remove(self) -> None:
+        """Remove the scratch directory and its contents."""
+        try:
+            shutil.rmtree(self._scratch_path, ignore_errors=True)
+            self._cleaned = True
+        except Exception:
+            settings.logger.error(f"An error occurred while removing {self._scratch_path}")
+
+    def copyfile(self, src_file: str, dst_filename: str | None = None) -> str:
+        """Copy a file to the scratch directory.
+
+        Parameters
+        ----------
+        src_file : str
+            Source file with fullpath.
+        dst_filename : str, optional
+            Destination filename with the extension. The default is ``None``,
+            in which case the destination file is given the same name as the
+            source file.
+
+        Returns
+        -------
+        dst_file : str
+            Full path and file name of the copied file.
+        """
+        if dst_filename:
+            dst_file = os.path.join(self.path, dst_filename)
+        else:
+            dst_file = os.path.join(self.path, os.path.basename(src_file))
+        if os.path.exists(dst_file):
+            try:
+                os.unlink(dst_file)
+            except OSError:  # pragma: no cover
+                pass
+        try:
+            shutil.copy2(src_file, dst_file)
+        except FileNotFoundError as fnf_error:
+            print(fnf_error)
+
+        return dst_file
+
+    def copyfolder(self, src_folder: str, destfolder: str | None = None) -> str:
+        """Copy a folder to the scratch directory.
+
+        Parameters
+        ----------
+        src_folder : str
+            Source folder with fullpath.
+        destfolder : str, optional
+            Destination folder. The default is ``None``, in which case the destination folder
+            is given the same name as the source folder.
+
+        Returns
+        -------
+        destfolder : str
+            Full path of the copied folder.
+        """
+        if not destfolder:
+            destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
+        shutil.copytree(src_folder, destfolder, dirs_exist_ok=True)
+        return destfolder
