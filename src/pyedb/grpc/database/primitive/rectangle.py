@@ -21,15 +21,16 @@
 # SOFTWARE.
 
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.primitive.rectangle import (
     Rectangle as CoreRectangle,
     RectangleRepresentationType as CoreRectangleRepresentationType,
 )
 
 from pyedb.grpc.database.layers.layer import Layer
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
