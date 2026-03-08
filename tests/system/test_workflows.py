@@ -101,10 +101,6 @@ class TestClass(BaseTestClass):
         assert rules.copper_balance[0].name == "CB"
         assert rules.copper_balance[0].max_percent == 15
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_drc_rules_from_file(self):
         from pyedb.workflows.drc.drc import Drc, Rules
 
