@@ -57,5 +57,5 @@ class ComponentPin:
         return self.core.name
 
     @name.setter
-    def name(self, value) -> str:
+    def name(self, value):
         self.core.name = value
