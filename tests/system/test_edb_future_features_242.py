@@ -148,6 +148,10 @@ class TestClass(BaseTestClass):
         for k, v in settings.items():
             assert settings[k] == settings_get[k]
 
+    @pytest.mark.skip(
+        reason="Issue to be fixed in pyedb-core #710, and settings API seems to be added in grpc only, "
+        "test will be extended once the bug is fixed."
+    )
     def test_create_hfss_pi_setup_add_sweep(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_hfss_pi_setup("test")

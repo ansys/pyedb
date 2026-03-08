@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
-    HFSSPIAdvancedSettings as CoreHFSSPIAdvancedSettings,
-)
+# Try to import the ANSYS 2026.1 gRPC package
+try:
+    from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
+        HFSSPIAdvancedSettings as CoreHFSSPIAdvancedSettings,
+    )
+except ImportError as e:
+    print(f"ANSYS 2026.1 gRPC package not available (expected in release 2026.1): {e}")
 
 
 class HFSSPIAdvancedSettings:
