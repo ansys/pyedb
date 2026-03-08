@@ -965,8 +965,8 @@ class Components(object):
                 else:
                     new_cmp.component_type = CoreComponentType.CAPACITOR  # RLC type by default
                 pin_pair = (pins[0].name, pins[1].name)
-                rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
-                rlc_model.core.set_rlc(pin_pair, rlc)
+                rlc_model = PinPairModel(Component(self._pedb, new_cmp))
+                rlc_model.set_rlc(pin_pair, rlc)
                 component_property = new_cmp.component_property
                 component_property.model = rlc_model.core
                 new_cmp.component_property = component_property

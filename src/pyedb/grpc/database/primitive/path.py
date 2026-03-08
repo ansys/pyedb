@@ -279,7 +279,7 @@ class Path(Primitive):
         #         self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         #     )
         # else:
-        return self._pedb.source_excitation.create_edge_port_vertical(
+        return self._pedb.excitation_manager.create_edge_port_vertical(
             self.edb_uid,
             pos,
             name,
