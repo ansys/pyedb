@@ -26,7 +26,6 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef:
@@ -34,14 +33,19 @@ class PackageDef:
 
     Parameters
     ----------
-    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
-        Edb object.
-    edb_object : object
-    Edb PackageDef Object
-        component_part_name : str, optional
-        Part name of the component.
+    pedb : :class:`Pedb <pyedb.grpc.database.general.Pedb>`
+        Pedb object.
+    core : :class:`CorePackageDef <ansys.edb.core.definition.package_def.PackageDef>`, optional
+        Core package definition object. If not provided, a new package definition will be created using the provided
+        name.
+    name : str, optional
+        Name of the package definition. Required if core is not provided.
+    component_part_name : str, optional
+        Name of the component part to infer the package definition bounding box. Required if extent_bounding_box is
+        not provided.
     extent_bounding_box : list, optional
-        Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"]].
+        Bounding box to define the package definition extent. Format: [[y_min, x_min], [y_max, x_max]]. Required if
+        component_part_name is not provided.
 
     """
 
@@ -189,7 +193,7 @@ class PackageDef:
         self.core.height = self._pedb._value_setter(value)
 
     @property
-    def heat_sink(self) -> "HeatSink":
+    def heat_sink(self) -> "HeatSink | None":
         """Package heat sink.
 
         Returns
