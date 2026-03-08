@@ -68,7 +68,9 @@ class SimulationSetups:
         if not setups:
             return self._hfss_setups
         self._hfss_setups = {
-            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "hfss"
+            setup.name: HfssSimulationSetup(self._pedb, setup)
+            for setup in setups
+            if setup.type is not None and setup.type.name.lower() == "hfss"
         }
         return self._hfss_setups
 
@@ -89,7 +91,9 @@ class SimulationSetups:
         if not setups:
             return self._siwave_setups
         self._siwave_setups = {
-            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "si_wave"
+            setup.name: SiwaveSimulationSetup(self._pedb, setup)
+            for setup in setups
+            if setup.type is not None and setup.type.name.lower() == "si_wave"
         }
         return self._siwave_setups
 
@@ -110,7 +114,7 @@ class SimulationSetups:
         if not setups:
             return self._siwave_dcir_setups
         self._siwave_dcir_setups = {
-            setup.name: setup
+            setup.name: SIWaveDCIRSimulationSetup(self._pedb, setup)
             for setup in setups
             if setup.type is not None and setup.type.name.lower() == "si_wave_dcir"
         }
@@ -158,7 +162,9 @@ class SimulationSetups:
         if not setups:
             return self._raptorx_setups
         self._raptorx_setups = {
-            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "raptor_x"
+            setup.name: RaptorXSimulationSetup(self._pedb, setup)
+            for setup in setups
+            if setup.type is not None and setup.type.name.lower() == "raptor_x"
         }
         return self._raptorx_setups
 
@@ -179,7 +185,9 @@ class SimulationSetups:
         if not setups:
             return self._q3d_setups
         self._q3d_setups = {
-            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "q3d_sim"
+            setup.name: Q3DSimulationSetup(self._pedb, setup)
+            for setup in setups
+            if setup.type is not None and setup.type.name.lower() == "q3d_sim"
         }
         return self._q3d_setups
 
@@ -200,7 +208,9 @@ class SimulationSetups:
         if not setups:
             return self._hfss_pi_setups
         self._hfss_pi_setups = {
-            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "hfss_pi"
+            setup.name: HFSSPISimulationSetup(self._pedb, setup)
+            for setup in setups
+            if setup.type is not None and setup.type.name.lower() == "hfss_pi"
         }
         return self._hfss_pi_setups
 
