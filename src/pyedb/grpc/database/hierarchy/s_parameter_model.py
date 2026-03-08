@@ -24,9 +24,9 @@
 class SparamModel:  # pragma: no cover
     """Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`"""
 
-    def __init__(self, edb_object):
-        self.core = edb_object
-        self._edb_model = edb_object
+    def __init__(self, component):
+        self.core = component.component_property.model
+        self._component = component
 
     @property
     def is_null(self):
@@ -63,6 +63,7 @@ class SparamModel:  # pragma: no cover
 
         """
         self.core.component_model = value
+        self._component._set_model(self.core)
 
     @property
     def component_model_name(self):
@@ -87,6 +88,7 @@ class SparamModel:  # pragma: no cover
 
         """
         self.core.component_model = value
+        self._component._set_model(self.core)
 
     @property
     def reference_net(self):
@@ -111,6 +113,7 @@ class SparamModel:  # pragma: no cover
 
         """
         self.core.reference_net = value
+        self._component._set_model(self.core)
 
     @property
     def file_path(self):
@@ -135,3 +138,4 @@ class SparamModel:  # pragma: no cover
 
         """
         self.core.file_path = value
+        self._component._set_model(self.core)

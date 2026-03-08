@@ -70,8 +70,8 @@ class StackupLayer:
         layer = CoreStackupLayer.create(
             name=name,
             layer_type=_mapping_layer_type[layer_type],
-            thickness=Value(thickness),
-            elevation=Value(elevation),
+            thickness=layout._pedb._value_setter(thickness),
+            elevation=layout._pedb._value_setter(elevation),
             material=material,
         )
         return cls(layout._pedb, layer)
@@ -173,8 +173,8 @@ class StackupLayer:
             self._edb_object = CoreStackupLayer.create(
                 self._name,
                 layer_type,
-                Value(0),
-                Value(0),
+                0.0,
+                0.0,
                 "copper",
             )
 
@@ -192,7 +192,7 @@ class StackupLayer:
     @lower_elevation.setter
     def lower_elevation(self, value):
         if self._pedb.stackup.mode == "overlapping":
-            self.core.lower_elevation = Value(value)
+            self.core.lower_elevation = self._pedb._value_setter(value)
 
     @property
     def fill_material(self) -> Union[str, None]:
@@ -364,7 +364,7 @@ class StackupLayer:
 
     @thickness.setter
     def thickness(self, value):
-        self.core.thickness = Value(value)
+        self.core.thickness = self._pedb._value_setter(value)
 
     @property
     def etch_factor_enabled(self) -> bool:
@@ -398,7 +398,9 @@ class StackupLayer:
             self.core.etch_factor_enabled = False
         else:
             self.core.etch_factor_enabled = True
-            self.core.etch_factor = Value(value, self._pedb.active_cell)
+            self.core.etch_factor = self._pedb._value_setter(
+                value,
+            )
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:
@@ -434,7 +436,7 @@ class StackupLayer:
             return 0.0
         top_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.TOP)
         if len(top_roughness_model) == 2:
-            return Value(top_roughness_model[1], self._pedb.active_cell)
+            return self._pedb.value(top_roughness_model[1])
         else:
             return 0.0
 
@@ -454,7 +456,9 @@ class StackupLayer:
         if not self.roughness_enabled:
             return 0.0
         bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
-        return bottom_roughness_model
+        return self._pedb.value(
+            bottom_roughness_model if not isinstance(bottom_roughness_model, list) else bottom_roughness_model[0]
+        )
 
     @bottom_hallhuray_nodule_radius.setter
     def bottom_hallhuray_nodule_radius(self, value):
@@ -472,7 +476,7 @@ class StackupLayer:
         if not self.roughness_enabled:
             return 0.0
         bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
-        return bottom_roughness_model
+        return self._pedb.value(bottom_roughness_model[-1])
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):
@@ -492,7 +496,7 @@ class StackupLayer:
             return 0.0
         side_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.SIDE)
         if len(side_roughness_model) == 2:
-            return Value(side_roughness_model[0], self._pedb.active_cell)
+            return self._pedb.value(side_roughness_model[0])
         return Value(0.0)
 
     @side_hallhuray_nodule_radius.setter

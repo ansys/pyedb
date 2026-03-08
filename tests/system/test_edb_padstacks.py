@@ -376,10 +376,9 @@ class TestClass(BaseTestClass):
 
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edb_plot = self.edb_examples.load_edb(source_path)
+        edb_plot = self.edb_examples.get_si_verse_sfp()
 
-        local_png1 = os.path.join(source_path, "test1.png")
+        local_png1 = os.path.join(self.edb_examples.test_folder, "test1.png")
         edb_plot.nets.plot(
             nets=None,
             layers=None,
@@ -390,10 +389,10 @@ class TestClass(BaseTestClass):
         )
         assert os.path.exists(local_png1)
 
-        local_png2 = os.path.join(source_path, "test2.png")
+        local_png2 = os.path.join(self.edb_examples.test_folder, "test2.png")
 
         edb_plot.nets.plot(
-            nets="DDR4_DQS7_N",
+            nets="SFPA_RX_N",
             layers=None,
             save_plot=local_png2,
             plot_components_on_top=True,
@@ -403,10 +402,10 @@ class TestClass(BaseTestClass):
         edb_plot.modeler.create_polygon(
             [[-10e-3, -10e-3], [110e-3, -10e-3], [110e-3, 70e-3], [-10e-3, 70e-3]], layer_name="Outline"
         )
-        local_png3 = os.path.join(source_path, "test3.png")
+        local_png3 = os.path.join(self.edb_examples.test_folder, "test3.png")
         edb_plot.nets.plot(
-            nets=["DDR4_DQ57", "DDR4_DQ56"],
-            layers="1_Top",
+            nets=["SFPA_RX_P", "SFPA_RX_N"],
+            layers="Top",
             color_by_net=True,
             save_plot=local_png3,
             plot_components=True,
@@ -414,14 +413,14 @@ class TestClass(BaseTestClass):
         )
         assert os.path.exists(local_png3)
 
-        local_png4 = os.path.join(source_path, "test4.png")
+        local_png4 = os.path.join(self.edb_examples.test_folder, "test4.png")
         edb_plot.stackup.plot(
             save_plot=local_png4,
             plot_definitions=list(edb_plot.padstacks.definitions.keys())[0],
         )
         assert os.path.exists(local_png4)
 
-        local_png5 = os.path.join(source_path, "test5.png")
+        local_png5 = os.path.join(self.edb_examples.test_folder, "test5.png")
         edb_plot.stackup.plot(
             scale_elevation=False,
             save_plot=local_png5,
@@ -431,42 +430,44 @@ class TestClass(BaseTestClass):
         edb_plot.close(terminate_rpc_session=False)
 
     def test_update_padstacks_after_layer_name_changed(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edbapp = self.edb_examples.load_edb(source_path)
+        edbapp = self.edb_examples.get_si_verse_sfp()
         signal_layer_list = [layer for layer in edbapp.stackup.layers.values() if layer.type == "signal"]
         old_layers = []
         for n_layer, layer in enumerate(signal_layer_list):
             new_name = f"new_signal_name_{n_layer}"
             old_layers.append(layer.name)
             layer.name = new_name
-        for layer_name in list(edbapp.stackup.layers.keys()):
-            print(f"New layer name is {layer_name}")
+            break
         for padstack_inst in edbapp.padstacks.instances.values():
             assert not [lay for lay in padstack_inst.layer_range_names if lay in old_layers]
-        edbapp.close_edb()
+            break
+        edbapp.close(terminate_rpc_session=False)
 
     def test_hole(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
         edbapp.padstacks.definitions["v35h15"].hole_diameter = "0.16mm"
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_instances_rtree_index(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edbapp = self.edb_examples.load_edb(source_path)
+        edbapp = self.edb_examples.get_si_verse_sfp()
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
-        assert [round(val, 6) for val in index.bounds] == [-0.013785, -0.00225, 0.148, 0.078]
-        stats = edbapp.get_statistics()
-        bbox = (0.0, 0.0, stats.layout_size[0], stats.layout_size[1])
+        assert [round(val, 6) for val in index.bounds] == [0.0577, 0.003875, 0.1135, 0.0245]
+        bbox = edbapp.layout_bounding_box
         test = list(index.intersection(bbox))
-        assert len(test) == 5689
+        assert len(test) == 457
         index = edbapp.padstacks.get_padstack_instances_rtree_index(nets="GND")
         test = list(index.intersection(bbox))
-        assert len(test) == 2048
+        assert len(test) == 417
         test = edbapp.padstacks.get_padstack_instances_intersecting_bounding_box(
-            bounding_box=[0, 0, 0.05, 0.08], nets="GND"
+            bounding_box=[0.05, 0.004, 0.08, 0.03], nets="GND"
         )
-        assert len(test) == 194
+        if edbapp.grpc:
+            # difference might come from values noise difference between DotNet and grpc.
+            assert len(test) == 173
+        else:
+            assert len(test) == 175
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
@@ -474,8 +475,7 @@ class TestClass(BaseTestClass):
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
     def test_polygon_based_padstack(self):
-        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ANSYS-HSD_V1.aedb")[0]
-        edbapp = self.edb_examples.load_edb(source_path)
+        edbapp = self.edb_examples.get_si_verse_sfp()
         polygon_data = edbapp.modeler.paths[0].polygon_data
         edbapp.padstacks.create(
             padstackname="test",

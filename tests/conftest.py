@@ -29,11 +29,12 @@ import secrets
 import shutil
 import string
 import tempfile
+import time
+from types import TracebackType
 
 import pytest
 
 from pyedb.generic.design_types import Edb
-from pyedb.generic.filesystem import Scratch
 from pyedb.generic.settings import settings
 
 settings.enable_global_log_file = False
@@ -106,7 +107,7 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch: Scratch, grpc=False):
+    def __init__(self, local_scratch: "Scratch", grpc=False):
         self.grpc = grpc
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
@@ -114,12 +115,15 @@ class EdbExamples:
 
     def copy_test_files_into_local_folder(self, file_folder_path):
         """Copy files or folders from example_models into local test folder."""
+        time.sleep(0.5)  # To avoid issues with rapid creation/deletion of folders in some environments.
         source_folder = Path(__file__).parent / "example_models"
         files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
         target_files = []
+        random_folder_name = "test_" + generate_random_string(6)
+        os.makedirs(os.path.join(self.test_folder, random_folder_name), exist_ok=True)
         for f in files:
             src_files = source_folder / f
-            target_file_folder_name = os.path.join(self.test_folder, src_files.name)
+            target_file_folder_name = os.path.join(self.test_folder, random_folder_name, src_files.name)
 
             if not src_files.exists():
                 raise FileNotFoundError(f"Source file or folder {src_files} does not exist.")
@@ -164,8 +168,10 @@ class EdbExamples:
             return target_file
 
     def create_empty_edb(self):
-        aedb = os.path.join(self.test_folder, "new_layout.aedb")
-        return Edb(aedb, version=desktop_version, grpc=self.grpc)
+        aedb = os.path.join(self.test_folder, f"new_layout_{generate_random_string(6)}.aedb")
+        edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
+        edbapp.save_edb()
+        return edbapp
 
     def get_multizone_pcb(self, version=None):
         target_file = self.copy_test_files_into_local_folder("multi_zone_project.aedb")[0]
@@ -207,3 +213,111 @@ class EdbExamples:
 @pytest.fixture(scope="class", autouse=True)
 def get_edb_examples(local_scratch):
     return EdbExamples(local_scratch, GRPC)
+
+
+class Scratch:
+    """Class for managing a scratch directory."""
+
+    def __init__(self, local_path, permission=0o777, volatile=False):
+        self._volatile = volatile
+        self._cleaned = True
+        char_set = string.ascii_uppercase + string.digits
+        generator = secrets.SystemRandom()
+        self._scratch_path = os.path.normpath(
+            os.path.join(local_path, "scratch" + "".join(secrets.SystemRandom.sample(generator, char_set, 6)))
+        )
+        if os.path.exists(self._scratch_path):
+            try:
+                self.remove()
+            except:
+                self._cleaned = False
+        if self._cleaned:
+            try:
+                os.mkdir(self.path)
+                os.chmod(self.path, permission)
+            except FileNotFoundError as fnf_error:  # Raise error if folder doesn't exist.
+                print(fnf_error)
+
+    def __enter__(self) -> "Scratch":
+        return self
+
+    def __exit__(
+        self,
+        exc_type: type[BaseException] | None,
+        exc_value: BaseException | None,
+        traceback: TracebackType | None,
+    ) -> None:
+        if exc_type or self._volatile:
+            self.remove()
+
+    @property
+    def path(self) -> str:
+        """Get the path of the scratch directory."""
+        return self._scratch_path
+
+    @property
+    def is_empty(self) -> bool:
+        """Check if the scratch directory is empty."""
+        return self._cleaned
+
+    def remove(self) -> None:
+        """Remove the scratch directory and its contents."""
+        try:
+            shutil.rmtree(self._scratch_path, ignore_errors=True)
+            self._cleaned = True
+        except Exception:
+            settings.logger.error(f"An error occurred while removing {self._scratch_path}")
+
+    def copyfile(self, src_file: str, dst_filename: str | None = None) -> str:
+        """Copy a file to the scratch directory.
+
+        Parameters
+        ----------
+        src_file : str
+            Source file with fullpath.
+        dst_filename : str, optional
+            Destination filename with the extension. The default is ``None``,
+            in which case the destination file is given the same name as the
+            source file.
+
+        Returns
+        -------
+        dst_file : str
+            Full path and file name of the copied file.
+        """
+        if dst_filename:
+            dst_file = os.path.join(self.path, dst_filename)
+        else:
+            dst_file = os.path.join(self.path, os.path.basename(src_file))
+        if os.path.exists(dst_file):
+            try:
+                os.unlink(dst_file)
+            except OSError:  # pragma: no cover
+                pass
+        try:
+            shutil.copy2(src_file, dst_file)
+        except FileNotFoundError as fnf_error:
+            print(fnf_error)
+
+        return dst_file
+
+    def copyfolder(self, src_folder: str, destfolder: str | None = None) -> str:
+        """Copy a folder to the scratch directory.
+
+        Parameters
+        ----------
+        src_folder : str
+            Source folder with fullpath.
+        destfolder : str, optional
+            Destination folder. The default is ``None``, in which case the destination folder
+            is given the same name as the source folder.
+
+        Returns
+        -------
+        destfolder : str
+            Full path of the copied folder.
+        """
+        if not destfolder:
+            destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
+        shutil.copytree(src_folder, destfolder, dirs_exist_ok=True)
+        return destfolder

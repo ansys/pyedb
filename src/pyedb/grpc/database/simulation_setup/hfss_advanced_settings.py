@@ -20,24 +20,20 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
 import warnings
 
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSAdvancedSettings as CoreHFSSAdvancedSettings,
-    )
 from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as CoreViaStyle
 
 
 class HFSSAdvancedSettings:
-    def __init__(self, pedb, core: "CoreHFSSAdvancedSettings"):
+    def __init__(self, parent):
         """PyEDB HFSS advanced settings class."""
-        self.core = core
-        self._pedb = pedb
+        self._parent = parent
+        self.core = parent.core.advanced
+        self._pedb = parent._pedb
 
     @property
-    def defeature_abs_length(self) -> float:
+    def defeature_abs_length(self) -> str:
         """Absolute length used as tolerance when defeaturing polygons.
 
         .. deprecated:: 0.77.3
@@ -251,7 +247,7 @@ class HFSSAdvancedSettings:
 
     @small_void_area.setter
     def small_void_area(self, value: float):
-        self.core.small_void_area = value
+        self.core.small_void_area = self._pedb.value(value)
 
     @property
     def union_polygons(self) -> bool:

@@ -26,6 +26,7 @@ import codecs
 import json
 import math
 import os
+from pathlib import Path
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
@@ -42,10 +43,7 @@ from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
 )
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    get_filename_without_extension,
-)
+from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.component_pin import ComponentPin
@@ -957,7 +955,7 @@ class Components(object):
                     enabled = bool(values[key])
                     setattr(rlc, f"{attr}_enabled", enabled)
                     if enabled:
-                        setattr(rlc, attr, Value(values[key]))
+                        setattr(rlc, attr, self._pedb._value_setter(values[key]))
 
                 # Determine final type based on enabled components
                 enabled_count = sum(getattr(rlc, f"{attr_map[k]}_enabled") for k in values)
@@ -967,8 +965,8 @@ class Components(object):
                 else:
                     new_cmp.component_type = CoreComponentType.CAPACITOR  # RLC type by default
                 pin_pair = (pins[0].name, pins[1].name)
-                rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
-                rlc_model.core.set_rlc(pin_pair, rlc)
+                rlc_model = PinPairModel(Component(self._pedb, new_cmp))
+                rlc_model.set_rlc(pin_pair, rlc)
                 component_property = new_cmp.component_property
                 component_property.model = rlc_model.core
                 new_cmp.component_property = component_property
@@ -1021,7 +1019,7 @@ class Components(object):
         >>> edbapp.components.set_component_model("U1", "Spice", "path/to/model.sp")
         """
         if not modelname:
-            modelname = get_filename_without_extension(modelpath)
+            modelname = Path(modelpath).stem
         if componentname not in self.instances:
             self._pedb.logger.error(f"Component {componentname} not found.")
             return False
@@ -1285,13 +1283,13 @@ class Components(object):
             pad_params = self._pedb.padstacks.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
             _sb_diam = min([abs(Value(val)) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
-        if sball_height:
-            sball_height = Value(sball_height)
+        if not sball_height:
+            sball_height = self._pedb._value_setter(sball_diam)
         else:
-            sball_height = Value(sball_diam)
+            sball_height = self._pedb._value_setter(sball_diam)
 
         if not sball_mid_diam:
-            sball_mid_diam = sball_diam
+            sball_mid_diam = self._pedb._value_setter(sball_diam)
 
         if shape.lower() == "cylinder":
             sball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
@@ -1311,17 +1309,19 @@ class Components(object):
             cmp_property.die_property = ic_die_prop
 
         solder_ball_prop = cmp_property.solder_ball_property
-        solder_ball_prop.set_diameter(Value(sball_diam), Value(sball_mid_diam))
-        solder_ball_prop.height = Value(sball_height)
+        solder_ball_prop.set_diameter(self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam))
+        solder_ball_prop.height = self._pedb._value_setter(sball_height)
 
         solder_ball_prop.shape = sball_shape
         cmp_property.solder_ball_property = solder_ball_prop
 
         port_prop = cmp_property.port_property
-        port_prop.reference_height = Value(reference_height)
+        port_prop.reference_height = self._pedb._value_setter(reference_height)
         port_prop.reference_size_auto = auto_reference_size
         if not auto_reference_size:
-            port_prop.set_reference_size(Value(reference_size_x), Value(reference_size_y))
+            port_prop.set_reference_size(
+                self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
+            )
         cmp_property.port_property = port_prop
         cmp.component_property = cmp_property
         return True
@@ -1371,17 +1371,17 @@ class Components(object):
             rlc.is_parallel = isparallel
             if res_value is not None:
                 rlc.r_enabled = True
-                rlc.r = Value(res_value)
+                rlc.r = self._pedb._value_setter(res_value)
             else:
                 rlc.r_enabled = False
             if ind_value is not None:
                 rlc.l_enabled = True
-                rlc.l = Value(ind_value)
+                rlc.l = self._pedb._value_setter(ind_value)
             else:
                 rlc.l_enabled = False
             if cap_value is not None:
                 rlc.c_enabled = True
-                rlc.c = Value(cap_value)
+                rlc.c = self._pedb._value_setter(cap_value)
             else:
                 rlc.CEnabled = False
             pin_pair = (from_pin.name, to_pin.name)
@@ -1700,7 +1700,12 @@ class Components(object):
             transformed_pt_pos = pt_pos
         else:
             transformed_pt_pos = pin.component.core.transform.transform_point(pt_pos)
-        return [Value(transformed_pt_pos.x), Value(transformed_pt_pos.y)]
+        try:
+            # Latest pyedb-core changed with returning PointData object.
+            return [Value(transformed_pt_pos.x), Value(transformed_pt_pos.y)]
+        except AttributeError:
+            # legacy support for older pyedb-core versions where transform_point returns a list
+            return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
     def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
         """Get pin names from net.

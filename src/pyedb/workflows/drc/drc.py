@@ -609,7 +609,7 @@ class Drc:
         self.idx_vias = rtree_index.Index()
         self.idx_components = rtree_index.Index()
 
-        for i, prim in enumerate(self.edb.modeler.primitives):
+        for i, prim in enumerate(self.edb.layout.primitives):
             bbox = prim.bbox
             self.idx_primitives.insert(i, coordinates=[bbox[0], bbox[1], bbox[2], bbox[3]])
         for i, via in enumerate(self.edb.padstacks.instances.values()):

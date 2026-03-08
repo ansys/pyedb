@@ -265,17 +265,17 @@ class ExtendedNets:
                 if is_power:
                     if include_power:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
+                        ext_net.core.add_net(_nets[i].core)
                         for net in new_ext:
-                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
+                            ext_net.core.add_net(_nets[net].core)
                     else:  # pragma: no cover
                         pass
                 else:
                     if include_signal:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
+                        ext_net.core.add_net(_nets[i].core)
                         for net in new_ext:
-                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
+                            ext_net.core.add_net(_nets[net].core)
                     else:  # pragma: no cover
                         pass
 
