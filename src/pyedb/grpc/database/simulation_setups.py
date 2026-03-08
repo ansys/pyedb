@@ -25,6 +25,7 @@ from typing import Union, cast
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
@@ -157,7 +158,18 @@ class SimulationSetups:
         return self._q3d_setups
 
     @property
-    def setups(self) -> dict[str, object]:
+    def setups(
+        self,
+    ) -> dict[
+        str,
+        HfssSimulationSetup
+        | SiwaveSimulationSetup
+        | SIWaveDCIRSimulationSetup
+        | SIWaveCPASimulationSetup
+        | RaptorXSimulationSetup
+        | Q3DSimulationSetup
+        | HFSSPISimulationSetup,
+    ]:
         """All simulation setups.
 
         Returns

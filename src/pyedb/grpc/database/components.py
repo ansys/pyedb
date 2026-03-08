@@ -841,7 +841,7 @@ class Components(object):
                     pin_name = str(ind)
                 ind += 1
                 component_definition_pin = ComponentPin.create(component_definition, pin_name)
-                if component_definition_pin.core.is_null:
+                if component_definition_pin.is_null:
                     self._logger.error(f"Failed to create component definition pin {name}-{pin_name}")
                     return None
         return component_definition
@@ -2127,7 +2127,7 @@ class Components(object):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> edb.excitation_manager.add_port_on_rlc_component("R1")
+        >>> edb.source_excitations.add_port_on_rlc_component("R1")
         """
         return self._pedb.excitation_manager.add_port_on_rlc_component(
             component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary

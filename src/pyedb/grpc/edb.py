@@ -461,7 +461,7 @@ class Edb(EdbInit):
             return None
         return None
 
-    def value(self, val) -> Value:
+    def value(self, val) -> Value | float | str:
         """Convert a value into a pyedb value."""
         return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
 
@@ -720,7 +720,7 @@ class Edb(EdbInit):
                 self.logger.error("Builder was not initialized.")
             return True
 
-    def create(self, restart_rpc_server=False) -> "Edb":
+    def create(self, restart_rpc_server=False) -> "Edb | None":
         """Create new EDB database.
 
         Returns
@@ -761,7 +761,7 @@ class Edb(EdbInit):
         map_file=None,
         tech_file=None,
         layer_filter=None,
-    ) -> str:
+    ) -> bool:
         """Import layout file and generate AEDB.
 
         Supported formats: BRD, MCM, XML (IPC2581), GDS, ODB++ (TGZ/ZIP), DXF
@@ -787,8 +787,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        str or bool
-            AEDB path if successful, False otherwise.
+        bool
+            True if translation is successful, False otherwise.
         """
         self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
         return self.import_layout_file(
@@ -812,7 +812,7 @@ class Edb(EdbInit):
         map_file=None,
         tech_file=None,
         layer_filter=None,
-    ) -> str:
+    ) -> bool:
         """Import a board file and generate an ``edb.def`` file in the working directory.
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
@@ -846,12 +846,12 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Full path to the AEDB file : str
+        bool
+            True if translation is successful, False otherwise.
 
         Examples
         --------
         >>> # Create an Edb instance and import a BRD file:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.import_layout_file("my_board.brd", r"C:/project")
         >>> # Import a GDS file with control file:
@@ -914,7 +914,7 @@ class Edb(EdbInit):
         vlctech_file,
         working_dir="",
         export_xml=None,
-    ) -> str:
+    ) -> bool | str:
         """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
 
         Parameters
@@ -929,8 +929,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        Full path to the AEDB file : str
-
+        bool or str
+            `False` if translation failed, file path otherwise.
         """
         if not working_dir:
             working_dir = os.path.dirname(vlctech_file)
@@ -985,7 +985,6 @@ class Edb(EdbInit):
         Examples
         --------
         >>> # Create an Edb instance and export to IPC2581 format:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.export_to_ipc2581("output.xml")
         """
@@ -1151,7 +1150,7 @@ class Edb(EdbInit):
         return None
 
     @property
-    def excitation_manager(self) -> SourceExcitation:
+    def excitation_manager(self) -> SourceExcitation | None:
         """Source excitation manager.
 
         Returns
@@ -1432,16 +1431,16 @@ class Edb(EdbInit):
 
         # If x is an iterable (list/tuple) assume coordinates sequence
         if y is None and isinstance(x, Iterable) and not isinstance(x, (str, bytes)):
-            core_pd = GrpcPointData([self._pedb._value_setter(i) for i in x])
+            core_pd = GrpcPointData([self._value_setter(i) for i in x])
             return PointData(core_pd)
 
         # If numeric x and y provided
         if y is not None:
-            core_pd = GrpcPointData([self._pedb._value_setter(x), self._pedb._value_setter(y)])
+            core_pd = GrpcPointData([self._value_setter(x), self._value_setter(y)])
             return PointData(core_pd)
 
         # Fallback: single value
-        core_pd = GrpcPointData([self._pedb._value_setter(x)])
+        core_pd = GrpcPointData([self._value_setter(x)])
         return PointData(core_pd)
 
     @staticmethod
@@ -1483,7 +1482,6 @@ class Edb(EdbInit):
         Examples
         --------
         Close the EDB session:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.close()
         """
@@ -1530,7 +1528,7 @@ class Edb(EdbInit):
         tech_file=None,
         map_file=None,
         layer_filter=None,
-    ) -> str:
+    ) -> bool:
         """Import GDS file.
 
         .. warning::
@@ -1554,6 +1552,11 @@ class Edb(EdbInit):
             Layer map file.
         layer_filter : str, optional
             Layer filter file.
+
+        Returns
+        -------
+        bool
+            True if import is successful, False otherwise.
         """
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(input_gds)[-1][:-3] + "xml")
         if float(self.version) < 2024.1:
@@ -1845,7 +1848,6 @@ class Edb(EdbInit):
         Examples
         --------
         >>> # Create an Edb instance and export to HFSS project:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
         """
@@ -1883,7 +1885,6 @@ class Edb(EdbInit):
         Examples
         --------
         >>> # Create an Edb instance and export to Q3D project:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.export_q3d(r"C:/output")
         """
@@ -1928,7 +1929,6 @@ class Edb(EdbInit):
         Examples
         --------
         >>> # Create an Edb instance and export to Maxwell project:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.export_maxwell(r"C:/output")
         """
@@ -1953,7 +1953,6 @@ class Edb(EdbInit):
         Examples
         --------
         >>> # Create an Edb instance and solve with SIwave:
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> edb.solve_siwave()
         """
@@ -2355,9 +2354,9 @@ class Edb(EdbInit):
         return self.simulation_setups.create_hfss_setup(
             name=name,
             distribution="linear",
-            start_freq=start_frequency,
-            stop_freq=stop_frequency,
-            step_freq=step_frequency,
+            start_freq=self._value_setter(start_frequency),
+            stop_freq=self._value_setter(stop_frequency),
+            step_freq=self._value_setter(step_frequency),
         )
 
     def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
@@ -2455,7 +2454,7 @@ class Edb(EdbInit):
                 edb_zone_path = os.path.join(working_directory, f"{zone_primitive.id}_{os.path.basename(self.edbpath)}")
                 shutil.copytree(self.edbpath, edb_zone_path)
                 poly_data = zone_primitive.polygon_data
-                if self.version[0] >= 10:
+                if self.version[0] >= "10":
                     edb_zones[edb_zone_path] = (zone_primitive.id, poly_data)
                 elif len(zone_primitives) == len(zone_ids):
                     edb_zones[edb_zone_path] = (zone_ids[0], poly_data)
@@ -2467,7 +2466,7 @@ class Edb(EdbInit):
                     edb_zones[edb_zone_path] = (-1, poly_data)
         return edb_zones
 
-    def cutout_multizone_layout(self, zones, common_reference_net=None) -> dict[str:str] | list[str]:
+    def cutout_multizone_layout(self, zones, common_reference_net=None) -> tuple[dict[str, str], list[str]]:
         """Create a multizone project cutout.
 
         Parameters
@@ -2481,7 +2480,7 @@ class Edb(EdbInit):
 
         Returns
         -------
-        dict[str: str] or list[str]
+        tuple[dict[str, str], list[str]]
             first dictionary defined_ports with edb name as key and existing port name list as value. Those ports are
             the ones defined before processing the multizone clipping. the second is the list of connected port.
 
@@ -2728,7 +2727,6 @@ class Edb(EdbInit):
 
         Examples
         --------
-        >>> from pyedb.grpc.edb import Edb
         >>> edb = Edb()
         >>> params = edb.auto_parametrize_design(
         >>>     layers=True,
