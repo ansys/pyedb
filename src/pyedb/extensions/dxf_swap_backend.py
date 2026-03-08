@@ -22,7 +22,13 @@
 
 from typing import List
 
-from ezdxf import readfile
+try:
+    from ezdxf import readfile
+except ImportError:
+    raise ImportError(
+        "ezdxf library is required for DXF import functionality. "
+        "Please install it using 'pip install pyedb[dxf]' or 'pip install ezdxf'."
+    )
 
 from pyedb import Edb
 from pyedb.grpc.database.primitive.primitive import Primitive
@@ -163,7 +169,7 @@ def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: L
     ]
 
     dxf_polygon.move(vector=move_vector)
-    edb.modeler._reload_all()
+    edb.modeler.clear_cache()
 
 
 def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str, point_aedt: List[str]):
@@ -229,7 +235,7 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
 
     dxf_polygon = create_polygon_from_dxf(edb, dxf_path, layer_name)
     point_dxf = dxf_polygon.center
-    point_dxf = [f"{x.value * 1000}mm" for x in point_dxf]
+    point_dxf = [f"{x * 1000}mm" for x in point_dxf]
 
     point_dxf_double = [
         edb.value(point_dxf[0]),
@@ -249,4 +255,4 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
     ]
 
     dxf_polygon.move(vector=move_vector)
-    edb.modeler._reload_all()  # Force reload to update primitive positions in EDB GUI
+    edb.modeler.clear_cache()  # Force reload to update primitive positions in EDB GUI

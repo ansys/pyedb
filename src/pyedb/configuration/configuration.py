@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from copy import deepcopy
 from datetime import datetime
 import json
 import os
@@ -29,6 +30,8 @@ import toml
 
 from pyedb import Edb
 from pyedb.configuration.cfg_data import CfgData
+from pyedb.generic.constants import FAdaptTypeMapper, MeshOperationTypeMapper, SourceTermMapper, TerminalTypeMapper
+from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
 
@@ -60,12 +63,12 @@ def set_padstack_instance(inst, inst_obj):
     if inst.backdrill_parameters:
         inst_obj.backdrill_parameters = inst.backdrill_parameters.model_dump(exclude_none=True)
     if inst.solder_ball_layer:
-        inst_obj._edb_object.SetSolderBallLayer(inst_obj._pedb.stackup[inst.solder_ball_layer]._edb_object)
+        inst_obj.solderball_layer = inst_obj._pedb.stackup[inst.solder_ball_layer].core
 
-    hole_override_enabled, hole_override_diam = inst_obj._edb_object.GetHoleOverrideValue()
+    hole_override_enabled, hole_override_diam = inst_obj.get_hole_overrides()
     hole_override_enabled = inst.hole_override_enabled if inst.hole_override_enabled else hole_override_enabled
     hole_override_diam = inst.hole_override_diameter if inst.hole_override_diameter else hole_override_diam
-    inst_obj._edb_object.SetHoleOverride(hole_override_enabled, inst_obj._pedb.edb_value(hole_override_diam))
+    inst_obj.set_hole_overrides(hole_override_enabled, hole_override_diam)
 
 
 class Configuration:
@@ -108,7 +111,7 @@ class Configuration:
             Config dictionary.
         """
         if isinstance(config_file, dict):
-            data = config_file
+            data = deepcopy(config_file)
         else:
             config_file = str(config_file)
             if os.path.isfile(config_file):
@@ -188,7 +191,7 @@ class Configuration:
 
     @execution_timer("Applying setups")
     def apply_setups(self):
-        cfg_setups = self.cfg_data.setups
+        cfg_setups = self.cfg_data.setups.setups
         for setup in cfg_setups:
             if setup.type == "siwave_dc":
                 edb_setup = self._pedb.create_siwave_dc_setup(
@@ -199,99 +202,200 @@ class Configuration:
                 edb_setup.dc_ir_settings.export_dc_thermal_data = dc_ir_settings.export_dc_thermal_data
             else:
                 if setup.type == "hfss":
-                    edb_setup = self._pedb.create_hfss_setup(setup.name)
-                    edb_setup.set_solution_single_frequency(setup.f_adapt, setup.max_num_passes, setup.max_mag_delta_s)
+                    edb_setup = self._pedb.simulation_setups.create(name=setup.name, solver="hfss")
+                    edb_setup.adaptive_settings.adapt_type = FAdaptTypeMapper.get(
+                        setup.adapt_type, as_grpc=settings.is_grpc
+                    )
+                    if not settings.is_grpc:
+                        edb_setup.adaptive_settings.clean_adaptive_frequency_data_list()
+                        if setup.adapt_type == "single":
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.single_frequency_adaptive_solution.adaptive_frequency,
+                                setup.single_frequency_adaptive_solution.max_passes,
+                                setup.single_frequency_adaptive_solution.max_delta,
+                            )
+                        elif setup.adapt_type == "broadband":
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.broadband_adaptive_solution.low_frequency,
+                                setup.broadband_adaptive_solution.max_passes,
+                                setup.broadband_adaptive_solution.max_delta,
+                            )
+                            edb_setup.adaptive_settings.add_adaptive_frequency_data(
+                                setup.broadband_adaptive_solution.high_frequency,
+                                setup.broadband_adaptive_solution.max_passes,
+                                setup.broadband_adaptive_solution.max_delta,
+                            )
+                        else:
+                            raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
 
-                    if setup.auto_mesh_operation:
-                        edb_setup.auto_mesh_operation(**dict(setup.auto_mesh_operation))
+                    else:
+                        if setup.adapt_type == "single":
+                            s_f_adapt = edb_setup.settings.general.single_frequency_adaptive_solution
+                            s_f_adapt.adaptive_frequency = setup.single_frequency_adaptive_solution.adaptive_frequency
+                            s_f_adapt.max_passes = setup.single_frequency_adaptive_solution.max_passes
+                            s_f_adapt.max_delta = setup.single_frequency_adaptive_solution.max_delta
+                            edb_setup.core.settings.general.single_frequency_adaptive_solution = s_f_adapt
+                        elif setup.adapt_type == "broadband":
+                            b_f_adapt = edb_setup.settings.general.broadband_adaptive_solution
+                            b_f_adapt.low_frequency = setup.broadband_adaptive_solution.low_frequency
+                            b_f_adapt.high_frequency = setup.broadband_adaptive_solution.high_frequency
+                            b_f_adapt.max_delta = setup.broadband_adaptive_solution.max_delta
+                            b_f_adapt.max_passes = setup.broadband_adaptive_solution.max_passes
+                            edb_setup.core.settings.general.broadband_adaptive_solution = b_f_adapt
+                        else:
+                            raise ValueError(f"Adapt type {setup.adapt_type} is not supported.")
+
+                    if setup.auto_mesh_operation.enabled:
+                        args = dict(setup.auto_mesh_operation)
+                        args.pop("enabled")
+                        edb_setup.auto_mesh_operation(**args)
 
                     for mp in setup.mesh_operations:
-                        edb_setup.add_length_mesh_operation(
-                            name=mp.name,
-                            max_elements=mp.max_elements,
-                            max_length=mp.max_length,
-                            restrict_length=mp.restrict_length,
-                            refine_inside=mp.refine_inside,
-                            # mesh_region=mp.get(mesh_region),
-                            net_layer_list=mp.nets_layers_list,
-                        )
-                else:
+                        if mp.mesh_operation_type == "length":
+                            edb_setup.add_length_mesh_operation(
+                                name=mp.name,
+                                max_elements=mp.max_elements,
+                                max_length=mp.max_length,
+                                restrict_length=mp.restrict_length,
+                                refine_inside=mp.refine_inside,
+                                # mesh_region=mp.get(mesh_region),
+                                net_layer_list=mp.nets_layers_list,
+                            )
+                        else:
+                            raise ValueError(f"Mesh operation type {mp.mesh_operation_type} is not supported.")
+                elif setup.type in ["siwave_ac", "siwave_syz"]:  # siwave ac
                     edb_setup = self._pedb.create_siwave_syz_setup(name=setup.name)
                     if setup.si_slider_position is not None:
                         edb_setup.si_slider_position = setup.si_slider_position
                     else:
                         edb_setup.pi_slider_position = setup.pi_slider_position
-
+                else:
+                    raise SyntaxError(f"Unsupported setup type '{setup.type}'.")
+                dist_dict = {"LIN": "linear_scale", "DEC": "log_scale", "LINC": "linear_count"}
                 # Apply frequency sweeps
                 for sw in setup.freq_sweep:
                     f_set = []
                     freq_string = []
                     for f in sw.frequencies:
                         if isinstance(f, str):
-                            freq_string.append(f)
+                            freq_strng = f.split(" ")
+                            if freq_strng[0] in dist_dict:
+                                f_set.append([dist_dict[freq_strng[0]], freq_strng[1], freq_strng[2], freq_strng[3]])
                         else:
                             f_set.append([f.distribution, f.start, f.stop, f.increment])
 
-                    sweep = edb_setup.add_sweep(sw.name, frequency_set=f_set, sweep_type=sw.type)
-                    if len(freq_string) > 0:
-                        sweep.frequency_string = freq_string
+                    sweep = edb_setup.add_sweep(
+                        sw.name, frequency_set=f_set, discrete=False if sw.type == "interpolation" else True
+                    )
 
+                    if len(freq_string) > 0 and not settings.is_grpc:
+                        sweep.frequency_string = freq_string
+                    sweep.use_q3d_for_dc = sw.use_q3d_for_dc
                     sweep.compute_dc_point = sw.compute_dc_point
                     sweep.enforce_causality = sw.enforce_causality
                     sweep.enforce_passivity = sw.enforce_passivity
                     sweep.adv_dc_extrapolation = sw.adv_dc_extrapolation
 
+                    if setup.type == "siwave_ac":
+                        sweep.use_hfss_solver_regions = sw.use_hfss_solver_regions
+                        sweep.hfss_solver_region_setup_name = sw.hfss_solver_region_setup_name
+                        sweep.hfss_solver_region_sweep_name = sw.hfss_solver_region_sweep_name
+
     def get_setups(self):
-        self.cfg_data.setups = []
+        self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
-            if setup.type == "siwave_dc":
-                self.cfg_data.add_siwave_dc_setup(
+            if setup.type in ["siwave_dc", "siwave_dcir"]:
+                self.cfg_data.setups.add_siwave_dc_setup(
                     name=setup.name,
                     dc_slider_position=setup.dc_settings.dc_slider_position,
                     dc_ir_settings={"export_dc_thermal_data": setup.dc_ir_settings.export_dc_thermal_data},
                 )
             else:
                 if setup.type == "hfss":
-                    adaptive_frequency_data_list = list(setup.adaptive_settings.adaptive_frequency_data_list)[0]
+                    cfg_ac_setup = self.cfg_data.setups.add_hfss_setup(name=setup.name)
+                    adapt_type = FAdaptTypeMapper.get(setup.adaptive_settings.adapt_type, as_grpc=True)
+                    cfg_ac_setup.adapt_type = adapt_type
+                    if not settings.is_grpc:
+                        if adapt_type == "single":
+                            i = setup.adaptive_settings.adaptive_frequency_data_list[0]
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = i.adaptive_frequency
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_passes = i.max_passes
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_delta = i.max_delta
+                        elif adapt_type == "broadband":
+                            lf = setup.adaptive_settings.adaptive_frequency_data_list[2]
+                            cfg_ac_setup.broadband_adaptive_solution.low_frequency = lf.adaptive_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes = lf.max_passes
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta = lf.max_delta
+                            hf = setup.adaptive_settings.adaptive_frequency_data_list[3]
+                            cfg_ac_setup.broadband_adaptive_solution.high_frequency = hf.adaptive_frequency
+                        else:
+                            self._pedb.logger.warning(
+                                "Unsupported adapt type found in setup, skipping adaptive settings."
+                            )
+                    else:
+                        if setup.adaptive_settings.adapt_type == "single":
+                            s_f_adapt = setup.settings.general.single_frequency_adaptive_solution
+                            cfg_ac_setup.single_frequency_adaptive_solution.adaptive_frequency = (
+                                s_f_adapt.adaptive_frequency
+                            )
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_passes = s_f_adapt.max_passes
+                            cfg_ac_setup.single_frequency_adaptive_solution.max_delta = s_f_adapt.max_delta
+                        elif setup.adaptive_settings.adapt_type == "broadband":
+                            b_f_adapt = setup.settings.general.broadband_adaptive_solution
+                            cfg_ac_setup.broadband_adaptive_solution.low_frequency = b_f_adapt.low_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.high_frequency = b_f_adapt.high_frequency
+                            cfg_ac_setup.broadband_adaptive_solution.max_delta = b_f_adapt.max_delta
+                            cfg_ac_setup.broadband_adaptive_solution.max_passes = b_f_adapt.max_passes
 
-                    cfg_ac_setup = self.cfg_data.add_hfss_setup(
-                        name=setup.name,
-                        f_adapt=adaptive_frequency_data_list.adaptive_frequency,
-                        max_num_passes=adaptive_frequency_data_list.max_passes,
-                        max_mag_delta_s=adaptive_frequency_data_list.max_delta,
-                    )
+                    mops = setup.mesh_operations if settings.is_grpc else list(setup.mesh_operations.values())
+                    for mop in mops:
+                        if mop.mesh_operation_type == MeshOperationTypeMapper.get("length", as_grpc=settings.is_grpc):
+                            cfg_ac_setup.add_length_mesh_operation(
+                                cfg_ac_setup.CfgLengthMeshOperation(
+                                    name=mop.name,
+                                    max_elements=mop.max_elements,
+                                    max_length=mop.max_length,
+                                    restrict_length=mop.restrict_length,
+                                    refine_inside=mop.refine_inside,
+                                    nets_layers_list=mop.nets_layers_list,
+                                )
+                            )
+                        else:
+                            raise ValueError(f"Mesh operation type {mop.mesh_operation_type} is not supported.")
 
-                    for name, mop in setup.mesh_operations.items():
-                        cfg_ac_setup.add_mesh_operation(
-                            **{
-                                "name": name,
-                                "type": mop.type,
-                                "max_elements": mop.max_elements,
-                                "max_length": mop.max_length,
-                                "restrict_length": mop.restrict_length,
-                                "refine_inside": mop.refine_inside,
-                                "nets_layers_list": mop.nets_layers_list,
-                            }
-                        )
-                else:  # siwave ac
-                    cfg_ac_setup = self.cfg_data.add_siwave_ac_setup(
+                elif setup.type in ["siwave", "siwave_ac"]:  # siwave ac
+                    cfg_ac_setup = self.cfg_data.setups.add_siwave_ac_setup(
                         name=setup.name,
                         use_si_settings=setup.use_si_settings,
                         si_slider_position=setup.si_slider_position,
                         pi_slider_position=setup.pi_slider_position,
                     )
+                else:
+                    self._pedb.logger.warning(f"Unsupported setup type '{setup.type}'.")
+                    continue
 
                 for name, sw in setup.sweeps.items():
                     cfg_ac_setup.add_frequency_sweep(
-                        {
-                            "name": name,
-                            "type": sw.type,
-                            "frequencies": sw.frequency_string,
-                            "compute_dc_point": sw.compute_dc_point,
-                            "enforce_causality": sw.enforce_causality,
-                            "enforce_passivity": sw.enforce_passivity,
-                            "adv_dc_extrapolation": sw.adv_dc_extrapolation,
-                        }
+                        cfg_ac_setup.CfgFrequencySweep(
+                            name=name,
+                            type=sw.type,
+                            frequencies=sw.frequency_string
+                            if isinstance(sw.frequency_string, list)
+                            else sw.frequency_string.split("\t\n"),
+                            compute_dc_point=sw.compute_dc_point,
+                            enforce_causality=sw.enforce_causality,
+                            enforce_passivity=sw.enforce_passivity,
+                            adv_dc_extrapolation=sw.adv_dc_extrapolation
+                            if hasattr(sw, "adv_dc_extrapolation")
+                            else False,
+                            use_hfss_solver_regions=sw.use_hfss_solver_regions,
+                            hfss_solver_region_setup_name=sw.hfss_solver_region_setup_name
+                            if hasattr(sw, "hfss_solver_region_setup_name")
+                            else None,
+                            hfss_solver_region_sweep_name=sw.hfss_solver_region_sweep_name
+                            if hasattr(sw, "hfss_solver_region_sweep_name")
+                            else None,
+                        )
                     )
 
     def apply_boundaries(self):
@@ -346,16 +450,16 @@ class Configuration:
         boundaries.radiation_level = edb_hfss_extent_info.radiation_level
         boundaries.dielectric_extent_type = edb_hfss_extent_info.dielectric_extent_type
         size, is_multiple = edb_hfss_extent_info.get_dielectric_extent()
-        boundaries.dielectric_extent_size = {"size": size, "is_multiple": is_multiple}
+        boundaries.dielectric_extent_size = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         boundaries.honor_user_dielectric = edb_hfss_extent_info.honor_user_dielectric
         boundaries.extent_type = edb_hfss_extent_info.extent_type
         boundaries.truncate_air_box_at_ground = edb_hfss_extent_info.truncate_air_box_at_ground
         size, is_multiple = edb_hfss_extent_info.get_air_box_horizontal_extent()
-        boundaries.air_box_horizontal_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.air_box_horizontal_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         size, is_multiple = edb_hfss_extent_info.get_air_box_positive_vertical_extent()
-        boundaries.air_box_positive_vertical_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.air_box_positive_vertical_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         size, is_multiple = edb_hfss_extent_info.get_air_box_negative_vertical_extent()
-        boundaries.air_box_negative_vertical_extent = {"size": size, "is_multiple": is_multiple}
+        boundaries.air_box_negative_vertical_extent = boundaries.PaddingData(size=size, is_multiple=is_multiple)
         boundaries.base_polygon = edb_hfss_extent_info.base_polygon
         boundaries.dielectric_base_polygon = edb_hfss_extent_info.dielectric_base_polygon
         boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent
@@ -391,11 +495,8 @@ class Configuration:
 
         if modeler.padstack_defs:
             for p in modeler.padstack_defs:
-                pdata = self._pedb._edb.Definition.PadstackDefData.Create()
-                pdef = self._pedb._edb.Definition.PadstackDef.Create(self._pedb.active_db, p.name)
-                pdef.SetData(pdata)
-                pdef = self._pedb.pedb_class.database.edb_data.padstacks_data.EDBPadstack(pdef, self._pedb.padstacks)
-                set_padstack_definition(p, pdef)
+                pdef = self._pedb.padstacks.create(p.name)
+                set_padstack_definition(p, self._pedb.padstacks[pdef])
 
         if modeler.padstack_instances:
             for p in modeler.padstack_instances:
@@ -421,9 +522,7 @@ class Configuration:
                     )
                     obj.aedt_name = p.name
                 elif p.type == "polygon":
-                    obj = self._pedb.modeler.create_polygon(
-                        main_shape=p.points, layer_name=p.layer, net_name=p.net_name
-                    )
+                    obj = self._pedb.modeler.create_polygon(points=p.points, layer_name=p.layer, net_name=p.net_name)
                     obj.aedt_name = p.name
                 elif p.type == "circle":
                     obj = self._pedb.modeler.create_circle(
@@ -442,10 +541,20 @@ class Configuration:
                         if i.aedt_name == v:
                             self._pedb.modeler.add_void(obj, i)
 
+        # grpc component.create() requires padstack_instance objects instead of names
+        # so we need to get the mapping here
+        instance_by_name = None
         if modeler.components:
+            if settings.is_grpc:
+                instance_by_name = self._pedb.padstacks.instances_by_name
             for c in modeler.components:
+                if instance_by_name:
+                    # entering this block only for grpc
+                    pins = [instance_by_name[i] for i in c.pins]
+                else:
+                    pins = c.pins
                 obj = self._pedb.components.create(
-                    c.pins,
+                    pins,
                     component_name=c.reference_designator,
                     placement_layer=c.placement_layer,
                     component_part_name=c.definition,
@@ -471,9 +580,9 @@ class Configuration:
         """Retrieve variables from database."""
         self.cfg_data.variables.variables = []
         for name, obj in self._pedb.design_variables.items():
-            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+            self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
         for name, obj in self._pedb.project_variables.items():
-            self.cfg_data.variables.add_variable(name, obj.value_string, obj.description)
+            self.cfg_data.variables.add_variable(name, str(obj.value), obj.description)
 
     def apply_materials(self):
         """Apply material settings to the current design"""
@@ -491,13 +600,7 @@ class Configuration:
                     mat.set_thermal_modifier(**i.to_dict())
 
     def get_materials(self):
-        """Retrieve materials from the current design.
-
-        Parameters
-        ----------
-        append: bool, optional
-            If `True`, append materials to the current material list.
-        """
+        """Retrieve materials from the current design."""
 
         self.cfg_data.stackup.materials = []
         for name, mat in self._pedb.materials.materials.items():
@@ -549,12 +652,12 @@ class Configuration:
         # step 1, archive padstack definitions
         temp_pdef_data = {}
         for pdef_name, pdef in self._pedb.padstacks.definitions.items():
-            pdef_edb_object = pdef._padstack_def_data
+            pdef_edb_object = pdef.data
             temp_pdef_data[pdef_name] = pdef_edb_object
         # step 2, archive padstack instance layer map
         temp_p_inst_layer_map = {}
         for p_inst in self._pedb.layout.padstack_instances:
-            temp_p_inst_layer_map[p_inst.id] = p_inst._edb_object.GetLayerMap()
+            temp_p_inst_layer_map[p_inst.id] = p_inst.layer_map
 
         # ----------------------------------------------------------------------
         # Apply stackup
@@ -604,7 +707,7 @@ class Configuration:
             pdef._padstack_def_data = pdef_data
         # restore padstack instance layer map
         for p_inst in self._pedb.layout.padstack_instances:
-            p_inst._edb_object.SetLayerMap(temp_p_inst_layer_map[p_inst.id])
+            p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
 
     def get_stackup(self):
         self.cfg_data.stackup.layers = []
@@ -628,41 +731,45 @@ class Configuration:
                 solder_ball_parameters=obj.get_solder_parameters(),
             )
 
-        for obj in self._pedb.layout.padstack_instances:
-            _, position, rotation = obj._edb_object.GetPositionAndRotationValue()
-            hole_override_enabled, hole_override_diameter = obj._edb_object.GetHoleOverrideValue()
+        for obj in self._pedb.padstacks.instances.values():
+            result = obj.position_and_rotation
+            position = result[:2]
+            rotation = result[-1]
+            hole_override_enabled, hole_override_diameter = obj.get_hole_overrides()
+            try:
+                solderball_layer = obj.solderball_layer
+            except Exception:
+                solderball_layer = None
             padstacks.add_padstack_instance(
                 name=obj.aedt_name,
                 is_pin=obj.is_pin,
                 definition=obj.padstack_definition,
                 backdrill_parameters=obj.backdrill_parameters,
-                position=[position.X.ToString(), position.Y.ToString()],
-                rotation=rotation.ToString(),
+                position=[str(position[0]), str(position[1])],
+                rotation=str(rotation),
                 eid=obj.id,
                 hole_override_enabled=hole_override_enabled,
-                hole_override_diameter=hole_override_diameter.ToString(),
-                solder_ball_layer=obj._edb_object.GetSolderBallLayer().GetName(),
+                hole_override_diameter=str(hole_override_diameter),
+                solder_ball_layer=solderball_layer,
                 layer_range=[obj.start_layer, obj.stop_layer],
             )
 
     @execution_timer("Applying padstack definitions and instances")
     def apply_padstacks(self):
         padstacks = self.cfg_data.padstacks
-
+        p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
         for pdef in padstacks.definitions:
-            pdef_obj = self._pedb.padstacks.definitions[pdef.name]
+            pdef_obj = p_d[pdef.name]
             set_padstack_definition(pdef, pdef_obj)
 
+        if padstacks.instances:
+            insts_by_name = self._pedb.padstacks.instances_by_name
         for inst in padstacks.instances:
-            inst_obj = self._pedb.padstacks.instances_by_name[inst.name]
+            inst_obj = insts_by_name[inst.name]
             set_padstack_instance(inst, inst_obj)
 
     def get_data_from_db(self, **kwargs):
         """Get configuration data from layout.
-
-        Parameters
-        ----------
-        stackup
 
         Returns
         -------
@@ -685,7 +792,7 @@ class Configuration:
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
             self.get_setups()
-            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups]
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
         if kwargs.get("terminals", False):
             self.get_terminals()
             data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
@@ -789,19 +896,19 @@ class Configuration:
         edge_terminals = {}
         for cfg_terminal in self.cfg_data.terminals.terminals:
             if cfg_terminal.terminal_type == "padstack_instance":
-                terminal = self._pedb.source_excitation.create_padstack_instance_terminal(
+                terminal = self._pedb.excitation_manager.create_padstack_instance_terminal(
                     name=cfg_terminal.name,
                     padstack_instance_id=cfg_terminal.padstack_instance_id,
                     padstack_instance_name=cfg_terminal.padstack_instance,
                 )
 
             elif cfg_terminal.terminal_type == "pin_group":
-                terminal = self._pedb.source_excitation.create_pin_group_terminal(
+                terminal = self._pedb.excitation_manager.create_terminal_from_pin_group(
                     name=cfg_terminal.name,
                     pin_group=cfg_terminal.pin_group,
                 )
             elif cfg_terminal.terminal_type == "point":
-                terminal = self._pedb.source_excitation.create_point_terminal(
+                terminal = self._pedb.excitation_manager.create_point_terminal(
                     name=cfg_terminal.name,
                     net=cfg_terminal.net,
                     x=cfg_terminal.x,
@@ -809,7 +916,7 @@ class Configuration:
                     layer=cfg_terminal.layer,
                 )
             elif cfg_terminal.terminal_type == "edge":
-                terminal = self._pedb.source_excitation.create_edge_terminal(
+                terminal = self._pedb.excitation_manager.create_edge_terminal(
                     primitive_name=cfg_terminal.primitive,
                     x=cfg_terminal.point_on_edge_x,
                     y=cfg_terminal.point_on_edge_y,
@@ -844,14 +951,14 @@ class Configuration:
                 obj.reference_terminal = terminals_dict[cfg.reference_terminal][1]
 
         for i in bungle_terminals:
-            self._pedb.source_excitation.create_bundle_terminal(terminals=i.terminals, name=i.name)
+            self._pedb.excitation_manager.create_bundle_terminal(terminals=i.terminals, name=i.name)
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
-            if i.terminal_type in ["PadstackInstanceTerminal", "padstack_inst"]:
+            if i.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 manager.add_padstack_instance_terminal(
                     padstack_instance=i.padstack_instance.aedt_name,
                     padstack_instance_id=i.padstack_instance.id,
@@ -861,11 +968,11 @@ class Configuration:
                     boundary_type=i.boundary_type,
                     amplitude=i.source_amplitude,
                     phase=i.source_phase,
-                    terminal_to_ground=i.terminal_to_ground,
+                    terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     hfss_type=i.hfss_type if i.hfss_type else "Wave",
                 )
-            elif i.terminal_type in ["PinGroupTerminal", "pin_group"]:
+            elif i.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                 manager.add_pin_group_terminal(
                     pin_group=i.pin_group.name,
                     name=i.name,
@@ -874,9 +981,9 @@ class Configuration:
                     reference_terminal=i.reference_terminal.name if i.reference_terminal else None,
                     amplitude=i.source_amplitude,
                     phase=i.source_phase,
-                    terminal_to_ground=i.terminal_to_ground,
+                    terminal_to_ground=SourceTermMapper.get(i.terminal_to_ground, as_grpc=settings.is_grpc),
                 )
-            elif i.terminal_type in ["PointTerminal", "point"]:
+            elif i.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                 manager.add_point_terminal(
                     x=i.location[0],
                     y=i.location[1],

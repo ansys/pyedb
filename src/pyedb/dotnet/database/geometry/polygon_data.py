@@ -19,12 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-from typing import Union
+from typing import TYPE_CHECKING, Any
 import warnings
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.dotnet.database.utilities.obj_base import BBox
+
+if TYPE_CHECKING:  # pragma: no cover
+    from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
+    from pyedb.dotnet.edb import Edb
 
 
 class PolygonData:
@@ -32,29 +36,28 @@ class PolygonData:
 
     def __init__(
         self,
-        pedb,
-        edb_object=None,
-        create_from_points=None,
-        create_from_circle=None,
-        create_from_rectangle=None,
-        create_from_bounding_box=None,
+        pedb: "Edb",
+        edb_object: Any | None = None,
+        create_from_points: Any | None = None,
+        create_from_bounding_box: Any | None = None,
         **kwargs,
-    ):
+    ) -> None:
         self._pedb = pedb
 
-        if create_from_points:
+        if edb_object is not None:
+            self._edb_object = edb_object
+        elif create_from_points:
             self._edb_object = self.create_from_points(**kwargs)
-        elif create_from_circle:
-            x_center, y_center, radius = kwargs
-        elif create_from_rectangle:
-            x_lower_left, y_lower_left, x_upper_right, y_upper_right = kwargs
         elif create_from_bounding_box:
             self._edb_object = self.create_from_bounding_box(**kwargs)
-        else:  # pragma: no cover
-            self._edb_object = edb_object
+        else:
+            self._pedb.logger.error(
+                "PolygonData: No valid EDB object or creation method provided. "
+                "Please provide either an 'edb_object', 'create_from_points', or 'create_from_bounding_box' argument."
+            )
 
     @property
-    def bounding_box(self):
+    def bounding_box(self) -> list[float]:
         """Bounding box.
 
         Returns
@@ -67,7 +70,7 @@ class PolygonData:
         return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
 
     @property
-    def arcs(self):
+    def arcs(self) -> list["EDBArcs"]:
         """Get the Primitive Arc Data."""
         from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
 
@@ -75,12 +78,12 @@ class PolygonData:
         return arcs
 
     @property
-    def points(self):
+    def points(self) -> list[tuple[float, float]]:
         """Get all points in polygon.
 
         Returns
         -------
-        list[list[float]]
+        list[tuple[float, float]]
         """
         return [
             (self._pedb.edb_value(i.X).ToDouble(), self._pedb.edb_value(i.Y).ToDouble())
@@ -88,27 +91,37 @@ class PolygonData:
         ]
 
     @property
-    def points_without_arcs(self):
+    def points_without_arcs(self) -> list[tuple[float, float]]:
+        """Get all points in polygon without arcs."""
         points = list(self._edb_object.GetPolygonWithoutArcs().Points)
         return [(pt.X.ToDouble(), pt.Y.ToDouble()) for pt in points]
 
-    def create_from_points(self, points, closed=True):
+    def create_from_points(self, points: list[tuple[float, float]], closed: bool = True) -> Any:
+        """Create a polygon from a list of points."""
         list_of_point_data = []
         for pt in points:
             list_of_point_data.append(PointData.create_from_xy(self._pedb, x=pt[0], y=pt[1])._edb_object)
         return self._pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
     @property
-    def area(self):
+    def area(self) -> float:
         """Get the area of the polygon."""
         return self._edb_object.Area()
 
-    def create_from_bounding_box(self, points):
+    def create_from_bounding_box(self, points: list[Any]) -> Any:
+        """Create a polygon from a bounding box defined by two corner points."""
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
         return self._pedb.core.Geometry.PolygonData.CreateFromBBox(bbox._edb_object)
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
+    def expand(
+        self,
+        offset: float = 0.001,
+        tolerance: float = 1e-12,
+        round_corners: bool = True,
+        maximum_corner_extension: float = 0.001,
+    ) -> bool:
         """Expand the polygon shape by an absolute value in all direction.
+
         Offset can be negative for negative expansion.
 
         Parameters
@@ -127,7 +140,7 @@ class PolygonData:
         self._edb_object = new_poly[0]
         return True
 
-    def create_from_arcs(self, arcs, flag):
+    def create_from_arcs(self, arcs: list[Any], flag: bool) -> "PolygonData":
         """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
 
         Parameters
@@ -141,14 +154,17 @@ class PolygonData:
         poly = self._edb_object.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
 
-    def is_inside(self, x: Union[str, float], y: Union[str, float] = None) -> bool:
+    # TODO: Shouldn't that method only work with x and y as input instead of
+    # accepting that x can be a "point" (list of two values)?
+    def is_inside(self, x: str | float | list[Any], y: str | float | None = None) -> bool:
         """Determines whether a point is inside the polygon."""
         if isinstance(x, list) and len(x) == 2:
             y = x[1]
             x = x[0]
         return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
 
-    def point_in_polygon(self, x: Union[str, float], y: Union[str, float] = None) -> bool:
+    # TODO: Same argument as above
+    def point_in_polygon(self, x: str | float | list[Any], y: str | float | None = None) -> bool:
         """Determines whether a point is inside the polygon.
 
         ..deprecated:: 0.48.0
@@ -157,11 +173,11 @@ class PolygonData:
         warnings.warn("Use method is_inside instead", DeprecationWarning)
         return self.is_inside(x, y)
 
-    def get_point(self, index):
+    def get_point(self, index: int) -> PointData:
         """Gets the point at the index as a PointData object."""
         edb_object = self._edb_object.GetPoint(index)
         return self._pedb.pedb_class.database.geometry.point_data.PointData(self._pedb, edb_object)
 
-    def set_point(self, index, point_data):
+    def set_point(self, index: int, point_data: PointData) -> None:
         """Sets the point at the index from a PointData object."""
         self._edb_object.SetPoint(index, point_data)

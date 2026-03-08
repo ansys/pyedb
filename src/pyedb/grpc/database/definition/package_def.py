@@ -20,8 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.definition.package_def import PackageDef as GrpcPackageDef
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
+from ansys.edb.core.definition.package_def import PackageDef as CorePackageDef
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
@@ -48,10 +48,11 @@ class PackageDef:
     def __init__(self, pedb, core=None, name=None, component_part_name=None, extent_bounding_box=None):
         if not core:
             if name:
-                edb_object = GrpcPackageDef.create(db=pedb.active_db, name=name)
+                self.core = CorePackageDef.create(db=pedb.active_db, name=name)
             else:
                 raise AttributeError("Name must be provided to create and instantiate a PackageDef object.")
-        self.core = core
+        else:
+            self.core = core
         self._pedb = pedb
         self._heat_sink = None
         if not self.core and name:
@@ -70,7 +71,7 @@ class PackageDef:
         edb_object: object
             EDB PackageDef Object
         """
-        self.core = GrpcPackageDef.create(self._pedb.active_db, name)
+        self.core = CorePackageDef.create(self._pedb.active_db, name)
         if component_part_name:
             x_pt1, y_pt1, x_pt2, y_pt2 = list(
                 self._pedb.components.definitions[component_part_name].components.values()
@@ -85,11 +86,11 @@ class PackageDef:
                 "Package creation uses bounding box but it cannot be inferred. "
                 "Please set argument 'component_part_name' or 'extent_bounding_box'."
             )
-        polygon_data = GrpcPolygonData(points=bbox)
+        polygon_data = CorePolygonData(points=bbox)
         self.exterior_boundary = polygon_data
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.core.name
 
     @name.setter
@@ -97,7 +98,7 @@ class PackageDef:
         self.core.name = value
 
     @property
-    def exterior_boundary(self) -> GrpcPolygonData:
+    def exterior_boundary(self) -> CorePolygonData:
         """Get the exterior boundary of a package definition.
 
         Returns
@@ -105,7 +106,7 @@ class PackageDef:
         :class:`PolygonData <ansys.edb.core.geometry.polygon_data.PolygonData>`
 
         """
-        return GrpcPolygonData(self.core.exterior_boundary.points)
+        return CorePolygonData(self.core.exterior_boundary.points)
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
@@ -124,7 +125,7 @@ class PackageDef:
 
     @maximum_power.setter
     def maximum_power(self, value):
-        self.core.maximum_power = Value(value)
+        self.core.maximum_power = self._pedb._value_setter(value)
 
     @property
     def thermal_conductivity(self) -> float:
@@ -140,7 +141,7 @@ class PackageDef:
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
-        self.core.thermal_conductivity = Value(value)
+        self.core.thermal_conductivity = self._pedb._value_setter(value)
 
     @property
     def theta_jb(self) -> float:
@@ -155,7 +156,7 @@ class PackageDef:
 
     @theta_jb.setter
     def theta_jb(self, value):
-        self.core.theta_jb = Value(value)
+        self.core.theta_jb = self._pedb._value_setter(value)
 
     @property
     def theta_jc(self) -> float:
@@ -170,7 +171,7 @@ class PackageDef:
 
     @theta_jc.setter
     def theta_jc(self, value):
-        self.core.theta_jc = Value(value)
+        self.core.theta_jc = self._pedb._value_setter(value)
 
     @property
     def height(self) -> float:
@@ -185,10 +186,10 @@ class PackageDef:
 
     @height.setter
     def height(self, value):
-        self.core.height = Value(value)
+        self.core.height = self._pedb._value_setter(value)
 
     @property
-    def heat_sink(self) -> HeatSink:
+    def heat_sink(self) -> "HeatSink":
         """Package heat sink.
 
         Returns
@@ -203,16 +204,6 @@ class PackageDef:
                 f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
                 f"property for object {self}: {str(e)}"
             )
-
-    @property
-    @deprecated_property
-    def heatsink(self):
-        """Property added for .NET compatibility.
-        . deprecated:: pyedb 0.43.0
-        Use :func:`heat_sink` instead.
-
-        """
-        return self.heat_sink
 
     @staticmethod
     def create(edb, name: str) -> "PackageDef":
@@ -230,7 +221,7 @@ class PackageDef:
         :class:`PackageDef <pyedb.grpc.database.definition.package_def.PackageDef>`
             PackageDef object.
         """
-        grpc_package = GrpcPackageDef.create(edb.active_db, name)
+        grpc_package = CorePackageDef.create(edb.active_db, name)
         if grpc_package.is_null:
             raise RuntimeError(f"Failed to create package {name}")
         return PackageDef(edb, grpc_package)
@@ -262,10 +253,10 @@ class PackageDef:
         else:
             fin_orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
         self.core.heat_sink = GrpcHeatSink(
-            Value(fin_thickness),
-            Value(fin_spacing),
-            Value(fin_base_height),
-            Value(fin_height),
+            self._pedb._value_setter(fin_thickness),
+            self._pedb._value_setter(fin_spacing),
+            self._pedb._value_setter(fin_base_height),
+            self._pedb._value_setter(fin_height),
             fin_orientation,
         )
         return self.heat_sink

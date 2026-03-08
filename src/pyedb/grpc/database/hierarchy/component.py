@@ -21,33 +21,34 @@
 # SOFTWARE.
 
 import logging
+from pathlib import Path
 import re
 from typing import List, Optional, Union
 import warnings
 
 from ansys.edb.core.definition.component_model import (
-    NPortComponentModel as GrpcNPortComponentModel,
+    NPortComponentModel as CoreNPortComponentModel,
 )
-from ansys.edb.core.definition.die_property import DieOrientation as GrpcDieOrientation, DieType as GrpcDieType
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
-from ansys.edb.core.hierarchy.netlist_model import NetlistModel as GrpcNetlistModel
-from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as GrpcPinPairModel
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
+from ansys.edb.core.hierarchy.netlist_model import NetlistModel as CoreNetlistModel
+from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 from ansys.edb.core.hierarchy.sparameter_model import (
-    SParameterModel as GrpcSParameterModel,
+    SParameterModel as CoreSParameterModel,
 )
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
+from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
 from ansys.edb.core.primitive.padstack_instance import (
-    PadstackInstance as GrpcPadstackInstance,
+    PadstackInstance as CorePadstackInstance,
 )
 from ansys.edb.core.terminal.padstack_instance_terminal import (
-    PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
+    PadstackInstanceTerminal as CorePadstackInstanceTerminal,
 )
-from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
+from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 import numpy as np
 
-from pyedb.generic.general_methods import get_filename_without_extension
+from pyedb.grpc.database.hierarchy.netlist_model import NetlistModel
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
@@ -59,14 +60,36 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 from pyedb.grpc.database.utility.value import Value
 
 component_type_mapping = {
-    GrpcComponentType.OTHER: "other",
-    GrpcComponentType.RESISTOR: "resistor",
-    GrpcComponentType.INDUCTOR: "inductor",
-    GrpcComponentType.CAPACITOR: "capacitor",
-    GrpcComponentType.IC: "ic",
-    GrpcComponentType.IO: "io",
-    GrpcComponentType.INVALID: "invalid",
+    CoreComponentType.OTHER: "other",
+    CoreComponentType.RESISTOR: "resistor",
+    CoreComponentType.INDUCTOR: "inductor",
+    CoreComponentType.CAPACITOR: "capacitor",
+    CoreComponentType.IC: "ic",
+    CoreComponentType.IO: "io",
+    CoreComponentType.INVALID: "invalid",
 }
+
+
+class ComponentProperty:
+    """Class managing component properties."""
+
+    def __init__(self, core):
+        # Use super().__setattr__ to avoid recursion in __setattr__ if you add it later
+        super().__setattr__("core", core)
+
+    def __getattr__(self, name):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        return getattr(self.core, name)
+
+    def __setattr__(self, name, value):
+        """
+        Only called if normal attribute lookup fails on self.
+        Delegates to self.core.
+        """
+        setattr(self.core, name, value)
 
 
 class Component:
@@ -88,6 +111,13 @@ class Component:
         self._comp_instance = None
         self._logger = pedb.logger
         self._package_def = None
+
+    @property
+    def pin_pairs(self) -> List[PinPairModel] | None:
+        """Pinpairs of the model."""
+        if "PinPairModel" in str(self.model):
+            return self.model.pin_pairs
+        return None
 
     @property
     def group_type(self):
@@ -118,7 +148,7 @@ class Component:
     def component_type(self, value):
         reverse_mapping = {v: k for k, v in component_type_mapping.items()}
         if value in reverse_mapping:
-            self.core.component_type = GrpcComponentType(reverse_mapping[value])
+            self.core.component_type = CoreComponentType(reverse_mapping[value])
         else:
             self._pedb.logger.error(f"Invalid component type: {value}")
 
@@ -221,13 +251,13 @@ class Component:
         :class:`Rlc <ansys.edb.core.utility.rlc.Rlc>`
 
         """
-        if self.model_type == "SPICEModel":
+        if self.model_type == "PinPairModel":
             if len(self.pins) == 2:
                 self._pedb.logger.warning(f"Spice model defined on component {self.name}, replacing model by ")
-                rlc = GrpcRlc()
+                rlc = CoreRlc()
                 pins = list(self.pins.keys())
                 pin_pair = (pins[0], pins[1])
-                rlc_model = PinPairModel(self._pedb, GrpcPinPairModel.create())
+                rlc_model = PinPairModel(self)
                 rlc_model.core.set_rlc(pin_pair, rlc)
                 component_property = self.component_property
                 component_property.model = rlc_model.core
@@ -280,7 +310,7 @@ class Component:
         :class:`ComponentProperty <ansys.edb.core.hierarchy.component_property.ComponentProperty>`
 
         """
-        return self.core.component_property
+        return ComponentProperty(self.core.component_property)
 
     @component_property.setter
     def component_property(self, value):
@@ -296,12 +326,14 @@ class Component:
 
         """
 
-        if isinstance(self.component_property.model, GrpcSPICEModel):
-            return SpiceModel(edb_object=self.component_property.model.msg)
-        elif isinstance(self.component_property.model, GrpcSParameterModel):
-            return SparamModel(edb_object=self.component_property.model.msg)
+        if isinstance(self.component_property.model, CoreSPICEModel):
+            return SpiceModel(
+                component=self,
+            )
+        elif isinstance(self.component_property.model, CoreSParameterModel):
+            return SparamModel(component=self)
         else:
-            return self.component_property.model
+            return PinPairModel(self)
 
     @model.setter
     def model(self, value):
@@ -332,7 +364,7 @@ class Component:
             )
 
             self._package_def = GrpcPackageDef.create(self._pedb.db, name=value)
-            self._package_def.exterior_boundary = GrpcPolygonData(points=self.bounding_box)
+            self._package_def.exterior_boundary = CorePolygonData(points=self.bounding_box)
             comp_prop = self.core.component_property
             comp_prop.package_def = self._package_def
             self.core.component_property = comp_prop
@@ -469,7 +501,7 @@ class Component:
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return SpiceModel(edb_object=self._edb_model)
+            return SpiceModel(component=self)
 
     @property
     def s_param_model(self) -> SparamModel:
@@ -482,10 +514,10 @@ class Component:
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return SparamModel(edb_object=self._edb_model)
+            return SparamModel(component=self)
 
     @property
-    def netlist_model(self) -> GrpcNetlistModel:
+    def netlist_model(self) -> NetlistModel:
         """Assigned netlist model.
 
         Returns
@@ -495,7 +527,7 @@ class Component:
         if not self.model_type == "NetlistModel":
             return None
         else:
-            return GrpcNetlistModel(self._edb_model)
+            return NetlistModel(self, self._edb_model)
 
     @property
     def solder_ball_height(self) -> float:
@@ -517,8 +549,6 @@ class Component:
             cmp_property = self.core.component_property
             solder_ball_prop = cmp_property.solder_ball_property
             solder_ball_prop.height = Value(value)
-            cmp_property.solder_ball_property = solder_ball_prop
-            self.core.component_property = cmp_property
 
     @property
     def solder_ball_shape(self) -> str:
@@ -589,6 +619,24 @@ class Component:
             solder_ball_prop.set_diameter(diameter, mid_diameter)
             cmp_property.solder_ball_property = solder_ball_prop
             self.core.component_property = cmp_property
+
+    @property
+    def solder_ball_material(self) -> str:
+        """Solderball material name."""
+        return self.component_property.solder_ball_property.material_name
+
+    @solder_ball_material.setter
+    def solder_ball_material(self, value):
+        self.component_property.solder_ball_property.material_name = value
+
+    @property
+    def uses_solderball(self) -> bool:
+        """Whether if solderball is enabled or not."""
+        return self.component_property.solder_ball_property.uses_solderball
+
+    @uses_solderball.setter
+    def uses_solderball(self, value):
+        self.component_property.solder_ball_property.uses_solderball = value
 
     @property
     def solder_ball_placement(self):
@@ -721,17 +769,95 @@ class Component:
 
     @res_value.setter
     def res_value(self, value):  # pragma no cover
-        _rlc = []
-        model = PinPairModel(self._pedb, GrpcPinPairModel.create())
-        for rlc in self._rlc:
-            rlc.r_enabled = True
-            rlc.r = Value(value)
-            _rlc.append(rlc)
-        for ind in range(len(self._pin_pairs)):
-            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.core.component_property
-        comp_prop.model = model
-        self.core.component_property = comp_prop
+        try:
+            self.model.pin_pairs[0].resistance = value
+        except Exception:
+            if value:
+                _rlc = []
+                model = CorePinPairModel.create()
+                rlc = CoreRlc()
+                rlc.r_enabled = True
+                rlc.r = Value(value)
+                model.set_rlc(list(self.pins().keys())[:2], rlc)
+                comp_prop = self.core.component_property
+                comp_prop.model = model
+                self.core.component_property = comp_prop
+
+    @property
+    def rlc_enable(self) -> bool:
+        """RLC enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if RLC is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return [self._rlc[0].r_enabled, self._rlc[0].l_enabled, self._rlc[0].c_enabled]
+        return [False, False, False]
+
+    @property
+    def res_enabled(self) -> bool:
+        """Resistance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if resistor is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].r_enabled
+        return False
+
+    @res_enabled.setter
+    def res_enabled(self, value):  # pragma no cover
+        try:
+            values = self.model.pin_pairs[0].rlc_enable
+            self.model.pin_pairs[0].rlc_enable = [value, values[1], values[2]]
+        except Exception:
+            self._logger.error("Failed to set parameter")
+
+    @property
+    def cap_enabled(self) -> bool:
+        """Capacitance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if capacitance is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].c_enabled
+        return False
+
+    @cap_enabled.setter
+    def cap_enabled(self, value):  # pragma no cover
+        try:
+            values = self.model.pin_pairs[0].rlc_enable
+            self.model.pin_pairs[0].rlc_enable = [values[0], value, values[2]]
+        except Exception:
+            self._logger.error("Failed to set parameter")
+
+    @property
+    def ind_enabled(self) -> bool:
+        """Inductance enabled flag.
+
+        Returns
+        -------
+        bool
+            ``True`` if inductance is enabled.
+        """
+        if self.component_type in ["resistor", "capacitor", "inductor"]:
+            return self._rlc[0].l_enabled
+        return False
+
+    @ind_enabled.setter
+    def ind_enabled(self, value):  # pragma no cover
+        try:
+            values = self.model.pin_pairs[0].rlc_enable
+            self.model.pin_pairs[0].rlc_enable = [values[0], values[1], value]
+        except Exception:
+            self._logger.error("Failed to set parameter")
 
     @property
     def cap_value(self) -> float:
@@ -750,18 +876,19 @@ class Component:
 
     @cap_value.setter
     def cap_value(self, value):  # pragma no cover
-        if value:
-            _rlc = []
-            model = PinPairModel(self._pedb, GrpcPinPairModel.create())
-            for rlc in self._rlc:
+        try:
+            self.model.pin_pairs[0].capacitance = value
+        except Exception:
+            if value:
+                _rlc = []
+                model = CorePinPairModel.create()
+                rlc = CoreRlc()
                 rlc.c_enabled = True
                 rlc.c = Value(value)
-                _rlc.append(rlc)
-            for ind in range(len(self._pin_pairs)):
-                model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.core.component_property
-            comp_prop.model = model
-            self.core.component_property = comp_prop
+                model.set_rlc(list(self.pins().keys())[:2], rlc)
+                comp_prop = self.core.component_property
+                comp_prop.model = model
+                self.core.component_property = comp_prop
 
     @property
     def ind_value(self):
@@ -780,18 +907,21 @@ class Component:
 
     @ind_value.setter
     def ind_value(self, value) -> float:
-        if value:
-            _rlc = []
-            model = PinPairModel(self._pedb, GrpcPinPairModel.create())
-            for rlc in self._rlc:
+        try:
+            self.model.pin_pairs[0].inductance = value
+        except Exception:
+            if value:
+                _rlc = []
+                model = CorePinPairModel.create()
+                rlc = CoreRlc()
                 rlc.l_enabled = True
                 rlc.l = Value(value)
-                _rlc.append(rlc)
-            for ind in range(len(self._pin_pairs)):
-                model.core.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.core.component_property
-            comp_prop.model = model.core
-            self.core.component_property = comp_prop
+                model.set_rlc(list(self.pins.keys())[:2], rlc)
+                comp_prop = self.core.component_property
+                comp_prop.model = model
+                self.core.component_property = comp_prop
+
+            self._logger.error("Failed to set parameter")
 
     @property
     def is_parallel_rlc(self) -> bool:
@@ -810,15 +940,10 @@ class Component:
 
     @is_parallel_rlc.setter
     def is_parallel_rlc(self, value):  # pragma no cover
-        if not len(self._pin_pairs):
-            logging.warning(self.refdes, " has no pin pair.")
-        else:
-            if isinstance(value, bool):
-                for rlc in self._rlc:
-                    rlc.is_parallel = value
-                    comp_property = self.component_property
-                    comp_property.set_rcl(rlc)
-                    self.component_property = comp_property
+        try:
+            self.model.pin_pairs[0].is_parallel = value
+        except Exception:
+            self._logger.error("Failed to set parameter")
 
     @property
     def center(self) -> tuple[float, float]:
@@ -871,7 +996,7 @@ class Component:
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
         pt2 = bbox[2]
-        return (Value(pt1.x), Value(pt1.y)), (Value(pt2.x), Value(pt2.y))
+        return [pt1.x.value, pt1.y.value, pt2.x.value, pt2.y.value]
 
     @property
     def rotation(self) -> float:
@@ -921,10 +1046,10 @@ class Component:
         """
         _pins = {}
         for connectable in self.core.members:
-            if isinstance(connectable, GrpcPadstackInstanceTerminal):
+            if isinstance(connectable, CorePadstackInstanceTerminal):
                 if connectable.padstack_instance.is_layout_pin:
                     _pins[connectable.name] = PadstackInstanceTerminal(self._pedb, connectable)
-            if isinstance(connectable, GrpcPadstackInstance):
+            if isinstance(connectable, CorePadstackInstance):
                 if connectable.is_layout_pin:
                     _pins[connectable.name] = PadstackInstance(self._pedb, connectable)
         return _pins
@@ -1140,7 +1265,10 @@ class Component:
         comp_prop = self.component_property
         if hasattr(model, "core"):
             model = model.core
-        comp_prop.model = model
+        if hasattr(comp_prop, "core"):
+            comp_prop.core.model = model
+        else:
+            comp_prop.model = model
         self.component_property = comp_prop
         return model
 
@@ -1177,7 +1305,7 @@ class Component:
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
 
         with open(file_path, "r") as f:
             for line in f:
@@ -1189,7 +1317,7 @@ class Component:
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = SpiceModel(file_path=file_path, name=name, sub_circuit=name)
+        model = SpiceModel(component=self, file_path=file_path, name=name, sub_circuit=name)
         if sub_circuit_name:
             model.sub_circuit = sub_circuit_name
 
@@ -1209,7 +1337,27 @@ class Component:
         else:
             return False
 
-    def assign_s_param_model(self, file_path, name=None, reference_net=None) -> GrpcNPortComponentModel:
+    def assign_netlist_model(
+        self,
+        netlist,
+    ):
+        """Assign Netlist to this component.
+
+        Parameters
+        ----------
+        netlist : str
+            Netlist.
+
+        Returns
+        -------
+
+        """
+
+        model = CoreNetlistModel.create(netlist)
+
+        return self._set_model(model)
+
+    def assign_s_param_model(self, file_path, name=None, reference_net=None) -> CoreNPortComponentModel:
         """Assign S-parameter to this component.
 
         Parameters
@@ -1229,7 +1377,7 @@ class Component:
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
         for model in self.core.component_def.component_models:
             if model.model_name == name:
                 self._pedb.logger.error(f"Model {name} already defined for component {self.refdes}")
@@ -1239,13 +1387,13 @@ class Component:
                 f"No reference net provided for S parameter file {file_path}, net `GND` is assigned by default"
             )
             reference_net = "GND"
-        n_port_model = GrpcNPortComponentModel.find_by_name(self.core.component_def, name)
+        n_port_model = CoreNPortComponentModel.find_by_name(self.core.component_def, name)
         if n_port_model.is_null:
-            n_port_model = GrpcNPortComponentModel.create(name=name)
+            n_port_model = CoreNPortComponentModel.create(name=name)
             n_port_model.reference_file = file_path
             self.component_definition.core.add_component_model(n_port_model)
 
-        model = GrpcSParameterModel.create(name=name, ref_net=reference_net)
+        model = CoreSParameterModel.create(name=name, ref_net=reference_net)
         return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None) -> bool:
@@ -1276,7 +1424,7 @@ class Component:
 
         model = GrpcComponentModel.find_by_name(self.core.component_def, name)
         if not model.is_null:
-            s_param_model = GrpcSParameterModel.create(name=name, ref_net="GND")
+            s_param_model = CoreSParameterModel.create(name=name, ref_net="GND")
             if reference_net:
                 s_param_model.reference_net = reference_net
             return self._set_model(s_param_model)
@@ -1312,11 +1460,11 @@ class Component:
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
         res, ind, cap = Value(res), Value(ind), Value(cap)
-        model = PinPairModel(self._pedb, self._edb_model)
+        model = PinPairModel(self)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
             # pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])
-            rlc = GrpcRlc(
+            rlc = CoreRlc(
                 r=res,
                 r_enabled=r_enabled,
                 l=ind,
@@ -1341,10 +1489,10 @@ class Component:
             bool
         """
         bounding_box = self.bounding_box
-        opening = [bounding_box[0][0] - extra_soldermask_clearance]
-        opening.append(bounding_box[0][1] - extra_soldermask_clearance)
-        opening.append(bounding_box[1][0] + extra_soldermask_clearance)
-        opening.append(bounding_box[1][1] + extra_soldermask_clearance)
+        opening = [bounding_box[0] - extra_soldermask_clearance]
+        opening.append(bounding_box[1] - extra_soldermask_clearance)
+        opening.append(bounding_box[2] + extra_soldermask_clearance)
+        opening.append(bounding_box[3] + extra_soldermask_clearance)
 
         comp_layer = self.layer
         layer_names = list(self._pedb.stackup.layers.keys())
@@ -1356,7 +1504,7 @@ class Component:
         else:
             soldermask_layer = layer_names[layer_index + 1]
 
-        if not self._pedb.modeler.get_primitives(layer_name=soldermask_layer):
+        if not self._pedb.layout.find_primitive(layer_name=soldermask_layer):
             all_nets = list(self._pedb.nets.nets.values())
             poly = self._pedb._create_conformal(all_nets, 0, 1e-12, False, 0)
             self._pedb.modeler.create_polygon(poly, soldermask_layer, [], "")
@@ -1393,9 +1541,9 @@ class ICDieProperty:
         component_property = self._component.component_property
         die_property = component_property.die_property
         if value.lower() == "chip_up":
-            die_property.die_orientation = GrpcDieOrientation.CHIP_UP
+            die_property.die_orientation = CoreDieOrientation.CHIP_UP
         elif value.lower() == "chip_down":
-            die_property.die_orientation = GrpcDieOrientation.CHIP_DOWN
+            die_property.die_orientation = CoreDieOrientation.CHIP_DOWN
         else:
             return
         component_property.die_property = die_property
@@ -1408,7 +1556,7 @@ class ICDieProperty:
         Returns
         -------
         str
-            Die type, ``noine``, ``flipchip``, ``wirebond``.
+            Die type, ``none``, ``flipchip``, ``wirebond``.
 
         """
         return self._die_property.die_type.name.lower()
@@ -1418,11 +1566,11 @@ class ICDieProperty:
         component_property = self._component.component_property
         die_property = component_property.die_property
         if value.lower() == "none":
-            die_property.die_type = GrpcDieType.NONE
+            die_property.die_type = CoreDieType.NONE
         elif value.lower() == "flipchip":
-            die_property.die_type = GrpcDieType.FLIPCHIP
+            die_property.die_type = CoreDieType.FLIPCHIP
         elif value.lower() == "wirebond":
-            die_property.die_type = GrpcDieType.WIREBOND
+            die_property.die_type = CoreDieType.WIREBOND
         else:
             return
         component_property.die_property = die_property

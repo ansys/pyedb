@@ -36,7 +36,6 @@ Python
 Python.NET
 Q3D
 [Rr]aptor[Xx]
-SimulationConfiguration
 S[Ii]wave
 [Ss][Yy][Zz]
 (?i)stackup(?:\s3D|s)?
@@ -148,3 +147,7 @@ Cohn
 Pydantic
 Drc
 SIPI
+API
+interdigital
+ore
+.NET

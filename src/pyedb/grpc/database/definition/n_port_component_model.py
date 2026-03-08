@@ -22,7 +22,7 @@
 
 
 from ansys.edb.core.definition.component_model import (
-    NPortComponentModel as GrpcNPortComponentModel,
+    NPortComponentModel as CoreNPortComponentModel,
 )
 
 
@@ -43,7 +43,7 @@ class NPortComponentModel:
         """
         if not name:
             raise ValueError("Name must be provided to create NPortComponentModel.")
-        grpc_nport_component_model = GrpcNPortComponentModel.create(name=name)
+        grpc_nport_component_model = CoreNPortComponentModel.create(name=name)
         if grpc_nport_component_model.is_null:
             raise ValueError("Failed to create NPortComponentModel.")
         return cls(grpc_nport_component_model)

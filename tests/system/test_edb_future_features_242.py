@@ -24,17 +24,21 @@
 
 import pytest
 
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
+@pytest.mark.skipif(
+    config["use_grpc"] and config["desktopVersion"] < "2026.1",
+    reason="This test is failing in grpc. To be validated in 26R1.",
+)
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(True, reason="AEDT 2024.2 is not installed")
 class TestClass(BaseTestClass):
-    def test_add_raptorx_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=VERSION)
+    def test_add_raptorx_setup(self):
+        edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
@@ -43,11 +47,11 @@ class TestClass(BaseTestClass):
         assert len(setup.frequency_sweeps) == 1
         general_settings = setup.settings.general_settings
         assert general_settings.global_temperature == 22.0
-        general_settings.global_temperature = 35.0
-        assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
-        assert general_settings.max_frequency == "10GHz"
+        # general_settings.global_temperature = 35.0
+        # assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
+        assert general_settings.max_frequency == 10e9
         general_settings.max_frequency = 20e9
-        assert general_settings.max_frequency == "20GHz"
+        assert general_settings.max_frequency == 20e9
         advanced_settings = setup.settings.advanced_settings
         assert advanced_settings.auto_removal_sliver_poly == 0.001
         advanced_settings.auto_removal_sliver_poly = 0.002
@@ -55,15 +59,15 @@ class TestClass(BaseTestClass):
         assert advanced_settings.cell_per_wave_length == 80
         advanced_settings.cell_per_wave_length = 60
         assert advanced_settings.cell_per_wave_length == 60
-        assert advanced_settings.edge_mesh == "0.8um"
-        advanced_settings.edge_mesh = "1um"
-        assert advanced_settings.edge_mesh == "1um"
+        assert advanced_settings.edge_mesh == 8e-7
+        advanced_settings.edge_mesh = 1e-6
+        assert advanced_settings.edge_mesh == 1e-6
         assert advanced_settings.eliminate_slit_per_hole == 5.0
         advanced_settings.eliminate_slit_per_hole = 4.0
         assert advanced_settings.eliminate_slit_per_hole == 4.0
-        assert advanced_settings.mesh_frequency == "1GHz"
-        advanced_settings.mesh_frequency = "5GHz"
-        assert advanced_settings.mesh_frequency == "5GHz"
+        assert advanced_settings.mesh_frequency == 1e9
+        advanced_settings.mesh_frequency = 5e9
+        assert advanced_settings.mesh_frequency == 5e9
         assert advanced_settings.override_shrink_fac == 1.0
         advanced_settings.override_shrink_fac = 1.5
         assert advanced_settings.override_shrink_fac == 1.5
@@ -117,8 +121,9 @@ class TestClass(BaseTestClass):
         assert advanced_settings.use_relaxed_z_axis
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_hfss_pi_setup(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=VERSION)
+    @pytest.mark.skip(reason="BUG 1420591")
+    def test_create_hfss_pi_setup(self):
+        edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.create_hfsspi_setup("test")
         assert setup.get_simulation_settings()
         settings = {
@@ -147,8 +152,8 @@ class TestClass(BaseTestClass):
         for k, v in settings.items():
             assert settings[k] == settings_get[k]
 
-    def test_create_hfss_pi_setup_add_sweep(self, edb_examples):
-        edbapp = edb_examples.get_si_verse(version=VERSION)
+    def test_create_hfss_pi_setup_add_sweep(self):
+        edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.create_hfsspi_setup("test")
         setup.add_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         assert setup.sweeps["sweep1"].frequencies

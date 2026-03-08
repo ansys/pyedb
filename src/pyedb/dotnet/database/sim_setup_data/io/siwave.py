@@ -149,7 +149,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if interplane coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInterPlaneCoupling
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInterPlaneCoupling
+        return self._parent._pedb.value(value)
 
     @property
     def xtalk_threshold(self):
@@ -160,7 +161,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.XtalkThreshold
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.XtalkThreshold
+        return self._parent._pedb.value(value)
 
     @property
     def min_void_area(self):
@@ -170,7 +172,8 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MinVoidArea
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MinVoidArea
+        return self._parent._pedb.value(value)
 
     @property
     def min_pad_area_to_mesh(self):
@@ -180,7 +183,8 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MinPadAreaToMesh
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MinPadAreaToMesh
+        return self._parent._pedb.value(value)
 
     @property
     def min_plane_area_to_mesh(self):
@@ -190,7 +194,8 @@ class AdvancedSettings(SettingsBase):
         -------
         bool
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh
+        return self._parent._pedb.value(value)
 
     @property
     def snap_length_threshold(self):
@@ -200,7 +205,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.SnapLengthThreshold
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.SnapLengthThreshold
+        return self._parent._pedb.value(value)
 
     @property
     def return_current_distribution(self):
@@ -288,7 +294,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if infinite ground is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInfGnd
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeInfGnd
+        return self._parent._pedb.value(value)
 
     @property
     def include_trace_coupling(self):
@@ -300,7 +307,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if trace coupling is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeTraceCoupling
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeTraceCoupling
+        return self._parent._pedb.value(value)
 
     @property
     def include_vi_sources(self):
@@ -312,7 +320,8 @@ class AdvancedSettings(SettingsBase):
         bool
             ``True`` if vi sources is used, ``False`` otherwise.
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeVISources
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.IncludeVISources
+        return self._parent._pedb.value(value)
 
     @property
     def infinite_ground_location(self):
@@ -322,7 +331,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.InfGndLocation
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.InfGndLocation
+        return self._parent._pedb.value(value)
 
     @property
     def max_coupled_lines(self):
@@ -333,26 +343,6 @@ class AdvancedSettings(SettingsBase):
         int
         """
         return self.sim_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines
-
-    @property
-    def automatic_mesh(self):
-        """Whether to automatically pick a suitable mesh refinement frequency,
-        depending on drawing size, number of modes, and/or maximum sweep
-        frequency.
-
-        .. deprecated:: 0.54.0
-           Use :func:`automatic_mesh` instead.
-
-        Returns
-        -------
-        bool
-            ``True`` if automatic mesh is used, ``False`` otherwise.
-        """
-        warnings.warn(
-            "`automatic_mesh` is deprecated. Use `mesh_automatic` instead.",
-            DeprecationWarning,
-        )
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic
 
     @property
     def mesh_automatic(self):
@@ -390,7 +380,8 @@ class AdvancedSettings(SettingsBase):
         -------
         str
         """
-        return self.sim_setup_info.simulation_settings.AdvancedSettings.MeshFrequency
+        value = self.sim_setup_info.simulation_settings.AdvancedSettings.MeshFrequency
+        return self._parent._pedb.value(value)
 
     @include_inter_plane_coupling.setter
     def include_inter_plane_coupling(self, value):
@@ -408,6 +399,7 @@ class AdvancedSettings(SettingsBase):
 
     @min_void_area.setter
     def min_void_area(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MinVoidArea = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -415,6 +407,7 @@ class AdvancedSettings(SettingsBase):
 
     @min_pad_area_to_mesh.setter
     def min_pad_area_to_mesh(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MinPadAreaToMesh = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -422,6 +415,7 @@ class AdvancedSettings(SettingsBase):
 
     @min_plane_area_to_mesh.setter
     def min_plane_area_to_mesh(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.MinPlaneAreaToMesh = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -429,6 +423,7 @@ class AdvancedSettings(SettingsBase):
 
     @snap_length_threshold.setter
     def snap_length_threshold(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
         edb_setup_info.simulation_settings.AdvancedSettings.SnapLengthThreshold = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
@@ -458,7 +453,6 @@ class AdvancedSettings(SettingsBase):
     @include_fringe_coupling.setter
     def include_fringe_coupling(self, value):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeFringeCoupling = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
@@ -466,59 +460,52 @@ class AdvancedSettings(SettingsBase):
     @include_split_plane_coupling.setter
     def include_split_plane_coupling(self, value):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeSplitPlaneCoupling = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @include_infinite_ground.setter
     def include_infinite_ground(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeInfGnd = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @include_trace_coupling.setter
     def include_trace_coupling(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeTraceCoupling = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @include_vi_sources.setter
     def include_vi_sources(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.IncludeVISources = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @infinite_ground_location.setter
     def infinite_ground_location(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.InfGndLocation = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
     @max_coupled_lines.setter
-    def max_coupled_lines(self, value):
+    def max_coupled_lines(self, value: int):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.MaxCoupledLines = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
 
-    @automatic_mesh.setter
-    def automatic_mesh(self, value):
-        self.mesh_automatic = value
-
     @mesh_automatic.setter
     def mesh_automatic(self, value):
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.MeshAutoMatic = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
@@ -532,8 +519,8 @@ class AdvancedSettings(SettingsBase):
 
     @mesh_frequency.setter
     def mesh_frequency(self, value):
+        value = str(self._parent._pedb.value(value))
         edb_setup_info = self.sim_setup_info
-
         edb_setup_info.simulation_settings.AdvancedSettings.MeshFrequency = value
         self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
         self._parent._update_setup()
@@ -679,6 +666,13 @@ class DCAdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.DcMinVoidAreaToMesh
 
+    @dc_min_void_area_to_mesh.setter
+    def dc_min_void_area_to_mesh(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.DcMinVoidAreaToMesh = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
     @property
     def dc_min_plane_area_to_mesh(self):
         """Minimum area below which geometry is ignored.
@@ -688,6 +682,13 @@ class DCAdvancedSettings(SettingsBase):
         float
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.DcMinPlaneAreaToMesh
+
+    @dc_min_plane_area_to_mesh.setter
+    def dc_min_plane_area_to_mesh(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.DcMinPlaneAreaToMesh = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def energy_error(self):
@@ -699,6 +700,13 @@ class DCAdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.EnergyError
 
+    @energy_error.setter
+    def energy_error(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.EnergyError = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
     @property
     def max_init_mesh_edge_length(self):
         """Initial mesh maximum edge length.
@@ -708,6 +716,13 @@ class DCAdvancedSettings(SettingsBase):
         float
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.MaxInitMeshEdgeLength
+
+    @max_init_mesh_edge_length.setter
+    def max_init_mesh_edge_length(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.MaxInitMeshEdgeLength = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def max_num_pass(self):
@@ -722,6 +737,10 @@ class DCAdvancedSettings(SettingsBase):
         warnings.warn("`max_num_pass` is deprecated. Use `max_num_passes` instead.", DeprecationWarning)
         return self.max_num_passes
 
+    @max_num_pass.setter
+    def max_num_pass(self, value):
+        self.max_num_passes = value
+
     @property
     def max_num_passes(self):
         """Maximum number of passes.
@@ -731,6 +750,13 @@ class DCAdvancedSettings(SettingsBase):
         int
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.MaxNumPasses
+
+    @max_num_passes.setter
+    def max_num_passes(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.MaxNumPasses = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def min_num_pass(self):
@@ -743,7 +769,11 @@ class DCAdvancedSettings(SettingsBase):
         int
         """
         warnings.warn("`min_num_pass` is deprecated. Use `min_num_passes` instead.", DeprecationWarning)
-        return self.sim_setup_info
+        return self.min_num_passes
+
+    @min_num_pass.setter
+    def min_num_pass(self, value):
+        self.min_num_passes = value
 
     @property
     def min_num_passes(self):
@@ -755,6 +785,13 @@ class DCAdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.MinNumPasses
 
+    @min_num_passes.setter
+    def min_num_passes(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.MinNumPasses = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
     @property
     def mesh_bondwires(self):
         """Mesh bondwires.
@@ -765,6 +802,13 @@ class DCAdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.MeshBws
 
+    @mesh_bondwires.setter
+    def mesh_bondwires(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.MeshBws = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
     @property
     def mesh_vias(self):
         """Mesh vias.
@@ -774,6 +818,13 @@ class DCAdvancedSettings(SettingsBase):
         bool
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.MeshVias
+
+    @mesh_vias.setter
+    def mesh_vias(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.MeshVias = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def num_bondwire_sides(self):
@@ -788,6 +839,10 @@ class DCAdvancedSettings(SettingsBase):
         warnings.warn("`num_bondwire_sides` is deprecated. Use `num_bw_sides` instead.", DeprecationWarning)
         return self.num_bw_sides
 
+    @num_bondwire_sides.setter
+    def num_bondwire_sides(self, value):
+        self.num_bw_sides = value
+
     @property
     def num_bw_sides(self):
         """Number of bondwire sides.
@@ -797,6 +852,13 @@ class DCAdvancedSettings(SettingsBase):
         int
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.NumBwSides
+
+    @num_bw_sides.setter
+    def num_bw_sides(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.NumBwSides = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def num_via_sides(self):
@@ -808,6 +870,13 @@ class DCAdvancedSettings(SettingsBase):
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.NumViaSides
 
+    @num_via_sides.setter
+    def num_via_sides(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.NumViaSides = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
+
     @property
     def percent_local_refinement(self):
         """Percentage of local refinement.
@@ -817,6 +886,13 @@ class DCAdvancedSettings(SettingsBase):
         float
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.PercentLocalRefinement
+
+    @percent_local_refinement.setter
+    def percent_local_refinement(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.PercentLocalRefinement = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def perform_adaptive_refinement(self):
@@ -828,6 +904,13 @@ class DCAdvancedSettings(SettingsBase):
             ``True`` if adaptive refinement is used, ``False`` otherwise.
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.PerformAdaptiveRefinement
+
+    @perform_adaptive_refinement.setter
+    def perform_adaptive_refinement(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.PerformAdaptiveRefinement = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def refine_bondwires(self):
@@ -843,6 +926,10 @@ class DCAdvancedSettings(SettingsBase):
         warnings.warn("`refine_bondwires` is deprecated. Use `refine_bws` instead.", DeprecationWarning)
         return self.refine_bws
 
+    @refine_bondwires.setter
+    def refine_bondwires(self, value):
+        self.refine_bws = value
+
     @property
     def refine_bws(self):
         """Whether to refine mesh along bondwires.
@@ -853,6 +940,13 @@ class DCAdvancedSettings(SettingsBase):
             ``True`` if refine bondwires is used, ``False`` otherwise.
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.RefineBws
+
+    @refine_bws.setter
+    def refine_bws(self, value):
+        edb_setup_info = self.sim_setup_info
+        edb_setup_info.simulation_settings.DCAdvancedSettings.RefineBws = value
+        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
+        self._parent._update_setup()
 
     @property
     def refine_vias(self):
@@ -865,104 +959,6 @@ class DCAdvancedSettings(SettingsBase):
 
         """
         return self.sim_setup_info.simulation_settings.DCAdvancedSettings.RefineVias
-
-    @dc_min_void_area_to_mesh.setter
-    def dc_min_void_area_to_mesh(self, value):
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.simulation_settings.DCAdvancedSettings.DcMinVoidAreaToMesh = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @dc_min_plane_area_to_mesh.setter
-    def dc_min_plane_area_to_mesh(self, value):
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.simulation_settings.DCAdvancedSettings.DcMinPlaneAreaToMesh = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @energy_error.setter
-    def energy_error(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.EnergyError = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @max_init_mesh_edge_length.setter
-    def max_init_mesh_edge_length(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.MaxInitMeshEdgeLength = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @max_num_pass.setter
-    def max_num_pass(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.MaxNumPasses = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @min_num_pass.setter
-    def min_num_pass(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.MinNumPasses = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @mesh_bondwires.setter
-    def mesh_bondwires(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.MeshBws = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @mesh_vias.setter
-    def mesh_vias(self, value):
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.simulation_settings.DCAdvancedSettings.MeshVias = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @num_bondwire_sides.setter
-    def num_bondwire_sides(self, value):
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.simulation_settings.DCAdvancedSettings.NumBwSides = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @num_via_sides.setter
-    def num_via_sides(self, value):
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.simulation_settings.DCAdvancedSettings.NumViaSides = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @percent_local_refinement.setter
-    def percent_local_refinement(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.PercentLocalRefinement = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @perform_adaptive_refinement.setter
-    def perform_adaptive_refinement(self, value):
-        edb_setup_info = self.sim_setup_info
-
-        edb_setup_info.simulation_settings.DCAdvancedSettings.PerformAdaptiveRefinement = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
-
-    @refine_bondwires.setter
-    def refine_bondwires(self, value):
-        edb_setup_info = self.sim_setup_info
-        edb_setup_info.simulation_settings.DCAdvancedSettings.RefineBws = value
-        self._parent._edb_object = self._parent._set_edb_setup_info(edb_setup_info)
-        self._parent._update_setup()
 
     @refine_vias.setter
     def refine_vias(self, value):

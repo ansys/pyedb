@@ -20,17 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.hierarchy.sparameter_model import (
-    SParameterModel as GrpcSParameterModel,
-)
-
 
 class SparamModel:  # pragma: no cover
     """Manage :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`"""
 
-    def __init__(self, edb_object):
-        self.core = edb_object
-        self._edb_model = edb_object
+    def __init__(self, component):
+        self.core = component.component_property.model
+        self._component = component
 
     @property
     def is_null(self):
@@ -54,7 +50,7 @@ class SparamModel:  # pragma: no cover
             The name of the S-parameter model.
 
         """
-        return self.core.name
+        return self.core.component_model
 
     @name.setter
     def name(self, value):
@@ -66,7 +62,33 @@ class SparamModel:  # pragma: no cover
             The new name for the S-parameter model.
 
         """
-        self.core.name = value
+        self.core.component_model = value
+        self._component._set_model(self.core)
+
+    @property
+    def component_model_name(self):
+        """Get the name of the S-parameter model.
+
+        Returns
+        -------
+        str
+            The name of the S-parameter model.
+
+        """
+        return self.core.component_model
+
+    @component_model_name.setter
+    def component_model_name(self, value):
+        """Set the name of the S-parameter model.
+
+        Parameters
+        ----------
+        value : str
+            The new name for the S-parameter model.
+
+        """
+        self.core.component_model = value
+        self._component._set_model(self.core)
 
     @property
     def reference_net(self):
@@ -91,6 +113,7 @@ class SparamModel:  # pragma: no cover
 
         """
         self.core.reference_net = value
+        self._component._set_model(self.core)
 
     @property
     def file_path(self):
@@ -115,3 +138,4 @@ class SparamModel:  # pragma: no cover
 
         """
         self.core.file_path = value
+        self._component._set_model(self.core)

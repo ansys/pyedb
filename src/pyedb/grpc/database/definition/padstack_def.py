@@ -23,16 +23,17 @@
 import math
 import warnings
 
-from ansys.edb.core.definition.padstack_def import PadstackDef as GrpcPadstackDef
+from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
-    PadGeometryType as GrpcPadGeometryType,
-    PadstackHoleRange as GrpcPadstackHoleRange,
-    PadType as GrpcPadType,
+    PadGeometryType as CorePadGeometryType,
+    PadstackHoleRange as CorePadstackHoleRange,
+    PadType as CorePadType,
+    SolderballPlacement,
+    SolderballShape,
 )
 import ansys.edb.core.geometry.polygon_data
-from ansys.edb.core.geometry.polygon_data import PolygonData as GrpcPolygonData
-from ansys.edb.core.hierarchy.structure3d import MeshClosure as GrpcMeshClosure, Structure3D as GrpcStructure3D
-from ansys.edb.core.primitive.circle import Circle as GrpcCircle
+from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure, Structure3D as CoreStructure3D
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.circle import Circle
@@ -77,9 +78,9 @@ class PadProperties:
 
     @property
     def _pad_parameter_value(self):
-        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, GrpcPadType.REGULAR_PAD)
+        p_val = self._edb_padstack.get_pad_parameters(self.layer_name, CorePadType.REGULAR_PAD)
         if isinstance(p_val[0], ansys.edb.core.geometry.polygon_data.PolygonData):
-            p_val = [GrpcPadGeometryType.PADGEOMTYPE_POLYGON] + [i for i in p_val]
+            p_val = [CorePadGeometryType.PADGEOMTYPE_POLYGON] + [i for i in p_val]
         return p_val
 
     @property
@@ -118,11 +119,11 @@ class PadProperties:
             Pad shape.
         """
         if value.lower() == "circle":
-            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_CIRCLE)
+            self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_CIRCLE)
         elif value.lower() == "rectangle":
-            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_RECTANGLE)
+            self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_RECTANGLE)
         elif value.lower() == "polygon":
-            self._update_pad_parameters_parameters(geom_type=GrpcPadGeometryType.PADGEOMTYPE_POLYGON)
+            self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_POLYGON)
         else:
             raise ValueError(
                 f"Unsupported pad shape: {value}. Supported shapes are 'circle', 'rectangle', and 'polygon'."
@@ -157,7 +158,7 @@ class PadProperties:
             return []
 
     @property
-    def polygon_data(self) -> GrpcPolygonData:
+    def polygon_data(self) -> CorePolygonData:
         """Parameters.
 
         Returns
@@ -228,36 +229,36 @@ class PadProperties:
         if layer_name is None:
             layer_name = self.layer_name
         if pad_type is None:
-            pad_type = GrpcPadType.REGULAR_PAD
+            pad_type = CorePadType.REGULAR_PAD
         if geom_type is None:
             geom_type = self.geometry_type
-        for k in GrpcPadGeometryType:
+        for k in CorePadGeometryType:
             if k.value == geom_type:
                 geom_type = k
         if params is None:
             params = self._pad_parameter_value[1]
         elif isinstance(params, list):
-            offsetx = [Value(i, self._pedbpadstack._pedb.db) for i in params]
+            offsetx = [self._pedbpadstack._pedb._value_setter(i) for i in params]
         if rotation is None:
             rotation = self._pad_parameter_value[4]
         elif isinstance(rotation, (str, float, int)):
-            rotation = Value(rotation, self._pedbpadstack._pedb.db)
+            rotation = self._pedbpadstack._pedb._value_setter(rotation)
         if offsetx is None:
             offsetx = self._pad_parameter_value[2]
         elif isinstance(offsetx, (str, float, int)):
-            offsetx = Value(offsetx, self._pedbpadstack._pedb.db)
+            offsetx = self._pedbpadstack._pedb._value_setter(offsetx)
         if offsety is None:
             offsety = self._pad_parameter_value[3]
         elif isinstance(offsety, (str, float, int)):
-            offsety = Value(offsety, self._pedbpadstack._pedb.db)
+            offsety = self._pedbpadstack._pedb._value_setter(offsety)
         self._edb_padstack.set_pad_parameters(
             layer=layer_name,
             pad_type=pad_type,
             type_geom=geom_type,
-            offset_x=Value(offsetx, self._pedbpadstack._pedb.db),
-            offset_y=Value(offsety, self._pedbpadstack._pedb.db),
-            rotation=Value(rotation, self._pedbpadstack._pedb.db),
-            sizes=[Value(i, self._pedbpadstack._pedb.db) for i in params],
+            offset_x=self._pedbpadstack._pedb._value_setter(offsetx),
+            offset_y=self._pedbpadstack._pedb._value_setter(offsety),
+            rotation=self._pedbpadstack._pedb._value_setter(rotation),
+            sizes=[self._pedbpadstack._pedb._value_setter(i) for i in params],
         )
 
 
@@ -286,10 +287,15 @@ class PadstackDef:
         self._thermalpad_by_layer = {}
         self._bounding_box = []
 
+    @property
+    def is_null(self):
+        """Check if the padstack definition is null."""
+        return self.core.is_null
+
     @classmethod
     def create(cls, edb, name: str):
         """Create a new padstack definition."""
-        padstack_def = GrpcPadstackDef.create(edb.db, name)
+        padstack_def = CorePadstackDef.create(edb.db, name)
         return cls(edb, padstack_def)
 
     @property
@@ -299,12 +305,12 @@ class PadstackDef:
         Returns
         -------
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
-            List of PadstackInstance objects.
+            Dict of PadstackInstance objects.
         """
         return [
-            i
-            for i in list(self._pedb.padstacks.instances.values())
-            if not i.is_null and i.padstack_def.name == self.core.name
+            j
+            for j in list(self._pedb.padstacks.instances.values())
+            if not j.is_null and j.padstack_def.name == self.core.name
         ]
 
     @property
@@ -433,14 +439,14 @@ class PadstackDef:
     def hole_diameter(self, value):
         hole_parameter = self.core.data.get_hole_parameters()
         if not isinstance(value, list):
-            value = [Value(value)]
+            value = [self._pedb._value_setter(value)]
         else:
-            value = [Value(p) for p in value]
+            value = [self._pedb._value_setter(p) for p in value]
         hole_size = value
         geometry_type = hole_parameter[0]
         hole_offset_x = hole_parameter[2]
         hole_offset_y = hole_parameter[3]
-        if not isinstance(geometry_type, GrpcPolygonData):
+        if not isinstance(geometry_type, CorePolygonData):
             hole_rotation = hole_parameter[4]
             self.core.data.set_hole_parameters(
                 offset_x=hole_offset_x,
@@ -491,7 +497,7 @@ class PadstackDef:
     @hole_offset_x.setter
     def hole_offset_x(self, value):
         hole_parameter = list(self.core.data.get_hole_parameters())
-        hole_parameter[2] = Value(value, self._pedb.db)
+        hole_parameter[2] = self._pedb._value_setter(value)
         self.core.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -517,7 +523,7 @@ class PadstackDef:
     @hole_offset_y.setter
     def hole_offset_y(self, value):
         hole_parameter = list(self.core.data.get_hole_parameters())
-        hole_parameter[3] = Value(value, self._pedb.db)
+        hole_parameter[3] = self._pedb._value_setter(value)
         self.core.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -543,7 +549,9 @@ class PadstackDef:
     @hole_rotation.setter
     def hole_rotation(self, value):
         hole_parameter = list(self.core.data.get_hole_parameters())
-        hole_parameter[4] = Value(value, self._pedb.db)
+        hole_parameter[4] = self._pedb._value_setter(
+            value,
+        )
         self.core.data.set_hole_parameters(
             offset_x=hole_parameter[2],
             offset_y=hole_parameter[3],
@@ -564,7 +572,7 @@ class PadstackDef:
         if not self._pad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, GrpcPadType.REGULAR_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.REGULAR_PAD, self)
                 except:
                     self._pad_by_layer[layer] = None
         return self._pad_by_layer
@@ -581,7 +589,7 @@ class PadstackDef:
         if not self._antipad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, GrpcPadType.ANTI_PAD, self)
+                    self._antipad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.ANTI_PAD, self)
                 except:
                     self._antipad_by_layer[layer] = None
         return self._antipad_by_layer
@@ -598,7 +606,7 @@ class PadstackDef:
         if not self._thermalpad_by_layer:
             for layer in self.layers:
                 try:
-                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, GrpcPadType.THERMAL_PAD, self)
+                    self._pad_by_layer[layer] = PadProperties(self.core.data, layer, CorePadType.THERMAL_PAD, self)
                 except:
                     self._thermalpad_by_layer[layer] = None
         return self._thermalpad_by_layer
@@ -616,7 +624,7 @@ class PadstackDef:
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
-        self.core.data.plating_percentage = Value(ratio)
+        self.core.data.plating_percentage = self._pedb._value_setter(ratio)
 
     @property
     def hole_plating_thickness(self) -> float:
@@ -644,7 +652,7 @@ class PadstackDef:
         float
             Thickness of the hole plating if present.
         """
-        hr = 200 * Value(value) / self.hole_diameter
+        hr = 200 * self._pedb.value(value).value / self.hole_diameter
         self.hole_plating_ratio = hr
 
     @property
@@ -683,15 +691,15 @@ class PadstackDef:
     def hole_range(self, value):
         if isinstance(value, str):
             if value == "through":
-                self.core.data.hole_range = GrpcPadstackHoleRange.THROUGH
+                self.core.data.hole_range = CorePadstackHoleRange.THROUGH
             elif value == "begin_on_upper_pad":
-                self.core.data.hole_range = GrpcPadstackHoleRange.BEGIN_ON_UPPER_PAD
+                self.core.data.hole_range = CorePadstackHoleRange.BEGIN_ON_UPPER_PAD
             elif value == "end_on_lower_pad":
-                self.core.data.hole_range = GrpcPadstackHoleRange.END_ON_LOWER_PAD
+                self.core.data.hole_range = CorePadstackHoleRange.END_ON_LOWER_PAD
             elif value == "upper_pad_to_lower_pad":
-                self.core.data.hole_range = GrpcPadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
+                self.core.data.hole_range = CorePadstackHoleRange.UPPER_PAD_TO_LOWER_PAD
             else:  # pragma no cover
-                self.core.data.hole_range = GrpcPadstackHoleRange.UNKNOWN_RANGE
+                self.core.data.hole_range = CorePadstackHoleRange.UNKNOWN_RANGE
 
     def convert_to_3d_microvias(
         self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True
@@ -716,7 +724,7 @@ class PadstackDef:
             ``True`` when successful, ``False`` when failed.
         """
 
-        if isinstance(self.core.data.get_hole_parameters()[0], GrpcPolygonData):
+        if isinstance(self.core.data.get_hole_parameters()[0], CorePolygonData):
             self._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")
             return False
 
@@ -763,9 +771,9 @@ class PadstackDef:
                         layout,
                         self.start_layer,
                         via.net,
-                        Value(pos[0]),
-                        Value(pos[1]),
-                        Value(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
+                        self._pedb._value_setter(pos[0]),
+                        self._pedb._value_setter(pos[1]),
+                        self._pedb._value_setter(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
                 if len(self.pad_by_layer[self.stop_layer].parameters_values) == 0:
                     self._pedb.modeler.create_polygon(
@@ -778,9 +786,9 @@ class PadstackDef:
                         layout,
                         self.stop_layer,
                         via.net,
-                        Value(pos[0]),
-                        Value(pos[1]),
-                        Value(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
+                        self._pedb._value_setter(pos[0]),
+                        self._pedb._value_setter(pos[1]),
+                        self._pedb._value_setter(self.pad_by_layer[self.stop_layer].parameters_values[0] / 2),
                     )
                 for layer_name in layer_names:
                     stop = ""
@@ -791,19 +799,19 @@ class PadstackDef:
                             layout,
                             start,
                             via.net,
-                            Value(pos[0]),
-                            Value(pos[1]),
-                            Value(rad1),
+                            self._pedb._value_setter(pos[0]),
+                            self._pedb._value_setter(pos[1]),
+                            self._pedb._value_setter(rad1),
                         )
                         cloned_circle2 = Circle(self._pedb).create(
                             layout,
                             stop,
                             via.net,
-                            Value(pos[0]),
-                            Value(pos[1]),
-                            Value(rad2),
+                            self._pedb._value_setter(pos[0]),
+                            self._pedb._value_setter(pos[1]),
+                            self._pedb._value_setter(rad2),
                         )
-                        s3d = GrpcStructure3D.create(
+                        s3d = CoreStructure3D.create(
                             layout.core, generate_unique_name("via3d_" + via.aedt_name.replace("via_", ""), n=3)
                         )
                         s3d.add_member(cloned_circle.core)
@@ -814,7 +822,7 @@ class PadstackDef:
                             )
                             self.data.material = "copper"
                         s3d.set_material(self.core.data.material.value)
-                        s3d.mesh_closure = GrpcMeshClosure.ENDS_CLOSED
+                        s3d.mesh_closure = CoreMeshClosure.ENDS_CLOSED
                         started = True
                         i += 1
                     if stop == via.stop_layer:
@@ -856,16 +864,22 @@ class PadstackDef:
                 stop = layer_names[layer_names.index(layer_name) + 1]
                 new_padstack_name = f"MV_{self.name}_{start}_{stop}"
                 included = [start, stop]
-                new_padstack_definition = GrpcPadstackDef.create(self._pedb.db, new_padstack_name)
+                new_padstack_definition = CorePadstackDef.create(self._pedb.db, new_padstack_name)
                 new_padstack_definition.data.add_layers(included)
                 for layer in included:
                     pl = self.pad_by_layer[layer]
                     new_padstack_definition.data.set_pad_parameters(
                         layer=layer,
-                        pad_type=GrpcPadType.REGULAR_PAD,
-                        offset_x=Value(pl.offset_x, self._pedb.db),
-                        offset_y=Value(pl.offset_y, self._pedb.db),
-                        rotation=Value(pl.rotation, self._pedb.db),
+                        pad_type=CorePadType.REGULAR_PAD,
+                        offset_x=self._pedb._value_setter(
+                            pl.offset_x,
+                        ),
+                        offset_y=self._pedb._value_setter(
+                            pl.offset_y,
+                        ),
+                        rotation=self._pedb._value_setter(
+                            pl.rotation,
+                        ),
                         type_geom=pl._edb_geometry_type,
                         sizes=pl.parameters_values,
                     )
@@ -874,10 +888,12 @@ class PadstackDef:
                         pl = antipads[layer]
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
-                            pad_type=GrpcPadType.ANTI_PAD,
-                            offset_x=Value(pl.offset_x, self._pedb.db),
-                            offset_y=Value(pl.offset_y, self._pedb.db),
-                            rotation=Value(pl.rotation, self._pedb.db),
+                            pad_type=CorePadType.ANTI_PAD,
+                            offset_x=self._pedb._value_setter(
+                                pl.offset_x,
+                            ),
+                            offset_y=self._pedb._value_setter(pl.offset_y),
+                            rotation=self._pedb._value_setter(pl.rotation),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
@@ -886,22 +902,26 @@ class PadstackDef:
                         pl = thermal_pads[layer]
                         new_padstack_definition.data.set_pad_parameters(
                             layer=layer,
-                            pad_type=GrpcPadType.THERMAL_PAD,
-                            offset_x=Value(pl.offset_x, self._pedb.db),
-                            offset_y=Value(pl.offset_y, self._pedb.db),
-                            rotation=Value(pl.rotation, self._pedb.db),
+                            pad_type=CorePadType.THERMAL_PAD,
+                            offset_x=self._pedb._value_setter(
+                                pl.offset_x,
+                            ),
+                            offset_y=self._pedb._value_setter(
+                                pl.offset_y,
+                            ),
+                            rotation=self._pedb._value_setter(pl.rotation),
                             type_geom=pl._edb_geometry_type,
                             sizes=pl.parameters_values,
                         )
                 new_padstack_definition.data.set_hole_parameters(
-                    offset_x=Value(self.hole_offset_x, self._pedb.db),
-                    offset_y=Value(self.hole_offset_y, self._pedb.db),
-                    rotation=Value(self.hole_rotation, self._pedb.db),
+                    offset_x=self.hole_offset_x,
+                    offset_y=self.hole_offset_y,
+                    rotation=self.hole_rotation,
                     type_geom=self.edb_hole_type,
                     sizes=[self.hole_diameter],
                 )
                 new_padstack_definition.data.material = self.material
-                new_padstack_definition.data.plating_percentage = Value(self.hole_plating_ratio, self._pedb.db)
+                new_padstack_definition.data.plating_percentage = self._pedb._value_setter(self.hole_plating_ratio)
                 new_instances.append(PadstackDef(self._pedb, new_padstack_definition))
                 started = True
             if self.stop_layer == stop:
@@ -932,4 +952,251 @@ class PadstackDef:
         self._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
+    def get_pad_parameters(self):
+        """Pad parameters.
+
+        Returns
+        -------
+        dict
+            params = {
+            'regular_pad': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
+                'rotation': '0', 'diameter': '0.5mm'}
+            ],
+            'anti_pad': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'diameter': '1mm'}
+            ],
+            'thermal_pad': [
+                {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
+            ],
+            'hole': [
+                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                 'diameter': '0.1499997mm'},
+            ]
+        }
+        """
+
+        pdef_data = self.core.data
+        pad_type_list = [CorePadType.REGULAR_PAD, CorePadType.ANTI_PAD, CorePadType.THERMAL_PAD]
+        data = {}
+        for pad_type in pad_type_list:
+            pad_type_name = str(pad_type.name)
+            temp_list = []
+            for lyr_name in pdef_data.layer_names:
+                result = pdef_data.get_pad_parameters(lyr_name, pad_type)
+                if len(result) < 5:
+                    continue
+                pad_shape, params, offset_x, offset_y, rotation = result
+                pad_shape = str(pad_shape.name)
+                pad_params = {}
+                pad_params["layer_name"] = lyr_name
+                pad_params["shape"] = pad_shape
+                pad_params["offset_x"] = str(offset_x)
+                pad_params["offset_y"] = str(offset_y)
+                pad_params["rotation"] = str(rotation)
+
+                for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[pad_shape.lower()]):
+                    pad_params[i] = str(params[idx])
+                temp_list.append(pad_params)
+            data[pad_type_name] = temp_list
+        return data
+
+    def set_pad_parameters(self, param):
+        pdef_data = self.core.data
+
+        pad_type_list = [
+            CorePadType.REGULAR_PAD,
+            CorePadType.ANTI_PAD,
+            CorePadType.THERMAL_PAD,
+            CorePadType.HOLE,
+        ]
+        for pad_type in pad_type_list:
+            pad_type_name = str(pad_type.name)
+            rpp = param.get(pad_type_name, []) if param.get(pad_type_name, []) else param.get(pad_type_name.lower(), [])
+            for _, layer_data in enumerate(rpp):
+                # Get geometry type from kwargs
+                p = layer_data.get("shape").upper()
+                if not p.startswith("PADGEOMTYPE_"):
+                    p = "PADGEOMTYPE_" + p
+                temp_param = []
+
+                # Handle Circle geometry type
+                if p == CorePadGeometryType.PADGEOMTYPE_CIRCLE.name:
+                    temp_param.append(layer_data["diameter"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
+
+                # Handle Square geometry type
+                elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE.name:
+                    temp_param.append(layer_data["size"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE
+
+                elif p == CorePadGeometryType.PADGEOMTYPE_RECTANGLE.name:
+                    temp_param.append(layer_data["x_size"])
+                    temp_param.append(layer_data["y_size"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
+
+                # Handle Oval geometry type
+                elif p == CorePadGeometryType.PADGEOMTYPE_OVAL.name:
+                    temp_param.append(layer_data["x_size"])
+                    temp_param.append(layer_data["y_size"])
+                    temp_param.append(layer_data["corner_radius"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_OVAL
+
+                # Handle Bullet geometry type
+                elif p == CorePadGeometryType.PADGEOMTYPE_BULLET.name:
+                    temp_param.append(layer_data["x_size"])
+                    temp_param.append(layer_data["y_size"])
+                    temp_param.append(layer_data["corner_radius"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
+
+                # Handle Round45 geometry type
+                elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE45.name:
+                    temp_param.append(layer_data["inner"])
+                    temp_param.append(layer_data["channel_width"])
+                    temp_param.append(layer_data["isolation_gap"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE45
+
+                # Handle Round90 geometry type
+                elif p == CorePadGeometryType.PADGEOMTYPE_SQUARE90.name:
+                    temp_param.append(layer_data["inner"])
+                    temp_param.append(layer_data["channel_width"])
+                    temp_param.append(layer_data["isolation_gap"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_SQUARE90
+                elif p == CorePadGeometryType.PADGEOMTYPE_ROUND90.name:
+                    temp_param.append(layer_data["inner"])
+                    temp_param.append(layer_data["channel_width"])
+                    temp_param.append(layer_data["isolation_gap"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_ROUND90
+                elif p == CorePadGeometryType.PADGEOMTYPE_ROUND45.name:
+                    temp_param.append(layer_data["inner"])
+                    temp_param.append(layer_data["channel_width"])
+                    temp_param.append(layer_data["isolation_gap"])
+                    pad_shape = CorePadGeometryType.PADGEOMTYPE_ROUND45
+                else:
+                    continue
+
+                # Set pad parameters for the current layer
+                pdef_data.set_pad_parameters(
+                    layer=layer_data["layer_name"],
+                    pad_type=pad_type,
+                    offset_x=self._pedb._value_setter(layer_data.get("offset_x", 0)),
+                    offset_y=self._pedb._value_setter(layer_data.get("offset_y", 0)),
+                    rotation=self._pedb._value_setter(layer_data.get("rotation", 0)),
+                    type_geom=pad_shape,
+                    sizes=temp_param,
+                )
+        self.core.data = pdef_data
+
+    def get_hole_parameters(self):
+        pdef_data = self.core.data
+        result = pdef_data.get_hole_parameters()
+        if len(result) == 0:
+            return {}
+        hole_shape, params, offset_x, offset_y, rotation = result
+        hole_shape = str(hole_shape.name)
+
+        hole_params = {}
+        hole_params["shape"] = hole_shape
+        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape.lower()]):
+            hole_params[i] = str(params[idx])
+        hole_params["offset_x"] = str(offset_x)
+        hole_params["offset_y"] = str(offset_y)
+        hole_params["rotation"] = str(rotation)
+        return hole_params
+
+    def set_hole_parameters(self, params):
+        original_params = self.get_hole_parameters()
+        pdef_data = self.core.data
+
+        temp_param = []
+        shape = params["shape"]
+        if not shape.startswith("padgeomtype_"):
+            shape = "padgeomtype_" + shape
+        if shape == "padgeomtype_no_geometry":
+            return  # .net api doesn't tell how to set no_geometry shape.
+        for i in self.PAD_SHAPE_PARAMETERS[shape]:
+            temp_param.append(self._pedb._value_setter(params[i]))
+            pedb_shape = shape
+
+        pdef_data.set_hole_parameters(
+            self._pedb._value_setter(params.get("offset_x", original_params.get("offset_x", 0))),
+            self._pedb._value_setter(params.get("offset_y", original_params.get("offset_y", 0))),
+            self._pedb._value_setter(params.get("rotation", original_params.get("rotation", 0))),
+            self.PAD_SHAPE_KEYS[shape],
+            temp_param,
+        )
+
+        self.core.data = pdef_data
+
+    def get_solder_parameters(self):
+        pdef_data = self.core.data
+        shape = pdef_data.solder_ball_shape
+        diameter, mid_diameter = pdef_data.solder_ball_param
+        try:
+            placement = pdef_data.solder_ball_placement
+        except ValueError:
+            placement = ""
+        material = pdef_data.solder_ball_material
+        place = [i for i, j in self.SOLDER_PLACEMENT.items() if j == placement]
+        place = place[0] if place else ""
+        parameters = {
+            "shape": [i for i, j in self.SOLDER_SHAPE_TYPE.items() if j == shape][0],
+            "diameter": str(Value(diameter)),
+            "mid_diameter": str(Value(mid_diameter)),
+            "placement": place,
+            "material": material,
+        }
+        return parameters
+
+    def set_solder_parameters(self, parameters):
+        pdef_data = self.core.data
+
+        shape = parameters.get("shape", "no_solder_ball")
+        diameter = parameters.get("diameter", "0.4mm")
+        mid_diameter = parameters.get("mid_diameter", diameter)
+        placement = parameters.get("placement", "above_padstack")
+        material = parameters.get("material", None)
+
+        pdef_data.solder_ball_shape = self.SOLDER_SHAPE_TYPE[shape]
+        if not shape == "no_solder_ball":
+            pdef_data.solder_ball_parameters = (
+                self._pedb._value_setter(diameter),
+                self._pedb._value_setter(mid_diameter),
+            )
+            pdef_data.solder_ball_param = (self._pedb._value_setter(diameter), self._pedb._value_setter(mid_diameter))
+            pdef_data.solder_ball_placement = self.SOLDER_PLACEMENT[placement]
+        if material:
+            pdef_data.solder_ball_material = material
+
+    PAD_SHAPE_PARAMETERS = {
+        "padgeomtype_circle": ["diameter"],
+        "padgeomtype_square": ["size"],
+        "padgeomtype_rectangle": ["x_size", "y_size"],
+        "padgeomtype_oval": ["x_size", "y_size", "corner_radius"],
+        "padgeomtype_bullet": ["x_size", "y_size", "corner_radius"],
+        "padgeomtype_round45": ["inner", "channel_width", "isolation_gap"],
+        "padgeomtype_round90": ["inner", "channel_width", "isolation_gap"],
+        "padgeomtype_no_geometry": [],
+    }
+    PAD_SHAPE_KEYS = {
+        "padgeomtype_circle": CorePadGeometryType.PADGEOMTYPE_CIRCLE,
+        "padgeomtype_square": CorePadGeometryType.PADGEOMTYPE_SQUARE,
+        "padgeomtype_rectangle": CorePadGeometryType.PADGEOMTYPE_RECTANGLE,
+        "padgeomtype_oval": CorePadGeometryType.PADGEOMTYPE_OVAL,
+        "padgeomtype_bullet": CorePadGeometryType.PADGEOMTYPE_BULLET,
+        "padgeomtype_round45": CorePadGeometryType.PADGEOMTYPE_ROUND45,
+        "padgeomtype_round90": CorePadGeometryType.PADGEOMTYPE_ROUND90,
+        "padgeomtype_no_geometry": CorePadGeometryType.PADGEOMTYPE_NO_GEOMETRY,
+    }
+    SOLDER_SHAPE_TYPE = {
+        "no_solder_ball": SolderballShape.NO_SOLDERBALL,
+        "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
+        "spheroid": SolderballShape.SOLDERBALL_SPHEROID,
+    }
+    SOLDER_PLACEMENT = {
+        "above_padstack": SolderballPlacement.ABOVE_PADSTACK,
+        "below_padstack": SolderballPlacement.BELOW_PADSTACK,
+    }
     # TODO check if update layer name is needed.

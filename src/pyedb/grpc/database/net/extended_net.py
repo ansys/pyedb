@@ -26,7 +26,9 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
-from ansys.edb.core.net.extended_net import ExtendedNet as GrpcExtendedNet
+from ansys.edb.core.net.extended_net import ExtendedNet as CoreExtendedNet
+
+from pyedb.generic.constants import decompose_variable_value, unit_converter
 
 
 class ExtendedNets:
@@ -192,6 +194,20 @@ class ExtendedNets:
             if self._pedb.nets._nets_by_comp_dict
             else (self._pedb.nets.nets_by_components)
         )
+        cap, unit = decompose_variable_value(capacitor_above)
+        capacitor_above = unit_converter(
+            values=cap, unit_system="Capacitance", input_units=unit if unit else "F    ", output_units="F"
+        )
+
+        ind, unit = decompose_variable_value(inductor_below)
+        inductor_below = unit_converter(
+            values=ind, unit_system="Inductance", input_units=unit if unit else "H", output_units="H"
+        )
+
+        res, unit = decompose_variable_value(resistor_below)
+        resistor_below = unit_converter(
+            values=res, unit_system="Resistance", input_units=unit if unit else "ohm", output_units="ohm"
+        )
 
         def get_net_list(net_name, _net_list):
             comps = []
@@ -221,7 +237,7 @@ class ExtendedNets:
                 elif cmp.type == "capacitor":
                     if val_value[2] is None:
                         continue
-                    elif not val_value[2] > capacitor_above:
+                    elif not float(val_value[2]) > capacitor_above:
                         continue
                 else:
                     continue
@@ -249,17 +265,17 @@ class ExtendedNets:
                 if is_power:
                     if include_power:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
+                        ext_net.core.add_net(_nets[i].core)
                         for net in new_ext:
-                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
+                            ext_net.core.add_net(_nets[net].core)
                     else:  # pragma: no cover
                         pass
                 else:
                     if include_signal:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
+                        ext_net.core.add_net(_nets[i].core)
                         for net in new_ext:
-                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
+                            ext_net.core.add_net(_nets[net].core)
                     else:  # pragma: no cover
                         pass
 
@@ -291,7 +307,7 @@ class ExtendedNet:
         ExtendedNet
             Extended net object.
         """
-        core_extended_net = GrpcExtendedNet.create(layout.core, name)
+        core_extended_net = CoreExtendedNet.create(layout.core, name)
         return cls(layout._pedb, core_extended_net)
 
     @property

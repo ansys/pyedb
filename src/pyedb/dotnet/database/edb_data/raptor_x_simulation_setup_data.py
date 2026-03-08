@@ -19,7 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
+
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
@@ -32,14 +35,18 @@ class RaptorXSimulationSetup(SimulationSetup):
         super().__init__(pedb, edb_object)
         self._pedb = pedb
         self._setup_type = "kRaptorX"
-        self._edb_setup_info = None
         self.logger = self._pedb.logger
+        self._simulation_setup_builder = self._pedb._edb.Utility.RaptorXSimulationSetup
 
-    def create(self, name=None):
-        """Create an HFSS setup."""
-        self._name = name
-        self._create(name, simulation_setup_type=self._setup_type)
-        return self
+    @classmethod
+    def create(cls, pedb, name):
+        obj = cls(pedb, edb_object=None)
+        obj._name = name
+        sim_setup_info = SimSetupInfo(pedb, sim_setup=obj, setup_type="kRaptorX", name=name)
+        obj._edb_object = obj._simulation_setup_builder(sim_setup_info._edb_object)
+        obj._update_setup()
+        obj._edb_setup_info = sim_setup_info._edb_object
+        return obj
 
     @property
     def setup_type(self):
@@ -47,15 +54,7 @@ class RaptorXSimulationSetup(SimulationSetup):
 
     @property
     def settings(self):
-        return RaptorXSimulationSettings(self._edb_setup_info, self._pedb)
-
-    @property
-    def enabled(self):
-        return self.settings.enabled
-
-    @enabled.setter
-    def enabled(self, value):
-        self.settings.enabled = value
+        return RaptorXSimulationSettings(self)
 
     @property
     def position(self):
@@ -97,16 +96,30 @@ class RaptorXSimulationSetup(SimulationSetup):
             return False
         if not name:
             name = generate_unique_name("sweep")
-        return SweepData(self, frequency_sweep, name)
+        sw_da = SweepData(self._pedb, None, name, self)
+        if frequency_sweep[0] == "linear count":
+            sw_da.set_frequencies_linear_count(
+                start=frequency_sweep[1], stop=frequency_sweep[2], count=frequency_sweep[3]
+            )
+        elif frequency_sweep[0] == "log scale":
+            sw_da.set_frequencies_log_scale(
+                start=frequency_sweep[1], stop=frequency_sweep[2], points_per_decade=frequency_sweep[3]
+            )
+        elif frequency_sweep[0] == "linear scale":
+            sw_da.set_frequencies_linear_scale(
+                start=frequency_sweep[1], stop=frequency_sweep[2], step=frequency_sweep[3]
+            )
+        return sw_da
 
 
 class RaptorXSimulationSettings(object):
-    def __init__(self, edb_setup_info, pedb):
-        self._pedb = pedb
+    def __init__(self, parent):
+        self._parent = parent
+        self._pedb = parent._pedb
         self.logger = self._pedb.logger
-        self._edb_setup_info = edb_setup_info
-        self._simulation_settings = edb_setup_info.SimulationSettings
-        self._general_settings = RaptorXGeneralSettings(self._edb_setup_info, self._pedb)
+        self._edb_setup_info = self._parent.sim_setup_info.core
+        self._simulation_settings = self._parent.sim_setup_info.core.SimulationSettings
+        self._general_settings = RaptorXGeneralSettings(self._edb_setup_info, self)
         self._advanced_settings = RaptorXSimulationAdvancedSettings(self._edb_setup_info, self._pedb)
         self._simulation_settings = self._edb_setup_info.SimulationSettings
 
@@ -115,8 +128,17 @@ class RaptorXSimulationSettings(object):
         return self._general_settings
 
     @property
+    def general(self):
+        return RaptorXGeneralSettings(self._edb_setup_info, self)
+
+    @property
     def advanced_settings(self):
+        warnings.warn("Deprecated: advanced_settings is deprecated, use advanced instead.", DeprecationWarning)
         return self._advanced_settings
+
+    @property
+    def advanced(self):
+        return RaptorXSimulationAdvancedSettings(self._edb_setup_info, self._pedb)
 
     @property
     def enabled(self):
@@ -131,10 +153,11 @@ class RaptorXSimulationSettings(object):
 
 
 class RaptorXGeneralSettings(object):
-    def __init__(self, edb_setup_info, pedb):
+    def __init__(self, edb_setup_info, parent):
         self._general_settings = edb_setup_info.SimulationSettings.GeneralSettings
-        self._pedb = pedb
-        self.logger = self._pedb.logger
+        self._parent = parent
+        self._pedb = parent._pedb
+        self.logger = self._parent.logger
 
     @property
     def global_temperature(self):
@@ -144,10 +167,11 @@ class RaptorXGeneralSettings(object):
     @global_temperature.setter
     def global_temperature(self, value):
         self._general_settings.GlobalTemperature = self._pedb.edb_value(value).ToDouble()
+        self._parent._parent._update_setup()
 
     @property
     def max_frequency(self):
-        return self._general_settings.MaxFrequency
+        return self._pedb.value(self._general_settings.MaxFrequency)
 
     @max_frequency.setter
     def max_frequency(self, value):
@@ -155,7 +179,8 @@ class RaptorXGeneralSettings(object):
         mesh will be. User can override the default meshing frequency as defined by Max Frequency using the Advanced
         settings > MeshFrequency. Example: "10GHz".
         """
-        self._general_settings.MaxFrequency = self._pedb.edb_value(value).ToString()
+        self._general_settings.MaxFrequency = str(self._pedb.value(value))
+        self._parent._parent._update_setup()
 
 
 class RaptorXSimulationAdvancedSettings(object):
@@ -196,7 +221,7 @@ class RaptorXSimulationAdvancedSettings(object):
         When specified, it prevails over the Mesh Frequency or Max Frequency during mesh calculation.
         Example: "0.8um".
         """
-        return self._advanced_settings.EdgeMesh
+        return self._pedb.value(self._advanced_settings.EdgeMesh)
 
     @edge_mesh.setter
     def edge_mesh(self, value):
@@ -220,7 +245,7 @@ class RaptorXSimulationAdvancedSettings(object):
         """User can override the default meshing applied by setting a custom frequency for mesh generation.
         Example: "1GHz".
         """
-        return self._advanced_settings.MeshFrequency
+        return self._pedb.value(self._advanced_settings.MeshFrequency)
 
     @mesh_frequency.setter
     def mesh_frequency(self, value):
@@ -234,9 +259,10 @@ class RaptorXSimulationAdvancedSettings(object):
     @net_settings_options.setter
     def net_settings_options(self, value):
         if isinstance(value, list):
-            self._advanced_settings.NetSettingsOptions = convert_py_list_to_net_list(value)
+            temp = [tuple(i) for i in value]
+            self._advanced_settings.NetSettingsOptions = convert_py_list_to_net_list(temp)
         else:
-            self.logger.error(f"RaptorX setup net_settings_options input setter must be a list. Provided value {value}")
+            raise ValueError(f"RaptorX setup net_settings_options input setter must be a list. Provided value {value}")
 
     @property
     def override_shrink_fac(self):

@@ -35,3 +35,7 @@ class SParameterModel(Model):
     @property
     def reference_net(self):
         return self._edb_object.GetReferenceNet()
+
+    @property
+    def component_model_name(self):
+        return self._edb_object.GetComponentModelName()

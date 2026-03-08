@@ -33,6 +33,7 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.misc.decorators import deprecate_argument_name
 
 
 class Modeler(object):
@@ -64,76 +65,10 @@ class Modeler(object):
                 or (isinstance(name, int) and i.id == name)
             ):
                 return i
-        self._pedb.logger.error("Primitive not found.")
-        return
+        raise ValueError(f"Primitive {name} not found.")
 
     def __init__(self, p_edb):
         self._pedb = p_edb
-
-    @property
-    def _edb(self):
-        return self._pedb.core
-
-    def _get_edb_value(self, value):
-        return self._pedb.edb_value(value)
-
-    @property
-    def _logger(self):
-        """Logger."""
-        return self._pedb.logger
-
-    @property
-    def _edbutils(self):
-        return self._pedb.edbutils
-
-    @property
-    def _active_layout(self):
-        return self._pedb.active_layout
-
-    @property
-    def _layout(self):
-        return self._pedb.layout
-
-    @property
-    def _cell(self):
-        return self._pedb.active_cell
-
-    @property
-    def db(self):
-        """Db object."""
-        return self._pedb.active_db
-
-    @property
-    def layers(self):
-        """Dictionary of layers.
-
-        Returns
-        -------
-        dict
-            Dictionary of layers.
-        """
-        return self._pedb.stackup.layers
-
-    def get_primitive(self, primitive_id):
-        """Retrieve primitive from give id.
-
-        Parameters
-        ----------
-        primitive_id : int
-            Primitive id.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of primitives.
-        """
-        for p in self._layout.primitives:
-            if p.id == primitive_id:
-                return p
-        for p in self._layout.primitives:
-            for v in p.voids:
-                if v.id == primitive_id:
-                    return v
 
     @property
     def primitives(self):
@@ -144,271 +79,8 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
         """
+        warnings.warn("Deprecated. Use `edb.layout.primitives` instead.", DeprecationWarning, stacklevel=2)
         return self._pedb.layout.primitives
-
-    @property
-    def polygons_by_layer(self):
-        """Primitives with layer names as keys.
-
-        Returns
-        -------
-        dict
-            Dictionary of primitives with layer names as keys.
-        """
-        _primitives_by_layer = {}
-        for lay in self.layers:
-            _primitives_by_layer[lay] = self.get_polygons_by_layer(lay)
-        return _primitives_by_layer
-
-    @property
-    def primitives_by_net(self):
-        """Primitives with net names as keys.
-
-        Returns
-        -------
-        dict
-            Dictionary of primitives with nat names as keys.
-        """
-        _prim_by_net = {}
-        for net, net_obj in self._pedb.nets.nets.items():
-            _prim_by_net[net] = [i for i in net_obj.primitives]
-        return _prim_by_net
-
-    @property
-    def primitives_by_layer(self):
-        """Primitives with layer names as keys.
-
-        Returns
-        -------
-        dict
-            Dictionary of primitives with layer names as keys.
-        """
-        _primitives_by_layer = {}
-        for lay in self.layers:
-            _primitives_by_layer[lay] = []
-        for lay in self._pedb.stackup.non_stackup_layers:
-            _primitives_by_layer[lay] = []
-        for i in self._layout.primitives:
-            layer = i.layer
-            if not layer:
-                continue
-            lay = layer.name
-            if lay in _primitives_by_layer:
-                _primitives_by_layer[lay].append(i)
-        return _primitives_by_layer
-
-    @property
-    def rectangles(self):
-        """Rectangles.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of rectangles.
-
-        """
-        return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
-
-    @property
-    def circles(self):
-        """Circles.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of circles.
-
-        """
-        return [i for i in self.primitives if isinstance(i, CircleDotNet)]
-
-    @property
-    def paths(self):
-        """Paths.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of paths.
-        """
-        return [i for i in self.primitives if i.primitive_type == "path"]
-
-    @property
-    def polygons(self):
-        """Polygons.
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of polygons.
-        """
-        return [i for i in self.primitives if i.primitive_type == "polygon"]
-
-    def get_polygons_by_layer(self, layer_name, net_list=None):
-        """Retrieve polygons by a layer.
-
-        Parameters
-        ----------
-        layer_name : str
-            Name of the layer.
-        net_list : list, optional
-            List of net names.
-
-        Returns
-        -------
-        list
-            List of primitive objects.
-        """
-        objinst = []
-        for el in self.polygons:
-            if el.layer.name == layer_name:
-                if net_list and el.net.name in net_list:
-                    objinst.append(el)
-                else:
-                    objinst.append(el)
-        return objinst
-
-    def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
-        """Return primitive given coordinate point [x, y], layer name and nets.
-
-        Parameters
-        ----------
-        point : list
-            Coordinate [x, y]
-
-        layer : list or str, optional
-            list of layer name or layer name applied on filter.
-
-        nets : list or str, optional
-            list of net name or single net name applied on filter
-
-        Returns
-        -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-            List of primitives, polygons, paths and rectangles.
-        """
-        if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
-            layer = None
-        if not isinstance(point, list) and len(point) == 2:
-            self._logger.error("Provided point must be a list of two values")
-            return False
-        pt = self._edb.Geometry.PointData(self._pedb.edb_value(point[0]), self._pedb.edb_value(point[1]))
-        if nets:
-            if isinstance(nets, str):
-                nets = [nets]
-            _nets = []
-            for net in nets:
-                if net not in self._pedb.nets:
-                    self._logger.warning(
-                        f"Net {net} used to find primitive from layer point and net not found, skipping it."
-                    )
-                else:
-                    _nets.append(self._pedb.nets[net].net_obj)
-            if _nets:
-                nets = convert_py_list_to_net_list(_nets)
-        _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
-        returned_obj = []
-        if layer:
-            selected_prim = [
-                obj.GetLayoutObj()
-                for obj in _obj_instances
-                if layer in [lay.GetName() for lay in list(obj.GetLayers())]
-                and "Terminal" not in str(obj.GetLayoutObj())
-            ]
-            for prim in selected_prim:
-                obj_id = prim.GetId()
-                prim_type = str(prim.GetPrimitiveType())
-                if prim_type == "Polygon":
-                    [returned_obj.append(p) for p in [poly for poly in self.polygons if poly.id == obj_id]]
-                elif prim_type == "Path":
-                    [returned_obj.append(p) for p in [t for t in self.paths if t.id == obj_id]]
-                elif prim_type == "Rectangle":
-                    [returned_obj.append(p) for p in [t for t in self.rectangles if t.id == obj_id]]
-        else:
-            for obj in _obj_instances:
-                obj_id = obj.GetLayoutObj().GetId()
-                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
-        return returned_obj
-
-    def get_polygon_bounding_box(self, polygon):
-        """Retrieve a polygon bounding box.
-
-        Parameters
-        ----------
-        polygon :
-            Name of the polygon.
-
-        Returns
-        -------
-        list
-            List of bounding box coordinates in the format ``[-x, -y, +x, +y]``.
-
-        Examples
-        --------
-        >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> bounding = database.modeler.get_polygon_bounding_box(poly[0])
-        """
-        bounding = []
-        try:
-            bounding_box = polygon.GetPolygonData().GetBBox()
-            bounding = [
-                bounding_box.Item1.X.ToDouble(),
-                bounding_box.Item1.Y.ToDouble(),
-                bounding_box.Item2.X.ToDouble(),
-                bounding_box.Item2.Y.ToDouble(),
-            ]
-        except Exception as e:
-            self._logger.warning(
-                f"A(n) {type(e).__name__} error occurred while retrieving bounding box for polygon {polygon} - "
-                f"Empty list is returned: {str(e)}"
-            )
-        return bounding
-
-    def get_polygon_points(self, polygon):
-        """Retrieve polygon points.
-
-        .. note::
-           For arcs, one point is returned.
-
-        Parameters
-        ----------
-        polygon :
-            class: `dotnet.database.edb_data.primitives_data.Primitive`
-
-        Returns
-        -------
-        list
-            List of tuples. Each tuple provides x, y point coordinate. If the length of two consecutives tuples
-             from the list equals 2, a segment is defined. The first tuple defines the starting point while the second
-             tuple the ending one. If the length of one tuple equals one, that means a polyline is defined and the value
-             is giving the arc height. Therefore to polyline is defined as starting point for the tuple
-             before in the list, the current one the arc height and the tuple after the polyline ending point.
-
-        Examples
-        --------
-
-        >>> poly = database.modeler.get_polygons_by_layer("GND")
-        >>> points = database.modeler.get_polygon_points(poly[0])
-
-        """
-        points = []
-        i = 0
-        continue_iterate = True
-        prev_point = None
-        while continue_iterate:
-            try:
-                point = polygon.GetPolygonData().GetPoint(i)
-                if prev_point != point:
-                    if point.IsArc():
-                        points.append([point.X.ToDouble()])
-                    else:
-                        points.append([point.X.ToDouble(), point.Y.ToDouble()])
-                    prev_point = point
-                    i += 1
-                else:
-                    continue_iterate = False
-            except:
-                continue_iterate = False
-        return points
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
         """Parametrize pieces of a polygon based on another polygon.
@@ -629,12 +301,19 @@ class Modeler(object):
 
         return primitive
 
-    def create_polygon(self, main_shape=None, layer_name="", voids=[], net_name="", points=None):
+    @deprecate_argument_name({"main_shape": "points"})
+    def create_polygon(
+        self,
+        points=None,
+        layer_name="",
+        voids=[],
+        net_name="",
+    ):
         """Create a polygon based on a list of points and voids.
 
         Parameters
         ----------
-        main_shape : list of points or PolygonData or ``modeler.Shape``
+        points : list of points or PolygonData or ``modeler.Shape``
             Shape or point lists of the main object. Point list can be in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
             Each point can be:
             - [x, y] coordinate
@@ -646,8 +325,7 @@ class Modeler(object):
             List of shape objects for voids or points that creates the shapes. The default is``[]``.
         net_name : str, optional
             Name of the net. The default is ``""``.
-        points : list, optional
-            Added for compatibility with grpc.
+
 
         Returns
         -------
@@ -656,16 +334,10 @@ class Modeler(object):
         """
         from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 
-        if main_shape:
-            warnings.warn(
-                "main_shape argument will be deprecated soon with grpc version, use points instead.", DeprecationWarning
-            )
-
         net = self._pedb.nets.find_or_create_net(net_name)
-        if points:
+
+        if isinstance(points, list):
             arcs = []
-            if isinstance(points, PolygonData):
-                points = points.points
             for _ in range(len(points)):
                 arcs.append(
                     self._edb.Geometry.ArcData(
@@ -680,28 +352,11 @@ class Modeler(object):
                 pdata_1 = self._pedb.edb_value(i[1])
                 new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
                 polygonData.SetPoint(idx, new_points)
-        if isinstance(main_shape, list):
-            arcs = []
-            for _ in range(len(main_shape)):
-                arcs.append(
-                    self._edb.Geometry.ArcData(
-                        self._pedb.point_data(0, 0),
-                        self._pedb.point_data(0, 0),
-                    )
-                )
-            polygonData = self._edb.Geometry.PolygonData.CreateFromArcs(convert_py_list_to_net_list(arcs), True)
 
-            for idx, i in enumerate(main_shape):
-                pdata_0 = self._pedb.edb_value(i[0])
-                pdata_1 = self._pedb.edb_value(i[1])
-                new_points = self._edb.Geometry.PointData(pdata_0, pdata_1)
-                polygonData.SetPoint(idx, new_points)
-
-        elif isinstance(main_shape, Modeler.Shape):
-            polygonData = self.shape_to_polygon_data(main_shape)
+        elif isinstance(points, Modeler.Shape):
+            polygonData = self.shape_to_polygon_data(points)
         else:
-            if not points:
-                polygonData = main_shape
+            polygonData = points
         if isinstance(polygonData, PolygonData):
             if not polygonData.points:
                 raise RuntimeError("Failed to create main shape polygon data")
@@ -720,6 +375,8 @@ class Modeler(object):
             if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
                 self._logger.error("Failed to create void polygon data")
                 return False
+            if isinstance(polygonData, PolygonData):
+                polygonData = polygonData._edb_object
             polygonData.AddHole(voidPolygonData)
         if isinstance(polygonData, PolygonData):
             polygonData = polygonData._edb_object
@@ -730,34 +387,6 @@ class Modeler(object):
             raise RuntimeError("Null polygon created")
         else:
             return cast(polygon, self._pedb)
-
-    def create_polygon_from_points(self, point_list, layer_name, net_name=""):
-        """Create a new polygon from a point list.
-
-        .. deprecated:: 0.6.73
-        Use :func:`create_polygon` method instead. It now supports point lists as arguments.
-
-        Parameters
-        ----------
-        point_list : list
-            Point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
-            Each point can be:
-            - [x,y] coordinate
-            - [x,y, height] for an arc with specific height (between previous point and actual point)
-            - [x,y, rotation, xc,yc] for an arc given a point, rotation and center.
-        layer_name : str
-            Name of layer on which create the polygon.
-        net_name : str, optional
-            Name of the net on which create the polygon.
-
-        Returns
-        -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
-        """
-        warnings.warn(
-            "Use :func:`create_polygon` method instead. It now supports point lists as arguments.", DeprecationWarning
-        )
-        return self.create_polygon(point_list, layer_name, net_name=net_name)
 
     def create_rectangle(
         self,
@@ -897,42 +526,6 @@ class Modeler(object):
             if p.net_name in net_names:
                 p.delete()
         return True
-
-    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
-        """Get primitives by conditions.
-
-        Parameters
-        ----------
-        net_name : str, optional
-            Set filter on net_name. Default is `None`.
-        layer_name : str, optional
-            Set filter on layer_name. Default is `None`.
-        prim_type :  str, optional
-            Set filter on primitive type. Default is `None`.
-        is_void : bool
-            Set filter on is_void. Default is 'False'
-        Returns
-        -------
-        list
-            List of filtered primitives
-        """
-        prims = []
-        for el in self.primitives:
-            if not el.type:
-                continue
-            if net_name:
-                if not el.net_name == net_name:
-                    continue
-            if layer_name:
-                if not el.layer_name == layer_name:
-                    continue
-            if prim_type:
-                if not el.type == prim_type:
-                    continue
-            if not el.is_void == is_void:
-                continue
-            prims.append(el)
-        return prims
 
     def fix_circle_void_for_clipping(self):
         """Fix issues when circle void are clipped due to a bug in EDB.
@@ -1228,7 +821,7 @@ class Modeler(object):
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width
-                            result, var_server = self._pedb.add_design_variable(
+                            _, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
                         p.width = self._pedb.edb_value(parameter_name)
@@ -1236,7 +829,7 @@ class Modeler(object):
                         if not var_server:
                             if not variable_value:
                                 variable_value = p.width
-                            result, var_server = self._pedb.add_design_variable(
+                            _, var_server = self._pedb.add_design_variable(
                                 parameter_name, variable_value, is_parameter=True
                             )
                         p.width = self._pedb.edb_value(parameter_name)
@@ -1342,7 +935,7 @@ class Modeler(object):
         poly._edb_object.SetPolygonData(new_poly)
         return True
 
-    def get_layout_statistics(self, evaluate_area=False, net_list=None):
+    def get_layout_statistics(self, evaluate_area=False, net_list=False) -> EDBStatistics:
         """Return EDBStatistics object from a layout.
 
         Parameters
@@ -1351,7 +944,8 @@ class Modeler(object):
         evaluate_area : optional bool
             When True evaluates the layout metal surface, can take time-consuming,
             avoid using this option on large design.
-
+        net_list: optional bool
+            list of net names to evaluate area for, if None all nets will be evaluated.
         Returns
         -------
 
@@ -1368,9 +962,6 @@ class Modeler(object):
         stat_model.num_discrete_components = (
             len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
-        stat_model.num_inductors = len(self._pedb.components.inductors)
-        stat_model.num_resistors = len(self._pedb.components.resistors)
-        stat_model.num_capacitors = len(self._pedb.components.capacitors)
         stat_model.num_nets = len(self._pedb.nets.nets)
         stat_model.num_traces = len(self._pedb.modeler.paths)
         stat_model.num_polygons = len(self._pedb.modeler.polygons)
@@ -1511,7 +1102,7 @@ class Modeler(object):
                 pins = _pins
             else:
                 for id, pin in _pins.items():
-                    if not id in pins:
+                    if id not in pins:
                         pins[id] = pin
         if not pins:
             self._logger.error("No pin found.")
@@ -1527,3 +1118,381 @@ class Modeler(object):
             if net_obj:
                 obj.SetNet(net_obj[0])
         return self._pedb.siwave.pin_groups[name]
+
+    @property
+    def _edb(self):
+        return self._pedb.core
+
+    def _get_edb_value(self, value):
+        return self._pedb.edb_value(value)
+
+    @property
+    def _logger(self):
+        """Logger."""
+        return self._pedb.logger
+
+    @property
+    def _edbutils(self):
+        return self._pedb.edbutils
+
+    @property
+    def _active_layout(self):
+        return self._pedb.active_layout
+
+    @property
+    def _layout(self):
+        return self._pedb.layout
+
+    @property
+    def _cell(self):
+        return self._pedb.active_cell
+
+    @property
+    def db(self):
+        """Db object."""
+        return self._pedb.active_db
+
+    @property
+    def layers(self):
+        """Dictionary of layers.
+
+        Returns
+        -------
+        dict
+            Dictionary of layers.
+        """
+        warnings.warn("Deprecated. Use `edb.stackup.layers` instead.", DeprecationWarning, stacklevel=2)
+        return self._pedb.stackup.layers
+
+    def get_primitive(self, primitive_id):
+        """Retrieve primitive from give id.
+
+        Parameters
+        ----------
+        primitive_id : int
+            Primitive id.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of primitives.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_object_by_id` instead.", DeprecationWarning, stacklevel=2)
+        for p in self._layout.primitives:
+            if p.id == primitive_id:
+                return p
+        for p in self._layout.primitives:
+            for v in p.voids:
+                if v.id == primitive_id:
+                    return v
+
+    @property
+    def polygons_by_layer(self):
+        """Primitives with layer names as keys.
+
+        Returns
+        -------
+        dict
+            Dictionary of primitives with layer names as keys.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        _primitives_by_layer = {}
+        for lay in self.layers:
+            _primitives_by_layer[lay] = self.get_polygons_by_layer(lay)
+        return _primitives_by_layer
+
+    @property
+    def primitives_by_net(self):
+        """Primitives with net names as keys.
+
+        Returns
+        -------
+        dict
+            Dictionary of primitives with nat names as keys.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        _prim_by_net = {}
+        for net, net_obj in self._pedb.nets.nets.items():
+            _prim_by_net[net] = [i for i in net_obj.primitives]
+        return _prim_by_net
+
+    @property
+    def primitives_by_layer(self):
+        """Primitives with layer names as keys.
+
+        Returns
+        -------
+        dict
+            Dictionary of primitives with layer names as keys.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        _primitives_by_layer = {}
+        for lay in self.layers:
+            _primitives_by_layer[lay] = []
+        for lay in self._pedb.stackup.non_stackup_layers:
+            _primitives_by_layer[lay] = []
+        for i in self._layout.primitives:
+            layer = i.layer
+            if not layer:
+                continue
+            lay = layer.name
+            if lay in _primitives_by_layer:
+                _primitives_by_layer[lay].append(i)
+        return _primitives_by_layer
+
+    @property
+    def rectangles(self):
+        """Rectangles.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of rectangles.
+
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
+
+    @property
+    def circles(self):
+        """Circles.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of circles.
+
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        return [i for i in self.primitives if isinstance(i, CircleDotNet)]
+
+    @property
+    def paths(self):
+        """Paths.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of paths.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        return [i for i in self.primitives if i.primitive_type == "path"]
+
+    @property
+    def polygons(self):
+        """Polygons.
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of polygons.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        return [i for i in self.primitives if i.primitive_type == "polygon"]
+
+    def get_polygons_by_layer(self, layer_name, net_list=None):
+        """Retrieve polygons by a layer.
+
+        Parameters
+        ----------
+        layer_name : str
+            Name of the layer.
+        net_list : list, optional
+            List of net names.
+
+        Returns
+        -------
+        list
+            List of primitive objects.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        objinst = []
+        for el in self.polygons:
+            if el.layer.name == layer_name:
+                if net_list and el.net.name in net_list:
+                    objinst.append(el)
+                else:
+                    objinst.append(el)
+        return objinst
+
+    def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
+        """Return primitive given coordinate point [x, y], layer name and nets.
+
+        Parameters
+        ----------
+        point : list
+            Coordinate [x, y]
+
+        layer : list or str, optional
+            list of layer name or layer name applied on filter.
+
+        nets : list or str, optional
+            list of net name or single net name applied on filter
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of primitives, polygons, paths and rectangles.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
+        if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
+            layer = None
+        if not isinstance(point, list) and len(point) == 2:
+            self._logger.error("Provided point must be a list of two values")
+            return False
+        pt = self._edb.Geometry.PointData(self._pedb.edb_value(point[0]), self._pedb.edb_value(point[1]))
+        if nets:
+            if isinstance(nets, str):
+                nets = [nets]
+            _nets = []
+            for net in nets:
+                if net not in self._pedb.nets:
+                    self._logger.warning(
+                        f"Net {net} used to find primitive from layer point and net not found, skipping it."
+                    )
+                else:
+                    _nets.append(self._pedb.nets[net].net_obj)
+            if _nets:
+                nets = convert_py_list_to_net_list(_nets)
+        _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
+        returned_obj = []
+        if layer:
+            selected_prim = [
+                obj.GetLayoutObj()
+                for obj in _obj_instances
+                if layer in [lay.GetName() for lay in list(obj.GetLayers())]
+                and "Terminal" not in str(obj.GetLayoutObj())
+            ]
+            for prim in selected_prim:
+                obj_id = prim.GetId()
+                prim_type = str(prim.GetPrimitiveType())
+                if prim_type == "Polygon":
+                    [returned_obj.append(p) for p in [poly for poly in self.polygons if poly.id == obj_id]]
+                elif prim_type == "Path":
+                    [returned_obj.append(p) for p in [t for t in self.paths if t.id == obj_id]]
+                elif prim_type == "Rectangle":
+                    [returned_obj.append(p) for p in [t for t in self.rectangles if t.id == obj_id]]
+        else:
+            for obj in _obj_instances:
+                obj_id = obj.GetLayoutObj().GetId()
+                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
+        return returned_obj
+
+    def get_polygon_bounding_box(self, polygon):
+        """Retrieve a polygon bounding box.
+
+        Parameters
+        ----------
+        polygon :
+            Name of the polygon.
+
+        Returns
+        -------
+        list
+            List of bounding box coordinates in the format ``[-x, -y, +x, +y]``.
+
+        Examples
+        --------
+        >>> poly = database.modeler.get_polygons_by_layer("GND")
+        >>> bounding = database.modeler.get_polygon_bounding_box(poly[0])
+        """
+        warnings.warn("Deprecated.", DeprecationWarning, stacklevel=2)
+
+        bounding = []
+        try:
+            bounding_box = polygon.GetPolygonData().GetBBox()
+            bounding = [
+                bounding_box.Item1.X.ToDouble(),
+                bounding_box.Item1.Y.ToDouble(),
+                bounding_box.Item2.X.ToDouble(),
+                bounding_box.Item2.Y.ToDouble(),
+            ]
+        except Exception as e:
+            self._logger.warning(
+                f"A(n) {type(e).__name__} error occurred while retrieving bounding box for polygon {polygon} - "
+                f"Empty list is returned: {str(e)}"
+            )
+        return bounding
+
+    def get_polygon_points(self, polygon):
+        """Retrieve polygon points.
+
+        .. note::
+           For arcs, one point is returned.
+
+        Parameters
+        ----------
+        polygon :
+            class: `dotnet.database.edb_data.primitives_data.Primitive`
+
+        Returns
+        -------
+        list
+            List of tuples. Each tuple provides x, y point coordinate. If the length of two consecutives tuples
+             from the list equals 2, a segment is defined. The first tuple defines the starting point while the second
+             tuple the ending one. If the length of one tuple equals one, that means a polyline is defined and the value
+             is giving the arc height. Therefore to polyline is defined as starting point for the tuple
+             before in the list, the current one the arc height and the tuple after the polyline ending point.
+
+        Examples
+        --------
+
+        >>> poly = database.modeler.get_polygons_by_layer("GND")
+        >>> points = database.modeler.get_polygon_points(poly[0])
+
+        """
+        points = []
+        i = 0
+        continue_iterate = True
+        prev_point = None
+        while continue_iterate:
+            try:
+                point = polygon.GetPolygonData().GetPoint(i)
+                if prev_point != point:
+                    if point.IsArc():
+                        points.append([point.X.ToDouble()])
+                    else:
+                        points.append([point.X.ToDouble(), point.Y.ToDouble()])
+                    prev_point = point
+                    i += 1
+                else:
+                    continue_iterate = False
+            except:
+                continue_iterate = False
+        return points
+
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False):
+        """Get primitives by conditions.
+
+        Parameters
+        ----------
+        net_name : str, optional
+            Set filter on net_name. Default is ``None``.
+        layer_name : str, optional
+            Set filter on layer_name. Default is ``None``.
+        prim_type :  str, optional
+            Set filter on primitive type. Default is ``None``.
+        is_void : bool
+            Set filter on is_void. Default is '``False'``
+        Returns
+        -------
+        list
+            List of filtered primitives
+        """
+        prims = []
+        for el in self.primitives:
+            if net_name and not el.net_name == net_name:
+                continue
+            if layer_name and not el.layer_name == layer_name:
+                continue
+            if prim_type and not el.type == prim_type:
+                continue
+            if not el.is_void == is_void:
+                continue
+            prims.append(el)
+        return prims
+
+    @staticmethod
+    def clear_cache():
+        """Force reload of all primitives and reset indexes."""
+        warnings.warn("Redundant methods. Not use.", DeprecationWarning)

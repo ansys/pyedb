@@ -32,19 +32,12 @@ For end-to-end examples, see :doc:`pyedb_examples`.
 
             Core PyEDB concepts.
 
-   .. grid-item-card:: PyEDB libraries
+   .. grid-item-card:: Advanced libraries
             :link: libraries/index
             :link-type: doc
             :margin: 2 2 0 0
 
             PyEDB advanced libraries.
-
-   .. grid-item-card:: Communication protocols
-            :link: communication_protocols
-            :link-type: doc
-            :margin: 2 2 0 0
-
-            PyEDB communication protocols.
 
    .. grid-item-card:: Security considerations
             :link: security_consideration
@@ -61,5 +54,4 @@ For end-to-end examples, see :doc:`pyedb_examples`.
    common_tasks
    core_concepts
    libraries/index
-   communication_protocols
    security_consideration

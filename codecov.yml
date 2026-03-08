@@ -13,7 +13,5 @@ coverage:
         if_ci_failed: error
         if_no_uploads: error
   ignore:
-    - "examples"  # ignore folders and all its contents
     - "tests"  # ignore folders and all its contents
-    - "src/pyedb/legacy/database/siwave.py"  # ignore folders and all its contents
     - "src/pyedb/misc/*.py"  # ignore folders and all its contents

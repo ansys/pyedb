@@ -25,7 +25,7 @@ from __future__ import absolute_import  # noreorder
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
 import warnings
 
-from ansys.edb.core.net.net_class import NetClass as GrpcNetClass
+from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
 from pyedb.common.nets import CommonNets
 from pyedb.generic.general_methods import generate_unique_name
@@ -968,7 +968,7 @@ class NetClasses:
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
             return False
-        grpc_net_class = GrpcNetClass.create(self._pedb.active_layout.core, name)
+        grpc_net_class = CoreNetClass.create(self._pedb.active_layout.core, name)
         if isinstance(net, str):
             net = [net]
         for i in net:

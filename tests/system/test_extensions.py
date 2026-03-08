@@ -25,10 +25,8 @@ from pathlib import Path
 import pytest
 
 from pyedb.extensions.via_design_backend import ViaDesignBackend
-from tests.conftest import GRPC, desktop_version
+from tests.conftest import GRPC, config, desktop_version
 from tests.system.base_test_class import BaseTestClass
-
-# from tests.conftest import _get_test_board
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -107,18 +105,6 @@ PADSTACK_DEFS = [
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.fixture(autouse=True)
-    def init(self, local_scratch):
-        working_dir = Path(local_scratch.path)
-        self.working_dir = working_dir
-
-        self.cfg = {
-            "stackup": {"layers": [], "materials": []},
-            "variables": [],
-            "ports": [],
-            "modeler": {"traces": [], "planes": [], "padstack_definitions": [], "padstack_instances": []},
-        }
-
     def test_backend_single(self):
         cfg = {
             "title": "Test Design",
@@ -305,7 +291,7 @@ class TestClass(BaseTestClass):
             },
             "differential_signals": {},
         }
-        app = ViaDesignBackend(cfg)
+        app = ViaDesignBackend(cfg, config["use_grpc"])
 
     def test_backend_diff(self):
         cfg = {
@@ -517,7 +503,7 @@ class TestClass(BaseTestClass):
                 },
             },
         }
-        app = ViaDesignBackend(cfg)
+        app = ViaDesignBackend(cfg, config["use_grpc"])
 
     def test_backend_diff_pcb(self):
         cfg = {
@@ -610,42 +596,39 @@ class TestClass(BaseTestClass):
                 },
             },
         }
-        app = ViaDesignBackend(cfg)
+        app = ViaDesignBackend(cfg, config["use_grpc"])
 
-    def test_arbitrary_wave_ports(self, edb_examples):
-        # TODO check later when sever instances is improved.
-
+    def test_arbitrary_wave_ports(self):
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
 
-        edbapp = edb_examples.load_edb(source_path_edb)
+        edbapp = self.edb_examples.load_edb(source_path_edb)
         assert edbapp.create_model_for_arbitrary_wave_ports(
-            temp_directory=edb_examples.test_folder,
-            output_edb=os.path.join(edb_examples.test_folder, "wave_ports.aedb"),
+            temp_directory=self.edb_examples.test_folder,
+            output_edb=os.path.join(self.edb_examples.test_folder, "wave_ports.aedb"),
             mounting_side="top",
         )
-        edb_model = os.path.join(edb_examples.test_folder, "wave_ports.aedb")
+        edb_model = os.path.join(self.edb_examples.test_folder, "wave_ports.aedb")
         assert os.path.isdir(edb_model)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_create_cell_array(self, edb_examples):
+    def test_create_cell_array(self):
         from pyedb.extensions.create_cell_array import create_array_from_unit_cell
 
-        edbapp = edb_examples.get_unit_cell()
+        edbapp = self.edb_examples.get_unit_cell()
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
         edbapp.close()
 
-    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
-    def test_dxf_swap_backend_center_point(self, edb_examples):
+    @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
+    def test_dxf_swap_backend_center_point(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
 
-        local_path = Path(__file__).parent.parent
-        dxf_path = os.path.join(local_path, "example_models", "dxf_swap", "rectangle.dxf")
         layer_name = "Trace"
-        edb = edb_examples.load_dxf_edb()
+        dxf = self.edb_examples.copy_test_files_into_local_folder("dxf_swap/rectangle.dxf")[0]
+        edb = self.edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
-        swap_polygon_with_dxf_center_point(edb, dxf_path, layer_name, point_aedt)
+        swap_polygon_with_dxf_center_point(edb, dxf, layer_name, point_aedt)
         edb.save()
 
         assert len(edb.modeler.primitives_by_layer["Trace"]) == 3
@@ -656,19 +639,16 @@ class TestClass(BaseTestClass):
         assert edb.modeler.primitives[2].layer_name == layer_name
         assert round(edb.modeler.primitives[2].area(), 6) == 200e-6
 
-    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
-    def test_dxf_swap_backend(self, edb_examples):
-        import os
-
+    @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
+    def test_dxf_swap_backend(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
-        local_path = Path(__file__).parent.parent
-        dxf_path = os.path.join(local_path, "example_models", "dxf_swap", "rectangle.dxf")
         layer_name = "Trace"
-        edb = edb_examples.load_dxf_edb()
+        dxf = self.edb_examples.copy_test_files_into_local_folder("dxf_swap/rectangle.dxf")[0]
+        edb = self.edb_examples.load_dxf_edb()
         point_aedt = ["170mm", "70mm"]
         point_dxf = ["40mm", "25mm"]
-        swap_polygon_with_dxf(edb, dxf_path, layer_name, point_dxf, point_aedt)
+        swap_polygon_with_dxf(edb, dxf, layer_name, point_dxf, point_aedt)
         edb.save()
 
         assert len(edb.modeler.primitives_by_layer["Trace"]) == 3

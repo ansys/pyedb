@@ -26,13 +26,34 @@ import warnings
 
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
+from pyedb.dotnet.database.utilities.obj_base import SystemObject
 from pyedb.generic.general_methods import generate_unique_name
+
+_setup_type_mapping = {
+    "kHFSS": "hfss",
+    "KPEM": "pem",
+    "KSiwave": "siwave",
+    "kSIWave": "siwave",
+    "kLNA": "lna",
+    "kTransient": "transient",
+    "kQEye": "quick_eye",
+    "kVEye": "verif_eye",
+    "kAMI": "ami",
+    "kAnalysisOption": "analysis_option",
+    "kSIWaveDCIR": "siwave_dc",
+    "kSIWaveEMI": "siwave_emi",
+    "kHFSSPI": "hfss_pi",
+    "kDDRwizard": "ddrwizard",
+    "kQ3D": "q3d",
+}
 
 
 class SimulationSetupType(Enum):
     kHFSS = "hfss"
+    hfss = "hfss"
     kPEM = None
     kSIwave = "siwave_ac"
+    siwave = "siwave_ac"
     kLNA = "lna"
     kTransient = "transient"
     kQEye = "quick_eye"
@@ -40,17 +61,19 @@ class SimulationSetupType(Enum):
     kAMI = "ami"
     kAnalysisOption = "analysis_option"
     kSIwaveDCIR = "siwave_dc"
+    siwave_dc = "siwave_dc"
     kSIwaveEMI = "siwave_emi"
     kHFSSPI = "hfss_pi"
     kDDRwizard = "ddrwizard"
     kQ3D = "q3d"
+    unknown = "unknown"
 
 
 class AdaptiveType(object):
     (SingleFrequency, MultiFrequency, BroadBand) = range(0, 3)
 
 
-class SimulationSetup(object):
+class SimulationSetup(SystemObject):
     """Provide base simulation setup.
 
     Parameters
@@ -64,8 +87,8 @@ class SimulationSetup(object):
     """
 
     def __init__(self, pedb, edb_object=None):
-        self._pedb = pedb
-        self._edb_object = edb_object
+        super().__init__(pedb, edb_object)
+
         self._setup_type = ""
         self._simulation_setup_builder = None
         self._simulation_setup_type = {
@@ -98,16 +121,19 @@ class SimulationSetup(object):
 
     @property
     def sim_setup_info(self):
-        return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        if hasattr(self._edb_object, "GetSimSetupInfo"):
+            return SimSetupInfo(self._pedb, sim_setup=self, edb_object=self._edb_object.GetSimSetupInfo())
+        else:
+            return None
 
-    def set_sim_setup_info(self, sim_setup_info):
+    def set_sim_setup_info(self, sim_setup_info: SimSetupInfo):
         self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
 
-    @property
-    def get_sim_setup_info(self):
-        """Get simulation setup information."""
-        warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
-        return self.sim_setup_info._edb_object
+    # @property
+    # def get_sim_setup_info(self):
+    #     """Get simulation setup information."""
+    #     warnings.warn("Use new property :func:`sim_setup_info` instead.", DeprecationWarning)
+    #     return self.sim_setup_info._edb_object
 
     @property
     def is_null(self):
@@ -129,10 +155,6 @@ class SimulationSetup(object):
             if k in self.get_simulation_settings():
                 setattr(self.sim_setup_info.simulation_settings, k, v)
         self._update_setup()
-
-    @property
-    def setup_type(self):
-        return self.sim_setup_info.sim_setup_type
 
     @property
     def type(self):
@@ -192,14 +214,22 @@ class SimulationSetup(object):
         else:
             return True
 
+    # @property
+    # def enabled(self):
+    #     """Flag indicating if the setup is enabled."""
+    #     return self.get_simulation_settings()["enabled"]
+    #
+    # @enabled.setter
+    # def enabled(self, value: bool):
+    #     self.set_simulation_settings({"enabled": value})
+
     @property
     def enabled(self):
-        """Flag indicating if the setup is enabled."""
-        return self.get_simulation_settings()["enabled"]
+        return self.settings.enabled
 
     @enabled.setter
-    def enabled(self, value: bool):
-        self.set_simulation_settings({"enabled": value})
+    def enabled(self, value):
+        self.settings.enabled = value
 
     @property
     def name(self):
@@ -230,7 +260,7 @@ class SimulationSetup(object):
     @property
     def setup_type(self):
         """Type of the setup."""
-        return self.sim_setup_info.sim_setup_type
+        return _setup_type_mapping.get(str(self._edb_object.GetType()), "unknown")
 
     @property
     def frequency_sweeps(self):
@@ -240,12 +270,18 @@ class SimulationSetup(object):
     @property
     def sweeps(self):
         """List of frequency sweeps."""
-        return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        if self.sim_setup_info:
+            return {i.name: i for i in self.sim_setup_info.sweep_data_list}
+        else:
+            return {}
 
     @property
     def sweep_data(self):
         """Adding property for compatibility with grpc."""
-        return list(self.sweeps.values())
+        if self.sim_setup_info:
+            return list(self.sweeps.values())
+        else:
+            return []
 
     @sweep_data.setter
     def sweep_data(self, sweep_data):
@@ -262,7 +298,7 @@ class SimulationSetup(object):
         stop_freq: str = None,
         step=None,
         frequency_set: list = None,
-        sweep_type: str = "interpolation",
+        discrete=False,
         **kwargs,
     ):
         """Add frequency sweep.
@@ -291,6 +327,10 @@ class SimulationSetup(object):
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
         """
+        if "sweep_type" in kwargs:
+            self._pedb.logger.warning("sweep_type parameter is deprecated. Use ``discrete`` parameter instead")
+            discrete = False if kwargs["sweep_type"] == "interpolation" else True
+
         name = generate_unique_name("sweep") if not name else name
         if name in self.sweeps:
             raise ValueError("Sweep {} already exists.".format(name))
@@ -316,7 +356,7 @@ class SimulationSetup(object):
         for k, v in kwargs.items():
             if k in dir(sweep_data):
                 setattr(sweep_data, k, v)
-        sweep_data.type = sweep_type
+        sweep_data.type = "interpolation" if not discrete else "discrete"
 
         return sweep_data
 
@@ -381,3 +421,14 @@ class SimulationSetup(object):
         """
         warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)
+
+    @property
+    def settings(self):
+        """Get the settings interface for SIwave DC simulation.
+
+        Returns
+        -------
+        SIWaveSimulationSettings
+            An instance of the Settings class providing access to SIwave DC simulation settings.
+        """
+        raise NotImplementedError("The `settings` property is not implemented in the base SimulationSetup class")

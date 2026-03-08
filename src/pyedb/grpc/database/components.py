@@ -26,39 +26,35 @@ import codecs
 import json
 import math
 import os
+from pathlib import Path
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
 import warnings
 
-from ansys.edb.core.definition.die_property import DieOrientation as GrpDieOrientation, DieType as GrpcDieType
+from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import (
-    SolderballShape as GrpcSolderballShape,
+    SolderballShape as CoreSolderballShape,
 )
-from ansys.edb.core.hierarchy.component_group import ComponentType as GrpcComponentType
-from ansys.edb.core.hierarchy.spice_model import SPICEModel as GrpcSPICEModel
-from ansys.edb.core.utility.rlc import Rlc as GrpcRlc
+from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
+from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
+from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
 )
-from pyedb.generic.general_methods import (
-    generate_unique_name,
-    get_filename_without_extension,
-)
+from pyedb.generic.general_methods import generate_unique_name
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.component_def import ComponentDef
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.padstacks import Padstacks
-from pyedb.grpc.database.utility.sources import SourceType
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 if TYPE_CHECKING:
-    # Provide symbolic names used in docstring examples for static analysis only.
     from pyedb.grpc.edb import Edb as _Edb  # pragma: no cover
 
     edbapp: "_Edb" = None  # type: ignore
@@ -87,6 +83,16 @@ def resistor_value_parser(r_value) -> float:
         r_value = r_value.replace("M", "e6")
     r_value = float(r_value)
     return r_value
+
+
+_mapping_component_type = {
+    "resistor": CoreComponentType.RESISTOR,
+    "capacitor": CoreComponentType.CAPACITOR,
+    "inductor": CoreComponentType.INDUCTOR,
+    "other": CoreComponentType.OTHER,
+    "ic": CoreComponentType.IC,
+    "io": CoreComponentType.IO,
+}
 
 
 class Components(object):
@@ -760,170 +766,6 @@ class Components(object):
                 comp_lib.inductors = vendors
         return comp_lib
 
-    def create_source_on_component(self, sources=None):  # pragma: no cover
-        """Create sources on components.
-
-        .. deprecated:: 0.28.0
-            Use :func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
-
-        Parameters
-        ----------
-        sources : list, optional
-            List of sources.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        warnings.warn(
-            "`create_source_on_component` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_source_on_component` instead.",
-            DeprecationWarning,
-        )
-        return self._pedb.excitations.create_source_on_component(self, sources=sources)
-
-    def create_port_on_pins(
-        self,
-        refdes,
-        pins,
-        reference_pins,
-        impedance=50.0,
-        port_name=None,
-        pec_boundary=False,
-        pingroup_on_single_pin=False,
-    ):  # pragma: no cover
-        """Create port on pins.
-
-        .. deprecated:: 0.28.0
-            Use :func:`pyedb.grpc.core.excitations.create_port_on_pins` instead.
-
-        Parameters
-        ----------
-        refdes : str
-            Reference designator.
-        pins : list
-            List of pins.
-        reference_pins : list
-            List of reference pins.
-        impedance : float, optional
-            Port impedance.
-        port_name : str, optional
-            Port name.
-        pec_boundary : bool, optional
-            Use PEC boundary.
-        pingroup_on_single_pin : bool, optional
-            Use pin group on single pin.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        warnings.warn(
-            "`create_port_on_pins` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_port_on_pins` instead.",
-            DeprecationWarning,
-        )
-        return self._pedb.source_excitation.create_port_on_pins(
-            refdes,
-            pins,
-            reference_pins,
-            impedance=impedance,
-            port_name=port_name,
-            pec_boundary=pec_boundary,
-            pingroup_on_single_pin=pingroup_on_single_pin,
-        )
-
-    def create_port_on_component(
-        self,
-        component,
-        net_list,
-        port_type=SourceType.CoaxPort,
-        do_pingroup=True,
-        reference_net="gnd",
-        port_name=None,
-        solder_balls_height=None,
-        solder_balls_size=None,
-        solder_balls_mid_size=None,
-        extend_reference_pins_outside_component=False,
-    ):  # pragma: no cover
-        """Create ports on a component.
-
-        .. deprecated:: 0.28.0
-            Use :func:`pyedb.grpc.core.excitations.create_port_on_component` instead.
-
-        Parameters
-        ----------
-        component : str
-            Component name.
-        net_list : list
-            List of nets.
-        port_type : SourceType, optional
-            Port type.
-        do_pingroup : bool, optional
-            Use pin groups.
-        reference_net : str, optional
-            Reference net.
-        port_name : str, optional
-            Port name.
-        solder_balls_height : float, optional
-            Solder ball height.
-        solder_balls_size : float, optional
-            Solder ball size.
-        solder_balls_mid_size : float, optional
-            Solder ball mid size.
-        extend_reference_pins_outside_component : bool, optional
-            Extend reference pins outside component.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        warnings.warn(
-            "`create_port_on_component` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_port_on_component` instead.",
-            DeprecationWarning,
-        )
-        return self._pedb.source_excitation.create_port_on_component(
-            component,
-            net_list,
-            port_type=port_type,
-            do_pingroup=do_pingroup,
-            reference_net=reference_net,
-            port_name=port_name,
-            solder_balls_height=solder_balls_height,
-            solder_balls_size=solder_balls_size,
-            solder_balls_mid_size=solder_balls_mid_size,
-            extend_reference_pins_outside_component=extend_reference_pins_outside_component,
-        )
-
-    def _create_terminal(self, pin, term_name=None):  # pragma: no cover
-        """Create terminal on pin.
-
-        .. deprecated:: 0.28.0
-            Use :func:`pyedb.grpc.core.excitations._create_terminal` instead.
-
-        Parameters
-        ----------
-        pin : :class:`pyedb.grpc.database.padstacks.PadstackInstance`
-            Pin instance.
-        term_name : str, optional
-            Terminal name.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        warnings.warn(
-            "`_create_terminal` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations._create_terminal` instead.",
-            DeprecationWarning,
-        )
-        self._pedb.excitations._create_terminal(pin, term_name=term_name)
-
     def _get_closest_pin_from(self, pin, ref_pinlist):
         """Get closest pin from a list of pins.
 
@@ -948,39 +790,6 @@ class Components(object):
                 distance = temp_distance
                 closest_pin = ref_pin
         return closest_pin
-
-    def _create_pin_group_terminal(
-        self, pingroup, isref=False, term_name=None, term_type="circuit"
-    ):  # pragma: no cover
-        """Create pin group terminal.
-
-        .. deprecated:: 0.28.0
-            Use :func:`pyedb.grpc.core.excitations._create_pin_group_terminal` instead.
-
-        Parameters
-        ----------
-        pingroup : :class:`pyedb.grpc.database.hierarchy.pingroup.PinGroup`
-            Pin group.
-        isref : bool, optional
-            Is reference terminal.
-        term_name : str, optional
-            Terminal name.
-        term_type : str, optional
-            Terminal type.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
-        warnings.warn(
-            "`_create_pin_group_terminal` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations._create_pin_group_terminal` instead.",
-            DeprecationWarning,
-        )
-        return self._pedb.source_excitation._create_pin_group_terminal(
-            pingroup=pingroup, term_name=term_name, term_type=term_type, isref=isref
-        )
 
     def _is_top_component(self, cmp) -> bool:
         """Check if component is on top layer.
@@ -1027,12 +836,13 @@ class Components(object):
                 return None
             ind = 1
             for pin in pins:
-                if not pin.name:
-                    pin.name = str(ind)
+                pin_name = pin if isinstance(pin, str) else pin.name
+                if not pin_name:
+                    pin_name = str(ind)
                 ind += 1
-                component_definition_pin = ComponentPin.create(component_definition, pin.name)
+                component_definition_pin = ComponentPin.create(component_definition, pin_name)
                 if component_definition_pin.core.is_null:
-                    self._logger.error(f"Failed to create component definition pin {name}-{pin.name}")
+                    self._logger.error(f"Failed to create component definition pin {name}-{pin_name}")
                     return None
         return component_definition
 
@@ -1081,7 +891,7 @@ class Components(object):
         >>> new_comp = edbapp.components.create(pins, "R1")
         """
         from ansys.edb.core.hierarchy.component_group import (
-            ComponentGroup as GrpcComponentGroup,
+            ComponentGroup as CoreComponentGroup,
         )
 
         if not pins:
@@ -1095,7 +905,7 @@ class Components(object):
             compdef = self._get_component_definition(component_name, pins)
         if not compdef:
             return False
-        new_cmp = GrpcComponentGroup.create(self._active_layout.core, component_name, compdef.name)
+        new_cmp = CoreComponentGroup.create(self._active_layout.core, component_name, compdef.name)
         if new_cmp.is_null:
             raise ValueError(f"Failed to create component {component_name}.")
         if hasattr(pins[0], "component") and pins[0].component:
@@ -1104,16 +914,15 @@ class Components(object):
                 hosting_component_location = pins[0].component.core.transform
         else:
             hosting_component_location = None
-        if not len(pins) == len(compdef.component_pins):
-            self._pedb.logger.error(
-                f"Number on pins {len(pins)} does not match component definition number "
-                f"of pins {len(compdef.component_pins)}"
-            )
-            return False
         for padstack_instance, component_pin in zip(pins, compdef.component_pins):
+            padstack_instance = (
+                self._pedb.padstacks[padstack_instance] if isinstance(padstack_instance, str) else padstack_instance
+            )
             padstack_instance.is_layout_pin = True
             padstack_instance.name = component_pin.name
-            new_cmp.add_member(padstack_instance.core)
+            if hasattr(padstack_instance, "core"):
+                padstack_instance = padstack_instance.core
+            new_cmp.add_member(padstack_instance)
         if not placement_layer:
             new_cmp_layer_name = pins[0].padstack_def.data.layer_names[0]
         else:
@@ -1121,88 +930,64 @@ class Components(object):
         if new_cmp_layer_name in self._pedb.stackup.signal_layers:
             new_cmp_placement_layer = self._pedb.stackup.signal_layers[new_cmp_layer_name]
             new_cmp.placement_layer = new_cmp_placement_layer.core
-        if r_value:
-            new_cmp.component_type = GrpcComponentType.RESISTOR
-            is_rlc = True
-        elif c_value:
-            new_cmp.component_type = GrpcComponentType.CAPACITOR
-            is_rlc = True
-        elif l_value:
-            new_cmp.component_type = GrpcComponentType.INDUCTOR
-            is_rlc = True
-        else:
-            new_cmp.component_type = GrpcComponentType.OTHER
-            is_rlc = False
-        if is_rlc and len(pins) == 2:
-            rlc = GrpcRlc()
-            rlc.is_parallel = is_parallel
-            if not r_value:
-                rlc.r_enabled = False
+
+            # Determine component type and create RLC if applicable
+            values = {"resistor": r_value, "capacitor": c_value, "inductor": l_value}
+            attr_map = {"resistor": "r", "capacitor": "c", "inductor": "l"}
+
+            # Find which values are present
+            present = [k for k, v in values.items() if v]
+            is_rlc = bool(present)
+
+            if is_rlc:
+                new_cmp.component_type = _mapping_component_type[present[0]]
             else:
-                rlc.r_enabled = True
-                rlc.r = Value(r_value)
-            if l_value is None:
-                rlc.l_enabled = False
-            else:
-                rlc.l_enabled = True
-                rlc.l = Value(l_value)
-            if c_value is None:
-                rlc.c_enabled = False
-            else:
-                rlc.c_enabled = True
-                rlc.c = Value(c_value)
-            if rlc.r_enabled and not rlc.c_enabled and not rlc.l_enabled:
-                new_cmp.component_type = GrpcComponentType.RESISTOR
-            elif rlc.c_enabled and not rlc.r_enabled and not rlc.l_enabled:
-                new_cmp.component_type = GrpcComponentType.CAPACITOR
-            elif rlc.l_enabled and not rlc.r_enabled and not rlc.c_enabled:
-                new_cmp.component_type = GrpcComponentType.INDUCTOR
-            else:
-                new_cmp.component_type = GrpcComponentType.RESISTOR
-            pin_pair = (pins[0].name, pins[1].name)
-            rlc_model = PinPairModel(self._pedb, new_cmp.component_property.model)
-            rlc_model.core.set_rlc(pin_pair, rlc)
-            component_property = new_cmp.component_property
-            component_property.model = rlc_model.core
-            new_cmp.component_property = component_property
+                new_cmp.component_type = CoreComponentType.OTHER
+
+            # Build RLC component for 2-pin components
+            if is_rlc and len(pins) == 2:
+                rlc = CoreRlc()
+                rlc.is_parallel = is_parallel
+
+                # Enable and set values
+                for key in values:
+                    attr = attr_map[key]
+                    enabled = bool(values[key])
+                    setattr(rlc, f"{attr}_enabled", enabled)
+                    if enabled:
+                        setattr(rlc, attr, self._pedb._value_setter(values[key]))
+
+                # Determine final type based on enabled components
+                enabled_count = sum(getattr(rlc, f"{attr_map[k]}_enabled") for k in values)
+                if enabled_count == 1:
+                    single = next(k for k in values if getattr(rlc, f"{attr_map[k]}_enabled"))
+                    new_cmp.component_type = _mapping_component_type[single]
+                else:
+                    new_cmp.component_type = CoreComponentType.CAPACITOR  # RLC type by default
+                pin_pair = (pins[0].name, pins[1].name)
+                rlc_model = PinPairModel(Component(self._pedb, new_cmp))
+                rlc_model.set_rlc(pin_pair, rlc)
+                component_property = new_cmp.component_property
+                component_property.model = rlc_model.core
+                new_cmp.component_property = component_property
+            elif is_rlc:
+                if len(pins) > 2:
+                    self._logger.warning(
+                        f"RLC components {new_cmp.name} with more than 2 pins are not supported. "
+                        "Created component will be of type OTHER."
+                    )
+                    new_cmp.component_type = CoreComponentType.OTHER
+                if len(pins) < 2:
+                    self._logger.warning(
+                        f"RLC components with {new_cmp.name} less than 2 pins are not supported. "
+                        "Created component will be of type OTHER."
+                    )
+                    new_cmp.component_type = CoreComponentType.OTHER
         if hosting_component_location:
             new_cmp.transform = hosting_component_location
         new_edb_comp = Component(self._pedb, new_cmp)
         self._cmp[new_cmp.name] = new_edb_comp
         return new_edb_comp
-
-    def create_component_from_pins(
-        self, pins, component_name, placement_layer=None, component_part_name=None
-    ) -> Union[Component, bool]:  # pragma: no cover
-        """Create component from pins.
-
-        .. deprecated:: 0.6.62
-            Use :func:`create` instead.
-
-        Parameters
-        ----------
-        pins : list
-            List of pins.
-        component_name : str
-            Component name.
-        placement_layer : str, optional
-            Placement layer.
-        component_part_name : str, optional
-            Part name.
-
-        Returns
-        -------
-        :class:`pyedb.grpc.database.hierarchy.component.Component` or bool
-            Component instance if successful, False otherwise.
-        """
-        warnings.warn("`create_component_from_pins` is deprecated use `create` instead..", DeprecationWarning)
-        return self.create(
-            pins=pins,
-            component_name=component_name,
-            placement_layer=placement_layer,
-            component_part_name=component_part_name,
-            is_rlc=False,
-        )
 
     def set_component_model(
         self,
@@ -1234,7 +1019,7 @@ class Components(object):
         >>> edbapp.components.set_component_model("U1", "Spice", "path/to/model.sp")
         """
         if not modelname:
-            modelname = get_filename_without_extension(modelpath)
+            modelname = Path(modelpath).stem
         if componentname not in self.instances:
             self._pedb.logger.error(f"Component {componentname} not found.")
             return False
@@ -1250,7 +1035,7 @@ class Components(object):
                         pin_names.remove(pin_names[0])
                         break
             if len(pin_names) == pin_number:
-                spice_mod = GrpcSPICEModel.create(name=modelname, path=modelpath, sub_circuit=f"{modelname}_sub")
+                spice_mod = CoreSPICEModel.create(name=modelname, path=modelpath, sub_circuit=f"{modelname}_sub")
                 terminal = 1
                 for pn in pin_names:
                     spice_mod.add_terminal(terminal=str(terminal), pin=pn)
@@ -1498,43 +1283,45 @@ class Components(object):
             pad_params = self._pedb.padstacks.get_pad_parameters(pin=pin1, layername=pin_layers[0], pad_type=0)
             _sb_diam = min([abs(Value(val)) for val in pad_params[1]])
             sball_diam = 0.8 * _sb_diam
-        if sball_height:
-            sball_height = Value(sball_height)
+        if not sball_height:
+            sball_height = self._pedb._value_setter(sball_diam)
         else:
-            sball_height = Value(sball_diam)
+            sball_height = self._pedb._value_setter(sball_diam)
 
         if not sball_mid_diam:
-            sball_mid_diam = sball_diam
+            sball_mid_diam = self._pedb._value_setter(sball_diam)
 
         if shape.lower() == "cylinder":
-            sball_shape = GrpcSolderballShape.SOLDERBALL_CYLINDER
+            sball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
         else:
-            sball_shape = GrpcSolderballShape.SOLDERBALL_SPHEROID
+            sball_shape = CoreSolderballShape.SOLDERBALL_SPHEROID
 
         cmp_property = cmp.component_property
-        if cmp.core.component_type == GrpcComponentType.IC:
+        if cmp.core.component_type == CoreComponentType.IC:
             ic_die_prop = cmp_property.die_property
-            ic_die_prop.die_type = GrpcDieType.FLIPCHIP
+            ic_die_prop.die_type = CoreDieType.FLIPCHIP
             if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
                 chip_orientation = "chip_up"
             if chip_orientation.lower() == "chip_up":
-                ic_die_prop.die_orientation = GrpDieOrientation.CHIP_UP
+                ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
             else:
-                ic_die_prop.die_orientation = GrpDieOrientation.CHIP_DOWN
+                ic_die_prop.die_orientation = CoreDieOrientation.CHIP_DOWN
             cmp_property.die_property = ic_die_prop
 
         solder_ball_prop = cmp_property.solder_ball_property
-        solder_ball_prop.set_diameter(Value(sball_diam), Value(sball_mid_diam))
-        solder_ball_prop.height = Value(sball_height)
+        solder_ball_prop.set_diameter(self._pedb._value_setter(sball_diam), self._pedb._value_setter(sball_mid_diam))
+        solder_ball_prop.height = self._pedb._value_setter(sball_height)
 
         solder_ball_prop.shape = sball_shape
         cmp_property.solder_ball_property = solder_ball_prop
 
         port_prop = cmp_property.port_property
-        port_prop.reference_height = Value(reference_height)
+        port_prop.reference_height = self._pedb._value_setter(reference_height)
         port_prop.reference_size_auto = auto_reference_size
         if not auto_reference_size:
-            port_prop.set_reference_size(Value(reference_size_x), Value(reference_size_y))
+            port_prop.set_reference_size(
+                self._pedb._value_setter(reference_size_x), self._pedb._value_setter(reference_size_y)
+            )
         cmp_property.port_property = port_prop
         cmp.component_property = cmp_property
         return True
@@ -1580,21 +1367,21 @@ class Components(object):
         if pin_number == 2:
             from_pin = list(component.pins.values())[0]
             to_pin = list(component.pins.values())[1]
-            rlc = GrpcRlc()
+            rlc = CoreRlc()
             rlc.is_parallel = isparallel
             if res_value is not None:
                 rlc.r_enabled = True
-                rlc.r = Value(res_value)
+                rlc.r = self._pedb._value_setter(res_value)
             else:
                 rlc.r_enabled = False
             if ind_value is not None:
                 rlc.l_enabled = True
-                rlc.l = Value(ind_value)
+                rlc.l = self._pedb._value_setter(ind_value)
             else:
                 rlc.l_enabled = False
             if cap_value is not None:
                 rlc.c_enabled = True
-                rlc.c = Value(cap_value)
+                rlc.c = self._pedb._value_setter(cap_value)
             else:
                 rlc.CEnabled = False
             pin_pair = (from_pin.name, to_pin.name)
@@ -1913,7 +1700,12 @@ class Components(object):
             transformed_pt_pos = pt_pos
         else:
             transformed_pt_pos = pin.component.core.transform.transform_point(pt_pos)
-        return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
+        try:
+            # Latest pyedb-core changed with returning PointData object.
+            return [Value(transformed_pt_pos.x), Value(transformed_pt_pos.y)]
+        except AttributeError:
+            # legacy support for older pyedb-core versions where transform_point returns a list
+            return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
     def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
         """Get pin names from net.
@@ -2225,7 +2017,7 @@ class Components(object):
                 if not pin.net.is_null:
                     if pin.net.name:
                         pingroup.net = pin.net
-                        return group_name, PinGroup(self._pedb, pingroup)
+                        return group_name, pingroup
         return False
 
     def create_pin_group_on_net(
@@ -2301,7 +2093,7 @@ class Components(object):
             self._logger.info(f"Component {component.refdes} passed to deactivate is not an RLC.")
             return False
         component.is_enabled = False
-        return self._pedb.source_excitation.add_port_on_rlc_component(
+        return self._pedb.excitation_manager.add_port_on_rlc_component(
             component=component.refdes, circuit_ports=create_circuit_port, pec_boundary=pec_boundary
         )
 
@@ -2335,9 +2127,9 @@ class Components(object):
         --------
         >>> from pyedb import Edb
         >>> edb = Edb()
-        >>> edb.source_excitation.add_port_on_rlc_component("R1")
+        >>> edb.excitation_manager.add_port_on_rlc_component("R1")
         """
-        return self._pedb.source_excitation.add_port_on_rlc_component(
+        return self._pedb.excitation_manager.add_port_on_rlc_component(
             component=component, circuit_ports=circuit_ports, pec_boundary=pec_boundary
         )
 
@@ -2375,7 +2167,7 @@ class Components(object):
             self._logger.info(f"Component {component.refdes} skipped to deactivate is not an RLC.")
             return False
         component.enabled = False
-        return self._pedb.source_excitation.add_rlc_boundary(component.refdes, False)
+        return self._pedb.excitation_manager.add_rlc_boundary(component.refdes, False)
 
     def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
         """Add RLC gap boundary on component and replace it with a circuit port.
@@ -2402,4 +2194,4 @@ class Components(object):
             "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
             DeprecationWarning,
         )
-        return self._pedb.source_excitation.add_rlc_boundary(self, component=component, circuit_type=circuit_type)
+        return self._pedb.excitation_manager.add_rlc_boundary(self, component=component, circuit_type=circuit_type)

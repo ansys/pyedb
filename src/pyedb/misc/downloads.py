@@ -22,134 +22,168 @@
 
 """Download example datasets from https://github.com/pyansys/example-data"""
 
-import os
+from pathlib import Path
 import shutil
-import subprocess  # nosec B404
 import tempfile
-import urllib.request
+import warnings
 import zipfile
 
-from pyedb.generic.general_methods import is_linux, settings
+from pyedb.edb_logger import EdbLogger
+from pyedb.generic.general_methods import settings
 
-tmpfold = tempfile.gettempdir()
-EXAMPLE_REPO = "https://github.com/ansys/example-data/raw/main/"
-EXAMPLES_PATH = os.path.join(tmpfold, "PyAEDTExamples")
+# Initialize logger
+pyedb_logger = EdbLogger(settings=settings)
+
+from ansys.tools.common.example_download import download_manager
+
+EXAMPLES_PATH = Path(tempfile.gettempdir()) / "PyAEDTExamples"
 
 
-def delete_downloads():
-    """Delete all downloaded examples to free space or update the files."""
+def delete_downloads() -> None:
+    """Delete all downloaded examples to free space or update the files.
+
+    Examples
+    --------
+    >>> import pyedb.misc.downloads as downloads
+    >>> downloads.delete_downloads()
+
+    """
     shutil.rmtree(EXAMPLES_PATH, ignore_errors=True)
 
 
-def _get_file_url(directory, filename=None):
-    if not filename:
-        return EXAMPLE_REPO + "/".join([directory])
-    else:
-        return EXAMPLE_REPO + "/".join([directory, filename])
+def list_examples_files(folder) -> list:
+    """List all files in a folder of the example-data repository.
+
+    Parameters
+    ----------
+    folder : str
+        The folder in the GitHub repository to list files from, e.g., "pyaedt/sbr/".
+
+    Returns
+    -------
+    list
+        A list of file paths in the specified folder.
+    """
+    import requests
+
+    # Adding a trailing slash to ensure we only match files in the specified folder
+    # Otherwise an input of "project/folder" would also match "project/folder_diff"
+    folder_prefix = folder if folder.endswith("/") else folder + "/"
+    url = "https://api.github.com/repos/ansys/example-data/git/trees/main?recursive=1"
+    headers = {"Accept": "application/vnd.github.v3+json"}
+    response = requests.get(url, headers=headers)  # nosec B113 : this is a trusted URL
+    response.raise_for_status()
+    tree = response.json()["tree"]
+
+    files = []
+    for item in tree:
+        if item["type"] == "blob" and item["path"].startswith(folder_prefix):
+            files.append(item["path"])
+    return files
 
 
-def _retrieve_file(url, filename, directory, destination=None, local_paths=[]):  # pragma: no cover
-    """Download a file from a url
+def _download_file(
+    directory: str,
+    filename: str,
+    destination: str,
+    strip_prefix: str | Path | None = None,
+    force: bool = False,
+) -> str:
+    """Download a file from the example repository.
 
-    .. warning::
-            Do not execute this function with untrusted function argument, environment
-            variables or pyedb global settings.
-            See the :ref:`security guide<ref_security_consideration>` for details.
+    Parameters
+    ----------
+    directory : str
+        Directory path in the repository.
+    filename : str
+        File name to download.
+    destination : str
+        Destination path for the download.
+    strip_prefix : str | Path, optional
+        A prefix to strip from the relative path when saving the file locally.
+        The default is ``None``.
+    force : bool, optional
+        Force to delete cache and download files again.
+        The default is ``False``.
+
+    Returns
+    -------
+    str
+        Path to the downloaded file.
 
     """
-    # Check that provided url is pointing to pyaedt-example repo
-    if not url.startswith(EXAMPLE_REPO):
-        raise ValueError(f"Attempting to download file(s) from url {url} not pointing the to example-data repo.")
-
-    # First check if file has already been downloaded
-    if not destination:
-        destination = EXAMPLES_PATH
-    local_path = os.path.join(destination, directory, os.path.basename(filename))
-    local_path_no_zip = local_path.replace(".zip", "")
-    if os.path.isfile(local_path_no_zip) or os.path.isdir(local_path_no_zip):
-        local_paths.append(local_path_no_zip)
-
-    # grab the correct url retriever
-    urlretrieve = urllib.request.urlretrieve
-    destination_dir = os.path.join(destination, directory)
-    if not os.path.isdir(destination_dir):
-        os.makedirs(destination_dir)
-    # Perform download
-    if is_linux:
-        command = ["wget", url, "-O", local_path]
-        try:
-            subprocess.run(command, check=True)  # nosec
-        except subprocess.CalledProcessError as e:  # nosec
-            raise RuntimeError("An error occurred while downloading wget") from e
-    else:
-        _, resp = urlretrieve(url, local_path)
-    local_paths.append(local_path)
-
-
-def _retrieve_folder(url, directory, destination=None, local_paths=[]):  # pragma: no cover
-    """Download a folder from a url"""
-    # First check if folder exists
-    import json
-    import re
+    local_relative_path = Path(directory) / filename
+    if strip_prefix:
+        local_relative_path = local_relative_path.relative_to(strip_prefix)
 
     if not destination:
-        destination = EXAMPLES_PATH
-    if directory.startswith("pyaedt/"):
-        local_path = os.path.join(destination, directory[7:])
+        destination = EXAMPLES_PATH / local_relative_path
     else:
-        local_path = os.path.join(destination, directory)
-
-    _get_dir = _get_file_url(directory)
-    with urllib.request.urlopen(_get_dir) as response:  # nosec
-        data = response.read().decode("utf-8").split("\n")
-
-    if not os.path.isdir(local_path):
-        try:
-            os.mkdir(local_path)
-        except FileNotFoundError:
-            os.makedirs(local_path)
+        destination = Path(destination) / local_relative_path
 
     try:
-        tree = [i for i in data if '"payload"' in i][0]
-        b = re.search(r'>({"payload".+)</script>', tree)
-        itemsfromjson = json.loads(b.group(1))
-        items = itemsfromjson["payload"]["tree"]["items"]
-        for item in items:
-            if item["contentType"] == "directory":
-                _retrieve_folder(url, item["path"], destination, local_paths)
-            else:
-                dir_folder = os.path.split(item["path"])
-                _download_file(dir_folder[0], dir_folder[1], destination, local_paths)
-    except:
-        return False
-
-
-def _download_file(directory, filename=None, destination=None, local_paths=[]):  # pragma: no cover
-    if not filename:
-        if not directory.startswith("pyaedt/"):
-            directory = "pyaedt/" + directory
-        _retrieve_folder(EXAMPLE_REPO, directory, destination, local_paths)
-    else:
-        if directory.startswith("pyaedt/"):
-            url = _get_file_url(directory, filename)
-            directory = directory[7:]
+        if not destination.exists() or force:
+            pyedb_logger.debug(f"Downloading file from {Path(Path(directory) / filename).as_posix()} to {destination}")
+            file_path = download_manager.download_file(
+                filename=filename,
+                directory=directory,
+                destination=str(destination.parent),
+                force=force,
+            )
         else:
-            url = _get_file_url("pyaedt/" + directory, filename)
-        _retrieve_file(url, filename, directory, destination, local_paths)
+            file_path = str(destination)
+            pyedb_logger.debug(f"File already exists in {destination}. Skipping download.")
+    except Exception as e:
+        raise RuntimeError(f"Failed to download file from {Path(directory) / filename}.") from e
+
     if settings.remote_rpc_session:
-        remote_path = os.path.join(settings.remote_rpc_session_temp_folder, os.path.split(local_paths[-1])[-1])
+        remote_path = Path(settings.remote_rpc_session_temp_folder) / Path(file_path)
         if not settings.remote_rpc_session.filemanager.pathexists(settings.remote_rpc_session_temp_folder):
             settings.remote_rpc_session.filemanager.makedirs(settings.remote_rpc_session_temp_folder)
-        settings.remote_rpc_session.filemanager.upload(local_paths[-1], remote_path)
-        local_paths[-1] = remote_path
-    return local_paths[-1]
+        settings.remote_rpc_session.filemanager.upload(file_path, str(remote_path))
+        file_path = remote_path
+
+    return file_path
+
+
+def _download_folder(
+    directory: str, destination: str, strip_prefix: str | Path | None = None, force: bool = False
+) -> str:
+    """Download a file from the example repository.
+
+    Parameters
+    ----------
+    directory : str
+        Directory path in the repository.
+    filename : str
+        File name to download.
+    destination : str
+        Destination path for the download.
+    strip_prefix : str | Path | None, optional
+        A prefix to strip from the relative path when saving the file locally.
+        The default is ``None``.
+    force : bool, optional
+        Force to delete cache and download files again.
+        The default is ``False``.
+
+    Returns
+    -------
+    str
+        Path to the downloaded folder.
+
+    """
+    files = list_examples_files(directory)
+    for file in files:
+        directory, filename = Path(file).parent.as_posix(), Path(file).name
+        _download_file(directory, filename, destination=destination, strip_prefix=strip_prefix, force=force)
+
+    return str(Path(destination) / directory)
 
 
 ###############################################################################
-# front-facing functions
 
 
-def download_aedb(destination=None):  # pragma: no cover
+def download_aedb(destination: str | None = None) -> str:
     """Download an example of AEDB File and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -157,8 +191,9 @@ def download_aedb(destination=None):  # pragma: no cover
 
     Parameters
     ----------
-    destination : str, optional
-        Path for downloading files. The default is the user's temp folder.
+    destination : str or None, optional
+        Path for downloading files.
+        The default is ``None``, which uses the user's temp folder.
 
     Returns
     -------
@@ -168,29 +203,30 @@ def download_aedb(destination=None):  # pragma: no cover
     Examples
     --------
     Download an example result file and return the path of the file.
+
     >>> import pyedb.misc.downloads
     >>> path = pyedb.misc.downloads.download_aedb()
     >>> path
     'C:/Users/user/AppData/local/temp/Galileo.aedb'
+
     """
-    local_paths = []
-    _download_file("pyaedt/edb/Galileo.aedb", "GRM32ER72A225KA35_25C_0V.sp", destination, local_paths)
-    _download_file("pyaedt/edb/Galileo.aedb", "edb.def", destination, local_paths)
-    return local_paths[-1]
+    warnings.warn("This design has been removed, consider using another one.")
 
 
-def download_edb_merge_utility(force_download=False, destination=None):  # pragma: no cover
-    """Download an example of WPF Project which allows to merge 2aedb files.
+def download_edb_merge_utility(force_download: bool = False, destination: str | None = None) -> str:
+    """Download an example of WPF Project which allows to merge 2 aedb files.
 
     Examples files are downloaded to a persistent cache to avoid
     re-downloading the same file twice.
 
     Parameters
     ----------
-    force_download : bool
+    force_download : bool, optional
         Force to delete cache and download files again.
-    destination : str, optional
-        Path for downloading files. The default is the user's temp folder.
+        The default is ``False``.
+    destination : str or None, optional
+        Path for downloading files.
+        The default is ``None``, which uses the user's temp folder.
 
     Returns
     -------
@@ -200,27 +236,32 @@ def download_edb_merge_utility(force_download=False, destination=None):  # pragm
     Examples
     --------
     Download an example result file and return the path of the file.
+
     >>> import pyedb.misc.downloads
     >>> path = pyedb.misc.downloads.download_edb_merge_utility(force_download=True)
     >>> path
-    'C:/Users/user/AppData/local/temp/wpf_edb_merge/merge_wizard.py'
+    'C:/Users/user/AppData/local/temp/PyAEDTExamples/wpf_edb_merge/merge_wizard.py'
+
     """
-    if not destination:
+    if not destination:  # pragma: no cover
         destination = EXAMPLES_PATH
-    if force_download:
-        local_path = os.path.join(destination, "wpf_edb_merge")
-        if os.path.exists(local_path):
-            shutil.rmtree(local_path, ignore_errors=True)
-    local_paths = []
-    _download_file("pyaedt/wpf_edb_merge/board.aedb", "edb.def", destination, local_paths)
-    _download_file("pyaedt/wpf_edb_merge/package.aedb", "edb.def", destination, local_paths)
-    _download_file("pyaedt/wpf_edb_merge", "merge_wizard_settings.json", destination, local_paths)
 
-    _download_file("pyaedt/wpf_edb_merge", "merge_wizard.py", destination, local_paths)
-    return local_paths[0]
+    _download_file(
+        "pyaedt/wpf_edb_merge/board.aedb", "edb.def", destination, strip_prefix="pyaedt", force=force_download
+    )
+    _download_file(
+        "pyaedt/wpf_edb_merge/package.aedb", "edb.def", destination, strip_prefix="pyaedt", force=force_download
+    )
+    _download_file(
+        "pyaedt/wpf_edb_merge", "merge_wizard_settings.json", destination, strip_prefix="pyaedt", force=force_download
+    )
+
+    return _download_file(
+        "pyaedt/wpf_edb_merge", "merge_wizard.py", destination, strip_prefix="pyaedt", force=force_download
+    )
 
 
-def download_via_wizard(destination=None):  # pragma: no cover
+def download_via_wizard(destination: str | None = None) -> str:
     """Download an example of Hfss Via Wizard and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -228,8 +269,9 @@ def download_via_wizard(destination=None):  # pragma: no cover
 
     Parameters
     ----------
-    destination : str, optional
-        Path for downloading files. The default is the user's temp folder.
+    destination : str or None, optional
+        Path for downloading files.
+        The default is ``None``, which uses the user's temp folder.
 
     Returns
     -------
@@ -243,13 +285,17 @@ def download_via_wizard(destination=None):  # pragma: no cover
     >>> import pyedb.misc.downloads
     >>> path = pyedb.misc.downloads.download_via_wizard()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/Graphic_Card.aedt'
+    'C:/Users/user/AppData/local/temp/PyAEDTExamples/viawizard_vacuum_FR4.aedt'
     """
+    if not destination:  # pragma: no cover
+        destination = EXAMPLES_PATH
 
-    return _download_file("pyaedt/via_wizard", "viawizard_vacuum_FR4.aedt", destination)
+    return _download_file(
+        "pyaedt/via_wizard", "viawizard_vacuum_FR4.aedt", destination, strip_prefix="pyaedt/via_wizard"
+    )
 
 
-def download_touchstone(destination=None):  # pragma: no cover
+def download_touchstone(destination: str | None = None) -> str:
     """Download an example of touchstone File and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
@@ -257,8 +303,9 @@ def download_touchstone(destination=None):  # pragma: no cover
 
     Parameters
     ----------
-    destination : str, optional
-        Path for downloading files. The default is the user's temp folder.
+    destination : str or None, optional
+        Path for downloading files.
+        The default is ``None``, which uses the user's temp folder.
 
     Returns
     -------
@@ -268,19 +315,21 @@ def download_touchstone(destination=None):  # pragma: no cover
     Examples
     --------
     Download an example result file and return the path of the file.
+
     >>> import pyedb.misc.downloads
     >>> path = pyedb.misc.downloads.download_touchstone()
     >>> path
-    'C:/Users/user/AppData/local/temp/pyaedtexamples/ssn_ssn.s6p'
+    'C:/Users/user/AppData/local/temp/PyAEDTExamples/SSN_ssn.s6p'
+
     """
-    local_paths = []
-    _download_file("pyaedt/touchstone", "SSN_ssn.s6p", destination, local_paths)
-    return local_paths[0]
+    if not destination:  # pragma: no cover
+        destination = EXAMPLES_PATH
+
+    return _download_file("pyaedt/touchstone", "SSN_ssn.s6p", destination, strip_prefix="pyaedt/touchstone")
 
 
-def download_file(directory, filename=None, destination=None):  # pragma: no cover
-    """
-    Download file from directory.
+def download_file(directory: str, filename: str | None = None, destination: str | None = None) -> str:
+    """Download file from directory.
 
     Files are downloaded to a destination. If filename is not specified, the full directory will be downloaded.
 
@@ -288,10 +337,12 @@ def download_file(directory, filename=None, destination=None):  # pragma: no cov
     ----------
     directory : str
         Directory name.
-    filename : str, optional
-        File name to download. The default is all files inside directory.
-    destination : str, optional
-        Path where files will be downloaded. Default is user temp folder.
+    filename : str or None, optional
+        File name to download.
+        The default is ``None``, which downloads all files inside directory.
+    destination : str or None, optional
+        Path where files will be downloaded.
+        The default is ``None``, which uses the user's temp folder.
 
     Returns
     -------
@@ -303,21 +354,35 @@ def download_file(directory, filename=None, destination=None):  # pragma: no cov
     Download an example result file and return the path of the file.
 
     >>> import pyedb.misc.downloads
-    >>> path = pyedb.misc.downloads.download_file("motorcad", "IPM_Vweb_Hairpin.mot")
+    >>> path = pyedb.misc.downloads.download_file("pyaedt/edb/ansys_interposer", "dummy_interposer_hbm.map")
     >>> path
-    'C:/Users/user/AppData/local/temp/PyAEDTExamples/motorcad'
+    'C:/Users/user/AppData/local/temp/PyAEDTExamples/pyaedt/edb/ansys_interposer/dummy_interposer_hbm.map'
+
     """
-    local_paths = []
-    _download_file(directory, filename, destination, local_paths)
+    if not destination:
+        destination = EXAMPLES_PATH
+
     if filename:
-        return list(set(local_paths))[0]
-    else:
-        if not destination:
-            destination = EXAMPLES_PATH
-        destination_dir = os.path.join(destination, directory)
-        return destination_dir
+        return _download_file(directory, filename, destination)
+
+    return _download_folder(directory, destination)
 
 
-def unzip(source_filename, dest_dir):
+def unzip(source_filename: str, dest_dir: str) -> None:
+    """Extract all files from a zip archive.
+
+    Parameters
+    ----------
+    source_filename : str
+        Path to the zip file to extract.
+    dest_dir : str
+        Destination directory for extracted files.
+
+    Examples
+    --------
+    >>> import pyedb.misc.downloads as downloads
+    >>> downloads.unzip("example.zip", "/path/to/destination")
+
+    """
     with zipfile.ZipFile(source_filename) as zf:
         zf.extractall(dest_dir)

@@ -24,8 +24,8 @@
 
 from pyedb.dotnet.database.dotnet.database import NetDotNet
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.misc.utilities import compute_arc_points
-from pyedb.modeler.geometry_operators import GeometryOperators
 
 
 def cast(api, prim_object):
@@ -1191,6 +1191,9 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             ),
         )
 
+    def get_hole_overrides(self):
+        return self.prim_obj.GetHoleOverrides()
+
     @property
     def padstack_def(self):
         """:class:`PadstackDef <ansys.edb.definition.padstack_def>`: PadstackDef of a Padstack Instance."""
@@ -1277,7 +1280,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
     @property
     def solderball_layer(self):
         """:class:`Layer <ansys.edb.layer.Layer>`: SolderBall Layer of Padstack Instance."""
-        return self.prim_obj.GetSolderBallLayer()
+        return self.prim_obj.GetSolderBallLayer().GetName()
 
     @solderball_layer.setter
     def solderball_layer(self, solderball_layer):
@@ -1322,6 +1325,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         hole_override : :class:`Value <ansys.edb.utility.Value>`
             Hole override diameter of this padstack instance.
         """
+        if isinstance(hole_override, float):
+            hole_override = self._app._edb.value(hole_override)
         self.prim_obj.SetHoleOverrides(is_hole_override, hole_override)
 
     @property
