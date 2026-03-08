@@ -2191,8 +2191,8 @@ class Edb(EdbInit):
 
         Returns
         -------
-        list
-            list[list[min_x, min_y], list[max_x, max_y]] in meters.
+        tuple
+            tuple[tuple[min_x, min_y], tuple[max_x, max_y]] in meters.
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = CorePolygonData.bbox_of_polygons(lay_inst_polygon_data)
