@@ -2186,7 +2186,7 @@ class Edb(EdbInit):
         except (AttributeError, ValueError) as exc:
             raise ValueError("Value must be 'general' or 'ic' (case-insensitive)") from exc
 
-    def get_bounding_box(self) -> tuple[tuple[Value, Value], tuple[Value, Value]]:
+    def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
         """Get layout bounding box.
 
         Returns
