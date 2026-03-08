@@ -21,11 +21,12 @@
 # SOFTWARE.
 
 
-from typing import Union, cast
+from typing import cast
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.grpc.database.simulation_setup.hfss_pi_simulation_setup import HFSSPISimulationSetup
 from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import HfssSimulationSetup
 from pyedb.grpc.database.simulation_setup.q3d_simulation_setup import Q3DSimulationSetup
 from pyedb.grpc.database.simulation_setup.raptor_x_simulation_setup import RaptorXSimulationSetup
@@ -48,6 +49,7 @@ class SimulationSetups:
         self._raptorx_setups: dict[str, RaptorXSimulationSetup] = {}
         self._q3d_setups: dict[str, Q3DSimulationSetup] = {}
         self._siwave_cpa_setup: dict[str, SIWaveCPASimulationSetup] = {}
+        self._hfss_pi_setups: dict[str, HFSSPISimulationSetup] = {}
 
     @property
     def hfss(self) -> dict[str, HfssSimulationSetup]:
@@ -58,10 +60,15 @@ class SimulationSetups:
         List[:class:`HFSSSimulationSetup <pyedb.grpc.database.simulation_setup.
         hfss_simulation_setup.HFSSSimulationSetup>`]
         """
+        self._hfss_setups = {}
+        setups = self._pedb.active_cell.simulation_setups
+        # grpc returns list of None
+        if isinstance(setups, list):
+            setups = [s for s in setups if s is not None]
+        if not setups:
+            return self._hfss_setups
         self._hfss_setups = {
-            setup.name: HfssSimulationSetup(self._pedb, setup)
-            for setup in self._pedb.active_cell.simulation_setups
-            if setup.type.name.lower() == "hfss"
+            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "hfss"
         }
         return self._hfss_setups
 
@@ -74,10 +81,15 @@ class SimulationSetups:
         List[:class:`SIWaveSimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_simulation_setup.SIWaveSimulationSetup>`]
         """
+        self._siwave_setups = {}
+        setups = self._pedb.active_cell.simulation_setups
+        # grpc returns list of None
+        if isinstance(setups, list):
+            setups = [s for s in setups if s is not None]
+        if not setups:
+            return self._siwave_setups
         self._siwave_setups = {
-            setup.name: SiwaveSimulationSetup(self._pedb, setup)
-            for setup in self._pedb.active_cell.simulation_setups
-            if setup.type.name.lower() == "si_wave"
+            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "si_wave"
         }
         return self._siwave_setups
 
@@ -90,10 +102,17 @@ class SimulationSetups:
         List[:class:`SIWaveDCIRSimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
         """
+        self._siwave_dcir_setups = {}
+        setups = self._pedb.active_cell.simulation_setups
+        # grpc returns list of None
+        if isinstance(setups, list):
+            setups = [s for s in setups if s is not None]
+        if not setups:
+            return self._siwave_dcir_setups
         self._siwave_dcir_setups = {
-            setup.name: SIWaveDCIRSimulationSetup(self._pedb, setup)
-            for setup in self._pedb.active_cell.simulation_setups
-            if setup.type.name.lower() == "si_wave_dcir"
+            setup.name: setup
+            for setup in setups
+            if setup.type is not None and setup.type.name.lower() == "si_wave_dcir"
         }
         return self._siwave_dcir_setups
 
@@ -123,7 +142,7 @@ class SimulationSetups:
         return self._siwave_cpa_setup
 
     @property
-    def raptorx(self) -> dict[str, RaptorXSimulationSetup]:
+    def raptor_x(self) -> dict[str, RaptorXSimulationSetup]:
         """RaptorX simulation setups.
 
         Returns
@@ -131,10 +150,15 @@ class SimulationSetups:
         List[:class:`RaptorXSimulationSetup <pyedb.grpc.database.simulation_setup.
         raptor_x_simulation_setup.RaptorXSimulationSetup>`]
         """
+        self._raptorx_setups = {}
+        setups = self._pedb.active_cell.simulation_setups
+        # grpc returns list of None
+        if isinstance(setups, list):
+            setups = [s for s in setups if s is not None]
+        if not setups:
+            return self._raptorx_setups
         self._raptorx_setups = {
-            setup.name: RaptorXSimulationSetup(self._pedb, setup)
-            for setup in self._pedb.active_cell.simulation_setups
-            if setup.type.name.lower() == "raptor_x"
+            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "raptor_x"
         }
         return self._raptorx_setups
 
@@ -147,12 +171,38 @@ class SimulationSetups:
         List[:class:`Q3DSimulationSetup <pyedb.grpc.database.simulation_setup.
         q3d_simulation_setup.Q3DSimulationSetup>`]
         """
+        self._q3d_setups = {}
+        setups = self._pedb.active_cell.simulation_setups
+        # grpc returns list of None
+        if isinstance(setups, list):
+            setups = [s for s in setups if s is not None]
+        if not setups:
+            return self._q3d_setups
         self._q3d_setups = {
-            setup.name: Q3DSimulationSetup(self._pedb, setup)
-            for setup in self._pedb.active_cell.simulation_setups
-            if setup.type == "q3d_sim"
+            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "q3d_sim"
         }
         return self._q3d_setups
+
+    @property
+    def hfss_pi(self) -> dict[str, HFSSPISimulationSetup]:
+        """HFSS PI simulation setups.
+
+        Returns
+        -------
+        List[:class:`HFSSPISimulationSetup <pyedb.grpc.database.simulation_setup.
+        hfss_pi_simulation_setup.HFSSPISimulationSetup>`]
+        """
+        self._hfss_pi_setups = {}
+        setups = self._pedb.active_cell.simulation_setups
+        # grpc returns list of None
+        if isinstance(setups, list):
+            setups = [s for s in setups if s is not None]
+        if not setups:
+            return self._hfss_pi_setups
+        self._hfss_pi_setups = {
+            setup.name: setup for setup in setups if setup.type is not None and setup.type.name.lower() == "hfss_pi"
+        }
+        return self._hfss_pi_setups
 
     @property
     def setups(self) -> dict[str, object]:
@@ -164,13 +214,17 @@ class SimulationSetups:
         simulation_setup.SimulationSetup>`]
         """
         # Merge all per-solver dicts into a single mapping
-        return {**self.hfss, **self.siwave, **self.siwave_dcir, **self.siwave_cpa, **self.raptorx, **self.q3d}
+        return {
+            **self.hfss,
+            **self.siwave,
+            **self.siwave_dcir,
+            **self.siwave_cpa,
+            **self.raptor_x,
+            **self.q3d,
+            **self.hfss_pi,
+        }
 
-    def create(
-        self,
-        name=None,
-        solver="hfss",
-    ) -> Union[BaseSimulationSetup, None]:
+    def create(self, name=None, solver="hfss") -> BaseSimulationSetup | None:
         """Add analysis setup.
 
         Parameters
@@ -178,7 +232,7 @@ class SimulationSetups:
         name : str, optional
             Setup name (auto-generated if None).
         solver : str, optional
-            Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d").
+            Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d", "hfss_pi").
 
         Returns
         -------
@@ -203,6 +257,9 @@ class SimulationSetups:
         elif solver.lower() == "q3d":
             setup = Q3DSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"Q3D setup {name} created.")
+        elif solver.lower() == "hfss_pi":
+            setup = HFSSPISimulationSetup.create(self._pedb, name)
+            self._pedb.logger.info(f"HFSS PI setup {name} created.")
         else:
             setup = HfssSimulationSetup.create(self._pedb, name)
             self._pedb.logger.info(f"HFSS setup {name} created.")
@@ -262,6 +319,60 @@ class SimulationSetups:
         for k, v in kwargs.items():
             setattr(setup, k, v)
         return cast(HfssSimulationSetup, setup)  # casting only for IDE type checking purposes
+
+    def create_hfss_pi_setup(
+        self,
+        name=None,
+        distribution="linear",
+        start_freq: float = None,
+        stop_freq: float = None,
+        step_freq: float = None,
+        discrete_sweep=False,
+        sweep_name: str = "frequency_sweep",
+        **kwargs,
+    ) -> HFSSPISimulationSetup:
+        """Add HFSS analysis setup.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name (auto-generated if None).
+        distribution : str, optional
+            Sweep distribution type ("linear", "linear_count", "decade_count", "octave_count", "exponential").
+        start_freq : float, str, optional
+            Starting frequency (Hz).
+        stop_freq : float, str, optional
+            Stopping frequency (Hz).
+        step_freq : float, str, int, optional
+        Frequency step (Hz) or count depending on distribution.
+        discrete_sweep : bool, optional
+            Use discrete sweep.
+        sweep_name : str, optional
+            Name of the frequency sweep.
+
+        Returns
+        -------
+        HfssSimulationSetup
+            Created setup object.
+        """
+        setup = self.create(
+            name=name,
+            solver="hfss_pi",
+        )
+        if start_freq and stop_freq and step_freq:
+            setup.add_sweep(
+                name=sweep_name,
+                distribution=distribution,
+                start_freq=start_freq,
+                stop_freq=stop_freq,
+                step=step_freq,
+                discrete=discrete_sweep,
+                frequency_set=None,
+            )
+        self._pedb.logger.info(f"Frequency sweep {sweep_name} added to simulation setup {name}.")
+        for k, v in kwargs.items():
+            setattr(setup, k, v)
+        return cast(HFSSPISimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_setup(
         self,

@@ -150,7 +150,12 @@ class TestClass(BaseTestClass):
 
     def test_create_hfss_pi_setup_add_sweep(self):
         edbapp = self.edb_examples.get_si_verse()
-        setup = edbapp.create_hfsspi_setup("test")
-        setup.add_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
-        assert setup.sweeps["sweep1"].frequencies
-        edbapp.setups["test"].sweeps["sweep1"].adaptive_sampling = True
+        setup = edbapp.simulation_setups.create_hfss_pi_setup("test")
+        setup.add_sweep(name="sweep1", distribution="linear", start_freq="0.1GHz", stop_freq="10GHz", step="0.1GHz")
+        assert setup.sweeps["sweep1"]
+        # TODO check bug in pyedb-core #710 status Cell.simulation_setups returns list of None objects despite the
+        #  setup is created.
+        # TODO Test will be extended once the bug is fixed. Seems settings API is added in grpc only.
+        if not edbapp.grpc:
+            edbapp.setups["test"].sweeps["sweep1"].adaptive_sampling = True
+        edbapp.close(terminate_rpc_session=False)
