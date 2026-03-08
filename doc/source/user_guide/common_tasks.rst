@@ -49,7 +49,7 @@ Creating a Simple Simulation Setup
    vrm_components = edb.components.Others["J1"]
    positive_pin = vrm_components.pins["1"]
    negative_pin = vrm_components.pins["2"]
-   edb.source_excitation.create_voltage_source(
+   edb.excitation_manager.create_voltage_source(
        terminal=positive_pin, ref_terminal=negative_pin, magnitude=3.3, phase=0
    )
 

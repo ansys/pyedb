@@ -3536,8 +3536,17 @@ class Edb:
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
 
-    def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
+    def create_port(
+        self,
+        terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
+        ref_terminal=None,
+        is_circuit_port=False,
+        name=None,
+    ):
         """Create a port.
+
+        ..deprecated:: 0.70.0
+           :func:`create_port` has been moved to edb.excitation_manager.create_port.
 
         Parameters
         ----------
@@ -3561,30 +3570,18 @@ class Edb:
         list: [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,
             :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,].
         """
-
-        terminal.boundary_type = "PortBoundary"
-        terminal.is_circuit_port = is_circuit_port
-
-        if ref_terminal:
-            ref_terminal.boundary_type = "PortBoundary"
-            terminal.reference_terminal = ref_terminal
-        if name:
-            terminal.name = name
-
-        if terminal.is_circuit_port:
-            port = CircuitPort(self, terminal._edb_object)
-        elif terminal.terminal_type == "BundleTerminal":
-            port = BundleWavePort(self, terminal._edb_object)
-        elif terminal.hfss_type == "Wave":
-            port = WavePort(self, terminal._edb_object)
-        elif terminal.terminal_type == "PadstackInstanceTerminal":
-            port = CoaxPort(self, terminal._edb_object)
-        else:
-            port = GapPort(self, terminal._edb_object)
-        return port
+        warnings.warn(
+            "Function `create_port` has been moved to edb.excitation_manager.create_port.", DeprecationWarning
+        )
+        return self.excitation_manager.create_port(
+            terminal=terminal, ref_terminal=ref_terminal, is_circuit_port=is_circuit_port, name=name
+        )
 
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
+
+        ..deprecated:: 0.70.0
+           :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
 
         Parameters
         ----------
@@ -3603,17 +3600,17 @@ class Edb:
         -------
         pyedb.dotnet.database.edb_data.terminals.Terminal
         """
-        term = Terminal(self, terminal._edb_object)
-        term.boundary_type = "kVoltageProbe"
-
-        ref_term = Terminal(self, ref_terminal._edb_object)
-        ref_term.boundary_type = "kVoltageProbe"
-
-        term.reference_terminal = ref_terminal
-        return self.probes[term.name]
+        warnings.warn(
+            "Function `create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.",
+            DeprecationWarning,
+        )
+        return self.excitation_manager.create_voltage_probe(terminal=terminal, ref_terminal=ref_terminal)
 
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
+
+        ..deprecated:: 0.70.0
+           :func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
 
         Parameters
         ----------
@@ -3632,17 +3629,17 @@ class Edb:
         -------
         class:`legacy.database.edb_data.ports.ExcitationSources`
         """
-        term = Terminal(self, terminal._edb_object)
-        term.boundary_type = "kVoltageSource"
-
-        ref_term = Terminal(self, ref_terminal._edb_object)
-        ref_term.boundary_type = "kVoltageSource"
-
-        term.reference_terminal = ref_terminal
-        return self.sources[term.name]
+        warnings.warn(
+            "Function `create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.",
+            DeprecationWarning,
+        )
+        return self.excitation_manager.create_voltage_source(terminal=terminal, ref_terminal=ref_terminal)
 
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
+
+        ..deprecated:: 0.70.0
+           :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
 
         Parameters
         ----------
@@ -3661,17 +3658,17 @@ class Edb:
         -------
         :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
         """
-        term = Terminal(self, terminal._edb_object)
-        term.boundary_type = "kCurrentSource"
-
-        ref_term = Terminal(self, ref_terminal._edb_object)
-        ref_term.boundary_type = "kCurrentSource"
-
-        term.reference_terminal = ref_terminal
-        return self.sources[term.name]
+        warnings.warn(
+            "Function `create_current_source` has been moved to edb.excitation_manager.create_current_source.",
+            DeprecationWarning,
+        )
+        return self.excitation_manager.create_current_source(terminal=terminal, ref_terminal=ref_terminal)
 
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.
+
+        ..deprecated:: 0.70.0
+           :func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
 
         Parameters
         ----------
@@ -3688,10 +3685,11 @@ class Edb:
         -------
         :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
         """
-        from pyedb.dotnet.database.cell.terminal.point_terminal import PointTerminal
-
-        point_terminal = PointTerminal(self)
-        return point_terminal.create(name, net_name, location, layer)
+        warnings.warn(
+            "Function `get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.",
+            DeprecationWarning,
+        )
+        return self.excitation_manager.get_point_terminal(name=name, net_name=net_name, location=location, layer=layer)
 
     def auto_parametrize_design(
         self,
@@ -4191,7 +4189,7 @@ class Edb:
         tree.write(control_path)
         return True if os.path.exists(control_path) else False
 
-    def get_variable_value(self, variable_name):
+    def get_variable(self, variable_name):
         """Added to get closer architecture as for grpc."""
         if variable_name in self.variables:
             return self.variables[variable_name]

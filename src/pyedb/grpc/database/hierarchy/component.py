@@ -48,6 +48,7 @@ from ansys.edb.core.terminal.padstack_instance_terminal import (
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 import numpy as np
 
+from pyedb.grpc.database.hierarchy.netlist_model import NetlistModel
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.s_parameter_model import SparamModel
 from pyedb.grpc.database.hierarchy.spice_model import SpiceModel
@@ -115,7 +116,7 @@ class Component:
     def pin_pairs(self) -> List[PinPairModel] | None:
         """Pinpairs of the model."""
         if "PinPairModel" in str(self.model):
-            return [PinPairModel(self._pedb, self.model)]
+            return self.model.pin_pairs
         return None
 
     @property
@@ -250,13 +251,13 @@ class Component:
         :class:`Rlc <ansys.edb.core.utility.rlc.Rlc>`
 
         """
-        if self.model_type == "SPICEModel":
+        if self.model_type == "PinPairModel":
             if len(self.pins) == 2:
                 self._pedb.logger.warning(f"Spice model defined on component {self.name}, replacing model by ")
                 rlc = CoreRlc()
                 pins = list(self.pins.keys())
                 pin_pair = (pins[0], pins[1])
-                rlc_model = PinPairModel(self._pedb, CorePinPairModel.create())
+                rlc_model = PinPairModel(self)
                 rlc_model.core.set_rlc(pin_pair, rlc)
                 component_property = self.component_property
                 component_property.model = rlc_model.core
@@ -326,11 +327,13 @@ class Component:
         """
 
         if isinstance(self.component_property.model, CoreSPICEModel):
-            return SpiceModel(edb_object=self.component_property.model)
+            return SpiceModel(
+                component=self,
+            )
         elif isinstance(self.component_property.model, CoreSParameterModel):
-            return SparamModel(edb_object=self.component_property.model)
+            return SparamModel(component=self)
         else:
-            return self.component_property.model
+            return PinPairModel(self)
 
     @model.setter
     def model(self, value):
@@ -498,7 +501,7 @@ class Component:
         if not self.model_type == "SPICEModel":
             return None
         else:
-            return SpiceModel(edb_object=self._edb_model)
+            return SpiceModel(component=self)
 
     @property
     def s_param_model(self) -> SparamModel:
@@ -511,10 +514,10 @@ class Component:
         if not self.model_type == "SParameterModel":
             return None
         else:
-            return SparamModel(edb_object=self._edb_model)
+            return SparamModel(component=self)
 
     @property
-    def netlist_model(self) -> CoreNetlistModel:
+    def netlist_model(self) -> NetlistModel:
         """Assigned netlist model.
 
         Returns
@@ -524,7 +527,7 @@ class Component:
         if not self.model_type == "NetlistModel":
             return None
         else:
-            return CoreNetlistModel(self._edb_model)
+            return NetlistModel(self, self._edb_model)
 
     @property
     def solder_ball_height(self) -> float:
@@ -766,17 +769,19 @@ class Component:
 
     @res_value.setter
     def res_value(self, value):  # pragma no cover
-        _rlc = []
-        model = PinPairModel(self._pedb, CorePinPairModel.create())
-        for rlc in self._rlc:
-            rlc.r_enabled = True
-            rlc.r = Value(value)
-            _rlc.append(rlc)
-        for ind in range(len(self._pin_pairs)):
-            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.core.component_property
-        comp_prop.model = model
-        self.core.component_property = comp_prop
+        try:
+            self.model.pin_pairs[0].resistance = value
+        except Exception:
+            if value:
+                _rlc = []
+                model = CorePinPairModel.create()
+                rlc = CoreRlc()
+                rlc.r_enabled = True
+                rlc.r = Value(value)
+                model.set_rlc(list(self.pins().keys())[:2], rlc)
+                comp_prop = self.core.component_property
+                comp_prop.model = model
+                self.core.component_property = comp_prop
 
     @property
     def rlc_enable(self) -> bool:
@@ -806,17 +811,11 @@ class Component:
 
     @res_enabled.setter
     def res_enabled(self, value):  # pragma no cover
-        _rlc = []
-        model = PinPairModel(self._pedb, CorePinPairModel.create())
-        for rlc in self._rlc:
-            rlc.r_enabled = value
-            rlc.r = Value(self.res_value)
-            _rlc.append(rlc)
-        for ind in range(len(self._pin_pairs)):
-            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.core.component_property
-        comp_prop.model = model
-        self.core.component_property = comp_prop
+        try:
+            values = self.model.pin_pairs[0].rlc_enable
+            self.model.pin_pairs[0].rlc_enable = [value, values[1], values[2]]
+        except Exception:
+            self._logger.error("Failed to set parameter")
 
     @property
     def cap_enabled(self) -> bool:
@@ -833,17 +832,11 @@ class Component:
 
     @cap_enabled.setter
     def cap_enabled(self, value):  # pragma no cover
-        _rlc = []
-        model = PinPairModel(self._pedb, CorePinPairModel.create())
-        for rlc in self._rlc:
-            rlc.c_enabled = value
-            rlc.c = Value(self.cap_value)
-            _rlc.append(rlc)
-        for ind in range(len(self._pin_pairs)):
-            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.core.component_property
-        comp_prop.model = model
-        self.core.component_property = comp_prop
+        try:
+            values = self.model.pin_pairs[0].rlc_enable
+            self.model.pin_pairs[0].rlc_enable = [values[0], value, values[2]]
+        except Exception:
+            self._logger.error("Failed to set parameter")
 
     @property
     def ind_enabled(self) -> bool:
@@ -860,31 +853,11 @@ class Component:
 
     @ind_enabled.setter
     def ind_enabled(self, value):  # pragma no cover
-        _rlc = []
-        model = PinPairModel(self._pedb, CorePinPairModel.create())
-        for rlc in self._rlc:
-            rlc.l_enabled = value
-            rlc.l = Value(self.ind_value)
-            _rlc.append(rlc)
-        for ind in range(len(self._pin_pairs)):
-            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.core.component_property
-        comp_prop.model = model
-        self.core.component_property = comp_prop
-
-    @res_value.setter
-    def res_value(self, value):  # pragma no cover
-        _rlc = []
-        model = PinPairModel(self._pedb, CorePinPairModel.create())
-        for rlc in self._rlc:
-            rlc.r_enabled = True
-            rlc.r = Value(value)
-            _rlc.append(rlc)
-        for ind in range(len(self._pin_pairs)):
-            model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-        comp_prop = self.core.component_property
-        comp_prop.model = model
-        self.core.component_property = comp_prop
+        try:
+            values = self.model.pin_pairs[0].rlc_enable
+            self.model.pin_pairs[0].rlc_enable = [values[0], values[1], value]
+        except Exception:
+            self._logger.error("Failed to set parameter")
 
     @property
     def cap_value(self) -> float:
@@ -903,18 +876,19 @@ class Component:
 
     @cap_value.setter
     def cap_value(self, value):  # pragma no cover
-        if value:
-            _rlc = []
-            model = PinPairModel(self._pedb, CorePinPairModel.create())
-            for rlc in self._rlc:
+        try:
+            self.model.pin_pairs[0].capacitance = value
+        except Exception:
+            if value:
+                _rlc = []
+                model = CorePinPairModel.create()
+                rlc = CoreRlc()
                 rlc.c_enabled = True
                 rlc.c = Value(value)
-                _rlc.append(rlc)
-            for ind in range(len(self._pin_pairs)):
-                model.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.core.component_property
-            comp_prop.model = model
-            self.core.component_property = comp_prop
+                model.set_rlc(list(self.pins().keys())[:2], rlc)
+                comp_prop = self.core.component_property
+                comp_prop.model = model
+                self.core.component_property = comp_prop
 
     @property
     def ind_value(self):
@@ -933,18 +907,21 @@ class Component:
 
     @ind_value.setter
     def ind_value(self, value) -> float:
-        if value:
-            _rlc = []
-            model = PinPairModel(self._pedb, CorePinPairModel.create())
-            for rlc in self._rlc:
+        try:
+            self.model.pin_pairs[0].inductance = value
+        except Exception:
+            if value:
+                _rlc = []
+                model = CorePinPairModel.create()
+                rlc = CoreRlc()
                 rlc.l_enabled = True
                 rlc.l = Value(value)
-                _rlc.append(rlc)
-            for ind in range(len(self._pin_pairs)):
-                model.core.set_rlc(self._pin_pairs[ind], _rlc[ind])
-            comp_prop = self.core.component_property
-            comp_prop.model = model.core
-            self.core.component_property = comp_prop
+                model.set_rlc(list(self.pins.keys())[:2], rlc)
+                comp_prop = self.core.component_property
+                comp_prop.model = model
+                self.core.component_property = comp_prop
+
+            self._logger.error("Failed to set parameter")
 
     @property
     def is_parallel_rlc(self) -> bool:
@@ -963,15 +940,10 @@ class Component:
 
     @is_parallel_rlc.setter
     def is_parallel_rlc(self, value):  # pragma no cover
-        if not len(self._pin_pairs):
-            logging.warning(self.refdes, " has no pin pair.")
-        else:
-            if isinstance(value, bool):
-                for rlc in self._rlc:
-                    rlc.is_parallel = value
-                    comp_property = self.component_property
-                    comp_property.set_rcl(rlc)
-                    self.component_property = comp_property
+        try:
+            self.model.pin_pairs[0].is_parallel = value
+        except Exception:
+            self._logger.error("Failed to set parameter")
 
     @property
     def center(self) -> tuple[float, float]:
@@ -1345,7 +1317,7 @@ class Component:
         if not len(pin_names_sp) == self.numpins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
-        model = SpiceModel(file_path=file_path, name=name, sub_circuit=name)
+        model = SpiceModel(component=self, file_path=file_path, name=name, sub_circuit=name)
         if sub_circuit_name:
             model.sub_circuit = sub_circuit_name
 
@@ -1364,6 +1336,26 @@ class Component:
             return model
         else:
             return False
+
+    def assign_netlist_model(
+        self,
+        netlist,
+    ):
+        """Assign Netlist to this component.
+
+        Parameters
+        ----------
+        netlist : str
+            Netlist.
+
+        Returns
+        -------
+
+        """
+
+        model = CoreNetlistModel.create(netlist)
+
+        return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None) -> CoreNPortComponentModel:
         """Assign S-parameter to this component.
@@ -1468,7 +1460,7 @@ class Component:
         ind = 0 if ind is None else ind
         cap = 0 if cap is None else cap
         res, ind, cap = Value(res), Value(ind), Value(cap)
-        model = PinPairModel(self._pedb, self._edb_model)
+        model = PinPairModel(self)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
             # pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])

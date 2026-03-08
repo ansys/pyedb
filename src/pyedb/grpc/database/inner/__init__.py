@@ -19,22 +19,3 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-
-from ansys.edb.core.hierarchy.netlist_model import NetlistModel as CoreNetlistModel
-
-
-class NetlistModel:
-    """Manage :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_model.NetlistModel>`."""
-
-    def __init__(self, component, core: CoreNetlistModel):
-        self._component = component
-        self.core = core
-
-    @property
-    def netlist(self) -> str:
-        return self.core.netlist
-
-    @netlist.setter
-    def netlist(self, netlist: str) -> None:
-        self.core.netlist = netlist
-        self._component._set_model(self.core)

@@ -26,6 +26,7 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.dotnet.clr_module import is_linux
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
 from tests.conftest import config, use_grpc
@@ -1269,6 +1270,7 @@ class TestClassSetups(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(is_linux and not config["use_grpc"], reason="Randomly fails on dotnet linux")
     def test_siwave_dc(self):
         data = {
             "setups": [

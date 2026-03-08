@@ -3235,7 +3235,7 @@ class SourceExcitation(SourceExcitationInternal):
             point=CorePointData(negative_location),
         )
         p_terminal.reference_terminal = n_terminal
-        return self._pedb.create_voltage_probe(p_terminal, n_terminal)
+        return self._pedb.excitation_manager.create_voltage_probe(p_terminal, n_terminal)
 
     def create_padstack_instance_terminal(self, name="", padstack_instance_id=None, padstack_instance_name=None):
         pds = self._pedb.layout.find_padstack_instances(
