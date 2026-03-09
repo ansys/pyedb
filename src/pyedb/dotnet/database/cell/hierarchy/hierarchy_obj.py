@@ -47,7 +47,7 @@ class HierarchyObj(Connectable):
 
         Returns
         -------
-        list or None
+        list[float] or None
             [x, y] if available, else None.
         """
         flag, x, y = self._edb_object.GetLocation()
