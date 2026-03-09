@@ -1,1 +1,4 @@
-.github/* @svandenb-dev @ring630 @SMoraisAnsys
+.github/* @SMoraisAnsys @ecoussoux-ansys
+
+# These owners will be the default owners for everything in the repo.
+* @svandenb-dev @ring630
