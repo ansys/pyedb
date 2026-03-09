@@ -40,7 +40,6 @@ class SiwaveSimulationSetup(SimulationSetup):
 
     def __init__(self, pedb, core: "CoreSIWaveSimulationSetup"):
         super().__init__(pedb, core)
-        # give static analyzers a concrete type for core
         self.core: CoreSIWaveSimulationSetup = core
         self._pedb = pedb
 

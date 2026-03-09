@@ -35,7 +35,7 @@ class ComponentModel:
         self.core = CoreComponentModel(core.msg)
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the component model is null.
 
         Returns
@@ -47,7 +47,7 @@ class ComponentModel:
         return self.core.is_null
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Get the name of the component model.
 
         Returns
@@ -59,7 +59,7 @@ class ComponentModel:
         return self.core.name
 
     @property
-    def reference_file(self):
+    def reference_file(self) -> str:
         """Get the reference file of the component model.
 
         Returns
@@ -136,7 +136,7 @@ class NPortComponentModel:
         return None
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the N-Port component model is null.
 
         Returns
@@ -148,7 +148,7 @@ class NPortComponentModel:
         return self.core.is_null
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Get the name of the N-Port component model.
 
         Returns
@@ -160,7 +160,7 @@ class NPortComponentModel:
         return self.core.name
 
     @property
-    def reference_file(self):
+    def reference_file(self) -> str:
         """Get the reference file of the N-Port component model.
 
         Returns

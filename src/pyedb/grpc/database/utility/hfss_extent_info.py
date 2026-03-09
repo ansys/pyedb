@@ -69,7 +69,7 @@ class HfssExtentInfo:
 
     def set_air_box_horizontal_extent(self, size: float, is_multiple: bool = True):
         hfss_extent = self.core
-        hfss_extent.airbox_horizontal = (CoreValue(size).value, is_multiple)
+        hfss_extent.airbox_horizontal = (self._pedb._value_setter(size), is_multiple)
         self._update_hfss_extent_info(hfss_extent)
 
     def get_air_box_positive_vertical_extent(self) -> (float, bool):
@@ -88,7 +88,7 @@ class HfssExtentInfo:
 
     def set_air_box_positive_vertical_extent(self, size: float, is_multiple: bool):
         hfss_exent = self.core
-        hfss_exent.airbox_vertical_positive = (CoreValue(size).value, is_multiple)
+        hfss_exent.airbox_vertical_positive = (self._pedb._value_setter(size), is_multiple)
         self._update_hfss_extent_info(hfss_exent)
 
     def get_air_box_negative_vertical_extent(self) -> (float, bool):
@@ -107,7 +107,7 @@ class HfssExtentInfo:
 
     def set_air_box_negative_vertical_extent(self, size: float, is_multiple: bool = True):
         hfss_extent = self.core
-        hfss_extent.airbox_vertical_negative = (CoreValue(size).value, is_multiple)
+        hfss_extent.airbox_vertical_negative = (self._pedb._value_setter(size), is_multiple)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -271,7 +271,7 @@ class HfssExtentInfo:
     @operating_freq.setter
     def operating_freq(self, value):
         hfss_extent = self.core
-        hfss_extent.operating_frequency = CoreValue(value)
+        hfss_extent.operating_frequency = self._pedb._value_setter(value)
         self._update_hfss_extent_info(hfss_extent)
 
     @property
@@ -292,7 +292,7 @@ class HfssExtentInfo:
     @radiation_level.setter
     def radiation_level(self, value):
         hfss_extent = self.core
-        hfss_extent.radiation_level = CoreValue(value)
+        hfss_extent.radiation_level = self._pedb._value_setter(value)
         self._update_hfss_extent_info(hfss_extent)
 
     @property

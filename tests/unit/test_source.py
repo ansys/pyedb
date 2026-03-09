@@ -22,7 +22,7 @@
 
 import pytest
 
-from pyedb.dotnet.database.edb_data.sources import Source
+from pyedb.dotnet.database.edb_data.sources import SourceBuilder
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -34,7 +34,7 @@ class TestClass:
 
     def test_source_change_values(self):
         """Create source and change its values"""
-        source = Source()
+        source = SourceBuilder()
         source.l_value = 1e-9
         assert source.l_value == 1e-9
         source.r_value = 1.3

@@ -229,7 +229,10 @@ class Layout:
         return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
     def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+        self,
+        layer_name: Union[str, list] = None,
+        name: Union[str, list] = None,
+        net_name: Union[str, list] = None,
     ) -> list[any]:
         """Find a primitive objects by layer name.
         Parameters
@@ -238,9 +241,9 @@ class Layout:
         layer_name : str, list, optional
             Name of the layer.
         name : str, list, optional
-            Name of the primitive
+            Name of the primitive.
         net_name : str, list, optional
-            Name of the primitive
+            Name of the primitive.
         Returns
         -------
         List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
@@ -322,7 +325,7 @@ class Layout:
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
-            candidates = [i for i in candidates if i.component.name in value]
+            candidates = [i for i in candidates if i.component and i.component.name in value]
 
         if net_name is not None:
             net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}

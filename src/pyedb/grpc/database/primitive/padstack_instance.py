@@ -26,8 +26,6 @@ import re
 from typing import TYPE_CHECKING, Literal, Union, overload
 import warnings
 
-if TYPE_CHECKING:
-    from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -44,6 +42,7 @@ from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.inner import conn_obj
+from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.modeler import Circle
 from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -86,8 +85,8 @@ class PadstackInstance(conn_obj.ConnObj):
         position_x: float,
         position_y: float,
         rotation: float,
-        top_layer: StackupLayer,
-        bottom_layer: StackupLayer,
+        top_layer: str | StackupLayer,
+        bottom_layer: str | StackupLayer,
         name: str = None,
         solder_ball_layer: StackupLayer = None,
         layer_map: str = "two_way",
@@ -109,9 +108,9 @@ class PadstackInstance(conn_obj.ConnObj):
             Y position.
         rotation : float
             Rotation.
-        top_layer : :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+        top_layer : str, :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
             Top layer.
-        bottom_layer : :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
+        bottom_layer : str, :class:`StackupLayer <pyedb.grpc.database.layers.stackup_layer.StackupLayer>`
             Bottom layer.
         name : str, optional
             Padstack instance name. The default is ``None``, in which case a name is automatically assigned.
@@ -128,22 +127,35 @@ class PadstackInstance(conn_obj.ConnObj):
         if isinstance(net, str):
             net = layout._pedb.nets.nets.get(net, Net.create(layout, generate_unique_name("net")))
         if isinstance(padstack_definition, PadstackDef):
+            padstack_def = padstack_definition.core
             padstack_definition = padstack_definition.name
+
+        elif padstack_definition not in layout._pedb.padstacks.definitions:
+            raise Exception(f"Padstack definition {padstack_definition} not found in layout.")
+        else:
+            padstack_def = layout._pedb.padstacks.definitions[padstack_definition].core
+
         if not name:
             name = generate_unique_name(padstack_definition)
         layer_map = LayerMap.create(layer_map)
-        if not padstack_definition in layout._pedb.padstacks.definitions:
-            raise Exception(f"Padstack definition {padstack_definition} not found in layout.")
-        padstack_def = layout._pedb.padstacks.definitions[padstack_definition].core
+
+        if isinstance(top_layer, StackupLayer):
+            top_layer = top_layer.core
+        else:
+            top_layer = layout._pedb.stackup.layers[top_layer].core
+        if isinstance(bottom_layer, StackupLayer):
+            bottom_layer = bottom_layer.core
+        else:
+            bottom_layer = layout._pedb.stackup.layers[bottom_layer].core
         inst = CorePadstackInstance.create(
             layout=layout.core,
             net=net.core,
             padstack_def=padstack_def,
-            position_x=layout._pedb.value(position_x),
-            position_y=layout._pedb.value(position_y),
-            rotation=layout._pedb.value(rotation),
-            top_layer=top_layer.core,
-            bottom_layer=bottom_layer.core,
+            position_x=layout._pedb._value_setter(position_x),
+            position_y=layout._pedb._value_setter(position_y),
+            rotation=layout._pedb._value_setter(rotation),
+            top_layer=top_layer,
+            bottom_layer=bottom_layer,
             name=name,
             solder_ball_layer=solder_ball_layer.core if solder_ball_layer else None,
             layer_map=layer_map.core,
@@ -171,7 +183,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
     def set_hole_overrides(self, enabled, diameter):
         if isinstance(diameter, (float, int)):
-            diameter = Value(diameter)
+            diameter = self._pedb._value_setter(diameter)
         self.core.set_hole_overrides(enabled, Value(diameter))
 
     @property
@@ -202,26 +214,30 @@ class PadstackInstance(conn_obj.ConnObj):
             if from_bottom.get("drill_to_layer"):
                 self.set_back_drill_by_layer(
                     drill_to_layer=from_bottom.get("drill_to_layer"),
-                    offset=Value(from_bottom.get("stub_length", 0)),
-                    diameter=Value(from_bottom.get("diameter", 0)),
+                    offset=self._pedb._value_setter(from_bottom.get("stub_length", 0)),
+                    diameter=self._pedb._value_setter(from_bottom.get("diameter", 0)),
                     from_bottom=True,
                 )
             else:
                 self.set_back_drill_by_depth(
-                    Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)), from_bottom=True
+                    self._pedb._value_setter(from_bottom.get("stub_length", 0)),
+                    self._pedb._value_setter(from_bottom.get("diameter", 0)),
+                    from_bottom=True,
                 )
         from_bottom = params.get("from_top")
         if from_bottom:
             if from_bottom.get("drill_to_layer"):
                 self.set_back_drill_by_layer(
                     drill_to_layer=from_bottom.get("drill_to_layer"),
-                    offset=Value(from_bottom.get("stub_length", 0)),
-                    diameter=Value(from_bottom.get("diameter", 0)),
+                    offset=self._pedb._value_setter(from_bottom.get("stub_length", 0)),
+                    diameter=self._pedb._value_setter(from_bottom.get("diameter", 0)),
                     from_bottom=False,
                 )
             else:
                 self.set_back_drill_by_depth(
-                    Value(from_bottom.get("stub_length", 0)), Value(from_bottom.get("diameter", 0)), from_bottom=False
+                    self._pedb._value_setter(from_bottom.get("stub_length", 0)),
+                    self._pedb._value_setter(from_bottom.get("diameter", 0)),
+                    from_bottom=False,
                 )
 
     @property
@@ -376,12 +392,14 @@ class PadstackInstance(conn_obj.ConnObj):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(
                     drill_to_layer=drill_depth,
-                    offset=Value(offset),
-                    diameter=Value(drill_diameter),
+                    offset=self._pedb._value_setter(offset),
+                    diameter=self._pedb._value_setter(drill_diameter),
                     from_bottom=False,
                 )
             else:
-                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=False)
+                return self.set_back_drill_by_depth(
+                    self._pedb._value_setter(drill_depth), self._pedb._value_setter(drill_diameter), from_bottom=False
+                )
 
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
@@ -411,12 +429,14 @@ class PadstackInstance(conn_obj.ConnObj):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(
                     drill_to_layer=self._pedb.stackup.layers[drill_depth],
-                    offset=Value(offset),
-                    diameter=Value(drill_diameter),
+                    offset=self._pedb._value_setter(offset),
+                    diameter=self._pedb._value_setter(drill_diameter),
                     from_bottom=True,
                 )
             else:
-                return self.set_back_drill_by_depth(Value(drill_depth), Value(drill_diameter), from_bottom=True)
+                return self.set_back_drill_by_depth(
+                    self._pedb._value_setter(drill_depth), self._pedb._value_setter(drill_diameter), from_bottom=True
+                )
 
     def create_terminal(self, name=None) -> PadstackInstanceTerminal:
         """Create a padstack instance terminal.
@@ -747,7 +767,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return comp if not comp.core.is_null else False
 
     @property
-    def position(self) -> list[float]:
+    def position(self) -> list[Value]:
         """Padstack instance position.
 
         Returns
@@ -757,13 +777,14 @@ class PadstackInstance(conn_obj.ConnObj):
         """
         position = self.core.get_position_and_rotation()
         if self.component:
-            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
+            point = CorePointData(position[:2])
+            out2 = self.component.core.transform.transform_point(point)
             if hasattr(out2, "x"):
-                self._position = [out2.x.value, out2.y.value]
+                self._position = [Value(out2.x), Value(out2.y)]
             else:
-                self._position = [out2[0].value, out2[1].value]
+                self._position = [Value(out2[0]), Value(out2[1])]
         else:
-            self._position = [Value(pt).value for pt in position[:2]]
+            self._position = [Value(pt) for pt in position[:2]]
         return self._position
 
     @position.setter
@@ -771,12 +792,12 @@ class PadstackInstance(conn_obj.ConnObj):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(Value(v, self._pedb.active_cell))
+                pos.append(self._pedb._value_setter(v))
             else:
                 pos.append(v)
         point_data = CorePointData(pos[0], pos[1])
         self.core.set_position_and_rotation(
-            x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
+            x=point_data.x, y=point_data.y, rotation=self._pedb._value_setter(self.rotation)
         )
 
     @property
@@ -794,13 +815,17 @@ class PadstackInstance(conn_obj.ConnObj):
     def rotation(self, value):
         pos = []
         if isinstance(value, (float, int, str)):
-            pos.append(Value(value, self._pedb.active_cell))
+            pos.append(self._pedb._value_setter(value, self._pedb.active_cell))
         else:
             pos.append(value)
         pos = self.position
         point_data = CorePointData(pos[0], pos[1])
         self.core.set_position_and_rotation(
-            x=point_data.x, y=point_data.y, rotation=Value(self.rotation, self._pedb.active_cell)
+            x=point_data.x,
+            y=point_data.y,
+            rotation=self._pedb._value_setter(
+                self.rotation,
+            ),
         )
 
     @property
@@ -814,7 +839,8 @@ class PadstackInstance(conn_obj.ConnObj):
         """
         position = self.core.get_position_and_rotation()
         if self.component:
-            out2 = self.component.core.transform.transform_point(CorePointData(position[:2]))
+            point = CorePointData(position[:2])
+            out2 = self.component.core.transform.transform_point(point)
             _position_and_rotation = [out2.x.value, out2.y.value]
             _position_and_rotation.append(Value(position[-1]).value)
         else:
@@ -826,13 +852,11 @@ class PadstackInstance(conn_obj.ConnObj):
         pos = []
         for v in value:
             if isinstance(v, (float, int, str)):
-                pos.append(Value(v, self._pedb.active_cell))
+                pos.append(self._pedb._value_setter(v))
             else:
                 pos.append(v)
         point_data = CorePointData(pos[0], pos[1])
-        self.core.set_position_and_rotation(
-            x=point_data.x, y=point_data.y, rotation=Value(pos[2], self._pedb.active_cell)
-        )
+        self.core.set_position_and_rotation(x=point_data.x, y=point_data.y, rotation=self._pedb._value_setter(pos[2]))
 
     @property
     def name(self) -> str:
@@ -916,7 +940,7 @@ class PadstackInstance(conn_obj.ConnObj):
             self.set_back_drill_by_layer(
                 drill_to_layer=parameters[0],
                 offset=parameters[1],
-                diameter=self._pedb.value(value),
+                diameter=self._pedb._value_setter(value),
                 from_bottom=True,
             )
         elif self.backdrill_top:
@@ -924,7 +948,7 @@ class PadstackInstance(conn_obj.ConnObj):
             self.set_back_drill_by_layer(
                 drill_to_layer=parameters[0],
                 offset=parameters[1],
-                diameter=Value(value),
+                diameter=self._pedb._value_setter(value),
                 from_bottom=False,
             )
 
@@ -975,7 +999,7 @@ class PadstackInstance(conn_obj.ConnObj):
             parameters = self.get_back_drill_by_layer(True)
             self.set_back_drill_by_layer(
                 drill_to_layer=parameters[0],
-                offset=Value(value),
+                offset=self._pedb._value_setter(value),
                 diameter=parameters[2],
                 from_bottom=True,
             )
@@ -983,7 +1007,7 @@ class PadstackInstance(conn_obj.ConnObj):
             parameters = self.get_back_drill_by_layer(False)
             self.set_back_drill_by_layer(
                 drill_to_layer=parameters[0],
-                offset=Value(value),
+                offset=self._pedb._value_setter(value),
                 diameter=parameters[2],
                 from_bottom=False,
             )
@@ -1146,17 +1170,17 @@ class PadstackInstance(conn_obj.ConnObj):
             layout=layout,
             layer=self.start_layer,
             net=self.net,
-            center_x=Value(self.position[0]),
-            center_y=Value(self.position[1]),
-            radius=Value(rad_u),
+            center_x=self._pedb._value_setter(self.position[0]),
+            center_y=self._pedb._value_setter(self.position[1]),
+            radius=self._pedb._value_setter(rad_u),
         )
         cloned_circle2 = Circle(self._pedb).create(
             layout=layout,
             layer=self.stop_layer,
             net=self.net,
-            center_x=Value(self.position[0]),
-            center_y=Value(self.position[1]),
-            radius=Value(rad_l),
+            center_x=self._pedb._value_setter(self.position[0]),
+            center_y=self._pedb._value_setter(self.position[1]),
+            radius=self._pedb._value_setter(rad_l),
         )
 
         s3d = CoreStructure3D.create(
@@ -1168,7 +1192,7 @@ class PadstackInstance(conn_obj.ConnObj):
         s3d.mesh_closure = CoreMeshClosure.ENDS_CLOSED
         hole_override_enabled = True
         hole_override_diam = 0
-        self.core.set_hole_overrides(hole_override_enabled, Value(hole_override_diam))
+        self.core.set_hole_overrides(hole_override_enabled, self._pedb._value_setter(hole_override_diam))
 
     def get_backdrill_type(self, from_bottom=True):
         """Return backdrill type
@@ -1259,14 +1283,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
         if float(self._pedb.version) < 2027.1:
             self.core.set_back_drill_by_depth(
-                drill_depth=Value(drill_depth),
-                diameter=Value(diameter),
+                drill_depth=self._pedb._value_setter(drill_depth),
+                diameter=self._pedb._value_setter(diameter),
                 from_bottom=from_bottom,
             )
         else:
             self.core.set_back_drill_by_depth(
-                drill_depth=Value(drill_depth),
-                diameter=Value(diameter),
+                drill_depth=self._pedb._value_setter(drill_depth),
+                diameter=self._pedb._value_setter(diameter),
                 from_bottom=from_bottom,
                 fill_material=fill_material,
             )
@@ -1360,15 +1384,15 @@ class PadstackInstance(conn_obj.ConnObj):
         if float(self._pedb.version) < 2027.1:
             self.core.set_back_drill_by_layer(
                 drill_to_layer=drill_to_layer.core,
-                offset=Value(offset),
-                diameter=Value(diameter),
+                offset=self._pedb._value_setter(offset),
+                diameter=self._pedb._value_setter(diameter),
                 from_bottom=from_bottom,
             )
         else:
             self.core.set_back_drill_by_layer(
                 drill_to_layer=drill_to_layer.core,
-                offset=Value(offset),
-                diameter=Value(diameter),
+                offset=self._pedb._value_setter(offset),
+                diameter=self._pedb._value_setter(diameter),
                 from_bottom=from_bottom,
                 fill_material=fill_material,
             )
@@ -1412,12 +1436,13 @@ class PadstackInstance(conn_obj.ConnObj):
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of the voids that include this padstack instance.
         """
-        x_pos = Value(self.position[0])
-        y_pos = Value(self.position[1])
+        x_pos = self._pedb._value_setter(self.position[0])
+        y_pos = self._pedb._value_setter(self.position[1])
         point_data = CorePointData([x_pos, y_pos])
 
         voids = []
-        for prim in self._pedb.modeler.get_primitives(net_name, layer_name, is_void=True):
+        prims = [i for i in self._pedb.layout.find_primitive(net_name=net_name, layer_name=layer_name) if i.is_void]
+        for prim in prims:
             if prim.polygon_data.point_in_polygon(point_data):
                 voids.append(prim)
         return voids
@@ -1668,7 +1693,7 @@ class PadstackInstance(conn_obj.ConnObj):
                 if point.is_arc:
                     continue
                 else:
-                    points.append([Value(point.x), Value(point.y)])
+                    points.append([self._pedb._value_setter(point.x), self._pedb._value_setter(point.y)])
             xpoly, ypoly = zip(*points)
             polygon = [list(xpoly), list(ypoly)]
             rectangles = GeometryOperators.find_largest_rectangle_inside_polygon(

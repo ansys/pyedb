@@ -22,11 +22,11 @@
 
 
 class PinPair(object):  # pragma: no cover
-    def __init__(self, pcomp, edb_comp, edb_comp_prop, edb_model, edb_pin_pair):
-        self._pedb_comp = pcomp
-        self._edb_comp = edb_comp
-        self._edb_comp_prop = edb_comp_prop
-        self._edb_model = edb_model
+    def __init__(self, component, edb_pin_pair):
+        self._pedb_comp = component
+        self._edb_comp = component.edbcomponent
+        self._edb_comp_prop = component.component_property.core
+        self._edb_model = component._edb_model
         self._edb_pin_pair = edb_pin_pair
 
     def _edb_value(self, value):
@@ -111,3 +111,72 @@ class PinPair(object):  # pragma: no cover
         self._edb_model.SetPinPairRlc(self._edb_pin_pair, self._pin_pair_rlc)
         self._edb_comp_prop.SetModel(self._edb_model)
         self._edb_comp.SetComponentProperty(self._edb_comp_prop)
+
+    def add_pin_pair(
+        self,
+        r: float | None = None,
+        l: float | None = None,
+        c: float | None = None,
+        r_enabled: bool | None = None,
+        l_enabled: bool | None = None,
+        c_enabled: bool | None = None,
+        first_pin: str | None = None,
+        second_pin: str | None = None,
+        is_parallel: bool = False,
+    ):
+        """
+        Add a pin pair definition.
+
+        Parameters
+        ----------
+        r: float | None
+        l: float | None
+        c: float | None
+        r_enabled: bool
+        l_enabled: bool
+        c_enabled: bool
+        first_pin: str
+        second_pin: str
+        is_parallel: bool
+
+        Returns
+        -------
+
+        """
+        m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
+        p = self._pedb._edb.Utility.PinPair(first_pin, second_pin)
+        if r is None:
+            # If resistance is not defined, set it to 0 and disable it
+            r = "0ohm"
+            en_res = False
+        else:
+            # If resistance is defined, use the provided value and enabled status
+            en_res = True if r_enabled is True or r_enabled is None else False
+        if l is None:
+            # If inductance is not defined, set it to 0 and disable it
+            l = "0nH"
+            en_ind = False
+        else:
+            # If inductance is defined, use the provided value and enabled status
+            en_ind = True if l_enabled is True or l_enabled is None else False
+        if c is None:
+            # If capacitance is not defined, set it to 0 and disable it
+            c = "0pF"
+            en_cap = False
+        else:
+            # If capacitance is defined, use the provided value and enabled status
+            en_cap = True if c_enabled is True or c_enabled is None else False
+
+        rlc = self._pedb._edb.Utility.Rlc(
+            self._pedb.edb_value(r),
+            en_res,
+            self._pedb.edb_value(l),
+            en_ind,
+            self._pedb.edb_value(c),
+            en_cap,
+            is_parallel,
+        )
+        m.SetPinPairRlc(p, rlc)
+        core = self.component.component_property.core.Clone()
+        core.SetModel(m)
+        self.component.component_property = core

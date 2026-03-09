@@ -92,8 +92,8 @@ class Modeler(object):
         """
 
         if isinstance(name, int):
-            return self._primitives.get(name)
-        return self.primitives_by_name.get(name)
+            return self._pedb.core.layout.layout.Primitive.find_by_id(name)
+        return self._pedb.layout.find_primitive(name=name)[0]
 
     def __init__(self, p_edb) -> None:
         """Initialize Modeler instance."""
@@ -102,7 +102,6 @@ class Modeler(object):
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
-        self._primitives_by_layer_and_net: Dict[str, Dict[str, List[Primitive]]] | None = None
 
         # ============================================================
 
@@ -114,134 +113,16 @@ class Modeler(object):
         self._primitives_by_name = None
         self._primitives_by_net = None
         self._primitives_by_layer = None
-        self._primitives_by_layer_and_net = None
-
-    @property
-    def primitives(self) -> list[Primitive]:
-        return self._pedb.layout.primitives
-
-    @property
-    def primitives_by_name(self):
-        if self._primitives_by_name is None:
-            self._primitives_by_name = {p.aedt_name: p for p in self.primitives}
-        return self._primitives_by_name
-
-    @property
-    def primitives_by_net(self):
-        if self._primitives_by_net is None:
-            d = {}
-            for p in self.primitives:
-                if hasattr(p, "net"):
-                    d.setdefault(p.net.name, []).append(p)
-            self._primitives_by_net = d
-        return self._primitives_by_net
 
     @property
     def primitives_by_layer(self):
         if self._primitives_by_layer is None:
             d = {}
-            for p in self.primitives:
+            for p in self._pedb.layout.primitives:
                 if p.layer_name:
                     d.setdefault(p.layer_name, []).append(p)
             self._primitives_by_layer = d
         return self._primitives_by_layer
-
-    @property
-    def primitives_by_layer_and_net(self) -> Dict[str, Dict[str, List[Primitive]]]:
-        """Return all primitives indexed first by layer, then by net.
-
-        Returns
-        -------
-        dict
-            Nested dictionary:  layer -> net -> list[Primitive]
-        """
-        if self._primitives_by_layer_and_net is None:
-            idx: Dict[str, Dict[str, List[Primitive]]] = {}
-            for prim in self.primitives:
-                if not prim.layer_name or not hasattr(prim, "net") or prim.net.is_null:
-                    continue
-                layer = prim.layer_name
-                net = prim.net.name
-                idx.setdefault(layer, {}).setdefault(net, []).append(prim)
-            self._primitives_by_layer_and_net = idx
-        return self._primitives_by_layer_and_net
-
-    @property
-    def _edb(self) -> Any:
-        """EDB API object.
-
-        Returns
-        -------
-        object
-            EDB API object.
-        """
-        return self._pedb
-
-    @property
-    def _logger(self) -> Any:
-        """Logger instance.
-
-        Returns
-        -------
-        :class:`logger.Logger`
-            Logger instance.
-        """
-        return self._pedb.logger
-
-    @property
-    def _active_layout(self) -> Any:
-        """Active layout.
-
-        Returns
-        -------
-        :class:`ansys.edb.core.layout.Layout`
-            Active layout object.
-        """
-        return self._pedb.active_layout
-
-    @property
-    def _layout(self) -> Any:
-        """Current layout.
-
-        Returns
-        -------
-        :class:`ansys.edb.core.layout.Layout`
-            Layout object.
-        """
-        return self._pedb.layout
-
-    @property
-    def _cell(self) -> Any:
-        """Active cell.
-
-        Returns
-        -------
-        :class:`ansys.edb.core.hierarchy.Cell`
-            Active cell object.
-        """
-        return self._pedb.active_cell
-
-    @property
-    def db(self) -> Any:
-        """Database object.
-
-        Returns
-        -------
-        ansys.edb.core.database.Database
-            Database object.
-        """
-        return self._pedb.active_db
-
-    @property
-    def layers(self) -> Dict[str, object]:
-        """Dictionary of layers.
-
-        Returns
-        -------
-        dict
-            Dictionary of layers with layer names as keys.
-        """
-        return self._pedb.stackup.layers
 
     def get_primitive(self, primitive_id: int, edb_uid=True) -> Optional[Primitive]:
         """Retrieve primitive by ID.
@@ -256,17 +137,12 @@ class Modeler(object):
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
             Primitive object if found, False otherwise.
         """
-        for p in self._layout.primitives:
+        for p in self._pedb.layout.primitives:
             if (edb_uid and p.edb_uid == primitive_id) or (not edb_uid and p.id == primitive_id):
                 return p
             for v in p.voids:
                 if (edb_uid and v.edb_uid == primitive_id) or (not edb_uid and v.id == primitive_id):
                     return v
-
-    def __mapping_primitive_type(self, primitive):
-        from ansys.edb.core.primitive.primitive import (
-            PrimitiveType as GrpcPrimitiveType,
-        )
 
     @property
     def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
@@ -278,11 +154,8 @@ class Modeler(object):
             Dictionary where keys are layer names and values are lists of polygons.
         """
         polygon_by_layer = {}
-        for lay in self.layers:
-            if lay in self.primitives_by_layer:
-                polygon_by_layer[lay] = [prim for prim in self.primitives_by_layer[lay] if prim.type == "polygon"]
-            else:
-                polygon_by_layer[lay] = []
+        for lay in self._pedb.stackup.layers:
+            polygon_by_layer[lay] = [i for i in self._pedb.layout.find_primitive(layer_name=lay) if i.type == "polygon"]
         return polygon_by_layer
 
     @property
@@ -294,7 +167,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
         """
-        return [i for i in self.primitives if i.type == "rectangle"]
+        return [i for i in self._pedb.layout.primitives if i.type == "rectangle"]
 
     @property
     def circles(self) -> List[Union[Circle, Primitive]]:
@@ -305,7 +178,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
         """
-        return [i for i in self.primitives if i.type == "circle"]
+        return [i for i in self._pedb.layout.primitives if i.type == "circle"]
 
     @property
     def paths(self) -> List[Union[Path, Primitive]]:
@@ -316,7 +189,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
-        return [i for i in self.primitives if i.primitive_type == "path"]
+        return [i for i in self._pedb.layout.primitives if i.primitive_type == "path"]
 
     @property
     def polygons(self) -> List[Union[Polygon, Primitive]]:
@@ -327,7 +200,7 @@ class Modeler(object):
         list
             List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
         """
-        return [i for i in self.primitives if i.primitive_type == "polygon"]
+        return [i for i in self._pedb.layout.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
         """Retrieve polygons by layer.
@@ -384,7 +257,7 @@ class Modeler(object):
         if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
             layer = None
         if not isinstance(point, list) and len(point) == 2:
-            self._logger.error("Provided point must be a list of two values")
+            self._pedb.logger.error("Provided point must be a list of two values")
             return []
         pt = CorePointData(point)
         if isinstance(nets, str):
@@ -393,7 +266,7 @@ class Modeler(object):
             _nets = []
             for net in nets:
                 if net not in self._pedb.nets:
-                    self._logger.error(
+                    self._pedb.logger.error(
                         f"Net {net} used to find primitive from layer point and net not found, skipping it."
                     )
                 else:
@@ -418,8 +291,7 @@ class Modeler(object):
                 returned_obj.append(Circle(self._pedb, primitive))
         return returned_obj
 
-    @staticmethod
-    def get_polygon_bounding_box(polygon: Primitive) -> List[float]:
+    def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
         """Get bounding box of polygon.
 
         Parameters
@@ -440,8 +312,7 @@ class Modeler(object):
             self._pedb.value(bounding_box[1].y),
         ]
 
-    @staticmethod
-    def get_polygon_points(polygon) -> List[List[float]]:
+    def get_polygon_points(self, polygon) -> List[List[float]]:
         """Get points defining a polygon.
 
         Parameters
@@ -613,7 +484,7 @@ class Modeler(object):
         else:
             raise TypeError("Points must be a list of points or a PolygonData object.")
         path = Path.create(
-            layout=self._active_layout,
+            layout=self._pedb.active_layout,
             layer=layer_name,
             net=net,
             width=width,
@@ -623,7 +494,7 @@ class Modeler(object):
             points=polygon_data,
         )
         if path.is_null:  # pragma: no cover
-            self._logger.error("Null path created")
+            self._pedb.logger.error("Null path created")
             return False
         return path
 
@@ -712,7 +583,7 @@ class Modeler(object):
         else:
             polygon_data = points
         if not polygon_data.points:
-            self._logger.error("Failed to create main shape polygon data")
+            self._pedb.logger.error("Failed to create main shape polygon data")
             return False
         for void in voids:
             if isinstance(void, list):
@@ -722,12 +593,12 @@ class Modeler(object):
             else:
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:
-                self._logger.error("Failed to create void polygon data")
+                self._pedb.logger.error("Failed to create void polygon data")
                 return False
             polygon_data.holes.append(void_polygon_data)
-        polygon = Polygon.create(layout=self._active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
+        polygon = Polygon.create(layout=self._pedb.active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
         if polygon.is_null or polygon_data is False:  # pragma: no cover
-            self._logger.error("Null polygon created")
+            self._pedb.logger.error("Null polygon created")
             return False
         return polygon
 
@@ -777,7 +648,7 @@ class Modeler(object):
         net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
             rect = Rectangle(self._pedb).create(
-                layout=self._active_layout,
+                layout=self._pedb.active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=representation_type,
@@ -805,7 +676,7 @@ class Modeler(object):
             else:
                 height = self._pedb.value(width)
             rect = Rectangle.create(
-                layout=self._active_layout,
+                layout=self._pedb.active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=rep_type,
@@ -846,7 +717,7 @@ class Modeler(object):
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
         circle = Circle(self._pedb).create(
-            layout=self._active_layout,
+            layout=self._pedb.active_layout,
             layer=layer_name,
             net=edb_net,
             center_x=self._pedb.value(x),
@@ -904,7 +775,7 @@ class Modeler(object):
             List of filtered primitives.
         """
         prims = []
-        for el in self.primitives:
+        for el in self._pedb.layout.primitives:
             if not el.primitive_type:
                 continue
             if net_name:
@@ -935,7 +806,7 @@ class Modeler(object):
             circ_params = void_circle.get_parameters()
 
             cloned_circle = Circle.create(
-                layout=self._active_layout,
+                layout=self._pedb.active_layout,
                 layer=void_circle.layer_name,
                 net=void_circle.net,
                 center_x=self._pedb.value(circ_params[0]),
@@ -950,48 +821,48 @@ class Modeler(object):
     def _validatePoint(self, point, allowArcs=True):
         if len(point) == 2:
             if not isinstance(point[0], (int, float, str)):
-                self._logger.error("Point X value must be a number.")
+                self._pedb.logger.error("Point X value must be a number.")
                 return False
             if not isinstance(point[1], (int, float, str)):
-                self._logger.error("Point Y value must be a number.")
+                self._pedb.logger.error("Point Y value must be a number.")
                 return False
             return True
         elif len(point) == 3:
             if not allowArcs:  # pragma: no cover
-                self._logger.error("Arc found but arcs are not allowed in _validatePoint.")
+                self._pedb.logger.error("Arc found but arcs are not allowed in _validatePoint.")
                 return False
             if not isinstance(point[0], (int, float, str)):  # pragma: no cover
-                self._logger.error("Point X value must be a number.")
+                self._pedb.logger.error("Point X value must be a number.")
                 return False
             if not isinstance(point[1], (int, float, str)):  # pragma: no cover
-                self._logger.error("Point Y value must be a number.")
+                self._pedb.logger.error("Point Y value must be a number.")
                 return False
             if not isinstance(point[1], (int, float, str)):  # pragma: no cover
-                self._logger.error("Invalid point height.")
+                self._pedb.logger.error("Invalid point height.")
                 return False
             return True
         elif len(point) == 5:
             if not allowArcs:  # pragma: no cover
-                self._logger.error("Arc found but arcs are not allowed in _validatePoint.")
+                self._pedb.logger.error("Arc found but arcs are not allowed in _validatePoint.")
                 return False
             if not isinstance(point[0], (int, float, str)):  # pragma: no cover
-                self._logger.error("Point X value must be a number.")
+                self._pedb.logger.error("Point X value must be a number.")
                 return False
             if not isinstance(point[1], (int, float, str)):  # pragma: no cover
-                self._logger.error("Point Y value must be a number.")
+                self._pedb.logger.error("Point Y value must be a number.")
                 return False
             if not isinstance(point[2], str) or point[2] not in ["cw", "ccw"]:
-                self._logger.error("Invalid rotation direction {} is specified.")
+                self._pedb.logger.error("Invalid rotation direction {} is specified.")
                 return False
             if not isinstance(point[3], (int, float, str)):  # pragma: no cover
-                self._logger.error("Arc center point X value must be a number.")
+                self._pedb.logger.error("Arc center point X value must be a number.")
                 return False
             if not isinstance(point[4], (int, float, str)):  # pragma: no cover
-                self._logger.error("Arc center point Y value must be a number.")
+                self._pedb.logger.error("Arc center point Y value must be a number.")
                 return False
             return True
         else:  # pragma: no cover
-            self._logger.error("Arc point descriptor has incorrect number of elements (%s)", len(point))
+            self._pedb.logger.error("Arc point descriptor has incorrect number of elements (%s)", len(point))
             return False
 
     def parametrize_trace_width(
@@ -1072,7 +943,7 @@ class Modeler(object):
             net_names_list = []
 
         for lay in layer_name:
-            self._logger.info(f"Uniting Objects on layer {lay}.")
+            self._pedb.logger.info(f"Uniting Objects on layer {lay}.")
             poly_by_nets = {}
             all_voids = []
             list_polygon_data = []
@@ -1106,7 +977,7 @@ class Modeler(object):
             for poly in delete_list:
                 poly.delete()
         if delete_padstack_gemometries:
-            self._logger.info("Deleting Padstack Definitions")
+            self._pedb.logger.info("Deleting Padstack Definitions")
             for pad in self._pedb.padstacks.definitions:
                 p1 = self._pedb.padstacks.definitions[pad].edb_padstack.data
                 if len(p1.get_layer_names()) > 1:
@@ -1160,7 +1031,7 @@ class Modeler(object):
         stat_model.num_capacitors = len(self._pedb.components.capacitors)
         stat_model.num_resistors = len(self._pedb.components.resistors)
         stat_model.num_inductors = len(self._pedb.components.inductors)
-        bbox = self._pedb._hfss.get_layout_bounding_box(self._active_layout)
+        bbox = self._pedb._hfss.get_layout_bounding_box(self._pedb.active_layout)
         stat_model._layout_size = round(bbox[2] - bbox[0], 6), round(bbox[3] - bbox[1], 6)
         stat_model.num_discrete_components = (
             len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
@@ -1253,7 +1124,7 @@ class Modeler(object):
 
         start_cell_inst = None
         end_cell_inst = None
-        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.core.cell_instances}
+        cell_instances = {cell_inst.name: cell_inst for cell_inst in self._pedb.active_layout.core.cell_instances}
         if start_cell_instance_name:
             if start_cell_instance_name not in cell_instances:
                 start_cell_inst = GrpcCellInstance.create(
@@ -1261,7 +1132,7 @@ class Modeler(object):
                 )
             else:
                 start_cell_inst = cell_instances[start_cell_instance_name]
-                cell_instances = {cell_inst.name: cell_inst for cell_inst in self._active_layout.cell_instances}
+                cell_instances = {cell_inst.name: cell_inst for cell_inst in self._pedb.active_layout.cell_instances}
         if end_cell_instance_name:
             if end_cell_instance_name not in cell_instances:
                 end_cell_inst = GrpcCellInstance.create(
@@ -1270,7 +1141,7 @@ class Modeler(object):
             else:
                 end_cell_inst = cell_instances[end_cell_instance_name]
         bw = Bondwire.create(
-            layout=self._active_layout,
+            layout=self._pedb.active_layout,
             bondwire_type=bondwire_type,
             definition_name=definition_name,
             placement_layer=placement_layer,
@@ -1342,7 +1213,7 @@ class Modeler(object):
                     if not id in pins:
                         pins[id] = pin
         if not pins:
-            self._logger.error("No pin found.")
+            self._pedb.logger.error("No pin found.")
             return False
         pins = list(pins.values())
         obj = PinGroup.create(layout=self._pedb.active_layout, name=name, padstack_instances=pins)
@@ -1500,9 +1371,9 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x * -1)),
-            (self._pedb.value(local_origin_y * -1)),
-            (self._pedb.value(local_origin_z * -1)),
+            (self._pedb.value(local_origin_x).core * -1),
+            (self._pedb.value(local_origin_y).core * -1),
+            (self._pedb.value(local_origin_z).core * -1),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
