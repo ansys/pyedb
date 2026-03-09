@@ -398,9 +398,7 @@ class StackupLayer:
             self.core.etch_factor_enabled = False
         else:
             self.core.etch_factor_enabled = True
-            self.core.etch_factor = self._pedb._value_setter(
-                value,
-            )
+            self.core.etch_factor = self._pedb._value_setter(value)
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:
@@ -412,19 +410,18 @@ class StackupLayer:
             Nodule radius value.
         """
         if self.roughness_enabled:
-            # grpc crashes if roughness is not enabled.
+            # grpc crashes if roughness is not enabled. check issue #711 on pyedb-core
             top_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.TOP)
         else:
             return 0.0
         if self.roughness_enabled and isinstance(top_roughness_model, tuple):
             return self._pedb.value(top_roughness_model[0])
-        # grpc return single value for Groisse model.
         return 0.0
 
     @top_hallhuray_nodule_radius.setter
-    def top_hallhuray_nodule_radius(self, value):
-        if value:
-            # make sure roughness is enabled to prevent crash
+    def top_hallhuray_nodule_radius(self, value: float) -> None:
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash. check issue #711 on pyedb-core
             self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="top")
 
@@ -440,17 +437,16 @@ class StackupLayer:
         if self.roughness_enabled:
             top_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.TOP)
         else:
-            # grpc crashes if roughness is not enabled.
+            # grpc crashes if roughness is not enabled. Check issue #711 on pyedb-core
             return 0.0
         if self.roughness_enabled and isinstance(top_roughness_model, tuple):
             return self._pedb.value(top_roughness_model[1])
-        # grpc return single value for Groisse model.
         return 0.0
 
     @top_hallhuray_surface_ratio.setter
-    def top_hallhuray_surface_ratio(self, value):
-        if value:
-            # make sure roughness is enabled to prevent crash
+    def top_hallhuray_surface_ratio(self, value: float) -> None:
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash. Check issue #711 on pyedb-core
             self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="top")
 
@@ -466,23 +462,22 @@ class StackupLayer:
         if self.roughness_enabled:
             bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
         else:
-            # grpc crashes if roughness is not enabled.
+            # grpc crashes if roughness is not enabled. Check issue #711 on pyedb-core
             return 0.0
-        if self.roughness_enabled and isinstance(bottom_roughness_model, Value):
+        if self.roughness_enabled and isinstance(bottom_roughness_model, tuple):
             return self._pedb.value(bottom_roughness_model[0])
-        # grpc return single value for Groisse model.
         return 0.0
 
     @bottom_hallhuray_nodule_radius.setter
     def bottom_hallhuray_nodule_radius(self, value):
-        if value:
-            # make sure roughness is enabled to prevent crash
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash. Check issue #711 on pyedb-core
             self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="bottom")
 
     @property
     def bottom_hallhuray_surface_ratio(self) -> float:
-        """Hurray model surface ratio on layer bottom.
+        """Huray model surface ratio on layer bottom.
 
         Returns
         -------
@@ -492,17 +487,16 @@ class StackupLayer:
         if self.roughness_enabled:
             bottom_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
         else:
-            # grpc crashes if roughness is not enabled.
+            # grpc crashes if roughness is not enabled. Check issue #711 on pyedb-core
             return 0.0
-        if self.roughness_enabled and isinstance(bottom_roughness_model, Value):
+        if self.roughness_enabled and isinstance(bottom_roughness_model, tuple):
             return self._pedb.value(bottom_roughness_model[-1])
-        # grpc return single value for Groisse model.
         return 0.0
 
     @bottom_hallhuray_surface_ratio.setter
     def bottom_hallhuray_surface_ratio(self, value):
-        if value:
-            # make sure roughness is enabled to prevent crash
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash.
             self.roughness_enabled = True
         self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="bottom")
 
@@ -517,23 +511,20 @@ class StackupLayer:
 
         """
         if self.roughness_enabled:
-            # grpc crashes if roughness is not enabled.
+            # grpc crashes if roughness is not enabled. Check issue #711 on pyedb-core
             side_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.SIDE)
         else:
-            # grpc crashes if roughness is not enabled.
             return 0.0
-
-        if self.roughness_enabled and isinstance(side_roughness_model, Value):
+        if self.roughness_enabled and isinstance(side_roughness_model, tuple):
             return self._pedb.value(side_roughness_model[0])
-        # grpc return single value for Groisse model.
         return 0.0
 
     @side_hallhuray_nodule_radius.setter
     def side_hallhuray_nodule_radius(self, value):
-        if value:
-            # make sure roughness is enabled to prevent crash
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash.
             self.roughness_enabled = True
-            self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="side")
+        self.assign_roughness_model(model_type="huray", huray_radius=value, apply_on_surface="side")
 
     @property
     def side_hallhuray_surface_ratio(self) -> float:
@@ -545,23 +536,20 @@ class StackupLayer:
             surface ratio.
         """
         if self.roughness_enabled:
-            # grpc crashes if roughness is not enabled.
+            # grpc crashes if roughness is not enabled. Check issue #711 on pyedb-core
             side_roughness_model = self.core.get_roughness_model(CoreRoughnessRegion.SIDE)
         else:
-            # grpc crashes if roughness is not enabled.
             return 0.0
-
         if self.roughness_enabled and isinstance(side_roughness_model, tuple):
             return self._pedb.value(side_roughness_model[1])
-        # grpc return single value for Groisse model.
         return 0.0
 
     @side_hallhuray_surface_ratio.setter
     def side_hallhuray_surface_ratio(self, value):
-        if value:
+        if not self.roughness_enabled:
             # make sure roughness is enabled to prevent crash
             self.roughness_enabled = True
-            self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="side")
+        self.assign_roughness_model(model_type="huray", huray_surface_ratio=value, apply_on_surface="side")
 
     @property
     def top_groisse_roughness(self) -> float:
@@ -575,15 +563,18 @@ class StackupLayer:
         if self.roughness_enabled:
             top_roughness = self.core.get_roughness_model(CoreRoughnessRegion.TOP)
         else:
-            # grpc crashes if rouhgness is not enabled.
+            # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
             return 0.0
+        # Groisse model returns single Value
         if self.roughness_enabled and isinstance(top_roughness, Value):
             return self._pedb.value(top_roughness)
-        # grpc return tuple for Hurray model.
         return 0.0
 
     @top_groisse_roughness.setter
     def top_groisse_roughness(self, value):
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash. check issue #711 on pyedb-core
+            self.roughness_enabled = True
         self.assign_roughness_model(model_type="groisse", groisse_roughness=value, apply_on_surface="top")
 
     @property
@@ -598,15 +589,18 @@ class StackupLayer:
         if self.roughness_enabled:
             bottom_roughness = self.core.get_roughness_model(CoreRoughnessRegion.BOTTOM)
         else:
-            # grpc crashes if rouhgness is not enabled.
+            # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
             return 0.0
+        # Groisse model returns single Value
         if self.roughness_enabled and isinstance(bottom_roughness, Value):
             return self._pedb.value(bottom_roughness)
-        # grpc return tuple for Hurray model.
         return 0.0
 
     @bottom_groisse_roughness.setter
     def bottom_groisse_roughness(self, value):
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash. check issue #711 on pyedb-core
+            self.roughness_enabled = True
         self.assign_roughness_model(model_type="groisse", groisse_roughness=value, apply_on_surface="bottom")
 
     @property
@@ -621,15 +615,18 @@ class StackupLayer:
         if self.roughness_enabled:
             bottom_roughness = self.core.get_roughness_model(CoreRoughnessRegion.SIDE)
         else:
-            # grpc crashes if rouhgness is not enabled.
+            # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
             return 0.0
+        # Groisse model returns single Value
         if self.roughness_enabled and isinstance(bottom_roughness, Value):
             return self._pedb.value(bottom_roughness)
-        # grpc return tuple for Hurray model.
         return 0.0
 
     @side_groisse_roughness.setter
     def side_groisse_roughness(self, value):
+        if not self.roughness_enabled:
+            # make sure roughness is enabled to prevent crash. check issue #711 on pyedb-core
+            self.roughness_enabled = True
         self.assign_roughness_model(model_type="groisse", groisse_roughness=value, apply_on_surface="side")
 
     @property
