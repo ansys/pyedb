@@ -185,7 +185,7 @@ class SweepData:
         self._update_sweep()
 
     @property
-    def frequency_data(self) -> CoreFrequencyData:
+    def frequency_data(self) -> list[CoreFrequencyData]:
         """Get the frequency data of the sweep.
 
         Returns

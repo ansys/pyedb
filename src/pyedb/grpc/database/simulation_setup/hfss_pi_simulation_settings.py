@@ -24,10 +24,9 @@ from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
     HFSSPISimulationSettings as CoreHFSSPISimulationSettings,
 )
 
+from pyedb.grpc.database.simulation_setup.hfss_pi_advanced_settings import HFSSPIAdvancedSettings
 from pyedb.grpc.database.simulation_setup.hfss_pi_general_settings import HFSSPIGeneralSettings
-from pyedb.grpc.database.simulation_setup.hfss_pi_net_processing_settings import HFSSPINetProcessingSettings
-from pyedb.grpc.database.simulation_setup.hfss_pi_power_ground_nets_settings import HFSSPIPowerGroundNetsSettings
-from pyedb.grpc.database.simulation_setup.hfss_pi_signal_nets_settings import HFSSPISignalNetsSettings
+from pyedb.grpc.database.simulation_setup.hfss_pi_solver_settings import HFSSPISolverSettings
 
 
 class HFSSPISimulationSettings:
@@ -36,6 +35,18 @@ class HFSSPISimulationSettings:
     def __init__(self, pedb, core: "CoreHFSSPISimulationSettings"):
         self.core = core
         self._pedb = pedb
+
+    @property
+    def advanced(self) -> HFSSPIAdvancedSettings:
+        """Get the HFSS PI advanced simulation settings.
+
+        Returns
+        -------
+        HFSSPIAdvancedSettings
+            The HFSS PI advanced simulation settings object.
+
+        """
+        return HFSSPIAdvancedSettings(self._pedb, self.core.advanced)
 
     @property
     def enabled(self) -> bool:
@@ -66,37 +77,13 @@ class HFSSPISimulationSettings:
         return HFSSPIGeneralSettings(self._pedb, self.core.general)
 
     @property
-    def net_processing(self) -> HFSSPINetProcessingSettings:
-        """Get the HFSS PI net processing simulation settings.
+    def solver(self):
+        """Get the HFSS PI solver simulation settings.
 
         Returns
         -------
-        HFSSPINetProcessingSettings
-            The HFSS PI net processing simulation settings object.
+        HFSSPISolverSettings
+            The HFSS PI solver simulation settings object.
 
         """
-        return HFSSPINetProcessingSettings(self._pedb, self.core.net_processing)
-
-    @property
-    def power_ground_nets(self) -> HFSSPIPowerGroundNetsSettings:
-        """Get the HFSS PI power and ground nets simulation settings.
-
-        Returns
-        -------
-        HFSSPIPowerGroundNetsSettings
-            The HFSS PI power and ground nets simulation settings object.
-
-        """
-        return HFSSPIPowerGroundNetsSettings(self._pedb, self.core.power_ground_nets)
-
-    @property
-    def signal_nets(self) -> HFSSPISignalNetsSettings:
-        """Get the HFSS PI signal nets simulation settings.
-
-        Returns
-        -------
-        HFSSPISignalNetsSettings
-            The HFSS PI signal nets simulation settings object.
-
-        """
-        return HFSSPISignalNetsSettings(self._pedb, self.core.signal_nets)
+        return HFSSPISolverSettings(self._pedb, self.core.solver)

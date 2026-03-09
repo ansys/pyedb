@@ -483,3 +483,23 @@ class HFSSPISimulationSetup(SimulationSetup):
             sim_setup_info = SimSetupInfo(self._pedb, sim_setup=self, setup_type="kHFSSPI", name=name)
             self._edb_object = self._simulation_setup_builder(sim_setup_info._edb_object)
             self._update_setup()
+
+    @classmethod
+    def create(cls, edb, name) -> "HFSSPISimulationSetup":
+        """Create a new HFSSPI simulation setup.
+
+        Parameters
+        ----------
+        edb : Edb
+            An EDB instance.
+        name : str
+            Name of the simulation setup.
+
+        Returns
+        -------
+        HFSSPISimulationSetup
+            The created HFSSPI simulation setup object.
+        """
+        sim_setup_info = SimSetupInfo(edb, sim_setup=cls, setup_type="kHFSSPI", name=name)
+        core = edb._edb.Utility.HFSSPISimulationSetup(sim_setup_info._edb_object)
+        return cls(edb, edb_object=core, name=name)
