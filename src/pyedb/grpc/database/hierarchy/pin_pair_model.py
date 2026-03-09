@@ -232,17 +232,17 @@ class PinPairModel:
             The created pin pair model.
 
         """
-        core_pin_pair = CorePinPairModel.create()  # codacy-disable-line
+        core_pin_pair = CorePinPairModel.create()  # noqa
         rlc = CoreRlc()
         if resistance is not None:
-            rlc.r_enabled = True  # codacy-disable-line
-            rlc.r = Value(resistance)  # codacy-disable-line
+            rlc.r_enabled = True  # noqa
+            rlc.r = Value(resistance)  # noqa
         if inductance is not None:
-            rlc.l_enabled = True  # codacy-disable-line
-            rlc.l = Value(inductance)  # codacy-disable-line
+            rlc.l_enabled = True  # noqa
+            rlc.l = Value(inductance)  # noqa
         if capacitance is not None:
-            rlc.c_enabled = True  # codacy-disable-line
-            rlc.c = Value(capacitance)  # codacy-disable-line
+            rlc.c_enabled = True  # noqa
+            rlc.c = Value(capacitance)  # noqa
         rlc.is_parallel = is_parallel
         if not pin1_name:
             pin1_name = "1"
