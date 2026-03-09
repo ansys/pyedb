@@ -35,8 +35,10 @@ VERSION = 2024.2
 class TestClass(BaseTestClass):
     def test_add_raptorx_setup(self):
         edbapp = self.edb_examples.get_si_verse()
-        setup = edbapp.create_raptorx_setup("test")
+        edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
+        # casting setup from edb to make sure all properties are available
+        setup = edbapp.setups["test"]
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         setup.enabled = False
         assert not setup.enabled
