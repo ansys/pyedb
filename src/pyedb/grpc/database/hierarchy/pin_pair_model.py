@@ -197,9 +197,9 @@ class PinPairModel:
     def create(
         cls,
         component: Component,
-        r: float | None = None,
-        l: float | None = None,
-        c: float | None = None,
+        resistance: float | None = None,
+        inductance: float | None = None,
+        capacitance: float | None = None,
         pin1_name: str | None = None,
         pin2_name: str | None = None,
         is_parallel: bool = False,
@@ -211,11 +211,11 @@ class PinPairModel:
         ----------
         component : Component
             Edb instance.
-        r : float, optional
+        resistance : float, optional
             Resistance value. If not provided, the default value will be used. Default value is 0.
-        l : float, optional
+        inductance : float, optional
             Inductance value. If not provided, the default value will be used. Default value is 0.
-        c : float, optional
+        capacitance : float, optional
             Capacitance value. If not provided, the default value will be used. Default value is 0.
         pin1_name : str, optional
             First pin name. If not provided, the default name will be used. Default name is `1`.
@@ -232,15 +232,15 @@ class PinPairModel:
         """
         core_pin_pair = CorePinPairModel.create()
         rlc = CoreRlc()
-        if r is not None:
+        if resistance is not None:
             rlc.r_enabled = True
-            rlc.r = Value(r)
-        if l is not None:
+            rlc.r = Value(resistance)
+        if inductance is not None:
             rlc.l_enabled = True
-            rlc.l = Value(l)
-        if c is not None:
+            rlc.l = Value(inductance)
+        if capacitance is not None:
             rlc.c_enabled = True
-            rlc.c = Value(c)
+            rlc.c = Value(capacitance)
         rlc.is_parallel = is_parallel
         if not pin1_name:
             pin1_name = "1"
