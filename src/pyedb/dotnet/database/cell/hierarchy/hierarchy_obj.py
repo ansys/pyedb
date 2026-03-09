@@ -42,7 +42,7 @@ class HierarchyObj(Connectable):
         return self._edb_object.GetComponentDef().GetName()
 
     @property
-    def location(self) -> List | None:
+    def location(self) -> List[float] | None:
         """Return XY coordinates if available.
 
         Returns
