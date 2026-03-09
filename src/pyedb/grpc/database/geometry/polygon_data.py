@@ -266,3 +266,13 @@ class PolygonData:
         if isinstance(polygon_data, PolygonData):
             polygon_data = polygon_data.core
         return self.core.intersection_type(polygon_data).value
+
+    def without_arcs(self) -> "PolygonData":
+        """Get a copy of the polygon without arcs.
+
+        Returns
+        -------
+        :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
+        """
+        new_poly = self.core.without_arcs()
+        return PolygonData(new_poly)
