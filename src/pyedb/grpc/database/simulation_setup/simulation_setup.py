@@ -247,9 +247,6 @@ class SimulationSetup(SimulationSetupDeprecated):
         self.core.sweep_data = self.core.sweep_data + [sweep.core]
         return self.sweep_data[-1]
 
-    @deprecated_class(
-        "The 'add_frequency_sweep' method is deprecated. Please use 'add_sweep' with appropriate parameters instead."
-    )
     def add_frequency_sweep(self, frequency_sweep: list[str]):
         """This method is deprecated. Please use 'add_sweep' with appropriate parameters instead."""
         # converting frequency sweep to frequency set

@@ -26,7 +26,10 @@ try:
         HFSSPIAdvancedSettings as CoreHFSSPIAdvancedSettings,
     )
 except ImportError as e:
-    print(f"ANSYS 2026.1 gRPC package not available (expected in release 2026.1): {e}")
+    print(
+        f"HFSSPiAdvancedSettings is available on with ANSYS release 2026.1 and latest pyedb-core: {e}."
+        f"Please upgrade to access this class."
+    )
 
 
 class HFSSPIAdvancedSettings:

@@ -146,7 +146,7 @@ class SimulationSetups:
 
         Returns
         -------
-        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+        :class:`pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
 
         """
         if name in self._pedb.setups:
