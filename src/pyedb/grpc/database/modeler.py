@@ -40,7 +40,6 @@ from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name
 
 
