@@ -26,7 +26,10 @@ try:
         HFSSPISolverSettings as CoreHFSSPISolverSettings,
     )
 except ImportError as e:
-    print(f"ANSYS 2026.1 gRPC package not available (expected in release 2026.1): {e}")
+    print(
+        f"HFSSPiAdvancedSettings is available on with ANSYS release 2026.1 and latest pyedb-core: {e}."
+        f"Please upgrade to access this class."
+    )
 
 
 class HFSSPISolverSettings:
@@ -59,7 +62,7 @@ class HFSSPISolverSettings:
         self.core.enhanced_low_frequency_accuracy = value
 
     @property
-    def via_area_cutoff_circ_elems(self) -> str:
+    def via_area_cutoff_circ_elems(self) -> float:
         """Pwr/Gnd vias with an area smaller than this value are simplified during simulation.
 
         Returns
@@ -67,10 +70,11 @@ class HFSSPISolverSettings:
         str
             Via area cutoff circular elements setting value.
         """
-        return self.core.via_area_cutoff_circ_elems
+        # pyedb-core takes string value for via area cutoff circular elements, but returning float for user convenience.
+        return float(self.core.via_area_cutoff_circ_elems)
 
     @via_area_cutoff_circ_elems.setter
-    def via_area_cutoff_circ_elems(self, value: str):
+    def via_area_cutoff_circ_elems(self, value: float):
         """Set via area cutoff circular elements setting.
 
         Parameters
@@ -78,4 +82,5 @@ class HFSSPISolverSettings:
         value : str
             Via area cutoff circular elements setting value.
         """
-        self.core.via_area_cutoff_circ_elems = value
+        # edb-core takes string value for via area cutoff circular elements, but allowing users to input float.
+        self.core.via_area_cutoff_circ_elems = str(value)

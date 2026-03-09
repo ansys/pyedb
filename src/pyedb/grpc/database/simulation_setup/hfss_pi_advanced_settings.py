@@ -40,26 +40,28 @@ class HFSSPIAdvancedSettings:
         self._core = core
 
     @property
-    def arc_to_chord_error(self) -> str:
+    def arc_to_chord_error(self) -> float:
         """Arc to chord error value.
 
         Returns
         -------
-        str
+        float
             Arc to chord error value.
         """
-        return self._core.arc_to_chord_error
+        # pyedb-core takes string value for arc to chord error, but returning float for user convenience.
+        return float(self._core.arc_to_chord_error)
 
     @arc_to_chord_error.setter
-    def arc_to_chord_error(self, value: str):
+    def arc_to_chord_error(self, value: float):
         """Set arc to chord error value.
 
         Parameters
         ----------
-        value : str
+        value : float
             Arc to chord error value.
         """
-        self._core.arc_to_chord_error = value
+        # edb-core takes string value for arc to chord error, but allowing users to input float as well for convenience
+        self._core.arc_to_chord_error = str(self._pedb.value(value))
 
     @property
     def auto_model_resolution(self) -> bool:
@@ -84,26 +86,27 @@ class HFSSPIAdvancedSettings:
         self._core.auto_model_resolution = value
 
     @property
-    def max_num_arc_points(self) -> str:
+    def max_num_arc_points(self) -> int:
         """Maximum number of points used to approximate arcs.
 
         Returns
         -------
-        str
+        int
             Maximum number of arc points.
         """
-        return self._core.max_num_arc_points
+        # pyedb-core takes int value for max number of arc points, but allowing int.
+        return int(self._core.max_num_arc_points)
 
     @max_num_arc_points.setter
-    def max_num_arc_points(self, value: str):
+    def max_num_arc_points(self, value: int):
         """Set maximum number of arc points.
 
         Parameters
         ----------
-        value : str
+        value : int
             Maximum number of arc points.
         """
-        self._core.max_num_arc_points = value
+        self._core.max_num_arc_points = str(value)
 
     @property
     def mesh_for_via_plating(self) -> bool:
@@ -128,26 +131,27 @@ class HFSSPIAdvancedSettings:
         self._core.mesh_for_via_plating = value
 
     @property
-    def model_resolution_length(self) -> str:
+    def model_resolution_length(self) -> float:
         """Model resolution to use when manually setting the model resolution.
 
         Returns
         -------
-        str
+        float
             Model resolution length value.
         """
-        return self._core.model_resolution_length
+        # pyedb-core takes string value for model resolution length, but returning float for user convenience.
+        return float(self._core.model_resolution_length)
 
     @model_resolution_length.setter
-    def model_resolution_length(self, value: str):
+    def model_resolution_length(self, value: float):
         """Set model resolution length value.
 
         Parameters
         ----------
-        value : str
+        value : float
             Model resolution length value.
         """
-        self._core.model_resolution_length = value
+        self._core.model_resolution_length = str(value)
 
     @property
     def num_via_sides(self) -> int:
@@ -194,26 +198,27 @@ class HFSSPIAdvancedSettings:
         self._core.remove_floating_geometry = value
 
     @property
-    def small_plane_area(self) -> str:
+    def small_plane_area(self) -> float:
         """Planes with an area smaller than this value are ignored during simulation.
 
         Returns
         -------
-        str
+        float
             Small plane area value.
         """
-        return self._core.small_plane_area
+        # pyedb-core takes string value for small plane area, but returning float for user convenience.
+        return float(self._core.small_plane_area)
 
     @small_plane_area.setter
-    def small_plane_area(self, value: str):
+    def small_plane_area(self, value: float):
         """Set small plane area value.
 
         Parameters
         ----------
-        value : str
+        value : float
             Small plane area value.
         """
-        self._core.small_plane_area = value
+        self._core.small_plane_area = str(value)
 
     @property
     def small_void_area(self) -> float:
@@ -224,7 +229,8 @@ class HFSSPIAdvancedSettings:
         float
             Small void area value.
         """
-        return self._core.small_void_area
+        # pyedb-core takes string value for small void area, but returning float for user convenience.
+        return float(self._core.small_void_area)
 
     @small_void_area.setter
     def small_void_area(self, value: float):
@@ -235,7 +241,7 @@ class HFSSPIAdvancedSettings:
         value : float
             Small void area value.
         """
-        self._core.small_void_area = value
+        self._core.small_void_area = str(value)
 
     @property
     def use_arc_chord_error_approx(self) -> bool:
@@ -282,15 +288,16 @@ class HFSSPIAdvancedSettings:
         self._core.via_material = value
 
     @property
-    def zero_metal_layer_thickness(self) -> str:
+    def zero_metal_layer_thickness(self) -> float:
         """Pwr/Gnd layers with a thickness smaller than this value are simplified during simulation.
 
         Returns
         -------
-        str
+        float
             Zero metal layer thickness value.
         """
-        return self._core.zero_metal_layer_thickness
+        # pyedb-core takes string value for zero metal layer thickness, but returning float.
+        return float(self._core.zero_metal_layer_thickness)
 
     @zero_metal_layer_thickness.setter
     def zero_metal_layer_thickness(self, value: str):
@@ -301,4 +308,5 @@ class HFSSPIAdvancedSettings:
         value : str
             Zero metal layer thickness value.
         """
-        self._core.zero_metal_layer_thickness = value
+        # pyedb-core takes string value for zero metal layer thickness, but allowing users to input float.
+        self._core.zero_metal_layer_thickness = str(value)
