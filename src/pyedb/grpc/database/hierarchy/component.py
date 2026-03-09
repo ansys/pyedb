@@ -97,11 +97,10 @@ class Component:
 
     Parameters
     ----------
-    parent : :class:`pyedb.grpc.database.components.Components`
-        Components object.
-    component : object
-        Edb Component Object
-
+    pedb : Edb
+        An instance of the Edb class.
+    edb_object : ansys.edb.core.hierarchy.component.Component
+            An instance of the EDB component object.
     """
 
     def __init__(self, pedb, edb_object):
@@ -113,7 +112,7 @@ class Component:
         self._package_def = None
 
     @property
-    def pin_pairs(self) -> List[PinPairModel] | None:
+    def pin_pairs(self) -> List[tuple[str, str]] | None:
         """Pinpairs of the model."""
         if "PinPairModel" in str(self.model):
             return self.model.pin_pairs
@@ -197,7 +196,7 @@ class Component:
             self.core.component_property = comp_prop
 
     @property
-    def ic_die_properties(self) -> any:
+    def ic_die_properties(self) -> "ICDieProperty | None":
         """IC Die property.
 
         returns
@@ -317,7 +316,7 @@ class Component:
         self.core.component_property = value
 
     @property
-    def model(self) -> Union[SparamModel, SpiceModel]:
+    def model(self) -> SparamModel | SpiceModel | PinPairModel:
         """Component model.
 
         Returns
@@ -491,7 +490,7 @@ class Component:
         self.core.component_property = cmp_prop
 
     @property
-    def spice_model(self) -> SpiceModel:
+    def spice_model(self) -> SpiceModel | None:
         """Assigned Spice model.
 
         Returns
@@ -504,7 +503,7 @@ class Component:
             return SpiceModel(component=self)
 
     @property
-    def s_param_model(self) -> SparamModel:
+    def s_param_model(self) -> SparamModel | None:
         """Assigned S-parameter model.
 
         Returns
@@ -517,7 +516,7 @@ class Component:
             return SparamModel(component=self)
 
     @property
-    def netlist_model(self) -> NetlistModel:
+    def netlist_model(self) -> NetlistModel | None:
         """Assigned netlist model.
 
         Returns
@@ -551,7 +550,7 @@ class Component:
             solder_ball_prop.height = Value(value)
 
     @property
-    def solder_ball_shape(self) -> str:
+    def solder_ball_shape(self) -> str | None:
         """Solder ball shape.
 
         Returns
@@ -567,6 +566,7 @@ class Component:
                 return "cylinder"
             elif shape == SolderballShape.SOLDERBALL_SPHEROID:
                 return "spheroid"
+        return None
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
@@ -598,6 +598,7 @@ class Component:
         if not self.component_property.solder_ball_property.is_null:
             diameter, mid_diameter = self.component_property.solder_ball_property.get_diameter()
             return Value(diameter), Value(mid_diameter)
+        return None
 
     @solder_ball_diameter.setter
     def solder_ball_diameter(self, value):
@@ -778,13 +779,13 @@ class Component:
                 rlc = CoreRlc()
                 rlc.r_enabled = True
                 rlc.r = Value(value)
-                model.set_rlc(list(self.pins().keys())[:2], rlc)
+                model.set_rlc(tuple(self.pins.keys())[:2], rlc)
                 comp_prop = self.core.component_property
                 comp_prop.model = model
                 self.core.component_property = comp_prop
 
     @property
-    def rlc_enable(self) -> bool:
+    def rlc_enable(self) -> list[bool]:
         """RLC enabled flag.
 
         Returns
@@ -885,7 +886,7 @@ class Component:
                 rlc = CoreRlc()
                 rlc.c_enabled = True
                 rlc.c = Value(value)
-                model.set_rlc(list(self.pins().keys())[:2], rlc)
+                model.set_rlc(tuple(self.pins.keys())[:2], rlc)
                 comp_prop = self.core.component_property
                 comp_prop.model = model
                 self.core.component_property = comp_prop
@@ -906,7 +907,7 @@ class Component:
         return 0.0
 
     @ind_value.setter
-    def ind_value(self, value) -> float:
+    def ind_value(self, value) -> float | None:
         try:
             self.model.pin_pairs[0].inductance = value
         except Exception:
@@ -916,7 +917,7 @@ class Component:
                 rlc = CoreRlc()
                 rlc.l_enabled = True
                 rlc.l = Value(value)
-                model.set_rlc(list(self.pins.keys())[:2], rlc)
+                model.set_rlc(tuple(self.pins.keys())[:2], rlc)
                 comp_prop = self.core.component_property
                 comp_prop.model = model
                 self.core.component_property = comp_prop
@@ -983,7 +984,7 @@ class Component:
             self.core.location = _location
 
     @property
-    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
+    def bounding_box(self) -> list[float, float, float, float]:
         """Component's bounding box.
 
         Returns
@@ -1288,7 +1289,7 @@ class Component:
         name: Optional[str] = None,
         sub_circuit_name: Optional[str] = None,
         terminal_pairs: Optional[list] = None,
-    ) -> SpiceModel:
+    ) -> SpiceModel | bool:
         """Assign Spice model to this component.
 
         Parameters
@@ -1310,11 +1311,11 @@ class Component:
         with open(file_path, "r") as f:
             for line in f:
                 if "subckt" in line.lower():
-                    pin_names_sp = [i.strip() for i in re.split(" |\t", line) if i]
+                    pin_names_sp = [i.strip() for i in re.split(" | \t", line) if i]
                     pin_names_sp.remove(pin_names_sp[0])
                     pin_names_sp.remove(pin_names_sp[0])
                     break
-        if not len(pin_names_sp) == self.numpins:  # pragma: no cover
+        if not len(pin_names_sp) == self.pins:  # pragma: no cover
             raise ValueError(f"Pin counts doesn't match component {self.name}.")
 
         model = SpiceModel(component=self, file_path=file_path, name=name, sub_circuit=name)
@@ -1357,7 +1358,7 @@ class Component:
 
         return self._set_model(model)
 
-    def assign_s_param_model(self, file_path, name=None, reference_net=None) -> CoreNPortComponentModel:
+    def assign_s_param_model(self, file_path, name=None, reference_net=None) -> CoreNPortComponentModel | bool:
         """Assign S-parameter to this component.
 
         Parameters
@@ -1413,7 +1414,6 @@ class Component:
 
         Examples
         --------
-        >>> edbapp = Edb()
         >>>comp_def = edbapp.definitions.components["CAPC3216X180X55ML20T25"]
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
@@ -1430,7 +1430,7 @@ class Component:
             return self._set_model(s_param_model)
         return False
 
-    def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> PinPairModel:
+    def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> PinPairModel | bool:
         """Assign RLC to this component.
 
         Parameters
@@ -1463,7 +1463,6 @@ class Component:
         model = PinPairModel(self)
         pin_names = list(self.pins.keys())
         for idx, i in enumerate(np.arange(len(pin_names) // 2)):
-            # pin_pair = GrpcPinPair(pin_names[idx], pin_names[idx + 1])
             rlc = CoreRlc(
                 r=res,
                 r_enabled=r_enabled,

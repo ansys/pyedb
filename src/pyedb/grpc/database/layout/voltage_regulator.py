@@ -26,9 +26,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from ansys.edb.core.layout.voltage_regulator import (
-    VoltageRegulator as CoreVoltageRegulator,
-)
 
 from pyedb.grpc.database.utility.value import Value
 

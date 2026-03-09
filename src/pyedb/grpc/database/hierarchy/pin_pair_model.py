@@ -22,7 +22,6 @@
 
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.grpc.database.utility.value import Value
@@ -31,7 +30,6 @@ if TYPE_CHECKING:
     from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 
     from pyedb.grpc.database.components import Component
-    from pyedb.grpc.edb import Edb
 
 
 class PinPair:
@@ -198,7 +196,7 @@ class PinPairModel:
     @classmethod
     def create(
         cls,
-        edb: "Edb",
+        component: Component,
         r: float | None = None,
         l: float | None = None,
         c: float | None = None,
@@ -211,7 +209,7 @@ class PinPairModel:
 
         Parameters
         ----------
-        edb : Edb
+        component : Component
             Edb instance.
         r : float, optional
             Resistance value. If not provided, the default value will be used. Default value is 0.
@@ -223,6 +221,8 @@ class PinPairModel:
             First pin name. If not provided, the default name will be used. Default name is `1`.
         pin2_name : str, optional
             Second pin name. If not provided, the default name will be used. Default name is `2`.
+        is_parallel : bool, optional
+            Whether the RLC model is parallel. If not provided, the default value will be used
 
         Returns
         -------
@@ -230,7 +230,7 @@ class PinPairModel:
             The created pin pair model.
 
         """
-        core = CorePinPairModel.create()
+        core_pin_pair = CorePinPairModel.create()
         rlc = CoreRlc()
         if r is not None:
             rlc.r_enabled = True
@@ -246,11 +246,14 @@ class PinPairModel:
             pin1_name = "1"
         if not pin2_name:
             pin2_name = "2"
-        core.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
-        return cls(edb, core)
+        core_pin_pair.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
+        component_property = component.component_property
+        component_property.model = core_pin_pair
+        component.component_property = component_property
+        return cls(component)
 
     @property
-    def pin_pairs(self) -> list[tuple[str, str]]:
+    def pin_pairs(self) -> list[PinPair]:
         """Get all pin pairs.
 
         Returns
@@ -333,7 +336,7 @@ class PinPairModel:
             Tuple of pin names (first_pin, second_pin).
 
         """
-        if pin_pair in self.pin_pairs():
+        if pin_pair in self.pin_pairs:
             self.core.delete_rlc(pin_pair=pin_pair)
 
     def add_pin_pair(

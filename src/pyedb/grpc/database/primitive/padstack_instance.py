@@ -23,7 +23,7 @@ from __future__ import annotations
 
 import math
 import re
-from typing import TYPE_CHECKING, Literal, Union, overload
+from typing import Literal, Union, overload
 import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
@@ -63,7 +63,7 @@ class PadstackInstance(conn_obj.ConnObj):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
 
@@ -584,7 +584,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self._object_instance
 
     @property
-    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
+    def bounding_box(self) -> list[float]:
         """Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
