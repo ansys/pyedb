@@ -36,6 +36,7 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_setup import (
     HfssSimulationSetup,
 )
 from pyedb.grpc.database.utility.hfss_extent_info import HfssExtentInfo
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class Hfss:
@@ -132,6 +133,7 @@ class Hfss:
         return self._pedb.active_db
 
     @property
+    @deprecated_property("Use property ''ports'' instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -144,7 +146,6 @@ class Hfss:
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
 
         """
-        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
         return self.ports
 
     @property
@@ -211,6 +212,10 @@ class Hfss:
         primitive = Primitive(self._pedb, primitive)
         point = PointData(self._pedb, point)
 
+    @deprecated(
+        "`create_edge_port` is deprecated and is now located here "
+        "`pyedb.grpc.core.excitations.create_edge_port` instead."
+    )
     def create_edge_port(
         self,
         location,
@@ -222,11 +227,6 @@ class Hfss:
         vertical_extent_factor=1,
         pec_launch_width=0.0001,
     ):
-        warnings.warn(
-            "`create_edge_port` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_edge_port` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_edge_port(
             location=location,
             primitive_name=primitive_name,
@@ -353,6 +353,7 @@ class Hfss:
             terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
         return CorePolygonData.bbox_of_polygons(terms_bbox)
 
+    @deprecated("add_setup is deprecated use create_simulation_setup instead")
     def add_setup(
         self,
         name=None,
@@ -369,8 +370,6 @@ class Hfss:
         use :func:`create_simulation_setup` instead.
 
         """
-        warnings.warn("add_setup is deprecated use create_simulation_setup instead", DeprecationWarning)
-
         return self._pedb.simulation_setups.create_hfss_setup(
             name, distribution, start_freq, stop_freq, step_freq, discrete_sweep
         )
