@@ -63,7 +63,7 @@ class PadstackInstance(conn_obj.ConnObj):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb("myedb", edbversion="2026.1")
+    >>> edb = Edb("myedb", version="2026.1")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
 

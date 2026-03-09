@@ -60,7 +60,7 @@ class PadProperties:
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb("myedb", edbversion="2026.1")
+    >>> edb = Edb("myedb", version="2026.1")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
 
@@ -278,7 +278,7 @@ class PadstackDef:
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb("myedb", edbversion="2026.1")
+    >>> edb = Edb("myedb", version="2026.1")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
 
