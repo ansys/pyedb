@@ -47,7 +47,7 @@ from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.definition.padstack_def import PadstackDef
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 if TYPE_CHECKING:
     import rtree
@@ -335,6 +335,9 @@ class Padstacks(object):
         return vias
 
     @property
+    @deprecated_property(
+        "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead."
+    )
     def pingroups(self) -> List[Any]:
         """All Layout Pin groups.
 
@@ -352,10 +355,6 @@ class Padstacks(object):
         >>> edb = Edb("my_design.edb")
         >>> groups = edb.padstacks._layout.pin_groups  # New way
         """
-        warnings.warn(
-            "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead.",
-            DeprecationWarning,
-        )
         return self._layout.pin_groups
 
     @property
@@ -747,6 +746,10 @@ class Padstacks(object):
 
         return False
 
+    @deprecated(
+        "`create_coax_port` is deprecated and is now located here "
+        "`pyedb.grpc.core.excitations.create_coax_port` instead."
+    )
     def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None):
         """Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
@@ -775,11 +778,6 @@ class Padstacks(object):
             Terminal name.
 
         """
-        warnings.warn(
-            "`create_coax_port` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.create_coax_port` instead.",
-            DeprecationWarning,
-        )
         self._pedb.excitation_manager.create_coax_port(
             self, padstackinstance, use_dot_separator=use_dot_separator, name=name
         )
@@ -827,6 +825,7 @@ class Padstacks(object):
 
         return pinlist
 
+    @deprecated("`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.")
     def get_pinlist_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.
 
@@ -852,10 +851,6 @@ class Padstacks(object):
         >>> edb = Edb("my_design.edb")
         >>> pins = edb.padstacks.get_pin_from_component_and_net(refdes="U1", netname="CLK")  # New way
         """
-        warnings.warn(
-            "`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.",
-            DeprecationWarning,
-        )
         return self.get_pin_from_component_and_net(refdes=refdes, netname=netname)
 
     def get_pad_parameters(
