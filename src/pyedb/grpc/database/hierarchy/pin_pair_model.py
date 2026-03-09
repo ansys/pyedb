@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
@@ -29,7 +31,7 @@ from pyedb.grpc.database.utility.value import Value
 if TYPE_CHECKING:
     from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 
-    from pyedb.grpc.database.components import Component
+    from pyedb.grpc.database.hierarchy.component import Component
 
 
 class PinPair:

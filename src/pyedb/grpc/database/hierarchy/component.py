@@ -1298,6 +1298,11 @@ class Component:
             File path of the Spice model.
         name : str, optional
             Name of the Spice model.
+        sub_circuit_name : str, optional
+            Sub-circuit name in the Spice file. If not provided, the first sub-circuit will be assigned.
+        terminal_pairs : list, optional
+            List of terminal pairs. Each pair should be in the format of [pin_name, pin_number].
+            If not provided, the pin order in the Spice file will be used.
 
         Returns
         -------
@@ -1315,8 +1320,9 @@ class Component:
                     pin_names_sp.remove(pin_names_sp[0])
                     pin_names_sp.remove(pin_names_sp[0])
                     break
-        if not len(pin_names_sp) == self.pins:  # pragma: no cover
-            raise ValueError(f"Pin counts doesn't match component {self.name}.")
+        if not len(pin_names_sp) == len(self.pins):  # pragma: no cover
+            self._pedb.logger.error(f"Pin counts doesn't match component {self.name}. Skipping Spice model assignment.")
+            return False
 
         model = SpiceModel(component=self, file_path=file_path, name=name, sub_circuit=name)
         if sub_circuit_name:

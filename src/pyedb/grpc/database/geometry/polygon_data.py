@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
@@ -37,7 +38,7 @@ class PolygonData:
 
     def __init__(
         self,
-        edb_object=None,
+        core=None,
         create_from_points=None,
         create_from_circle=None,
         create_from_rectangle=None,
@@ -53,7 +54,7 @@ class PolygonData:
         elif create_from_bounding_box:
             self.core = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
-            self.core = edb_object
+            self.core = core
 
     @property
     def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
