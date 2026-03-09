@@ -52,9 +52,8 @@ class GapPort(EdgeTerminal):
     @property
     def renormalize(self):
         """Whether renormalize is active."""
-        return self._edb_object.GetPortPostProcessingProp().get_DoRenormalize()
+        return self._edb_object.GetPortPostProcessingProp().DoRenormalize
         # TODO add getter for renormalize: Possible bugs in net API for setters.
-        # coverage_todo_no1
 
     @property
     def renormalize_z0(self):
