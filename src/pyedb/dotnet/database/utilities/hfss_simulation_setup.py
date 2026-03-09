@@ -501,6 +501,5 @@ class HFSSPISimulationSetup(SimulationSetup):
             The created HFSSPI simulation setup object.
         """
         sim_setup_info = SimSetupInfo(edb, sim_setup=cls, setup_type="kHFSSPI", name=name)
-        edb_object = edb._edb.Utility.HFSSPISimulationSetup(sim_setup_info._edb_object)
-        # edb._update_setup()
-        return cls(edb, edb_object=edb_object, name=name)
+        core = edb._edb.Utility.HFSSPISimulationSetup(sim_setup_info._edb_object)
+        return cls(edb, edb_object=core, name=name)

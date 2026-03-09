@@ -128,7 +128,11 @@ class SimulationSetups:
             self._pedb.logger.error("Setup name already used in the layout")
             return False
         if float(self._pedb.version) < 2024.2:
-            self._pedb.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
+            raise (
+                "Unsupported ANSYS release version for HFSS PI simulation setup. "
+                "Please use Ansys release 2024R2 or higher.",
+                UserWarning,
+            )
             return False
         return HFSSPISimulationSetup.create(self._pedb, name=name)
 

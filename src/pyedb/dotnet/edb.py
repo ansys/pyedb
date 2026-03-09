@@ -3299,7 +3299,9 @@ class Edb:
         when failed.
 
         """
-        warnings.warn("Deprecated method. Use simulation_setups.create_hfss_pi_setup instead.", DeprecationWarning)
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_hfss_pi_setup instead.", DeprecationWarning, stacklevel=2
+        )
         return self.simulation_setups.create_hfss_pi_setup(name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
