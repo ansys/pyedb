@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
+import warnings
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.raptor_x_simulation_settings import (
@@ -51,8 +52,31 @@ class RaptorXAdvancedSettings:
         self.core.auto_removal_sliver_poly = value
 
     @property
+    def cell_per_wave_length(self):
+        """Number of cells that fit under each wavelength.
+
+        .. deprecated:: 0.70.0
+              Use :attr:`cells_per_wavelength` instead.
+        """
+        warnings.warn("Use :attr:`cells_per_wavelength` instead", DeprecationWarning)
+        return self.cells_per_wavelength
+
+    @cell_per_wave_length.setter
+    def cell_per_wave_length(self, value: int):
+        """Set number of cells that fit under each wavelength."""
+        warnings.warn("cell_per_wave_length is deprecated, use cells_per_wave_length instead.", DeprecationWarning)
+        self.cells_per_wavelength = value
+
+    @property
     def cells_per_wavelength(self) -> int:
-        """Number of cells that fit under each wavelength."""
+        """Number of cells that fit under each wavelength.
+
+        Returns
+        -------
+        int
+            Number of cells per wavelength.
+        """
+
         return self.core.cells_per_wavelength
 
     @cells_per_wavelength.setter
@@ -69,6 +93,24 @@ class RaptorXAdvancedSettings:
     def edge_mesh(self, value: float):
         """Set thickness and width of the exterior conductor filament."""
         self.core.edge_mesh = str(self._pedb.value(value))
+
+    @property
+    def eliminate_slit_per_hole(self):
+        """Threshold for strain or thermal relief slits and hole polygon areas.
+
+        .. deprecated:: 0.70.0
+              Use :attr:`eliminate_slit_per_holes` instead.
+        """
+        warnings.warn("Use :attr:`eliminate_slit_per_holes` instead", DeprecationWarning)
+        return self.eliminate_slit_per_holes
+
+    @eliminate_slit_per_hole.setter
+    def eliminate_slit_per_hole(self, value: float):
+        """Set threshold for strain or thermal relief slits and hole polygon areas."""
+        warnings.warn(
+            "eliminate_slit_per_hole is deprecated, use eliminate_slit_per_holes instead.", DeprecationWarning
+        )
+        self.eliminate_slit_per_holes = value
 
     @property
     def eliminate_slit_per_holes(self) -> float:
@@ -99,6 +141,22 @@ class RaptorXAdvancedSettings:
     def net_settings_options(self, value: dict[str, list[str]]):
         """Set net settings options as a dictionary."""
         self.core.net_settings_options = value
+
+    @property
+    def override_shrink_fac(self):
+        """Override shrink factor for polygon edges.
+
+        .. deprecated:: 0.70.0
+              Use :attr:`override_shrink_factor` instead.
+        """
+        warnings.warn("Use :attr:`override_shrink_factor` instead", DeprecationWarning)
+        return self.override_shrink_factor
+
+    @override_shrink_fac.setter
+    def override_shrink_fac(self, value: float):
+        """Set override shrink factor for polygon edges."""
+        warnings.warn("override_shrink_fac is deprecated, use override_shrink_factor instead.", DeprecationWarning)
+        self.override_shrink_factor = value
 
     @property
     def override_shrink_factor(self) -> float:
@@ -236,6 +294,24 @@ class RaptorXAdvancedSettings:
     @use_mesh_frequency.setter
     def use_mesh_frequency(self, value: bool):
         self.core.use_mesh_frequency = value
+
+    @property
+    def use_override_shrink_fac(self):
+        """Flag indicating if override shrink factor is used.
+
+        .. deprecated:: 0.70.0
+              Use :attr:`use_override_shrink_factor` instead.
+        """
+        warnings.warn("Use :attr:`use_override_shrink_factor` instead", DeprecationWarning)
+        return self.use_override_shrink_factor
+
+    @use_override_shrink_fac.setter
+    def use_override_shrink_fac(self, value: bool):
+        """Set flag indicating if override shrink factor is used."""
+        warnings.warn(
+            "use_override_shrink_fac is deprecated, use use_override_shrink_factor instead.", DeprecationWarning
+        )
+        self.use_override_shrink_factor = value
 
     @property
     def use_override_shrink_factor(self) -> bool:
