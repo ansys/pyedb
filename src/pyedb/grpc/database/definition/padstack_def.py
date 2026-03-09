@@ -166,8 +166,8 @@ class PadProperties:
 
         Returns
         -------
-        list
-            List of parameters.
+        PolygonData
+            PolygonData object.
         """
         p = self._pad_parameter_value[1]
         return p if isinstance(p, ansys.edb.core.geometry.polygon_data.PolygonData) else None
@@ -289,6 +289,11 @@ class PadstackDef:
         self._antipad_by_layer = {}
         self._thermalpad_by_layer = {}
         self._bounding_box = []
+
+    @property
+    def id(self) -> int:
+        """Padstack definition ID."""
+        return self.core.id
 
     @property
     def is_null(self):
