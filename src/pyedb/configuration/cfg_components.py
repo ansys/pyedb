@@ -22,11 +22,9 @@
 
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
-from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.configuration.cfg_common import CfgBase
 from pyedb.dotnet.database.general import snake_to_pascal
-from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 
 _solder_shape_mapping = {
     "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,
@@ -153,73 +151,27 @@ class CfgComponent(CfgBase):
             # grpc is returning pyedb-core object directly as it is internal.
             c_p = self.pyedb_obj.component_property
         if self.netlist_model:
-            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
-            m.SetNetlist(self.netlist_model["netlist"])
-            c_p.SetModel(m)
-            self.pyedb_obj.component_property = c_p
+            self.pyedb_obj.assign_netlist_model(self.netlist_model["netlist"])
         elif self.pin_pair_model:
-            if self._pedb.grpc:
-                m = None
-                for i in self.pin_pair_model:
-                    m = PinPairModel.create(self._pedb.layout)
-                    rlc = CoreRlc()
-                    rlc.r = i.get("resistance")
-                    rlc.r_enabled = i.get("resistance_enabled", False)
-                    rlc.l = i.get("inductance")
-                    rlc.l_enabled = i.get("inductance_enabled", False)
-                    rlc.c = i.get("capacitance")
-                    rlc.c_enabled = i.get("capacitance_enabled", False)
-                    rlc.is_parallel = i.get("is_parallel", False)
-                    m.set_rlc(pin_pair=(str(i["first_pin"]), str(i["second_pin"])), rlc=rlc)
-                c_p.model = m.core
-
-            else:
-                m = self._pedb._edb.Cell.Hierarchy.PinPairModel()
-                for i in self.pin_pair_model:
-                    p = self._pedb._edb.Utility.PinPair(str(i["first_pin"]), str(i["second_pin"]))
-                    res = i.get("resistance")
-                    if res is None:
-                        # If resistance is not defined, set it to 0 and disable it
-                        res = "0ohm"
-                        en_res = False
-                    else:
-                        # If resistance is defined, use the provided value and enabled status
-                        en_res = i.get("resistance_enabled", True)
-                    ind = i.get("inductance")
-                    if ind is None:
-                        # If inductance is not defined, set it to 0 and disable it
-                        ind = "0nH"
-                        en_ind = False
-                    else:
-                        # If inductance is defined, use the provided value and enabled status
-                        en_ind = i.get("inductance_enabled", True)
-                    cap = i.get("capacitance")
-                    if cap is None:
-                        # If capacitance is not defined, set it to 0 and disable it
-                        cap = "0pF"
-                        en_cap = False
-                    else:
-                        # If capacitance is defined, use the provided value and enabled status
-                        en_cap = i.get("capacitance_enabled", True)
-
-                    rlc = self._pedb._edb.Utility.Rlc(
-                        self._pedb.edb_value(res),
-                        en_res,
-                        self._pedb.edb_value(ind),
-                        en_ind,
-                        self._pedb.edb_value(cap),
-                        en_cap,
-                        i.get("is_parallel", False),
-                    )
-                    m.SetPinPairRlc(p, rlc)
-                c_p.SetModel(m)
-            self.pyedb_obj.component_property = c_p
+            m = self.pyedb_obj.model
+            for i in self.pin_pair_model:
+                m.add_pin_pair(
+                    r=i.get("resistance"),
+                    l=i.get("inductance"),
+                    c=i.get("capacitance"),
+                    is_parallel=i.get("is_parallel", False),
+                    first_pin=str(i["first_pin"]),
+                    second_pin=str(i["second_pin"]),
+                    r_enabled=i.get("resistance_enabled", False),
+                    l_enabled=i.get("inductance_enabled", False),
+                    c_enabled=i.get("capacitance_enabled", False),
+                )
         elif self.s_parameter_model:
-            m = self._pedb._edb.Cell.Hierarchy.SParameterModel()
-            m.SetComponentModelName(self.s_parameter_model["model_name"])
-            m.SetReferenceNet(self.s_parameter_model["reference_net"])
-            c_p.SetModel(m)
-            self.pyedb_obj.component_property = c_p
+            self.pyedb_obj.assign_s_param_model(
+                self.s_parameter_model["model_path"],
+                self.s_parameter_model["model_name"],
+                self.s_parameter_model["reference_net"],
+            )
         elif self.spice_model:
             self.pyedb_obj.assign_spice_model(
                 self.spice_model["model_path"],

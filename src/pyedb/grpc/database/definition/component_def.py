@@ -21,11 +21,19 @@
 # SOFTWARE.
 
 import os
+from typing import TYPE_CHECKING
 
 from ansys.edb.core.definition.component_def import ComponentDef as CoreComponentDef
+from ansys.edb.core.definition.component_model import (
+    NPortComponentModel as CoreNPortComponentModel,
+)
 
+from pyedb.dotnet.database.definition.component_model import ComponentModel
 from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
+
+if TYPE_CHECKING:
+    from pyedb import Edb
 
 
 class ComponentDef:
@@ -37,7 +45,7 @@ class ComponentDef:
         Edb ComponentDef Object
     """
 
-    def __init__(self, pedb, core):
+    def __init__(self, pedb: "Edb", core: "CoreComponentDef"):
         self.core = core
         self._pedb = pedb
 
@@ -133,7 +141,7 @@ class ComponentDef:
         return [ComponentPin(pin) for pin in self.core.component_pins]
 
     @classmethod
-    def find(cls, edb, name):
+    def find(cls, edb, name) -> "ComponentDef":
         """Find component definition by name.
 
         Parameters
@@ -153,7 +161,7 @@ class ComponentDef:
         return None
 
     @classmethod
-    def create(cls, edb, name, fp=None):
+    def create(cls, edb, name, fp=None) -> "ComponentDef":
         """Create a new component definition.
 
         Parameters
@@ -249,7 +257,7 @@ class ComponentDef:
         return [model.reference_file for model in self.component_models.values()]
 
     @property
-    def component_models(self):
+    def component_models(self) -> dict[str, ComponentModel]:
         """Component models.
 
         Returns
@@ -262,7 +270,7 @@ class ComponentDef:
         return {model.name: ComponentModel(model) for model in self.core.component_models}
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Component definition name.
 
         Returns
@@ -277,7 +285,7 @@ class ComponentDef:
     def name(self, value):
         self.core.name = value
 
-    def add_n_port_model(self, fpath, name=None):
+    def add_n_port_model(self, fpath, name=None) -> CoreNPortComponentModel:
         """Add N-port model.
 
         Returns
@@ -285,10 +293,6 @@ class ComponentDef:
         Nport model : :class:`NPortComponentModel <ansys.edb.core.definition.component_model.NPortComponentModel>`
 
         """
-
-        from ansys.edb.core.definition.component_model import (
-            NPortComponentModel as CoreNPortComponentModel,
-        )
 
         if not name:
             name = os.path.splitext(os.path.basename(fpath)[0])
@@ -300,7 +304,7 @@ class ComponentDef:
         self.core.add_component_model(n_port_model)
         return n_port_model
 
-    def get_properties(self):
+    def get_properties(self) -> dict:
         data = {}
         temp = []
         for i in self.component_pins:

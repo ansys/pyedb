@@ -24,10 +24,6 @@ import copy
 import numpy as np
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.database.cell.primitive.primitive import Primitive
-from pyedb.dotnet.database.edb_data.ports import WavePort
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.generic.constants import TerminalTypeMapper
 from pyedb.generic.settings import settings
 
@@ -326,7 +322,9 @@ class CfgCircuitElement(CfgBase):
             net_name = self.positive_terminal_info.net
             if net_name not in self._pedb.nets:
                 self._pedb.nets.find_or_create_net(net_name)
-            pos_coor_terminal[self.name] = self._pedb.get_point_terminal(self.name, net_name, point, layer)
+            pos_coor_terminal[self.name] = self._pedb.excitation_manager.get_point_terminal(
+                self.name, net_name, point, layer
+            )
 
         elif pos_type == "padstack":
             flag = False
@@ -415,7 +413,9 @@ class CfgCircuitElement(CfgBase):
                 net_name = self.negative_terminal_info.net
                 if net_name not in self._pedb.nets:
                     self._pedb.nets.find_or_create_net(net_name)
-                self.neg_terminal = self._pedb.get_point_terminal(self.name + "_ref", net_name, point, layer)
+                self.neg_terminal = self._pedb.excitation_manager.get_point_terminal(
+                    self.name + "_ref", net_name, point, layer
+                )
             elif neg_type == "nearest_pin":
                 ref_net = neg_value.get("reference_net", "GND")
                 search_radius = neg_value.get("search_radius", "5e-3")
@@ -576,9 +576,9 @@ class CfgPort(CfgCircuitElement):
         circuit_elements = []
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
-                elem = self._pedb.create_port(j, self.neg_terminal[name], is_circuit_port)
+                elem = self._pedb.excitation_manager.create_port(j, self.neg_terminal[name], is_circuit_port)
             else:
-                elem = self._pedb.create_port(j, self.neg_terminal, is_circuit_port)
+                elem = self._pedb.excitation_manager.create_port(j, self.neg_terminal, is_circuit_port)
             elem.impedance = self.impedance if self.impedance else self._pedb.value(50)
             if not self.distributed:
                 elem.name = self.name
@@ -612,7 +612,9 @@ class CfgSource(CfgCircuitElement):
         # is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
         create_xxx_source = (
-            self._pedb.create_current_source if self.type == "current" else self._pedb.create_voltage_source
+            self._pedb.excitation_manager.create_current_source
+            if self.type == "current"
+            else self._pedb.excitation_manager.create_voltage_source
         )
         terminals = self._pedb.terminals
 
@@ -696,9 +698,9 @@ class CfgProbe(CfgCircuitElement):
         circuit_elements = []
         for name, j in self.pos_terminals.items():
             if isinstance(self.neg_terminal, dict):
-                elem = self._pedb.create_voltage_probe(j, self.neg_terminal[name])
+                elem = self._pedb.excitation_manager.create_voltage_probe(j, self.neg_terminal[name])
             else:
-                elem = self._pedb.create_voltage_probe(j, self.neg_terminal)
+                elem = self._pedb.excitation_manager.create_voltage_probe(j, self.neg_terminal)
             elem.name = self.name
             circuit_elements.append(elem)
         return circuit_elements

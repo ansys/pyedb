@@ -69,7 +69,7 @@ class LayoutValidation:
             net_list = [net_list]
         _objects_list = {}
         _padstacks_list = {}
-        for prim in self._pedb.modeler.primitives:
+        for prim in self._pedb.layout.primitives:
             n_name = prim.net_name
             if n_name in _objects_list:
                 _objects_list[n_name].append(prim)
@@ -198,7 +198,7 @@ class LayoutValidation:
             net_list = [net_list]
         _objects_list = {}
         _padstacks_list = {}
-        for prim in self._pedb.modeler.primitives:
+        for prim in self._pedb.layout.primitives:
             if not prim.net.is_null:
                 n_name = prim.net.name
                 if n_name in _objects_list:

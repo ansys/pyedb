@@ -23,24 +23,12 @@
 from ansys.edb.core.simulation_setup.hfss_pi_simulation_settings import (
     HFSSPIGeneralSettings as CoreHFSSPIGeneralSettings,
     HFSSPIModelType as CoreHFSSPIModelType,
-    HFSSPISimulationPreference as CoreHFSSPISimulationPreference,
-    SurfaceRoughnessModel as CoreSurfaceRoughnessModel,
 )
 
 _mapping_model_type = {
     "pcb": CoreHFSSPIModelType.PCB,
     "rdl": CoreHFSSPIModelType.RDL,
-    "package": CoreHFSSPIModelType,
-}
-_mapping_simulation_preference = {
-    "balanced": CoreHFSSPISimulationPreference.BALANCED,
-    "accuracy": CoreHFSSPISimulationPreference.ACCURACY,
-}
-
-_mapping_surface_roughness = {
-    "exponential": CoreSurfaceRoughnessModel.EXPONENTIAL,
-    "hammerstad": CoreSurfaceRoughnessModel.HAMMERSTAD,
-    "": CoreSurfaceRoughnessModel.NONE,
+    "package": CoreHFSSPIModelType.PACKAGE,
 }
 
 
@@ -52,169 +40,63 @@ class HFSSPIGeneralSettings:
         self._pedb = pedb
 
     @property
-    def include_enhanced_bondwire_modeling(self) -> bool:
-        """Flag indicating whether to include enhanced bondwire modeling.
-
-        Returns
-        -------
-        bool
-            True if include enhanced bondwire modeling is enabled, False otherwise.
-
-        """
-        return self.core.include_enhanced_bondwire_modeling
-
-    @include_enhanced_bondwire_modeling.setter
-    def include_enhanced_bondwire_modeling(self, value: bool):
-        self.core.include_enhanced_bondwire_modeling = value
-
-    @property
-    def min_plane_area_to_mesh(self) -> str:
-        """(General Mode Only) The minimum plane area to mesh.
+    def mesh_region_name(self) -> str:
+        """Mesh region name.
 
         Returns
         -------
         str
-            Minimum plane area to mesh as a string with units (e.g., "0.1mm2").
-
+            Mesh region name.
         """
-        return self.core.min_plane_area_to_mesh
+        return self.core.mesh_region_name
 
-    @min_plane_area_to_mesh.setter
-    def min_plane_area_to_mesh(self, value: str):
-        self.core.min_plane_area_to_mesh = value
-
-    @property
-    def min_void_area_to_mesh(self) -> str:
-        """(General Mode Only) The minimum void area to mesh.
-
-        Returns
-        -------
-        str
-            Minimum void area to mesh as a string with units (e.g., "0.1mm2").
-
-        """
-        return self.core.min_void_area_to_mesh
-
-    @min_void_area_to_mesh.setter
-    def min_void_area_to_mesh(self, value: str):
-        self.core.min_void_area_to_mesh = value
+    @mesh_region_name.setter
+    def mesh_region_name(self, value: str):
+        self.core.mesh_region_name = value
 
     @property
     def model_type(self) -> str:
-        """Get the model type.
+        """Model type.
 
         Returns
         -------
         str
-            The model type.
-
+            Model type, possible values are "pcb", "rdl", and "package".
         """
-        for key, val in _mapping_model_type.items():
-            if val == self.core.model_type:
-                return key
-        return "unknown"  # Fallback in case of an unmapped type
+        return self.core.model_type.name.lower()
 
     @model_type.setter
     def model_type(self, value: str):
-        if value.lower() in _mapping_model_type:
-            self.core.model_type = _mapping_model_type[value.lower()]
-        else:
+        if value.lower() not in _mapping_model_type:
             raise ValueError(f"Invalid model type: {value}. Valid options are: {list(_mapping_model_type.keys())}")
+        self.core.model_type = _mapping_model_type[value.lower()]
 
     @property
-    def perform_erc(self) -> bool:
-        """(General Mode Only) Flag indicating whether to perform error checking while generating the solver input file.
+    def use_auto_mesh_region(self) -> bool:
+        """Flag indicating if auto mesh regions are used.
 
         Returns
         -------
         bool
-            True if perform ERC is enabled, False otherwise.
-
+            True if auto mesh region is used, False otherwise.
         """
-        return self.core.perform_erc
+        return self.core.use_auto_mesh_region
 
-    @perform_erc.setter
-    def perform_erc(self, value: bool):
-        self.core.perform_erc = value
+    @use_auto_mesh_region.setter
+    def use_auto_mesh_region(self, value: bool):
+        self.core.use_auto_mesh_region = value
 
     @property
-    def rms_surface_roughness(self) -> str:
-        """The RMS surface roughness.
+    def use_mesh_region(self) -> bool:
+        """Flag indicating if mesh region is used.
 
         Returns
         -------
-        str
-            RMS surface roughness as a string with units (e.g., "0.5um").
-
+        bool
+            True if mesh region is used, False otherwise.
         """
-        return self.core.rms_surface_roughness
+        return self.core.use_mesh_region
 
-    @rms_surface_roughness.setter
-    def rms_surface_roughness(self, value: str):
-        self.core.rms_surface_roughness = value
-
-    @property
-    def simulation_preference(self) -> str:
-        """Get the simulation preference.
-
-        Returns
-        -------
-        str
-            The simulation preference.
-
-        """
-        for key, val in _mapping_simulation_preference.items():
-            if val == self.core.simulation_preference:
-                return key
-        return "unknown"  # Fallback in case of an unmapped type
-
-    @simulation_preference.setter
-    def simulation_preference(self, value: str):
-        if value.lower() in _mapping_simulation_preference:
-            self.core.simulation_preference = _mapping_simulation_preference[value.lower()]
-        else:
-            raise ValueError(
-                f"Invalid simulation preference: {value}. "
-                f"Valid options are: {list(_mapping_simulation_preference.keys())}"
-            )
-
-    @property
-    def snap_length_threshold(self) -> str:
-        """(General Mode Only) The snap length threshold.
-
-        Returns
-        -------
-        str
-            Snap length threshold as a string with units (e.g., "0.1mm").
-
-        """
-        return self.core.snap_length_threshold
-
-    @snap_length_threshold.setter
-    def snap_length_threshold(self, value: str):
-        self.core.snap_length_threshold = value
-
-    @property
-    def surface_roughness_model(self) -> str:
-        """Get the surface roughness model.
-
-        Returns
-        -------
-        str
-            The surface roughness model.
-
-        """
-        for key, val in _mapping_surface_roughness.items():
-            if val == self.core.surface_roughness_model:
-                return key
-        return "unknown"  # Fallback in case of an unmapped type
-
-    @surface_roughness_model.setter
-    def surface_roughness_model(self, value: str):
-        if value.lower() in _mapping_surface_roughness:
-            self.core.surface_roughness_model = _mapping_surface_roughness[value.lower()]
-        else:
-            raise ValueError(
-                f"Invalid surface roughness model: {value}. "
-                f"Valid options are: {list(_mapping_surface_roughness.keys())}"
-            )
+    @use_mesh_region.setter
+    def use_mesh_region(self, value: bool):
+        self.core.use_mesh_region = value

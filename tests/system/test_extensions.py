@@ -640,7 +640,6 @@ class TestClass(BaseTestClass):
         assert round(edb.modeler.primitives[2].area(), 6) == 200e-6
 
     @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
-    @pytest.mark.skipif(condition=not GRPC, reason="Implemented only with grpc")
     def test_dxf_swap_backend(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 

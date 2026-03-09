@@ -29,6 +29,7 @@ import secrets
 import shutil
 import string
 import tempfile
+import time
 from types import TracebackType
 
 import pytest
@@ -114,6 +115,7 @@ class EdbExamples:
 
     def copy_test_files_into_local_folder(self, file_folder_path):
         """Copy files or folders from example_models into local test folder."""
+        time.sleep(0.5)  # To avoid issues with rapid creation/deletion of folders in some environments.
         source_folder = Path(__file__).parent / "example_models"
         files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
         target_files = []

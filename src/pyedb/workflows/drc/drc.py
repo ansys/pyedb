@@ -609,7 +609,7 @@ class Drc:
         self.idx_vias = rtree_index.Index()
         self.idx_components = rtree_index.Index()
 
-        for i, prim in enumerate(self.edb.modeler.primitives):
+        for i, prim in enumerate(self.edb.layout.primitives):
             bbox = prim.bbox
             self.idx_primitives.insert(i, coordinates=[bbox[0], bbox[1], bbox[2], bbox[3]])
         for i, via in enumerate(self.edb.padstacks.instances.values()):
@@ -780,7 +780,7 @@ class Drc:
                 pid = prim.id
                 bbox = prim.bbox
                 if self.edb.grpc:
-                    points = [[pt.x.value, pt.y.value] for pt in prim.polygon_data.without_arcs().points]
+                    points = prim.polygon_data.without_arcs().points
                 else:
                     points = prim.polygon_data.points_without_arcs
 
@@ -972,7 +972,7 @@ class Drc:
 
         # Snapshot data
         primitives_by_layer = dict(self.edb.modeler.primitives_by_layer)
-        layout_outline = [prim for prim in self.edb.modeler.primitives if prim.layer.name.lower() == "outline"]
+        layout_outline = [prim for prim in self.edb.layout.primitives if prim.layer.name.lower() == "outline"]
         if layout_outline:
             if self.edb.grpc:
                 area_board = layout_outline[0].polygon_data.area()
@@ -1153,7 +1153,7 @@ class Drc:
                 for prim in net.primitives:
                     if hasattr(prim, "polygon_data"):
                         if self.edb.grpc:
-                            points = [[pt.x.value, pt.y.value] for pt in prim.polygon_data.without_arcs().points]
+                            points = prim.polygon_data.without_arcs().points
                         else:
                             points = prim.polygon_data.points_without_arcs
                         if points:
