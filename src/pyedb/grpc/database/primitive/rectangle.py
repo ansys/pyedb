@@ -21,8 +21,10 @@
 # SOFTWARE.
 
 
-from typing import Union
+from typing import TYPE_CHECKING, Union
 
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.primitive.rectangle import (
     Rectangle as CoreRectangle,
     RectangleRepresentationType as CoreRectangleRepresentationType,
@@ -144,12 +146,12 @@ class Rectangle(Primitive):
             layer=layer,
             net=net.core,
             rep_type=rep_type,
-            param1=Value(param1),
-            param2=Value(param2),
-            param3=Value(param3),
-            param4=Value(param4),
-            corner_rad=Value(corner_rad),
-            rotation=Value(rotation),
+            param1=layout._pedb._value_setter(param1),
+            param2=layout._pedb._value_setter(param2),
+            param3=layout._pedb._value_setter(param3),
+            param4=layout._pedb._value_setter(param4),
+            corner_rad=layout._pedb._value_setter(corner_rad),
+            rotation=layout._pedb._value_setter(rotation),
         )
         new_rect = cls(layout._pedb, edb_object)
         return new_rect
@@ -248,7 +250,7 @@ class Rectangle(Primitive):
             param2=parameters[2],
             param3=parameters[3],
             param4=parameters[4],
-            corner_rad=Value(value),
+            corner_rad=self._pedb._value_setter(value),
             rotation=parameters[6],
         )
 
@@ -273,7 +275,7 @@ class Rectangle(Primitive):
             param3=parameters[3],
             param4=parameters[4],
             corner_rad=parameters[5],
-            rotation=Value(value),
+            rotation=self._pedb._value_setter(value),
         )
 
     @property
@@ -301,7 +303,7 @@ class Rectangle(Primitive):
             rep_type=parameters[0],
             param1=parameters[1],
             param2=parameters[2],
-            param3=Value(value),
+            param3=self._pedb._value_setter(value),
             param4=parameters[4],
             corner_rad=parameters[5],
             rotation=parameters[6],
@@ -333,7 +335,7 @@ class Rectangle(Primitive):
             param1=parameters[1],
             param2=parameters[2],
             param3=parameters[3],
-            param4=Value(value),
+            param4=self._pedb._value_setter(value),
             corner_rad=parameters[5],
             rotation=parameters[6],
         )

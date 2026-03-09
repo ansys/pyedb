@@ -70,7 +70,7 @@ class PointTerminal(Terminal):
             Point terminal object.
         """
         if isinstance(point, list):
-            point = CorePointData([Value(i) for i in point])
+            point = CorePointData([layout._pedb._value_setter(i) for i in point])
         if isinstance(net, str):
             net = layout._pedb.nets[net]
         if isinstance(layer, str):
@@ -118,7 +118,7 @@ class PointTerminal(Terminal):
     def location(self, value):
         if not isinstance(value, list):
             return
-        value = [Value(i) for i in value]
+        value = [self._pedb._value_setter(i) for i in value]
         self.core.point = CorePointData(value)
 
     @property

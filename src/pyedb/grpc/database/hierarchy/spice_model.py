@@ -26,14 +26,17 @@ from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSpiceModel
 class SpiceModel:  # pragma: no cover
     """Manage :class:`SpiceModel <ansys.edb.core.hierarchy.spice_model.SpiceModel>`"""
 
-    def __init__(self, edb_object=None, name=None, file_path=None, sub_circuit=None):
-        if edb_object:
-            self.core = edb_object
-        elif name and file_path:
+    def __init__(self, component, name=None, file_path=None, sub_circuit=None):
+        self._component = component
+
+        if name and file_path:
             if not sub_circuit:
                 sub_circuit = name
             edb_object = CoreSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
             self.core = edb_object
+            self._component.component_property = self.core
+        else:
+            self.core = component.component_property.model
 
     @property
     def model_name(self):
@@ -74,3 +77,4 @@ class SpiceModel:  # pragma: no cover
 
         """
         self.core.model_path = value
+        self._component._set_model(self.core)

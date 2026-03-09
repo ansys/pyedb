@@ -169,10 +169,8 @@ class TestClass(BaseTestClass):
         assert len(edb.components.get_component_net_connection_info("U1")) > 0
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="This test is failing in grpc. To be validated in 26R1.")
     def test_components_get_pin_name_and_position(self):
         """Retrieve component name and position."""
-        # Done
         edb = self.edb_examples.get_si_verse()
         cmp_pinlist = edb.padstacks.get_pinlist_from_component_and_net("U6", "GND")
         pin_name = edb.components.get_aedt_pin_name(cmp_pinlist[0])
@@ -550,7 +548,6 @@ class TestClass(BaseTestClass):
 
     def test_instances(self):
         """Check instances access and values."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         comp_pins = edbapp.components.instances["U1"].pins
         pins = [comp_pins["AM38"], comp_pins["AL37"]]
@@ -673,7 +670,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_rlc_component_302(self):
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         pins = edbapp.components.get_pin_from_component("C31")
         component = edbapp.components.create([pins[0], pins[1]], r_value=1.2, component_name="TEST", is_rlc=True)
