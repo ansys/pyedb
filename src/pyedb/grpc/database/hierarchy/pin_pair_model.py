@@ -232,7 +232,7 @@ class PinPairModel:
             The created pin pair model.
 
         """
-        core_pin_pair = CorePinPairModel.create()
+        core_pin_pair = CorePinPairModel.create()  # codacy-disable-line
         rlc = CoreRlc()
         if resistance is not None:
             rlc.r_enabled = True  # codacy-disable-line
