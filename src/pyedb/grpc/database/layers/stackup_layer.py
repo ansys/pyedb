@@ -566,7 +566,7 @@ class StackupLayer:
             # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
             return 0.0
         # Groisse model returns single Value
-        if self.roughness_enabled and isinstance(top_roughness, Value):
+        if self.roughness_enabled and isinstance(top_roughness, CoreValue):
             return self._pedb.value(top_roughness)
         return 0.0
 
@@ -592,7 +592,7 @@ class StackupLayer:
             # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
             return 0.0
         # Groisse model returns single Value
-        if self.roughness_enabled and isinstance(bottom_roughness, Value):
+        if self.roughness_enabled and isinstance(bottom_roughness, CoreValue):
             return self._pedb.value(bottom_roughness)
         return 0.0
 
@@ -618,7 +618,7 @@ class StackupLayer:
             # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
             return 0.0
         # Groisse model returns single Value
-        if self.roughness_enabled and isinstance(bottom_roughness, Value):
+        if self.roughness_enabled and isinstance(bottom_roughness, CoreValue):
             return self._pedb.value(bottom_roughness)
         return 0.0
 
