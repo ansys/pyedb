@@ -29,8 +29,6 @@ from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 from pyedb.grpc.database.utility.value import Value
 
 if TYPE_CHECKING:
-    from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
-
     from pyedb.grpc.database.hierarchy.component import Component
 
 
@@ -232,7 +230,9 @@ class PinPairModel:
             The created pin pair model.
 
         """
-        core_pin_pair = CorePinPairModel.create()  # codacy-disable-next-line Pylint.W0631
+        from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
+
+        core_pin_pair = CorePinPairModel.create()
         rlc = CoreRlc()
         if resistance is not None:
             rlc.r_enabled = True  # codacy-disable-line
