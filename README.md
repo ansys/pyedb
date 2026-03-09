@@ -11,6 +11,7 @@
 [![PythonVersion](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
 [![MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/ansys/pyedb)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/cadfeebb7d8346eeb4c3373cbcdffa64)](https://app.codacy.com/gh/ansys/pyedb/dashboard?utm_source=gh&utm_medium=referral&utm_content=&utm_campaign=Badge_grade)
 
 ## What is PyEDB?
 
