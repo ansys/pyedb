@@ -232,17 +232,17 @@ class PinPairModel:
             The created pin pair model.
 
         """
-        core_pin_pair = CorePinPairModel.create()  # noqa
+        core_pin_pair = CorePinPairModel.create()  # codacy-disable-next-line Pylint.W0631
         rlc = CoreRlc()
         if resistance is not None:
-            rlc.r_enabled = True  # noqa
-            rlc.r = Value(resistance)  # noqa
+            rlc.r_enabled = True  # codacy-disable-line
+            rlc.r = Value(resistance)  # codacy-disable-line
         if inductance is not None:
-            rlc.l_enabled = True  # noqa
-            rlc.l = Value(inductance)  # noqa
+            rlc.l_enabled = True  # codacy-disable-line
+            rlc.l = Value(inductance)  # codacy-disable-line
         if capacitance is not None:
-            rlc.c_enabled = True  # noqa
-            rlc.c = Value(capacitance)  # noqa
+            rlc.c_enabled = True  # codacy-disable-line
+            rlc.c = Value(capacitance)  # codacy-disable-line
         rlc.is_parallel = is_parallel
         if not pin1_name:
             pin1_name = "1"
