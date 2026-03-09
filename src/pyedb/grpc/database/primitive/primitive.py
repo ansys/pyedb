@@ -26,6 +26,7 @@ import math
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.polygon import Polygon
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -34,7 +35,6 @@ from ansys.edb.core.primitive.circle import Circle as CoreCircle
 
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
-from pyedb.grpc.database.net.net import Net
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.utilities import compute_arc_points
 
