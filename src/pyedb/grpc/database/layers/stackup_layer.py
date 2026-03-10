@@ -755,13 +755,8 @@ class StackupLayer:
                 roughness_model = self.core.get_roughness_model(location)
                 if isinstance(roughness_model, tuple):
                     return "huray"
-                else:
+                elif isinstance(roughness_model, CoreValue | Value):
                     return "groisse"
-            else:
-                raise (
-                    "Wrong argument for roughness model type location should be one of 'top', 'bottom', or 'side'",
-                    ValueError,
-                )
         return "none"
 
     @property
