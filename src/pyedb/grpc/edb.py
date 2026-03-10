@@ -546,7 +546,7 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    @deprecated_property("Use property ''ports'' instead.")
+    @deprecated_property
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -752,7 +752,7 @@ class Edb(EdbInit):
             return self
         return None
 
-    @deprecated("import_layout_pcb method is deprecated, use import_layout_file instead.")
+    @deprecated
     def import_layout_pcb(
         self,
         input_file,
@@ -1136,7 +1136,7 @@ class Edb(EdbInit):
         return self._stackup
 
     @property
-    @deprecated_property("Use property excitation_manager instead.")
+    @deprecated_property
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
         .. deprecated:: 0.70
@@ -1469,7 +1469,7 @@ class Edb(EdbInit):
                 times = 0
                 time.sleep(0.250)
 
-    @deprecated("Use method close instead.")
+    @deprecated
     def close_edb(self) -> bool:
         """Close EDB and clean up resources.
 
@@ -1490,7 +1490,7 @@ class Edb(EdbInit):
         """
         return self.close()
 
-    @deprecated("Use method save instead.")
+    @deprecated
     def save_edb(self) -> bool:
         """Save current EDB database.
 
@@ -1500,7 +1500,7 @@ class Edb(EdbInit):
         """
         return self.save()
 
-    @deprecated("Use method save_as instead.")
+    @deprecated
     def save_edb_as(self, fname) -> bool:
         """Save EDB database to new location.
 
@@ -2312,7 +2312,7 @@ class Edb(EdbInit):
         return SimulationSetups(self)
 
     @property
-    @deprecated_property("simulation_setups.hfss")
+    @deprecated_property
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:
         """Active HFSS setup in EDB.
 
@@ -2322,7 +2322,7 @@ class Edb(EdbInit):
         return self.simulation_setups.hfss
 
     @property
-    @deprecated_property("simulation_setups.siwave_dcir instead")
+    @deprecated_property
     def siwave_dc_setups(self) -> dict[str, SIWaveDCIRSimulationSetup]:
         """Active Siwave DC IR Setups.
 
@@ -2333,7 +2333,7 @@ class Edb(EdbInit):
         return self.simulation_setups.siwave_dcir
 
     @property
-    @deprecated_property("use simulation_setups.siwave instead")
+    @deprecated_property
     def siwave_ac_setups(self) -> dict[str, SiwaveSimulationSetup]:
         """Active Siwave SYZ setups.
 
@@ -2342,7 +2342,7 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.siwave
 
-    @deprecated("`create_hfss_setup` is deprecated and is now located here `self.simulation_setups.create` instead.")
+    @deprecated
     def create_hfss_setup(
         self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"
     ) -> HfssSimulationSetup:
@@ -2359,7 +2359,7 @@ class Edb(EdbInit):
             step_freq=step_frequency,
         )
 
-    @deprecated("`create_raptorx_setup` is deprecated and is now located here `self.simulation_setups.create` instead.")
+    @deprecated
     def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
         """Create RaptorX analysis setup (2024R2+ only).
 
@@ -2368,10 +2368,7 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.create_raptor_x_setup(name=name, start_freq=None, stop_freq=None, step_freq=None)
 
-    @deprecated(
-        "`create_siwave_syz_setup` is deprecated and is now located here "
-        "`edb.simulation_setups.create_siwave_setup` instead."
-    )
+    @deprecated
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
 
@@ -2380,10 +2377,7 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
-    @deprecated(
-        "`create_siwave_dc_setup` is deprecated and is now located here "
-        "`edb.simulation_setups.create_siwave_dcir_setup` instead."
-    )
+    @deprecated
     def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Create SIwave DC analysis setup.
 
@@ -2610,7 +2604,7 @@ class Edb(EdbInit):
         # If no terminal info provided, return empty list to keep return type consistent.
         return []
 
-    @deprecated("`create_port` is deprecated and is now located here `edb.excitation_manager.create_port` instead.")
+    @deprecated
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
@@ -2620,9 +2614,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port, name)
 
-    @deprecated(
-        "`create_gap_port` is deprecated and is now located here `edb.excitation_manager.create_gap_port` instead."
-    )
+    @deprecated
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
@@ -2632,7 +2624,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_voltage_probe(terminal, ref_terminal)
 
-    @deprecated("use create_voltage_source located in edb.excitation_manager.create_voltage_source instead")
+    @deprecated
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
@@ -2642,7 +2634,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_voltage_source(terminal, ref_terminal)
 
-    @deprecated("use create_current_source located in edb.excitation_manager.create_current_source instead")
+    @deprecated
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
@@ -2652,7 +2644,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_current_source(terminal, ref_terminal)
 
-    @deprecated("use get_point_terminal located in edb.excitation_manager.get_point_terminal instead")
+    @deprecated
     def get_point_terminal(self, name, net_name, location, layer):
         """Place terminal between two points.
 

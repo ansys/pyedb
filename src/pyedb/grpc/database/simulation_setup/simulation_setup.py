@@ -43,11 +43,10 @@ _mapping_simulation_types = {
 }
 
 
-@deprecated_class("The 'SimulationSetupDeprecated' class is deprecated. Please use 'SimulationSetup' instead.")
+@deprecated_class
 class SimulationSetupDeprecated:
     @property
     def type(self):
-        self._pedb.logger.warning("The 'type' property is deprecated. Please use 'setup_type' instead.")
         return self.setup_type
 
     @property
@@ -245,10 +244,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         self.core.sweep_data = self.core.sweep_data + [sweep.core]
         return self.sweep_data[-1]
 
-    deprecated(
-        "The 'add_frequency_sweep' method is deprecated. Please use 'add_sweep' with appropriate parameters instead."
-    )
-
+    @deprecated
     def add_frequency_sweep(self, frequency_sweep: list[str]):
         """This method is deprecated. Please use 'add_sweep' with appropriate parameters instead."""
         # converting frequency sweep to frequency set

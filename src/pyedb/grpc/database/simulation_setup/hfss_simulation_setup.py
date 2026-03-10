@@ -95,7 +95,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.core.mesh_operations = [mesh_operation.core for mesh_operation in mesh_operations]
 
     @property
-    @deprecated_property("The 'defeature_settings' property is deprecated. Use 'settings.advanced' property instead.")
+    @deprecated_property
     def defeature_settings(self):
         """HFSS defeature settings class.
 
@@ -108,7 +108,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self.settings.advanced
 
     @property
-    @deprecated_property("The 'via_settings' property is deprecated. Use 'settings.advanced' property instead.")
+    @deprecated_property
     def via_settings(self):
         """HFSS via settings class.
 
@@ -121,9 +121,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self.settings.advanced
 
     @property
-    @deprecated_property(
-        "The 'advanced_mesh_settings' property is deprecated. Use 'settings.advanced_meshing' property instead."
-    )
+    @deprecated_property
     def advanced_mesh_settings(self):
         """HFSS advanced meshing settings class.
 
@@ -136,7 +134,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self.settings.advanced_meshing
 
     @property
-    @deprecated_property("The 'hfss_solver_settings' property is deprecated. Use 'settings' property instead.")
+    @deprecated_property
     def hfss_solver_settings(self):
         """Legacy compatibility to settings properties.
 
@@ -161,7 +159,7 @@ class HfssSimulationSetup(SimulationSetup):
         return HFSSSimulationSettings(self)
 
     @property
-    @deprecated_property("The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.")
+    @deprecated_property
     def adaptive_settings(self):
         """Legacy compatibility to general settings.
 
@@ -174,9 +172,7 @@ class HfssSimulationSetup(SimulationSetup):
         return HFSSGeneralSettings(self.settings)
 
     @property
-    @deprecated_property(
-        "The 'curve_approx_settings' property is deprecated. Use 'settings.advanced_meshing' property instead."
-    )
+    @deprecated_property
     def curve_approx_settings(self):
         """Legacy compatibility to advanced meshing settings.
 
@@ -189,7 +185,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self.settings.advanced_meshing
 
     @property
-    @deprecated_property("The 'dcr_settings' property is deprecated. Use 'settings.dcr' property instead.")
+    @deprecated_property
     def dcr_settings(self):
         """HFSS DCR settings class.
 
@@ -201,7 +197,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self.settings.dcr
 
     @property
-    @deprecated_property("The 'hfss_port_settings' property is deprecated. Use 'settings' property instead.")
+    @deprecated_property
     def hfss_port_settings(self):
         """HFSS port settings class.
 

@@ -133,7 +133,7 @@ class Hfss:
         return self._pedb.active_db
 
     @property
-    @deprecated_property("Use property ''ports'' instead.")
+    @deprecated_property
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -212,10 +212,7 @@ class Hfss:
         primitive = Primitive(self._pedb, primitive)
         point = PointData(self._pedb, point)
 
-    @deprecated(
-        "`create_edge_port` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_edge_port` instead."
-    )
+    @deprecated
     def create_edge_port(
         self,
         location,
@@ -353,7 +350,7 @@ class Hfss:
             terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
         return CorePolygonData.bbox_of_polygons(terms_bbox)
 
-    @deprecated("add_setup is deprecated use create_simulation_setup instead")
+    @deprecated
     def add_setup(
         self,
         name=None,

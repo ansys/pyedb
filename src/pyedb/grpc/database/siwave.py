@@ -90,7 +90,7 @@ class Siwave(object):
         return self._pedb.active_db
 
     @property
-    @deprecated_property("Use property ''ports'' instead.")
+    @deprecated_property
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -163,10 +163,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager.pin_groups
 
-    @deprecated(
-        "`_create_terminal_on_pins` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations._create_terminal_on_pins` instead."
-    )
+    @deprecated
     def _create_terminal_on_pins(self, source):
         """Create a terminal on pins.
 
@@ -181,10 +178,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager._create_terminal_on_pins(source)
 
-    @deprecated(
-        "`create_circuit_port_on_pin` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_circuit_port_on_pin` instead."
-    )
+    @deprecated
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
 
@@ -209,10 +203,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
-    @deprecated(
-        "`create_port_between_pin_and_layer` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_port_between_pin_and_layer` instead."
-    )
+    @deprecated
     def create_port_between_pin_and_layer(
         self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
     ):
@@ -243,10 +234,7 @@ class Siwave(object):
             component_name, pins_name, layer_name, reference_net, impedance
         )
 
-    @deprecated(
-        "`create_voltage_source_on_pin` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_voltage_source_on_pin` instead."
-    )
+    @deprecated
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -275,10 +263,7 @@ class Siwave(object):
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
-    @deprecated(
-        "`create_current_source_on_pin` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_current_source_on_pin` instead."
-    )
+    @deprecated
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -307,10 +292,7 @@ class Siwave(object):
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
-    @deprecated(
-        "`create_resistor_on_pin` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_resistor_on_pin` instead."
-    )
+    @deprecated
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a resistor boundary between two given pins.
 
@@ -335,7 +317,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
-    @deprecated("`_check_gnd` is deprecated and is now located here `pyedb.grpc.core.excitations._check_gnd` instead.")
+    @deprecated
     def _check_gnd(self, component_name):
         """Check ground reference.
 
@@ -344,10 +326,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager._check_gnd(component_name)
 
-    @deprecated(
-        "`create_circuit_port_on_net` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitation_manager.create_circuit_port_on_net` instead."
-    )
+    @deprecated
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -393,10 +372,7 @@ class Siwave(object):
             port_name,
         )
 
-    @deprecated(
-        "`create_voltage_source_on_net` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_voltage_source_on_net` instead."
-    )
+    @deprecated
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -444,10 +420,7 @@ class Siwave(object):
             source_name,
         )
 
-    @deprecated(
-        "`create_current_source_on_net` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_current_source_on_net` instead."
-    )
+    @deprecated
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -495,10 +468,7 @@ class Siwave(object):
             source_name,
         )
 
-    @deprecated(
-        "`create_dc_terminal` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_dc_terminal` instead."
-    )
+    @deprecated
     def create_dc_terminal(
         self,
         component_name,
@@ -591,7 +561,7 @@ class Siwave(object):
 
         return str(file_name)
 
-    @deprecated("`add_cpa_analysis` is deprecated. Use `SiwaveCPASimulationSetup.create` instead.")
+    @deprecated
     def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
         """Add a SIwave CPA analysis to EDB.
 
@@ -691,10 +661,7 @@ class Siwave(object):
         self.create_exec_file(add_dc=True)
         return setup
 
-    @deprecated(
-        "`create_pin_group_terminal` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_pin_group_terminal` instead."
-    )
+    @deprecated
     def create_pin_group_terminal(self, source):
         """Create a pin group terminal.
 
@@ -709,10 +676,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager._create_pin_group_terminal2(source)
 
-    @deprecated(
-        "`create_rlc_component` is deprecated and is now located here "
-        "`pyedb.grpc.core.components.create_rlc_component` instead."
-    )
+    @deprecated
     def create_rlc_component(
         self,
         pins,
@@ -757,10 +721,7 @@ class Siwave(object):
             is_parallel=is_parallel,
         )  # pragma no cover
 
-    @deprecated(
-        "`create_pin_group` is deprecated and is now located here "
-        "`pyedb.grpc.core.components.create_pin_group` instead."
-    )
+    @deprecated
     def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
         """Create pin group on the component.
 
@@ -783,10 +744,7 @@ class Siwave(object):
         """
         return self._pedb.components.create_pin_group(reference_designator, pin_numbers, group_name)
 
-    @deprecated(
-        "`create_pin_group_on_net` is deprecated and is now located here "
-        "`pyedb.grpc.core.components.create_pin_group_on_net` instead."
-    )
+    @deprecated
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.
 
@@ -809,10 +767,7 @@ class Siwave(object):
         """
         return self._pedb.components.create_pin_group_on_net(reference_designator, net_name, group_name)
 
-    @deprecated(
-        "`create_current_source_on_pin_group` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_current_source_on_pin_group` instead."
-    )
+    @deprecated
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
@@ -843,10 +798,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name
         )
 
-    @deprecated(
-        "`create_voltage_source_on_pin_group` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_voltage_source_on_pin_group` instead."
-    )
+    @deprecated
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
@@ -879,10 +831,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name, impedance
         )
 
-    @deprecated(
-        "`create_voltage_probe_on_pin_group` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_voltage_probe_on_pin_group` instead."
-    )
+    @deprecated
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1e6):
         """Create voltage probe between two pin groups.
 
@@ -910,10 +859,7 @@ class Siwave(object):
             probe_name, pos_pin_group_name, neg_pin_group_name, impedance=impedance
         )
 
-    @deprecated(
-        "`create_circuit_port_on_pin_group` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_circuit_port_on_pin_group` instead."
-    )
+    @deprecated
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
 
@@ -940,10 +886,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, impedance, name
         )
 
-    @deprecated(
-        "`place_voltage_probe` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.place_voltage_probe` instead."
-    )
+    @deprecated
     def place_voltage_probe(
         self,
         name,

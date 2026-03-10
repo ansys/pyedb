@@ -74,7 +74,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return self.settings.advanced
 
     @property
-    @deprecated_property("`dc_settings` is deprecated. Use `settings.dc` instead.")
+    @deprecated_property
     def dc_settings(self) -> SIWaveDCSettings:
         """Setup dc settings.
 
@@ -85,7 +85,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return self.settings.dc
 
     @property
-    @deprecated_property("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` instead.")
+    @deprecated_property
     def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
         """Setup dc settings.
 
@@ -96,7 +96,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return self.settings.dc_advanced
 
     @property
-    @deprecated_property("`use_si_settings` is deprecated. Use `settings.general.use_si_settings` instead.")
+    @deprecated_property
     def use_si_settings(self) -> bool:
         """Whether to use SI settings.
 
@@ -111,7 +111,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.settings.general.use_si_settings = value
 
     @property
-    @deprecated_property("`si_slider_position` is deprecated. Use `settings.general.si_slider_position` instead.")
+    @deprecated_property
     def si_slider_position(self) -> int:
         """SI slider position.
 
@@ -125,7 +125,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.settings.general.si_slider_position = value
 
     @property
-    @deprecated_property("`pi_slider_position` is deprecated. Use `settings.general.pi_slider_position` instead.")
+    @deprecated_property
     def pi_slider_position(self) -> int:
         """I slider position.
 

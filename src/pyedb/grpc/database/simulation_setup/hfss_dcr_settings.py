@@ -34,7 +34,7 @@ class HFSSDCRSettings:
         self._pedb = parent._pedb
 
     @property
-    @deprecated_property("`conduction_max_passes` is deprecated. Use `max_passes` instead.")
+    @deprecated_property
     def conduction_max_passes(self) -> int:
         """Maximum number of conduction adaptive passes.
 
@@ -45,7 +45,7 @@ class HFSSDCRSettings:
         return self.max_passes
 
     @conduction_max_passes.setter
-    @deprecated_property("`conduction_max_passes` is deprecated. Use `max_passes` instead.")
+    @deprecated_property
     def conduction_max_passes(self, value: int):
         """Set maximum number of conduction adaptive passes.
 
@@ -66,7 +66,7 @@ class HFSSDCRSettings:
         self.core.max_passes = value
 
     @property
-    @deprecated_property("`conduction_min_converged_passes` is deprecated. Use `min_converged_passes` instead.")
+    @deprecated_property
     def conduction_min_converged_passes(self) -> int:
         """Minimum number of converged conduction adaptive passes.
 
@@ -78,7 +78,7 @@ class HFSSDCRSettings:
         return self.min_converged_passes
 
     @conduction_min_converged_passes.setter
-    @deprecated_property("`conduction_min_converged_passes` is deprecated. Use `min_converged_passes` instead.")
+    @deprecated_property
     def conduction_min_converged_passes(self, value: int):
         """Set minimum number of converged conduction adaptive passes.
 
@@ -100,7 +100,7 @@ class HFSSDCRSettings:
         self.core.min_converged_passes = value
 
     @property
-    @deprecated_property("`conduction_min_passes` is deprecated. Use `min_passes` instead.")
+    @deprecated_property
     def conduction_min_passes(self) -> int:
         """Minimum number of conduction adaptive passes.
 
@@ -111,7 +111,7 @@ class HFSSDCRSettings:
         return self.min_passes
 
     @conduction_min_passes.setter
-    @deprecated_property("`conduction_min_passes` is deprecated. Use `min_passes` instead.")
+    @deprecated_property
     def conduction_min_passes(self, value: int):
         """Set minimum number of conduction adaptive passes.
 
@@ -133,7 +133,7 @@ class HFSSDCRSettings:
         self.core.min_passes = value
 
     @property
-    @deprecated_property("`conduction_percent_error` is deprecated. Use `percent_error` instead.")
+    @deprecated_property
     def conduction_per_error(self) -> float:
         """Conduction adaptive percent error.
 
@@ -144,7 +144,7 @@ class HFSSDCRSettings:
         return self.percent_error
 
     @conduction_per_error.setter
-    @deprecated_property("`conduction_percent_error` is deprecated. Use `percent_error` instead.")
+    @deprecated_property
     def conduction_per_error(self, value: float):
         """Set conduction adaptive percent error.
 
@@ -165,9 +165,7 @@ class HFSSDCRSettings:
         self.core.percent_error = value
 
     @property
-    @deprecated_property(
-        "`conduction_percent_refinement_per_pass` is deprecated. Use `percent_refinement_per_pass` instead."
-    )
+    @deprecated_property
     def conduction_per_refine(self) -> float:
         """Conduction adaptive percent refinement per pass.
 
@@ -180,9 +178,7 @@ class HFSSDCRSettings:
         return self.percent_refinement_per_pass
 
     @conduction_per_refine.setter
-    @deprecated_property(
-        "`conduction_percent_refinement_per_pass` is deprecated. Use `percent_refinement_per_pass` instead."
-    )
+    @deprecated_property
     def conduction_per_refine(self, value: float):
         """Set conduction adaptive percent refinement per pass.
 

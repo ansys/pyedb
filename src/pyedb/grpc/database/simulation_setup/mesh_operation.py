@@ -27,10 +27,7 @@ from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecated_class
 
 
-@deprecated_class(
-    "This class is deprecated to ensure backward compatibility with DotNet implementation, "
-    "use class LengthMeshOperation instead."
-)
+@deprecated_class
 class LengthMeshOperationDeprecated:
     """PyEDB Length Mesh Operation class."""
 

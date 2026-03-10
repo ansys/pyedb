@@ -53,7 +53,7 @@ class RaptorXAdvancedSettings:
         self.core.auto_removal_sliver_poly = value
 
     @property
-    @deprecated_property("Use :attr:`cells_per_wavelength` instead")
+    @deprecated_property
     def cell_per_wave_length(self):
         """Number of cells that fit under each wavelength.
 
@@ -63,7 +63,7 @@ class RaptorXAdvancedSettings:
         return self.cells_per_wavelength
 
     @cell_per_wave_length.setter
-    @deprecated_property("cell_per_wave_length is deprecated, use cells_per_wave_length instead.")
+    @deprecated_property
     def cell_per_wave_length(self, value: int):
         """Set number of cells that fit under each wavelength."""
         self.cells_per_wavelength = value
@@ -96,7 +96,7 @@ class RaptorXAdvancedSettings:
         self.core.edge_mesh = str(self._pedb.value(value))
 
     @property
-    @deprecated_property("Use :attr:`eliminate_slit_per_holes` instead")
+    @deprecated_property
     def eliminate_slit_per_hole(self):
         """Threshold for strain or thermal relief slits and hole polygon areas.
 
@@ -106,7 +106,7 @@ class RaptorXAdvancedSettings:
         return self.eliminate_slit_per_holes
 
     @eliminate_slit_per_hole.setter
-    @deprecated_property("eliminate_slit_per_hole is deprecated, use eliminate_slit_per_holes instead.")
+    @deprecated_property
     def eliminate_slit_per_hole(self, value: float):
         """Set threshold for strain or thermal relief slits and hole polygon areas."""
         self.eliminate_slit_per_holes = value
@@ -142,7 +142,7 @@ class RaptorXAdvancedSettings:
         self.core.net_settings_options = value
 
     @property
-    @deprecated_property("Use :attr:`override_shrink_factor` instead")
+    @deprecated_property
     def override_shrink_fac(self):
         """Override shrink factor for polygon edges.
 
@@ -152,7 +152,7 @@ class RaptorXAdvancedSettings:
         return self.override_shrink_factor
 
     @override_shrink_fac.setter
-    @deprecated_property("override_shrink_fac is deprecated, use override_shrink_factor instead.")
+    @deprecated_property
     def override_shrink_fac(self, value: float):
         """Set override shrink factor for polygon edges."""
         self.override_shrink_factor = value
@@ -295,7 +295,7 @@ class RaptorXAdvancedSettings:
         self.core.use_mesh_frequency = value
 
     @property
-    @deprecated_property("Use :attr:`use_override_shrink_factor` instead")
+    @deprecated_property
     def use_override_shrink_fac(self):
         """Flag indicating if override shrink factor is used.
 
@@ -305,7 +305,7 @@ class RaptorXAdvancedSettings:
         return self.use_override_shrink_factor
 
     @use_override_shrink_fac.setter
-    @deprecated_property("use_override_shrink_fac is deprecated, use use_override_shrink_factor instead.")
+    @deprecated_property
     def use_override_shrink_fac(self, value: bool):
         """Set flag indicating if override shrink factor is used."""
         self.use_override_shrink_factor = value

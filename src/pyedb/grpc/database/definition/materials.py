@@ -343,10 +343,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
-    @deprecated_property(
-        "This method is deprecated in versions >0.7.0 and will soon be removed. "
-        "Use property dielectric_loss_tangent instead."
-    )
+    @deprecated_property
     def loss_tangent(self) -> float | str | None:
         """Material loss tangent.
 
@@ -374,10 +371,7 @@ class Material:
             return 0.0
 
     @loss_tangent.setter
-    @deprecated_property(
-        "This method is deprecated in versions >0.7.0 and will soon be removed. "
-        "Use property dielectric_loss_tangent instead."
-    )
+    @deprecated_property
     def loss_tangent(self, value):
         """Set material loss tangent."""
         self.dielectric_loss_tangent = value
@@ -971,7 +965,7 @@ class Materials(object):
         new_material.update(material_dict)
         return new_material
 
-    @deprecated("`delete_material` is deprecated use `delete` instead.")
+    @deprecated
     def delete_material(self, material_name):
         """
 

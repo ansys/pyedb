@@ -365,7 +365,7 @@ class PadstackDef:
         return self.layers[0]
 
     @property
-    @deprecated_property("via_start_layer is deprecated. Use start_layer instead.")
+    @deprecated_property
     def via_start_layer(self):
         """Via starting layer.
 
@@ -392,7 +392,7 @@ class PadstackDef:
         return self.layers[-1]
 
     @property
-    @deprecated_property("via_stop_layer is deprecated. Use stop_layer instead.")
+    @deprecated_property
     def via_stop_layer(self):
         """Via stop layer.
 

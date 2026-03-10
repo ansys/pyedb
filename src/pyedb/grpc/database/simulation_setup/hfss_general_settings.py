@@ -531,10 +531,7 @@ class HFSSGeneralSettings:
         self._pedb = parent._pedb
 
     @property
-    @deprecated_property(
-        "The 'adapt_type' property is deprecated and will be removed in future versions. "
-        "Use 'adaptive_solution_type' instead."
-    )
+    @deprecated_property
     def adapt_type(self) -> str:
         """Adaptation type.
 
@@ -645,10 +642,7 @@ class HFSSGeneralSettings:
         self.core.save_fields = value
 
     @property
-    @deprecated_property(
-        "The 'save_rad_field_only' property is deprecated and will be removed in future versions. "
-        "Use 'save_rad_fields_only' instead."
-    )
+    @deprecated_property
     def save_rad_field_only(self) -> bool:
         """Indicates whether to save radiation field only.
 
@@ -660,10 +654,7 @@ class HFSSGeneralSettings:
         return self.save_rad_fields_only
 
     @save_rad_field_only.setter
-    @deprecated_property(
-        "The 'save_rad_field_only' property is deprecated and will be removed in future versions. "
-        "Use 'save_rad_fields_only' instead."
-    )
+    @deprecated_property
     def save_rad_field_only(self, value: bool):
         self.save_rad_fields_only = value
 
@@ -720,10 +711,7 @@ class HFSSGeneralSettings:
         self.core.use_parallel_refinement = value
 
     @property
-    @deprecated_property(
-        "Use of 'max_refine_per_pass' is deprecated and will be removed in future versions."
-        "Use 'settings.options.max_refinement_per_pass' instead."
-    )
+    @deprecated_property
     def max_refine_per_pass(self) -> float:
         """Maximum refinement per pass.
 
@@ -739,10 +727,7 @@ class HFSSGeneralSettings:
         self._parent.options.max_refinement_per_pass = value
 
     @property
-    @deprecated_property(
-        "Use of 'min_passes' is deprecated and will be removed in future versions."
-        "Use 'settings.options.min_passes' instead."
-    )
+    @deprecated_property
     def min_passes(self) -> int:
         """Minimum number of passes.
 
@@ -758,10 +743,7 @@ class HFSSGeneralSettings:
         self._parent.options.min_passes = value
 
     @property
-    @deprecated_property(
-        "Use of 'use_max_refinement' is deprecated and will be removed in future versions."
-        "Use 'settings.options.use_max_refinement' instead."
-    )
+    @deprecated_property
     def use_max_refinement(self) -> bool:
         """Indicates whether to use maximum refinement.
 

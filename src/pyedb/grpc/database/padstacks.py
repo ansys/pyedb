@@ -335,9 +335,7 @@ class Padstacks(object):
         return vias
 
     @property
-    @deprecated_property(
-        "`pingroups` is deprecated and is now located here `pyedb.grpc.core.layout.pin_groups` instead."
-    )
+    @deprecated_property
     def pingroups(self) -> List[Any]:
         """All Layout Pin groups.
 
@@ -746,10 +744,7 @@ class Padstacks(object):
 
         return False
 
-    @deprecated(
-        "`create_coax_port` is deprecated and is now located here "
-        "`pyedb.grpc.core.excitations.create_coax_port` instead."
-    )
+    @deprecated
     def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None):
         """Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
@@ -825,7 +820,7 @@ class Padstacks(object):
 
         return pinlist
 
-    @deprecated("`get_pinlist_from_component_and_net` is deprecated use `get_pin_from_component_and_net` instead.")
+    @deprecated
     def get_pinlist_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.
 

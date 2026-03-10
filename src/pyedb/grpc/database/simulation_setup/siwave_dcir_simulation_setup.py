@@ -61,7 +61,7 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
         return cls(edb, core_setup)
 
     @property
-    @deprecated_property("`dc_ir_settings` is deprecated. Use `settings` instead.")
+    @deprecated_property
     def dc_ir_settings(self):
         """SIWave DCIR simulation settings.
 
