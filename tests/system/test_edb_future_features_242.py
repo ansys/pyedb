@@ -121,7 +121,7 @@ class TestClass(BaseTestClass):
         assert advanced_settings.use_relaxed_z_axis
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["desktopVersion"] >= "2026.1", reason="HFSSPI migrated to prism mesh ")
+    @pytest.mark.skipif(reason="HFSSPI migrated to prism mesh ")
     def test_create_hfss_pi_setup(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.create_hfsspi_setup("test")
