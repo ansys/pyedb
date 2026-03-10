@@ -747,29 +747,29 @@ class Stackup:
             if lc.mode.name.lower() == "overlapping":
                 for layer in layers:
                     if layer.name == layer_clone.name or layer.name == base_layer:
-                        _lc.add_stackup_layer_at_elevation(layer_clone)
+                        _lc.add_stackup_layer_at_elevation(layer_clone.core)
                     else:
                         _lc.add_stackup_layer_at_elevation(layer.core)
             else:
                 for layer in layers:
                     if layer.name == layer_clone.name or layer.name == base_layer:
-                        _lc.add_layer_bottom(layer_clone)
+                        _lc.add_layer_bottom(layer_clone.core)
                     else:
                         _lc.add_layer_bottom(layer.core)
             for layer in non_stackup:
                 _lc.add_layer_bottom(layer.core)
         elif operation == "insert_below":
-            lc.add_layer_below(layer_clone, base_layer)
+            lc.add_layer_below(layer_clone.core, base_layer)
         elif operation == "insert_above":
-            lc.add_layer_above(layer_clone, base_layer)
+            lc.add_layer_above(layer_clone.core, base_layer)
         elif operation == "add_on_top":
-            lc.add_layer_top(layer_clone)
+            lc.add_layer_top(layer_clone.core)
         elif operation == "add_on_bottom":
-            lc.add_layer_bottom(layer_clone)
+            lc.add_layer_bottom(layer_clone.core)
         elif operation == "add_at_elevation":
-            lc.add_stackup_layer_at_elevation(layer_clone)
+            lc.add_stackup_layer_at_elevation(layer_clone.core)
         elif operation == "non_stackup":
-            lc.add_layer_bottom(layer_clone)
+            lc.add_layer_bottom(layer_clone.core)
         self.core = lc
         return True
 
