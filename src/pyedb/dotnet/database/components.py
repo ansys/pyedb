@@ -31,8 +31,6 @@ import re
 from typing import List, Set, Union
 import warnings
 
-import skrf
-
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
@@ -52,6 +50,7 @@ from pyedb.generic.general_methods import (
     generate_unique_name,
 )
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 def resistor_value_parser(RValue: str | float) -> float:
@@ -731,6 +730,7 @@ class Components(object):
                 )
         return True
 
+    @deprecated
     def create_port_on_pins(
         self,
         refdes,
@@ -741,12 +741,6 @@ class Components(object):
         pec_boundary=False,
         pingroup_on_single_pin=False,
     ):
-        warnings.warn(
-            "`create_port_on_pins` is deprecated and will be removed in future versions. "
-            "Please use `create_port_on_component` from edb.excitation_manager instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
         self._pedb.excitation_manager.create_port_on_pins(
             refdes,
             pins,
@@ -1407,6 +1401,7 @@ class Components(object):
                     return None
         return componentDefinition
 
+    @deprecated
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
@@ -1435,7 +1430,6 @@ class Components(object):
             Created EDB component.
 
         """
-        warnings.warn("`create_rlc_component` is deprecated. Use `create` method instead.", DeprecationWarning)
         return self.create(
             pins=pins,
             component_name=component_name,

@@ -33,7 +33,7 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
 class Modeler(object):
@@ -71,6 +71,7 @@ class Modeler(object):
         self._pedb = p_edb
 
     @property
+    @deprecated_property
     def primitives(self):
         """Primitives.
 
@@ -79,7 +80,6 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
         """
-        warnings.warn("Deprecated. Use `edb.layout.primitives` instead.", DeprecationWarning, stacklevel=2)
         return self._pedb.layout.primitives
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
@@ -1153,6 +1153,7 @@ class Modeler(object):
         return self._pedb.active_db
 
     @property
+    @deprecated_property
     def layers(self):
         """Dictionary of layers.
 
@@ -1161,9 +1162,9 @@ class Modeler(object):
         dict
             Dictionary of layers.
         """
-        warnings.warn("Deprecated. Use `edb.stackup.layers` instead.", DeprecationWarning, stacklevel=2)
         return self._pedb.stackup.layers
 
+    @deprecated
     def get_primitive(self, primitive_id):
         """Retrieve primitive from give id.
 
@@ -1177,7 +1178,6 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_object_by_id` instead.", DeprecationWarning, stacklevel=2)
         for p in self._layout.primitives:
             if p.id == primitive_id:
                 return p
@@ -1187,6 +1187,7 @@ class Modeler(object):
                     return v
 
     @property
+    @deprecated_property
     def polygons_by_layer(self):
         """Primitives with layer names as keys.
 
@@ -1195,13 +1196,13 @@ class Modeler(object):
         dict
             Dictionary of primitives with layer names as keys.
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         _primitives_by_layer = {}
         for lay in self.layers:
             _primitives_by_layer[lay] = self.get_polygons_by_layer(lay)
         return _primitives_by_layer
 
     @property
+    @deprecated_property
     def primitives_by_net(self):
         """Primitives with net names as keys.
 
@@ -1210,13 +1211,13 @@ class Modeler(object):
         dict
             Dictionary of primitives with nat names as keys.
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         _prim_by_net = {}
         for net, net_obj in self._pedb.nets.nets.items():
             _prim_by_net[net] = [i for i in net_obj.primitives]
         return _prim_by_net
 
     @property
+    @deprecated_property
     def primitives_by_layer(self):
         """Primitives with layer names as keys.
 
@@ -1225,7 +1226,6 @@ class Modeler(object):
         dict
             Dictionary of primitives with layer names as keys.
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         _primitives_by_layer = {}
         for lay in self.layers:
             _primitives_by_layer[lay] = []
@@ -1241,6 +1241,7 @@ class Modeler(object):
         return _primitives_by_layer
 
     @property
+    @deprecated_property
     def rectangles(self):
         """Rectangles.
 
@@ -1250,10 +1251,10 @@ class Modeler(object):
             List of rectangles.
 
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
 
     @property
+    @deprecated_property
     def circles(self):
         """Circles.
 
@@ -1263,10 +1264,10 @@ class Modeler(object):
             List of circles.
 
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if isinstance(i, CircleDotNet)]
 
     @property
+    @deprecated_property
     def paths(self):
         """Paths.
 
@@ -1275,10 +1276,10 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of paths.
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
+    @deprecated_property
     def polygons(self):
         """Polygons.
 
@@ -1287,7 +1288,6 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of polygons.
         """
-        warnings.warn("Deprecated. Use `edb.layout.find_primitive` instead.", DeprecationWarning, stacklevel=2)
         return [i for i in self.primitives if i.primitive_type == "polygon"]
 
     def get_polygons_by_layer(self, layer_name, net_list=None):

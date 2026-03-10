@@ -26,7 +26,6 @@ This module contains the ``EdbHfss`` class.
 
 import math
 from typing import Dict, Union
-import warnings
 
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
@@ -50,6 +49,7 @@ from pyedb.dotnet.database.general import (
 from pyedb.generic.constants import RadiationBoxType, SweepType
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class EdbHfss(object):
@@ -101,6 +101,7 @@ class EdbHfss(object):
         return self._pedb.active_db
 
     @property
+    @deprecated_property
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -113,7 +114,6 @@ class EdbHfss(object):
                    :class:`pyedb.dotnet.database.edb_data.ports.BundleWavePort`]]
 
         """
-        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
         return self.ports
 
     @property
@@ -161,6 +161,7 @@ class EdbHfss(object):
                 nets[net] = self._pedb.nets[net].get_smallest_trace_width()
         return nets
 
+    @deprecated
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create Circuit Port on Pin.
 
@@ -189,13 +190,9 @@ class EdbHfss(object):
             Port Name.
 
         """
-        warnings.warn(
-            "`create_circuit_port_on_pin` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_circuit_port_on_pin` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
+    @deprecated
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -228,15 +225,11 @@ class EdbHfss(object):
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
-        warnings.warn(
-            "`create_voltage_source_on_pin` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_voltage_source_on_pin` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_voltage_source_on_pin(
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
+    @deprecated
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -269,15 +262,11 @@ class EdbHfss(object):
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
         """
-        warnings.warn(
-            "`create_current_source_on_pin` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_current_source_on_pin` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_current_source_on_pin(
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
+    @deprecated
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins.
 
@@ -308,13 +297,9 @@ class EdbHfss(object):
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
         """
-        warnings.warn(
-            "`create_resistor_on_pin` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_resistor_on_pin` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
+    @deprecated
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -357,11 +342,6 @@ class EdbHfss(object):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
         """
-        warnings.warn(
-            "`create_circuit_port_on_net` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_circuit_port_on_net` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_circuit_port_on_net(
             positive_component_name,
             positive_net_name,
@@ -371,6 +351,7 @@ class EdbHfss(object):
             port_name,
         )
 
+    @deprecated
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -416,11 +397,6 @@ class EdbHfss(object):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
         """
-        warnings.warn(
-            "`create_voltage_source_on_net` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_voltage_source_on_net` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_voltage_source_on_net(
             positive_component_name,
             positive_net_name,
@@ -431,6 +407,7 @@ class EdbHfss(object):
             source_name,
         )
 
+    @deprecated
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -476,11 +453,6 @@ class EdbHfss(object):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
         """
-        warnings.warn(
-            "`create_current_source_on_net` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_current_source_on_net.create_voltage_source_on_net` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_current_source_on_net(
             positive_component_name,
             positive_net_name,
@@ -491,6 +463,7 @@ class EdbHfss(object):
             source_name,
         )
 
+    @deprecated
     def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
         """Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
@@ -516,15 +489,11 @@ class EdbHfss(object):
             ``True`` when successful, ``False`` when failed.
 
         """
-        warnings.warn(
-            "`create_coax_port_on_component` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_current_source_on_net.create_coax_port_on_component` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_coax_port_on_component(
             ref_des_list=ref_des_list, net_list=net_list, delete_existing_terminal=delete_existing_terminal
         )
 
+    @deprecated
     def create_differential_wave_port(
         self,
         positive_primitive_id,
@@ -573,11 +542,6 @@ class EdbHfss(object):
         --------
         >>> edb.excitation_manager.create_differential_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
         """
-        warnings.warn(
-            "`create_differential_wave_port` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_current_source_on_net.create_differential_wave_port` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_differential_wave_port(
             positive_primitive_id=positive_primitive_id,
             positive_points_on_edge=positive_points_on_edge,
@@ -589,6 +553,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
+    @deprecated
     def create_bundle_wave_port(
         self,
         primitives_id,
@@ -629,11 +594,6 @@ class EdbHfss(object):
         --------
         >>> edb.excitation_manager.create_bundle_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
         """
-        warnings.warn(
-            "`create_bundle_wave_port` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_current_source_on_net.create_bundle_wave_port` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_bundle_wave_port(
             primitives_id=primitives_id,
             points_on_edge=points_on_edge,
@@ -643,6 +603,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
+    @deprecated
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
 
@@ -662,13 +623,9 @@ class EdbHfss(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        warnings.warn(
-            "`create_hfss_ports_on_padstack` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_current_source_on_net.create_hfss_ports_on_padstack` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_hfss_ports_on_padstack(pinpos=pinpos, portname=portname)
 
+    @deprecated
     def create_edge_port(
         self,
         location,
@@ -705,11 +662,6 @@ class EdbHfss(object):
             Pec launcher width for wave ports.
 
         """
-        warnings.warn(
-            "`create_edge_port` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_edge_port` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_edge_port(
             location=location,
             primitive_name=primitive_name,
@@ -721,6 +673,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
+    @deprecated
     def create_edge_port_on_polygon(
         self,
         polygon=None,
@@ -783,11 +736,6 @@ class EdbHfss(object):
         >>> terminal_point=port_location, reference_point=ref_location)
 
         """
-        warnings.warn(
-            "`create_edge_port_on_polygon` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_edge_port_on_polygon` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_edge_port_on_polygon(
             polygon=polygon,
             reference_polygon=reference_polygon,
@@ -799,6 +747,7 @@ class EdbHfss(object):
             force_circuit_port=force_circuit_port,
         )
 
+    @deprecated
     def create_wave_port(
         self,
         prim_id,
@@ -842,11 +791,6 @@ class EdbHfss(object):
         --------
         >>> edb.excitation_manager.create_wave_port(0, ["-50mm", "-0mm"])
         """
-        warnings.warn(
-            "`create_wave_port` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_wave_port` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_wave_port(
             prim_id=prim_id,
             point_on_edge=point_on_edge,
@@ -857,6 +801,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
+    @deprecated
     def create_edge_port_vertical(
         self,
         prim_id,
@@ -904,11 +849,6 @@ class EdbHfss(object):
         str
             Port name.
         """
-        warnings.warn(
-            "`create_edge_port_vertical` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_edge_port_vertical` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_edge_port_vertical(
             prim_id=prim_id,
             point_on_edge=point_on_edge,
@@ -921,6 +861,7 @@ class EdbHfss(object):
             pec_launch_width=pec_launch_width,
         )
 
+    @deprecated
     def create_edge_port_horizontal(
         self,
         prim_id,
@@ -962,11 +903,6 @@ class EdbHfss(object):
         str
             Name of the port.
         """
-        warnings.warn(
-            "`create_edge_port_horizontal` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_edge_port_horizontal` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_edge_port_horizontal(
             prim_id=prim_id,
             point_on_edge=point_on_edge,
@@ -977,6 +913,7 @@ class EdbHfss(object):
             layer_alignment=layer_alignment,
         )
 
+    @deprecated
     def create_lumped_port_on_net(
         self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
     ):
@@ -1011,11 +948,6 @@ class EdbHfss(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        warnings.warn(
-            "`create_lumped_port_on_net` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_lumped_port_on_net` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_lumped_port_on_net(
             nets=nets,
             reference_layer=reference_layer,
@@ -1024,6 +956,7 @@ class EdbHfss(object):
             at_bounding_box=at_bounding_box,
         )
 
+    @deprecated
     def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
         """Create an edge port on clipped signal traces.
 
@@ -1047,11 +980,6 @@ class EdbHfss(object):
             Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
             and terminal name.
         """
-        warnings.warn(
-            "`create_vertical_circuit_port_on_clipped_traces` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
             nets=nets, reference_net=reference_net, user_defined_extent=user_defined_extent
         )
@@ -1161,6 +1089,7 @@ class EdbHfss(object):
         terms = [term for term in self._layout.terminals if int(term._edb_object.GetBoundaryType()) == 0]
         return len([i for i in terms if not i.is_reference_terminal])
 
+    @deprecated
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
         """Create hfss rlc boundary on pins.
 
@@ -1188,11 +1117,6 @@ class EdbHfss(object):
 
         """
 
-        warnings.warn(
-            "`create_rlc_boundary_on_pins` is deprecated and is now located here "
-            "`pyedb.excitation_manager.create_rlc_boundary_on_pins` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.create_rlc_boundary_on_pins(
             positive_pin=positive_pin, negative_pin=negative_pin, rvalue=rvalue, lvalue=lvalue, cvalue=cvalue
         )

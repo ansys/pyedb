@@ -31,7 +31,6 @@ from collections import OrderedDict
 import json
 import logging
 import math
-import warnings
 
 from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
@@ -44,6 +43,7 @@ from pyedb.dotnet.database.edb_data.layer_data import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -254,9 +254,9 @@ class LayerCollection(object):
         return obj
 
     @property
+    @deprecated_property
     def stackup_layers(self):
         """Retrieve the dictionary of signal and dielectric layers."""
-        warnings.warn("Use new property :func:`layers` instead.", DeprecationWarning)
         return self.layers
 
     @property
