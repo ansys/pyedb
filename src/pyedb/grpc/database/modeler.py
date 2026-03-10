@@ -26,6 +26,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 
 import math
 from typing import Any, Dict, Iterable, List, Optional, Union
+import warnings
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import (
@@ -112,6 +113,21 @@ class Modeler(object):
         self._primitives_by_name = None
         self._primitives_by_net = None
         self._primitives_by_layer = None
+
+    @property
+    def primitives(self):
+        """Primitives.
+
+        .. deprecated:: 0.70.0
+                Use :attr:`edb.layout.primitives` instead.
+
+        Returns
+        -------
+        list of :class:`pyedb.grpc.database.primitives.Primitive`
+            List of primitives.
+        """
+        warnings.warn("Deprecated. Use `edb.layout.primitives` instead.", DeprecationWarning, stacklevel=2)
+        return self._pedb.layout.primitives
 
     @property
     def primitives_by_layer(self):

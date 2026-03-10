@@ -35,9 +35,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.simulation_setup.siwave_simulation_setup import SiwaveSimulationSetup
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 
-from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import (
-    SIWaveCPASimulationSetup,
-)
 from pyedb.misc.siw_feature_config.xtalk_scan.scan_config import SiwaveScanConfig
 
 

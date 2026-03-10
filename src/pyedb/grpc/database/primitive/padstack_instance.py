@@ -24,6 +24,7 @@ from __future__ import annotations
 import math
 import re
 from typing import Literal, Union, overload
+import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -63,7 +64,7 @@ class PadstackInstance(conn_obj.ConnObj):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", version="2026.1")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
     """
 
@@ -578,7 +579,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self._object_instance
 
     @property
-    def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
+    def bounding_box(self) -> list[float]:
         """Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
@@ -761,12 +762,12 @@ class PadstackInstance(conn_obj.ConnObj):
         return comp if not comp.core.is_null else False
 
     @property
-    def position(self) -> list[Value]:
+    def position(self) -> list[float]:
         """Padstack instance position.
 
         Returns
         -------
-        list
+        list[float, float]
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
         position = self.core.get_position_and_rotation()

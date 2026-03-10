@@ -31,8 +31,10 @@ from collections import OrderedDict
 import json
 import logging
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
-import warnings
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from pyedb import Edb
 
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
 from ansys.edb.core.definition.solder_ball_property import (
@@ -1225,7 +1227,7 @@ class Stackup:
         else:
             return False
 
-    def limits(self, only_metals: bool = False) -> Tuple[str, str]:
+    def limits(self, only_metals: bool = False) -> Tuple[any, any, any, any]:
         """Retrieve stackup limits.
 
         Parameters
@@ -1262,12 +1264,6 @@ class Stackup:
         bool
             ``True`` when successful.
 
-        Examples
-        --------
-        >>> edb = Edb(edbpath=targetfile, edbversion="2021.2")
-        >>> edb.stackup.flip_design()
-        >>> edb.save()
-        >>> edb.close_edb()
         """
         try:
             lc = self._layer_collection

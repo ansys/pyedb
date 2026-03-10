@@ -20,8 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import math
+from __future__ import annotations
 
+import math
+from typing import TYPE_CHECKING
+import warnings
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
 from ansys.edb.core.definition.padstack_def_data import (
     PadGeometryType as CorePadGeometryType,
@@ -57,7 +63,7 @@ class PadProperties:
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", version="2026.1")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
 
@@ -275,7 +281,7 @@ class PadstackDef:
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", version="2026.1")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
     """
 
@@ -304,7 +310,7 @@ class PadstackDef:
         return cls(edb, padstack_def)
 
     @property
-    def instances(self) -> list[any]:
+    def instances(self) -> list[PadstackInstance]:
         """Definitions Instances.
 
         Returns
@@ -424,7 +430,7 @@ class PadstackDef:
             self.core.data.material = value
 
     @property
-    def hole_diameter(self) -> float:
+    def hole_diameter(self) -> float | None:
         """Hole diameter.
 
         Returns
@@ -678,7 +684,7 @@ class PadstackDef:
             return 0.0
 
     @property
-    def hole_range(self) -> str:
+    def hole_range(self) -> str | None:
         """Get hole range value from padstack definition.
 
         Returns
@@ -841,7 +847,7 @@ class PadstackDef:
         self._pedb.logger.info(f"{i} Converted successfully to 3D Objects.")
         return True
 
-    def split_to_microvias(self) -> list[any]:
+    def split_to_microvias(self) -> list[PadstackInstance] | bool:
         """Convert actual padstack definition to multiple microvias definitions.
 
         Returns

@@ -33,7 +33,7 @@ from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 
 if TYPE_CHECKING:
-    from pyedb import Edb
+    from pyedb.grpc.edb import Edb
 
 
 class ComponentDef:
@@ -41,8 +41,10 @@ class ComponentDef:
 
     Parameters
     ----------
-    edb_object : object
-        Edb ComponentDef Object
+    pedb : :class:`pyedb.grpc.edb.Edb`
+        EDB database object.
+    core : :class:`ansys.edb.core.definition.component_def.ComponentDef`
+        Core component definition object.
     """
 
     def __init__(self, pedb: "Edb", core: "CoreComponentDef"):
@@ -141,7 +143,7 @@ class ComponentDef:
         return [ComponentPin(pin) for pin in self.core.component_pins]
 
     @classmethod
-    def find(cls, edb, name) -> "ComponentDef":
+    def find(cls, edb, name) -> "ComponentDef | None":
         """Find component definition by name.
 
         Parameters

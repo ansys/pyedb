@@ -206,12 +206,6 @@ class Hfss:
             nets[net] = self._pedb.nets.nets[net].get_smallest_trace_width()
         return nets
 
-    def get_edge_from_port(self, port):
-        _, primitive, point = port._edb_object.GetEdges()[0].GetParameters()
-
-        primitive = Primitive(self._pedb, primitive)
-        point = PointData(self._pedb, point)
-
     @deprecated
     def create_edge_port(
         self,

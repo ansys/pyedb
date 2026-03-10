@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from typing import TYPE_CHECKING, Dict, List, Union
+from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.primitive import Primitive
@@ -103,7 +103,9 @@ class Layout:
         return self.__primitives
 
     @property
-    def terminals(self) -> list[any]:
+    def terminals(
+        self,
+    ) -> list[PinGroupTerminal | PadstackInstanceTerminal | EdgeTerminal | BundleTerminal | PointTerminal]:
         """Get terminals belonging to active layout.
 
         Returns

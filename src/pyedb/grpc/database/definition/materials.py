@@ -26,7 +26,10 @@ import difflib
 import logging
 import os
 import re
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 import warnings
 
 from ansys.edb.core.definition.debye_model import DebyeModel as CoreDebyeModel
@@ -990,7 +993,6 @@ class Materials(object):
         material_def = CoreMaterialDef.find_by_name(self.__edb.active_db, material_name)
         if material_def.is_null:
             raise ValueError(f"Cannot find material {material_name}.")
-            return False
         material_def.delete()
         return True
 

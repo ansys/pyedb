@@ -20,18 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
-from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.grpc.database.utility.value import Value
 
 if TYPE_CHECKING:
-    from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
-
-    from pyedb.grpc.database.components import Component
-    from pyedb.grpc.edb import Edb
+    from pyedb.grpc.database.hierarchy.component import Component
 
 
 class PinPair:
@@ -198,10 +196,10 @@ class PinPairModel:
     @classmethod
     def create(
         cls,
-        edb: "Edb",
-        r: float | None = None,
-        l: float | None = None,
-        c: float | None = None,
+        component: Component,
+        resistance: float | None = None,
+        inductance: float | None = None,
+        capacitance: float | None = None,
         pin1_name: str | None = None,
         pin2_name: str | None = None,
         is_parallel: bool = False,
@@ -211,18 +209,20 @@ class PinPairModel:
 
         Parameters
         ----------
-        edb : Edb
+        component : Component
             Edb instance.
-        r : float, optional
+        resistance : float, optional
             Resistance value. If not provided, the default value will be used. Default value is 0.
-        l : float, optional
+        inductance : float, optional
             Inductance value. If not provided, the default value will be used. Default value is 0.
-        c : float, optional
+        capacitance : float, optional
             Capacitance value. If not provided, the default value will be used. Default value is 0.
         pin1_name : str, optional
             First pin name. If not provided, the default name will be used. Default name is `1`.
         pin2_name : str, optional
             Second pin name. If not provided, the default name will be used. Default name is `2`.
+        is_parallel : bool, optional
+            Whether the RLC model is parallel. If not provided, the default value will be used
 
         Returns
         -------
@@ -230,27 +230,32 @@ class PinPairModel:
             The created pin pair model.
 
         """
-        core = CorePinPairModel.create()
+        from ansys.edb.core.hierarchy.pin_pair_model import PinPairModel as CorePinPairModel
+
+        core_pin_pair = CorePinPairModel.create()
         rlc = CoreRlc()
-        if r is not None:
-            rlc.r_enabled = True
-            rlc.r = Value(r)
-        if l is not None:
-            rlc.l_enabled = True
-            rlc.l = Value(l)
-        if c is not None:
-            rlc.c_enabled = True
-            rlc.c = Value(c)
+        if resistance is not None:
+            rlc.r_enabled = True  # noqa: E741
+            rlc.r = Value(resistance)  # noqa: E741
+        if inductance is not None:
+            rlc.l_enabled = True  # noqa: E741
+            rlc.l = Value(inductance)  # noqa: E741
+        if capacitance is not None:
+            rlc.c_enabled = True  # noqa: E741
+            rlc.c = Value(capacitance)  # noqa: E741
         rlc.is_parallel = is_parallel
         if not pin1_name:
             pin1_name = "1"
         if not pin2_name:
             pin2_name = "2"
-        core.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
-        return cls(edb, core)
+        core_pin_pair.set_rlc(pin_pair=(pin1_name, pin2_name), rlc=rlc)
+        component_property = component.component_property
+        component_property.model = core_pin_pair
+        component.component_property = component_property
+        return cls(component)
 
     @property
-    def pin_pairs(self) -> list[tuple[str, str]]:
+    def pin_pairs(self) -> list[PinPair]:
         """Get all pin pairs.
 
         Returns
@@ -333,7 +338,7 @@ class PinPairModel:
             Tuple of pin names (first_pin, second_pin).
 
         """
-        if pin_pair in self.pin_pairs():
+        if pin_pair in self.pin_pairs:
             self.core.delete_rlc(pin_pair=pin_pair)
 
     def add_pin_pair(

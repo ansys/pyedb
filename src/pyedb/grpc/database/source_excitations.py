@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
+import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -448,7 +449,7 @@ class SourceExcitation(SourceExcitationInternal):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> from pyedb.grpc.utility.sources import Source, SourceType
+        >>> from pyedb.grpc.database.utility.sources import Source, SourceType
         >>> edb = Edb()
         >>> source = Source(source_type=SourceType.Vsource, amplitude="1V", ...)
         >>> edb.excitation_manager.create_source_on_component([source])
