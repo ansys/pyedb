@@ -767,12 +767,12 @@ class PadstackInstance(conn_obj.ConnObj):
         return comp if not comp.core.is_null else False
 
     @property
-    def position(self) -> list[Value]:
+    def position(self) -> list[float]:
         """Padstack instance position.
 
         Returns
         -------
-        list
+        list[float, float]
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
         position = self.core.get_position_and_rotation()
