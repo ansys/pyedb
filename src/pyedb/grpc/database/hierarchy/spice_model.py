@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import warnings
+
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSpiceModel
 
 
@@ -39,8 +41,23 @@ class SpiceModel:  # pragma: no cover
             self.core = component.component_property.model
 
     @property
+    def name(self) -> str:
+        """SPICE model name.
+
+        Returns
+        -------
+        str
+            SPICE model name.
+
+        """
+        return self.core.model_name
+
+    @property
     def model_name(self):
         """Model name.
+
+        .. deprecated:: 0.70.0
+                Use :attr:`name` instead.
 
         Returns
         -------
@@ -48,6 +65,7 @@ class SpiceModel:  # pragma: no cover
             Model name.
 
         """
+        warnings.warn("`model_name` is deprecated. Use `name` instead.", DeprecationWarning)
         return self.core.model_name
 
     @property

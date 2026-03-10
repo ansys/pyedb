@@ -20,9 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import math
-from typing import Any
+from __future__ import annotations
 
+import math
+from typing import TYPE_CHECKING, Any
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
+    from pyedb.grpc.database.primitive.polygon import Polygon
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.layer.layer import LayerType as CoreLayerType
@@ -61,8 +66,8 @@ class Primitive:
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2025.2", grpc=True)
-    >>> edb_prim = edb.modeler.primitives[0]
+    >>> edb = Edb("myedb", version="2026.1", grpc=True)
+    >>> edb_prim = edb.layout.primitives[0]
     """
 
     def __init__(self, pedb, core):
@@ -137,7 +142,7 @@ class Primitive:
         return self._object_instance
 
     @property
-    def net_name(self) -> str:
+    def net_name(self) -> str | None:
         """Net name.
 
         Returns
@@ -148,6 +153,7 @@ class Primitive:
         """
         if not self.core.net.is_null:
             return self.net.name
+        return None
 
     @net_name.setter
     def net_name(self, value):
@@ -182,7 +188,7 @@ class Primitive:
         return [Primitive(self._pedb, prim) for prim in self.core.voids]
 
     @property
-    def has_voids(self):
+    def has_voids(self) -> bool:
         """Check if primitive has voids.
 
         Returns
@@ -236,7 +242,7 @@ class Primitive:
         return self.core.is_zone_primitive
 
     @property
-    def can_be_zone_primitive(self):
+    def can_be_zone_primitive(self) -> bool:
         """Check if primitive can be a zone primitive.
 
         Returns
@@ -279,7 +285,7 @@ class Primitive:
     def aedt_name(self, value):
         self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
-    def get_connected_objects(self):
+    def get_connected_objects(self) -> list[Any]:
         """Get connected objects.
 
         Returns
@@ -301,6 +307,7 @@ class Primitive:
         Returns
         -------
         float
+            Area value.
         """
         area = self.core.cast().polygon_data.area()
         if include_voids:
@@ -308,7 +315,7 @@ class Primitive:
                 area -= el.polygon_data.area()
         return area
 
-    def _get_points_for_plot(self, my_net_points, num):
+    def _get_points_for_plot(self, my_net_points, num) -> tuple[list[float], list[float]]:
         """
         Get the points to be plotted.
         """
@@ -343,7 +350,7 @@ class Primitive:
 
         """
         center = self.core.cast().polygon_data.bounding_circle()[0]
-        return Value(center.x), Value(center.y)
+        return center.x, center.y
 
     def get_connected_object_id_set(self) -> list[int]:
         """Produce a list of all geometries physically connected to a given layout object.
@@ -370,7 +377,7 @@ class Primitive:
         bbox = self.core.cast().polygon_data.bbox()
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
-    def convert_to_polygon(self):
+    def convert_to_polygon(self) -> Polygon:
         """Convert path to polygon.
 
         Returns
@@ -387,7 +394,7 @@ class Primitive:
         else:
             return False
 
-    def intersection_type(self, primitive):
+    def intersection_type(self, primitive) -> int:
         """Get intersection type between actual primitive and another primitive or polygon data.
 
         Parameters
@@ -785,7 +792,7 @@ class Primitive:
             )
         return self.add_void(void_poly)
 
-    def points(self, arc_segments=6) -> tuple[float, float]:
+    def points(self, arc_segments=6) -> tuple[list[float], list[float]] | None:
         """Return the list of points with arcs converted to segments.
 
         Parameters
@@ -800,7 +807,7 @@ class Primitive:
         """
         xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
         if not xt:
-            return []
+            return None
         x, y = GeometryOperators.orient_polygon(xt, yt, clockwise=True)
         return x, y
 
@@ -816,19 +823,40 @@ class Primitive:
         return self.polygon_data.points_raw
 
     @property
-    def id(self):
+    def id(self) -> int:
+        """Primitive ID. This is the same as edb_uid, long Int.
+
+        Returns
+        -------
+        int
+            Primitive ID.
+        """
         return self.core.edb_uid
 
     @property
-    def edb_uid(self):
+    def edb_uid(self) -> int:
+        """Primitive EDB UID. This is the same as id, long Int.
+
+        Returns
+        -------
+        int
+            Primitive EDB UID.
+        """
         return self.core.edb_uid  # grpc has introduced id and edb_uid while dotnet got only edb_uid equivalent.
 
     @property
-    def primitive_type(self):
+    def primitive_type(self) -> str:
+        """Primitive type.
+
+        Returns
+        -------
+        str
+            Primitive type, such as "circle", "rectangle", "polygon", "path" or "bondwire".
+        """
         return self.core.primitive_type.name.lower()
 
     @property
-    def net(self):
+    def net(self) -> Net:
         from pyedb.grpc.database.net.net import Net
 
         return Net(self._pedb, self.core.net)

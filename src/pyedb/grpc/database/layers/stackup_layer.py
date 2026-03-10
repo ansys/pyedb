@@ -177,7 +177,7 @@ class StackupLayer:
         if layer_type in self._stackup_layer_mapping:
             layer_type = self._stackup_layer_mapping[layer_type]
             self._edb_object = CoreStackupLayer.create(
-                self._name,
+                self.name,
                 layer_type,
                 0.0,
                 0.0,
@@ -830,7 +830,7 @@ class StackupLayer:
         return False
 
     @property
-    def properties(self):
+    def properties(self) -> dict[str, dict[str, str]] | bool:
         data = {"name": self.core.name, "type": self.type, "color": self.color}
         if self.type == "signal" or self.type == "dielectric":
             data["material"] = self.material

@@ -38,7 +38,7 @@ class DifferentialPairs:
         self._pedb = pedb
 
     @property
-    def items(self) -> dict[str, any]:
+    def items(self) -> dict[str, DifferentialPair]:
         """Extended nets.
 
         Returns

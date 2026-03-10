@@ -20,10 +20,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 
+if TYPE_CHECKING:
+    from ansys.edb.core.geometry.polygon_data import PolygonSenseType as CorePolygonSenseType
 from pyedb.grpc.database.geometry.arc_data import ArcData
 from pyedb.grpc.database.utility.value import Value
 
@@ -33,7 +38,7 @@ class PolygonData:
 
     def __init__(
         self,
-        edb_object=None,
+        core=None,
         create_from_points=None,
         create_from_circle=None,
         create_from_rectangle=None,
@@ -49,7 +54,7 @@ class PolygonData:
         elif create_from_bounding_box:
             self.core = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
-            self.core = edb_object
+            self.core = core
 
     @property
     def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
@@ -106,7 +111,7 @@ class PolygonData:
         return self.core.is_inside(point)
 
     @property
-    def sense(self) -> any:
+    def sense(self) -> CorePolygonSenseType:
         """Get the polygon sense type.
 
         Returns

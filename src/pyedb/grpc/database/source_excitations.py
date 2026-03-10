@@ -46,7 +46,6 @@ from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
-from pyedb.grpc.database.utility.value import Value
 
 
 class SourceExcitationInternal:
@@ -448,7 +447,7 @@ class SourceExcitation(SourceExcitationInternal):
         Examples
         --------
         >>> from pyedb import Edb
-        >>> from pyedb.grpc.utility.sources import Source, SourceType
+        >>> from pyedb.grpc.database.utility.sources import Source, SourceType
         >>> edb = Edb()
         >>> source = Source(source_type=SourceType.Vsource, amplitude="1V", ...)
         >>> edb.excitation_manager.create_source_on_component([source])

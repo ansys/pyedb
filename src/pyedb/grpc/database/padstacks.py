@@ -37,7 +37,6 @@ from ansys.edb.core.definition.padstack_def_data import (
     SolderballPlacement as CoreSolderballPlacement,
     SolderballShape as CoreSolderballShape,
 )
-from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
 import numpy as np
@@ -732,9 +731,8 @@ class Padstacks(object):
             psdef = padstack_instance.padstack_def
         newdefdata = CorePadstackDefData.create(psdef.data)
         newdefdata.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
-        newdefdata.solder_ball_param(
-            self._pedb._value_setter(solder_ball_diameter), self._pedb._value_setter(solder_ball_diameter)
-        )
+        solder_ball_diameter = self._pedb._value_setter(solder_ball_diameter)
+        newdefdata.solder_ball_param = solder_ball_diameter, solder_ball_diameter
         sball_placement = (
             CoreSolderballPlacement.ABOVE_PADSTACK if top_placed else CoreSolderballPlacement.BELOW_PADSTACK
         )
