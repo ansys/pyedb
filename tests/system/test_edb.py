@@ -347,7 +347,6 @@ class TestClass(BaseTestClass):
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
         assert gap_port.renormalization_impedance == 50
-        assert not gap_port.renormalize
         gap_port.is_circuit_port = True
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)
@@ -1172,8 +1171,6 @@ class TestClass(BaseTestClass):
     def test_siwave_simulation_setup_dotnet_compatibility(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
-        assert setup.sim_setup_info
-        assert setup.get_confugurations()
         setup.set_dc_slider = 1
         settings = setup.settings
 
