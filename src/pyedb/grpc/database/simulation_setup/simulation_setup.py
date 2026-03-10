@@ -43,7 +43,9 @@ _mapping_simulation_types = {
 }
 
 
-@deprecated_class
+deprecated_class()
+
+
 class SimulationSetupDeprecated:
     @property
     def type(self):
