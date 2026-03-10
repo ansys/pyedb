@@ -3285,6 +3285,9 @@ class Edb:
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
 
+        .. deprecated:: 0.70.0
+                Use :func:`legacy.simulation_setups.create_hfss_pi_setup` instead.
+
         Parameters
         ----------
         name : str, optional
@@ -3296,13 +3299,10 @@ class Edb:
         when failed.
 
         """
-        if name in self.setups:
-            self.logger.error("Setup name already used in the layout")
-            return False
-        if float(self.version) < 2024.2:
-            self.logger.error("HFSSPI simulation only supported with Ansys release 2024R2 and higher")
-            return False
-        return HFSSPISimulationSetup(self, name=name)
+        warnings.warn(
+            "Deprecated method. Use simulation_setups.create_hfss_pi_setup instead.", DeprecationWarning, stacklevel=2
+        )
+        return self.simulation_setups.create_hfss_pi_setup(name=name)
 
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a Siwave SYZ setup from a template."""
