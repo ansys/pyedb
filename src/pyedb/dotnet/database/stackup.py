@@ -43,7 +43,7 @@ from pyedb.dotnet.database.edb_data.layer_data import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
 
