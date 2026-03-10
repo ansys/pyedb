@@ -19,8 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
-import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -46,7 +46,7 @@ from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.grpc.database.terminal.terminal import Terminal
 from pyedb.grpc.database.utility.sources import Source, SourceType
-from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class SourceExcitationInternal:
@@ -392,6 +392,7 @@ class SourceExcitation(SourceExcitationInternal):
         return self._pedb.logger
 
     @property
+    @deprecated_property("Use property ''ports'' instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -404,7 +405,6 @@ class SourceExcitation(SourceExcitationInternal):
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
 
         """
-        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
         return self.ports
 
     @property

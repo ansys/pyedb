@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
-
 from pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings import (
     HFSSAdvancedMeshingSettings,
 )
@@ -36,6 +34,7 @@ from pyedb.grpc.database.simulation_setup.hfss_settings_options import (
     HFSSSettingsOptions,
 )
 from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolverSettings
+from pyedb.misc.decorators import deprecated_property
 
 
 class HFSSSimulationSettings:
@@ -115,6 +114,9 @@ class HFSSSimulationSettings:
         return HFSSSolverSettings(self)
 
     @property
+    @deprecated_property(
+        "The 'enhanced_low_frequency_accuracy' property is deprecated and will be removed in future releases. "
+    )
     def enhanced_low_frequency_accuracy(self) -> bool:
         """Enhanced low frequency accuracy flag.
 
@@ -123,10 +125,6 @@ class HFSSSimulationSettings:
             instead.
             This attribute was added for dotnet compatibility and will be removed in future releases.
         """
-        warnings.warn(
-            "The 'enhanced_low_frequency_accuracy' property is deprecated and will be removed in future releases. ",
-            DeprecationWarning,
-        )
         return self.options.enhanced_low_frequency_accuracy
 
     @enhanced_low_frequency_accuracy.setter
@@ -134,6 +132,7 @@ class HFSSSimulationSettings:
         self.options.enhanced_low_frequency_accuracy = value
 
     @property
+    @deprecated_property("The 'relative_residual' property is deprecated and will be removed in future releases.")
     def relative_residual(self) -> float:
         """Relative residual value.
 
@@ -142,10 +141,6 @@ class HFSSSimulationSettings:
             instead.
             This attribute was added for dotnet compatibility and will be removed in future releases.
         """
-        warnings.warn(
-            "The 'relative_residual' property is deprecated and will be removed in future releases.",
-            DeprecationWarning,
-        )
         return self.options.relative_residual
 
     @relative_residual.setter
@@ -153,6 +148,7 @@ class HFSSSimulationSettings:
         self.options.relative_residual = value
 
     @property
+    @deprecated_property("The 'use_shell_elements' property is deprecated and will be removed in future releases. ")
     def use_shell_elements(self) -> bool:
         """Use shell elements flag.
 
@@ -161,10 +157,6 @@ class HFSSSimulationSettings:
             instead.
             This attribute was added for dotnet compatibility and will be removed in future releases.
         """
-        warnings.warn(
-            "The 'use_shell_elements' property is deprecated and will be removed in future releases. ",
-            DeprecationWarning,
-        )
         return self.options.use_shell_elements
 
     @use_shell_elements.setter

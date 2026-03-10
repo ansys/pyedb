@@ -45,6 +45,7 @@ from pydantic import BaseModel, confloat
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -342,6 +343,10 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
+    @deprecated_property(
+        "This method is deprecated in versions >0.7.0 and will soon be removed. "
+        "Use property dielectric_loss_tangent instead."
+    )
     def loss_tangent(self) -> float | str | None:
         """Material loss tangent.
 
@@ -351,11 +356,6 @@ class Material:
             Loss tangent value.
 
         """
-        warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. "
-            "Use property dielectric_loss_tangent instead.",
-            DeprecationWarning,
-        )
         return self.dielectric_loss_tangent
 
     @property
@@ -374,13 +374,12 @@ class Material:
             return 0.0
 
     @loss_tangent.setter
+    @deprecated_property(
+        "This method is deprecated in versions >0.7.0 and will soon be removed. "
+        "Use property dielectric_loss_tangent instead."
+    )
     def loss_tangent(self, value):
         """Set material loss tangent."""
-        warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. "
-            "Use property dielectric_loss_tangent instead.",
-            DeprecationWarning,
-        )
         self.dielectric_loss_tangent = value
 
     @dielectric_loss_tangent.setter
@@ -972,6 +971,7 @@ class Materials(object):
         new_material.update(material_dict)
         return new_material
 
+    @deprecated("`delete_material` is deprecated use `delete` instead.")
     def delete_material(self, material_name):
         """
 
@@ -983,10 +983,6 @@ class Materials(object):
             Name of the material to delete.
 
         """
-        warnings.warn(
-            "`delete_material` is deprecated use `delete` instead.",
-            DeprecationWarning,
-        )
         self.delete(material_name)
 
     def delete(self, material_name) -> bool:

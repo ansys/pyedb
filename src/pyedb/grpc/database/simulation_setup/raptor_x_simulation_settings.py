@@ -26,15 +26,13 @@ if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.raptor_x_simulation_setup import (
         RaptorXSimulationSettings as CoreRaptorXSimulationSettings,
     )
-
-import warnings
-
 from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import (
     RaptorXAdvancedSettings,
 )
 from pyedb.grpc.database.simulation_setup.raptor_x_general_settings import (
     RaptorXGeneralSettings,
 )
+from pyedb.misc.decorators import deprecated_property
 
 
 class RaptorXSimulationSettings:
@@ -45,6 +43,7 @@ class RaptorXSimulationSettings:
         self._pedb = pedb
 
     @property
+    @deprecated_property("`advanced_settings` is deprecated, use `advanced` instead.")
     def advanced_settings(self) -> RaptorXAdvancedSettings:
         """Advanced settings class.
 
@@ -57,7 +56,6 @@ class RaptorXSimulationSettings:
         raptor_x_advanced_settings.RaptorXAdvancedSettings>`
 
         """
-        warnings.warn("`advanced_settings` is deprecated, use `advanced` instead.", DeprecationWarning)
         return self.advanced
 
     @property

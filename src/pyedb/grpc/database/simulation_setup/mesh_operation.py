@@ -24,8 +24,13 @@ from ansys.edb.core.simulation_setup.mesh_operation import LengthMeshOperation a
 
 from pyedb.generic.constants import MeshOperationTypeMapper
 from pyedb.generic.settings import settings
+from pyedb.misc.decorators import deprecated_class
 
 
+@deprecated_class(
+    "This class is deprecated to ensure backward compatibility with DotNet implementation, "
+    "use class LengthMeshOperation instead."
+)
 class LengthMeshOperationDeprecated:
     """PyEDB Length Mesh Operation class."""
 

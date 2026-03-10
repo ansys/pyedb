@@ -30,7 +30,6 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
-import warnings
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
@@ -41,6 +40,7 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class Terminal(ConnObj):
@@ -656,6 +656,7 @@ class Terminal(ConnObj):
             self._pedb.logger.warning("Terminal does not support circuit port property.")
 
     @property
+    @deprecated_property("`is_circuit` is deprecated. Use `is_circuit_port` instead.")
     def is_circuit(self) -> bool:
         """Check if the terminal is a circuit terminal.
 
@@ -667,10 +668,10 @@ class Terminal(ConnObj):
         bool
             True if the terminal is a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         return self.is_circuit_port
 
     @is_circuit.setter
+    @deprecated_property("`is_circuit` is deprecated. Use `is_circuit_port` instead.")
     def is_circuit(self, value: bool):
         """Set whether the terminal is a circuit terminal.
 
@@ -682,5 +683,4 @@ class Terminal(ConnObj):
         value : bool
             True to set the terminal as a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         self.is_circuit_port = value

@@ -22,14 +22,12 @@
 
 from typing import TYPE_CHECKING, Union
 
-from pyedb.misc.decorators import deprecated_class
+from pyedb.misc.decorators import deprecated, deprecated_class
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
 from ansys.edb.core.simulation_setup.simulation_setup import (
-    FreqSweepType,
-    FrequencyData as CoreFrequencyData,
     SimulationSetupType as CoreSimulationSetupType,
 )
 
@@ -246,6 +244,10 @@ class SimulationSetup(SimulationSetupDeprecated):
         """
         self.core.sweep_data = self.core.sweep_data + [sweep.core]
         return self.sweep_data[-1]
+
+    deprecated(
+        "The 'add_frequency_sweep' method is deprecated. Please use 'add_sweep' with appropriate parameters instead."
+    )
 
     def add_frequency_sweep(self, frequency_sweep: list[str]):
         """This method is deprecated. Please use 'add_sweep' with appropriate parameters instead."""
