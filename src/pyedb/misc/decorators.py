@@ -21,31 +21,82 @@
 # SOFTWARE.
 
 import functools
+import inspect
+import re
 import time
 import warnings
 
 from pyedb.generic.settings import settings
 
 
-def deprecated(reason: str = ""):
+def deprecated(reason=None):
     """Decorator to mark functions or methods as deprecated.
 
-    Parameters
-    ----------
-    reason : str, optional
-        Message to display with the deprecation warning.
+    Automatically infers replacement method from return statement when no reason provided.
+    Customized reason can be provided to override inferred replacement.
+
+    Examples
+    --------
+    @deprecated
+    def close_edb(self):
+        return self.close()
+    # -> "Call to deprecated function close_edb(). Use close() instead."
     """
 
-    def decorator(func):
+    def _create_wrapper(func, msg_reason):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            msg = f"Call to deprecated function {func.__qualname__}."
-            if reason:
-                msg += f" {reason}"
+            func_name = func.__name__
+            msg = f"Call to deprecated function {func_name}()."
+            if msg_reason:
+                msg += f" {msg_reason}"
             warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
             return func(*args, **kwargs)
 
         return wrapper
+
+    def _infer_replacement(func):
+        """Try to infer replacement from return self.xxx.method() statement."""
+        try:
+            source = inspect.getsource(func)
+            lines = source.split("\n")
+            def_idx = 0
+            for i, line in enumerate(lines):
+                if line.strip().startswith("def "):
+                    def_idx = i
+                    break
+
+            # Get body lines (after def line)
+            body_lines = lines[def_idx + 1 :]
+
+            # Find return statement in body
+            for line in body_lines:
+                stripped = line.strip()
+                if stripped.startswith("return "):
+                    # Match: return self.xxx.method() or return self.method()
+                    # Extract just the method name (last part after last dot)
+                    match = re.search(r"return\s+self(?:\.\w+)*\.(\w+)\s*\(", stripped)
+                    if match:
+                        new_method = match.group(1)
+                        return f"Use {new_method}() instead."
+                    break
+
+        except (OSError, TypeError, IOError):
+            pass
+        return ""
+
+    # Handle @deprecated (without parentheses)
+    if callable(reason):
+        func = reason
+        inferred = _infer_replacement(func)
+        return _create_wrapper(func, inferred)
+
+    # Handle @deprecated() or @deprecated("reason")
+    def decorator(func):
+        if reason:
+            return _create_wrapper(func, reason)
+        inferred = _infer_replacement(func)
+        return _create_wrapper(func, inferred)
 
     return decorator
 
@@ -76,17 +127,61 @@ def deprecated_class(reason: str = ""):
     return decorator
 
 
-def deprecated_property(func):
-    """
-    This decorator marks a property as deprecated.
-    It will emit a warning when the property is accessed.
-    """
+def deprecated_property(reason=None):
+    """Decorator to mark properties as deprecated."""
 
-    def wrapper(*args, **kwargs):
-        warnings.warn(f"Access to deprecated property {func.__name__}.", category=DeprecationWarning, stacklevel=2)
-        return func(*args, **kwargs)
+    def _create_wrapper(func, msg_reason):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            prop_name = func.__name__
+            msg = f"Access to deprecated property {prop_name}."
+            if msg_reason:
+                msg += f" {msg_reason}"
+            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            return func(*args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    def _infer_replacement(func):
+        """Try to infer replacement from return self.xxx.property statement."""
+        try:
+            source = inspect.getsource(func)
+            lines = source.split("\n")
+            def_idx = 0
+            for i, line in enumerate(lines):
+                if line.strip().startswith("def "):
+                    def_idx = i
+                    break
+
+            body_lines = lines[def_idx + 1 :]
+
+            for line in body_lines:
+                stripped = line.strip()
+                if stripped.startswith("return "):
+                    # Match: return self.xxx.property or return self.property
+                    match = re.search(r"return\s+self(?:\.\w+)*\.(\w+)\s*$", stripped)
+                    if match:
+                        new_prop = match.group(1)
+                        return f"Use {new_prop} instead."
+                    break
+
+        except (OSError, TypeError, IOError):
+            pass
+        return ""
+
+    # handle without parentheses
+    if callable(reason):
+        func = reason
+        inferred = _infer_replacement(func)
+        return _create_wrapper(func, inferred)
+
+    def decorator(func):
+        if reason:
+            return _create_wrapper(func, reason)
+        inferred = _infer_replacement(func)
+        return _create_wrapper(func, inferred)
+
+    return decorator
 
 
 def deprecate_argument_name(argument_map):

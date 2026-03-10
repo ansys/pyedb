@@ -1135,7 +1135,7 @@ class Edb(EdbInit):
         return self._stackup
 
     @property
-    @deprecated_property
+    @deprecated_property()
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
         .. deprecated:: 0.70
@@ -1146,7 +1146,7 @@ class Edb(EdbInit):
             Source and port creation tools.
         """
         if self.active_db:
-            return self._source_excitation
+            return self.excitation_manager
         return None
 
     @property
