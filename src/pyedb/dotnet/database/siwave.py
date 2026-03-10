@@ -44,7 +44,6 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import (
     SIWaveCPASimulationSetup,
 )
-from pyedb.generic.constants import SolverType, SweepType
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.misc.decorators import deprecated, deprecated_property
@@ -268,7 +267,7 @@ class EdbSiwave(object):
             pass
         return pos_pingroup_terminal.GetName()
 
-    @deprecated
+    @deprecated()
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
 
@@ -303,7 +302,7 @@ class EdbSiwave(object):
             pos_pin=pos_pin, neg_pin=neg_pin, impedance=impedance, port_name=port_name
         )
 
-    @deprecated
+    @deprecated()
     def create_port_between_pin_and_layer(
         self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
     ):
@@ -339,7 +338,7 @@ class EdbSiwave(object):
             impedance=impedance,
         )
 
-    @deprecated
+    @deprecated()
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -380,7 +379,7 @@ class EdbSiwave(object):
             source_name=source_name,
         )
 
-    @deprecated
+    @deprecated()
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -421,7 +420,7 @@ class EdbSiwave(object):
             source_name=source_name,
         )
 
-    @deprecated
+    @deprecated()
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins..
 
@@ -459,7 +458,7 @@ class EdbSiwave(object):
             resistor_name=resistor_name,
         )
 
-    @deprecated
+    @deprecated()
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -513,7 +512,7 @@ class EdbSiwave(object):
             port_name=port_name,
         )
 
-    @deprecated
+    @deprecated()
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -569,7 +568,7 @@ class EdbSiwave(object):
             source_name=source_name,
         )
 
-    @deprecated
+    @deprecated()
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -1030,7 +1029,7 @@ class EdbSiwave(object):
         pin_names = [p.GetName() for p in pins]
         return self.create_pin_group(reference_designator, pin_names, group_name)
 
-    @deprecated
+    @deprecated()
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
@@ -1063,7 +1062,7 @@ class EdbSiwave(object):
             name=name,
         )
 
-    @deprecated
+    @deprecated()
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
@@ -1097,7 +1096,7 @@ class EdbSiwave(object):
             impedance=impedance,
         )
 
-    @deprecated
+    @deprecated()
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000):
         """Create voltage probe between two pin groups.
 
@@ -1127,7 +1126,7 @@ class EdbSiwave(object):
             impedance=impedance,
         )
 
-    @deprecated
+    @deprecated()
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
 

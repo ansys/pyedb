@@ -658,7 +658,7 @@ class EdbNets(CommonNets):
                 return True
         return False
 
-    @deprecated
+    @deprecated()
     def find_and_fix_disjoint_nets(
         self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
     ):

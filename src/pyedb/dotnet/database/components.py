@@ -730,7 +730,7 @@ class Components(object):
                 )
         return True
 
-    @deprecated
+    @deprecated()
     def create_port_on_pins(
         self,
         refdes,
@@ -1401,7 +1401,7 @@ class Components(object):
                     return None
         return componentDefinition
 
-    @deprecated
+    @deprecated()
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover

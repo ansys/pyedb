@@ -329,7 +329,7 @@ class PinGroup(object):
         """Terminal."""
         warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
-            term = self._create_terminal(name)
+            return self.create_terminal(name)
         else:
             return self.terminal
 

@@ -206,7 +206,7 @@ class Hfss:
             nets[net] = self._pedb.nets.nets[net].get_smallest_trace_width()
         return nets
 
-    @deprecated
+    @deprecated()
     def create_edge_port(
         self,
         location,
@@ -344,7 +344,7 @@ class Hfss:
             terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
         return CorePolygonData.bbox_of_polygons(terms_bbox)
 
-    @deprecated
+    @deprecated()
     def add_setup(
         self,
         name=None,

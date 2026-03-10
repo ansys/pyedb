@@ -389,7 +389,7 @@ class Nets(CommonNets):
                     self._comps_by_nets_dict[n] = [comp]
         return self._comps_by_nets_dict
 
-    @deprecated
+    @deprecated()
     def generate_extended_nets(
         self,
         resistor_below: Union[int, float] = 10,
@@ -833,7 +833,7 @@ class Nets(CommonNets):
                 return True
         return False
 
-    @deprecated
+    @deprecated()
     def find_and_fix_disjoint_nets(
         self,
         net_list: Optional[List[str]] = None,

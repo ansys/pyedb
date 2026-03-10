@@ -968,7 +968,7 @@ class Materials(object):
         new_material.update(material_dict)
         return new_material
 
-    @deprecated
+    @deprecated()
     def delete_material(self, material_name):
         """
 

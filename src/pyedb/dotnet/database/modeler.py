@@ -1164,7 +1164,7 @@ class Modeler(object):
         """
         return self._pedb.stackup.layers
 
-    @deprecated
+    @deprecated()
     def get_primitive(self, primitive_id):
         """Retrieve primitive from give id.
 

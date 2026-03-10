@@ -752,7 +752,7 @@ class Edb(EdbInit):
             return self
         return None
 
-    @deprecated
+    @deprecated()
     def import_layout_pcb(
         self,
         input_file,
@@ -1468,7 +1468,7 @@ class Edb(EdbInit):
                 times = 0
                 time.sleep(0.250)
 
-    @deprecated
+    @deprecated()
     def close_edb(self) -> bool:
         """Close EDB and clean up resources.
 
@@ -1488,7 +1488,7 @@ class Edb(EdbInit):
         """
         return self.close()
 
-    @deprecated
+    @deprecated()
     def save_edb(self) -> bool:
         """Save current EDB database.
 
@@ -1498,7 +1498,7 @@ class Edb(EdbInit):
         """
         return self.save()
 
-    @deprecated
+    @deprecated()
     def save_edb_as(self, fname) -> bool:
         """Save EDB database to new location.
 
@@ -2341,7 +2341,7 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.siwave
 
-    @deprecated
+    @deprecated()
     def create_hfss_setup(
         self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"
     ) -> HfssSimulationSetup:
@@ -2358,7 +2358,7 @@ class Edb(EdbInit):
             step_freq=self._value_setter(step_frequency),
         )
 
-    @deprecated
+    @deprecated()
     def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
         """Create RaptorX analysis setup (2024R2+ only).
 
@@ -2367,7 +2367,7 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.create_raptor_x_setup(name=name, start_freq=None, stop_freq=None, step_freq=None)
 
-    @deprecated
+    @deprecated()
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
 
@@ -2376,7 +2376,7 @@ class Edb(EdbInit):
         """
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
-    @deprecated
+    @deprecated()
     def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Create SIwave DC analysis setup.
 
@@ -2603,7 +2603,7 @@ class Edb(EdbInit):
         # If no terminal info provided, return empty list to keep return type consistent.
         return []
 
-    @deprecated
+    @deprecated()
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
@@ -2613,7 +2613,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port, name)
 
-    @deprecated
+    @deprecated()
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
@@ -2623,7 +2623,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_voltage_probe(terminal, ref_terminal)
 
-    @deprecated
+    @deprecated()
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
@@ -2633,7 +2633,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_voltage_source(terminal, ref_terminal)
 
-    @deprecated
+    @deprecated()
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
@@ -2643,7 +2643,7 @@ class Edb(EdbInit):
         """
         return self.excitation_manager.create_current_source(terminal, ref_terminal)
 
-    @deprecated
+    @deprecated()
     def get_point_terminal(self, name, net_name, location, layer):
         """Place terminal between two points.
 

@@ -96,9 +96,9 @@ class TestClass(BaseTestClass):
         assert list(edbapp.terminals.values())[2].magnitude == 3.3
 
         u6 = edbapp.components["U6"]
-        voltage_source = edbapp.create_voltage_source(
-            u6.pins["F2"].get_terminal(create_new_terminal=True), u6.pins["F1"].get_terminal(create_new_terminal=True)
-        )
+        term1 = u6.pins["F2"].get_terminal(create_new_terminal=True)
+        term2 = u6.pins["F1"].get_terminal(create_new_terminal=True)
+        voltage_source = edbapp.create_voltage_source(terminal=term1, ref_terminal=term2)
         assert not voltage_source.is_null
         edbapp.close(terminate_rpc_session=False)
 

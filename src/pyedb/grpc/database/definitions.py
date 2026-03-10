@@ -191,7 +191,7 @@ class Definitions:
             for jedec5_def in self._pedb.active_db.jedec5_bondwire_defs
         }
 
-    @deprecated
+    @deprecated()
     def add_package_def(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:

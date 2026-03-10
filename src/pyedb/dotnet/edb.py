@@ -1472,7 +1472,7 @@ class Edb:
                 times = 0
                 time.sleep(0.250)
 
-    @deprecated
+    @deprecated()
     def close_edb(self) -> bool:
         """Close EDB and cleanup variables.
 
@@ -1509,7 +1509,7 @@ class Edb:
         self._clean_variables()
         return True
 
-    @deprecated
+    @deprecated()
     def save_edb(self) -> bool:
         """Save the EDB file.
 
@@ -1539,7 +1539,7 @@ class Edb:
         self._wait_for_file_release()
         return True
 
-    @deprecated
+    @deprecated()
     def save_edb_as(self, path) -> bool:
         """Save the EDB file as another file.
 
@@ -3270,17 +3270,17 @@ class Edb:
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
-    @deprecated
+    @deprecated()
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template."""
         return self.simulation_setups.create_hfss_setup(name)
 
-    @deprecated
+    @deprecated()
     def create_raptorx_setup(self, name=None):
         """Create a RaptorX simulation setup."""
         return self.simulation_setups.create_raptor_x_setup(name)
 
-    @deprecated
+    @deprecated()
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
 
@@ -3300,7 +3300,7 @@ class Edb:
         """
         return self.simulation_setups.create_hfss_pi_setup(name=name)
 
-    @deprecated
+    @deprecated()
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a Siwave SYZ setup from a template."""
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
@@ -3528,7 +3528,7 @@ class Edb:
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
 
-    @deprecated
+    @deprecated()
     def create_port(
         self,
         terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
@@ -3567,7 +3567,7 @@ class Edb:
             terminal=terminal, ref_terminal=ref_terminal, is_circuit_port=is_circuit_port, name=name
         )
 
-    @deprecated
+    @deprecated()
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
@@ -3593,7 +3593,7 @@ class Edb:
         """
         return self.excitation_manager.create_voltage_probe(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated
+    @deprecated()
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
@@ -3619,7 +3619,7 @@ class Edb:
         """
         return self.excitation_manager.create_voltage_source(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated
+    @deprecated()
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
@@ -3645,7 +3645,7 @@ class Edb:
         """
         return self.excitation_manager.create_current_source(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated
+    @deprecated()
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.
 
