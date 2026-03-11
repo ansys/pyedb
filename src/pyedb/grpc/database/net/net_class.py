@@ -20,7 +20,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.grpc.database.net.net import Net
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 
 
 class NetClass:
@@ -81,9 +86,9 @@ class NetClass:
         -------
         bool
         """
-        if isinstance(net, str):
-            from pyedb.grpc.database.net.net import Net
+        from pyedb.grpc.database.net.net import Net
 
+        if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
             self.core.add_net(net)
