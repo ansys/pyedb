@@ -266,8 +266,9 @@ class Path(Primitive):
 
         Examples
         --------
-        >>> edbapp = pyedb.dotnet.Edb("myproject.aedb")
-        >>> sig = appedb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
+        >>> from pyedb import Edb
+        >>> edb = Edb("myproject.aedb")
+        >>> sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """

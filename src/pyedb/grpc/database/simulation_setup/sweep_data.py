@@ -24,6 +24,8 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SweepData as CoreSweepData
+
+    from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as CoreDistribution,
     FreqSweepType as CoreSweepType,
@@ -149,7 +151,7 @@ class SweepData:
         start_f=0.0,
         end_f=10e9,
         step=10e6,
-        core: "GrpcSweepData" = None,
+        core: "CoreSweepData" = None,
         simsetup: "SimulationSetup" = None,
     ):
         self._pedb = pedb
@@ -388,11 +390,6 @@ class SweepData:
             Frequency sweep string.
         """
         return self.core.frequency_string.strip().split("\t\n")
-
-    @frequency_string.setter
-    def frequency_string(self, value: str):
-        self.core.frequency_string = value
-        self._update_sweep()
 
     @property
     def enforce_causality(self) -> bool:

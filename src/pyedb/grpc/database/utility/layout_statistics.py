@@ -111,7 +111,7 @@ class LayoutStatistics(object):
             self._nb_vias = value
 
     @property
-    def occupying_ratio(self) -> float:
+    def occupying_ratio(self) -> dict[str, float]:
         """Occupying ratio.
 
         Returns
@@ -129,7 +129,7 @@ class LayoutStatistics(object):
             self._occupying_ratio = value
 
     @property
-    def occupying_surface(self) -> bool:
+    def occupying_surface(self) -> dict[str, float]:
         """Occupying surface.
 
         Returns

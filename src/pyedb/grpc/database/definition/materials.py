@@ -51,10 +51,6 @@ from pyedb.grpc.database.utility.value import Value
 
 logger = logging.getLogger(__name__)
 
-# TODO: Once we are Python3.9+ change PositiveInt implementation like
-# from annotated_types import Gt
-# from typing_extensions import Annotated
-# PositiveFloat = Annotated[float, Gt(0)]
 try:
     from annotated_types import Gt
     from typing_extensions import Annotated
@@ -94,7 +90,7 @@ def get_line_float_value(line):
     - permittivity='12'.
     """
     try:
-        return float(re.split(",|=", line)[-1].strip("'\n)"))
+        return float(re.split(", | =", line)[-1].strip("'\n)"))
     except ValueError:
         return None
 
@@ -378,7 +374,12 @@ class Material:
 
     @loss_tangent.setter
     def loss_tangent(self, value):
-        """Set material loss tangent."""
+        """Set material loss tangent.
+
+        .. deprecated:: v0.70.0
+                Use property dielectric_loss_tangent instead.
+
+        """
         warnings.warn(
             "This method is deprecated and will soon be removed. Use property dielectric_loss_tangent instead.",
             DeprecationWarning,

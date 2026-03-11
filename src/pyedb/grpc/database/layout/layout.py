@@ -44,7 +44,6 @@ from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
 from pyedb.grpc.database.net.differential_pair import DifferentialPair
 from pyedb.grpc.database.net.extended_net import ExtendedNet
 from pyedb.grpc.database.net.net_class import NetClass
-from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -141,7 +140,7 @@ class Layout:
         return [Net(self._pedb, net) for net in self.core.nets]
 
     @property
-    def bondwires(self) -> list[Bondwire]:
+    def bondwires(self) -> list[Primitive]:
         """Bondwires.
 
         Returns
@@ -235,7 +234,7 @@ class Layout:
         layer_name: Union[str, list] = None,
         name: Union[str, list] = None,
         net_name: Union[str, list] = None,
-    ) -> list[any]:
+    ) -> list[Primitive]:
         """Find a primitive objects by layer name.
         Parameters
         ----------
@@ -246,22 +245,33 @@ class Layout:
             Name of the primitive.
         net_name : str, list, optional
             Name of the primitive.
+
         Returns
         -------
         List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
             List of Primitive.
         """
-        if layer_name:
-            layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
-        if name:
-            name = name if isinstance(name, list) else [name]
-        if net_name:
-            net_name = net_name if isinstance(net_name, list) else [net_name]
-        prims = self.primitives
-        prims = [i for i in prims if i.aedt_name in name] if name is not None else prims
-        prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
-        prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
-        return prims
+        # Convert filters to sets for O(1) membership lookup instead of O(n) list search.
+        # Empty strings / empty lists are treated as "no filter" (falsy check preserved).
+        name_set = set(name if isinstance(name, list) else [name]) if name else None
+        layer_set = set(layer_name if isinstance(layer_name, list) else [layer_name]) if layer_name else None
+        net_set = set(net_name if isinstance(net_name, list) else [net_name]) if net_name else None
+
+        # No active filter – return all primitives immediately.
+        if name_set is None and layer_set is None and net_set is None:
+            return self.primitives
+
+        # Single pass over primitives, evaluating all active filters at once.
+        result = []
+        for prim in self.primitives:
+            if name_set is not None and prim.aedt_name not in name_set:
+                continue
+            if layer_set is not None and prim.layer_name not in layer_set:
+                continue
+            if net_set is not None and prim.net_name not in net_set:
+                continue
+            result.append(prim)
+        return result
 
     def find_padstack_instances(
         self,

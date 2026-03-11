@@ -893,7 +893,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.get_backdrill_type()
 
     @property
-    def backdrill_top(self) -> bool:
+    def backdrill_top(self) -> bool | None:
         if self.core.get_back_drill_type(False).value == 0:
             return False
         else:
@@ -1421,7 +1421,7 @@ class PadstackInstance(conn_obj.ConnObj):
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
 
-    def in_voids(self, net_name=None, layer_name=None) -> list[any]:
+    def in_voids(self, net_name=None, layer_name=None) -> list[PadstackInstance]:
         """Check if this padstack instance is in any void.
 
         Parameters
@@ -1720,7 +1720,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
     def get_reference_pins(
         self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True, pinlist_position=None
-    ) -> list[any]:
+    ) -> list[PadstackInstance]:
         """Search for reference pins using given criteria.
 
         Parameters
@@ -1743,6 +1743,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         Examples
         --------
+        >>> from pyedb import Edb
         >>> edbapp = Edb("target_path")
         >>> pin = edbapp.components.instances["J5"].pins["19"]
         >>> reference_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0,

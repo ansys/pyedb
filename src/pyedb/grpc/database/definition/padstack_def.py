@@ -135,7 +135,7 @@ class PadProperties:
             )
 
     @property
-    def parameters_values(self):
+    def parameters_values(self) -> list[float] | None:
         """Parameters.
 
         Returns
@@ -146,7 +146,7 @@ class PadProperties:
         try:
             return [Value(i) for i in self._pad_parameter_value[1]]
         except TypeError:
-            return []
+            return None
 
     @parameters_values.setter
     def parameters_values(self, value):
@@ -155,12 +155,12 @@ class PadProperties:
         self._update_pad_parameters_parameters(params=value)
 
     @property
-    def parameters_values_string(self):
+    def parameters_values_string(self) -> list[str] | None:
         """Parameters value in string format."""
         try:
             return [str(i) for i in self._pad_parameter_value[1]]
         except TypeError:
-            return []
+            return None
 
     @property
     def polygon_data(self) -> CorePolygonData:
