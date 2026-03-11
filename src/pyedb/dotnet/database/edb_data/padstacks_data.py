@@ -23,6 +23,7 @@
 from collections import OrderedDict
 import math
 import re
+import warnings
 
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.primitive.primitive import Connectable
