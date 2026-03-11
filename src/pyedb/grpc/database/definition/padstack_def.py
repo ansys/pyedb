@@ -744,7 +744,7 @@ class PadstackDef:
         layers = self._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._pedb._pedb.nets.signal_nets.keys())]
+            signal_nets = [i for i in list(self._pedb.nets.signal.keys())]
         topl, topz, bottoml, bottomz = self._pedb.stackup.limits(True)
         if self.start_layer in layers:
             start_elevation = layers[self.start_layer].lower_elevation
