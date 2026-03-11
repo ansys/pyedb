@@ -334,7 +334,7 @@ class Padstacks(object):
         return vias
 
     @property
-    @deprecated_property
+    @deprecated_property("use pin_groups property instead.")
     def pingroups(self) -> List[Any]:
         """All Layout Pin groups.
 

@@ -1466,7 +1466,7 @@ class EdbPadstacks(object):
                     instances = [inst for inst in instances if inst.component_pin in component_pin]
             return instances
 
-    @deprecated()
+    @deprecated("use get_instances method instead.")
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
 

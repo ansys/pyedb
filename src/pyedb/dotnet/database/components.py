@@ -730,7 +730,7 @@ class Components(object):
                 )
         return True
 
-    @deprecated()
+    @deprecated("use excitation_manager.create_port_on_pins method instead")
     def create_port_on_pins(
         self,
         refdes,
@@ -741,6 +741,13 @@ class Components(object):
         pec_boundary=False,
         pingroup_on_single_pin=False,
     ):
+        """Create a port on pins.
+
+        .. deprecated:: 0.70.0
+           Use :func:`pyedb.dotnet.database.excitation_manager.ExcitationManager.create_port
+
+        """
+
         self._pedb.excitation_manager.create_port_on_pins(
             refdes,
             pins,
@@ -1401,7 +1408,7 @@ class Components(object):
                     return None
         return componentDefinition
 
-    @deprecated()
+    @deprecated("use create method instead.")
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover

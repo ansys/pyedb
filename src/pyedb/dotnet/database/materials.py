@@ -274,7 +274,7 @@ class Materials(object):
         except MaterialModelException:
             raise ValueError("Use realistic values to define DS model.")
 
-    @deprecated()
+    @deprecated("use add_djordjevic_sarkar_dielectric method instead.")
     def add_djordjevicsarkar_dielectric(
         self,
         name,

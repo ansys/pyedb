@@ -108,7 +108,7 @@ class EdbSiwave(object):
         return self._pedb.active_db
 
     @property
-    @deprecated_property
+    @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
@@ -267,7 +267,7 @@ class EdbSiwave(object):
             pass
         return pos_pingroup_terminal.GetName()
 
-    @deprecated()
+    @deprecated("use excitation_manager.create_circuit_port_on_pin method instead.")
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
 
@@ -302,7 +302,7 @@ class EdbSiwave(object):
             pos_pin=pos_pin, neg_pin=neg_pin, impedance=impedance, port_name=port_name
         )
 
-    @deprecated()
+    @deprecated("use excitation_manager.create_port_between_pin_and_layer method instead.")
     def create_port_between_pin_and_layer(
         self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
     ):
@@ -338,7 +338,7 @@ class EdbSiwave(object):
             impedance=impedance,
         )
 
-    @deprecated()
+    @deprecated("use excitation_manager.create_voltage_source_on_pin method instead.")
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -379,7 +379,7 @@ class EdbSiwave(object):
             source_name=source_name,
         )
 
-    @deprecated()
+    @deprecated("use excitation_manager.create_current_source_on_pin method instead.")
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -420,7 +420,7 @@ class EdbSiwave(object):
             source_name=source_name,
         )
 
-    @deprecated()
+    @deprecated("use excitation_manager.create_resistor_on_pin instead.")
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a Resistor boundary between two given pins..
 

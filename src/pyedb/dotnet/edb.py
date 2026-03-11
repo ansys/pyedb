@@ -571,7 +571,7 @@ class Edb:
         return {i.name: i for i in self.layout.terminals}
 
     @property
-    @deprecated_property("use edb.ports property instead.")
+    @deprecated_property("use ports property instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 

@@ -114,7 +114,7 @@ class Modeler(object):
         self._primitives_by_layer = None
 
     @property
-    @deprecated_property("use edb.layout.primitives property instead")
+    @deprecated_property("use layout.primitives property instead")
     def primitives(self):
         """Primitives.
 

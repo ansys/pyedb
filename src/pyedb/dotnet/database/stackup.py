@@ -254,7 +254,7 @@ class LayerCollection(object):
         return obj
 
     @property
-    @deprecated_property
+    @deprecated_property("use layers property instead.")
     def stackup_layers(self):
         """Retrieve the dictionary of signal and dielectric layers."""
         return self.layers

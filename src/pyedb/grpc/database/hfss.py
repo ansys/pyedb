@@ -206,7 +206,7 @@ class Hfss:
             nets[net] = self._pedb.nets.nets[net].get_smallest_trace_width()
         return nets
 
-    @deprecated("use edb.excitation_manager.create_edge_port method instead")
+    @deprecated("use excitation_manager.create_edge_port method instead")
     def create_edge_port(
         self,
         location,
@@ -344,7 +344,7 @@ class Hfss:
             terms_bbox.append(CorePolygonData([ll[0] - dim, ll[1] - dim, ur[0] + dim, ur[1] + dim]))
         return CorePolygonData.bbox_of_polygons(terms_bbox)
 
-    @deprecated("use edb.simulation_setups.create_simulation_setup method instead")
+    @deprecated("use simulation_setups.create_simulation_setup method instead")
     def add_setup(
         self,
         name=None,

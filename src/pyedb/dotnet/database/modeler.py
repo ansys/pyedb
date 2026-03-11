@@ -71,7 +71,7 @@ class Modeler(object):
         self._pedb = p_edb
 
     @property
-    @deprecated_property
+    @deprecated_property("use layout.primitives property instead.")
     def primitives(self):
         """Primitives.
 
@@ -1153,7 +1153,7 @@ class Modeler(object):
         return self._pedb.active_db
 
     @property
-    @deprecated_property
+    @deprecated_property("use stackup.layers property instead.")
     def layers(self):
         """Dictionary of layers.
 
@@ -1164,7 +1164,6 @@ class Modeler(object):
         """
         return self._pedb.stackup.layers
 
-    @deprecated()
     def get_primitive(self, primitive_id):
         """Retrieve primitive from give id.
 
@@ -1187,7 +1186,6 @@ class Modeler(object):
                     return v
 
     @property
-    @deprecated_property
     def polygons_by_layer(self):
         """Primitives with layer names as keys.
 
@@ -1202,7 +1200,6 @@ class Modeler(object):
         return _primitives_by_layer
 
     @property
-    @deprecated_property
     def primitives_by_net(self):
         """Primitives with net names as keys.
 
@@ -1217,7 +1214,6 @@ class Modeler(object):
         return _prim_by_net
 
     @property
-    @deprecated_property
     def primitives_by_layer(self):
         """Primitives with layer names as keys.
 
@@ -1241,7 +1237,6 @@ class Modeler(object):
         return _primitives_by_layer
 
     @property
-    @deprecated_property
     def rectangles(self):
         """Rectangles.
 
@@ -1254,7 +1249,6 @@ class Modeler(object):
         return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
 
     @property
-    @deprecated_property
     def circles(self):
         """Circles.
 
@@ -1267,7 +1261,6 @@ class Modeler(object):
         return [i for i in self.primitives if isinstance(i, CircleDotNet)]
 
     @property
-    @deprecated_property
     def paths(self):
         """Paths.
 
@@ -1279,7 +1272,6 @@ class Modeler(object):
         return [i for i in self.primitives if i.primitive_type == "path"]
 
     @property
-    @deprecated_property
     def polygons(self):
         """Polygons.
 
