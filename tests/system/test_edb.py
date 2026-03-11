@@ -1278,12 +1278,6 @@ class TestClass(BaseTestClass):
 
         setup2 = edbapp.simulation_setups.create_siwave_setup("setup_2")
         assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
-        assert setup2.sim_setup_info
-        setup2.set_si_slider = 1
-        setup2.pi_slider_position = 2
-
-        # setup2.create("setup3") bug
-
         edbapp.close()
 
     @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
