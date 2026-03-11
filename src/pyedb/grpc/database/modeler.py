@@ -1378,6 +1378,16 @@ class Modeler(object):
 
         from pyedb.generic.general_methods import generate_unique_name
 
+        x_ = self._pedb.value(x)
+        y_ = self._pedb.value(y)
+        z_ = self._pedb.value(z)
+        rotation_x_ = self._pedb.value(rotation_x)
+        rotation_y_ = self._pedb.value(rotation_y)
+        rotation_z_ = self._pedb.value(rotation_z)
+        local_origin_x_ = self._pedb.value(local_origin_x)
+        local_origin_y_ = self._pedb.value(local_origin_y)
+        local_origin_z_ = self._pedb.value(local_origin_z)
+
         instance_name = generate_unique_name(cell_name, n=2)
         edb_cell = Cell.find(self._pedb._db, CellType.CIRCUIT_CELL, cell_name)
         cell_inst = GrpcCellInstance.create(self._pedb.active_layout.core, instance_name, edb_cell.layout)
@@ -1386,33 +1396,33 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x).core * -1),
-            (self._pedb.value(local_origin_y).core * -1),
-            (self._pedb.value(local_origin_z).core * -1),
+            (local_origin_x_.core * -1),
+            (local_origin_y_.core * -1),
+            (local_origin_z_.core * -1),
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 
         # Rotation X
         t3d_rotation_x = t3d.create_from_axis_and_angle(
-            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
+            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x_)
         )
         t3d = t3d + t3d_rotation_x
 
         # Rotation Y
         t3d_rotation_y = t3d.create_from_axis_and_angle(
-            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y)
+            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y_)
         )
         t3d = t3d + t3d_rotation_y
 
         # Rotation Z
         t3d_rotation_z = t3d.create_from_axis_and_angle(
-            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z)
+            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z_)
         )
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(self._pedb.value(x).core, self._pedb.value(y).core, self._pedb.value(z).core)
+        location = GrpcPoint3DData(x_.core, y_.core, z_.core)
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 
@@ -1461,6 +1471,16 @@ class Modeler(object):
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
 
+        x_ = self._pedb.value(x)
+        y_ = self._pedb.value(y)
+        z_ = self._pedb.value(z)
+        rotation_x_ = self._pedb.value(rotation_x)
+        rotation_y_ = self._pedb.value(rotation_y)
+        rotation_z_ = self._pedb.value(rotation_z)
+        local_origin_x_ = self._pedb.value(local_origin_x)
+        local_origin_y_ = self._pedb.value(local_origin_y)
+        local_origin_z_ = self._pedb.value(local_origin_z)
+
         mcad_model = GrpcMcadModel.create_3d_comp(layout=self._pedb.active_layout.core, filename=str(a3dcomp_path))
         cell_inst = mcad_model.cell_instance
         cell_inst.placement_3d = True
@@ -1468,33 +1488,33 @@ class Modeler(object):
 
         # offsets
         location = GrpcPoint3DData(
-            (self._pedb.value(local_origin_x * -1)).core,
-            (self._pedb.value(local_origin_y * -1)).core,
-            (self._pedb.value(local_origin_z * -1)).core,
+            (local_origin_x_ * -1).core,
+            (local_origin_y_ * -1).core,
+            (local_origin_z_ * -1).core,
         )
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 
         # Rotation X
         t3d_rotation_x = t3d.create_from_axis_and_angle(
-            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x)
+            axis=GrpcPoint3DData(1.0, 0.0, 0.0), angle=self._pedb.value(rotation_x_)
         )
         t3d = t3d + t3d_rotation_x
 
         # Rotation Y
         t3d_rotation_y = t3d.create_from_axis_and_angle(
-            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y)
+            axis=GrpcPoint3DData(0.0, 1.0, 0.0), angle=self._pedb.value(rotation_y_)
         )
         t3d = t3d + t3d_rotation_y
 
         # Rotation Z
         t3d_rotation_z = t3d.create_from_axis_and_angle(
-            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z)
+            axis=GrpcPoint3DData(0.0, 0.0, 1.0), angle=self._pedb.value(rotation_z_)
         )
         t3d = t3d + t3d_rotation_z
 
         # Place
-        location = GrpcPoint3DData(self._pedb.value(x).core, self._pedb.value(y).core, self._pedb.value(z).core)
+        location = GrpcPoint3DData(x_.core, y_.core, z_.core)
         t3d_offset = t3d.create_from_offset(offset=location)
         t3d = t3d + t3d_offset
 

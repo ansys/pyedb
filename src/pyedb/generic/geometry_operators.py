@@ -2418,7 +2418,7 @@ class GeometryOperators(object):
                 angle = column[k]
 
                 # Check if both indexes (points) are in any of the sets (lines)
-                # Note that lines containing `i` are pre-selected outside this loop.
+                # Note that lines containing `i` are preselected outside this loop.
                 # This makes the check O(n^2) instead of O(n^3)
                 found = any(j in l for l in lines_to_check)
                 if found:
