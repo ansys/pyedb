@@ -31,8 +31,10 @@ from collections import OrderedDict
 import json
 import logging
 import math
-from typing import Any, Dict, List, Optional, Tuple, Union
-import warnings
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+
+if TYPE_CHECKING:
+    from pyedb import Edb
 
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation
 from ansys.edb.core.definition.solder_ball_property import (
@@ -131,10 +133,10 @@ class LayerCollection:
         ...     "NewTopLayer", layer_type="signal", thickness="0.1mm", material="copper"
         ... )
         """
-        thickness = Value(0.0)
+        thickness = 0.0
         if "thickness" in kwargs:
-            thickness = Value(kwargs["thickness"])
-        elevation = Value(0.0)
+            thickness = self._pedb._value_setter(kwargs["thickness"])
+        elevation = 0.0
         layer = StackupLayer.create(
             layout=self._pedb.layout,
             name=name,
@@ -173,10 +175,10 @@ class LayerCollection:
         ...     "NewBottomLayer", layer_type="signal", thickness="0.1mm", material="copper"
         ... )
         """
-        thickness = Value(0.0)
+        thickness = 0.0
         if "thickness" in kwargs:
-            thickness = Value(kwargs["thickness"])
-        elevation = Value(0.0)
+            thickness = self._pedb._value_setter(kwargs["thickness"])
+        elevation = 0.0
         if "type" in kwargs:
             _layer_type = kwargs["type"]
         else:
@@ -226,10 +228,10 @@ class LayerCollection:
         >>> edb = Edb()
         >>> new_layer = edb.stackup.add_layer_below("NewLayer", "TopLayer", layer_type="dielectric", thickness="0.05mm")
         """
-        thickness = Value(0.0)
+        thickness = 0.0
         if "thickness" in kwargs:
-            thickness = Value(kwargs["thickness"])
-        elevation = Value(0.0)
+            thickness = self._pedb._value_setter(kwargs["thickness"])
+        elevation = 0.0
         if "type" in kwargs:
             layer_type = kwargs["type"]
         if "material" in kwargs:
@@ -275,10 +277,10 @@ class LayerCollection:
         >>> edb = Edb()
         >>> new_layer = edb.stackup.add_layer_above("NewLayer", "BottomLayer", layer_type="signal", thickness="0.05mm")
         """
-        thickness = Value(0.0)
+        thickness = 0.0
         if "thickness" in kwargs:
-            thickness = Value(kwargs["thickness"])
-        elevation = Value(0.0)
+            thickness = self._pedb._value_setter(kwargs["thickness"])
+        elevation = 0.0
         layer = StackupLayer.create(
             layout=self._pedb.layout,
             name=name,
@@ -778,13 +780,13 @@ class Stackup:
             material = "copper"
         elif layer_type == "dielectric":
             material = "FR4_epoxy"
-        thickness = Value(thickness, self._pedb.active_db)
+        thickness = self._pedb._value_setter(thickness)
         layer = StackupLayer.create(
             layout=self._pedb.active_layout,
             name=layer_name,
             layer_type=layer_type,
             thickness=thickness,
-            elevation=Value(0),
+            elevation=0.0,
             material=material,
         )
         return layer
@@ -941,7 +943,7 @@ class Stackup:
             new_layer.negative = is_negative
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
-                new_layer.lower_elevation = Value(elevation)
+                new_layer.lower_elevation = self._pedb._value_setter(elevation)
             if etch_factor:
                 new_layer.etch_factor = etch_factor
             if enable_roughness:
@@ -1225,7 +1227,7 @@ class Stackup:
         else:
             return False
 
-    def limits(self, only_metals: bool = False) -> Tuple[str, str]:
+    def limits(self, only_metals: bool = False) -> Tuple[any, any, any, any]:
         """Retrieve stackup limits.
 
         Parameters
@@ -1262,12 +1264,6 @@ class Stackup:
         bool
             ``True`` when successful.
 
-        Examples
-        --------
-        >>> edb = Edb(edbpath=targetfile, edbversion="2021.2")
-        >>> edb.stackup.flip_design()
-        >>> edb.save()
-        >>> edb.close_edb()
         """
         try:
             lc = self._layer_collection
@@ -1276,8 +1272,8 @@ class Stackup:
             max_elevation = 0.0
             for layer in lc.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET):
                 if "RadBox" not in layer.name:  # Ignore RadBox
-                    lower_elevation = Value(layer.clone().lower_elevation) * 1.0e6
-                    upper_elevation = Value(layer.Clone().upper_elevation) * 1.0e6
+                    lower_elevation = Value(layer.lower_elevation) * 1.0e6
+                    upper_elevation = Value(layer.upper_elevation) * 1.0e6
                     max_elevation = max([max_elevation, lower_elevation, upper_elevation])
 
             non_stackup_layers = []
@@ -1393,7 +1389,7 @@ class Stackup:
                 comp_prop = val.component_property
                 port_property = comp_prop.port_property
                 port_property.reference_size_auto = False
-                port_property.reference_size = (Value(0.0), Value(0.0))
+                port_property.reference_size = (0.0, 0.0)
                 comp_prop.port_property = port_property
                 val.component_property = comp_prop
 
@@ -1503,9 +1499,9 @@ class Stackup:
         elif flipped_stackup:
             self.flip_design()
         edb_cell = edb.active_cell
-        _angle = Value(angle * math.pi / 180.0)
-        _offset_x = Value(offset_x)
-        _offset_y = Value(offset_y)
+        _angle = self._pedb._value_setter(angle * math.pi / 180.0)
+        _offset_x = self._pedb._value_setter(offset_x)
+        _offset_y = self._pedb._value_setter(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells([edb_cell])
@@ -1606,13 +1602,9 @@ class Stackup:
                     solder_height = max(lay_solder_height, solder_height)
                     self._remove_solder_pec(lay.name)
 
-        rotation = Value(0.0)
-        if flipped_stackup:
-            rotation = Value(math.pi)
-
         edb_cell = edb.active_cell
-        _offset_x = Value(offset_x)
-        _offset_y = Value(offset_y)
+        _offset_x = self._pedb._value_setter(offset_x)
+        _offset_y = self._pedb._value_setter(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
@@ -1647,10 +1639,10 @@ class Stackup:
             elevation = target_bottom_elevation - source_stack_top_elevation
             solder_height = -solder_height
 
-        h_stackup = Value(elevation + solder_height)
+        h_stackup = self._pedb._value_setter(elevation + solder_height)
 
-        zero_data = Value(0.0)
-        one_data = Value(1.0)
+        zero_data = 0.0
+        one_data = 1.0
         point3d_t = CorePoint3DData(_offset_x, _offset_y, h_stackup)
         point_loc = CorePoint3DData(zero_data, zero_data, zero_data)
         point_from = CorePoint3DData(one_data, zero_data, zero_data)
@@ -1731,8 +1723,8 @@ class Stackup:
                     solder_height = max(lay_solder_height, solder_height)
                     component_edb.stackup._remove_solder_pec(lay.name)
         edb_cell = component_edb.active_cell
-        _offset_x = Value(offset_x)
-        _offset_y = Value(offset_y)
+        _offset_x = self._pedb._value_setter(offset_x)
+        _offset_y = self._pedb._value_setter(offset_y)
 
         if edb_cell.name not in self._pedb.cell_names:
             list_cells = self._pedb.copy_cells(edb_cell)
@@ -1742,12 +1734,12 @@ class Stackup:
                 edb_cell = cell
         # Keep Cell Independent
         edb_cell.is_black_box = True
-        rotation = Value(0.0)
+        rotation = 0.0
         if flipped_stackup:
-            rotation = Value(math.pi)
+            rotation = math.pi
 
-        _offset_x = Value(offset_x)
-        _offset_y = Value(offset_y)
+        _offset_x = offset_x
+        _offset_y = offset_y
 
         instance_name = generate_unique_name(edb_cell.name, n=2)
 
@@ -1783,8 +1775,8 @@ class Stackup:
 
         h_stackup = elevation + solder_height
 
-        zero_data = Value(0.0)
-        one_data = Value(1.0)
+        zero_data = 0.0
+        one_data = 1.0
         point3d_t = CorePoint3DData(_offset_x, _offset_y, h_stackup)
         point_loc = CorePoint3DData(zero_data, zero_data, zero_data)
         point_from = CorePoint3DData(one_data, zero_data, zero_data)
@@ -1895,7 +1887,7 @@ class Stackup:
         """
         temp_data = {name: 0 for name, _ in self.signal_layers.items()}
         outline_area = 0
-        for i in self._pedb.modeler.primitives:
+        for i in self._pedb.layout.primitives:
             layer_name = i.layer.name
             if layer_name.lower() == "outline":
                 if i.area() > outline_area:

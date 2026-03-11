@@ -24,6 +24,7 @@ import re
 from typing import Any, List, Optional, Union
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
+from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
@@ -68,7 +69,7 @@ class LayoutValidation:
             net_list = [net_list]
         _objects_list = {}
         _padstacks_list = {}
-        for prim in self._pedb.modeler.primitives:
+        for prim in self._pedb.layout.primitives:
             n_name = prim.net_name
             if n_name in _objects_list:
                 _objects_list[n_name].append(prim)
@@ -169,13 +170,35 @@ class LayoutValidation:
         """
         timer_start = self._pedb.logger.reset_timer()
 
+        def area_calc(elem: List[int]) -> float:
+            """Calculate total area for a group of element ids.
+
+            The layout groups are stored as lists of element ids; resolve to
+            actual objects using ``obj_dict`` before computing area.
+            """
+            total = 0.0
+            for el_id in elem:
+                obj = obj_dict.get(el_id)
+                if obj is None:
+                    continue
+                try:
+                    if obj.layout_obj.obj_type.value == 0:
+                        if not getattr(obj, "is_void", False):
+                            total += obj.area()
+                except Exception as e:
+                    self._pedb._logger.warning(
+                        f"A(n) {type(e).__name__} error occurred while calculating area "
+                        f"for element {el_id} - Default value of 0 is used: {str(e)}"
+                    )
+            return total
+
         if not net_list:
             net_list = list(self._pedb.nets.nets.keys())
         elif isinstance(net_list, str):
             net_list = [net_list]
         _objects_list = {}
         _padstacks_list = {}
-        for prim in self._pedb.modeler.primitives:
+        for prim in self._pedb.layout.primitives:
             if not prim.net.is_null:
                 n_name = prim.net.name
                 if n_name in _objects_list:
@@ -200,9 +223,13 @@ class LayoutValidation:
             for i in _padstacks_list.get(net, []):
                 obj_dict[i.id] = i
             objs = list(obj_dict.values())
+            obj_dict_copy = {id: i for id, i in obj_dict.items()}
             l = len(objs)
             while l > 0:
-                l1 = self._layout_instance.get_connected_objects(objs[0].object_instance, False)
+                l1 = [
+                    i.layout_obj.edb_uid
+                    for i in self._layout_instance.get_connected_objects(objs[0].object_instance, False)
+                ]
                 l1.append(objs[0].id)
                 repetition = False
                 for group in net_groups:
@@ -211,32 +238,10 @@ class LayoutValidation:
                         repetition = True
                 if not repetition:
                     net_groups.append(l1)
-                objs = [i for i in objs if i.id not in l1]
+                obj_dict_copy = {id: i for id, i in obj_dict_copy.items() if id not in l1}
+                objs = list(obj_dict_copy.values())
                 l = len(objs)
             if len(net_groups) > 1:
-
-                def area_calc(elem: List[int]) -> float:
-                    """Calculate total area for a group of element ids.
-
-                    The layout groups are stored as lists of element ids; resolve to
-                    actual objects using ``obj_dict`` before computing area.
-                    """
-                    total = 0.0
-                    for el_id in elem:
-                        obj = obj_dict.get(el_id)
-                        if obj is None:
-                            continue
-                        try:
-                            if obj.layout_obj.obj_type.value == 0:
-                                if not getattr(obj, "is_void", False):
-                                    total += obj.area()
-                        except Exception as e:
-                            self._pedb._logger.warning(
-                                f"A(n) {type(e).__name__} error occurred while calculating area "
-                                f"for element {el_id} - Default value of 0 is used: {str(e)}"
-                            )
-                    return total
-
                 if order_by_area:
                     areas = [area_calc(i) for i in net_groups]
                     sorted_list = [x for _, x in sorted(zip(areas, net_groups), reverse=True)]
@@ -270,17 +275,18 @@ class LayoutValidation:
 
                     else:
                         new_net_name = generate_unique_name(net, n=6)
-                        net_obj = self._pedb.nets.find_or_create_net(new_net_name)
+                        net_obj = CoreNetClass.create(self._pedb.active_layout.core, new_net_name)
+                        # net_obj = self._pedb.nets.find_or_create_net(new_net_name)
                         if net_obj:
-                            new_nets.append(net_obj.name)
+                            new_nets.append(new_net_name)
                             for geo in disjoints:
                                 try:
-                                    obj_dict[geo].net_name = net_obj.name
+                                    obj_dict[geo].net_name = new_net_name
                                 except KeyError:
                                     pass
                             disjoints_objects.extend(disjoints)
-        self._pedb._logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
-        self._pedb._logger.info_timer("Disjoint Cleanup Completed.", timer_start)
+        self._pedb.logger.info("Found {} objects in {} new nets.".format(len(disjoints_objects), len(new_nets)))
+        self._pedb.logger.info_timer("Disjoint Cleanup Completed.", timer_start)
 
         return new_nets
 

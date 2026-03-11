@@ -100,7 +100,6 @@ class TestClass(BaseTestClass):
         assert expected_result == material_dict
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=not GRPC, reason="Need to refactor dielectric model for DotNet")
     def test_material_with_dc_model_to_dict(self):
         """Evaluate material conversion into a dictionary."""
         edbapp = self.edb_examples.create_empty_edb()

@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.primitive.circle import Circle
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.net.net import Net as CoreNet
@@ -37,22 +38,19 @@ from pyedb.grpc.database.primitive.rectangle import Rectangle
 
 
 class Net:
-    """Manages EDB functionalities for net objects and their primitives.
-
-    Inherits properties from EDB objects and provides additional functionality
-    specific to nets.
+    """Class managing :class:`Net <ansys.edb.core.net.net.Net>` objects in EDB database.
 
     Parameters
     ----------
-    pedb : :class:`pyedb.Edb`
-        Main EDB object.
-    raw_net :
-        Raw net object from gRPC.
+    pedb : :class:`.Edb`
+        Parent EDB object.
+    core : :class:`ansys.edb.core.net.net.Net`
+        Core EDB Net object to manage.
 
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb_net = edb.nets["GND"]
     >>> edb_net.name
     'GND'
@@ -170,7 +168,7 @@ class Net:
         return [PadstackInstance(self._pedb, i) for i in self.core.padstack_instances]
 
     @property
-    def components(self) -> dict[str, any]:
+    def components(self) -> dict[str, Component]:
         """Components connected to this net.
 
         Returns
@@ -209,7 +207,7 @@ class Net:
         """
         return cls(layout._pedb, CoreNet.create(layout=layout.core, name=name))
 
-    def find_dc_short(self, fix=False) -> list[list[str, str]]:
+    def find_dc_short(self, fix=False) -> list[list[str]]:
         """Find DC-shorted nets connected to this net.
 
         Parameters

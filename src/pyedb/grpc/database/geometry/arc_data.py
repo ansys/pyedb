@@ -21,8 +21,6 @@
 # SOFTWARE.
 
 
-from ansys.edb.core.geometry.arc_data import ArcData as CoreArcData
-
 from pyedb.grpc.database.utility.value import Value
 
 

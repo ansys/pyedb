@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import (
@@ -183,7 +182,8 @@ class ExcitationSources(EdgeTerminal):
     """
 
     def __init__(self, pedb, edb_terminal):
-        Terminal.__init__(self, pedb, edb_terminal)
+        super().__init__(pedb, edb_terminal)
+        self._pedb = pedb
 
 
 class BundleWavePort(BundleTerminal):

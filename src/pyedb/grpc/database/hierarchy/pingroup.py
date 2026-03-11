@@ -284,9 +284,9 @@ class PinGroup:
         """
         terminal = self.create_terminal()
         terminal.boundary_type = CoreBoundaryType.VOLTAGE_SOURCE
-        terminal.source_amplitude = Value(magnitude)
-        terminal.source_phase = Value(phase)
-        terminal.impedance = Value(impedance)
+        terminal.source_amplitude = self._pedb._value_setter(magnitude)
+        terminal.source_phase = self._pedb._value_setter(phase)
+        terminal.impedance = self._pedb._value_setter(impedance)
         return terminal
 
     def create_voltage_probe_terminal(self, impedance=1e6) -> PinGroupTerminal:
@@ -305,7 +305,7 @@ class PinGroup:
         """
         terminal = self.create_terminal()
         terminal.boundary_type = CoreBoundaryType.VOLTAGE_PROBE
-        terminal.impedance = Value(impedance)
+        terminal.impedance = self._pedb._value_setter(impedance)
         return terminal
 
     def create_port_terminal(self, impedance=50) -> PinGroupTerminal:
@@ -324,7 +324,7 @@ class PinGroup:
         """
         terminal = self.create_terminal()
         terminal.boundary_type = "port"
-        terminal.impedance = Value(impedance)
+        terminal.impedance = self._pedb._value_setter(impedance)
         terminal.is_circuit_port = True
         return terminal
 

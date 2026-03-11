@@ -26,9 +26,6 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from ansys.edb.core.layout.voltage_regulator import (
-    VoltageRegulator as CoreVoltageRegulator,
-)
 
 from pyedb.grpc.database.utility.value import Value
 
@@ -79,7 +76,7 @@ class VoltageRegulator:
 
     @load_regulator_current.setter
     def load_regulator_current(self, value):
-        self.core.load_regulation_percent = Value(value)
+        self.core.load_regulation_percent = self._pedb._value_setter(value)
 
     @property
     def load_regulation_percent(self) -> float:
@@ -94,7 +91,7 @@ class VoltageRegulator:
 
     @load_regulation_percent.setter
     def load_regulation_percent(self, value):
-        self.core.load_regulation_percent = Value(value)
+        self.core.load_regulation_percent = self._pedb._value_setter(value)
 
     @property
     def negative_remote_sense_pin(self) -> PadstackInstance:
@@ -151,4 +148,4 @@ class VoltageRegulator:
 
     @voltage.setter
     def voltage(self, value):
-        self.core.voltage = Value(value)
+        self.core.voltage = self._pedb._value_setter(value)

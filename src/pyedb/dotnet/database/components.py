@@ -43,14 +43,13 @@ from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.dotnet.database.edb_data.sources import Source, SourceType
+from pyedb.dotnet.database.edb_data.sources import SourceBuilder, SourceType
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.padstack import EdbPadstacks
 from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import (
     _retry_ntimes,
     generate_unique_name,
-    get_filename_without_extension,
 )
 from pyedb.generic.geometry_operators import GeometryOperators
 
@@ -657,8 +656,8 @@ class Components(object):
 
         Parameters
         ----------
-        sources : list[Source]
-            List of ``edb_data.sources.Source`` objects.
+        sources : list[SourceBuilder] or SourceBuilder
+            List of ``edb_data.sources.SourceBuilder`` objects.
 
         Returns
         -------
@@ -669,11 +668,11 @@ class Components(object):
 
         if not sources:  # pragma: no cover
             return False
-        if isinstance(sources, Source):  # pragma: no cover
+        if isinstance(sources, SourceBuilder):  # pragma: no cover
             sources = [sources]
         if isinstance(sources, list):  # pragma: no cover
             for src in sources:
-                if not isinstance(src, Source):  # pragma: no cover
+                if not isinstance(src, SourceBuilder):  # pragma: no cover
                     self._logger.error("List of source objects must be passed as an argument.")
                     return False
         for source in sources:
@@ -748,7 +747,7 @@ class Components(object):
             DeprecationWarning,
             stacklevel=2,
         )
-        self._pedb.source_excitation.create_port_on_pins(
+        self._pedb.excitation_manager.create_port_on_pins(
             refdes,
             pins,
             reference_pins,
@@ -1600,7 +1599,7 @@ class Components(object):
 
         """
         if not modelname:
-            modelname = get_filename_without_extension(modelpath)
+            modelname = Path(modelpath).stem
         edbComponent = self._pedb.layout.find_component_by_name(componentname)
         if edbComponent is None:
             raise ValueError(f"Component {componentname} not found in the layout.")

@@ -20,9 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
 
 import math
-from typing import Union
+from typing import TYPE_CHECKING, Union
+
+if TYPE_CHECKING:
+    from pyedb.grpc.database.net.net import Net
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -33,7 +37,6 @@ from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.layers.stackup_layer import StackupLayer
 from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.primitive.primitive import Primitive
-from pyedb.grpc.database.utility.value import Value
 
 
 class Polygon(Primitive):
@@ -155,7 +158,7 @@ class Polygon(Primitive):
         new_polygon = cls(layout._pedb, edb_object)
         return new_polygon
 
-    def fix_self_intersections(self) -> list[any]:
+    def fix_self_intersections(self) -> list[Polygon]:
         """Remove self intersections if they exist.
 
         Returns
@@ -238,13 +241,14 @@ class Polygon(Primitive):
 
         Examples
         --------
-        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
-            _vector = [Value(pt) for pt in vector]
+            _vector = [self._pedb._value_setter(pt) for pt in vector]
             self.polygon_data = PolygonData(self.polygon_data.core.move(_vector))
             return True
         return False
@@ -274,7 +278,7 @@ class Polygon(Primitive):
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
-                center = CorePointData([Value(center[0]), Value(center[1])])
+                center = CorePointData([self._pedb._value_setter(center[0]), self._pedb._value_setter(center[1])])
                 self.polygon_data = PolygonData(self.polygon_data.core.scale(factor, center))
                 return True
         return False
@@ -296,7 +300,8 @@ class Polygon(Primitive):
 
         Examples
         --------
-        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
+        >>> from pyedb import Edb
+        >>> edbapp = Edb("myproject.aedb")
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.rotate(angle=45)

@@ -45,7 +45,7 @@ class Point3DData:
 
     @x.setter
     def x(self, value):
-        self.core.x = Value(value)
+        self.core.x = value
 
     @property
     def y(self) -> float:
@@ -61,7 +61,7 @@ class Point3DData:
 
     @y.setter
     def y(self, value):
-        self.core.y = Value(value)
+        self.core.y = value
 
     @property
     def z(self) -> float:
@@ -77,4 +77,4 @@ class Point3DData:
 
     @z.setter
     def z(self, value):
-        self.core.z = Value(value)
+        self.core.z = value

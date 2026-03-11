@@ -25,6 +25,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
+    from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
 from ansys.edb.core.net.extended_net import ExtendedNet as CoreExtendedNet
 
@@ -36,7 +37,7 @@ class ExtendedNets:
         self._pedb = pedb
 
     @property
-    def items(self) -> dict[str, any]:
+    def items(self) -> dict[str, ExtendedNet]:
         """Extended nets.
 
         Returns
@@ -265,17 +266,17 @@ class ExtendedNets:
                 if is_power:
                     if include_power:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
+                        ext_net.core.add_net(_nets[i].core)
                         for net in new_ext:
-                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
+                            ext_net.core.add_net(_nets[net].core)
                     else:  # pragma: no cover
                         pass
                 else:
                     if include_signal:
                         ext_net = ExtendedNet.create(self._pedb.layout, i)
-                        ext_net.core.add_net(self._pedb.nets.nets[i].core)
+                        ext_net.core.add_net(_nets[i].core)
                         for net in new_ext:
-                            ext_net.core.add_net(self._pedb.nets.nets[net].core)
+                            ext_net.core.add_net(_nets[net].core)
                     else:  # pragma: no cover
                         pass
 
@@ -339,7 +340,7 @@ class ExtendedNet:
         return {net.name: Net(self._pedb, net) for net in self.core.nets}
 
     @property
-    def components(self) -> dict[str, any]:
+    def components(self) -> dict[str, Component]:
         """Dictionary of components.
 
         Returns

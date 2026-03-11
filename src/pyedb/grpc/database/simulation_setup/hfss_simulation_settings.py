@@ -20,13 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
 import warnings
-
-if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
-        HFSSSimulationSettings as CoreHFSSSimulationSettings,
-    )
 
 from pyedb.grpc.database.simulation_setup.hfss_advanced_meshing_settings import (
     HFSSAdvancedMeshingSettings,
@@ -47,9 +41,10 @@ from pyedb.grpc.database.simulation_setup.hfss_solver_settings import HFSSSolver
 class HFSSSimulationSettings:
     """PyEDB-core HFSS simulation settings class."""
 
-    def __init__(self, pedb, core: "CoreHFSSSimulationSettings"):
-        self.core = core
-        self._pedb = pedb
+    def __init__(self, parent):
+        self._parent = parent
+        self.core = parent.core.settings
+        self._pedb = parent._pedb
 
     @property
     def advanced(self) -> HFSSAdvancedSettings:
@@ -61,7 +56,7 @@ class HFSSSimulationSettings:
         :class:`HFSSAdvancedSettings <pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings>`
 
         """
-        return HFSSAdvancedSettings(self._pedb, self.core.advanced)
+        return HFSSAdvancedSettings(self)
 
     @property
     def advanced_meshing(self) -> HFSSAdvancedMeshingSettings:
@@ -73,7 +68,7 @@ class HFSSSimulationSettings:
         hfss_advanced_meshing_settings.HFSSAdvancedMeshingSettings>`
 
         """
-        return HFSSAdvancedMeshingSettings(self._pedb, self.core.advanced_meshing)
+        return HFSSAdvancedMeshingSettings(self)
 
     @property
     def dcr(self) -> HFSSDCRSettings:
@@ -84,7 +79,7 @@ class HFSSSimulationSettings:
         :class:`HFSSDCRSettings <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings>`
 
         """
-        return HFSSDCRSettings(self._pedb, self.core.dcr)
+        return HFSSDCRSettings(self)
 
     @property
     def general(self) -> HFSSGeneralSettings:
@@ -95,7 +90,7 @@ class HFSSSimulationSettings:
         :class:`HFSSGeneralSettings <pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings>`
 
         """
-        return HFSSGeneralSettings(self._pedb, self.core.general)
+        return HFSSGeneralSettings(self)
 
     @property
     def options(self) -> HFSSSettingsOptions:
@@ -106,7 +101,7 @@ class HFSSSimulationSettings:
         :class:`HFSSSettingsOptions <pyedb.grpc.database.simulation_setup.hfss_settings_options.HFSSSettingsOptions>`
 
         """
-        return HFSSSettingsOptions(self._pedb, self.core.options)
+        return HFSSSettingsOptions(self)
 
     @property
     def solver(self) -> HFSSSolverSettings:
@@ -117,7 +112,7 @@ class HFSSSimulationSettings:
         :class:`HFSSSolverSettings <pyedb.grpc.database.simulation_setup.hfss_solver_settings.HFSSSolverSettings>`
 
         """
-        return HFSSSolverSettings(self._pedb, self.core.solver)
+        return HFSSSolverSettings(self)
 
     @property
     def enhanced_low_frequency_accuracy(self) -> bool:

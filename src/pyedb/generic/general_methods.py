@@ -40,13 +40,13 @@ import sys
 import tempfile
 import time
 from typing import IO, TYPE_CHECKING, Any
-import xml.etree.ElementTree as ET
+import xml.etree.ElementTree as ET  # nosec B405
 
 from pyedb.generic.constants import CSS4_COLORS
 from pyedb.generic.settings import settings
 
 # Backwards-compatible re-exports (decorators were moved to pyedb.misc.decorators)
-from pyedb.misc.decorators import deprecate_argument_name, execution_timer
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_class, execution_timer
 
 if TYPE_CHECKING:
     import pandas as pd
@@ -54,7 +54,6 @@ if TYPE_CHECKING:
 
 __all__ = [
     "installed_ansys_em_versions",
-    "get_filename_without_extension",
     "deprecate_argument_name",
     "execution_timer",
 ]
@@ -69,12 +68,6 @@ _pythonver = sys.version_info[0]
 
 class GrpcApiError(Exception):
     """Error raised when a gRPC API call fails."""
-
-    pass
-
-
-class MethodNotSupportedError(Exception):
-    """Error raised when a method is not supported."""
 
     pass
 
@@ -104,6 +97,7 @@ def installed_ansys_em_versions() -> dict[str, str]:
     return dict(sorted(versions.items(), key=lambda kv: int(kv[0])))
 
 
+@deprecated("Please use pathlib.Path.stem to get the filename without its extension.")
 def get_filename_without_extension(path: str | Path) -> str:
     """Get the filename without its extension.
 
@@ -223,6 +217,7 @@ def generate_unique_name(rootname: str, suffix: str = "", n: int = 6) -> str:
     return unique_name
 
 
+@deprecated("Please use pathlib.Path.as_posix() to normalize path separators.")
 def normalize_path(path_in: str, sep: str | None = None) -> str:
     """Normalize path separators.
 
@@ -559,6 +554,7 @@ def _retry_ntimes(n: int, function: callable, *args: Any, **kwargs: Any) -> None
             raise AttributeError("Error in Executing Method.")
 
 
+@deprecated("Please use time.perf_counter() or time.process_time() for timing functions.")
 def time_fn(fn: callable, *args: Any, **kwargs: Any) -> Any:  # pragma: no cover
     """Time the execution of a function.
 
@@ -585,6 +581,7 @@ def time_fn(fn: callable, *args: Any, **kwargs: Any) -> Any:  # pragma: no cover
     return results
 
 
+@deprecated("Please use math.isclose for comparing floating point numbers.")
 def isclose(a: float, b: float, rel_tol: float = 1e-9, abs_tol: float = 0.0) -> bool:
     """Determine whether two floating point numbers are close in value.
 
@@ -692,6 +689,7 @@ def remove_project_lock(project_path: str) -> bool:  # pragma: no cover
     return True
 
 
+@deprecated("Please use pandas.read_csv for reading CSV files.")
 def read_csv(filename: str, encoding: str = "utf-8") -> list:  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -716,6 +714,7 @@ def read_csv(filename: str, encoding: str = "utf-8") -> list:  # pragma: no cove
     return lines
 
 
+@deprecated("Please use pandas.read_csv for reading CSV files.")
 def read_csv_pandas(filename: str, encoding: str = "utf-8") -> "pd.DataFrame":  # pragma: no cover
     """Read information from a CSV file and return a list.
 
@@ -742,6 +741,7 @@ def read_csv_pandas(filename: str, encoding: str = "utf-8") -> "pd.DataFrame":  
     return pd.read_csv(filename, encoding=encoding, header=0, na_values=".")
 
 
+@deprecated("Please use open() for reading TAB files.")
 def read_tab(filename: str) -> list:  # pragma: no cover
     """Read information from a TAB file and return a list.
 
@@ -760,6 +760,7 @@ def read_tab(filename: str) -> list:  # pragma: no cover
     return lines
 
 
+@deprecated("Please use pandas.read_excel for reading XLSX files.")
 def read_xlsx(filename: str) -> list:  # pragma: no cover
     """Read information from an XLSX file and return a list.
 
@@ -785,6 +786,7 @@ def read_xlsx(filename: str) -> list:  # pragma: no cover
     return lines
 
 
+@deprecated("Please handle CSV files using the csv module or pandas, depending on your needs.")
 def write_csv(
     output: str, list_data: list, delimiter: str = ",", quotechar: str = "|", quoting: int = csv.QUOTE_MINIMAL
 ) -> bool:  # pragma: no cover
@@ -817,6 +819,7 @@ def write_csv(
     return True
 
 
+@deprecated("Please handle filtering of your own data.")
 def filter_tuple(value: tuple, search_key1: str, search_key2: str) -> bool:  # pragma: no cover
     """Filter a tuple of two elements with two search keywords.
 
@@ -855,6 +858,7 @@ def filter_tuple(value: tuple, search_key1: str, search_key2: str) -> bool:  # p
     return False
 
 
+@deprecated("Please handle filtering of your own data.")
 def filter_string(value: str, search_key1: str) -> bool:  # pragma: no cover
     """Filter a string.
 
@@ -921,6 +925,7 @@ def recursive_glob(startpath: str, filepattern: str) -> list:  # pragma: no cove
         ]
 
 
+@deprecated("Please handle sorting of your own data.")
 def number_aware_string_key(s: str) -> tuple:  # pragma: no cover
     """Get a key for sorting strings that treats embedded digit sequences as integers.
 
@@ -958,6 +963,7 @@ def number_aware_string_key(s: str) -> tuple:  # pragma: no cover
     return tuple(result)
 
 
+@deprecated("This function is for internal use only and may be renamed.")
 def compute_fft(time_vals: "pd.Series", value: "pd.Series") -> tuple:  # pragma: no cover
     """Compute FFT of input transient data.
 
@@ -986,6 +992,7 @@ def compute_fft(time_vals: "pd.Series", value: "pd.Series") -> tuple:  # pragma:
     return freq, valueFFT
 
 
+# NOTE: Not used in pyedb, should this function be removed ?
 def parse_excitation_file(
     file_name: str,
     is_time_domain: bool = True,
@@ -1026,7 +1033,15 @@ def parse_excitation_file(
     """
     import numpy as np
 
-    df = read_csv_pandas(file_name, encoding=encoding)
+    try:
+        import pandas as pd
+    except ImportError:
+        raise ImportError(
+            "Pandas library is required. Please install it using 'pip install pyedb[analysis]' or 'pip install pandas'."
+        )
+
+    df = pd.read_csv(file_name, encoding=encoding, header=0, na_values=".")
+
     if is_time_domain:
         time = df[df.keys()[0]].values * x_scale
         val = df[df.keys()[1]].values * y_scale
@@ -1059,6 +1074,7 @@ def parse_excitation_file(
     return freq, mag, phase
 
 
+# NOTE: Not used in pyedb, should this function be removed ?
 def tech_to_control_file(tech_path: str, unit: str = "nm", control_path: str | None = None) -> str:  # pragma: no cover
     """Convert a TECH file to an XML file for use in a GDS or DXF import.
 
@@ -1117,7 +1133,7 @@ def tech_to_control_file(tech_path: str, unit: str = "nm", control_path: str | N
     return control_path
 
 
-# FIXME: This one in particular should be removed.
+@deprecated_class()
 class PropsManager(object):
     """Class for managing properties of an object."""
 
@@ -1261,6 +1277,7 @@ rgb_color_codes = {
 }
 
 
+@deprecated("Please use pip directly for installing packages.")
 def install_with_pip(
     package_name: str, package_path: str | None = None, upgrade: bool = False, uninstall: bool = False
 ):  # pragma: no cover

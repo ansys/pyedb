@@ -167,7 +167,7 @@ class HfssSimulationSetup(SimulationSetup):
 
         """
 
-        return HFSSSimulationSettings(self._pedb, self.core.settings)
+        return HFSSSimulationSettings(self)
 
     @property
     def adaptive_settings(self):
@@ -183,7 +183,7 @@ class HfssSimulationSetup(SimulationSetup):
             "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
             DeprecationWarning,
         )
-        return HFSSGeneralSettings(self._pedb, self.core.settings.general)
+        return HFSSGeneralSettings(self.settings)
 
     @property
     def curve_approx_settings(self):
@@ -529,7 +529,8 @@ class HfssSimulationSetup(SimulationSetup):
         layer_info = []
         smallest_width = 1e3
         for net in net_for_mesh_seeding:
-            traces = [prim for prim in self._pedb.modeler.primitives_by_net[net] if prim.type == "path"]
+            net_obj = self._pedb.layout.find_primitive(net_name=net)
+            traces = [prim for prim in net_obj if prim.type == "path"]
             _width = min([trace.width for trace in traces], default=1e3)
             if _width < smallest_width:
                 smallest_width = _width

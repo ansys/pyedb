@@ -27,6 +27,8 @@ if TYPE_CHECKING:
         RaptorXSimulationSettings as CoreRaptorXSimulationSettings,
     )
 
+import warnings
+
 from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import (
     RaptorXAdvancedSettings,
 )
@@ -43,6 +45,22 @@ class RaptorXSimulationSettings:
         self._pedb = pedb
 
     @property
+    def advanced_settings(self) -> RaptorXAdvancedSettings:
+        """Advanced settings class.
+
+        .. deprecated:: 0.70.0
+                Use :attr:`advanced` instead.
+
+        Returns
+        -------
+        :class:`RaptorXAdvancedSettings <pyedb.grpc.database.simulation_setup.
+        raptor_x_advanced_settings.RaptorXAdvancedSettings>`
+
+        """
+        warnings.warn("`advanced_settings` is deprecated, use `advanced` instead.", DeprecationWarning)
+        return self.advanced
+
+    @property
     def advanced(self) -> RaptorXAdvancedSettings:
         """Advanced class.
 
@@ -53,6 +71,18 @@ class RaptorXSimulationSettings:
 
         """
         return RaptorXAdvancedSettings(self._pedb, self.core.advanced)
+
+    @property
+    def general_settings(self) -> RaptorXGeneralSettings:
+        """General settings class.
+
+        Returns
+        -------
+        :class:`RaptorXGeneralSettings <pyedb.grpc.database.simulation_setup.
+        raptor_x_general_settings.RaptorXGeneralSettings>`
+
+        """
+        return self.general
 
     @property
     def general(self) -> RaptorXGeneralSettings:

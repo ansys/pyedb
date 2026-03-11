@@ -30,7 +30,7 @@ class ComponentPin:
         self.core = core
 
     @classmethod
-    def create(cls, component_def, name):
+    def create(cls, component_def, name) -> CoreComponentPin:
         """Create a component pin.
 
         Parameters
@@ -49,11 +49,11 @@ class ComponentPin:
         return cls(edb_obj)
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         return self.core.is_null
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.core.name
 
     @name.setter

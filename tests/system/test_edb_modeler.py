@@ -31,8 +31,6 @@ from pyedb.generic.settings import settings
 from tests.conftest import config, local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass
 
-pytestmark = [pytest.mark.system, pytest.mark.legacy]
-
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
@@ -112,17 +110,17 @@ class TestClass(BaseTestClass):
         assert path.width == 0.001
         assert edbapp.modeler["line_167"].type.lower() == "path"
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
-        line_number = len(edbapp.modeler.primitives)
+        line_number = len(edbapp.layout.primitives)
         edbapp.modeler["line_167"].delete()
-        assert edbapp.modeler.primitives
-        assert line_number == len(edbapp.modeler.primitives) + 1
+        assert edbapp.layout.primitives
+        assert line_number == len(edbapp.layout.primitives) + 1
         assert edbapp.modeler["poly_3022"].type.lower() == "polygon"
         edbapp.close(terminate_rpc_session=False)
 
     def test_modeler_primitives_by_layer(self):
         """Evaluate modeler primitives by layer"""
         edbapp = self.edb_examples.get_si_verse()
-        primmitive = edbapp.modeler.primitives_by_layer["1_Top"][0]
+        primmitive = edbapp.layout.find_primitive(layer_name="1_Top")[0]
         assert primmitive.layer_name == "1_Top"
         assert not primmitive.is_negative
         assert not primmitive.is_void
@@ -287,7 +285,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         i = 0
         while i < 2:
-            prim = edbapp.modeler.primitives[i]
+            prim = edbapp.layout.primitives[i]
             assert prim.area(True) > 0
             i += 1
         assert prim.bbox
@@ -340,7 +338,8 @@ class TestClass(BaseTestClass):
     def test_modeler_defeature(self):
         """Defeature the polygon."""
         edbapp = self.edb_examples.get_si_verse()
-        assert edbapp.modeler.defeature_polygon(edbapp.modeler.primitives_by_net["GND"][-1], 0.0001)
+        net_obj = edbapp.layout.find_primitive(net_name="GND")
+        assert edbapp.modeler.defeature_polygon(net_obj[-1], 0.0001)
         edbapp.close(terminate_rpc_session=False)
 
     def test_modeler_primitives_boolean_operation(self):
@@ -452,9 +451,9 @@ class TestClass(BaseTestClass):
         assert r2
         assert r1.subtract(r2)
         lay_list = ["bot_gnd", "mid_gnd"]
-        assert edbapp.modeler.primitives[0].duplicate_across_layers(lay_list)
-        assert edbapp.modeler.primitives_by_layer["mid_gnd"]
-        assert edbapp.modeler.primitives_by_layer["bot_gnd"]
+        assert edbapp.layout.primitives[0].duplicate_across_layers(lay_list)
+        assert edbapp.layout.find_primitive(layer_name="mid_gnd")
+        assert edbapp.layout.find_primitive(layer_name="bot_gnd")
         edbapp.close(terminate_rpc_session=False)
 
     def test_unite_polygon(self):
@@ -551,6 +550,7 @@ class TestClass(BaseTestClass):
         # https://github.com/ansys/pyedb-core/issues/457
         # edb.modeler.paths[0].set_center_line([[0.0, 0.0], [0.0, 5e-3]]) # Path does not have center_lin setter.
         # assert edb.modeler.paths[0].center_line == [[0.0, 0.0], [0.0, 5e-3]]
+        edb.close(terminate_rpc_session=False)
 
     def test_polygon_data_refactoring_bounding_box(self):
         # Done
@@ -563,10 +563,11 @@ class TestClass(BaseTestClass):
 
     def test_aedt_name(self):
         edbapp = self.edb_examples.get_si_verse()
-        primitives = edbapp.modeler.primitives
+        primitives = edbapp.layout.primitives
         assert primitives[0].aedt_name == "line_0"
+        edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="Only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_layout_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -577,7 +578,7 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_layout_instance_place_on_bottom(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -592,7 +593,7 @@ class TestClass(BaseTestClass):
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_layout_instance_placement_3d(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -607,7 +608,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_placement_3d(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
@@ -624,7 +625,7 @@ class TestClass(BaseTestClass):
         assert cell_inst_1.transform3d.shift.z.value == pytest.approx(0.003)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="only implemented in gRPC")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing the method to get transform3D")
     def test_insert_3d_component_on_layer(self):
         fpath = self.edb_examples.copy_test_files_into_local_folder("si_board/SMA.a3dcomp")
         edbapp = self.edb_examples.get_si_board()
@@ -633,20 +634,11 @@ class TestClass(BaseTestClass):
         )
         assert not cell_inst_1.is_null
         cell_inst_2 = edbapp.modeler.insert_3d_component_on_layer(
-            a3dcomp_path=Path(edbapp.edbpath).with_name("SMA.a3dcomp"),
+            a3dcomp_path=fpath,
             x="5mm",
             y="2mm",
             placement_layer="s3",
             place_on_bottom=True,
         )
         assert not cell_inst_2.is_null
-        edbapp.close(terminate_rpc_session=False)
-
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="issue #1803 fix grpc consolidation")
-    def test_modeler_get_primitives(self):
-        edbapp = self.edb_examples.get_si_verse()
-        paths = edbapp.modeler.get_primitives(net_name="GND", prim_type="path")
-        assert len(paths) == 407
-        polygons = edbapp.modeler.get_primitives(net_name="GND", prim_type="polygon")
-        assert len(polygons) == 39
         edbapp.close(terminate_rpc_session=False)

@@ -24,7 +24,7 @@
 from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import (
     RaptorXSimulationSetup,
 )
-from pyedb.dotnet.database.utilities.hfss_simulation_setup import HfssSimulationSetup
+from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup, HfssSimulationSetup
 from pyedb.dotnet.database.utilities.siwave_simulation_setup import SiwaveDCSimulationSetup, SIwaveSimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
 
@@ -110,6 +110,32 @@ class SimulationSetups:
         )
         return setup
 
+    def create_hfss_pi_setup(self, name=None):
+        """Create an HFSS PI simulation setup from a template.
+
+        Parameters
+        ----------
+        name : str, optional
+            Setup name.
+
+        Returns
+        -------
+        :class:`legacy.database.edb_data.hfss_pi_simulation_setup_data.HFSSPISimulationSetup when succeeded, ``False``
+        when failed.
+
+        """
+        if name in self._pedb.setups:
+            self._pedb.logger.error("Setup name already used in the layout")
+            return False
+        if float(self._pedb.version) < 2024.2:
+            raise (
+                "Unsupported ANSYS release version for HFSS PI simulation setup. "
+                "Please use Ansys release 2024R2 or higher.",
+                UserWarning,
+            )
+            return False
+        return HFSSPISimulationSetup.create(self._pedb, name=name)
+
     def create_raptor_x_setup(self, name=None):
         """Create an RaptorX simulation setup from a template.
 
@@ -120,7 +146,7 @@ class SimulationSetups:
 
         Returns
         -------
-        :class:`legacy.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
+        :class:`pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSetup`
 
         """
         if name in self._pedb.setups:

@@ -21,10 +21,12 @@
 # SOFTWARE.
 from collections import Counter
 import json
+import os
 from pathlib import Path
 
 import pytest
 
+from pyedb.dotnet.clr_module import is_linux
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
 from tests.conftest import config, use_grpc
@@ -48,12 +50,6 @@ U8_IC_DIE_PROPERTIES = {
         }
     ]
 }
-
-
-def _assert_initial_ic_die_properties(component: dict):
-    assert component["ic_die_properties"]["type"] in ["none", "no_die"]
-    assert "orientation" not in component["ic_die_properties"]
-    assert "height" not in component["ic_die_properties"]
 
 
 def _assert_final_ic_die_properties(component: dict):
@@ -160,12 +156,13 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_03_spice_models(self):
-        self.edb_examples.copy_test_files_into_local_folder(
+        files = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/GRM32_DC0V_25degC.mod", "TEDB/GRM32ER72A225KA35_25C_0V.sp"]
         )
+        spice_dir = os.path.dirname(files[0])
         edbapp = self.edb_examples.get_si_verse()
         data = {
-            "general": {"spice_model_library": self.edb_examples.test_folder},
+            "general": {"spice_model_library": spice_dir},
             "spice_models": [
                 {
                     "name": "GRM32ER72A225KA35_25C_0V",
@@ -389,7 +386,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"], reason="issue #687 resolved  (wave ports) but need new pyedb-core release published"
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="issue #687 fixed with latest pyedb-core release",
     )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
@@ -859,7 +857,6 @@ class TestClass(BaseTestClass):
     reason="This test is failing in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
-# @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
         "name": "terminal1",
@@ -1273,6 +1270,7 @@ class TestClassSetups(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(is_linux and not config["use_grpc"], reason="Randomly fails on dotnet linux")
     def test_siwave_dc(self):
         data = {
             "setups": [
@@ -1702,7 +1700,6 @@ class TestClassPadstacks(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_18_modeler(self):
         data = {
             "modeler": {
@@ -1849,7 +1846,6 @@ class TestModeler(BaseTestClass):
             )
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(condition=config["use_grpc"], reason="Not implemented with grpc")
     def test_modeler_delete(self):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(name="line_163")
@@ -1867,11 +1863,15 @@ class TestModeler(BaseTestClass):
 class TestComponent(BaseTestClass):
     def test_17_ic_die_properties(self):
         db = self.edb_examples.get_si_verse()
-
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]
-        _assert_initial_ic_die_properties(component)
-
+        assert component["ic_die_properties"]["type"] in ["none", "no_die"]
+        if db.grpc:
+            # grpc does have this property not DotNet.
+            assert "orientation" in component["ic_die_properties"]
+        else:
+            assert "orientation" not in component["ic_die_properties"]
+        assert "height" not in component["ic_die_properties"]
         db.configuration.load(U8_IC_DIE_PROPERTIES, apply_file=True)
         comps_edb = db.configuration.get_data_from_db(components=True)["components"]
         component = [i for i in comps_edb if i["reference_designator"] == "U8"][0]

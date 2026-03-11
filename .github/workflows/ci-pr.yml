@@ -1,0 +1,538 @@
+name: GitHub CI - PR
+
+on:
+  pull_request:
+
+env:
+  ANSYSLMD_LICENSE_FILE: ${{ format('1055@{0}', secrets.LICENSE_SERVER) }}
+  PYEDB_CI_NO_DISPLAY: '1'
+  MAIN_PYTHON_VERSION: '3.12'
+  PACKAGE_NAME: 'pyedb'
+  ON_CI: True
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  
+  pr-title:
+    name: Check the title of the pull request
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check the title of the pull request
+        uses: ansys/actions/check-pr-title@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          use-upper-case: true
+
+  vulnerabilities:
+    name: Vulnerabilities
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: ansys/actions/check-vulnerabilities@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          python-package-name: ${{ env.PACKAGE_NAME }}
+          token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
+          dev-mode: true
+
+  actions-security:
+    name: Check actions security
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: ansys/actions/check-actions-security@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          generate-summary: true
+          token: ${{ secrets.GITHUB_TOKEN }}
+          auditing-level: 'high'
+
+  doc-style:
+    name: Documentation style check
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check documentation style
+        uses: ansys/actions/doc-style@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+  smoke-tests:
+    name: Build and Smoke tests (${{ matrix.os }} | Python ${{ matrix.python-version }})
+    runs-on: ${{ matrix.os }}
+    permissions:
+      attestations: write # Required to create and publish build attestations (SLSA provenance)
+      contents: read
+      id-token: write # Required for OIDC token generation (for provenance signing)
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python-version: ['3.10', '3.11', '3.12', '3.13']
+    steps:
+      - name: Build wheelhouse and perform smoke test
+        id: build-wheelhouse
+        uses: ansys/actions/build-wheelhouse@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          operating-system: ${{ matrix.os }}
+          python-version: ${{ matrix.python-version }}
+          attest-provenance: true
+          target: 'all'
+
+      - name: Import python package
+        shell: bash
+        env:
+          ACTIVATE_VENV: ${{ steps.build-wheelhouse.outputs.activate-venv }}
+        run: |
+          ${ACTIVATE_VENV}
+          python -c "import pyedb; from pyedb import __version__"
+
+  unit-tests-dotnet:
+    name: Unit test dotnet
+    needs: [smoke-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      USE_GRPC: '0'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.TESTS_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: Update pip
+        run: |
+          source .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: Install Python library and tests dependencies
+        run: |
+          source .venv/bin/activate
+          python -m pip install .[all,tests]
+
+      - name: Run unit tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
+
+      - name: Create coverage files
+        run: |
+          source .venv/bin/activate
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: .cov\unit-html
+          name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
+
+  unit-tests-grpc:
+    name: Unit test grpc
+    needs: [smoke-tests]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      USE_GRPC: '1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: Update pip
+        run: |
+          source .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: Install Python library and tests dependencies
+        run: |
+          source .venv/bin/activate
+          python -m pip install .[all,tests]
+
+      - name: Run unit tests
+        run: |
+          source .venv/bin/activate
+          pytest tests/unit -vvv --cov=pyedb --color=yes -ra
+
+      - name: Create coverage files
+        run: |
+          source .venv/bin/activate
+          python -m coverage html -d .cov\unit-html
+          python -m coverage xml -o .cov\unit.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: .cov\unit-html
+          name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/unit.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+  
+  system-tests-windows-dotnet:
+    name: Test dotnet (windows)
+    needs: [unit-tests-dotnet]
+    runs-on: [ Windows, self-hosted, pyedb ]
+    permissions:
+      contents: read
+    env:
+      USE_GRPC: '0'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: Update pip
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: Install Python library and tests dependencies
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .[all,tests]
+
+      - name: Executing system tests
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest tests/system --cov=pyedb --color=yes -ra
+
+      - name: Create coverage files
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: .cov\system-html
+          name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/system.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-windows-grpc:
+    name: Test grpc (windows)
+    needs: [unit-tests-grpc]
+    runs-on: [ Windows, self-hosted, pyedb ]
+    permissions:
+      contents: read
+    env:
+      USE_GRPC: '1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Setup Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+          . .venv\Scripts\Activate.ps1
+
+      - name: Update pip
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install -U pip
+
+      - name: Install Python library and tests dependencies
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m pip install .[all,tests]
+
+      - name: Executing system tests
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv\Scripts\Activate.ps1
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+
+      - name: Create coverage files
+        run: |
+          . .venv\Scripts\Activate.ps1
+          python -m coverage html -d .cov\system-html
+          python -m coverage xml -o .cov\system.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: .cov\system-html
+          name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/system.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-linux-dotnet:
+    name: Test dotnet (linux)
+    needs: [unit-tests-dotnet]
+    runs-on: [ Linux, self-hosted, pyedb ]
+    permissions:
+      contents: read
+    env:
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANS_NODEPCHECK: '1'
+      USE_GRPC: '0'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Install os packages
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: Update pip
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: Install Python library and tests dependencies
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[all,tests]
+
+      - name: Executing system tests
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv/bin/activate
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+
+      - name: Create coverage files
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov/system-html
+          python -m coverage xml -o .cov/system.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: .cov/system-html
+          name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/system.xml
+
+# =================================================================================================
+# vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
+# =================================================================================================
+
+  system-tests-linux-grpc:
+    name: Test grpc (linux)
+    needs: [unit-tests-grpc]
+    runs-on: [ Linux, self-hosted, pyedb ]
+    permissions:
+      contents: read
+    env:
+      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANS_NODEPCHECK: '1'
+      USE_GRPC: '1'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Python
+        uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+        with:
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+
+      - name: Install os packages
+        run: |
+          sudo apt update
+          sudo apt install libgl1-mesa-glx -y
+
+      - name: Create Python venv
+        run: |
+          python -m venv .venv
+
+      - name: Update pip
+        run: |
+          . .venv/bin/activate
+          python -m pip install -U pip
+
+      - name: Install Python library and tests dependencies
+        run: |
+          . .venv/bin/activate
+          python -m pip install .[all,tests]
+
+      - name: Executing system tests
+        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        with:
+          max_attempts: 3
+          retry_on: error
+          timeout_minutes: 40
+          command: |
+            . .venv/bin/activate
+            pytest tests/system -vvv --cov=pyedb --color=yes -ra
+
+      - name: Create coverage files
+        run: |
+          . .venv/bin/activate
+          python -m coverage html -d .cov/system-html
+          python -m coverage xml -o .cov/system.xml
+
+      - name: Upload Coverage Results
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          path: .cov/system-html
+          name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
+          retention-days: 7
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@671740ac38dd9b0130fbe1cec585b89eea48d3de # v5.5.2
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+        with:
+          files: .cov/system.xml
+
+  docs-build:
+    name: Build documentation
+    needs: [doc-style]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Build documentation
+        uses: ansys/actions/doc-build@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          sphinxopts: '-j 1 --color -w build_errors.txt'
+          check-links: false
+          needs-quarto: true
+
+  package:
+    name: Package library
+    needs: [system-tests-windows-dotnet,
+            system-tests-windows-grpc,
+            system-tests-linux-dotnet,
+            system-tests-linux-grpc,
+            docs-build]
+    runs-on: ubuntu-latest
+    permissions:
+      attestations: write # Required to create and publish package attestations (SLSA provenance)
+      contents: read
+      id-token: write # Required for OIDC token generation (for provenance signing)
+    steps:
+      - name: Build library source and wheel artifacts
+        uses: ansys/actions/build-library@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        with:
+          library-name: ${{ env.PACKAGE_NAME }}
+          python-version: ${{ env.MAIN_PYTHON_VERSION }}
+          attest-provenance: true

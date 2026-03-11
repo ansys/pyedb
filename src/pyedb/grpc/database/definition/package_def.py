@@ -26,7 +26,6 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from pyedb.generic.settings import settings
 from pyedb.grpc.database.utility.heat_sink import HeatSink
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef:
@@ -34,14 +33,19 @@ class PackageDef:
 
     Parameters
     ----------
-    pedb : :class:`Edb <pyedb.grpc.edb.Edb>`
-        Edb object.
-    edb_object : object
-    Edb PackageDef Object
-        component_part_name : str, optional
-        Part name of the component.
+    pedb : :class:`Pedb <pyedb.grpc.database.general.Pedb>`
+        Pedb object.
+    core : :class:`CorePackageDef <ansys.edb.core.definition.package_def.PackageDef>`, optional
+        Core package definition object. If not provided, a new package definition will be created using the provided
+        name.
+    name : str, optional
+        Name of the package definition. Required if core is not provided.
+    component_part_name : str, optional
+        Name of the component part to infer the package definition bounding box. Required if extent_bounding_box is
+        not provided.
     extent_bounding_box : list, optional
-        Bounding box defines the shape of the package. For example, [[0, 0], ["2mm", "2mm"]].
+        Bounding box to define the package definition extent. Format: [[y_min, x_min], [y_max, x_max]]. Required if
+        component_part_name is not provided.
 
     """
 
@@ -90,7 +94,7 @@ class PackageDef:
         self.exterior_boundary = polygon_data
 
     @property
-    def name(self):
+    def name(self) -> str:
         return self.core.name
 
     @name.setter
@@ -125,7 +129,7 @@ class PackageDef:
 
     @maximum_power.setter
     def maximum_power(self, value):
-        self.core.maximum_power = Value(value)
+        self.core.maximum_power = self._pedb._value_setter(value)
 
     @property
     def thermal_conductivity(self) -> float:
@@ -141,7 +145,7 @@ class PackageDef:
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
-        self.core.thermal_conductivity = Value(value)
+        self.core.thermal_conductivity = self._pedb._value_setter(value)
 
     @property
     def theta_jb(self) -> float:
@@ -156,7 +160,7 @@ class PackageDef:
 
     @theta_jb.setter
     def theta_jb(self, value):
-        self.core.theta_jb = Value(value)
+        self.core.theta_jb = self._pedb._value_setter(value)
 
     @property
     def theta_jc(self) -> float:
@@ -171,7 +175,7 @@ class PackageDef:
 
     @theta_jc.setter
     def theta_jc(self, value):
-        self.core.theta_jc = Value(value)
+        self.core.theta_jc = self._pedb._value_setter(value)
 
     @property
     def height(self) -> float:
@@ -186,10 +190,10 @@ class PackageDef:
 
     @height.setter
     def height(self, value):
-        self.core.height = Value(value)
+        self.core.height = self._pedb._value_setter(value)
 
     @property
-    def heat_sink(self) -> HeatSink:
+    def heat_sink(self) -> "HeatSink | None":
         """Package heat sink.
 
         Returns
@@ -204,16 +208,6 @@ class PackageDef:
                 f"A(n) {type(e).__name__} error occurred while attempting to access 'heatsink' "
                 f"property for object {self}: {str(e)}"
             )
-
-    @property
-    @deprecated_property
-    def heatsink(self):
-        """Property added for .NET compatibility.
-        . deprecated:: pyedb 0.43.0
-        Use :func:`heat_sink` instead.
-
-        """
-        return self.heat_sink
 
     @staticmethod
     def create(edb, name: str) -> "PackageDef":
@@ -263,10 +257,10 @@ class PackageDef:
         else:
             fin_orientation = GrpcHeatSinkFinOrientation.OTHER_ORIENTED
         self.core.heat_sink = GrpcHeatSink(
-            Value(fin_thickness),
-            Value(fin_spacing),
-            Value(fin_base_height),
-            Value(fin_height),
+            self._pedb._value_setter(fin_thickness),
+            self._pedb._value_setter(fin_spacing),
+            self._pedb._value_setter(fin_base_height),
+            self._pedb._value_setter(fin_height),
             fin_orientation,
         )
         return self.heat_sink

@@ -9,6 +9,7 @@ Cannot connect to ansys-edb-core service
 
 *   **Cause:** The ``ansys-edb-core`` service is not installed or running.
 *   **Solution:**
+
     *   On Windows with AEDT: Ensure AEDT is properly installed.
     *   On Linux/Windows standalone: Ensure the standalone ``ansys-edb-core`` service is installed and running. Contact Ansys support for the installer.
 
@@ -18,6 +19,7 @@ The gPRC channel is in state TRANSIENT_FAILURE
 
 *   **Cause:** The connection to the gRPC server failed or was interrupted.
 *   **Solution:**
+
     *   Check if the server process is running.
     *   Restart the service or your machine.
     *   Check firewall settings that might be blocking gRPC communication.

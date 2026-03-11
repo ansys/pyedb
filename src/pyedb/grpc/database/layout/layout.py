@@ -34,7 +34,7 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-from typing import TYPE_CHECKING, Dict, List, Union
+from typing import TYPE_CHECKING, List, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.primitive import Primitive
@@ -103,7 +103,9 @@ class Layout:
         return self.__primitives
 
     @property
-    def terminals(self) -> list[any]:
+    def terminals(
+        self,
+    ) -> list[PinGroupTerminal | PadstackInstanceTerminal | EdgeTerminal | BundleTerminal | PointTerminal]:
         """Get terminals belonging to active layout.
 
         Returns
@@ -229,7 +231,10 @@ class Layout:
         return [VoltageRegulator(self._pedb, i) for i in self._pedb.active_cell.layout.voltage_regulators]
 
     def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
+        self,
+        layer_name: Union[str, list] = None,
+        name: Union[str, list] = None,
+        net_name: Union[str, list] = None,
     ) -> list[any]:
         """Find a primitive objects by layer name.
         Parameters
@@ -238,9 +243,9 @@ class Layout:
         layer_name : str, list, optional
             Name of the layer.
         name : str, list, optional
-            Name of the primitive
+            Name of the primitive.
         net_name : str, list, optional
-            Name of the primitive
+            Name of the primitive.
         Returns
         -------
         List[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive`].
@@ -322,7 +327,7 @@ class Layout:
 
         if component_name is not None:
             value = component_name if isinstance(component_name, list) else [component_name]
-            candidates = [i for i in candidates if i.component.name in value]
+            candidates = [i for i in candidates if i.component and i.component.name in value]
 
         if net_name is not None:
             net_name_set = set(net_name) if isinstance(net_name, list) else {net_name}

@@ -57,7 +57,7 @@ class Path(Primitive):
 
     @width.setter
     def width(self, value):
-        self.core.width = Value(value)
+        self.core.width = self._pedb._value_setter(value)
 
     @property
     def length(self) -> float:
@@ -218,7 +218,7 @@ class Path(Primitive):
             layout=self._pedb.active_layout.core,
             layer=self.layer,
             net=self.net.core,
-            width=Value(self.width),
+            width=self.width,
             end_cap1=self.core.get_end_cap_style()[0],
             end_cap2=self.core.get_end_cap_style()[1],
             corner_style=mapping[self.corner_style],
@@ -279,7 +279,7 @@ class Path(Primitive):
         #         self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
         #     )
         # else:
-        return self._pedb.source_excitation.create_edge_port_vertical(
+        return self._pedb.excitation_manager.create_edge_port_vertical(
             self.edb_uid,
             pos,
             name,
@@ -388,8 +388,8 @@ class Path(Primitive):
             rightline.append(rightPt)
             return leftline, rightline
 
-        distance = Value(distance)
-        gap = Value(gap)
+        distance = self._pedb._value_setter(distance)
+        gap = self._pedb._value_setter(gap)
         center_line = self.center_line
         leftline, rightline = get_parallet_lines(center_line, distance)
         for x, y in get_locations(rightline, gap) + get_locations(leftline, gap):

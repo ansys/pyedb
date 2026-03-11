@@ -37,8 +37,8 @@ from ansys.edb.core.definition.padstack_def_data import (
     SolderballPlacement as CoreSolderballPlacement,
     SolderballShape as CoreSolderballShape,
 )
-from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
+from ansys.edb.core.inner.exceptions import InvalidArgumentException
 import numpy as np
 
 from pyedb.generic.general_methods import generate_unique_name
@@ -205,11 +205,13 @@ class Padstacks(object):
         >>> for name, definition in all_definitions.items():
         ...     print(f"Padstack: {name}")
         """
-        padstack_defs = self._pedb.db.padstack_defs
         self.__definitions = {}
-        for padstack_def in padstack_defs:
-            if len(padstack_def.data.layer_names) >= 1:
-                self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+        for padstack_def in self._pedb.db.padstack_defs:
+            try:
+                if len(padstack_def.data.layer_names) >= 1:
+                    self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+            except (Exception, InvalidArgumentException) as e:
+                self._logger.warning(f"Error processing padstack definition {padstack_def.name}: {e}")
         return self.__definitions
 
     @property
@@ -534,11 +536,12 @@ class Padstacks(object):
             )
             self.definitions[padstack_def_backdrill_name].material = material
             self.definitions[padstack_def_backdrill_name].hole_plating_ratio = 100.0
+            definition = self.definitions[padstack_def_backdrill_name]
             for inst in instances:
                 inst.set_back_drill_by_layer(drill_to_layer=layer, offset=0.0, diameter=self._pedb.value(diameter))
                 self.place(
                     position=inst.position,
-                    definition_name=padstack_def_backdrill_name,
+                    definition_name=definition,
                     fromlayer=start_layer,
                     tolayer=layer,
                 )
@@ -589,11 +592,15 @@ class Padstacks(object):
         padstack_def = PadstackDef.create(self._pedb, padstackname)
 
         padstack_data = CorePadstackDefData.create()
-        list_values = [Value(holediam), Value(paddiam), Value(antipaddiam)]
+        list_values = [
+            self._pedb._value_setter(holediam),
+            self._pedb._value_setter(paddiam),
+            self._pedb._value_setter(antipaddiam),
+        ]
         padstack_data.set_hole_parameters(
-            offset_x=Value(0),
-            offset_y=Value(0),
-            rotation=Value(0),
+            offset_x=0.0,
+            offset_y=0.0,
+            rotation=0.0,
             type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
             sizes=list_values,
         )
@@ -611,20 +618,20 @@ class Padstacks(object):
             layer="Default",
             pad_type=CorePadType.REGULAR_PAD,
             type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
-            offset_x=Value(0),
-            offset_y=Value(0),
-            rotation=Value(0),
-            sizes=[Value(paddiam)],
+            offset_x=0.0,
+            offset_y=0.0,
+            rotation=0,
+            sizes=[self._pedb._value_setter(paddiam)],
         )
 
         padstack_data.set_pad_parameters(
             layer="Default",
             pad_type=CorePadType.ANTI_PAD,
             type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
-            offset_x=Value(0),
-            offset_y=Value(0),
-            rotation=Value(0),
-            sizes=[Value(antipaddiam)],
+            offset_x=0,
+            offset_y=0,
+            rotation=0,
+            sizes=[self._pedb._value_setter(antipaddiam)],
         )
 
         for layer in layers:
@@ -637,20 +644,20 @@ class Padstacks(object):
                     layer=layer,
                     pad_type=CorePadType.ANTI_PAD,
                     type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
-                    offset_x=Value(0),
-                    offset_y=Value(0),
-                    rotation=Value(0),
-                    sizes=[Value(antipaddiam)],
+                    offset_x=0,
+                    offset_y=0,
+                    rotation=0,
+                    sizes=[self._pedb._value_setter(antipaddiam)],
                 )
 
                 padstack_data.set_pad_parameters(
                     layer=layer,
                     pad_type=CorePadType.ANTI_PAD,
                     type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
-                    offset_x=Value(0),
-                    offset_y=Value(0),
-                    rotation=Value(0),
-                    sizes=[Value(antipaddiam)],
+                    offset_x=0,
+                    offset_y=0,
+                    rotation=0,
+                    sizes=[self._pedb._value_setter(antipaddiam)],
                 )
 
         padstack_def.data = padstack_data
@@ -724,7 +731,8 @@ class Padstacks(object):
             psdef = padstack_instance.padstack_def
         newdefdata = CorePadstackDefData.create(psdef.data)
         newdefdata.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
-        newdefdata.solder_ball_param(Value(solder_ball_diameter), Value(solder_ball_diameter))
+        solder_ball_diameter = self._pedb._value_setter(solder_ball_diameter)
+        newdefdata.solder_ball_param = solder_ball_diameter, solder_ball_diameter
         sball_placement = (
             CoreSolderballPlacement.ABOVE_PADSTACK if top_placed else CoreSolderballPlacement.BELOW_PADSTACK
         )
@@ -944,11 +952,11 @@ class Padstacks(object):
                             cloned_padstack_data.set_pad_parameters(
                                 layer=layer,
                                 pad_type=CorePadType.ANTI_PAD,
-                                offset_x=Value(offset_x),
-                                offset_y=Value(offset_y),
-                                rotation=Value(rotation),
+                                offset_x=self._pedb._value_setter(offset_x),
+                                offset_y=self._pedb._value_setter(offset_y),
+                                rotation=self._pedb._value_setter(rotation),
                                 type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
-                                sizes=[Value(value)],
+                                sizes=[self._pedb._value_setter(value)],
                             )
                             self._logger.info(
                                 f"Pad-stack definition {padstack.name}, anti-pad on layer {layer}, has been set "
@@ -1141,11 +1149,11 @@ class Padstacks(object):
         """
         from pyedb.grpc.database.geometry.polygon_data import PolygonData
 
-        holediam = Value(holediam)
-        paddiam = Value(paddiam)
-        antipaddiam = Value(antipaddiam)
+        holediam = self._pedb._value_setter(holediam)
+        paddiam = self._pedb._value_setter(paddiam)
+        antipaddiam = self._pedb._value_setter(antipaddiam)
         layers = list(self._pedb.stackup.signal_layers.keys())[:]
-        value0 = Value("0.0")
+        value0 = 0.0
         if not padstackname:
             padstackname = generate_unique_name("VIA")
         padstack_data = CorePadstackDefData.create()
@@ -1158,7 +1166,7 @@ class Padstacks(object):
                 type_geom=CorePadGeometryType.PADGEOMTYPE_CIRCLE,
                 sizes=hole_param,
             )
-            padstack_data.plating_percentage = Value(20.0)
+            padstack_data.plating_percentage = 20.0
         elif polygon_hole:
             if isinstance(polygon_hole, list):
                 polygon_hole = CorePolygonData(points=polygon_hole)
@@ -1169,18 +1177,18 @@ class Padstacks(object):
                 type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
                 poly=polygon_hole,
             )
-            padstack_data.plating_percentage = Value(20.0)
+            padstack_data.plating_percentage = 20.0
         else:
             pass
 
-        x_size = Value(x_size)
-        y_size = Value(y_size)
-        corner_radius = Value(corner_radius)
-        pad_offset_x = Value(pad_offset_x)
-        pad_offset_y = Value(pad_offset_y)
-        pad_rotation = Value(pad_rotation)
-        anti_pad_x_size = Value(anti_pad_x_size)
-        anti_pad_y_size = Value(anti_pad_y_size)
+        x_size = self._pedb._value_setter(x_size)
+        y_size = self._pedb._value_setter(y_size)
+        corner_radius = self._pedb._value_setter(corner_radius)
+        pad_offset_x = self._pedb._value_setter(pad_offset_x)
+        pad_offset_y = self._pedb._value_setter(pad_offset_y)
+        pad_rotation = self._pedb._value_setter(pad_rotation)
+        anti_pad_x_size = self._pedb._value_setter(anti_pad_x_size)
+        anti_pad_y_size = self._pedb._value_setter(anti_pad_y_size)
 
         if hole_range == "through":  # pragma no cover
             padstack_data.hole_range = CorePadstackHoleRange.THROUGH
@@ -1298,7 +1306,7 @@ class Padstacks(object):
     def place(
         self,
         position: List[float],
-        definition_name: str,
+        definition_name: str | PadstackDef,
         net_name: str = "",
         via_name: str = "",
         rotation: float = 0.0,
@@ -1314,7 +1322,7 @@ class Padstacks(object):
         ----------
         position : list[float, float]
             [x, y] position for placement.
-        definition_name : str
+        definition_name : str or :class:`PadstackDef`
             Padstack definition name.
         net_name : str, optional
             Net name. Default is ``""``.
@@ -1339,32 +1347,35 @@ class Padstacks(object):
         :class:`pyedb.grpc.database.primitive.padstack_instance.PadstackInstance` or bool
             Created padstack instance or ``False`` if failed.
         """
-        padstack_def = self.definitions.get(definition_name)
+        if isinstance(definition_name, PadstackDef):
+            padstack_def = definition_name
+        else:
+            padstack_def = self.definitions.get(definition_name)
         if not padstack_def:
             raise RuntimeError("Padstack definition not found")
-        pad = definition_name
-        position = CorePointData(
-            [Value(position[0], self._pedb.active_cell), Value(position[1], self._pedb.active_cell)]
-        )
+
         self._pedb.nets.find_or_create_net(net_name)
-        rotation = Value(rotation * math.pi / 180)
-        sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
-        sign_layers = list(sign_layers_values.keys())
+        rotation = self._pedb._value_setter(rotation * math.pi / 180)
+        sign_layers_values = {}
+        sign_layers = []
         if not from_layer:
+            sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
+            sign_layers = list(sign_layers_values.keys())
             try:
-                from_layer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[0]]
+                from_layer = sign_layers_values[list(padstack_def.pad_by_layer.keys())[0]]
             except KeyError:
                 from_layer = sign_layers_values[sign_layers[0]]
-        else:
-            from_layer = sign_layers_values[from_layer]
 
         if not to_layer:
+            if not sign_layers_values:
+                sign_layers_values = {i: v for i, v in self._pedb.stackup.signal_layers.items()}
+            if not sign_layers:
+                sign_layers = list(sign_layers_values.keys())
             try:
-                to_layer = sign_layers_values[list(self.definitions[pad].pad_by_layer.keys())[-1]]
+                to_layer = sign_layers_values[list(padstack_def.pad_by_layer.keys())[-1]]
             except KeyError:
                 to_layer = sign_layers_values[sign_layers[-1]]
-        else:
-            to_layer = sign_layers_values[to_layer]
+
         if solder_ball_layer:
             solder_ball_layer = sign_layers_values[solder_ball_layer]
         if not via_name:
@@ -1373,9 +1384,9 @@ class Padstacks(object):
             padstack_instance = PadstackInstance.create(
                 layout=self._active_layout,
                 net=net_name,
-                padstack_definition=padstack_def.name,
-                position_x=position.x.value,
-                position_y=position.y.value,
+                padstack_definition=padstack_def,
+                position_x=self._pedb._value_setter(position[0]),
+                position_y=self._pedb._value_setter(position[1]),
                 rotation=rotation,
                 top_layer=from_layer,
                 bottom_layer=to_layer,
@@ -1405,8 +1416,8 @@ class Padstacks(object):
         """
         pad_type = CorePadType.REGULAR_PAD
         pad_geo = CorePadGeometryType.PADGEOMTYPE_CIRCLE
-        vals = Value(0)
-        params = [Value(0)]
+        vals = 0
+        params = [0]
         new_padstack_definition_data = CorePadstackDefData(self.definitions[padstack_name].data.core)
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())
@@ -1484,18 +1495,18 @@ class Padstacks(object):
         pad_shape = shape_dict[pad_shape]
         if not isinstance(pad_params, list):
             pad_params = [pad_params]
-        pad_params = [Value(i) for i in pad_params]
-        pad_x_offset = Value(pad_x_offset)
-        pad_y_offset = Value(pad_y_offset)
-        pad_rotation = Value(pad_rotation)
+        pad_params = [self._pedb._value_setter(i) for i in pad_params]
+        pad_x_offset = self._pedb._value_setter(pad_x_offset)
+        pad_y_offset = self._pedb._value_setter(pad_y_offset)
+        pad_rotation = self._pedb._value_setter(pad_rotation)
 
         antipad_shape = shape_dict[antipad_shape]
         if not isinstance(antipad_params, list):
             antipad_params = [antipad_params]
-        antipad_params = [Value(i) for i in antipad_params]
-        antipad_x_offset = Value(antipad_x_offset)
-        antipad_y_offset = Value(antipad_y_offset)
-        antipad_rotation = Value(antipad_rotation)
+        antipad_params = [self._pedb._value_setter(i) for i in antipad_params]
+        antipad_x_offset = self._pedb._value_setter(antipad_x_offset)
+        antipad_y_offset = self._pedb._value_setter(antipad_y_offset)
+        antipad_rotation = self._pedb._value_setter(antipad_rotation)
         cloned_padstack_def_data = self.definitions[padstack_name].core.data
         if not layer_name:
             layer_name = list(self._pedb.stackup.signal_layers.keys())

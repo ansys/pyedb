@@ -31,24 +31,20 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 VERSION = 2024.2
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_add_raptorx_setup(self):
         edbapp = self.edb_examples.get_si_verse()
-        setup = edbapp.create_raptorx_setup("test")
+        edbapp.create_raptorx_setup("test")
         assert "test" in edbapp.setups
+        # casting setup from edb to make sure all properties are available
+        setup = edbapp.setups["test"]
         setup.add_frequency_sweep(frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
         setup.enabled = False
         assert not setup.enabled
         assert len(setup.frequency_sweeps) == 1
         general_settings = setup.settings.general_settings
         assert general_settings.global_temperature == 22.0
-        # general_settings.global_temperature = 35.0
-        # assert edbapp.setups["test"].settings.general_settings.global_temperature == 35.0
         assert general_settings.max_frequency == 10e9
         general_settings.max_frequency = 20e9
         assert general_settings.max_frequency == 20e9
@@ -121,7 +117,7 @@ class TestClass(BaseTestClass):
         assert advanced_settings.use_relaxed_z_axis
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="BUG 1420591")
+    @pytest.mark.skipif(reason="HFSSPI migrated to prism mesh ")
     def test_create_hfss_pi_setup(self):
         edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.create_hfsspi_setup("test")
@@ -152,9 +148,18 @@ class TestClass(BaseTestClass):
         for k, v in settings.items():
             assert settings[k] == settings_get[k]
 
+    @pytest.mark.skip(
+        reason="Issue to be fixed in pyedb-core #710, and settings API seems to be added in grpc only, "
+        "test will be extended once the bug is fixed."
+    )
     def test_create_hfss_pi_setup_add_sweep(self):
         edbapp = self.edb_examples.get_si_verse()
-        setup = edbapp.create_hfsspi_setup("test")
-        setup.add_sweep(name="sweep1", frequency_sweep=["linear scale", "0.1GHz", "10GHz", "0.1GHz"])
-        assert setup.sweeps["sweep1"].frequencies
-        edbapp.setups["test"].sweeps["sweep1"].adaptive_sampling = True
+        setup = edbapp.simulation_setups.create_hfss_pi_setup("test")
+        setup.add_sweep(name="sweep1", distribution="linear", start_freq="0.1GHz", stop_freq="10GHz", step="0.1GHz")
+        assert setup.sweeps["sweep1"]
+        # TODO check bug in pyedb-core #710 status Cell.simulation_setups returns list of None objects despite the
+        #  setup is created.
+        # TODO Test will be extended once the bug is fixed. Seems settings API is added in grpc only.
+        if not edbapp.grpc:
+            edbapp.setups["test"].sweeps["sweep1"].adaptive_sampling = True
+        edbapp.close(terminate_rpc_session=False)

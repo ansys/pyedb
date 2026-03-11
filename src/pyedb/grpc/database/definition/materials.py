@@ -26,7 +26,10 @@ import difflib
 import logging
 import os
 import re
-from typing import Optional, Union
+from typing import TYPE_CHECKING, Optional, Union
+
+if TYPE_CHECKING:
+    from pyedb.grpc.edb import Edb
 import warnings
 
 from ansys.edb.core.definition.debye_model import DebyeModel as CoreDebyeModel
@@ -139,7 +142,7 @@ class Material:
         return self.__name
 
     @property
-    def dc_model(self):
+    def dc_model(self) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:
         """Dielectric material model.
 
         Returns
@@ -150,7 +153,9 @@ class Material:
         return self.dielectric_material_model
 
     @property
-    def dielectric_material_model(self):
+    def dielectric_material_model(
+        self,
+    ) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:
         """Material dielectric model.
 
         Returns
@@ -195,10 +200,10 @@ class Material:
                 f"Changing conductivity is only allowed when no dielectric model is assigned."
             )
         else:
-            self.core.set_property(CoreMaterialProperty.CONDUCTIVITY, Value(value))
+            self.core.set_property(CoreMaterialProperty.CONDUCTIVITY, self.__edb._value_setter(value))
 
     @property
-    def dc_conductivity(self):
+    def dc_conductivity(self) -> float | str | None:
         """Material DC conductivity.
 
         Returns
@@ -218,7 +223,7 @@ class Material:
             self.dielectric_material_model.dc_conductivity = float(value)
 
     @property
-    def dc_permittivity(self):
+    def dc_permittivity(self) -> float | str | None:
         """Material DC permittivity.
 
         Returns
@@ -238,7 +243,7 @@ class Material:
             self.dielectric_material_model.dc_relative_permittivity = float(value)
 
     @property
-    def loss_tangent_at_frequency(self) -> float:
+    def loss_tangent_at_frequency(self) -> float | str | None:
         """Material loss tangent at frequency if dielectric model is defined.
 
         Returns
@@ -258,7 +263,7 @@ class Material:
             self.dielectric_material_model.loss_tangent_at_frequency = float(value)
 
     @property
-    def dielectric_model_frequency(self) -> float:
+    def dielectric_model_frequency(self) -> float | str | None:
         """Dielectric model frequency if model is defined.
 
         Returns
@@ -278,7 +283,7 @@ class Material:
             self.dielectric_material_model.frequency = float(value)
 
     @property
-    def permittivity_at_frequency(self) -> float:
+    def permittivity_at_frequency(self) -> float | str | None:
         """Material permittivity at frequency if model is defined.
 
 
@@ -299,7 +304,7 @@ class Material:
             self.dielectric_material_model.relative_permittivity_at_frequency = float(value)
 
     @property
-    def permittivity(self) -> float:
+    def permittivity(self) -> float | str | None:
         """Material permittivity.
 
 
@@ -317,10 +322,10 @@ class Material:
     @permittivity.setter
     def permittivity(self, value):
         """Set material permittivity."""
-        self.core.set_property(CoreMaterialProperty.PERMITTIVITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.PERMITTIVITY, self.__edb._value_setter(value))
 
     @property
-    def permeability(self) -> float:
+    def permeability(self) -> float | str | None:
         """Material permeability.
 
         Returns
@@ -337,10 +342,10 @@ class Material:
     @permeability.setter
     def permeability(self, value):
         """Set material permeability."""
-        self.core.set_property(CoreMaterialProperty.PERMEABILITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
-    def loss_tangent(self):
+    def loss_tangent(self) -> float | str | None:
         """Material loss tangent.
 
         Returns
@@ -357,7 +362,7 @@ class Material:
         return self.dielectric_loss_tangent
 
     @property
-    def dielectric_loss_tangent(self) -> float:
+    def dielectric_loss_tangent(self) -> float | str | None:
         """Material loss tangent.
 
         Returns
@@ -375,8 +380,7 @@ class Material:
     def loss_tangent(self, value):
         """Set material loss tangent."""
         warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. "
-            "Use property dielectric_loss_tangent instead.",
+            "This method is deprecated and will soon be removed. Use property dielectric_loss_tangent instead.",
             DeprecationWarning,
         )
         self.dielectric_loss_tangent = value
@@ -384,10 +388,10 @@ class Material:
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
         """Set material loss tangent."""
-        self.core.set_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT, Value(value))
+        self.core.set_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT, self.__edb._value_setter(value))
 
     @property
-    def magnetic_loss_tangent(self) -> float:
+    def magnetic_loss_tangent(self) -> float | str | None:
         """Material magnetic loss tangent.
 
         Returns
@@ -403,10 +407,10 @@ class Material:
     @magnetic_loss_tangent.setter
     def magnetic_loss_tangent(self, value):
         """Set material magnetic loss tangent."""
-        self.core.set_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT, Value(value))
+        self.core.set_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT, self.__edb._value_setter(value))
 
     @property
-    def thermal_conductivity(self) -> float:
+    def thermal_conductivity(self) -> float | str | None:
         """Material thermal conductivity.
 
         Returns
@@ -423,10 +427,10 @@ class Material:
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
         """Set material thermal conductivity."""
-        self.core.set_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY, self.__edb._value_setter(value))
 
     @property
-    def mass_density(self) -> float:
+    def mass_density(self) -> float | str | None:
         """Material mass density.
 
         Returns
@@ -443,10 +447,10 @@ class Material:
     @mass_density.setter
     def mass_density(self, value):
         """Set material mass density."""
-        self.core.set_property(CoreMaterialProperty.MASS_DENSITY, Value(value))
+        self.core.set_property(CoreMaterialProperty.MASS_DENSITY, self.__edb._value_setter(value))
 
     @property
-    def youngs_modulus(self) -> float:
+    def youngs_modulus(self) -> float | str | None:
         """Material young modulus.
 
         Returns
@@ -463,10 +467,10 @@ class Material:
     @youngs_modulus.setter
     def youngs_modulus(self, value):
         """Set material young modulus."""
-        self.core.set_property(CoreMaterialProperty.YOUNGS_MODULUS, Value(value))
+        self.core.set_property(CoreMaterialProperty.YOUNGS_MODULUS, self.__edb._value_setter(value))
 
     @property
-    def specific_heat(self) -> float:
+    def specific_heat(self) -> float | str | None:
         """Material specific heat.
 
         Returns
@@ -482,10 +486,10 @@ class Material:
     @specific_heat.setter
     def specific_heat(self, value):
         """Set material specific heat."""
-        self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, Value(value))
+        self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, self.__edb._value_setter(value))
 
     @property
-    def poisson_ratio(self) -> float:
+    def poisson_ratio(self) -> float | str | None:
         """Material poisson ratio.
 
         Returns
@@ -501,10 +505,10 @@ class Material:
     @poisson_ratio.setter
     def poisson_ratio(self, value):
         """Set material poisson ratio."""
-        self.core.set_property(CoreMaterialProperty.POISSONS_RATIO, Value(value))
+        self.core.set_property(CoreMaterialProperty.POISSONS_RATIO, self.__edb._value_setter(value))
 
     @property
-    def thermal_expansion_coefficient(self) -> float:
+    def thermal_expansion_coefficient(self) -> float | str | None:
         """Material thermal coefficient.
 
         Returns
@@ -521,7 +525,7 @@ class Material:
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):
         """Set material thermal coefficient."""
-        self.core.set_property(CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, Value(value))
+        self.core.set_property(CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT, self.__edb._value_setter(value))
 
     def set_debye_model(self):
         """Set Debye model on current material."""
@@ -662,12 +666,13 @@ class Materials(object):
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
         """
-        curr_materials = self.materials
-        if name in curr_materials:
-            raise ValueError(f"Material {name} already exists in material library.")
-        elif name.lower() in (material.lower() for material in curr_materials):
-            m = {material.lower(): material for material in curr_materials}[name.lower()]
-            raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
+        if not ("skip_check" in kwargs and kwargs["skip_check"]):  # pragma: no cover
+            curr_materials = self.materials
+            if name in curr_materials:
+                raise ValueError(f"Material {name} already exists in material library.")
+            elif name.lower() in (material.lower() for material in curr_materials):
+                m = {material.lower(): material for material in curr_materials}[name.lower()]
+                raise ValueError(f"Material names are case-insensitive and '{name}' already exists as '{m}'.")
 
         material_def = CoreMaterialDef.create(self.__edb.active_db, name)
         material = Material(self.__edb, material_def)
@@ -997,7 +1002,6 @@ class Materials(object):
         material_def = CoreMaterialDef.find_by_name(self.__edb.active_db, material_name)
         if material_def.is_null:
             raise ValueError(f"Cannot find material {material_name}.")
-            return False
         material_def.delete()
         return True
 
@@ -1096,8 +1100,9 @@ class Materials(object):
         if not os.path.exists(amat_file):
             raise FileNotFoundError(f"File path {amat_file} does not exist.")
         materials_dict = self.read_materials(amat_file)
+        local_materials = list(self.materials.keys())
         for material_name, material_properties in materials_dict.items():
-            if not material_name in self:
+            if material_name not in local_materials:
                 if "tangent_delta" in material_properties:
                     material_properties["dielectric_loss_tangent"] = material_properties["tangent_delta"]
                     del material_properties["tangent_delta"]
@@ -1109,7 +1114,7 @@ class Materials(object):
                     )
                     material_properties["dielectric_loss_tangent"] = material_properties["loss_tangent"]
                     del material_properties["loss_tangent"]
-                self.add_material(material_name, **material_properties)
+                self.add_material(material_name, skip_check=True, **material_properties)
             else:
                 self.__edb.logger.warning(f"Material {material_name} already exist and was not loaded from AMAT file.")
         return True

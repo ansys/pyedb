@@ -478,7 +478,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`create_current_source_on_net` is deprecated and is now located here "
-            "`pyedb.create_current_source_on_net.create_voltage_source_on_net` instead.",
+            "`pyedb.excitation_manager.create_current_source_on_net.create_voltage_source_on_net` instead.",
             DeprecationWarning,
         )
         return self._pedb.excitation_manager.create_current_source_on_net(
@@ -518,7 +518,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`create_coax_port_on_component` is deprecated and is now located here "
-            "`pyedb.create_current_source_on_net.create_coax_port_on_component` instead.",
+            "`pyedb.excitation_manager.create_current_source_on_net.create_coax_port_on_component` instead.",
             DeprecationWarning,
         )
         return self._pedb.excitation_manager.create_coax_port_on_component(
@@ -575,7 +575,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`create_differential_wave_port` is deprecated and is now located here "
-            "`pyedb.create_current_source_on_net.create_differential_wave_port` instead.",
+            "`pyedb.excitation_manager.create_current_source_on_net.create_differential_wave_port` instead.",
             DeprecationWarning,
         )
         return self._pedb.excitation_manager.create_differential_wave_port(
@@ -631,7 +631,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`create_bundle_wave_port` is deprecated and is now located here "
-            "`pyedb.create_current_source_on_net.create_bundle_wave_port` instead.",
+            "`pyedb.excitation_manager.create_current_source_on_net.create_bundle_wave_port` instead.",
             DeprecationWarning,
         )
         return self._pedb.excitation_manager.create_bundle_wave_port(
@@ -664,7 +664,7 @@ class EdbHfss(object):
         """
         warnings.warn(
             "`create_hfss_ports_on_padstack` is deprecated and is now located here "
-            "`pyedb.create_current_source_on_net.create_hfss_ports_on_padstack` instead.",
+            "`pyedb.excitation_manager.create_current_source_on_net.create_hfss_ports_on_padstack` instead.",
             DeprecationWarning,
         )
         return self._pedb.excitation_manager.create_hfss_ports_on_padstack(pinpos=pinpos, portname=portname)

@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import logging
+from pathlib import Path
 import re
 from typing import Optional
 import warnings
@@ -35,7 +36,6 @@ from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SParameterMod
 from pyedb.dotnet.database.cell.hierarchy.spice_model import SPICEModel
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
-from pyedb.generic.general_methods import get_filename_without_extension
 
 
 class ICDieProperties:
@@ -161,20 +161,11 @@ class EDBComponent(Group):
     def _edb_model(self):  # pragma: no cover
         return self.component_property.core.GetModel().Clone()
 
-    @property  # pragma: no cover
-    def _pin_pairs(self):
-        edb_comp_prop = self.component_property.core
-        edb_model = self._edb_model
-        return [
-            PinPair(self, self.edbcomponent, edb_comp_prop, edb_model, pin_pair)
-            for pin_pair in list(edb_model.PinPairs)
-        ]
-
     @property
     def pin_pairs(self):
         """Pin pair model if assigned."""
         if self.model_type == "RLC":
-            return self._pin_pairs
+            return self.model.pin_pairs
         return []
 
     @property
@@ -183,7 +174,7 @@ class EDBComponent(Group):
         edb_object = self.component_property.core.GetModel().Clone()
         model_type = edb_object.GetModelType().ToString()
         if model_type == "PinPairModel":
-            return PinPairModel(self._pedb, edb_object)
+            return PinPairModel(self, edb_object)
         elif model_type == "SPICEModel":
             return SPICEModel(self._pedb, edb_object)
         elif model_type == "SParameterModel":
@@ -474,9 +465,9 @@ class EDBComponent(Group):
     @property
     def rlc_values(self):
         """Get component rlc values."""
-        if not len(self._pin_pairs):
+        if not len(self.pin_pairs):
             return [None, None, None]
-        pin_pair = self._pin_pairs[0]
+        pin_pair = self.pin_pairs[0]
         return pin_pair.rlc_values
 
     @rlc_values.setter
@@ -504,10 +495,10 @@ class EDBComponent(Group):
             Value. ``None`` if not an RLC Type.
         """
         if self.model_type == "RLC":
-            if not self._pin_pairs:
+            if not self.pin_pairs:
                 return
             else:
-                pin_pair = self._pin_pairs[0]
+                pin_pair = self.pin_pairs[0]
             if len([i for i in pin_pair.rlc_enable if i]) == 1:
                 return [pin_pair.rlc_values[idx] for idx, val in enumerate(pin_pair.rlc_enable) if val][0]
             else:
@@ -544,8 +535,8 @@ class EDBComponent(Group):
         str
             Resistance value or ``None`` if not an RLC type.
         """
-        if self._pin_pairs:
-            return self._pin_pairs[0].resistance
+        if self.pin_pairs:
+            return self.pin_pairs[0].resistance
         return None
 
     @res_value.setter
@@ -558,24 +549,24 @@ class EDBComponent(Group):
 
     @property
     def rlc_enable(self):
-        if self._pin_pairs:
-            return self._pin_pairs[0].rlc_enable
+        if self.pin_pairs:
+            return self.pin_pairs[0].rlc_enable
 
     @rlc_enable.setter
     def rlc_enable(self, value):
-        if self._pin_pairs:
-            self._pin_pairs[0].rlc_enable = value
+        if self.pin_pairs:
+            self.pin_pairs[0].rlc_enable = value
 
     @property
     def first_pin(self):
-        if self._pin_pairs:
-            return self._pin_pairs[0].first_pin
+        if self.pin_pairs:
+            return self.pin_pairs[0].first_pin
         return None
 
     @property
     def second_pin(self):
-        if self._pin_pairs:
-            return self._pin_pairs[0].second_pin
+        if self.pin_pairs:
+            return self.pin_pairs[0].second_pin
         return None
 
     @property
@@ -587,8 +578,8 @@ class EDBComponent(Group):
         str
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        if self._pin_pairs:
-            return self._pin_pairs[0].capacitance
+        if self.pin_pairs:
+            return self.pin_pairs[0].capacitance
         return None
 
     @cap_value.setter
@@ -608,8 +599,8 @@ class EDBComponent(Group):
         str
             Inductance Value. ``None`` if not an RLC Type.
         """
-        if self._pin_pairs:
-            return self._pin_pairs[0].inductance
+        if self.pin_pairs:
+            return self.pin_pairs[0].inductance
         return None
 
     @ind_value.setter
@@ -640,7 +631,7 @@ class EDBComponent(Group):
 
     @is_parallel_rlc.setter
     def is_parallel_rlc(self, value):  # pragma no cover
-        if not len(self._pin_pairs):
+        if not len(self.pin_pairs):
             logging.warning(self.refdes, " has no pin pair.")
         else:
             if isinstance(value, bool):
@@ -940,7 +931,7 @@ class EDBComponent(Group):
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
 
         with open(file_path, "r") as f:
             for line in f:
@@ -971,6 +962,27 @@ class EDBComponent(Group):
 
         return self._set_model(model)
 
+    def assign_netlist_model(
+        self,
+        netlist,
+    ):
+        """Assign Netlist to this component.
+
+        Parameters
+        ----------
+        netlist : str
+           Netlist.
+
+        Returns
+        -------
+
+        """
+
+        model = self._edb.Cell.Hierarchy.NetlistModel()
+        model.SetNetlist(netlist)
+
+        return self._set_model(model)
+
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to this component.
 
@@ -987,7 +999,7 @@ class EDBComponent(Group):
 
         """
         if not name:
-            name = get_filename_without_extension(file_path)
+            name = Path(file_path).stem
 
         edbComponentDef = self.edbcomponent.GetComponentDef()
         nPortModel = self._edb.Definition.NPortComponentModel.FindByName(edbComponentDef, name)
