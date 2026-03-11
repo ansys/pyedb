@@ -1702,7 +1702,6 @@ class EDBPadstackInstance(Connectable):
             return False
 
     @property
-    @deprecated_property
     def pin(self):
         """EDB padstack object."""
         return self._edb_padstackinstance
