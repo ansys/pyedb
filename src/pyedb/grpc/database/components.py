@@ -2168,7 +2168,7 @@ class Components(object):
         component.enabled = False
         return self._pedb.excitation_manager.add_rlc_boundary(component.refdes, False)
 
-    @deprecated()
+    @deprecated("use excitation_manager.add_rlc_boundary instead")
     def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
         """Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.

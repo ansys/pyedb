@@ -91,7 +91,7 @@ class HFSSAdvancedMeshingSettings:
         self.core.layer_snap_tol = str(value)
 
     @property
-    @deprecated_property
+    @deprecated_property("use max_num_arc_points property instead.")
     def max_arc_points(self) -> int:
         """Get or set the maximum number of arc points.
 
@@ -101,7 +101,7 @@ class HFSSAdvancedMeshingSettings:
         return self.max_num_arc_points
 
     @max_arc_points.setter
-    @deprecated_property
+    @deprecated_property("use max_num_arc_points property instead.")
     def max_arc_points(self, value: int):
         self.max_num_arc_points = value
 

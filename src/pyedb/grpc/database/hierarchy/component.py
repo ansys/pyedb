@@ -286,7 +286,7 @@ class Component:
             self._pedb.logger.error("Invalid input. Set component definition failed.")
 
     @property
-    @deprecated_property
+    @deprecated_property("use component_definition property instead")
     def component_def(self):
         """Component definition.
 
@@ -296,7 +296,7 @@ class Component:
         return self.component_definition
 
     @component_def.setter
-    @deprecated_property
+    @deprecated_property("use component_definition property instead")
     def component_def(self, value):
         self.component_definition = value
 
@@ -1096,7 +1096,7 @@ class Component:
         self.component_type = new_type
 
     @property
-    @deprecated_property
+    @deprecated_property("use num_pins property instead")
     def numpins(self) -> int:
         """Number of Pins of Component.
 

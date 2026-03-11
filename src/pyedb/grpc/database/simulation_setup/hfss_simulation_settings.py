@@ -114,7 +114,7 @@ class HFSSSimulationSettings:
         return HFSSSolverSettings(self)
 
     @property
-    @deprecated_property
+    @deprecated_property("use options.enhanced_low_frequency_accuracy property instead.")
     def enhanced_low_frequency_accuracy(self) -> bool:
         """Enhanced low frequency accuracy flag.
 
@@ -130,7 +130,7 @@ class HFSSSimulationSettings:
         self.options.enhanced_low_frequency_accuracy = value
 
     @property
-    @deprecated_property
+    @deprecated_property("use options.relative_residual property instead.")
     def relative_residual(self) -> float:
         """Relative residual value.
 
@@ -146,7 +146,7 @@ class HFSSSimulationSettings:
         self.options.relative_residual = value
 
     @property
-    @deprecated_property
+    @deprecated_property("use options.use_shell_elements property instead.")
     def use_shell_elements(self) -> bool:
         """Use shell elements flag.
 

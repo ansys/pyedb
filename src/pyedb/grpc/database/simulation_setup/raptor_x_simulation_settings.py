@@ -43,7 +43,7 @@ class RaptorXSimulationSettings:
         self._pedb = pedb
 
     @property
-    @deprecated_property
+    @deprecated_property("use advanced property instead")
     def advanced_settings(self) -> RaptorXAdvancedSettings:
         """Advanced settings class.
 

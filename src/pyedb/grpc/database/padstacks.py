@@ -742,13 +742,13 @@ class Padstacks(object):
 
         return False
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_source_on_component method instead")
     def create_coax_port(self, padstackinstance, use_dot_separator=True, name=None):
         """Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
 
         . deprecated:: pyedb 0.28.0
-        Use :func:`pyedb.grpc.core.excitations.create_source_on_component` instead.
+        Use :func:`edb.grpc.core.excitations.create_source_on_component` instead.
 
         Parameters
         ----------
@@ -818,7 +818,7 @@ class Padstacks(object):
 
         return pinlist
 
-    @deprecated()
+    @deprecated("use get_pin_from_component_and_net method instead")
     def get_pinlist_from_component_and_net(self, refdes=None, netname=None):
         """Retrieve pins given a component's reference designator and net name.
 

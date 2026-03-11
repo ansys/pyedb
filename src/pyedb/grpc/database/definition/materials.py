@@ -52,10 +52,6 @@ from pyedb.misc.decorators import deprecated, deprecated_property
 
 logger = logging.getLogger(__name__)
 
-# TODO: Once we are Python3.9+ change PositiveInt implementation like
-# from annotated_types import Gt
-# from typing_extensions import Annotated
-# PositiveFloat = Annotated[float, Gt(0)]
 try:
     from annotated_types import Gt
     from typing_extensions import Annotated
@@ -346,7 +342,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
-    @deprecated_property
+    @deprecated_property("use dielectric_loss_tangent property instead")
     def loss_tangent(self) -> float | str | None:
         """Material loss tangent.
 
@@ -374,7 +370,7 @@ class Material:
             return 0.0
 
     @loss_tangent.setter
-    @deprecated_property
+    @deprecated_property("use dielectric_loss_tangent property instead")
     def loss_tangent(self, value):
         """Set material loss tangent."""
         self.dielectric_loss_tangent = value
@@ -968,7 +964,7 @@ class Materials(object):
         new_material.update(material_dict)
         return new_material
 
-    @deprecated()
+    @deprecated("use delete method instead")
     def delete_material(self, material_name):
         """
 

@@ -365,7 +365,7 @@ class PadstackInstance(conn_obj.ConnObj):
         """Delete the padstack instance."""
         self.core.delete()
 
-    @deprecated()
+    @deprecated("use set_back_drill_by_layer or set_back_drill_by_depth methods instead")
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from top.
 
@@ -399,7 +399,7 @@ class PadstackInstance(conn_obj.ConnObj):
                     self._pedb._value_setter(drill_depth), self._pedb._value_setter(drill_diameter), from_bottom=False
                 )
 
-    @deprecated()
+    @deprecated("use set_back_drill_by_layer or set_back_drill_by_depth methods instead")
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
 

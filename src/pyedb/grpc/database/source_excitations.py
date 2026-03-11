@@ -393,7 +393,7 @@ class SourceExcitation(SourceExcitationInternal):
         return self._pedb.logger
 
     @property
-    @deprecated_property
+    @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 

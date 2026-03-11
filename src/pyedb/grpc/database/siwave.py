@@ -87,9 +87,12 @@ class Siwave(object):
         return self._pedb.active_db
 
     @property
-    @deprecated_property
+    @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
+
+        .. deprecated:: pyedb 0.70.0
+                Use :attr:`ports` property instead.
 
         Returns
         -------
@@ -160,7 +163,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager.pin_groups
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager._create_terminal_on_pins method instead")
     def _create_terminal_on_pins(self, source):
         """Create a terminal on pins.
 
@@ -175,7 +178,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager._create_terminal_on_pins(source)
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_circuit_port_on_pin method instead")
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
         """Create a circuit port on a pin.
 
@@ -200,7 +203,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager.create_circuit_port_on_pin(pos_pin, neg_pin, impedance, port_name)
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_port_between_pin_and_layer method instead")
     def create_port_between_pin_and_layer(
         self, component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0
     ):
@@ -231,7 +234,7 @@ class Siwave(object):
             component_name, pins_name, layer_name, reference_net, impedance
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_voltage_source_on_pin method instead")
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
         """Create a voltage source.
 
@@ -260,7 +263,7 @@ class Siwave(object):
             pos_pin, neg_pin, voltage_value, phase_value, source_name
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_current_source_on_pin method instead")
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
         """Create a current source.
 
@@ -289,7 +292,7 @@ class Siwave(object):
             pos_pin, neg_pin, current_value, phase_value, source_name
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_resistor_on_pin method instead")
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
         """Create a resistor boundary between two given pins.
 
@@ -314,7 +317,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager._check_gnd method instead")
     def _check_gnd(self, component_name):
         """Check ground reference.
 
@@ -323,7 +326,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager._check_gnd(component_name)
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_circuit_port_on_net method instead")
     def create_circuit_port_on_net(
         self,
         positive_component_name,
@@ -369,7 +372,7 @@ class Siwave(object):
             port_name,
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_voltage_source_on_net method instead")
     def create_voltage_source_on_net(
         self,
         positive_component_name,
@@ -417,7 +420,7 @@ class Siwave(object):
             source_name,
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_current_source_on_net method instead")
     def create_current_source_on_net(
         self,
         positive_component_name,
@@ -465,7 +468,7 @@ class Siwave(object):
             source_name,
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_dc_terminal method instead")
     def create_dc_terminal(
         self,
         component_name,
@@ -558,7 +561,7 @@ class Siwave(object):
 
         return str(file_name)
 
-    @deprecated()
+    @deprecated("use edb.simulation_setups.create_siwave_cpa_setup method instead")
     def add_cpa_analysis(self, name=None, siwave_cpa_setup_class=None):
         """Add a SIwave CPA analysis to EDB.
 
@@ -658,7 +661,7 @@ class Siwave(object):
         self.create_exec_file(add_dc=True)
         return setup
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager._create_pin_group_terminal2 method instead")
     def create_pin_group_terminal(self, source):
         """Create a pin group terminal.
 
@@ -673,7 +676,7 @@ class Siwave(object):
         """
         return self._pedb.excitation_manager._create_pin_group_terminal2(source)
 
-    @deprecated()
+    @deprecated("use edb.components.create method instead")
     def create_rlc_component(
         self,
         pins,
@@ -718,7 +721,7 @@ class Siwave(object):
             is_parallel=is_parallel,
         )  # pragma no cover
 
-    @deprecated()
+    @deprecated("use edb.components.create_pin_group method instead")
     def create_pin_group(self, reference_designator, pin_numbers, group_name=None):
         """Create pin group on the component.
 
@@ -741,7 +744,7 @@ class Siwave(object):
         """
         return self._pedb.components.create_pin_group(reference_designator, pin_numbers, group_name)
 
-    @deprecated()
+    @deprecated("use edb.components.create_pin_group_on_net method instead")
     def create_pin_group_on_net(self, reference_designator, net_name, group_name=None):
         """Create pin group on component by net name.
 
@@ -764,7 +767,7 @@ class Siwave(object):
         """
         return self._pedb.components.create_pin_group_on_net(reference_designator, net_name, group_name)
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_current_source_on_pin_group method instead")
     def create_current_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None
     ):
@@ -795,7 +798,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_voltage_source_on_pin_group method instead")
     def create_voltage_source_on_pin_group(
         self, pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001
     ):
@@ -828,7 +831,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, magnitude, phase, name, impedance
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_voltage_probe_on_pin_group method instead")
     def create_voltage_probe_on_pin_group(self, probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1e6):
         """Create voltage probe between two pin groups.
 
@@ -856,7 +859,7 @@ class Siwave(object):
             probe_name, pos_pin_group_name, neg_pin_group_name, impedance=impedance
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.create_circuit_port_on_pin_group method instead")
     def create_circuit_port_on_pin_group(self, pos_pin_group_name, neg_pin_group_name, impedance=50, name=None):
         """Create a port between two pin groups.
 
@@ -883,7 +886,7 @@ class Siwave(object):
             pos_pin_group_name, neg_pin_group_name, impedance, name
         )
 
-    @deprecated()
+    @deprecated("use edb.excitation_manager.place_voltage_probe method instead")
     def place_voltage_probe(
         self,
         name,
