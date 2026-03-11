@@ -21,12 +21,12 @@
 # SOFTWARE.
 
 import re
-import warnings
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.primitives_data import cast
 from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
+from pyedb.misc.decorators import deprecated_property
 
 
 class Terminal(Connectable):
@@ -220,6 +220,7 @@ class Terminal(Connectable):
         self._edb_object.SetReferenceTerminal(value._edb_object)
 
     @property
+    @deprecated_property("use reference_terminal property instead.")
     def ref_terminal(self):
         """Get reference terminal.
 
@@ -227,13 +228,10 @@ class Terminal(Connectable):
         Use: attribute:`reference_terminal` instead.
 
         """
-        warnings.warn(
-            "`ref_terminal` is deprecated, use `reference_terminal` instead.",
-            DeprecationWarning,
-        )
         return self.reference_terminal
 
     @ref_terminal.setter
+    @deprecated_property("use reference_terminal property instead.")
     def ref_terminal(self, value):
         self.reference_terminal = value
 
