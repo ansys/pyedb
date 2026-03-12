@@ -23,7 +23,10 @@
 """Database."""
 
 import re
+from typing import TYPE_CHECKING, Any
 
+if TYPE_CHECKING:
+    from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
@@ -140,7 +143,7 @@ class PolygonDataDotNet:  # pragma: no cover
             polygons = convert_py_list_to_net_list(polygons)
         return self.dotnetobj.GetBBoxOfPolygons(polygons)
 
-    def create_from_bbox(self, points):
+    def create_from_bbox(self, points) -> list[Any]:
         """Edb Dotnet Api Database `Edb.Geometry.CreateFromBBox`.
 
         Parameters
@@ -212,12 +215,22 @@ class NetDotNet:
         """Return Ansys.Ansoft.Edb object."""
         return self.net_obj
 
-    def find_by_name(self, layout, net):  # pragma: no cover
-        """Edb Dotnet Api Database `Edb.Net.FindByName`."""
+    def find_by_name(self, layout, net) -> "NetDotNet":  # pragma: no cover
+        """Edb Dotnet Api Database `Edb.Net.FindByName`.
+
+        Returns
+        -------
+        :class:`NetDotNet`
+        """
         return NetDotNet(self._app, self.net.FindByName(layout, net))
 
-    def create(self, layout, name):
-        """Edb Dotnet Api Database `Edb.Net.Create`."""
+    def create(self, layout, name) -> "NetDotNet":
+        """Edb Dotnet Api Database `Edb.Net.Create`.
+
+        Returns
+        -------
+        :class:`NetDotNet`
+        """
 
         return NetDotNet(self._app, self.net.Create(layout, name))
 
@@ -228,10 +241,17 @@ class NetDotNet:
             self.net_obj = None
 
     @property
-    def name(self):
-        """Edb Dotnet Api Database `net.name` and  `Net.SetName()`."""
+    def name(self) -> str:
+        """Edb Dotnet Api Database `net.name` and  `Net.SetName()`.
+
+        Returns
+        -------
+        str
+            Name of the net.
+        """
         if self.net_obj:
             return self.net_obj.GetName()
+        return ""
 
     @name.setter
     def name(self, value):
@@ -239,16 +259,18 @@ class NetDotNet:
             self.net_obj.SetName(value)
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Edb Dotnet Api Database `Net.IsNull()`."""
         if self.net_obj:
             return self.net_obj.IsNull()
+        return True
 
     @property
-    def is_power_ground(self):
+    def is_power_ground(self) -> bool | None:
         """Edb Dotnet Api Database `Net.IsPowerGround()` and  `Net.SetIsPowerGround()`."""
         if self.net_obj:
             return self.net_obj.IsPowerGround()
+        return None
 
     @property
     def _api_get_extended_net(self):
@@ -282,10 +304,11 @@ class NetClassDotNet:
         return NetClassDotNet(self._app, self.cell_net_class.Create(self._app.active_layout, name))
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Edb Dotnet Api Database `NetClass.name` and  `NetClass.SetName()`."""
         if self.api_object:
             return self.api_object.GetName()
+        return ""
 
     @name.setter
     def name(self, value):
@@ -307,6 +330,7 @@ class NetClassDotNet:
         if self.api_object:
             edb_api_net = self.core.Cell.Net.FindByName(self._app.active_layout, name)
             return self.api_object.AddNet(edb_api_net)
+        return None
 
     def delete(self):  # pragma: no cover
         """Edb Dotnet Api Database `Delete`."""
@@ -315,12 +339,14 @@ class NetClassDotNet:
             self.api_object.Delete()
             self.api_object = None
             return not self.api_object
+        return None
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Edb Dotnet Api Database `NetClass.IsNull()`."""
         if self.api_object:
             return self.api_object.IsNull()
+        return True
 
 
 class ExtendedNetDotNet(NetClassDotNet):
@@ -356,8 +382,14 @@ class DifferentialPairDotNet(NetClassDotNet):
         """Return Ansys.Ansoft.Edb class object."""
         return self.cell_diff_pair
 
-    def find_by_name(self, layout, net):  # pragma: no cover
-        """Edb Dotnet Api Database `Edb.DifferentialPair.FindByName`."""
+    def find_by_name(self, layout, net) -> "DifferentialPairDotNet":  # pragma: no cover
+        """Edb Dotnet Api Database `Edb.DifferentialPair.FindByName`.
+
+        Returns
+        -------
+        :class:`DifferentialPairDotNet`
+
+        """
         return DifferentialPairDotNet(self._app, self.cell_diff_pair.FindByName(layout, net))
 
     def api_create(self, name):
@@ -374,12 +406,14 @@ class DifferentialPairDotNet(NetClassDotNet):
         """Edb Api Positive net object."""
         if self.api_object:
             return self.api_object.GetPositiveNet()
+        return None
 
     @property
     def api_negative_net(self):
         """Edb Api Negative net object."""
         if self.api_object:
             return self.api_object.GetNegativeNet()
+        return None
 
 
 class CellClassDotNet:
@@ -416,7 +450,14 @@ class CellClassDotNet:
         """Return Ansys.Ansoft.Edb object."""
         return self._active_cell
 
-    def create(self, db, cell_type, cell_name):
+    def create(self, db, cell_type, cell_name) -> "CellClassDotNet":
+        """Edb Dotnet Api Database `Edb.Cell.Create`.
+
+        Returns
+        -------
+        :class:`CellClassDotNet`
+
+        """
         return CellClassDotNet(self._app, self.cell.Create(db, cell_type, cell_name))
 
     @property
@@ -425,7 +466,7 @@ class CellClassDotNet:
         return self._cell.Terminal
 
     @property
-    def hierarchy(self):
+    def hierarchy(self) -> "HierarchyDotNet":
         """Edb Dotnet Api Database `Edb.Cell.Hierarchy`.
 
         Returns
@@ -440,7 +481,7 @@ class CellClassDotNet:
         return self._cell.Cell
 
     @property
-    def net(self):
+    def net(self) -> "NetDotNet":
         """Edb Dotnet Api Cell.Layer."""
         return NetDotNet(self._app)
 
@@ -465,7 +506,7 @@ class CellClassDotNet:
         return self._cell.LayoutObjType
 
     @property
-    def primitive(self):
+    def primitive(self) -> "PrimitiveDotNet":
         """Edb Dotnet Api Database `Edb.Cell.Primitive`."""
         from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
 
@@ -722,7 +763,7 @@ class Database:
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
         """
-        return [CellClassDotNet(self, i) for i in list(self._db.TopCircuitCells)]
+        return [CellClassDotNet(self._pedb, i) for i in list(self._db.TopCircuitCells)]
 
     @property
     def circuit_cells(self):
@@ -732,20 +773,20 @@ class Database:
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
         """
-        return [CellClassDotNet(self, i) for i in list(self._db.CircuitCells)]
+        return [CellClassDotNet(self._pedb, i) for i in list(self._db.CircuitCells)]
 
     @property
-    def footprint_cells(self):
+    def footprint_cells(self) -> list[Any]:
         """Get all footprint cells in the Database.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
         """
-        return [CellClassDotNet(self, i) for i in list(self._db.FootprintCells)]
+        return [CellClassDotNet(self._pedb, i) for i in list(self._db.FootprintCells)]
 
     @property
-    def edb_uid(self):
+    def edb_uid(self) -> int:
         """Get ID of the database.
 
         Returns
@@ -756,7 +797,7 @@ class Database:
         return self._db.GetId()
 
     @property
-    def is_read_only(self):
+    def is_read_only(self) -> bool:
         """Determine if the database is open in a read-only mode.
 
         Returns
@@ -779,9 +820,9 @@ class Database:
         Database
             The Database or Null on failure.
         """
-        self.core.database.FindById(db_id)
+        return self.core.database.FindById(db_id)
 
-    def save_as(self, path, version=""):
+    def save_as(self, path, version="") -> bool:
         """Save this Database to a new location and older EDB version.
 
         Parameters
@@ -790,11 +831,16 @@ class Database:
             New Database file location.
         version : str
             EDB version to save to. Empty string means current version.
+
+        Returns
+        -------
+        bool
+            True if successful, False if failed.
         """
-        self._db.SaveAs(path, version)
+        return self._db.SaveAs(path, version)
 
     @property
-    def directory(self):
+    def directory(self) -> str:
         """Get the directory of the Database.
 
         Returns
@@ -804,7 +850,7 @@ class Database:
         """
         return self._db.GetDirectory()
 
-    def get_product_property(self, prod_id, attr_it):
+    def get_product_property(self, prod_id, attr_it) -> str:
         """Get the product-specific property value.
 
         Parameters
@@ -835,7 +881,7 @@ class Database:
         """
         self._db.SetProductProperty(prod_id, attr_it, prop_value)
 
-    def get_product_property_ids(self, prod_id):
+    def get_product_property_ids(self, prod_id) -> list[int]:
         """Get a list of attribute ids corresponding to a product property id.
 
         Parameters
@@ -869,7 +915,7 @@ class Database:
         )
 
     @property
-    def version(self):
+    def version(self) -> tuple[int, int]:
         """Get version of the Database.
 
         Returns
@@ -880,7 +926,7 @@ class Database:
         major, minor = self._db.GetVersion()
         return major, minor
 
-    def scale(self, scale_factor):
+    def scale(self, scale_factor) -> float:
         """Uniformly scale all geometry and their locations by a positive factor.
 
         Parameters
@@ -891,7 +937,7 @@ class Database:
         return self._db.Scale(scale_factor)
 
     @property
-    def source(self):
+    def source(self) -> str:
         """Get source name for this Database.
 
         This attribute is also used to set the source name.
@@ -909,7 +955,7 @@ class Database:
         self._db.SetSource(source)
 
     @property
-    def source_version(self):
+    def source_version(self) -> str:
         """Get the source version for this Database.
 
         This attribute is also used to set the version.
@@ -927,7 +973,7 @@ class Database:
         """Set source version of the database."""
         self._db.SetSourceVersion(source_version)
 
-    def copy_cells(self, cells_to_copy):
+    def copy_cells(self, cells_to_copy) -> list[Any]:
         """Copy Cells from other Databases or this Database into this Database.
 
         Parameters
@@ -946,7 +992,7 @@ class Database:
         return self._db.CopyCells(_dbCells)
 
     @property
-    def apd_bondwire_defs(self):
+    def apd_bondwire_defs(self) -> list[Any]:
         """Get all APD bondwire definitions in this Database.
 
         Returns
@@ -956,7 +1002,7 @@ class Database:
         return list(self._db.APDBondwireDefs)
 
     @property
-    def jedec4_bondwire_defs(self):
+    def jedec4_bondwire_defs(self) -> list[Any]:
         """Get all JEDEC4 bondwire definitions in this Database.
 
         Returns
@@ -966,7 +1012,7 @@ class Database:
         return list(self._db.Jedec4BondwireDefs)
 
     @property
-    def jedec5_bondwire_defs(self):
+    def jedec5_bondwire_defs(self) -> list[Any]:
         """Get all JEDEC5 bondwire definitions in this Database.
 
         Returns
@@ -976,7 +1022,7 @@ class Database:
         return list(self._db.Jedec5BondwireDefs)
 
     @property
-    def padstack_defs(self):
+    def padstack_defs(self) -> list[Any]:
         """Get all Padstack definitions in this Database.
 
         Returns
@@ -986,7 +1032,7 @@ class Database:
         return list(self._db.PadstackDefs)
 
     @property
-    def package_defs(self):
+    def package_defs(self) -> list[Any]:
         """Get all Package definitions in this Database.
 
         Returns
@@ -996,7 +1042,7 @@ class Database:
         return list(self._db.PackageDefs)
 
     @property
-    def component_defs(self):
+    def component_defs(self) -> list[Any]:
         """Get all component definitions in the database.
 
         Returns
@@ -1006,7 +1052,7 @@ class Database:
         return list(self._db.ComponentDefs)
 
     @property
-    def material_defs(self):
+    def material_defs(self) -> lit[Any]:
         """Get all material definitions in the database.
 
         Returns
@@ -1016,7 +1062,7 @@ class Database:
         return list(self._db.MaterialDefs)
 
     @property
-    def dataset_defs(self):
+    def dataset_defs(self) -> list[Any]:
         """Get all dataset definitions in the database.
 
         Returns
@@ -1031,10 +1077,6 @@ class Database:
         Parameters
         ----------
         hdb
-
-        Returns
-        -------
-
         """
         from pyedb.dotnet.clr_module import Convert
 
