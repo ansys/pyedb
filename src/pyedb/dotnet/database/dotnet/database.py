@@ -1052,7 +1052,7 @@ class Database:
         return list(self._db.ComponentDefs)
 
     @property
-    def material_defs(self) -> lit[Any]:
+    def material_defs(self) -> list[Any]:
         """Get all material definitions in the database.
 
         Returns
