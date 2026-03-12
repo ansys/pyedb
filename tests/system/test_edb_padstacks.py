@@ -268,7 +268,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.load_edb(source_path)
         assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
-        assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(False)
+        assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(True)
         assert edbapp.padstacks.definitions["MyVia"].convert_to_3d_microvias(
             convert_only_signal_vias=False, delete_padstack_def=False
         )
