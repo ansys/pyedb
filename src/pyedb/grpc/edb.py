@@ -591,7 +591,7 @@ class Edb(EdbInit):
             elif isinstance(t, PadstackInstanceTerminal):
                 ports[t.name] = CoaxPort(self, t.core)
             elif isinstance(t, EdgeTerminal):
-                if getattr(t, "is_wave_port", False):
+                if getattr(t, "is_wave_port", True):
                     ports[t.name] = WavePort(self, t.core)
                 else:
                     ports[t.name] = EdgeTerminal(self, t.core)

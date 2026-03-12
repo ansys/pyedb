@@ -387,7 +387,13 @@ class Terminal(ConnObj):
                 if edge_type == CoreEdgeType.PADSTACK:
                     self._reference_object = self.get_pad_edge_terminal_reference_pin()
                 else:
-                    self._reference_object = self.get_edge_terminal_reference_primitive()
+                    if self.core.edges:
+                        if hasattr(self.core.edges[0], "primitive"):
+                            self._reference_object = Primitive(self._pedb, self.core.edges[0].primitive)
+                        else:
+                            self._reference_object = None
+                    else:
+                        self._reference_object = None
             elif self.terminal_type == "pin_group":
                 self._reference_object = self.get_pin_group_terminal_reference_pin()
             elif self.terminal_type == "point":
@@ -473,20 +479,14 @@ class Terminal(ConnObj):
         """Check and return a primitive instance that serves Edge ports,
         wave-ports and coupled-edge ports that are directly connected to primitives.
 
-        Returns
-        -------
-        :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
+        .. deprecated:: 0.70.0
+            The `get_edge_terminal_reference_primitive` method is deprecated and not used anymore.
+            Please use `edb.ports["your_port_name"].reference_object` instead if it exists.
         """
-
-        ref_layer = self.reference_layer
-        edges = self.core.edges
-        _, _, point_data = edges[0].get_parameters()
-        layer_name = ref_layer.name
-        for primitive in self._pedb.layout.primitives:
-            if primitive.layer.name == layer_name:
-                if primitive.polygon_data.point_in_polygon(point_data):
-                    return (primitive, self._pedb)
-        return None  # pragma: no cover
+        raise (
+            "get_edge_terminal_reference_primitive is deprecated and not used anymore. "
+            'Please use edb.ports["your_port_name"].reference_object instead if it exists.'
+        )
 
     def get_point_terminal_reference_primitive(self) -> Primitive:
         """

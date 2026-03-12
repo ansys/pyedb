@@ -313,6 +313,7 @@ class TestClass(BaseTestClass):
                 terminal_point=port_location,
                 reference_point=ref_location,
             )
+            assert list(edb.ports.values())[-1].reference_object is None
         else:
             # method already deprecated in grpc.
             assert edb.excitation_manager.create_edge_port_on_polygon(
@@ -430,6 +431,8 @@ class TestClass(BaseTestClass):
             assert edb.excitation_manager.create_edge_port_horizontal(
                 prim_1_id, ["-60mm", "-4mm"], prim_2_id, ["-59mm", "-4mm"], "port_hori", 30, "Lower"
             )
+            assert edb.ports["port_hori"].reference_terminal.reference_object is None
+            assert edb.ports["port_hori"].reference_object is None
         else:
             # This method is also available at same location in grpc but is deprecated.
             assert edb.excitation_manager.create_edge_port_horizontal(
