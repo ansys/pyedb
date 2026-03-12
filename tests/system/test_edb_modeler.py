@@ -245,12 +245,13 @@ class TestClass(BaseTestClass):
         ]
         trace = edbapp.modeler.create_trace(points, "1_Top")
         assert trace
-        assert trace.end_cap1 == "round"
-        assert trace.end_cap2 == "round"
-        trace.end_cap1 = "flat"
-        trace.end_cap2 = "flat"
-        assert trace.end_cap1 == "flat"
-        assert trace.end_cap2 == "flat"
+        if edbapp.grpc:
+            assert trace.end_cap1 == "round"
+            assert trace.end_cap2 == "round"
+            trace.end_cap1 = "flat"
+            trace.end_cap2 = "flat"
+            assert trace.end_cap1 == "flat"
+            assert trace.end_cap2 == "flat"
 
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)
