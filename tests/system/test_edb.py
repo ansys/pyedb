@@ -1169,14 +1169,16 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(is_linux and not config["use_grpc"], reason="Randomly fails on linux dotnet")
     def test_siwave_simulation_setup_dotnet_compatibility(self):
-        edbapp = self.edb_examples.create_empty_edb()
+        edbapp = self.edb_examples.get_si_verse()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
+        setup.set_dc_slider = 1
         settings = setup.settings
 
         # -------------------------
         # Apply settings (SETTERS)
         # -------------------------
 
+        settings.dc_report_show_active_devices = True
         settings.dc_report_config_file = "custom_dc_report.cfg"
         settings.enabled = False
         settings.enabled = True
@@ -1188,6 +1190,8 @@ class TestClass(BaseTestClass):
         settings.use_loop_res_for_per_pin = False
         settings.export_dc_thermal_data = True
         settings.full_dc_report_path = "full_dc_report.txt"
+        settings.use_loop_res_for_per_pin = True
+        # settings.add_source_terminal_to_ground("test", 1)
 
         # DC settings
         dc = settings.dc
@@ -1228,6 +1232,9 @@ class TestClass(BaseTestClass):
         setup = edbapp.setups["setup_1"]
         settings = setup.settings
 
+        # assert settings.source_terms_to_ground["test"]
+        assert settings.use_loop_res_for_per_pin
+        assert settings.dc_report_show_active_devices
         assert settings.dc_report_config_file == "custom_dc_report.cfg"
         assert settings.enabled
         assert settings.icepak_temp_file == "icepak_temp_file.txt"
@@ -1267,6 +1274,10 @@ class TestClass(BaseTestClass):
         assert not general.plot_jv
         assert not general.use_dc_custom_settings
 
+        # test syz setup
+
+        setup2 = edbapp.simulation_setups.create_siwave_setup("setup_2")
+        assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
         edbapp.close()
 
     @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")

@@ -83,7 +83,7 @@ class TestClass:
             "unit_test_xml_parser/ANSYS-SI-Verse-PCB_V1_1_CONTROL.xml"
         )[0]
         xml_parser = XmlParser.load_xml_file(str(xml_file))
-
+        assert xml_parser.to_dict()
         assert len(xml_parser.stackup.materials.material) == 8
         assert xml_parser.stackup.materials.material[1].name == "copper"
 
