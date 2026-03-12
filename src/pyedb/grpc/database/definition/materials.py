@@ -90,7 +90,7 @@ def get_line_float_value(line):
     - permittivity='12'.
     """
     try:
-        return float(re.split(", | =", line)[-1].strip("'\n)"))
+        return float(re.split(",|=", line)[-1].strip("'\n)"))
     except ValueError:
         return None
 
