@@ -862,14 +862,15 @@ class EDBPadstack(object):
         layout = self._ppadstack._pedb.active_layout
         layers = self._ppadstack._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
+        # All nets by default
+        nets = list(self._ppadstack._pedb.nets.nets.keys())
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal.keys())]
-
+            nets = [i for i in list(self._ppadstack._pedb.nets.signal.keys())]
         layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
         i = 0
         for via in self.padstack_instances.values():
-            if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
+            if via.net_name in nets:
                 pos = via.position
                 started = False
                 if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
