@@ -255,7 +255,6 @@ class TestClass(BaseTestClass):
 
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)
-        pass
         # TODO
         # edbapp["delta_x"] = "1mm"
         # assert trace.add_point("delta_x", "1mm", True)
