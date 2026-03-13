@@ -863,7 +863,7 @@ class EDBPadstack(object):
         layers = self._ppadstack._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
+            signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal.keys())]
 
         layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
