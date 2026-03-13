@@ -231,7 +231,6 @@ class Terminal(Connectable):
         return self.reference_terminal
 
     @ref_terminal.setter
-    @deprecated_property("use reference_terminal property instead.")
     def ref_terminal(self, value):
         self.reference_terminal = value
 
