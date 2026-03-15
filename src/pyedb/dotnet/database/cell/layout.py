@@ -26,9 +26,12 @@ This module contains these classes: `EdbLayout` and `Shape`.
 
 from typing import List, Union
 
+from pyedb.misc.decorators import deprecate_argument_name
+
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
+from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
@@ -48,6 +51,7 @@ from pyedb.dotnet.database.edb_data.primitives_data import (
     EdbRectangle,
     EdbText,
 )
+from pyedb.dotnet.database.dotnet.primitive import RectangleDotNet, CircleDotNet, PathDotNet
 from pyedb.dotnet.database.edb_data.sources import PinGroup
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
@@ -77,11 +81,357 @@ def primitive_cast(pedb, edb_object):
     else:
         return
 
+class PrimitivesQuery:
+    def __init__(self, pedb):
+        self._pedb = pedb
+        self._primitives = []
 
-class Layout(ObjBase):
+    @property
+    def primitives_by_aedt_name(self) -> dict:
+        """Primitives."""
+        return {i.aedt_name: i for i in self.primitives}
+
+    @property
+    def primitives(self) -> list[Primitive]:
+        """List of primitives.Read-Only.
+
+        Returns
+        -------
+        list of :class:`dotnet.database.dotnet.primitive.PrimitiveDotNet` cast objects.
+        """
+        primitives = list(self._edb_object.Primitives)
+        if len(primitives) != len(self._primitives):
+            self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
+        return [p for p in self._primitives if p is not None]  # non stackup primitives are None
+
+    @property
+    def zone_primitives(self):
+        """:obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>` : List of all the primitives in \
+        :term:`zones <Zone>`.
+
+        Read-Only.
+        """
+        return list(self._edb_object.GetZonePrimitives())
+
+    @property
+    def bondwires(self):
+        """Bondwires.
+
+        Returns
+        -------
+        list :
+            List of bondwires.
+        """
+        return [i for i in self.primitives if i.primitive_type == "bondwire"]
+
+    def find_object_by_id(
+        self, value: int
+    ) -> EDBPadstackInstance | EdbRectangle | EdbPolygon | EdbText | EdbCircle | Path | None:
+        """Find a layout object by Database ID.
+
+        Parameters
+        ----------
+        value : int
+            ID of the object.
+        """
+        obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
+        if obj is None:
+            raise RuntimeError(f"Object Id {value} not found")
+
+        if obj.GetObjType().ToString() == "PadstackInstance":
+            return EDBPadstackInstance(obj, self._pedb)
+
+        if obj.GetObjType().ToString() == "Primitive":
+            return primitive_cast(self._pedb, obj)
+
+    def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
+        """Return primitive given coordinate point [x, y], layer name and nets.
+
+        Parameters
+        ----------
+        point : list
+            Coordinate [x, y]
+
+        layer : list or str, optional
+            list of layer name or layer name applied on filter.
+
+        nets : list or str, optional
+            list of net name or single net name applied on filter
+
+        Returns
+        -------
+        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+            List of primitives, polygons, paths and rectangles.
+        """
+        if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
+            layer = None
+        if not isinstance(point, list) and len(point) == 2:
+            self._logger.error("Provided point must be a list of two values")
+            return False
+        pt = self._edb.Geometry.PointData(self._pedb.edb_value(point[0]), self._pedb.edb_value(point[1]))
+        if nets:
+            if isinstance(nets, str):
+                nets = [nets]
+            _nets = []
+            for net in nets:
+                if net not in self._pedb.nets:
+                    self._logger.warning(
+                        f"Net {net} used to find primitive from layer point and net not found, skipping it."
+                    )
+                else:
+                    _nets.append(self._pedb.nets[net].net_obj)
+            if _nets:
+                nets = convert_py_list_to_net_list(_nets)
+        _obj_instances = list(self._pedb.layout_instance.FindLayoutObjInstance(pt, None, nets).Items)
+        returned_obj = []
+        if layer:
+            selected_prim = [
+                obj.GetLayoutObj()
+                for obj in _obj_instances
+                if layer in [lay.GetName() for lay in list(obj.GetLayers())]
+                and "Terminal" not in str(obj.GetLayoutObj())
+            ]
+            for prim in selected_prim:
+                obj_id = prim.GetId()
+                prim_type = str(prim.GetPrimitiveType())
+                if prim_type == "Polygon":
+                    [returned_obj.append(p) for p in [poly for poly in self.polygons if poly.id == obj_id]]
+                elif prim_type == "Path":
+                    [returned_obj.append(p) for p in [t for t in self.paths if t.id == obj_id]]
+                elif prim_type == "Rectangle":
+                    [returned_obj.append(p) for p in [t for t in self.rectangles if t.id == obj_id]]
+        else:
+            for obj in _obj_instances:
+                obj_id = obj.GetLayoutObj().GetId()
+                [returned_obj.append(p) for p in [obj for obj in self.primitives if obj.id == obj_id]]
+        return returned_obj
+
+    def find_primitive(
+        self, layer_name: str | list = None, name: str | list = None, net_name: str | list = None) -> list:
+        """Find a primitive objects by layer name.
+
+        Parameters
+        ----------
+        layer_name : str, list, optional
+            Name of the layer.
+        name : str, list, optional
+            Name of the primitive
+        net_name : str, list, optional
+            Name of the primitive
+        point : tuple[float, float], optional
+            Coordinate point (x, y) to find primitives at a specific location. If provided, only primitives that contain
+            this point will be returned.
+        Returns
+        -------
+        list
+        """
+        # Normalize parameters to sets for O(1) lookups
+        layer_name_set = set(layer_name) if isinstance(layer_name, list) else {layer_name} if layer_name is not None else None
+        name_set = set(name) if isinstance(name, list) else {name} if name is not None else None
+        net_name_set = set(net_name) if isinstance(net_name, list) else {net_name} if net_name is not None else None
+
+        # Single pass filtering with multiple conditions
+        prims = self.primitives
+        primitive_filtered= [
+            i for i in prims
+            if (layer_name_set is None or i.layer_name in layer_name_set)
+            and (name_set is None or i.aedt_name in name_set)
+            and (net_name_set is None or i.net_name in net_name_set)
+        ]
+        return primitive_filtered
+
+
+    @property
+    def primitives_by_layer(self) -> dict:
+        """Get primitives by layer name.
+
+        Returns
+        -------
+        dict
+            Returns dict[str, list] with all specified layer names as keys organized by layer.
+        """      
+        primitives = self.find_primitive()
+        result = {}
+        for prim in primitives:
+            layer = prim.layer_name
+            if layer not in result:
+                result[layer] = []
+            result[layer].append(prim)
+        return result
+
+    @property
+    def polygons_by_layer(self) -> dict:
+        """Get polygons by layer name.
+
+        Returns
+        -------
+        dict
+            dictionary of polygons with layer name as key and list of polygons as value.
+        """
+        primitive = self.primitives_by_layer
+        polygons = {}
+        for layer, primitives in primitive.items():
+            _polygon_at_layer = []
+            for primitive in primitives:
+                if primitive.primitive_type == "polygon":
+                    _polygon_at_layer.append(primitive)
+            if _polygon_at_layer:
+                polygons[layer] = _polygon_at_layer
+        return polygons
+
+    @property
+    def primitives_by_net(self) -> dict:
+        """Get primitives by net name.
+
+        Returns
+        -------
+        dict
+            Returns dict[str, list] with all specified net names as keys organized by net.
+        """
+        primitives = self.find_primitive()
+        primitive_by_net = {}
+        for primitive in primitives:
+            net_primitive = primitive.net_name
+            if net_primitive not in primitive_by_net:
+                primitive_by_net[net_primitive] = []
+            primitive_by_net[net_primitive].append(primitive)
+        return primitive_by_net
+
+    @property
+    def rectangles(self) -> list[RectangleDotNet]:
+        return [i for i in self.primitives if isinstance(i, RectangleDotNet)]
+
+    @property
+    def circles(self) -> list[CircleDotNet]:
+        return [i for i in self.primitives if isinstance(i, CircleDotNet)]
+
+    @property
+    def paths(self) -> list[PathDotNet]:
+        return [i for i in self.primitives if isinstance(i, PathDotNet)]
+
+    @property
+    def polygons(self) -> list[EdbPolygon]:
+        return [i for i in self.primitives if isinstance(i, EdbPolygon)]
+
+    @deprecate_argument_name({"layer_name": "layer", "net_list": "nets"})
+    def get_polygons_by_layer(self, layer, nets=None) -> list[EdbPolygon]:
+        primitives = self.find_primitive(layer_name=layer, net_name=nets)
+        return [primitive for primitive in primitives if isinstance(primitive, EdbPolygon)]
+
+    def get_polygon_bounding_box(self, polygon : EdbPolygon) -> list[float] | None:
+        """Retrieve a polygon bounding box.
+
+        Parameters
+        ----------
+        polygon :
+            Polygon object.
+
+        Returns
+        -------
+        List of bounding box coordinates in the format ``[-x, -y, +x, +y]``.
+
+        Examples
+        --------
+        >>> poly = database.modeler.get_polygons_by_layer("GND")
+        >>> bounding = database.modeler.get_polygon_bounding_box(poly[0])
+        """
+        bounding = []
+        if isinstance(polygon, self._edb.Geometry.Polygon):
+            bounding_box = polygon.GetPolygonData().GetBBox()
+            bounding = [
+                bounding_box.Item1.X.ToDouble(),
+                bounding_box.Item1.Y.ToDouble(),
+                bounding_box.Item2.X.ToDouble(),
+                bounding_box.Item2.Y.ToDouble(),
+            ]
+            return bounding
+        if hasattr(polygon, "polygon_data"):
+            return polygon.polygon_data.bounding_box
+        return None
+
+    def get_polygon_points(self, polygon):
+        """Retrieve polygon points.
+
+        .. note::
+           For arcs, one point is returned.
+
+        Parameters
+        ----------
+        polygon :
+            class: `dotnet.database.edb_data.primitives_data.Primitive`
+
+        Returns
+        -------
+        List of tuples. Each tuple provides x, y point coordinate. If the length of two consecutives tuples
+        from the list equals 2, a segment is defined. The first tuple defines the starting point while the second
+        tuple the ending one. If the length of one tuple equals one, that means a polyline is defined and the value
+        is giving the arc height. Therefore to polyline is defined as starting point for the tuple
+        before in the list, the current one the arc height and the tuple after the polyline ending point.
+
+        Examples
+        --------
+
+        >>> poly = database.modeler.get_polygons_by_layer("GND")
+        >>> points = database.modeler.get_polygon_points(poly[0])
+
+        """
+        points = []
+        i = 0
+        continue_iterate = True
+        prev_point = None
+        while continue_iterate:
+            try:
+                point = polygon.GetPolygonData().GetPoint(i)
+                if prev_point != point:
+                    if point.IsArc():
+                        points.append([point.X.ToDouble()])
+                    else:
+                        points.append([point.X.ToDouble(), point.Y.ToDouble()])
+                    prev_point = point
+                    i += 1
+                else:
+                    continue_iterate = False
+            except:
+                continue_iterate = False
+        return points
+
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
+        """Get primitives by conditions.
+
+        Parameters
+        ----------
+        net_name : str, optional
+            Set filter on net_name. Default is ``None``.
+        layer_name : str, optional
+            Set filter on layer_name. Default is ``None``.
+        prim_type :  str, optional
+            Set filter on primitive type. Default is ``None``.
+        is_void : bool
+            Set filter on is_void. Default is '``False'``
+        Returns
+        -------
+        List of filtered primitives
+        """
+        prims = []
+        for el in self.primitives:
+            if net_name and not el.net_name == net_name:
+                continue
+            if layer_name and not el.layer_name == layer_name:
+                continue
+            if prim_type and not el.type == prim_type:
+                continue
+            if not el.is_void == is_void:
+                continue
+            prims.append(el)
+        return prims
+
+
+
+class Layout(ObjBase, PrimitivesQuery):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
-        self._primitives = []
+        PrimitivesQuery.__init__(self, pedb)
+
 
     @property
     def cell(self):
@@ -160,15 +510,6 @@ class Layout(ObjBase):
         self._edb_object.ConvertPrimitivestoVias(convert_py_list_to_net_list(primitives), is_pins)
 
     @property
-    def zone_primitives(self):
-        """:obj:`list` of :class:`Primitive <ansys.edb.primitive.Primitive>` : List of all the primitives in \
-        :term:`zones <Zone>`.
-
-        Read-Only.
-        """
-        return list(self._edb_object.GetZonePrimitives())
-
-    @property
     def fixed_zone_primitive(self):
         """:class:`Primitive <ansys.edb.primitive.Primitive>` : Fixed :term:`zones <Zone>` primitive."""
         return list(self._edb_object.GetFixedZonePrimitive())
@@ -227,34 +568,6 @@ class Layout(ObjBase):
 
         return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets if net]
 
-    @property
-    def primitives(self):
-        """List of primitives.Read-Only.
-
-        Returns
-        -------
-        list of :class:`dotnet.database.dotnet.primitive.PrimitiveDotNet` cast objects.
-        """
-        primitives = list(self._edb_object.Primitives)
-        if len(primitives) != len(self._primitives):
-            self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
-        return [p for p in self._primitives if p is not None]  # non stackup primitives are None
-
-    @property
-    def primitives_by_aedt_name(self) -> dict:
-        """Primitives."""
-        return {i.aedt_name: i for i in self.primitives}
-
-    @property
-    def bondwires(self):
-        """Bondwires.
-
-        Returns
-        -------
-        list :
-            List of bondwires.
-        """
-        return [i for i in self.primitives if i.primitive_type == "bondwire"]
 
     @property
     def groups(self):
@@ -294,25 +607,6 @@ class Layout(ObjBase):
         """
         return self._edb_object.ArePortReferenceTerminalsConnected()
 
-    def find_object_by_id(
-        self, value: int
-    ) -> Union[EDBPadstackInstance, EdbRectangle, EdbPolygon, EdbText, EdbCircle, Path]:
-        """Find a layout object by Database ID.
-
-        Parameters
-        ----------
-        value : int
-            ID of the object.
-        """
-        obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
-        if obj is None:
-            raise RuntimeError(f"Object Id {value} not found")
-
-        if obj.GetObjType().ToString() == "PadstackInstance":
-            return EDBPadstackInstance(obj, self._pedb)
-
-        if obj.GetObjType().ToString() == "Primitive":
-            return primitive_cast(self._pedb, obj)
 
     def find_net_by_name(self, value: str):
         """Find a net object by name
@@ -345,36 +639,6 @@ class Layout(ObjBase):
         """
         obj = self._pedb.core.Cell.Hierarchy.Component.FindByName(self._edb_object, value)
         return EDBComponent(self._pedb, obj) if not obj.IsNull() else None
-
-    def find_primitive(
-        self, layer_name: Union[str, list] = None, name: Union[str, list] = None, net_name: Union[str, list] = None
-    ) -> list:
-        """Find a primitive objects by layer name.
-
-        Parameters
-        ----------
-        layer_name : str, list, optional
-            Name of the layer.
-        name : str, list, optional
-            Name of the primitive
-        net_name : str, list, optional
-            Name of the primitive
-        Returns
-        -------
-        list
-        """
-        if layer_name is not None:
-            layer_name = layer_name if isinstance(layer_name, list) else [layer_name]
-        if name is not None:
-            name = name if isinstance(name, list) else [name]
-        if net_name is not None:
-            net_name = net_name if isinstance(net_name, list) else [net_name]
-
-        prims = self.primitives
-        prims = [i for i in prims if i.aedt_name in name] if name is not None else prims
-        prims = [i for i in prims if i.layer_name in layer_name] if layer_name is not None else prims
-        prims = [i for i in prims if i.net_name in net_name] if net_name is not None else prims
-        return prims
 
     def find_padstack_instances(
         self,
