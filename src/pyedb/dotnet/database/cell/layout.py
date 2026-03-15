@@ -234,7 +234,7 @@ class PrimitivesQuery:
         primitives = list(self._edb_object.Primitives)
         if len(primitives) != len(self._primitives):
             self._primitives = [primitive_cast(self._pedb, p) for p in primitives]
-        return [p for p in self._primitives if p is not None]  # non stackup primitives are None
+        return [p for p in self._primitives if p is not None]
 
     @property
     def zone_primitives(self):
@@ -318,7 +318,7 @@ class PrimitivesQuery:
             ]
 
         primitives_by_id = self._primitive_lookup_by_id(
-            self.filter_primitives(prim_type=["polygon", "path", "rectangle"])
+            self.filter_primitives(prim_type=["polygon", "path", "rectangle", "circle"])
         )
         return [
             primitive
