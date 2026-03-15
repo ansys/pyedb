@@ -28,9 +28,9 @@ import math
 import warnings
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
-    from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 
+    from pyedb.dotnet.database.edb_data.primitives_data import Primitive
+from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet, PathDotNet
@@ -38,7 +38,7 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.misc.decorators import deprecate_argument_name, deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
 class Modeler(object):
@@ -1295,7 +1295,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of polygons.
         """
-        return self._pedb.layout.polygons.polygons
+        return self._pedb.layout.polygons
 
     @deprecated("use layout.get_polygons_by_layer method instead.")
     def get_polygons_by_layer(self, layer_name, net_list=None) -> list[EdbPolygon]:
@@ -1340,7 +1340,7 @@ class Modeler(object):
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives, polygons, paths and rectangles.
         """
-        return self._pedb.layout.get_primitive_by_layer_and_point(point=point, layer_name=layer, nets=nets)
+        return self._pedb.layout.get_primitive_by_layer_and_point(point=point, layer=layer, nets=nets)
 
     @deprecated("use layout.get_polygons_by_layer method instead.")
     def get_polygon_bounding_box(self, polygon):
@@ -1371,12 +1371,12 @@ class Modeler(object):
         """
         return self._pedb.layout.get_polygon_points(polygon)
 
-    @deprecated("use layout.get_polygons_by_layer method instead.")
+    @deprecated("use layout.filter_primitives method instead.")
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
         """Get primitives by conditions.
 
         .. deprecated:: 0.70.0
-        use layout.get_primitives method instead.
+        use layout.filter_primitives method instead.
 
         Parameters
         ----------
@@ -1393,8 +1393,12 @@ class Modeler(object):
         list
             List of filtered primitives
         """
-        return self._pedb.layout.get_primitives(net_name=net_name, layer_name=layer_name, prim_type=prim_type,
-                                                is_void=is_void)
+        return self._pedb.layout.filter_primitives(
+            net_name=net_name,
+            layer_name=layer_name,
+            prim_type=prim_type,
+            is_void=is_void,
+        )
 
     @staticmethod
     def clear_cache():

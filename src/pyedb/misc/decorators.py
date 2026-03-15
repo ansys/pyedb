@@ -39,7 +39,7 @@ def deprecated(reason: str = ""):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            msg = f"Call to deprecated function {func.__qualname__}."
+            msg = f"Call to deprecated function {func.__name__}."  # <-- Changed from __qualname__ to __name__
             if reason:
                 msg += f" {reason}"
             warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
@@ -76,17 +76,30 @@ def deprecated_class(reason: str = ""):
     return decorator
 
 
-def deprecated_property(func):
+def deprecated_property(message):
     """
     This decorator marks a property as deprecated.
     It will emit a warning when the property is accessed.
+
+    Parameters
+    ----------
+    message : str
+        Custom message to display after the deprecation warning.
     """
 
-    def wrapper(*args, **kwargs):
-        warnings.warn(f"Access to deprecated property {func.__name__}.", category=DeprecationWarning, stacklevel=2)
-        return func(*args, **kwargs)
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f"Accessing deprecated property {func.__name__}. {message}", category=DeprecationWarning, stacklevel=2
+            )
+            return func(*args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    return decorator
+
+
 
 
 def deprecate_argument_name(argument_map):
