@@ -100,8 +100,6 @@ def deprecated_property(message):
     return decorator
 
 
-
-
 def deprecate_argument_name(argument_map):
     """Decorator to deprecate certain argument names in favor of new ones."""
 

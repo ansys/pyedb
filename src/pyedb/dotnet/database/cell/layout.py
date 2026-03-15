@@ -25,7 +25,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 from typing import List, TypeVar, Union
-from pyedb.misc.decorators import deprecate_argument_name, deprecated
+
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.cell.primitive.path import Path
@@ -52,6 +52,7 @@ from pyedb.dotnet.database.edb_data.primitives_data import (
 from pyedb.dotnet.database.edb_data.sources import PinGroup
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
+from pyedb.misc.decorators import deprecate_argument_name, deprecated
 
 TPrimitiveClass = TypeVar("TPrimitiveClass")
 
@@ -79,6 +80,7 @@ def primitive_cast(pedb, edb_object):
         return
     else:
         return
+
 
 class PrimitivesQuery:
     def __init__(self, pedb):
@@ -212,11 +214,7 @@ class PrimitivesQuery:
             if (layer_name_set is None or primitive.layer_name in layer_name_set)
             and (name_set is None or primitive.aedt_name in name_set)
             and (net_name_set is None or primitive.net_name in net_name_set)
-            and (
-                prim_type_set is None
-                or primitive.primitive_type in prim_type_set
-                or primitive.type in prim_type_set
-            )
+            and (prim_type_set is None or primitive.primitive_type in prim_type_set or primitive.type in prim_type_set)
             and (is_void is None or primitive.is_void == is_void)
         ]
 
@@ -256,7 +254,9 @@ class PrimitivesQuery:
         list :
             List of bondwires.
         """
-        return [primitive for primitive in self.filter_primitives(prim_type="bondwire") if isinstance(primitive, Bondwire)]
+        return [
+            primitive for primitive in self.filter_primitives(prim_type="bondwire") if isinstance(primitive, Bondwire)
+        ]
 
     def find_object_by_id(self, value: int) -> EDBPadstackInstance | Primitive | None:
         """Find a layout object by Database ID.
@@ -351,7 +351,6 @@ class PrimitivesQuery:
         list
         """
         return self.filter_primitives(layer_name=layer_name, name=name, net_name=net_name)
-
 
     @property
     def primitives_by_layer(self) -> dict:
@@ -483,9 +482,7 @@ class PrimitivesQuery:
         return points
 
     @deprecated("Use `filter_primitives` instead.")
-    def get_primitives(
-        self, net_name=None, layer_name=None, prim_type=None, is_void=False
-    ) -> list[Primitive]:
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
         """Get primitives by conditions.
 
         Parameters
@@ -510,12 +507,10 @@ class PrimitivesQuery:
         )
 
 
-
 class Layout(ObjBase, PrimitivesQuery):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         PrimitivesQuery.__init__(self, pedb)
-
 
     @property
     def cell(self):
@@ -652,7 +647,6 @@ class Layout(ObjBase, PrimitivesQuery):
 
         return [EDBNetsData(net, self._pedb) for net in self._edb_object.Nets if net]
 
-
     @property
     def groups(self):
         return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
@@ -690,7 +684,6 @@ class Layout(ObjBase, PrimitivesQuery):
         Read-Only.
         """
         return self._edb_object.ArePortReferenceTerminalsConnected()
-
 
     def find_net_by_name(self, value: str):
         """Find a net object by name

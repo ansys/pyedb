@@ -81,10 +81,14 @@ class TestClass(BaseTestClass):
         primitives_top_layer = polygon_by_layers["1_Top"]
         assert len(primitives_top_layer) == 134
         assert len([prim for prim in primitives_top_layer if prim.primitive_type == "polygon"]) == len(
-            primitives_top_layer)
+            primitives_top_layer
+        )
         obj_id = primitives_top_layer[0].id
         assert edbapp.layout.find_object_by_id(obj_id)
-        assert len(edbapp.layout.get_primitive_by_layer_and_point(point=[10e-3, 10e-3],layer="Inner1(GND1)", nets="GND")) == 1
+        assert (
+            len(edbapp.layout.get_primitive_by_layer_and_point(point=[10e-3, 10e-3], layer="Inner1(GND1)", nets="GND"))
+            == 1
+        )
         assert len(edbapp.layout.find_primitive(layer_name="1_Top", net_name="GND")) == 383
         assert len(edbapp.layout.primitives_by_net["GND"]) == 446
         assert len(edbapp.layout.rectangles) == 1
