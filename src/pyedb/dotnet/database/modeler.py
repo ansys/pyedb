@@ -33,7 +33,7 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, RectangleDotNet
 from pyedb.dotnet.database.edb_data.primitives_data import Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name, deprecated_property
 
 
 class Modeler(object):
