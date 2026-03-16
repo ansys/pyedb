@@ -162,9 +162,10 @@ class PrimitiveDotNet:
 
     @layer_name.setter
     def layer_name(self, layer_name):
-        layer = self._app.core.Cell.Layer.GetLayer(layer_name)
-        if layer is not None:
-            self.layer = layer
+        layer = self.api_object.GetLayer()
+        if not layer.IsNull():
+            new_layer = self._app.stackup.layers[layer_name].core
+            self.api_object.SetLayer(new_layer)
         else:
             self._app.logger.error(f"Layer {layer_name} does not exist in the layout.")
 
