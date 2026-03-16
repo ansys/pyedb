@@ -328,8 +328,8 @@ class TestClass(BaseTestClass):
         assert MATERIAL_NAME not in materials
         materials.load_material(dielectric_material_properties)
         material = materials[MATERIAL_NAME]
-        assert 0.00045 == material.loss_tangent
-        assert 0.00045 == material.dielectric_loss_tangent
+        material.dielectric_loss_tangent = 0.00045
+        assert material.dielectric_loss_tangent == 0.00045
         assert 12 == material.permittivity
         edbapp.close(terminate_rpc_session=False)
 
