@@ -79,7 +79,7 @@ class TestClass(BaseTestClass):
             for value in VALUES:
                 setattr(material, property, value)
                 assert float(value) == getattr(material, property)
-        assert 12 == material.loss_tangent
+        assert 12 == material.dielectric_loss_tangent
         edbapp.close(terminate_rpc_session=False)
 
     def test_material_to_dict(self):
