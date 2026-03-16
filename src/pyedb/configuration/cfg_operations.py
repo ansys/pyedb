@@ -29,9 +29,9 @@ from pydantic import BaseModel, Field
 
 class CfgAutoIdentifyNets(BaseModel):
     enabled: bool = False
-    resistor_below: float | str | None = Field(100)
-    inductor_below: float | str | None = Field(1)
-    capacitor_above: float | str | None = Field("10nF")
+    resistor_below: float | str | int | None = Field(100)
+    inductor_below: float | str | int | None = Field(1)
+    capacitor_above: float | str | int | None = Field("10nF")
 
 
 class CfgCutout(BaseModel):
