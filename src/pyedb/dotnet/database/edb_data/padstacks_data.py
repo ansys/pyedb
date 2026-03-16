@@ -852,7 +852,6 @@ class EDBPadstack(object):
         -------
             ``True`` when successful, ``False`` when failed.
         """
-        from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
 
         if len(self.hole_properties) == 0:
             self._ppadstack._pedb.logger.error("Microvias cannot be applied on vias using hole shape polygon")

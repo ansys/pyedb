@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.dotnet.database.edb_data.nets_data import NetDotNet
-
 
 class Structure3D:
     def __init__(self, pedb, core):
