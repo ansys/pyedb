@@ -170,7 +170,7 @@ class PrimitiveDotNet:
             else:
                 self._app.logger.error(f"Layer {layer_name} does not exist in the layout.")
         else:
-            self._app.logger.error(f"Primitive has no layer assigned")
+            self._app.logger.error("Primitive has no layer assigned")
 
     @property
     def layer(self):

@@ -20,13 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from typing import TYPE_CHECKING
-
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 from pyedb.generic.general_methods import generate_unique_name
-
-if TYPE_CHECKING:
-    from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 
 
 class PadstackInstanceTerminal(Terminal):
