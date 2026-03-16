@@ -33,7 +33,7 @@ if TYPE_CHECKING:
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, PathDotNet, RectangleDotNet
-from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon, Primitive, cast
+from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
