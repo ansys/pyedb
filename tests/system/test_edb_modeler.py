@@ -99,7 +99,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_paths(self):
         """Evaluate modeler paths"""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.paths) > 0
         path = edbapp.modeler.paths[0]
@@ -150,7 +149,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_get_polygons_bounding(self):
         """Retrieve polygons bounding box."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         polys = edbapp.modeler.get_polygons_by_layer("GND")
         for poly in polys:
@@ -239,7 +237,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_create_trace(self):
         """Create a trace based on a list of points."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         points = [
             [-0.025, -0.02],
@@ -248,6 +245,14 @@ class TestClass(BaseTestClass):
         ]
         trace = edbapp.modeler.create_trace(points, "1_Top")
         assert trace
+        if edbapp.grpc:
+            assert trace.end_cap1 == "round"
+            assert trace.end_cap2 == "round"
+            trace.end_cap1 = "flat"
+            trace.end_cap2 = "flat"
+            assert trace.end_cap1 == "flat"
+            assert trace.end_cap2 == "flat"
+
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)
         # TODO
