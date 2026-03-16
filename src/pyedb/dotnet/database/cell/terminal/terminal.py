@@ -21,15 +21,11 @@
 # SOFTWARE.
 
 import re
-from typing import TYPE_CHECKING
 import warnings
 
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.edb_data.primitives_data import cast
 from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
-
-if TYPE_CHECKING:
-    from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 
 
 class Terminal(Connectable):
