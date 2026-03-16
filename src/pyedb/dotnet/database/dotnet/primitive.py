@@ -164,10 +164,13 @@ class PrimitiveDotNet:
     def layer_name(self, layer_name):
         layer = self.api_object.GetLayer()
         if not layer.IsNull():
-            new_layer = self._app.stackup.layers[layer_name].core
-            self.api_object.SetLayer(new_layer)
+            new_layer = self._app.stackup.layers.get(layer_name, None)
+            if new_layer is not None:
+                self.api_object.SetLayer(new_layer.core)
+            else:
+                self._app.logger.error(f"Layer {layer_name} does not exist in the layout.")
         else:
-            self._app.logger.error(f"Layer {layer_name} does not exist in the layout.")
+            self._app.logger.error(f"Primitive has no layer assigned")
 
     @property
     def layer(self):
