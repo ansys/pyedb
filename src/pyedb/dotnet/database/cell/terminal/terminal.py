@@ -23,7 +23,6 @@
 import re
 
 from pyedb.dotnet.database.cell.connectable import Connectable
-from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.dotnet.database.edb_data.primitives_data import cast
 from pyedb.generic.constants import BoundaryTypeMapper, SourceTermMapper, TerminalTypeMapper
 from pyedb.misc.decorators import deprecated_property
@@ -324,6 +323,8 @@ class Terminal(Connectable):
                 return self._get_closest_pin(padStackInstance, refPinList, gnd_net_name_preference)
             else:
                 try:
+                    from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+
                     _, refTermPSI, _ = refTerm.GetParameters()
                     return EDBPadstackInstance(refTermPSI, self._pedb)
                 except AttributeError:
@@ -405,6 +406,8 @@ class Terminal(Connectable):
         return self._get_closest_pin(pad_edge_pstack_inst, pins, gnd_net_name_preference)
 
     def _get_closest_pin(self, ref_pin, pin_list, gnd_net=None):
+        from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+
         _, pad_stack_inst_point, _ = ref_pin.GetPositionAndRotation()  # get the xy of the padstack
         if gnd_net is not None:
             power_ground_net_names = [gnd_net]
