@@ -296,7 +296,7 @@ class Layout(ObjBase):
 
     def find_object_by_id(
         self, value: int
-    ) -> Union[EDBPadstackInstance, EdbRectangle, EdbPolygon, EdbText, EdbCircle, Path]:
+    ) -> EDBPadstackInstance | EdbRectangle | EdbPolygon | EdbText | EdbCircle | Path | None:
         """Find a layout object by Database ID.
 
         Parameters

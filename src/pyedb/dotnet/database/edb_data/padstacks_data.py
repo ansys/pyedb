@@ -23,10 +23,18 @@
 from collections import OrderedDict
 import math
 import re
+from typing import TYPE_CHECKING, Any
 import warnings
 
+from pyedb.dotnet.database.edb_data.ports import CoaxPort, WavePort
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
+    from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
+
+
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.primitive.primitive import Connectable
+from pyedb.dotnet.database.cell.primitive.primitive import Connectable, Primitive
 from pyedb.dotnet.database.dotnet.database import PolygonDataDotNet
 from pyedb.dotnet.database.edb_data.edbvalue import EdbValue
 from pyedb.dotnet.database.general import (
@@ -46,19 +54,18 @@ class EDBPadProperties(object):
 
     Parameters
     ----------
-    edb_padstack :
-
+    edb_padstack : str
+        Inherited AEDT object.
     layer_name : str
         Name of the layer.
     pad_type :
         Type of the pad.
-    pedbpadstack : str
-        Inherited AEDT object.
+
 
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
     """
 
@@ -93,7 +100,7 @@ class EDBPadProperties(object):
         return pad_params
 
     @property
-    def geometry_type(self):
+    def geometry_type(self) -> int:
         """Geometry type.
 
         Returns
@@ -130,8 +137,14 @@ class EDBPadProperties(object):
         self._update_pad_parameters_parameters(geom_type=geom_type, params=params)
 
     @property
-    def shape(self):
-        """Get the shape of the pad."""
+    def shape(self) -> str:
+        """Get the shape of the pad.
+
+        Returns
+        -------
+        str
+            Shape of the pad.
+        """
         return self._pad_parameter_value[1].ToString()
 
     @shape.setter
@@ -139,7 +152,7 @@ class EDBPadProperties(object):
         self._update_pad_parameters_parameters(geom_type=PadGeometryTpe[value].value)
 
     @property
-    def parameters_values(self):
+    def parameters_values(self) -> list[float]:
         """Parameters.
 
         Returns
@@ -150,18 +163,23 @@ class EDBPadProperties(object):
         return [i.tofloat for i in self.parameters.values()]
 
     @property
-    def parameters_values_string(self):
-        """Parameters value in string format."""
-        return [i.tostring for i in self.parameters.values()]
-
-    @property
-    def polygon_data(self):
-        """Parameters.
+    def parameters_values_string(self) -> list[str]:
+        """Parameters value in string format.
 
         Returns
         -------
         list
-            List of parameters.
+            List of parameters in string format.
+        """
+        return [i.tostring for i in self.parameters.values()]
+
+    @property
+    def polygon_data(self) -> PolygonData:
+        """Parameters.
+
+        Returns
+        -------
+        PolygonData
         """
 
         flag, edb_object, _, _, _ = self._edb_padstack.GetData().GetPolygonalPadParameters(
@@ -173,13 +191,12 @@ class EDBPadProperties(object):
             raise AttributeError("No polygon data.")
 
     @property
-    def _polygon_data_dotnet(self):
+    def _polygon_data_dotnet(self) -> PolygonDataDotNet | None:
         """Parameters.
 
         Returns
         -------
-        list
-            List of parameters.
+        PolygonDataDotNet
         """
         pad_values = self._edb_padstack.GetData().GetPolygonalPadParameters(
             self.layer_name, self.int_to_pad_type(self.pad_type)
@@ -187,10 +204,10 @@ class EDBPadProperties(object):
         if pad_values[1]:
             return PolygonDataDotNet(self._pedbpadstack._ppadstack._pedb, pad_values[1])
         else:
-            return
+            return None
 
     @property
-    def parameters(self):
+    def parameters(self) -> OrderedDict[str, EdbValue]:
         """Get parameters.
 
         Returns
@@ -262,7 +279,7 @@ class EDBPadProperties(object):
         self._update_pad_parameters_parameters(params=params)
 
     @property
-    def offset_x(self):
+    def offset_x(self) -> str:
         """Offset for the X axis.
 
         Returns
@@ -281,7 +298,7 @@ class EDBPadProperties(object):
         self._update_pad_parameters_parameters(offsetx=offset_value)
 
     @property
-    def offset_y(self):
+    def offset_y(self) -> str:
         """Offset for the Y axis.
 
         Returns
@@ -300,7 +317,7 @@ class EDBPadProperties(object):
         self._update_pad_parameters_parameters(offsety=offset_value)
 
     @property
-    def rotation(self):
+    def rotation(self) -> str:
         """Rotation.
 
         Returns
@@ -318,7 +335,7 @@ class EDBPadProperties(object):
     def rotation(self, rotation_value):
         self._update_pad_parameters_parameters(rotation=rotation_value)
 
-    def int_to_pad_type(self, val=0):
+    def int_to_pad_type(self, val=0) -> Any:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -332,7 +349,7 @@ class EDBPadProperties(object):
         """
         return self._pedbpadstack._ppadstack.int_to_pad_type(val)
 
-    def int_to_geometry_type(self, val=0):
+    def int_to_geometry_type(self, val=0) -> Any:
         """Convert an integer to an EDB.PadGeometryType.
 
         Parameters
@@ -458,7 +475,7 @@ class EDBPadstack(object):
         }
 
     @property
-    def pad_by_layer(self):
+    def pad_by_layer(self) -> dict[str, EDBPadProperties]:
         """Regular pad property."""
         temp = {}
         for layer in self.via_layers:
@@ -466,7 +483,7 @@ class EDBPadstack(object):
         return temp
 
     @property
-    def antipad_by_layer(self):
+    def antipad_by_layer(self) -> dict[str, EDBPadProperties]:
         """Anti pad property."""
         temp = {}
         for layer in self.via_layers:
@@ -474,7 +491,7 @@ class EDBPadstack(object):
         return temp
 
     @property
-    def thermalpad_by_layer(self):
+    def thermalpad_by_layer(self) -> dict[str, EDBPadProperties]:
         """Thermal pad property."""
         temp = {}
         for layer in self.via_layers:
@@ -482,7 +499,7 @@ class EDBPadstack(object):
         return temp
 
     @property
-    def _padstack_def_data(self):
+    def _padstack_def_data(self) -> Any:
         """Get padstack definition data.
 
         Returns
@@ -493,7 +510,7 @@ class EDBPadstack(object):
         return self._edb.Definition.PadstackDefData(pstack_data)
 
     @property
-    def data(self):
+    def data(self) -> Any:
         """Get padstack definition data.
 
         Returns
@@ -508,12 +525,12 @@ class EDBPadstack(object):
         self._edb_object.SetData(value)
 
     @property
-    def instances(self):
+    def instances(self) -> list[Any]:
         """Definitions Instances."""
         return [inst for inst in self._ppadstack.instances.values() if inst.padstack_definition == self.name]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Padstack Definition Name."""
         return self.edb_padstack.GetName()
 
@@ -533,7 +550,7 @@ class EDBPadstack(object):
         return self._ppadstack._get_edb_value(value)
 
     @property
-    def via_layers(self):
+    def via_layers(self) -> list[str]:
         """Layers.
 
         Returns
@@ -544,7 +561,7 @@ class EDBPadstack(object):
         return list(self._padstack_def_data.GetLayerNames())
 
     @property
-    def via_start_layer(self):
+    def via_start_layer(self) -> str:
         """Starting layer.
 
         Returns
@@ -555,7 +572,7 @@ class EDBPadstack(object):
         return self.via_layers[0]
 
     @property
-    def via_stop_layer(self):
+    def via_stop_layer(self) -> str:
         """Stopping layer.
 
         Returns
@@ -574,18 +591,18 @@ class EDBPadstack(object):
         return self._hole_params
 
     @property
-    def _hole_parameters(self):
+    def _hole_parameters(self) -> float:
         """Hole parameters.
 
         Returns
         -------
-        list
-            List of the hole parameters.
+        float
+            hole parameters.
         """
         return self.hole_params[2]
 
     @property
-    def hole_diameter(self):
+    def hole_diameter(self) -> float:
         """Hole diameter."""
         return list(self.hole_params[2])[0].ToDouble()
 
@@ -595,7 +612,7 @@ class EDBPadstack(object):
         self._update_hole_parameters(params=params)
 
     @property
-    def hole_diameter_string(self):
+    def hole_diameter_string(self) -> str:
         """Hole diameter in string format."""
         return list(self.hole_params[2])[0].ToString()
 
@@ -644,7 +661,7 @@ class EDBPadstack(object):
         self.edb_padstack.SetData(newPadstackDefinitionData)
 
     @property
-    def hole_properties(self):
+    def hole_properties(self) -> list[float]:
         """Hole properties.
 
         Returns
@@ -664,7 +681,7 @@ class EDBPadstack(object):
         self._update_hole_parameters(params=propertylist)
 
     @property
-    def hole_type(self):
+    def hole_type(self) -> int:
         """Hole type.
 
         Returns
@@ -676,7 +693,7 @@ class EDBPadstack(object):
         return self._hole_type
 
     @property
-    def hole_offset_x(self):
+    def hole_offset_x(self) -> str:
         """Hole offset for the X axis.
 
         Returns
@@ -693,7 +710,7 @@ class EDBPadstack(object):
         self._update_hole_parameters(offsetx=offset)
 
     @property
-    def hole_offset_y(self):
+    def hole_offset_y(self) -> str:
         """Hole offset for the Y axis.
 
         Returns
@@ -710,7 +727,7 @@ class EDBPadstack(object):
         self._update_hole_parameters(offsety=offset)
 
     @property
-    def hole_rotation(self):
+    def hole_rotation(self) -> str:
         """Hole rotation.
 
         Returns
@@ -727,7 +744,7 @@ class EDBPadstack(object):
         self._update_hole_parameters(rotation=rotation)
 
     @property
-    def hole_plating_ratio(self):
+    def hole_plating_ratio(self) -> float:
         """Hole plating ratio.
 
         Returns
@@ -745,7 +762,7 @@ class EDBPadstack(object):
         self.edb_padstack.SetData(newPadstackDefinitionData)
 
     @property
-    def hole_plating_thickness(self):
+    def hole_plating_thickness(self) -> float:
         """Hole plating thickness.
 
         Returns
@@ -772,7 +789,7 @@ class EDBPadstack(object):
         self.hole_plating_ratio = hr
 
     @property
-    def hole_finished_size(self):
+    def hole_finished_size(self) -> float | int:
         """Finished hole size.
 
         Returns
@@ -786,7 +803,7 @@ class EDBPadstack(object):
             return 0
 
     @property
-    def material(self):
+    def material(self) -> str:
         """Hole material.
 
         Returns
@@ -803,7 +820,7 @@ class EDBPadstack(object):
         self._padstack_def_data = pdef_data
 
     @property
-    def padstack_instances(self):
+    def padstack_instances(self) -> dict[str, "EDBPadstackInstance"]:
         """Get all the vias that belongs to active Padstack definition.
 
         Returns
@@ -815,7 +832,7 @@ class EDBPadstack(object):
         }
 
     @property
-    def hole_range(self):
+    def hole_range(self) -> str:
         """Get hole range value from padstack definition.
 
         Returns
@@ -832,7 +849,9 @@ class EDBPadstack(object):
         pdef_data.SetHoleRange(getattr(self._edb.Definition.PadstackHoleRange, snake_to_pascal(value)))
         self._padstack_def_data = pdef_data
 
-    def convert_to_3d_microvias(self, convert_only_signal_vias=True, hole_wall_angle=75, delete_padstack_def=True):
+    def convert_to_3d_microvias(
+        self, convert_only_signal_vias=True, hole_wall_angle=75, delete_padstack_def=True
+    ) -> bool:
         """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
@@ -960,7 +979,7 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("{} Converted successfully to 3D Objects.".format(i))
         return True
 
-    def split_to_microvias(self):
+    def split_to_microvias(self) -> list["EDBPadstackInstance"]:
         """Convert actual padstack definition to multiple microvias definitions.
 
         Returns
@@ -1099,7 +1118,7 @@ class EDBPadstack(object):
         self._ppadstack._pedb.logger.info("Created {} new microvias.".format(i))
         return new_instances
 
-    def _update_layer_names(self, old_name, updated_name):
+    def _update_layer_names(self, old_name, updated_name) -> bool:
         """Update padstack definition layer name when layer name is edited with the layer name setter.
         Parameters
         ----------
@@ -1196,7 +1215,7 @@ class EDBPadstack(object):
         self.edb_padstack.SetData(new_padstack_data)
         return True
 
-    def get_pad_parameters(self):
+    def get_pad_parameters(self) -> dict[str, list[dict[str, str]]]:
         """Pad parameters.
 
         Returns
@@ -1362,7 +1381,8 @@ class EDBPadstack(object):
         )
         self._padstack_def_data = pdef_data
 
-    def get_solder_parameters(self):
+    def get_solder_parameters(self) -> dict[str, str]:
+        """Solder ball parameters."""
         pdef_data = self._padstack_def_data
         shape = pdef_data.GetSolderBallShape()
         _, diameter, mid_diameter = pdef_data.GetSolderBallParameterValue()
@@ -1448,14 +1468,14 @@ class EDBPadstackInstance(Connectable):
         self.core.SetHoleOverride(is_hole_override, hole_override)
 
     @property
-    def solderball_layer(self):
+    def solderball_layer(self) -> str:
         return self.core.GetSolderBallLayer().GetName()
 
     @solderball_layer.setter
     def solderball_layer(self, solderball_layer):
         self.core.SetSolderBallLayer(solderball_layer)
 
-    def get_terminal(self, name=None, create_new_terminal=False):
+    def get_terminal(self, name=None, create_new_terminal=False) -> "PadstackInstanceTerminal | None":
         """Get PadstackInstanceTerminal object.
 
         Parameters
@@ -1467,7 +1487,7 @@ class EDBPadstackInstance(Connectable):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.terminals`
+        :class:`database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal`
         """
         warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
@@ -1482,7 +1502,7 @@ class EDBPadstackInstance(Connectable):
             return term
 
     @property
-    def side_number(self):
+    def side_number(self) -> int:
         """Return the number of sides meshed of the padstack instance.
         Returns
         -------
@@ -1515,7 +1535,7 @@ class EDBPadstackInstance(Connectable):
             raise ValueError("Number of sides must be an integer between 3 and 64")
 
     @property
-    def terminal(self):
+    def terminal(self) -> "PadstackInstanceTerminal | None":
         """Terminal."""
         from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
@@ -1529,7 +1549,7 @@ class EDBPadstackInstance(Connectable):
         warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
         return self.create_terminal(name)
 
-    def create_terminal(self, name=None):
+    def create_terminal(self, name=None) -> "PadstackInstanceTerminal":
         """Create a padstack instance terminal"""
 
         existing_terminal = self.terminal
@@ -1544,13 +1564,13 @@ class EDBPadstackInstance(Connectable):
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term.create(self, name)
 
-    def create_coax_port(self, name=None, radial_extent_factor=0):
+    def create_coax_port(self, name=None, radial_extent_factor=0) -> CoaxPort:
         """Create a coax port."""
         port = self.create_port(name)
         port.radial_extent_factor = radial_extent_factor
         return port
 
-    def create_port(self, name=None, reference=None, is_circuit_port=False):
+    def create_port(self, name=None, reference=None, is_circuit_port=False) -> "WavePort":
         """Create a port on the padstack.
 
         Parameters
@@ -1576,7 +1596,7 @@ class EDBPadstackInstance(Connectable):
 
         return self._pedb.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port)
 
-    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
+    def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None) -> Primitive:
         """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
         specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
         pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
@@ -1641,7 +1661,7 @@ class EDBPadstackInstance(Connectable):
         return self._object_instance
 
     @property
-    def bounding_box(self):
+    def bounding_box(self) -> list[list[float]]:
         """Get bounding box of the padstack instance.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
@@ -1658,7 +1678,7 @@ class EDBPadstackInstance(Connectable):
         ]
         return self._bounding_box
 
-    def in_polygon(self, polygon_data, include_partial=True, simple_check=False):
+    def in_polygon(self, polygon_data, include_partial=True, simple_check=False) -> bool:
         """Check if padstack Instance is in given polygon data.
 
         Parameters
@@ -1702,13 +1722,13 @@ class EDBPadstackInstance(Connectable):
             return False
 
     @property
-    def pin(self):
+    def pin(self) -> "EDBPadstackInstance":
         """EDB padstack object."""
         warnings.warn("`pin` is deprecated.", DeprecationWarning)
         return self._edb_padstackinstance
 
     @property
-    def padstack_definition(self):
+    def padstack_definition(self) -> str:
         """Padstack definition Name.
 
         Returns
@@ -1731,7 +1751,7 @@ class EDBPadstackInstance(Connectable):
         return self._pdef
 
     @property
-    def backdrill_top(self):
+    def backdrill_top(self) -> tuple[str, str, str] | tuple[str, str] | None:
         """Backdrill layer from top.
 
         Returns
@@ -1784,11 +1804,11 @@ class EDBPadstackInstance(Connectable):
             return self._edb_padstackinstance.SetBackDrillParameters(layer, val, False)
 
     @property
-    def backdrill_type(self):
+    def backdrill_type(self) -> str:
         """Adding grpc compatibility. DotNet is supporting only layer drill type with adding stub length."""
         return "layer_drill"
 
-    def get_back_drill_by_layer(self):
+    def get_back_drill_by_layer(self) -> tuple[str, float, float] | None:
         params = self.backdrill_parameters["from_bottom"]
         return (
             params["drill_to_layer"],
@@ -1797,7 +1817,7 @@ class EDBPadstackInstance(Connectable):
         )
 
     @property
-    def backdrill_bottom(self):
+    def backdrill_bottom(self) -> tuple[str, str, str] | tuple[str, str] | None:
         """Backdrill layer from bottom.
 
         Returns
@@ -1823,7 +1843,8 @@ class EDBPadstackInstance(Connectable):
             return
 
     @property
-    def backdrill_parameters(self):
+    def backdrill_parameters(self) -> dict[str, dict[str, str]]:
+        """Backdrill parameters by layer."""
         data = {}
         value_0 = self._pedb.edb_value(0)
         value_00 = self._pedb.edb_value(0.0)
@@ -1917,7 +1938,7 @@ class EDBPadstackInstance(Connectable):
             return self._edb_object.SetBackDrillParameters(layer, val, True)
 
     @property
-    def start_layer(self):
+    def start_layer(self) -> str:
         """Starting layer.
 
         Returns
@@ -1938,7 +1959,7 @@ class EDBPadstackInstance(Connectable):
         self._edb_padstackinstance.SetLayerRange(layer, stop_layer)
 
     @property
-    def stop_layer(self):
+    def stop_layer(self) -> str:
         """Stopping layer.
 
         Returns
@@ -1959,7 +1980,7 @@ class EDBPadstackInstance(Connectable):
         self._edb_padstackinstance.SetLayerRange(start_layer, layer)
 
     @property
-    def layer_range_names(self):
+    def layer_range_names(self) -> list[str]:
         """List of all layers to which the padstack instance belongs."""
         _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
         started = False
@@ -1984,7 +2005,7 @@ class EDBPadstackInstance(Connectable):
         return layer_list
 
     @property
-    def is_pin(self):
+    def is_pin(self) -> bool:
         """Determines whether this padstack instance is a layout pin.
 
         Returns
@@ -2006,7 +2027,7 @@ class EDBPadstackInstance(Connectable):
         self._edb_padstackinstance.SetIsLayoutPin(pin)
 
     @property
-    def position(self):
+    def position(self) -> list[float]:
         """Padstack instance position.
 
         Returns
@@ -2037,7 +2058,7 @@ class EDBPadstackInstance(Connectable):
         self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, self._pedb.edb_value(self.rotation))
 
     @property
-    def position_and_rotation(self):
+    def position_and_rotation(self) -> list[float]:
         """Padstack instance position and rotation.
 
         Returns
@@ -2078,7 +2099,7 @@ class EDBPadstackInstance(Connectable):
         self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, pos[2])
 
     @property
-    def rotation(self):
+    def rotation(self) -> float:
         """Padstack instance rotation.
 
         Returns
@@ -2090,9 +2111,10 @@ class EDBPadstackInstance(Connectable):
 
         if out[0]:
             return round(out[2].ToDouble(), 6)
+        return 0.0
 
     @property
-    def metal_volume(self):
+    def metal_volume(self) -> float:
         """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
         Returns
@@ -2128,19 +2150,19 @@ class EDBPadstackInstance(Connectable):
         return volume
 
     @property
-    def pin_number(self):
+    def pin_number(self) -> str:
         """Get pin number."""
         warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
         return self.name
 
     @property
-    def component_pin(self):
+    def component_pin(self) -> str:
         """Get component pin."""
         warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
         return self.name
 
     @property
-    def aedt_name(self):
+    def aedt_name(self) -> str:
         """Retrieve the pin name that is shown in AEDT.
 
         .. note::
@@ -2175,7 +2197,7 @@ class EDBPadstackInstance(Connectable):
     def aedt_name(self, value):
         self._edb_object.SetProductProperty(self._pedb.core.ProductId.Designer, 11, value)
 
-    def parametrize_position(self, prefix=None):
+    def parametrize_position(self, prefix=None) -> list[str]:
         """Parametrize the instance position.
 
         Parameters
@@ -2199,7 +2221,7 @@ class EDBPadstackInstance(Connectable):
         self.position = [var_name + "X", var_name + "Y"]
         return [var_name + "X", var_name + "Y"]
 
-    def in_voids(self, net_name=None, layer_name=None):
+    def in_voids(self, net_name=None, layer_name=None) -> list["Primitive"]:
         """Check if this padstack instance is in any void.
 
         Parameters
@@ -2225,7 +2247,7 @@ class EDBPadstackInstance(Connectable):
         return voids
 
     @property
-    def pingroups(self):
+    def pingroups(self) -> Any:
         """Pin groups that the pin belongs to.
 
         Returns
@@ -2236,7 +2258,7 @@ class EDBPadstackInstance(Connectable):
         return self._edb_padstackinstance.GetPinGroups()
 
     @property
-    def placement_layer(self):
+    def placement_layer(self) -> str:
         """Placement layer.
 
         Returns
@@ -2247,7 +2269,7 @@ class EDBPadstackInstance(Connectable):
         return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetName()
 
     @property
-    def lower_elevation(self):
+    def lower_elevation(self) -> float | None:
         """Lower elevation of the placement layer.
 
         Returns
@@ -2261,7 +2283,7 @@ class EDBPadstackInstance(Connectable):
             return None
 
     @property
-    def upper_elevation(self):
+    def upper_elevation(self) -> float | None:
         """Upper elevation of the placement layer.
 
         Returns
@@ -2275,7 +2297,7 @@ class EDBPadstackInstance(Connectable):
             return None
 
     @property
-    def top_bottom_association(self):
+    def top_bottom_association(self) -> int:
         """Top/bottom association of the placement layer.
 
         Returns
@@ -2291,7 +2313,9 @@ class EDBPadstackInstance(Connectable):
         """
         return int(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetTopBottomAssociation())
 
-    def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
+    def create_rectangle_in_pad(
+        self, layer_name, return_points=False, partition_max_order=16
+    ) -> list["PrimitiveDotNet"] | bool:
         """Create a rectangle inscribed inside a padstack instance pad.
 
         The rectangle is fully inscribed in the pad and has the maximum area.
@@ -2495,7 +2519,7 @@ class EDBPadstackInstance(Connectable):
         max_limit=0,
         component_only=True,
         pinlist_position: dict = None,
-    ):
+    ) -> list["EDBPadstackInstance"]:
         """Search for reference pins using given criteria.
 
         Parameters
@@ -2533,7 +2557,7 @@ class EDBPadstackInstance(Connectable):
             pinlist_position=pinlist_position,
         )
 
-    def split(self) -> list:
+    def split(self) -> list["EDBPadstackInstance"]:
         """Split padstack instance into multiple instances. The new instances only connect adjacent layers."""
         pdef_name = self.padstack_definition
         position = self.position
@@ -2564,8 +2588,6 @@ class EDBPadstackInstance(Connectable):
             The default is ``75``.
             The lowest hole is ``0.75*HoleDepth/HoleDiam``.
 
-        Returns
-        -------
         """
         pos = self.position
         stackup_layers = self._pedb.stackup.stackup_layers
