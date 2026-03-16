@@ -436,7 +436,7 @@ class Terminal(ConnObj):
         pins = self._pedb.components.get_pin_from_component(self.core.component.name)
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
-    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance | bool:
+    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance | bool | None:
         """Return a list of pins and serves terminals connected to pingroups.
 
         Parameters
@@ -488,7 +488,7 @@ class Terminal(ConnObj):
                     return Primitive(primitive, self._pedb)
         return None  # pragma: no cover
 
-    def get_point_terminal_reference_primitive(self) -> Primitive | bool:
+    def get_point_terminal_reference_primitive(self) -> Primitive | PadstackInstance | bool:
         """
         Find and return the primitive reference for the point terminal or the padstack instance.
 

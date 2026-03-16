@@ -231,9 +231,9 @@ class Layout:
 
     def find_primitive(
         self,
-        layer_name: Union[str, list] = None,
-        name: Union[str, list] = None,
-        net_name: Union[str, list] = None,
+        layer_name: str | list = None,
+        name: str | list = None,
+        net_name: str | list = None,
     ) -> list[Primitive]:
         """Find a primitive objects by layer name.
         Parameters

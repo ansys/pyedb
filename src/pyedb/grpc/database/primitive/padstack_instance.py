@@ -893,7 +893,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return self.get_backdrill_type()
 
     @property
-    def backdrill_top(self) -> bool | None:
+    def backdrill_top(self) -> bool:
         if self.core.get_back_drill_type(False).value == 0:
             return False
         else:
@@ -1736,6 +1736,9 @@ class PadstackInstance(conn_obj.ConnObj):
         component_only : bool, optional
             Whether to limit the search to component padstack instances only. The
             default is ``True``. When ``False``, the search is extended to the entire layout.
+        pinlist_position : int, optional
+            Position of the pin in the pinlist. The default is ``None``, in which case the position of the pin in
+            the pinlist is not considered in the search criteria. When specified, only the pins with the same position
 
         Returns
         -------

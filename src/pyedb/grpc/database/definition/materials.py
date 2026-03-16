@@ -341,23 +341,6 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
-    def loss_tangent(self) -> float | str | None:
-        """Material loss tangent.
-
-        Returns
-        -------
-        float
-            Loss tangent value.
-
-        """
-        warnings.warn(
-            "This method is deprecated in versions >0.7.0 and will soon be removed. "
-            "Use property dielectric_loss_tangent instead.",
-            DeprecationWarning,
-        )
-        return self.dielectric_loss_tangent
-
-    @property
     def dielectric_loss_tangent(self) -> float | str | None:
         """Material loss tangent.
 
@@ -371,20 +354,6 @@ class Material:
             return Value(self.core.get_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT))
         except:
             return 0.0
-
-    @loss_tangent.setter
-    def loss_tangent(self, value):
-        """Set material loss tangent.
-
-        .. deprecated:: v0.70.0
-                Use property dielectric_loss_tangent instead.
-
-        """
-        warnings.warn(
-            "This method is deprecated and will soon be removed. Use property dielectric_loss_tangent instead.",
-            DeprecationWarning,
-        )
-        self.dielectric_loss_tangent = value
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):

@@ -134,8 +134,8 @@ class LayoutStatistics(object):
 
         Returns
         -------
-        float
-            Occupying surface value.
+        dict[str, float]
+            Occupying surface value with layer name as key and ratio as value.
 
         """
         return self._occupying_surface

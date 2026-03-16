@@ -20,12 +20,13 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from ansys.edb.core.simulation_setup.simulation_setup import SweepData as CoreSweepData
-
     from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
+
 from ansys.edb.core.simulation_setup.simulation_setup import (
     Distribution as CoreDistribution,
     FreqSweepType as CoreSweepType,
@@ -57,7 +58,7 @@ _mapping_sweep_type = {
 
 
 class FrequencyData:
-    def __init__(self, core: "CoreFrequencyData"):
+    def __init__(self, core: CoreFrequencyData):
         self._core = core
 
     @property
@@ -151,8 +152,8 @@ class SweepData:
         start_f=0.0,
         end_f=10e9,
         step=10e6,
-        core: "CoreSweepData" = None,
-        simsetup: "SimulationSetup" = None,
+        core: CoreSweepData | None = None,
+        simsetup: SimulationSetup | None = None,
     ):
         self._pedb = pedb
         self.simsetup = simsetup

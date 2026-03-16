@@ -229,7 +229,7 @@ class PinGroup:
         )
         return term
 
-    def _json_format(self) -> dict[str, Component | str | Net]:
+    def _json_format(self) -> dict[str, Component | str | Net | int]:
         """Format json.
 
         Returns
