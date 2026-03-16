@@ -323,7 +323,7 @@ class PrimitivesQuery:
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        list of :class:`pyedb.grpc.database.primitive.primitive.Primitive`
             List of primitives, polygons, paths and rectangles.
         """
         layer_names = self._normalize_layer_filter(layer)
@@ -447,8 +447,6 @@ class PrimitivesQuery:
 
         points = []
         previous_point = None
-        # Keep using ``points_raw`` because ``polygon_data.points`` drops arc metadata,
-        # while the legacy API must keep returning ``[arc_height]`` entries for arcs.
         for point in polygon_data.points_raw:
             if previous_point == point:
                 break
@@ -497,7 +495,6 @@ class Layout(PrimitivesQuery):
 
     @property
     def layout_instance(self) -> Any:
-        # TODO: The return should be a LayoutInstance class.
         return self.core.layout_instance
 
     @property
@@ -508,7 +505,7 @@ class Layout(PrimitivesQuery):
 
         Returns
         -------
-        Terminal dictionary : Dict[str, :class:`Terminal <pyedb.grpc.database.terminal.Terminal>`]
+        Terminal dictionary : Dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Dictionary of terminals.
         """
         temp = []
