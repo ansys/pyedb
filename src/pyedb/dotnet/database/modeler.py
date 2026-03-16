@@ -25,11 +25,8 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
-from typing import TYPE_CHECKING
 import warnings
-
-if TYPE_CHECKING:
-    from pyedb.dotnet.database.edb_data.primitives_data import Primitive
+from pyedb.dotnet.database.edb_data.primitives_data import Primitive
 from pyedb.dotnet.clr_module import Tuple
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
 from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, PathDotNet, RectangleDotNet
