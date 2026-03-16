@@ -647,3 +647,28 @@ class TestClass(BaseTestClass):
         )
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
+    def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
+        from pyedb.dotnet.database.dotnet.database import CellDotNet
+        from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
+
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        primitive_api = CellDotNet(edbapp).cell.primitive
+        assert isinstance(primitive_api, PrimitiveDotNet)
+
+        net = edbapp.nets.find_or_create_net("primitive_dotnet_test")
+        circle = primitive_api.circle.create(
+            layout=edbapp.active_layout,
+            layer="Top",
+            net=net,
+            center_x=edbapp.edb_value(0.0),
+            center_y=edbapp.edb_value(0.0),
+            radius=edbapp.edb_value("1mm"),
+        )
+
+        assert isinstance(circle, PrimitiveDotNet)
+        assert circle.layer_name == "Top"
+        circle.layer_name = "Bottom"
+        assert circle.layer_name == "Bottom"
+        edbapp.close(terminate_rpc_session=False)

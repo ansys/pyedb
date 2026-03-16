@@ -55,6 +55,7 @@ class PrimitiveDotNet:
 
     def __init__(self, api, prim_object=None):
         self._app = api
+        self._logger = api.logger
         self.api = api._edb.Cell.Primitive
         self.core = api._edb
         self.prim_obj = prim_object
@@ -153,6 +154,23 @@ class PrimitiveDotNet:
             Whether to do solve inside.
         """
         self.prim_obj.SetHfssProp(material, solve_inside)
+
+    @property
+    def layer_name(self) -> str:
+        """:str: Layer name that the primitive object is on."""
+        return self.layer.GetName()
+
+    @layer_name.setter
+    def layer_name(self, layer_name):
+        layer = self.api_object.GetLayer()
+        if not layer.IsNull():
+            new_layer = self._app.stackup.layers.get(layer_name, None)
+            if new_layer is not None:
+                self.api_object.SetLayer(new_layer.core)
+            else:
+                self._app.logger.error(f"Layer {layer_name} does not exist in the layout.")
+        else:
+            self._app.logger.error("Primitive has no layer assigned")
 
     @property
     def layer(self):
@@ -1294,26 +1312,6 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
     @layer_map.setter
     def layer_map(self, layer_map):
         self.prim_obj.SetLayerMap(layer_map)
-
-    def get_hole_overrides(self):
-        """Get the hole overrides of Padstack Instance.
-
-        Returns
-        -------
-        tuple[
-            bool,
-            :class:`Value <ansys.edb.utility.Value>`
-        ]
-
-            Returns a tuple of the following format:
-
-            **(is_hole_override, hole_override)**
-
-            **is_hole_override** : If padstack instance is hole override.
-
-            **hole_override** : Hole override diameter of this padstack instance.
-        """
-        return self.prim_obj.GetHoleOverrides()
 
     def set_hole_overrides(self, is_hole_override, hole_override):
         """Set the hole overrides of Padstack Instance.

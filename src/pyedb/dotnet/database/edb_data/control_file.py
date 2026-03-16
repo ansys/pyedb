@@ -28,24 +28,3 @@ warnings.warn(
     DeprecationWarning,
     stacklevel=2,
 )
-
-from pyedb.generic.control_file import (
-    ControlCircuitPt,
-    ControlExtent,
-    ControlFile,
-    ControlFileBoundaries,
-    ControlFileComponent,
-    ControlFileComponents,
-    ControlFileDielectric,
-    ControlFileImportOptions,
-    ControlFileLayer,
-    ControlFileMaterial,
-    ControlFileMeshOp,
-    ControlFileSetup,
-    ControlFileSetups,
-    ControlFileStackup,
-    ControlFileSweep,
-    ControlFileVia,
-    ControlProperty,
-    convert_technology_file,
-)
