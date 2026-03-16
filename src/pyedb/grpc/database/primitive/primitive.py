@@ -81,7 +81,7 @@ class Primitive:
     def type(self) -> str:
         """Type of the primitive.
 
-        Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
+        Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
 
         Returns
         -------
