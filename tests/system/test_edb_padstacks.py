@@ -266,9 +266,19 @@ class TestClass(BaseTestClass):
         """Convert padstack to microvias 3D objects."""
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/padstacks.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
-        assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(False)
+        assert edbapp.padstacks.definitions["Padstack_Circle"].convert_to_3d_microvias(True)
         assert edbapp.padstacks.definitions["Padstack_Rectangle"].convert_to_3d_microvias(False, hole_wall_angle=10)
         assert edbapp.padstacks.definitions["Padstack_Polygon_p12"].convert_to_3d_microvias(True)
+        assert len(edbapp.components.structures_3d) == 3
+        micro_via = list(edbapp.components.structures_3d.values())[0]
+        assert micro_via.id
+        assert micro_via.location == (0.0, 0.0)
+        micro_via.location = (1e-3, 1e-3)
+        assert micro_via.location == (0.001, 0.001)
+        micro_via.material = "copper"
+        assert micro_via.material == "copper"
+        micro_via.net = "Test_net"
+        assert micro_via.net == "Test_net"
         assert edbapp.padstacks.definitions["MyVia"].convert_to_3d_microvias(
             convert_only_signal_vias=False, delete_padstack_def=False
         )
