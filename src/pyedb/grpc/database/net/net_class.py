@@ -86,9 +86,9 @@ class NetClass:
         -------
         bool
         """
-        if isinstance(net, str):
-            from pyedb.grpc.database.net.net import Net
+        from pyedb.grpc.database.net.net import Net
 
+        if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
             self.core.add_net(net)

@@ -70,7 +70,7 @@ tests = [
     "pytest-xdist>=3.5.0,<3.7",
 ]
 doc = [
-    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.7",
+    "ansys-sphinx-theme[autoapi]>=1.0.0,<1.8",
     "ezdxf>=1.4.2",
     "imageio>=2.30.0,<2.38",
     "jupyterlab>=4.0.0,<4.6",
