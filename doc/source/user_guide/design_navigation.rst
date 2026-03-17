@@ -95,7 +95,7 @@ The gRPC backend requires a supported AEDT version:
 * ``grpc=True`` requires Ansys 2026.1 or later.
 * Requesting ``grpc=True`` with an older version raises an error.
 
-If you are writing onboarding material or reusable automation scripts, always
+If you are writing introductory material or reusable automation scripts, always
 show the ``grpc`` flag explicitly.
 
 PyEDB architecture at a glance
@@ -230,18 +230,16 @@ Sources, ports, and excitations
 -------------------------------
 
 One important architectural point in PyEDB API is the role of
-:class:`~pyedb.grpc.database.source_excitations.SourceExcitation`.
+``SourceExcitation``.
 
-In PyEDB source and port excitation workflows are centralized through
-:class:`~pyedb.grpc.database.source_excitations.SourceExcitation`, which is
-exposed from :class:`~pyedb.grpc.edb.Edb` as
-:attr:`~pyedb.grpc.edb.Edb.excitation_manager`.
+In PyEDB, source and port excitation workflows are centralized through the
+``SourceExcitation`` manager, which is exposed from ``Edb`` as
+``edb.excitation_manager``.
 
 This means that, from a class-architecture point of view, excitation-related
-operations are no longer best understood as belonging to
-:class:`~pyedb.grpc.database.hfss.Hfss` or
-:class:`~pyedb.grpc.database.siwave.Siwave`. Instead, they are grouped into a
-dedicated manager focused on ports, sources, and excitation objects.
+operations are no longer best understood as belonging to ``Hfss`` or
+``Siwave``. Instead, they are grouped into a dedicated manager focused on
+ports, sources, and excitation objects.
 
 Typical entry points are:
 
@@ -252,16 +250,13 @@ Typical entry points are:
 
 .. note::
 
-   :attr:`~pyedb.grpc.edb.Edb.source_excitation` still exists, but is deprecated in favor of
-   :attr:`~pyedb.grpc.edb.Edb.excitation_manager`.
+   ``edb.source_excitation`` still exists, but is deprecated in favor of
+   ``edb.excitation_manager``.
 
-This centralization is especially useful because both
-:class:`~pyedb.grpc.database.hfss.Hfss` and
-:class:`~pyedb.grpc.database.siwave.Siwave` still contain deprecated methods
-and properties related to ports and excitations. When documenting the PyEDB
-architecture, it is therefore clearer to present
-:class:`~pyedb.grpc.database.source_excitations.SourceExcitation` as the main
-class for these workflows.
+This centralization is especially useful because both ``Hfss`` and ``Siwave``
+still contain deprecated methods and properties related to ports and
+excitations. When documenting the PyEDB architecture, it is therefore clearer
+to present ``SourceExcitation`` as the main class for these workflows.
 
 .. _ref_simulation_setup_architecture:
 
@@ -270,9 +265,8 @@ Simulation setup organization
 
 Simulation setups are also centralized through a dedicated manager:
 
-* :attr:`~pyedb.grpc.edb.Edb.simulation_setups` returns a
-  :class:`~pyedb.grpc.database.simulation_setups.SimulationSetups` object.
-* :attr:`~pyedb.grpc.edb.Edb.setups` provides a merged view of all setups.
+* ``edb.simulation_setups`` returns a ``SimulationSetups`` object.
+* ``edb.setups`` provides a merged view of all setups.
 
 The ``SimulationSetups`` manager groups setups by solver family, including:
 
@@ -289,12 +283,10 @@ scattering setup access across multiple legacy-style properties.
 
 .. note::
 
-   Some convenience properties still exist on :class:`~pyedb.grpc.edb.Edb` for
-   backward compatibility, such as
-   :attr:`~pyedb.grpc.edb.Edb.hfss_setups`,
-   :attr:`~pyedb.grpc.edb.Edb.siwave_dc_setups`, and
-   :attr:`~pyedb.grpc.edb.Edb.siwave_ac_setups`. In the gRPC architecture, the
-   preferred entry point is :attr:`~pyedb.grpc.edb.Edb.simulation_setups`.
+   Some convenience properties still exist on ``Edb`` for backward
+   compatibility, such as ``edb.hfss_setups``, ``edb.siwave_dc_setups``, and
+   ``edb.siwave_ac_setups``. In the gRPC architecture, the preferred entry
+   point is ``edb.simulation_setups``.
 
 .. _ref_manager_selection:
 
@@ -310,11 +302,11 @@ The simplest rule is:
 * pick the manager that matches your engineering question,
 * then walk from that manager to the design objects you need.
 
-.. list-table:: Which manager should I use?
+.. list-table:: Which manager should you use?
    :header-rows: 1
    :widths: 32 22 46
 
-   * - If your question is...
+   * - Question
      - Start here
      - Typical next step
    * - Which design is active? What does the layout contain?
@@ -332,16 +324,16 @@ The simplest rule is:
    * - Which reusable definitions exist in the design?
      - ``edb.definitions``
      - Inspect component, package, or bondwire definitions
-   * - I want to query geometry or inspect existing primitives
+   * - Query geometry or inspect existing primitives
      - ``edb.layout``
      - Find primitives, inspect layout objects, and run geometry-oriented queries
-   * - I want to create or edit primitives
+   * - Create or edit primitives
      - ``edb.modeler``
      - Create and edit paths, polygons, rectangles, circles, and related objects
-   * - I want to validate the layout or run checks
+   * - Validate the layout or run checks
      - ``edb.layout_validation``
      - Run validation and inspection helpers
-   * - I want to inspect or create simulation setups
+   * - Inspect or create simulation setups
      - ``edb.simulation_setups``
      - Read or create setups by solver family
    * - Which ports, sources, or terminals exist?
@@ -601,10 +593,8 @@ terminals are organized, which sources are defined, or where probes are placed.
 
 In PyEDB architecture, this is the preferred way to present excitation
 workflows because source and port handling has been consolidated into the
-:class:`~pyedb.grpc.database.source_excitations.SourceExcitation` manager
-rather than being split conceptually between
-:class:`~pyedb.grpc.database.hfss.Hfss` and
-:class:`~pyedb.grpc.database.siwave.Siwave`.
+``SourceExcitation`` manager rather than being split conceptually between
+``Hfss`` and ``Siwave``.
 
 Retrieval cookbook
 ------------------
@@ -731,7 +721,7 @@ When writing user scripts or tutorials, these habits improve readability:
 1. Import with ``from pyedb import Edb``.
 2. Pass ``grpc=True`` or ``grpc=False`` explicitly.
 3. Start from the highest-level manager that matches the question.
-4. Prefer named lookups and dictionaries when possible.
+4. Prefer named queries and dictionaries when possible.
 5. Keep layer questions in ``stackup``, connectivity questions in ``nets``, and part questions in ``components``.
 6. Close the session explicitly with ``edb.close()``.
 
