@@ -254,9 +254,7 @@ class PrimitivesQuery:
         list :
             List of bondwires.
         """
-        return [
-            primitive for primitive in self.filter_primitives(prim_type="bondwire") if isinstance(primitive, Bondwire)
-        ]
+        return self._primitives_by_class(Bondwire)
 
     def find_object_by_id(self, value: int) -> EDBPadstackInstance | Primitive | None:
         """Find a layout object by Database ID.
