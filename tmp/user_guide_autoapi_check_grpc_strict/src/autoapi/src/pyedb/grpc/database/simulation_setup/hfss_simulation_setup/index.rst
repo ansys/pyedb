@@ -1,0 +1,355 @@
+src.pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+==============================================================
+
+.. py:module:: src.pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+
+Classes
+-------
+
+.. autoapisummary::
+
+   src.pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup
+
+
+Module Contents
+---------------
+
+.. py:class:: HfssSimulationSetup(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_setup.HfssSimulationSetup, name: str = None)
+
+   Bases: :py:obj:`pyedb.grpc.database.simulation_setup.simulation_setup.SimulationSetup`
+
+
+   HFSS simulation setup class.
+
+
+   .. py:attribute:: core
+
+
+   .. py:method:: create(edb: pyedb.grpc.edb.Edb, name: str = None)
+      :classmethod:
+
+
+      Create a new HFSS simulation setup.
+
+      Parameters
+      ----------
+      edb : pyedb.Edb
+          The EDB instance to which the simulation setup will be added.
+      name : str, optional
+          Name of the simulation setup.
+
+      Returns
+      -------
+      :class:`HfssSimulationSetup <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup>`
+
+
+
+   .. py:property:: mesh_operations
+      :type: list[Union[pyedb.grpc.database.simulation_setup.mesh_operation.LengthMeshOperation, pyedb.grpc.database.simulation_setup.skin_depth_mesh_operation.SkinDepthMeshOperation]]
+
+
+      List of HFSS mesh operations.
+
+
+
+   .. py:property:: defeature_settings
+
+      HFSS defeature settings class.
+
+      .. deprecated:: 0.67.2
+      Use :attr:`settings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced>"
+      instead.
+
+
+
+
+   .. py:property:: via_settings
+
+      HFSS via settings class.
+
+      .. deprecated:: 0.67.2
+      Use :attr:`settings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced>`
+      instead.
+
+
+
+
+   .. py:property:: advanced_mesh_settings
+
+      HFSS advanced meshing settings class.
+
+      .. deprecated:: 0.67.2
+      Use :attr:`settings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced_meshing>`
+      instead.
+
+
+
+
+   .. py:property:: hfss_solver_settings
+
+      Legacy compatibility to settings properties.
+
+      .. deprecated:: 0.67.2
+      Use :attr:`settings <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
+      instead.
+
+      #
+
+
+
+   .. py:property:: settings
+      :type: pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings
+
+
+      HFSS simulation settings class.
+
+      Returns
+      -------
+      :class:`HFSSSimulationSettings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_settings.HFSSSimulationSettings>`
+
+
+
+
+   .. py:property:: adaptive_settings
+
+      Legacy compatibility to general settings.
+
+      .. deprecated:: 0.67.2
+      use :attr:`general_settings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.general>`
+      instead.
+
+
+
+
+   .. py:property:: curve_approx_settings
+
+      Legacy compatibility to advanced meshing settings.
+
+      .. deprecated:: 0.67.2
+      use :attr:`advanced_mesh_settings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.advanced_meshing>`
+      instead.
+
+
+
+
+   .. py:property:: dcr_settings
+
+      HFSS DCR settings class.
+
+      .. deprecated:: 0.67.2
+      use :attr:`dcr
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.dcr>`
+      instead.
+
+
+
+   .. py:property:: hfss_port_settings
+
+      HFSS port settings class.
+
+      .. deprecated:: 0.67.2
+      use :attr:`settings
+      <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
+      instead.
+
+
+
+
+   .. py:method:: set_solution_single_frequency(frequency='5GHz', max_num_passes=10, max_delta_s=0.02) -> bool
+
+      Set HFSS single frequency solution.
+      Parameters
+      ----------
+      frequency : str, optional
+          Adaptive frequency.
+      max_num_passes : int, optional
+          Maxmímum passes number. Default value `10`.
+      max_delta_s : float, optional
+          Maximum delta S value. Default value `0.02`,
+
+      Returns
+      -------
+      bool.
+
+
+
+
+   .. py:method:: set_solution_multi_frequencies(frequencies='5GHz', max_delta_s=0.02) -> bool
+
+      Set HFSS setup multi frequencies adaptive.
+
+      Parameters
+      ----------
+      frequencies : str, List[str].
+          Adaptive frequencies.
+      max_delta_s : float, List[float].
+          Max delta S values.
+
+      Returns
+      -------
+      bool.
+
+
+
+
+   .. py:method:: set_solution_broadband(low_frequency='1GHz', high_frequency='10GHz', max_delta_s=0.02, max_num_passes=10)
+
+      Set solution to broadband.
+
+      Parameters
+      ----------
+      low_frequency : str
+          Low frequency value.
+      high_frequency : str
+          High frequency value.
+      max_delta_s : float
+          Max delta S value.
+      max_num_passes : int
+          Maximum number of passes.
+
+      Returns
+      -------
+      bool.
+
+
+
+
+   .. py:method:: add_adaptive_frequency_data(frequency='5GHz', max_delta_s='0.01')
+
+      Add adaptive frequency data to simulation setup.
+
+      Parameters
+      ----------
+      frequency : str
+          Adaptive frequency value.
+
+      max_delta_s : str
+          Maximum delta S value.
+
+      Returns
+      -------
+      bool.
+
+
+
+
+   .. py:method:: add_length_mesh_operation(net_layer_list, name=None, max_elements=1000, max_length='1mm', restrict_elements=True, restrict_length=True, refine_inside=False, mesh_region=None)
+
+      Add a mesh operation to the setup.
+
+      Parameters
+      ----------
+      net_layer_list : dict
+          Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+      name : str, optional
+          Mesh operation name.
+      max_elements : int, optional
+          Maximum number of elements. Default is ``1000``.
+      max_length : str, optional
+          Maximum length of elements. Default is ``1mm``.
+      restrict_elements : bool, optional
+          Whether to restrict number of elements. Default is ``True``.
+      restrict_length : bool, optional
+          Whether to restrict length of elements. Default is ``True``.
+      mesh_region : str, optional
+          Mesh region name.
+      refine_inside : bool, optional
+          Whether to refine inside or not.  Default is ``False``.
+
+      Returns
+      -------
+      :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
+
+
+
+
+   .. py:method:: add_skin_depth_mesh_operation(net_layer_list, name=None, max_elements=1000, skin_depth='1um', restrict_elements=True, surface_triangle_length='1mm', number_of_layers=2, refine_inside=False, mesh_region=None)
+
+      Add a mesh operation to the setup.
+
+      Parameters
+      ----------
+      net_layer_list : dict
+          Dictionary containing nets and layers on which enable Mesh operation. Example ``{"A0_N": ["TOP", "PWR"]}``.
+      name : str, optional
+          Mesh operation name.
+      max_elements : int, optional
+          Maximum number of elements. Default is ``1000``.
+      skin_depth : str, optional
+          Skin Depth. Default is ``1um``.
+      restrict_elements : bool, optional
+          Whether to restrict number of elements. Default is ``True``.
+      surface_triangle_length : bool, optional
+          Surface Triangle length. Default is ``1mm``.
+      number_of_layers : int, str, optional
+          Number of layers. Default is ``2``.
+      mesh_region : str, optional
+          Mesh region name.
+      refine_inside : bool, optional
+          Whether to refine inside or not.  Default is ``False``.
+
+      Returns
+      -------
+      :class:`LengthMeshOperation <ansys.edb.core.simulation_setup.mesh_operation.LengthMeshOperation>`
+
+
+
+
+   .. py:method:: auto_mesh_operation(trace_ratio_seeding: float = 3, signal_via_side_number: int = 12, power_ground_via_side_number: int = 6) -> bool
+
+      Automatically create and apply a length-based mesh operation for all nets in the design.
+
+      The method inspects every signal net, determines the smallest trace width, and
+      seeds a :class:`GrpcLengthMeshOperation` whose maximum element length is
+      ``smallest_width * trace_ratio_seeding``. Signal vias (padstack instances) are
+      configured with the requested number of polygon sides, while power/ground vias
+      are updated through the global ``num_via_sides`` advanced setting.
+
+      Parameters
+      ----------
+      trace_ratio_seeding : float, optional
+          Ratio used to compute the maximum allowed element length from the
+          smallest trace width found in the design.  The resulting length is
+          ``min_width * trace_ratio_seeding``.  Defaults to ``3``.
+      signal_via_side_number : int, optional
+          Number of sides (i.e. faceting resolution) assigned to **signal**
+          padstack instances that belong to the nets being meshed.
+          Defaults to ``12``.
+      power_ground_via_side_number : int, optional
+          Number of sides assigned to **power/ground** vias via the global
+          ``advanced.num_via_sides`` setting.  Defaults to ``6``.
+
+      Returns
+      -------
+      bool
+
+      Raises
+      ------
+      ValueError
+          If the design contains no terminals, making mesh seeding impossible.
+
+      Notes
+      -----
+      * Only primitives of type ``"path"`` are considered when determining the
+        smallest trace width.
+      * Every ``(net, layer, sheet)`` tuple required by the mesher is
+        automatically populated; sheet are explicitly marked as ``False``.
+      * Existing contents of :attr:`mesh_operations` are **replaced** by the
+        single new operation.
+
+      Examples
+      --------
+      >>> setup = edbapp.setups["my_setup"]
+      >>> setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=16)
+      >>> setup.mesh_operations[0].max_length
+      '2.5um'
+
+
+
