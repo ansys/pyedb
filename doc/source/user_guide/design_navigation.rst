@@ -129,8 +129,8 @@ You can picture the user-facing architecture like this:
             +-- stackup     -> layers and physical organization
             +-- nets        -> connectivity-centric traversal
             +-- components  -> component-centric traversal
-            +-- layout      -> primitives, terminals, groups, pin groups
-            +-- modeler     -> geometry creation and helper queries
+             +-- layout      -> geometry queries, primitives, terminals, groups
+             +-- modeler     -> primitive creation and editing
             +-- padstacks   -> padstack definitions and instances
             +-- definitions -> component, package, and bondwire definitions
             +-- layout_validation -> design checks and validation helpers
@@ -149,47 +149,35 @@ to a set of focused managers. The most important ones are:
 
 .. list-table:: Main managers exposed from ``Edb``
    :header-rows: 1
-   :widths: 24 28 48
+   :widths: 28 72
 
-   * - Property
-     - Main class
+   * - Manager
      - Primary role
-   * - :attr:`~pyedb.grpc.edb.Edb.stackup`
-     - :class:`~pyedb.grpc.database.stackup.Stackup`
+   * - ``edb.stackup``
      - Access stackup layers, signal layers, dielectric layers, and physical layer properties
-   * - :attr:`~pyedb.grpc.edb.Edb.nets`
-     - :class:`~pyedb.grpc.database.nets.Nets`
+   * - ``edb.nets``
      - Navigate the design by electrical connectivity
-   * - :attr:`~pyedb.grpc.edb.Edb.components`
-     - :class:`~pyedb.grpc.database.components.Components`
+   * - ``edb.components``
      - Navigate the design by placed parts, reference designators, and pins
-   * - :attr:`~pyedb.grpc.edb.Edb.layout`
-     - :class:`~pyedb.grpc.database.layout.layout.Layout`
-     - Inspect layout content such as primitives, terminals, groups, and pin groups
-   * - :attr:`~pyedb.grpc.edb.Edb.modeler`
-     - :class:`~pyedb.grpc.database.modeler.Modeler`
-     - Create and query geometry-oriented objects
-   * - :attr:`~pyedb.grpc.edb.Edb.padstacks`
-     - :class:`~pyedb.grpc.database.padstacks.Padstacks`
+   * - ``edb.layout``
+     - Run geometry queries and inspect primitives, terminals, groups, and pin groups
+   * - ``edb.modeler``
+     - Create and edit primitive geometry
+   * - ``edb.padstacks``
      - Access padstack definitions and padstack instances
-   * - :attr:`~pyedb.grpc.edb.Edb.definitions`
-     - :class:`~pyedb.grpc.database.definitions.Definitions`
-     - Access component definitions, package definitions, and bondwire definitions
-   * - :attr:`~pyedb.grpc.edb.Edb.layout_validation`
-     - :class:`~pyedb.grpc.database.layout_validation.LayoutValidation`
+   * - ``edb.definitions``
+     - Access component, package, and bondwire definitions
+   * - ``edb.layout_validation``
      - Run design checks and validation utilities
-   * - :attr:`~pyedb.grpc.edb.Edb.excitation_manager`
-     - :class:`~pyedb.grpc.database.source_excitations.SourceExcitation`
+   * - ``edb.excitation_manager``
      - Manage source and port excitations in one place
-   * - :attr:`~pyedb.grpc.edb.Edb.simulation_setups`
-     - :class:`~pyedb.grpc.database.simulation_setups.SimulationSetups`
+   * - ``edb.simulation_setups``
      - Access setup collections for HFSS, SIwave, DCIR, CPA, Q3D, and RaptorX
-   * - :attr:`~pyedb.grpc.edb.Edb.hfss`
-     - :class:`~pyedb.grpc.database.hfss.Hfss`
-     - HFSS-related workflows and helper methods
-   * - :attr:`~pyedb.grpc.edb.Edb.siwave`
-     - :class:`~pyedb.grpc.database.siwave.Siwave`
-     - SIwave-related workflows and helper methods
+   * - ``edb.hfss`` and ``edb.siwave``
+     - Access solver-specific workflows; some older excitation helpers remain here as deprecated APIs
+
+For symbol-level API details, see the gRPC API reference. This section keeps
+the architectural view intentionally compact.
 
 What ``Edb`` represents
 -----------------------
@@ -225,23 +213,6 @@ The EDB hierarchy
 
 Understanding the EDB hierarchy makes design navigation much easier.
 
-At a high level, the design is organized like this:
-
-* **EDB project**
-
-  * **Cell**
-
-    * **Layout**
-
-      * **Stackup** for layer definitions
-      * **Primitives** for geometric objects
-      * **Terminals** and other layout objects
-
-    * **Net list** for electrical connectivity
-    * **Component list** for placed parts
-
-  * **Simulation setup** for analysis definitions
-
 PyEDB wraps these concepts into user-friendly Python objects. For example:
 
 * ``Edb`` gives you the active project and cell,
@@ -255,13 +226,13 @@ PyEDB wraps these concepts into user-friendly Python objects. For example:
 
 .. _ref_excitation_architecture:
 
-Sources, ports, and excitations in the gRPC architecture
---------------------------------------------------------
+Sources, ports, and excitations
+-------------------------------
 
-One important architectural point in the gRPC API is the role of
+One important architectural point in PyEDB API is the role of
 :class:`~pyedb.grpc.database.source_excitations.SourceExcitation`.
 
-In PyEDB gRPC, source and port excitation workflows are centralized through
+In PyEDB source and port excitation workflows are centralized through
 :class:`~pyedb.grpc.database.source_excitations.SourceExcitation`, which is
 exposed from :class:`~pyedb.grpc.edb.Edb` as
 :attr:`~pyedb.grpc.edb.Edb.excitation_manager`.
@@ -281,14 +252,13 @@ Typical entry points are:
 
 .. note::
 
-   :attr:`~pyedb.grpc.edb.Edb.source_excitation` still exists, but in the gRPC
-   API it is deprecated in favor of
+   :attr:`~pyedb.grpc.edb.Edb.source_excitation` still exists, but is deprecated in favor of
    :attr:`~pyedb.grpc.edb.Edb.excitation_manager`.
 
 This centralization is especially useful because both
 :class:`~pyedb.grpc.database.hfss.Hfss` and
 :class:`~pyedb.grpc.database.siwave.Siwave` still contain deprecated methods
-and properties related to ports and excitations. When documenting the gRPC
+and properties related to ports and excitations. When documenting the PyEDB
 architecture, it is therefore clearer to present
 :class:`~pyedb.grpc.database.source_excitations.SourceExcitation` as the main
 class for these workflows.
@@ -312,9 +282,9 @@ The ``SimulationSetups`` manager groups setups by solver family, including:
 * SIwave CPA,
 * Q3D,
 * RaptorX,
-* and HFSS PI.
+* and HFSS-PI.
 
-This is the recommended architectural view for the gRPC API because it avoids
+This is the recommended architectural view for PyEDB API because it avoids
 scattering setup access across multiple legacy-style properties.
 
 .. note::
@@ -362,9 +332,12 @@ The simplest rule is:
    * - Which reusable definitions exist in the design?
      - ``edb.definitions``
      - Inspect component, package, or bondwire definitions
-   * - I want to inspect or create geometry
-     - ``edb.layout`` or ``edb.modeler``
-     - Find primitives or create paths, polygons, rectangles, and circles
+   * - I want to query geometry or inspect existing primitives
+     - ``edb.layout``
+     - Find primitives, inspect layout objects, and run geometry-oriented queries
+   * - I want to create or edit primitives
+     - ``edb.modeler``
+     - Create and edit paths, polygons, rectangles, circles, and related objects
    * - I want to validate the layout or run checks
      - ``edb.layout_validation``
      - Run validation and inspection helpers
@@ -545,12 +518,14 @@ that supports placed components and package-related data.
 
 .. _ref_layout_navigation:
 
-Navigate by layout and primitives
----------------------------------
+Navigate by layout and geometry queries
+---------------------------------------
 
 Use ``edb.layout`` when you want to inspect the active layout directly.
 
-This is the preferred read-oriented entry point for:
+This is the preferred entry point for geometry queries and layout inspection.
+
+Typical use cases are:
 
 * enumerating primitives,
 * enumerating terminals,
@@ -573,9 +548,25 @@ Useful entry points are:
 Primitive objects commonly expose information such as ``aedt_name``,
 ``layer_name``, ``net_name``, ``polygon_data``, ``voids``, and ``area()``.
 
-Use ``edb.modeler`` when the task is not only inspection, but also geometry
-creation or geometry-centric helper operations such as creating paths,
-polygons, rectangles, and circles.
+In the intended gRPC architecture, geometry queries belong to ``Layout``. This
+keeps read-oriented geometry access in one place.
+
+Navigate by primitive creation and editing
+------------------------------------------
+
+Use ``edb.modeler`` when the task is to create or edit primitive geometry.
+
+Typical examples are:
+
+* creating paths,
+* creating polygons,
+* creating rectangles,
+* creating circles,
+* editing primitive geometry.
+
+In the gRPC architecture, ``Modeler`` is best understood as the primitive
+creation and editing manager rather than the main entry point for geometry
+queries.
 
 .. _ref_validation_setup_navigation:
 
@@ -670,6 +661,7 @@ For a new design, a practical learning sequence is:
 5. Inspect ``edb.nets.netlist`` to understand connectivity naming.
 6. Inspect ``edb.components.instances`` to understand the placed parts.
 7. Use ``edb.layout.primitives`` or ``edb.layout.find_primitive(...)`` for targeted geometry inspection.
+8. Use ``edb.modeler`` when you need to create or edit primitives.
 
 This progression gives users a clear view of both the electrical and physical
 structure of a design without requiring low-level knowledge of the backend.
@@ -696,7 +688,7 @@ are the most relevant:
 
 * ``src/pyedb/grpc/database/layout/layout.py``
 
-  * Layout-oriented traversal.
+  * Layout-oriented traversal and geometry queries.
 
 * ``src/pyedb/grpc/database/stackup.py``
 
@@ -729,7 +721,7 @@ are the most relevant:
 
 * ``src/pyedb/grpc/database/modeler.py``
 
-  * Geometry creation helpers and geometry-centric utilities.
+  * Primitive creation and editing helpers.
 
 Guidelines for writing clear PyEDB scripts
 ------------------------------------------
