@@ -18,19 +18,19 @@ For end-to-end examples, see :doc:`pyedb_examples`.
 
             How to use PyEDB.
 
-   .. grid-item-card:: Common tasks
-            :link: common_tasks
-            :link-type: doc
-            :margin: 2 2 0 0
-
-            Common automated tasks with PyEDB.
-
    .. grid-item-card:: Architecture and navigation
             :link: design_navigation
             :link-type: doc
             :margin: 2 2 0 0
 
             Core architecture, backend selection, and design navigation.
+
+   .. grid-item-card:: Common tasks
+            :link: common_tasks
+            :link-type: doc
+            :margin: 2 2 0 0
+
+            Common automated tasks with PyEDB.
 
    .. grid-item-card:: Advanced libraries
             :link: libraries/index
