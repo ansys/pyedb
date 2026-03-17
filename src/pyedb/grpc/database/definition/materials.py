@@ -48,7 +48,7 @@ from pydantic import BaseModel, confloat
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated, deprecated_property
+from pyedb.misc.decorators import deprecated
 
 logger = logging.getLogger(__name__)
 
