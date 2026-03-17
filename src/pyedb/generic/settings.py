@@ -112,7 +112,7 @@ class Settings(object):
     @aedt_version.setter
     def aedt_version(self, value):
         self._aedt_version = value
-        if self._aedt_version >= "2026.1":
+        if self._aedt_version >= "2023.1":
             self.disable_bounding_box_sat = True
 
     @property
