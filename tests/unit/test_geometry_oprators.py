@@ -23,6 +23,7 @@
 import pytest
 
 from pyedb.generic.geometry_operators import GeometryOperators as go
+from pyedb.misc.utilities import compute_arc_points
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
@@ -60,3 +61,68 @@ class TestClass:
         assert nplines == 24
         assert nslines == 7
         assert nlines == 21
+
+    from pyedb.misc.utilities import compute_arc_points
+
+    def test_arc_less_than_180(self):
+        """Test arc with h < r (arc < 180°)."""
+        p1 = [0.0, 0.0]
+        p2 = [2.0, 0.0]
+        h = 0.2  # Small arc, h < r
+        xr, yr = compute_arc_points(p1, p2, h, n=6)
+
+        assert len(xr) == 6, f"Expected 6 points, got {len(xr)}"
+        assert len(yr) == 6, f"Expected 6 points, got {len(yr)}"
+
+        # Check that all points are above the chord (positive y for h > 0)
+        assert all(y > 0 for y in yr), "All points should be above chord for positive h"
+        print("✓ Arc < 180° test passed")
+
+    def test_arc_greater_than_180(self):
+        """Test arc with h > r (arc > 180°)."""
+        p1 = [0.0, 0.0]
+        p2 = [2.0, 0.0]
+        h = 1.5  # Large arc, h > r (arc > 180°)
+        xr, yr = compute_arc_points(p1, p2, h, n=6)
+
+        assert len(xr) == 6, f"Expected 6 points, got {len(xr)}"
+        assert len(yr) == 6, f"Expected 6 points, got {len(yr)}"
+
+        # Check that points are on the correct side
+        assert all(y > 0 for y in yr), "All points should be above chord for positive h"
+        print("✓ Arc > 180° test passed")
+
+    def test_negative_arc(self):
+        """Test arc with negative sagitta."""
+        p1 = [0.0, 0.0]
+        p2 = [2.0, 0.0]
+        h = -0.2  # Negative arc
+        xr, yr = compute_arc_points(p1, p2, h, n=6)
+
+        assert len(xr) == 6, f"Expected 6 points, got {len(xr)}"
+        assert len(yr) == 6, f"Expected 6 points, got {len(yr)}"
+
+        # Check that all points are below the chord (negative y for h < 0)
+        assert all(y < 0 for y in yr), "All points should be below chord for negative h"
+        print("✓ Negative arc test passed")
+
+    def test_zero_height(self):
+        """Test arc with zero height."""
+        p1 = [0.0, 0.0]
+        p2 = [2.0, 0.0]
+        h = 0.0
+        xr, yr = compute_arc_points(p1, p2, h, n=6)
+
+        assert xr == [], "Expected empty list for zero height"
+        assert yr == [], "Expected empty list for zero height"
+        print("✓ Zero height test passed")
+
+    def test_same_start_end(self):
+        """Test arc with same start and end points."""
+        p1 = [1.0, 1.0]
+        p2 = [1.0, 1.0]
+        h = 0.5
+        xr, yr = compute_arc_points(p1, p2, h, n=6)
+
+        assert xr == [], "Expected empty list for same start/end"
+        assert yr == [], "Expected empty list for same start/end"

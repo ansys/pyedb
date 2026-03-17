@@ -148,7 +148,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_get_polygons_bounding(self):
         """Retrieve polygons bounding box."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         polys = edbapp.modeler.get_polygons_by_layer("GND")
         for poly in polys:
@@ -237,7 +236,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_create_trace(self):
         """Create a trace based on a list of points."""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         points = [
             [-0.025, -0.02],
@@ -246,6 +244,14 @@ class TestClass(BaseTestClass):
         ]
         trace = edbapp.modeler.create_trace(points, "1_Top")
         assert trace
+        if edbapp.grpc:
+            assert trace.end_cap1 == "round"
+            assert trace.end_cap2 == "round"
+            trace.end_cap1 = "flat"
+            trace.end_cap2 = "flat"
+            assert trace.end_cap1 == "flat"
+            assert trace.end_cap2 == "flat"
+
         assert isinstance(trace.get_center_line(), list)
         assert isinstance(trace.get_center_line(), list)
         # TODO
@@ -639,4 +645,29 @@ class TestClass(BaseTestClass):
             place_on_bottom=True,
         )
         assert not cell_inst_2.is_null
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
+    def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
+        from pyedb.dotnet.database.dotnet.database import CellDotNet
+        from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
+
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        primitive_api = CellDotNet(edbapp).cell.primitive
+        assert isinstance(primitive_api, PrimitiveDotNet)
+
+        net = edbapp.nets.find_or_create_net("primitive_dotnet_test")
+        circle = primitive_api.circle.create(
+            layout=edbapp.active_layout,
+            layer="Top",
+            net=net,
+            center_x=edbapp.edb_value(0.0),
+            center_y=edbapp.edb_value(0.0),
+            radius=edbapp.edb_value("1mm"),
+        )
+
+        assert isinstance(circle, PrimitiveDotNet)
+        assert circle.layer_name == "Top"
+        circle.layer_name = "Bottom"
+        assert circle.layer_name == "Bottom"
         edbapp.close(terminate_rpc_session=False)
