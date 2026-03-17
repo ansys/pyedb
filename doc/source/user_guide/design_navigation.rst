@@ -129,8 +129,8 @@ You can picture the user-facing architecture like this:
             +-- stackup     -> layers and physical organization
             +-- nets        -> connectivity-centric traversal
             +-- components  -> component-centric traversal
-             +-- layout      -> geometry queries, primitives, terminals, groups
-             +-- modeler     -> primitive creation and editing
+            +-- layout      -> geometry queries, primitives, terminals, groups
+            +-- modeler     -> primitive creation and editing
             +-- padstacks   -> padstack definitions and instances
             +-- definitions -> component, package, and bondwire definitions
             +-- layout_validation -> design checks and validation helpers
@@ -141,10 +141,10 @@ You can picture the user-facing architecture like this:
 
 .. _ref_grpc_manager_overview:
 
-Key gRPC managers exposed by ``Edb``
-------------------------------------
+Key managers exposed by ``Edb``
+-------------------------------
 
-In the gRPC implementation, ``Edb`` is the root object and the main entry point
+In PyEDB implementation, ``Edb`` is the root object and the main entry point
 to a set of focused managers. The most important ones are:
 
 .. list-table:: Main managers exposed from ``Edb``
@@ -176,7 +176,7 @@ to a set of focused managers. The most important ones are:
    * - ``edb.hfss`` and ``edb.siwave``
      - Access solver-specific workflows; some older excitation helpers remain here as deprecated APIs
 
-For symbol-level API details, see the gRPC API reference. This section keeps
+For API all details, see the *API reference* section. This section keeps
 the architectural view intentionally compact.
 
 What ``Edb`` represents
@@ -548,7 +548,7 @@ Useful entry points are:
 Primitive objects commonly expose information such as ``aedt_name``,
 ``layer_name``, ``net_name``, ``polygon_data``, ``voids``, and ``area()``.
 
-In the intended gRPC architecture, geometry queries belong to ``Layout``. This
+In the intended PyEDB architecture, geometry queries belong to ``Layout``. This
 keeps read-oriented geometry access in one place.
 
 Navigate by primitive creation and editing
@@ -564,7 +564,7 @@ Typical examples are:
 * creating circles,
 * editing primitive geometry.
 
-In the gRPC architecture, ``Modeler`` is best understood as the primitive
+In PyEDB architecture, ``Modeler`` is best understood as the primitive
 creation and editing manager rather than the main entry point for geometry
 queries.
 
@@ -579,7 +579,7 @@ perform validation, or run layout checks.
 Use ``edb.simulation_setups`` when the goal is to inspect, organize, or create
 analysis setups for supported solvers.
 
-These two managers are important parts of the gRPC class architecture because
+These two managers are important parts of the PyEDB class architecture because
 they keep validation and setup management separated from geometry and
 connectivity traversal.
 
@@ -599,7 +599,7 @@ For excitation and measurement questions, start from:
 Use these entry points when the question is about which ports exist, how
 terminals are organized, which sources are defined, or where probes are placed.
 
-In the gRPC architecture, this is the preferred way to present excitation
+In PyEDB architecture, this is the preferred way to present excitation
 workflows because source and port handling has been consolidated into the
 :class:`~pyedb.grpc.database.source_excitations.SourceExcitation` manager
 rather than being split conceptually between
