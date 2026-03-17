@@ -135,7 +135,7 @@ class PadProperties:
             )
 
     @property
-    def parameters_values(self):
+    def parameters_values(self) -> list[float] | None:
         """Parameters.
 
         Returns
@@ -146,7 +146,7 @@ class PadProperties:
         try:
             return [Value(i) for i in self._pad_parameter_value[1]]
         except TypeError:
-            return []
+            return None
 
     @parameters_values.setter
     def parameters_values(self, value):
@@ -155,12 +155,12 @@ class PadProperties:
         self._update_pad_parameters_parameters(params=value)
 
     @property
-    def parameters_values_string(self):
+    def parameters_values_string(self) -> list[str] | None:
         """Parameters value in string format."""
         try:
             return [str(i) for i in self._pad_parameter_value[1]]
         except TypeError:
-            return []
+            return None
 
     @property
     def polygon_data(self) -> CorePolygonData:
@@ -743,8 +743,10 @@ class PadstackDef:
         layout = self._pedb.active_layout
         layers = self._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
+        # All nets by default
+        nets = list(self._pedb.nets.nets.keys())
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._pedb._pedb.nets.signal_nets.keys())]
+            nets = [i for i in list(self._pedb.nets.signal.keys())]
         topl, topz, bottoml, bottomz = self._pedb.stackup.limits(True)
         if self.start_layer in layers:
             start_elevation = layers[self.start_layer].lower_elevation
@@ -767,10 +769,12 @@ class PadstackDef:
             rad1, rad2 = rad2, rad1
         i = 0
         for via in self.instances:
-            if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
+            # Check if via belongs to the nets to convert if the user wants to convert only signal vias or all vias.
+            if via.net_name in nets:
                 pos = via.position
                 started = False
-                if len(self.pad_by_layer[self.start_layer].parameters_values) == 0:
+                pad_by_layer = self.pad_by_layer[self.start_layer]
+                if hasattr(pad_by_layer, "parameters_values") and len(pad_by_layer.parameters_values) == 0:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.start_layer].polygon_data,
                         layer_name=self.start_layer,
