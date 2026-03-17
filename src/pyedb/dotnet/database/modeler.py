@@ -36,7 +36,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
-class Modeler(object):
+class Modeler:
     """Manages EDB methods for primitives management accessible from `Edb.modeler` property.
 
     Examples
