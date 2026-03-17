@@ -31,7 +31,7 @@ import warnings
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
 
-    CURRENT_STABLE_AEDT_VERSION = 2025.2
+    CURRENT_STABLE_AEDT_VERSION = 2026.1
     INSTALLED_VERSIONS = None
     INSTALLED_STUDENT_VERSIONS = None
     INSTALLED_CLIENT_VERSIONS = None
@@ -112,7 +112,7 @@ class Settings(object):
     @aedt_version.setter
     def aedt_version(self, value):
         self._aedt_version = value
-        if self._aedt_version >= "2023.1":
+        if self._aedt_version >= "2026.1":
             self.disable_bounding_box_sat = True
 
     @property
