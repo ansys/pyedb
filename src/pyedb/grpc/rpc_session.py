@@ -117,11 +117,6 @@ class RpcSession:
                 RpcSession.__start_rpc_server()
             elif not RpcSession.in_memory:
                 settings.logger.info(f"Server already running on port {RpcSession.port}")
-
-            if restart_server and RpcSession.in_memory:
-                settings.logger.logger.info("Restarting RPC in-memory server")
-                RpcSession.kill()
-                RpcSession.__start_local_rpc()
         else:
             if not RpcSession.in_memory:
                 RpcSession.__start_rpc_server()
