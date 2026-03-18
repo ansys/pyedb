@@ -377,7 +377,7 @@ class Primitive:
         bbox = self.core.cast().polygon_data.bbox()
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
-    def convert_to_polygon(self) -> Polygon:
+    def convert_to_polygon(self) -> Polygon | bool:
         """Convert path to polygon.
 
         Returns

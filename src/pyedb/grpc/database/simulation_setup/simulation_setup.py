@@ -27,11 +27,7 @@ from pyedb.misc.decorators import deprecated_class
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    FreqSweepType,
-    FrequencyData as CoreFrequencyData,
-    SimulationSetupType as CoreSimulationSetupType,
-)
+from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as CoreSimulationSetupType
 
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 

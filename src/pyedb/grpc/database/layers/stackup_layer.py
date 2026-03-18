@@ -332,7 +332,7 @@ class StackupLayer:
             Material loss tangent value.
         """
         if self.material in self._pedb.materials.materials:
-            loss_tangent = self._pedb.materials[self.material].loss_tangent
+            loss_tangent = self._pedb.materials[self.material].dielectric_loss_tangent
             return loss_tangent if loss_tangent else 0.0
         return 0.0
 
