@@ -106,12 +106,8 @@ class Components(object):
         :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
 
         """
-        if name in self.instances:
-            return self.instances[name]
-        elif name in self.definitions:
-            return self.definitions[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return
+
+        return self.instances[name]
 
     def __init__(self, p_edb):
         self._pedb = p_edb

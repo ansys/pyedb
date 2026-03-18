@@ -128,12 +128,7 @@ class Components(object):
         --------
         >>> component = edbapp.components["R1"]
         """
-        if name in self.instances:
-            return self.instances[name]
-        elif name in self.definitions:
-            return self.definitions[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return None
+        return self.instances[name]
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
