@@ -41,10 +41,10 @@ from pyedb.grpc.rpc_session import RpcSession
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, edbversion):
+    def __init__(self, version, in_memory=False, is_linux=False):
         self.logger = settings.logger
         self._db = None
-        self.version = edbversion
+        self.version = version
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
@@ -71,6 +71,7 @@ class EdbInit(object):
         # register signal handlers
         signal.signal(signal.SIGTERM, self._signal_handler)
         signal.signal(signal.SIGINT, self._signal_handler)
+        RpcSession.in_memory = in_memory
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
@@ -111,7 +112,7 @@ class EdbInit(object):
         self._db = database.Database.create(db_path)
         return self._db
 
-    def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
+    def _open(self, db_path, read_only, port=0, restart_rpc_server=False, in_memory=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -132,13 +133,14 @@ class EdbInit(object):
         """
         if restart_rpc_server:
             RpcSession.pid = 0
+        RpcSession.in_memory = in_memory
         if not RpcSession.pid:
             RpcSession.start(
                 edb_version=self.version,
                 port=port,
                 restart_server=restart_rpc_server,
             )
-            if not RpcSession.pid:
+            if not RpcSession.pid and not RpcSession.in_memory:
                 self.logger.error("Failed to start RPC server.")
                 return False
         self._db = database.Database.open(db_path, read_only)
@@ -197,7 +199,7 @@ class EdbInit(object):
         """
         self._db.close()
         self._db = None
-        if terminate_rpc_session:
+        if terminate_rpc_session and not RpcSession.in_memory:
             RpcSession.rpc_session.disconnect()
             RpcSession.pid = 0
         self._clean_variables()

@@ -26,6 +26,11 @@ import sys
 import time
 
 from ansys.edb.core.session import launch_session
+
+try:
+    from ansys.edb.core.session import launch_local_session
+except ImportError:
+    print("local session is development feature")
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -48,6 +53,7 @@ class RpcSession:
     rpc_session = None
     base_path = None
     port = 10000
+    in_memory = False
 
     @staticmethod
     def start(edb_version, port=0, restart_server=False):
@@ -105,19 +111,28 @@ class RpcSession:
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
 
         if RpcSession.pid:
-            if restart_server:
+            if restart_server and not RpcSession.in_memory:
                 settings.logger.logger.info("Restarting RPC server")
                 RpcSession.kill()
                 RpcSession.__start_rpc_server()
-            else:
+            elif not RpcSession.in_memory:
                 settings.logger.info(f"Server already running on port {RpcSession.port}")
+
+            if restart_server and RpcSession.in_memory:
+                settings.logger.logger.info("Restarting RPC in-memory server")
+                RpcSession.kill()
+                RpcSession.__start_local_rpc()
         else:
-            RpcSession.__start_rpc_server()
-            if RpcSession.rpc_session:
-                RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
-                settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
+            if not RpcSession.in_memory:
+                RpcSession.__start_rpc_server()
+                if RpcSession.rpc_session:
+                    RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
+                    settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
+                else:
+                    settings.logger.error("Failed to start EDB_RPC_server process")
             else:
-                settings.logger.error("Failed to start EDB_RPC_server process")
+                RpcSession.__start_local_rpc()
+                settings.logger.info("Grpc session started in local mode (fast)")
 
     @staticmethod
     def __get_process_id():
@@ -136,6 +151,10 @@ class RpcSession:
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
             settings.logger.logger.info("Grpc session started")
+
+    @staticmethod
+    def __start_local_rpc():
+        RpcSession.rpc_session = launch_local_session(RpcSession.base_path)
 
     @staticmethod
     def kill():

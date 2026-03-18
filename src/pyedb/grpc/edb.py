@@ -223,10 +223,12 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
+        in_memory: bool = False,
     ):
         edbversion = get_string_version(version)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=version)
+        EdbInit.__init__(self, version=version, in_memory=in_memory)
+        self.in_memory = in_memory
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -319,13 +321,13 @@ class Edb(EdbInit):
                 raise AttributeError("Translation was unsuccessful")
         elif edbpath.endswith("edb.def"):
             self.edbpath = os.path.dirname(edbpath)
-            self.open(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server, in_memory=self.in_memory)
         elif not os.path.exists(os.path.join(self.edbpath, "edb.def")):
             self.create(restart_rpc_server=restart_rpc_server)
             self.logger.info("EDB %s created correctly.", self.edbpath)
         elif ".aedb" in edbpath:
             self.edbpath = edbpath
-            self.open(restart_rpc_server=restart_rpc_server)
+            self.open(restart_rpc_server=restart_rpc_server, in_memory=self.in_memory)
         if self.active_cell:
             self.logger.info("EDB initialized.")
         else:
@@ -673,7 +675,7 @@ class Edb(EdbInit):
         ]
         return {ter.name: ter for ter in terms}
 
-    def open(self, restart_rpc_server=False) -> bool:
+    def open(self, restart_rpc_server: bool = False, in_memory: bool = False) -> bool:
         """Open EDB database.
 
         Returns
@@ -694,6 +696,7 @@ class Edb(EdbInit):
                     self.edbpath,
                     self.isreadonly,
                     restart_rpc_server=restart_rpc_server,
+                    in_memory=in_memory,
                 )
                 n_try -= 1
             except Exception as e:
@@ -907,7 +910,7 @@ class Edb(EdbInit):
             self.logger.info("Translation successfully completed")
         self.edbpath = os.path.join(working_dir, aedb_name)
         # open_edb is deprecated; use open() here to silence deprecation warnings
-        return self.open()
+        return self.open(in_memory=self.in_memory)
 
     def import_vlctech_stackup(
         self,
@@ -962,7 +965,7 @@ class Edb(EdbInit):
         else:
             self.logger.info("edb successfully created.")
         self.edbpath = os.path.join(working_dir, "vlctech.aedb")
-        self.open()
+        self.open(in_memory=self.in_memory)
         return self.edbpath
 
     def export_to_ipc2581(self, edbpath="", anstranslator_full_path="", ipc_path=None) -> str:
@@ -1612,7 +1615,7 @@ class Edb(EdbInit):
                 raise RuntimeError("An error occurred while converting file") from e
             temp_input_gds = input_gds.split(".gds")[0]
             self.edbpath = temp_input_gds + ".aedb"
-            return self.open()
+            return self.open(in_memory=self.in_memory)
 
     @deprecate_argument_name({"signal_list": "signal_nets", "reference_list": "reference_nets"})
     def cutout(
@@ -2934,7 +2937,7 @@ class Edb(EdbInit):
             self.save()
             self.close()
             self.edbpath = edb_original_path
-            self.open()
+            self.open(in_memory=self.in_memory)
         return parameters
 
     @staticmethod
