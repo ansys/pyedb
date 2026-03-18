@@ -737,7 +737,7 @@ class Edb(EdbInit):
         n_try = 10
         while not self.db and n_try:
             try:
-                self._create(self.edbpath, restart_rpc_server=restart_rpc_server)
+                self._create(self.edbpath, restart_rpc_server=restart_rpc_server, in_memory=self.in_memory)
                 n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])

@@ -82,7 +82,7 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
-    def _create(self, db_path, port=0, restart_rpc_server=False):
+    def _create(self, db_path, port=0, restart_rpc_server=False, in_memory=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -100,15 +100,17 @@ class EdbInit(object):
         -------
         Database
         """
-        if not RpcSession.pid:
+        RpcSession.in_memory = in_memory
+        if RpcSession.in_memory and not RpcSession.pid:
             RpcSession.start(
                 edb_version=self.version,
                 port=port,
                 restart_server=restart_rpc_server,
             )
-            if not RpcSession.pid:
+            if not RpcSession.pid and not RpcSession.in_memory:
                 self.logger.error("Failed to start RPC server.")
                 return False
+
         self._db = database.Database.create(db_path)
         return self._db
 
