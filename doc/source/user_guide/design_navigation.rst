@@ -1,4 +1,3 @@
-.. _ref_grpc_edb_design_guide:
 .. _ref_design_navigation:
 
 PyEDB architecture and design navigation
