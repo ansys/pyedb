@@ -31,8 +31,6 @@ import re
 from typing import List, Set, Union
 import warnings
 
-import skrf
-
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
