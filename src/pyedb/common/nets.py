@@ -22,6 +22,7 @@
 
 import math
 import time
+import warnings
 
 from pyedb.generic.constants import CSS4_COLORS
 
@@ -36,10 +37,12 @@ try:
     )
     from shapely.plotting import plot_line, plot_polygon
 except ImportError:
-    raise ImportError(
-        "Shapely library is required for plotting. "
-        "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
+    warnings.warn(
+        "Shapely library is required for plotting"
+        "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'.",
+        ImportWarning,
     )
+
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:

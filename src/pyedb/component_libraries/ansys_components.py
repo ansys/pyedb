@@ -22,14 +22,19 @@
 
 import struct
 from typing import TYPE_CHECKING
+import warnings
 
 import numpy as np
 
 if TYPE_CHECKING:
     try:
         from skrf.network import Network
-    except ModuleNotFoundError:
-        Network = None
+    except ImportError:
+        warnings.warn(
+            "skrf library is required for loading Libraries component. "
+            "Please install it using 'pip install pyedb[all]' or 'pip install skrf'.",
+            ImportWarning,
+        )
 
 
 class ComponentLib:

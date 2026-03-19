@@ -73,15 +73,17 @@ import itertools
 import os
 from queue import Queue
 from typing import Any, Set
+import warnings
 
 from pydantic import BaseModel
 
 try:
     from rtree import index as rtree_index
 except ImportError:
-    raise ImportError(
+    warnings.warn(
         "Rtree library is required for spatial indexing. "
-        "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'."
+        "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'.",
+        ImportWarning,
     )
 
 import pyedb

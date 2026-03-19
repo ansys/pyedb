@@ -38,9 +38,6 @@ dependencies = [
     "psutil",
     "defusedxml>=0.7,<8.0",
     "xmltodict",
-    "shapely",
-    "Rtree>=1.2.0",
-    "scikit-rf",
 ]
 
 [project.optional-dependencies]
@@ -49,6 +46,8 @@ geometry = [
     "ezdxf>=1.4.2",
     "Rtree>=1.2.0",
     "scipy>=1.13,<2.0",
+    "Rtree>=1.2.0",
+    "shapely",
 ]
 graphics = [
     "matplotlib>=3.5.0,<3.11",
@@ -62,6 +61,7 @@ all = [
     "scipy>=1.13,<2.0",
     "matplotlib>=3.5.0,<3.11",
     "pandas>=1.1.0,<2.4",
+    "scikit-rf"
 ]
 tests = [
     "mock>=5.1.0,<5.3",

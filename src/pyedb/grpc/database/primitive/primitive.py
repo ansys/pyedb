@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import math
 from typing import TYPE_CHECKING, Any
+import warnings
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
@@ -961,9 +962,10 @@ class Primitive:
             from shapely.geometry import Polygon
             from shapely.plotting import plot_polygon
         except ImportError:
-            raise ImportError(
-                "Shapely library is required for plotting. "
-                "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
+            warnings.warn(
+                "Shapely library is required for plotting"
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'.",
+                ImportWarning,
             )
 
         dpi = 100.0
