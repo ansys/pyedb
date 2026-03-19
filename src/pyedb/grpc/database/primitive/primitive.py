@@ -24,7 +24,6 @@ from __future__ import annotations
 
 import math
 from typing import TYPE_CHECKING, Any
-import warnings
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
