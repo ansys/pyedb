@@ -118,6 +118,8 @@ class CfgSources:
             elif src.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 refdes = src.component.refdes if src.component else ""
                 pos_term_info = {"padstack": src.padstack_instance.aedt_name}
+            elif src.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
+                pos_term_info = {"point": src.name, "coordinates": src.location}
 
             neg_term = self._pedb.terminals[src.reference_terminal.name]
             if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
@@ -125,6 +127,8 @@ class CfgSources:
                 neg_term_info = {"pin_group": pg.name}
             elif neg_term.terminal_type == TerminalTypeMapper.get("PadstackInstanceTerminal", as_grpc=settings.is_grpc):
                 neg_term_info = {"padstack": neg_term.padstack_instance.aedt_name}
+            elif neg_term.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
+                neg_term_info = {"point": neg_term.name, "coordinates": neg_term.location}
 
             cfg_src = CfgSource(
                 self._pedb,
