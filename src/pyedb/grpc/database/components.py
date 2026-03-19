@@ -36,6 +36,7 @@ from ansys.edb.core.definition.solder_ball_property import (
 )
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSPICEModel
+from ansys.edb.core.hierarchy.structure3d import Structure3D as CoreStructure3D
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
 
 from pyedb.component_libraries.ansys_components import (
@@ -49,6 +50,7 @@ from pyedb.grpc.database.definition.component_pin import ComponentPin
 from pyedb.grpc.database.hierarchy.component import Component
 from pyedb.grpc.database.hierarchy.pin_pair_model import PinPairModel
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
+from pyedb.grpc.database.hierarchy.structure_3d import Structure3D
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecate_argument_name, deprecated
@@ -127,12 +129,7 @@ class Components(object):
         --------
         >>> component = edbapp.components["R1"]
         """
-        if name in self.instances:
-            return self.instances[name]
-        elif name in self.definitions:
-            return self.definitions[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return None
+        return self.instances[name]
 
     def __init__(self, p_edb: Any) -> None:
         self._pedb = p_edb
@@ -144,6 +141,7 @@ class Components(object):
         self._ics: Dict[str, Component] = {}
         self._ios: Dict[str, Component] = {}
         self._others: Dict[str, Component] = {}
+        self._structures_3d = {}
         self._pins = {}
         self._comps_by_part = {}
         self._padstack = Padstacks(self._pedb)
@@ -465,6 +463,19 @@ class Components(object):
         >>> edbapp.components.IOs
         """
         return self._ios
+
+    @property
+    def structures_3d(self) -> Dict[str, Structure3D]:
+        """Dictionary of structures 3D components.
+
+        Returns
+        -------
+        dict[str, :class:`pyedb.grpc.database.hierarchy.structure_3d.Structure3D`]
+        Dictionary of structures 3D components keyed by name.
+        """
+        structures_3d = [obj.core for obj in self._pedb.active_layout.groups if isinstance(obj.core, CoreStructure3D)]
+        self._structures_3d = {structure.name: Structure3D(self._pedb, structure) for structure in structures_3d}
+        return self._structures_3d
 
     @property
     def Others(self) -> Dict[str, Component]:

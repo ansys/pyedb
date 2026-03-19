@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from pyedb.dotnet.database.cell.hierarchy.model import Model
+from pyedb.dotnet.database.general import convert_netdict_to_pydict, convert_pydict_to_netdict
 
 
 class SPICEModel(Model):
@@ -43,3 +44,13 @@ class SPICEModel(Model):
     def sub_circuit(self):
         """SPICE sub-ciruit."""
         return self._edb_object.GetSubCkt()
+
+    @property
+    def pin_pairs(self):
+        pin_pairs = convert_netdict_to_pydict(self.core.GetTerminalPinPairs())
+        return pin_pairs
+
+    @pin_pairs.setter
+    def pin_pairs(self, pin_pairs):
+        pin_pairs = convert_pydict_to_netdict(pin_pairs)
+        self.core.SetTerminalPinPairs(pin_pairs)

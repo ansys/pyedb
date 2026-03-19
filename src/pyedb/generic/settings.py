@@ -31,7 +31,7 @@ import warnings
 class Settings(object):
     """Manages all PyEDB environment variables and global settings."""
 
-    CURRENT_STABLE_AEDT_VERSION = 2025.2
+    CURRENT_STABLE_AEDT_VERSION = 2026.1
     INSTALLED_VERSIONS = None
     INSTALLED_STUDENT_VERSIONS = None
     INSTALLED_CLIENT_VERSIONS = None

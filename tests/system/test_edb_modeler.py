@@ -36,12 +36,15 @@ from tests.system.base_test_class import BaseTestClass
 class TestClass(BaseTestClass):
     def test_modeler_polygons(self):
         """Evaluate modeler polygons"""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.polygons) > 0
         assert not edbapp.modeler.polygons[0].is_void
 
         poly0 = edbapp.modeler.polygons[0]
+        assert poly0.net_name in ["", None]
+        poly0.net_name = "GND"
+        assert poly0.net_name == "GND"
+        assert poly0.net.name == "GND"
         assert edbapp.modeler.polygons[0].clone()
         assert isinstance(poly0.voids, list)
         # TODO convert point_raw as property in dotnet to be compliant with grpc.
@@ -135,7 +138,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_primitives(self):
         """Evaluate modeler primitives"""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.rectangles) > 0
         assert len(edbapp.modeler.circles) > 0
