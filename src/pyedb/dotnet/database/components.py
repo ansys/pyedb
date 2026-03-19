@@ -40,6 +40,7 @@ from pyedb.component_libraries.ansys_components import (
 )
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
@@ -114,6 +115,7 @@ class Components(object):
         self.refresh_components()
         self._pins = {}
         self._comps_by_part = {}
+        self._structures_3d = {}
         self._padstack = EdbPadstacks(self._pedb)
 
     @property
@@ -406,6 +408,16 @@ class Components(object):
 
         """
         return self._others
+
+    @property
+    def structures_3d(self) -> dict[str, Structure3D]:
+        self._structures_3d = {}
+        structures_3d = [
+            obj for obj in list(self._pedb.active_layout.Groups) if str(obj).split(".")[-1] == "Structure3D"
+        ]
+        for comp_3d in structures_3d:
+            self._structures_3d[comp_3d.GetName()] = Structure3D(self._pedb, comp_3d)
+        return self._structures_3d
 
     @property
     def components_by_partname(self) -> dict:
