@@ -643,7 +643,7 @@ A compact production-style skeleton is:
 
    from pyedb import Edb
 
-   edb = Edb(edbpath=r"C:\projects\board.aedb", version="2025.2", grpc=True)
+   edb = Edb(edbpath=r"C:\\projects\\board.aedb", version="2025.2", grpc=True)
    try:
        # Read or modify the design here
        print(edb.active_cell.name)
