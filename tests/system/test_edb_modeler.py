@@ -138,7 +138,6 @@ class TestClass(BaseTestClass):
 
     def test_modeler_primitives(self):
         """Evaluate modeler primitives"""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.modeler.rectangles) > 0
         assert len(edbapp.modeler.circles) > 0
