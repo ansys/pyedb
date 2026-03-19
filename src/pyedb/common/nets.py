@@ -22,25 +22,9 @@
 
 import math
 import time
+from typing import TYPE_CHECKING
 
 from pyedb.generic.constants import CSS4_COLORS
-
-try:
-    from shapely import affinity
-    from shapely.geometry import (
-        LinearRing,
-        MultiLineString,
-        MultiPolygon,
-        Point,
-        Polygon,
-    )
-    from shapely.plotting import plot_line, plot_polygon
-except ImportError:
-    raise ImportError(
-        "Shapely library is required for plotting. "
-        "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
-    )
-from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from matplotlib.axes import Axes
@@ -112,6 +96,22 @@ class CommonNets:
         (ax, fig)
             Matplotlib ax and figures.
         """
+
+        try:
+            from shapely import affinity
+            from shapely.geometry import (
+                LinearRing,
+                MultiLineString,
+                MultiPolygon,
+                Point,
+                Polygon,
+            )
+            from shapely.plotting import plot_line, plot_polygon
+        except ImportError:
+            raise ImportError(
+                "Shapely library is required for plotting. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
+            )
         try:
             import matplotlib.pyplot as plt
         except ImportError:
