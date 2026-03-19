@@ -962,10 +962,9 @@ class Primitive:
             from shapely.geometry import Polygon
             from shapely.plotting import plot_polygon
         except ImportError:
-            warnings.warn(
-                "Shapely library is required for plotting"
-                "Please install it using 'pip install pyedb[geometry]' or 'pip install rtree'.",
-                ImportWarning,
+            raise ImportError(
+                "Shapely library is required for plotting. "
+                "Please install it using 'pip install pyedb[geometry]' or 'pip install shapely'."
             )
 
         dpi = 100.0
