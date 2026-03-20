@@ -50,7 +50,6 @@ from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
 from pyedb.grpc.database.net.differential_pair import DifferentialPair
 from pyedb.grpc.database.net.extended_net import ExtendedNet
 from pyedb.grpc.database.net.net_class import NetClass
-from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.terminal.bundle_terminal import BundleTerminal
 from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
 from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInstanceTerminal
