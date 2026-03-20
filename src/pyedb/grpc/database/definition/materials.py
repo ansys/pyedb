@@ -144,8 +144,8 @@ class Material:
 
         Returns
         -------
-        :class:``
-
+        The dielectric model object, or ``0.0`` when no dielectric
+        model is assigned.
         """
         return self.dielectric_material_model
 
@@ -157,10 +157,8 @@ class Material:
 
         Returns
         -------
-        :class:`DebyeModel <ansys.edb.core.definition.debye_model.DebyeModel>` or
-        :class:`DjordjecvicSarkarModel <ansys.edb.core.definition.djordjecvic_sarkar_model.DjordjecvicSarkarModel>` or
-        :class:`MultipoleDebyeModel <ansys.edb.core.definition.multipole_debye_model.MultipoleDebyeModel>`.
-            EDB dielectric model.
+        The dielectric model object associated with the material, or
+        ``0.0`` when no dielectric model is assigned.
         """
         # Todo missing wrapper classes for dielctric model classes.
         try:
@@ -181,7 +179,7 @@ class Material:
         Returns
         -------
         float
-         Conductivity value.
+            Conductivity value.
         """
         try:
             return Value(self.core.get_property(CoreMaterialProperty.CONDUCTIVITY))
