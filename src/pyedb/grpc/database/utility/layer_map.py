@@ -26,7 +26,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from __future__ import absolute_import
+from __future__ import annotations
 
 from ansys.edb.core.utility.layer_map import (
     LayerMap as CoreLayerMap,
@@ -39,7 +39,7 @@ class LayerMap:
         self.core = core
 
     @classmethod
-    def create(cls, direction: str = "two_way") -> "LayerMap":
+    def create(cls, direction: str = "two_way") -> LayerMap:
         """Create a layer map.
 
         Parameters

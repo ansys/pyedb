@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import time
 from typing import Set
+import warnings
 
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
@@ -718,6 +720,7 @@ class SourceExcitation:
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        warnings.warn("Use :func:`pyedb.excitation_manager.create_edge_port` instead.", DeprecationWarning)
         res, fromLayer_pos, toLayer_pos = pinpos.GetLayerRange()
 
         if not portname:

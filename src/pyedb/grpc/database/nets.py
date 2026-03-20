@@ -34,6 +34,7 @@ from pyedb.grpc.database.net.net_class import NetClass
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
+from pyedb.misc.decorators import deprecated
 from pyedb.misc.utilities import compute_arc_points
 
 
@@ -388,6 +389,7 @@ class Nets(CommonNets):
                     self._comps_by_nets_dict[n] = [comp]
         return self._comps_by_nets_dict
 
+    @deprecated("use edb.extended_nets.generate_extended_nets method instead")
     def generate_extended_nets(
         self,
         resistor_below: Union[int, float] = 10,
@@ -428,7 +430,6 @@ class Nets(CommonNets):
         >>> edb = Edb("my_design.edb")
         >>> edb.extended_nets.generate_extended_nets(resistor_below=5, inductor_below=0.5, capacitor_above=0.1)
         """
-        warnings.warn("Use new method :func:`edb.extended_nets.generate_extended_nets` instead.", DeprecationWarning)
         return self._pedb.extended_nets.generate_extended_nets(
             resistor_below, inductor_below, capacitor_above, exception_list, include_signal, include_power
         )
@@ -832,6 +833,7 @@ class Nets(CommonNets):
                 return True
         return False
 
+    @deprecated("use edb.layout_validation.disjoint_nets method instead")
     def find_and_fix_disjoint_nets(
         self,
         net_list: Optional[List[str]] = None,
@@ -869,8 +871,6 @@ class Nets(CommonNets):
         >>> fixed_nets = edb.layout_validation.disjoint_nets(net_list=["PCIe_TX"], clean_disjoints_less_than=1e-6)
         >>> print("Fixed nets:", fixed_nets)
         """
-
-        warnings.warn("Use new function :func:`edb.layout_validation.disjoint_nets` instead.", DeprecationWarning)
         return self._pedb.layout_validation.disjoint_nets(
             net_list, keep_only_main_net, clean_disjoints_less_than, order_by_area
         )

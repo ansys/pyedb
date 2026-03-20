@@ -19,6 +19,9 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+from typing import TYPE_CHECKING
+
 from pyedb.dotnet.database.dotnet.database import (
     DifferentialPairDotNet,
     ExtendedNetDotNet,
@@ -26,6 +29,10 @@ from pyedb.dotnet.database.dotnet.database import (
     NetDotNet,
 )
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+
+if TYPE_CHECKING:
+    from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+    from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
 
 
 class EDBNetsData(NetDotNet):
@@ -35,7 +42,7 @@ class EDBNetsData(NetDotNet):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb_net = edb.nets.nets["GND"]
     >>> edb_net.name  # Class Property
     >>> edb_net.name  # EDB Object Property
@@ -50,7 +57,7 @@ class EDBNetsData(NetDotNet):
         NetDotNet.__init__(self, self._app, raw_net)
 
     @property
-    def primitives(self):
+    def primitives(self) -> list["PrimitiveDotNet"]:
         """Return the list of primitives that belongs to the net.
 
         Returns
@@ -60,23 +67,19 @@ class EDBNetsData(NetDotNet):
         from pyedb.dotnet.database.cell.layout import primitive_cast
 
         return [primitive_cast(self._app, i) for i in self.net_object.Primitives if i]
-        # return [self._app.layout.find_object_by_id(i.GetId()) for i in self.net_object.Primitives]
 
     @property
-    def padstack_instances(self):
+    def padstack_instances(self) -> list[EDBPadstackInstance]:
         """Return the list of primitives that belongs to the net.
 
         Returns
         -------
         list of :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`"""
-        # name = self.name
-        # return [
-        # EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances if i.GetNet().GetName() == name
-        # ]
+
         return [EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances]
 
     @property
-    def components(self):
+    def components(self) -> dict[str, "EDBComponent"]:
         """Return the list of components that touch the net.
 
         Returns
@@ -91,7 +94,7 @@ class EDBNetsData(NetDotNet):
                     comps[comp.refdes] = comp
         return comps
 
-    def find_dc_short(self, fix=False):
+    def find_dc_short(self, fix=False) -> list[list[str]]:
         """Find DC-shorted nets.
 
         Parameters
@@ -148,7 +151,7 @@ class EDBNetsData(NetDotNet):
             plot_components=True,
         )
 
-    def get_smallest_trace_width(self):
+    def get_smallest_trace_width(self) -> float:
         """Retrieve the smallest trace width from paths.
 
         Returns
@@ -165,7 +168,7 @@ class EDBNetsData(NetDotNet):
         return current_value
 
     @property
-    def extended_net(self):
+    def extended_net(self) -> "EDBExtendedNetData | None":
         """Get extended net and associated components.
 
         Returns
@@ -184,7 +187,7 @@ class EDBNetsData(NetDotNet):
         if not obj.is_null:
             return obj
         else:  # pragma: no cover
-            return
+            return None
 
 
 class EDBNetClassData(NetClassDotNet):
@@ -194,7 +197,7 @@ class EDBNetClassData(NetClassDotNet):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb.net_classes
     """
 
@@ -206,7 +209,7 @@ class EDBNetClassData(NetClassDotNet):
         self._core_nets = core_app.nets
 
     @property
-    def nets(self):
+    def nets(self) -> dict[str, EDBNetsData]:
         """Get nets belong to this net class."""
         return {name: self._core_nets[name] for name in self.api_nets}
 
@@ -218,7 +221,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
     Examples
     --------
     >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
+    >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb_extended_net = edb.nets.extended_nets["GND"]
     >>> edb_extended_net.name  # Class Property
     """
@@ -231,12 +234,12 @@ class EDBExtendedNetData(ExtendedNetDotNet):
         ExtendedNetDotNet.__init__(self, self._app, raw_extended_net)
 
     @property
-    def nets(self):
+    def nets(self) -> dict[str, EDBNetsData]:
         """Nets dictionary."""
         return {name: self._core_nets[name] for name in self.api_nets}
 
     @property
-    def components(self):
+    def components(self) -> dict[str, "EDBComponent"]:
         """Dictionary of components."""
         comps = {}
         for _, obj in self.nets.items():
@@ -244,14 +247,14 @@ class EDBExtendedNetData(ExtendedNetDotNet):
         return comps
 
     @property
-    def rlc(self):
+    def rlc(self) -> dict[str, "EDBComponent"]:
         """Dictionary of RLC components."""
         return {
             name: comp for name, comp in self.components.items() if comp.type in ["Inductor", "Resistor", "Capacitor"]
         }
 
     @property
-    def serial_rlc(self):
+    def serial_rlc(self) -> dict[str, "EDBComponent"]:
         """Dictionary of serial RLC components."""
         res = {}
         nets = self.nets
@@ -263,7 +266,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
         return res
 
     @property
-    def shunt_rlc(self):
+    def shunt_rlc(self) -> dict[str, "EDBComponent"]:
         """Dictionary of shunt RLC components."""
         res = {}
         nets = self.nets
@@ -279,13 +282,6 @@ class EDBDifferentialPairData(DifferentialPairDotNet):
     """Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
 
-    Examples
-    --------
-    >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
-    >>> diff_pair = edb.differential_pairs["DQ4"]
-    >>> diff_pair.positive_net
-    >>> diff_pair.negative_net
     """
 
     def __init__(self, core_app, api_object=None):
@@ -296,13 +292,11 @@ class EDBDifferentialPairData(DifferentialPairDotNet):
         DifferentialPairDotNet.__init__(self, self._app, api_object)
 
     @property
-    def positive_net(self):
-        # type: ()->EDBNetsData
+    def positive_net(self) -> "EDBNetsData":
         """Positive Net."""
         return EDBNetsData(self.api_positive_net, self._app)
 
     @property
-    def negative_net(self):
-        # type: ()->EDBNetsData
+    def negative_net(self) -> "EDBNetsData":
         """Negative Net."""
         return EDBNetsData(self.api_negative_net, self._app)

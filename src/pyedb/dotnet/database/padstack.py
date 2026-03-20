@@ -27,7 +27,6 @@ This module contains the `EdbPadstacks` class.
 from collections import defaultdict
 import math
 from typing import Dict, List, Optional, Union
-import warnings
 
 import numpy as np
 
@@ -40,6 +39,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 class EdbPadstacks(object):
@@ -1466,6 +1466,7 @@ class EdbPadstacks(object):
                     instances = [inst for inst in instances if inst.component_pin in component_pin]
             return instances
 
+    @deprecated("use get_instances method instead.")
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
 
@@ -1479,7 +1480,6 @@ class EdbPadstacks(object):
         list
             List of :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`.
         """
-        warnings.warn("Use new property :func:`get_padstack_instance` instead.", DeprecationWarning)
         return self.get_instances(net_name=net_name)
 
     def get_reference_pins(

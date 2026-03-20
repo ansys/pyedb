@@ -231,7 +231,8 @@ class PackageDef:
         return PackageDef(edb, grpc_package)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
-        """Set Heat sink.
+        """Set heat sink.
+
         Parameters
         ----------
         fin_base_height : str, float

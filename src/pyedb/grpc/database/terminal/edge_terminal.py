@@ -20,7 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import re
 from typing import TYPE_CHECKING
 
 from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal

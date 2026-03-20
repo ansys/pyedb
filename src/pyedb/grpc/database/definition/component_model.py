@@ -104,6 +104,7 @@ class NPortComponentModel:
             Component definition to search for the N-Port component model.
         id : int
             IO count of the N-Port component model.
+
         Returns
         -------
         NPortComponentModel

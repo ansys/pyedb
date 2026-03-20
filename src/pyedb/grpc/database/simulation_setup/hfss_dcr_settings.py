@@ -1,6 +1,8 @@
 # Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
+# SPDX-License-Identifier: MIT
+#
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -20,7 +22,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
+from pyedb.misc.decorators import deprecated_property
 
 
 class HFSSDCRSettings:
@@ -32,6 +34,7 @@ class HFSSDCRSettings:
         self._pedb = parent._pedb
 
     @property
+    @deprecated_property("use max_passes property instead.")
     def conduction_max_passes(self) -> int:
         """Maximum number of conduction adaptive passes.
 
@@ -39,10 +42,10 @@ class HFSSDCRSettings:
         Use :attr:`max_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.max_passes>`
         nstead.
         """
-        warnings.warn("`conduction_max_passes` is deprecated. Use `max_passes` instead.", DeprecationWarning)
         return self.max_passes
 
     @conduction_max_passes.setter
+    @deprecated_property("use max_passes property instead.")
     def conduction_max_passes(self, value: int):
         """Set maximum number of conduction adaptive passes.
 
@@ -50,7 +53,6 @@ class HFSSDCRSettings:
         Use :attr:`max_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.max_passes>`
         instead.
         """
-        warnings.warn("`conduction_max_passes` is deprecated. Use `max_passes` instead.", DeprecationWarning)
         self.max_passes = value
 
     @property
@@ -64,6 +66,7 @@ class HFSSDCRSettings:
         self.core.max_passes = value
 
     @property
+    @deprecated_property("use min_converged_passes property instead.")
     def conduction_min_converged_passes(self) -> int:
         """Minimum number of converged conduction adaptive passes.
 
@@ -72,12 +75,10 @@ class HFSSDCRSettings:
         <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_converged_passes>`
         instead.
         """
-        warnings.warn(
-            "`conduction_min_converged_passes` is deprecated. Use `min_converged_passes` instead.", DeprecationWarning
-        )
         return self.min_converged_passes
 
     @conduction_min_converged_passes.setter
+    @deprecated_property("use min_converged_passes property instead.")
     def conduction_min_converged_passes(self, value: int):
         """Set minimum number of converged conduction adaptive passes.
 
@@ -86,9 +87,6 @@ class HFSSDCRSettings:
         <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_converged_passes>`
         instead.
         """
-        warnings.warn(
-            "`conduction_min_converged_passes` is deprecated. Use `min_converged_passes` instead.", DeprecationWarning
-        )
         self.min_converged_passes = value
 
     @property
@@ -102,6 +100,7 @@ class HFSSDCRSettings:
         self.core.min_converged_passes = value
 
     @property
+    @deprecated_property("use min_passes property instead.")
     def conduction_min_passes(self) -> int:
         """Minimum number of conduction adaptive passes.
 
@@ -109,10 +108,10 @@ class HFSSDCRSettings:
         Use :attr:`min_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
         instead.
         """
-        warnings.warn("`conduction_min_passes` is deprecated. Use `min_passes` instead.", DeprecationWarning)
         return self.min_passes
 
     @conduction_min_passes.setter
+    @deprecated_property("use min_passes property instead.")
     def conduction_min_passes(self, value: int):
         """Set minimum number of conduction adaptive passes.
 
@@ -121,7 +120,6 @@ class HFSSDCRSettings:
         <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
         instead.
         """
-        warnings.warn("`conduction_min_passes` is deprecated. Use `min_passes` instead.", DeprecationWarning)
         self.min_passes = value
 
     @property
@@ -135,6 +133,7 @@ class HFSSDCRSettings:
         self.core.min_passes = value
 
     @property
+    @deprecated_property("use percent_error property instead.")
     def conduction_per_error(self) -> float:
         """Conduction adaptive percent error.
 
@@ -142,10 +141,10 @@ class HFSSDCRSettings:
         Use :attr:`percent_error <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_error>`
         instead.
         """
-        warnings.warn("`conduction_percent_error` is deprecated. Use `percent_error` instead.", DeprecationWarning)
         return self.percent_error
 
     @conduction_per_error.setter
+    @deprecated_property("use percent_error property instead.")
     def conduction_per_error(self, value: float):
         """Set conduction adaptive percent error.
 
@@ -153,7 +152,6 @@ class HFSSDCRSettings:
         Use :attr:`percent_error <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_error>`
         instead.
         """
-        warnings.warn("`conduction_percent_error` is deprecated. Use `percent_error` instead.", DeprecationWarning)
         self.percent_error = value
 
     @property
@@ -167,6 +165,7 @@ class HFSSDCRSettings:
         self.core.percent_error = value
 
     @property
+    @deprecated_property("use percent_refinement_per_pass property instead.")
     def conduction_per_refine(self) -> float:
         """Conduction adaptive percent refinement per pass.
 
@@ -179,6 +178,7 @@ class HFSSDCRSettings:
         return self.percent_refinement_per_pass
 
     @conduction_per_refine.setter
+    @deprecated_property("use percent_refinement_per_pass property instead.")
     def conduction_per_refine(self, value: float):
         """Set conduction adaptive percent refinement per pass.
 

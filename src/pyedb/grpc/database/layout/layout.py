@@ -30,18 +30,21 @@ from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from ansys.edb.core.layout.layout import Layout as CoreLayout
-    from pyedb.grpc.database.primitive.primitive import Primitive
-    from pyedb.grpc.database.primitive.rectangle import Rectangle
-    from pyedb.grpc.database.primitive.circle import Circle
-    from pyedb.grpc.database.primitive.path import Path
-    from pyedb.grpc.database.primitive.bondwire import Bondwire
+
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
+    from pyedb.grpc.database.primitive.bondwire import Bondwire
+    from pyedb.grpc.database.primitive.circle import Circle
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+    from pyedb.grpc.database.primitive.path import Path
     from pyedb.grpc.database.primitive.polygon import Polygon
+    from pyedb.grpc.database.primitive.primitive import Primitive
+    from pyedb.grpc.database.primitive.rectangle import Rectangle
 
 from typing import List, Union
+
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
+
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
 from pyedb.grpc.database.net.differential_pair import DifferentialPair
@@ -54,7 +57,6 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import PadstackInst
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 from pyedb.misc.decorators import deprecate_argument_name, deprecated
-
 
 _PRIMITIVE_TYPE_MAP = {
     "Path": ("pyedb.grpc.database.primitive.path", "Path"),
@@ -83,7 +85,9 @@ def _resolve_primitive_type_name(value: Any) -> str | None:
             if attr_value is not None:
                 candidates.extend([getattr(attr_value, "name", None), str(attr_value)])
 
-    normalized_candidates = ["".join(ch for ch in str(candidate) if ch.isalnum()).lower() for candidate in candidates if candidate]
+    normalized_candidates = [
+        "".join(ch for ch in str(candidate) if ch.isalnum()).lower() for candidate in candidates if candidate
+    ]
 
     for primitive_type in _PRIMITIVE_TYPE_MAP:
         primitive_key = primitive_type.lower()
@@ -211,7 +215,7 @@ class PrimitivesQuery:
         prim_type: str | list = None,
         is_void: bool | None = None,
     ) -> list[Primitive]:
-        """ Filter primitives by one or more attributes.
+        """Filter primitives by one or more attributes.
 
         Parameters
         ----------
@@ -275,7 +279,6 @@ class PrimitivesQuery:
                 zone_primitives.append(wrapped_primitive)
         return zone_primitives
 
-
     @property
     def bondwires(self) -> list[Bondwire]:
         """Bondwires.
@@ -304,7 +307,6 @@ class PrimitivesQuery:
                 return padstack_instance
 
         raise RuntimeError(f"Object Id {value} not found")
-
 
     @deprecate_argument_name({"layer_name": "layer"})
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):

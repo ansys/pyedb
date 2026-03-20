@@ -22,16 +22,12 @@
 
 from typing import TYPE_CHECKING, Union
 
-from pyedb.misc.decorators import deprecated_class
+from pyedb.misc.decorators import deprecated
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    FreqSweepType,
-    FrequencyData as CoreFrequencyData,
-    SimulationSetupType as CoreSimulationSetupType,
-)
+from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as CoreSimulationSetupType
 
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
@@ -45,11 +41,9 @@ _mapping_simulation_types = {
 }
 
 
-@deprecated_class("The 'SimulationSetupDeprecated' class is deprecated. Please use 'SimulationSetup' instead.")
 class SimulationSetupDeprecated:
     @property
     def type(self):
-        self._pedb.logger.warning("The 'type' property is deprecated. Please use 'setup_type' instead.")
         return self.setup_type
 
     @property
@@ -247,6 +241,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         self.core.sweep_data = self.core.sweep_data + [sweep.core]
         return self.sweep_data[-1]
 
+    @deprecated("use add_sweep method instead")
     def add_frequency_sweep(self, frequency_sweep: list[str]):
         """This method is deprecated. Please use 'add_sweep' with appropriate parameters instead."""
         # converting frequency sweep to frequency set

@@ -33,7 +33,7 @@ LINUX_WARNING = (
     "for example Ubuntu 22.04, we are going to stop depending on `dotnetcore2`."
     "Instead of using this package which embeds .NET Core 3, users will be required to "
     "install .NET themselves. For more information, see "
-    "https://edb.docs.pyansys.com/version/stable/build_breaking_change.html"
+    "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
 )
 
 existing_showwarning = warnings.showwarning

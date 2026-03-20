@@ -36,6 +36,12 @@ from pyedb.grpc.database.layers.layer import Layer
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
+mapping = {
+    "flat": CorePathEndCapType.FLAT,
+    "round": CorePathEndCapType.ROUND,
+    "extended": CorePathEndCapType.EXTENDED,
+}
+
 
 class Path(Primitive):
     def __init__(self, pedb, core=None):
@@ -266,8 +272,9 @@ class Path(Primitive):
 
         Examples
         --------
-        >>> edbapp = pyedb.dotnet.Edb("myproject.aedb")
-        >>> sig = appedb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
+        >>> from pyedb import Edb
+        >>> edb = Edb("myproject.aedb")
+        >>> sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "TOP", "1mm", "SIG", "Flat", "Flat")
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """
@@ -453,12 +460,7 @@ class Path(Primitive):
     @end_cap1.setter
     def end_cap1(self, end_cap_style):
         if isinstance(end_cap_style, str):
-            mapping = {
-                "flat": CorePathEndCapType.FLAT,
-                "round": CorePathEndCapType.ROUND,
-                "extended": CorePathEndCapType.EXTENDED,
-            }
-            self.core.set_end_cap_style(mapping[end_cap_style], self.core.get_end_cap_style()[1].value)
+            self.core.set_end_cap_style(mapping[end_cap_style], self.core.get_end_cap_style()[1])
 
     @property
     def end_cap2(self) -> str:
@@ -475,12 +477,7 @@ class Path(Primitive):
     @end_cap2.setter
     def end_cap2(self, end_cap_style):
         if isinstance(end_cap_style, str):
-            mapping = {
-                "flat": CorePathEndCapType.FLAT,
-                "round": CorePathEndCapType.ROUND,
-                "extended": CorePathEndCapType.EXTENDED,
-            }
-            self.core.set_end_cap_style(self.core.get_end_cap_style()[0].value, mapping[end_cap_style])
+            self.core.set_end_cap_style(self.core.get_end_cap_style()[0], mapping[end_cap_style])
 
     def move(self, vector):
         """Move the path by a given vector.

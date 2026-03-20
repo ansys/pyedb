@@ -30,7 +30,6 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
-import warnings
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
@@ -41,6 +40,7 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class Terminal(ConnObj):
@@ -371,7 +371,7 @@ class Terminal(ConnObj):
         self.core.impedance = self._pedb._value_setter(value)
 
     @property
-    def reference_object(self) -> any:
+    def reference_object(self) -> Primitive | PadstackInstance | bool:
         """This returns the object assigned as reference. It can be a primitive or a padstack instance.
 
 
@@ -436,7 +436,7 @@ class Terminal(ConnObj):
         pins = self._pedb.components.get_pin_from_component(self.core.component.name)
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
-    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
+    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance | bool | None:
         """Return a list of pins and serves terminals connected to pingroups.
 
         Parameters
@@ -469,7 +469,7 @@ class Terminal(ConnObj):
                     return False
         return False
 
-    def get_edge_terminal_reference_primitive(self) -> any:
+    def get_edge_terminal_reference_primitive(self) -> Primitive | None:
         """Check and return a primitive instance that serves Edge ports,
         wave-ports and coupled-edge ports that are directly connected to primitives.
 
@@ -477,7 +477,7 @@ class Terminal(ConnObj):
         -------
         :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
         """
-
+        # TODO check this method most likely does not work : issue #1903
         ref_layer = self.reference_layer
         edges = self.core.edges
         _, _, point_data = edges[0].get_parameters()
@@ -485,10 +485,10 @@ class Terminal(ConnObj):
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
                 if primitive.polygon_data.point_in_polygon(point_data):
-                    return (primitive, self._pedb)
+                    return Primitive(primitive, self._pedb)
         return None  # pragma: no cover
 
-    def get_point_terminal_reference_primitive(self) -> Primitive:
+    def get_point_terminal_reference_primitive(self) -> Primitive | PadstackInstance | bool:
         """
         Find and return the primitive reference for the point terminal or the padstack instance.
 
@@ -656,6 +656,7 @@ class Terminal(ConnObj):
             self._pedb.logger.warning("Terminal does not support circuit port property.")
 
     @property
+    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self) -> bool:
         """Check if the terminal is a circuit terminal.
 
@@ -667,10 +668,10 @@ class Terminal(ConnObj):
         bool
             True if the terminal is a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         return self.is_circuit_port
 
     @is_circuit.setter
+    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self, value: bool):
         """Set whether the terminal is a circuit terminal.
 
@@ -682,5 +683,4 @@ class Terminal(ConnObj):
         value : bool
             True to set the terminal as a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         self.is_circuit_port = value

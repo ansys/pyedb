@@ -24,7 +24,7 @@
 This module contains these classes: `EdbLayout` and `Shape`.
 """
 
-from typing import List, TypeVar, Union
+from typing import TypeVar
 
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 from pyedb.dotnet.database.cell.primitive.bondwire import Bondwire
@@ -254,9 +254,7 @@ class PrimitivesQuery:
         list :
             List of bondwires.
         """
-        return [
-            primitive for primitive in self.filter_primitives(prim_type="bondwire") if isinstance(primitive, Bondwire)
-        ]
+        return self._primitives_by_class(Bondwire)
 
     def find_object_by_id(self, value: int) -> EDBPadstackInstance | Primitive | None:
         """Find a layout object by Database ID.
@@ -652,28 +650,28 @@ class Layout(ObjBase, PrimitivesQuery):
         return [EDBComponent(self._pedb, i) for i in self._edb_object.Groups if i.ToString().endswith(".Component")]
 
     @property
-    def pin_groups(self) -> List[PinGroup]:
+    def pin_groups(self) -> list[PinGroup]:
         return [PinGroup(pedb=self._pedb, edb_pin_group=i, name=i.GetName()) for i in self._edb_object.PinGroups]
 
     @property
-    def net_classes(self) -> List[EDBNetClassData]:
+    def net_classes(self) -> list[EDBNetClassData]:
         return [EDBNetClassData(self._pedb, i) for i in list(self._edb_object.NetClasses)]
 
     @property
-    def extended_nets(self) -> List[EDBExtendedNetData]:
+    def extended_nets(self) -> list[EDBExtendedNetData]:
         return [EDBExtendedNetData(self._pedb, i) for i in self._edb_object.ExtendedNets]
 
     @property
-    def differential_pairs(self) -> List[EDBDifferentialPairData]:
+    def differential_pairs(self) -> list[EDBDifferentialPairData]:
         return [EDBDifferentialPairData(self._pedb, i) for i in list(self._edb_object.DifferentialPairs)]
 
     @property
-    def padstack_instances(self) -> List[EDBPadstackInstance]:
+    def padstack_instances(self) -> list[EDBPadstackInstance]:
         """Get all padstack instances in a list."""
         return [EDBPadstackInstance(i, self._pedb) for i in self._edb_object.PadstackInstances]
 
     @property
-    def voltage_regulators(self) -> List[VoltageRegulator]:
+    def voltage_regulators(self) -> list[VoltageRegulator]:
         return [VoltageRegulator(self._pedb, i) for i in list(self._edb_object.VoltageRegulators)]
 
     @property
@@ -719,12 +717,12 @@ class Layout(ObjBase, PrimitivesQuery):
 
     def find_padstack_instances(
         self,
-        aedt_name: Union[str, List[str]] = None,
-        component_name: Union[str, List[str]] = None,
-        component_pin_name: Union[str, List[str]] = None,
-        net_name: Union[str, List[str]] = None,
-        instance_id: Union[int, List[int]] = None,
-    ) -> List[EDBPadstackInstance]:
+        aedt_name: str | list[str] = None,
+        component_name: str | list[str] = None,
+        component_pin_name: str | list[str] = None,
+        net_name: str | list[str] = None,
+        instance_id: int | list[int] = None,
+    ) -> list[EDBPadstackInstance]:
         """
         Finds padstack instances matching the specified criteria.
 

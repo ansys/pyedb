@@ -24,7 +24,6 @@ import logging
 from pathlib import Path
 import re
 from typing import List, Optional, Union
-import warnings
 
 from ansys.edb.core.definition.component_model import (
     NPortComponentModel as CoreNPortComponentModel,
@@ -58,6 +57,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 component_type_mapping = {
     CoreComponentType.OTHER: "other",
@@ -286,18 +286,18 @@ class Component:
             self._pedb.logger.error("Invalid input. Set component definition failed.")
 
     @property
+    @deprecated_property("use component_definition property instead")
     def component_def(self):
         """Component definition.
 
         deprecated: use `component_definition` instead.
 
         """
-        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
         return self.component_definition
 
     @component_def.setter
+    @deprecated_property("use component_definition property instead")
     def component_def(self, value):
-        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
         self.component_definition = value
 
     @property
@@ -1096,6 +1096,7 @@ class Component:
         self.component_type = new_type
 
     @property
+    @deprecated_property("use num_pins property instead")
     def numpins(self) -> int:
         """Number of Pins of Component.
 
@@ -1107,7 +1108,6 @@ class Component:
             Component pins number.
         """
 
-        warnings.warn("Use num_pins instead.", DeprecationWarning)
         try:
             return self.core.num_pins
         except Exception as e:

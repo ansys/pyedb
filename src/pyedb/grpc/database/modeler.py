@@ -41,8 +41,7 @@ from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-from pyedb.misc.decorators import deprecated_property, deprecated
-from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -133,7 +132,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.primitives_by_layer property instead.")
     def primitives_by_layer(self):
-        """ Primitives organized by layer names.
+        """Primitives organized by layer names.
 
         .. deprecated:: 0.70.0
         use layout.primitives_by_layer property instead.
