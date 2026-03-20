@@ -93,9 +93,10 @@
       </Material>
     </Materials>
     <Layers LengthUnit="mil">
+      <Layer Color="#44614c" Material="ODB_DIEL_top_soldermask" Name="top_soldermask" Thickness="0.984251968503937" Type="soldermask"/>
       <Layer Color="#5c4300" FillMaterial="ODB_DIEL_top" Material="copper" Name="top" Thickness="1.377992125984252" Type="conductor">
         <HuraySurfaceRoughness HallHuraySurfaceRatio="2.9" NoduleRadius="0.5um"/>
-        <GroissBottomSurfaceRoughness Roughness="1um"/>
+        <HurayBottomSurfaceRoughness HallHuraySurfaceRatio="2.9" NoduleRadius="0.5um"/>
         <HuraySideSurfaceRoughness HallHuraySurfaceRatio="2.9" NoduleRadius="0.5um"/>
       </Layer>
       <Layer Color="#1a291f" Material="ODB_DIEL_de1" Name="de1" Thickness="3.937007874015748" Type="dielectric"/>
