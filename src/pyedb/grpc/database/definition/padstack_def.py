@@ -773,8 +773,7 @@ class PadstackDef:
             if via.net_name in nets:
                 pos = via.position
                 started = False
-                pad_by_layer = self.pad_by_layer[self.start_layer]
-                if hasattr(pad_by_layer, "parameters_values") and len(pad_by_layer.parameters_values) == 0:
+                if self.pad_by_layer[self.start_layer].polygon_data is not None:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.start_layer].polygon_data,
                         layer_name=self.start_layer,
@@ -789,7 +788,7 @@ class PadstackDef:
                         self._pedb._value_setter(pos[1]),
                         self._pedb._value_setter(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
-                if len(self.pad_by_layer[self.stop_layer].parameters_values) == 0:
+                if self.pad_by_layer[self.stop_layer].polygon_data is not None:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.stop_layer].polygon_data,
                         layer_name=self.stop_layer,
