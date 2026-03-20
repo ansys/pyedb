@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
-
 from ansys.edb.core.simulation_setup.simulation_settings import ViaStyle as CoreViaStyle
+
+from pyedb.misc.decorators import deprecated_property
 
 
 class HFSSAdvancedSettings:
@@ -33,6 +33,7 @@ class HFSSAdvancedSettings:
         self._pedb = parent._pedb
 
     @property
+    @deprecated_property("use defeature_absolute_length property instead.")
     def defeature_abs_length(self) -> str:
         """Absolute length used as tolerance when defeaturing polygons.
 
@@ -40,18 +41,11 @@ class HFSSAdvancedSettings:
             Use :attr:`defeature_absolute_length` instead.
 
         """
-        warnings.warn(
-            "The 'defeature_abs_length' property is deprecated. Please use 'defeature_absolute_length' instead.",
-            DeprecationWarning,
-        )
         return self.defeature_absolute_length
 
     @defeature_abs_length.setter
+    @deprecated_property("use defeature_absolute_length property instead.")
     def defeature_abs_length(self, value):
-        warnings.warn(
-            "The 'defeature_abs_length' property is deprecated. Please use 'defeature_absolute_length' instead.",
-            DeprecationWarning,
-        )
         self.defeature_absolute_length = value
 
     @property
@@ -150,6 +144,7 @@ class HFSSAdvancedSettings:
             return "ic"
 
     @property
+    @deprecated_property("use num_via_density property instead.")
     def via_density(self) -> float:
         """Density of vias.
 
@@ -161,10 +156,6 @@ class HFSSAdvancedSettings:
 
     @via_density.setter
     def via_density(self, value: float):
-        warnings.warn(
-            "The 'via_density' property is deprecated. Please use 'num_via_density' instead.",
-            DeprecationWarning,
-        )
         self.num_via_density = value
 
     @property
@@ -184,6 +175,7 @@ class HFSSAdvancedSettings:
         self.core.num_via_density = value
 
     @property
+    @deprecated_property("use num_via_sides property instead.")
     def via_num_sides(self) -> int:
         """Number of sides a via is considered to have.
 
@@ -194,11 +186,8 @@ class HFSSAdvancedSettings:
         return self.num_via_sides
 
     @via_num_sides.setter
+    @deprecated_property("use num_via_sides property instead.")
     def via_num_sides(self, value: int):
-        warnings.warn(
-            "The 'via_num_sides' property is deprecated. Please use 'num_via_sides' instead.",
-            DeprecationWarning,
-        )
         self.num_via_sides = value
 
     @property
@@ -282,6 +271,7 @@ class HFSSAdvancedSettings:
         self.core.use_defeature = value
 
     @property
+    @deprecated_property("use use_defeature_absolute_length property instead.")
     def use_defeature_abs_length(self) -> bool:
         """Flag indicating if absolute length defeaturing is used.
 
@@ -289,20 +279,11 @@ class HFSSAdvancedSettings:
             Use :attr:`use_defeature_absolute_length` instead.
 
         """
-        warnings.warn(
-            "The 'use_defeature_abs_length' property is deprecated. "
-            "Please use 'use_defeature_absolute_length' instead.",
-            DeprecationWarning,
-        )
         return self.use_defeature_absolute_length
 
     @use_defeature_abs_length.setter
+    @deprecated_property("use use_defeature_absolute_length property instead.")
     def use_defeature_abs_length(self, value: bool):
-        warnings.warn(
-            "The 'use_defeature_abs_length' property is deprecated. "
-            "Please use 'use_defeature_absolute_length' instead.",
-            DeprecationWarning,
-        )
         self.use_defeature_absolute_length = value
 
     @property
@@ -338,6 +319,7 @@ class HFSSAdvancedSettings:
         self.core.via_material = value
 
     @property
+    @deprecated_property("use via_model_type property instead.")
     def via_style(self) -> str:
         """Via style.
 
@@ -348,11 +330,8 @@ class HFSSAdvancedSettings:
         return self.via_model_type
 
     @via_style.setter
+    @deprecated_property("use via_model_type property instead.")
     def via_style(self, value):
-        warnings.warn(
-            "The 'via_style' property is deprecated. Please use 'via_model_type' instead.",
-            DeprecationWarning,
-        )
         self.via_model_type = value
 
     @property

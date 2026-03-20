@@ -20,7 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
+from pyedb.misc.decorators import deprecated_property
 
 
 class HFSSAdvancedMeshingSettings:
@@ -91,22 +91,18 @@ class HFSSAdvancedMeshingSettings:
         self.core.layer_snap_tol = str(value)
 
     @property
+    @deprecated_property("use max_num_arc_points property instead.")
     def max_arc_points(self) -> int:
         """Get or set the maximum number of arc points.
 
         .. deprecated:: 0.77.3
             Use :attr:`max_num_arc_points` instead.
         """
-        warnings.warn(
-            "The 'max_arc_points' property is deprecated and will be removed in future releases.", DeprecationWarning
-        )
         return self.max_num_arc_points
 
     @max_arc_points.setter
+    @deprecated_property("use max_num_arc_points property instead.")
     def max_arc_points(self, value: int):
-        warnings.warn(
-            "The 'max_arc_points' property is deprecated and will be removed in future releases.", DeprecationWarning
-        )
         self.max_num_arc_points = value
 
     @property

@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
-
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import AdaptType as CoreAdaptType
+
+from pyedb.misc.decorators import deprecated_property
 
 
 class BroadbandAdaptiveSolution:
@@ -531,6 +531,7 @@ class HFSSGeneralSettings:
         self._pedb = parent._pedb
 
     @property
+    @deprecated_property("use adaptive_solution_type property instead.")
     def adapt_type(self) -> str:
         """Adaptation type.
 
@@ -540,11 +541,6 @@ class HFSSGeneralSettings:
             Use :attr:`adaptive_solution_type` instead.
 
         """
-        warnings.warn(
-            "The 'adapt_type' property is deprecated and will be removed in future versions. "
-            "Use 'adaptive_solution_type' instead.",
-            DeprecationWarning,
-        )
         # The underlying core.adaptive_solution_type may be an enum (with .name)
         # or already a string. Handle both robustly.
         val = self.core.adaptive_solution_type
@@ -646,6 +642,7 @@ class HFSSGeneralSettings:
         self.core.save_fields = value
 
     @property
+    @deprecated_property("use save_rad_fields_only property instead.")
     def save_rad_field_only(self) -> bool:
         """Indicates whether to save radiation field only.
 
@@ -654,20 +651,11 @@ class HFSSGeneralSettings:
             Use :attr:`save_rad_fields_only` instead.
 
         """
-        warnings.warn(
-            "The 'save_rad_field_only' property is deprecated and will be removed in future versions. "
-            "Use 'save_rad_fields_only' instead.",
-            DeprecationWarning,
-        )
         return self.save_rad_fields_only
 
     @save_rad_field_only.setter
+    @deprecated_property("use save_rad_fields_only property instead.")
     def save_rad_field_only(self, value: bool):
-        warnings.warn(
-            "The 'save_rad_field_only' property is deprecated and will be removed in future versions. "
-            "Use 'save_rad_fields_only' instead.",
-            DeprecationWarning,
-        )
         self.save_rad_fields_only = value
 
     @property
@@ -723,6 +711,7 @@ class HFSSGeneralSettings:
         self.core.use_parallel_refinement = value
 
     @property
+    @deprecated_property("use settings.options.max_refinement_per_pass instead.")
     def max_refine_per_pass(self) -> float:
         """Maximum refinement per pass.
 
@@ -731,11 +720,6 @@ class HFSSGeneralSettings:
         use settings.options.max_refinement_per_pass instead.
 
         """
-        warnings.warn(
-            "Use of 'max_refine_per_pass' is deprecated and will be removed in future versions."
-            "Use 'settings.options.max_refinement_per_pass' instead.",
-            DeprecationWarning,
-        )
         return self._parent.options.max_refinement_per_pass
 
     @max_refine_per_pass.setter
@@ -743,6 +727,7 @@ class HFSSGeneralSettings:
         self._parent.options.max_refinement_per_pass = value
 
     @property
+    @deprecated_property("use settings.options.min_passes instead.")
     def min_passes(self) -> int:
         """Minimum number of passes.
 
@@ -751,11 +736,6 @@ class HFSSGeneralSettings:
         use settings.options.min_passes instead.
 
         """
-        warnings.warn(
-            "Use of 'min_passes' is deprecated and will be removed in future versions."
-            "Use 'settings.options.min_passes' instead.",
-            DeprecationWarning,
-        )
         return self._parent.options.min_passes
 
     @min_passes.setter
@@ -763,6 +743,7 @@ class HFSSGeneralSettings:
         self._parent.options.min_passes = value
 
     @property
+    @deprecated_property("use settings.options.use_max_refinement property instead.")
     def use_max_refinement(self) -> bool:
         """Indicates whether to use maximum refinement.
 
@@ -771,11 +752,6 @@ class HFSSGeneralSettings:
         use settings.options.use_max_refinement instead.
 
         """
-        warnings.warn(
-            "Use of 'use_max_refinement' is deprecated and will be removed in future versions."
-            "Use 'settings.options.use_max_refinement' instead.",
-            DeprecationWarning,
-        )
         return self._parent.options.use_max_refinement
 
     @use_max_refinement.setter

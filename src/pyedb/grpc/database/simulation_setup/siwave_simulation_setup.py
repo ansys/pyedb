@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from typing import TYPE_CHECKING
-import warnings
 
 from ansys.edb.core.simulation_setup.siwave_simulation_setup import SIWaveSimulationSetup as CoreSIWaveSimulationSetup
 
@@ -30,6 +29,7 @@ from pyedb.grpc.database.simulation_setup.siwave_advanced_settings import SIWave
 from pyedb.grpc.database.simulation_setup.siwave_dc_advanced import SIWaveDCAdvancedSettings
 from pyedb.grpc.database.simulation_setup.siwave_dc_settings import SIWaveDCSettings
 from pyedb.grpc.database.simulation_setup.siwave_simulation_settings import SIWaveSimulationSettings
+from pyedb.misc.decorators import deprecated_property
 
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb
@@ -74,6 +74,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         return self.settings.advanced
 
     @property
+    @deprecated_property("use settings.dc property instead.")
     def dc_settings(self) -> SIWaveDCSettings:
         """Setup dc settings.
 
@@ -81,10 +82,10 @@ class SiwaveSimulationSetup(SimulationSetup):
         Use :attr:`dc_advanced_settings is deprecated. Use :attr:`settings.dc instead.
 
         """
-        warnings.warn("`dc_settings` is deprecated. Use `settings.dc` instead.", DeprecationWarning)
         return self.settings.dc
 
     @property
+    @deprecated_property("use settings.dc_advanced property instead.")
     def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
         """Setup dc settings.
 
@@ -92,10 +93,10 @@ class SiwaveSimulationSetup(SimulationSetup):
         Use :attr:`dc_advanced_settings is deprecated. Use :attr:`settings.dc_advanced instead.
 
         """
-        warnings.warn("`dc_advanced_settings` is deprecated. Use `settings.dc_advanced` instead.", DeprecationWarning)
         return self.settings.dc_advanced
 
     @property
+    @deprecated_property("use settings.use_si_settings property instead.")
     def use_si_settings(self) -> bool:
         """Whether to use SI settings.
 
@@ -103,9 +104,6 @@ class SiwaveSimulationSetup(SimulationSetup):
         Use :attr:`settings.use_si_settings is deprecated. Use :attr:`settings.general.use_si_settings` instead.
 
         """
-        warnings.warn(
-            "`use_si_settings` is deprecated. Use `settings.general.use_si_settings` instead.", DeprecationWarning
-        )
         return self.settings.general.use_si_settings
 
     @use_si_settings.setter
@@ -113,15 +111,13 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.settings.general.use_si_settings = value
 
     @property
+    @deprecated_property("use settings.general.si_slider_position property instead.")
     def si_slider_position(self) -> int:
         """SI slider position.
 
         .. deprecated:: 0.70.0
         Use :attr:`settings.si_slider_position is deprecated. Use :attr:`settings.general.si_slider_position` instead.
         """
-        warnings.warn(
-            "`si_slider_position` is deprecated. Use `settings.general.si_slider_position` instead.",
-        )
         return self.settings.general.si_slider_position
 
     @si_slider_position.setter
@@ -129,15 +125,13 @@ class SiwaveSimulationSetup(SimulationSetup):
         self.settings.general.si_slider_position = value
 
     @property
+    @deprecated_property("use settings.general.pi_slider_pos property instead.")
     def pi_slider_position(self) -> int:
         """I slider position.
 
         .. deprecated:: 0.70.0
         Use :attr:`settings.pi_slider_position is deprecated. Use :attr:`settings.general.pi_slider_position` instead.
         """
-        warnings.warn(
-            "`pi_slider_position` is deprecated. Use `settings.general.pi_slider_position` instead.", DeprecationWarning
-        )
         return self.settings.general.pi_slider_pos
 
     @pi_slider_position.setter

@@ -29,7 +29,6 @@ import os
 from pathlib import Path
 import re
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
-import warnings
 
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import (
@@ -54,7 +53,7 @@ from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.hierarchy.structure_3d import Structure3D
 from pyedb.grpc.database.padstacks import Padstacks
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecate_argument_name, deprecated
 
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb as _Edb  # pragma: no cover
@@ -2180,6 +2179,7 @@ class Components(object):
         component.enabled = False
         return self._pedb.excitation_manager.add_rlc_boundary(component.refdes, False)
 
+    @deprecated("use excitation_manager.add_rlc_boundary instead")
     def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
         """Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
@@ -2200,9 +2200,4 @@ class Components(object):
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        warnings.warn(
-            "`add_rlc_boundary` is deprecated and is now located here "
-            "`pyedb.grpc.core.excitations.add_rlc_boundary` instead.",
-            DeprecationWarning,
-        )
         return self._pedb.excitation_manager.add_rlc_boundary(self, component=component, circuit_type=circuit_type)

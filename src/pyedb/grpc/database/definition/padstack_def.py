@@ -43,6 +43,7 @@ from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure,
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class PadProperties:
@@ -370,6 +371,7 @@ class PadstackDef:
         return self.layers[0]
 
     @property
+    @deprecated_property("use start_layer property instead")
     def via_start_layer(self):
         """Via starting layer.
 
@@ -382,7 +384,6 @@ class PadstackDef:
         str
             Name of the via starting layer.
         """
-        warnings.warn("via_start_layer is deprecated. Use start_layer instead.", DeprecationWarning)
         return self.start_layer
 
     @property
@@ -397,6 +398,7 @@ class PadstackDef:
         return self.layers[-1]
 
     @property
+    @deprecated_property("use stop_layer property instead")
     def via_stop_layer(self):
         """Via stop layer.
 
@@ -409,7 +411,6 @@ class PadstackDef:
         str
             Name of the via stop layer.
         """
-        warnings.warn("via_stop_layer is deprecated. Use stop_layer instead.", DeprecationWarning)
         return self.stop_layer
 
     @property

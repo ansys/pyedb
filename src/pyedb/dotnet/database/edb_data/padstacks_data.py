@@ -47,6 +47,7 @@ from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class EDBPadProperties(object):
@@ -1475,7 +1476,8 @@ class EDBPadstackInstance(Connectable):
     def solderball_layer(self, solderball_layer):
         self.core.SetSolderBallLayer(solderball_layer)
 
-    def get_terminal(self, name=None, create_new_terminal=False) -> "PadstackInstanceTerminal | None":
+    @deprecated("use terminal property instead.")
+    def get_terminal(self, name=None, create_new_terminal=False):
         """Get PadstackInstanceTerminal object.
 
         Parameters
@@ -1489,7 +1491,6 @@ class EDBPadstackInstance(Connectable):
         -------
         :class:`database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal`
         """
-        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
@@ -1544,9 +1545,9 @@ class EDBPadstackInstance(Connectable):
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
 
+    @deprecated("use create_terminal method instead.")
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
         return self.create_terminal(name)
 
     def create_terminal(self, name=None) -> "PadstackInstanceTerminal":
@@ -1724,7 +1725,6 @@ class EDBPadstackInstance(Connectable):
     @property
     def pin(self) -> "EDBPadstackInstance":
         """EDB padstack object."""
-        warnings.warn("`pin` is deprecated.", DeprecationWarning)
         return self._edb_padstackinstance
 
     @property
@@ -2150,15 +2150,15 @@ class EDBPadstackInstance(Connectable):
         return volume
 
     @property
-    def pin_number(self) -> str:
+    @deprecated_property("use name property instead.")
+    def pin_number(self):
         """Get pin number."""
-        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
         return self.name
 
     @property
-    def component_pin(self) -> str:
+    @deprecated_property("use name property instead.")
+    def component_pin(self):
         """Get component pin."""
-        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
         return self.name
 
     @property

@@ -71,8 +71,8 @@ class Modeler:
         self._pedb = p_edb
 
     @property
-    @deprecated_property("use layout.primitives property instead")
-    def primitives(self) -> list[Primitive]:
+    @deprecated_property("use layout.primitives property instead.")
+    def primitives(self):
         """Primitives.
 
         .. deprecated:: 0.70.0

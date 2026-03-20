@@ -48,6 +48,7 @@ from pydantic import BaseModel, confloat
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -944,6 +945,7 @@ class Materials(object):
         new_material.update(material_dict)
         return new_material
 
+    @deprecated("use delete method instead")
     def delete_material(self, material_name):
         """
 
@@ -955,10 +957,6 @@ class Materials(object):
             Name of the material to delete.
 
         """
-        warnings.warn(
-            "`delete_material` is deprecated use `delete` instead.",
-            DeprecationWarning,
-        )
         self.delete(material_name)
 
     def delete(self, material_name) -> bool:
