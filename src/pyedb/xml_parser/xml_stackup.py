@@ -81,7 +81,7 @@ class XmlHuraySurfaceRoughness(BaseModel):
     model_config = dict(populate_by_name=True)
 
 
-class XmlGroissBottomSurfaceRoughness(BaseModel):
+class XmlGroissSurfaceRoughness(BaseModel):
     """Represents Groiss bottom roughness settings for a conductor surface."""
 
     roughness: str | None = Field(None, alias="@Roughness")
@@ -120,11 +120,14 @@ class XmlLayer(BaseModel):
     negative: bool | None = Field(None, alias="@Negative")
     thickness: float | str | None = Field(None, alias="@Thickness")
     type: str | None = Field(None, alias="@Type")
-    huray_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySurfaceRoughness")
-    groiss_bottom_surface_roughness: XmlGroissBottomSurfaceRoughness | None = Field(
-        None, alias="GroissBottomSurfaceRoughness"
-    )
-    huray_side_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySideSurfaceRoughness")
+
+    huray_surface_roughness: XmlHuraySurfaceRoughness| None = Field(None, alias="HuraySurfaceRoughness")
+    huray_bottom_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HurayBottomSurfaceRoughness")
+    huray_side_surface_roughness: XmlHuraySurfaceRoughness| None = Field(None, alias="HuraySideSurfaceRoughness")
+
+    groiss_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissSurfaceRoughness")
+    groiss_bottom_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissBottomSurfaceRoughness")
+    groiss_side_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissSideSurfaceRoughness")
 
     model_config = dict(populate_by_name=True)
 
