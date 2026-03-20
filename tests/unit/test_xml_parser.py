@@ -90,6 +90,13 @@ class TestClass:
         assert len(xml_parser.stackup.layers.layer) == 20
         assert xml_parser.stackup.layers.layer[0].name == "top_soldermask"
 
+        top_layer = next(layer for layer in xml_parser.stackup.layers.layer if layer.name == "top")
+        assert top_layer.huray_surface_roughness.hall_huray_surface_ratio == 2.9
+        assert top_layer.huray_surface_roughness.nodule_radius == "0.5um"
+        assert top_layer.groiss_bottom_surface_roughness.roughness == "1um"
+        assert top_layer.huray_side_surface_roughness.hall_huray_surface_ratio == 2.9
+        assert top_layer.huray_side_surface_roughness.nodule_radius == "0.5um"
+
     def test_load_from_cfg(self):
         from pyedb.configuration.cfg_data import CfgStackup
 

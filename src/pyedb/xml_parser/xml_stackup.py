@@ -72,6 +72,23 @@ class XmlMaterial(BaseModel):
     model_config = dict(populate_by_name=True)
 
 
+class XmlHuraySurfaceRoughness(BaseModel):
+    """Represents Huray roughness settings for a conductor surface."""
+
+    hall_huray_surface_ratio: float | None = Field(None, alias="@HallHuraySurfaceRatio")
+    nodule_radius: str | None = Field(None, alias="@NoduleRadius")
+
+    model_config = dict(populate_by_name=True)
+
+
+class XmlGroissBottomSurfaceRoughness(BaseModel):
+    """Represents Groiss bottom roughness settings for a conductor surface."""
+
+    roughness: str | None = Field(None, alias="@Roughness")
+
+    model_config = dict(populate_by_name=True)
+
+
 class XmlLayer(BaseModel):
     """Represents a layer in the XML stackup.
 
@@ -103,6 +120,11 @@ class XmlLayer(BaseModel):
     negative: bool | None = Field(None, alias="@Negative")
     thickness: float | str | None = Field(None, alias="@Thickness")
     type: str | None = Field(None, alias="@Type")
+    huray_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySurfaceRoughness")
+    groiss_bottom_surface_roughness: XmlGroissBottomSurfaceRoughness | None = Field(
+        None, alias="GroissBottomSurfaceRoughness"
+    )
+    huray_side_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySideSurfaceRoughness")
 
     model_config = dict(populate_by_name=True)
 

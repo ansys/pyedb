@@ -93,10 +93,13 @@
       </Material>
     </Materials>
     <Layers LengthUnit="mil">
-      <Layer Color="#44614c" Material="ODB_DIEL_top_soldermask" Name="top_soldermask" Thickness="0.984251968503937" Type="soldermask"/>
-      <Layer Color="#5c4300" FillMaterial="ODB_DIEL_top" Material="copper" Name="top" Thickness="1.377992125984252" Type="conductor"/>
+      <Layer Color="#5c4300" FillMaterial="ODB_DIEL_top" Material="copper" Name="top" Thickness="1.377992125984252" Type="conductor">
+        <HuraySurfaceRoughness HallHuraySurfaceRatio="2.9" NoduleRadius="0.5um"/>
+        <GroissBottomSurfaceRoughness Roughness="1um"/>
+        <HuraySideSurfaceRoughness HallHuraySurfaceRatio="2.9" NoduleRadius="0.5um"/>
+      </Layer>
       <Layer Color="#1a291f" Material="ODB_DIEL_de1" Name="de1" Thickness="3.937007874015748" Type="dielectric"/>
-      <Layer Color="#8db7ca" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner1_gnd1" Thickness="0.6692913385826771" Type="conductor"/>
+      <Layer Color="#8db7ca" EtchFactor="5" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner1_gnd1" Thickness="0.6692913385826771" Type="conductor"/>
       <Layer Color="#264a33" Material="ODB_DIEL_de2" Name="de2" Thickness="3.464566929133858" Type="dielectric"/>
       <Layer Color="#fd777a" FillMaterial="ODB_DIEL_top" Material="copper" Name="inner2_pwr1" Thickness="0.6692913385826771" Type="conductor"/>
       <Layer Color="#44614c" Material="ODB_DIEL_de1" Name="de3" Thickness="3.937007874015748" Type="dielectric"/>
