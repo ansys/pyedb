@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 """
-PyEDB Local Design Diff & Regression Tool  ·  v3.0
-====================================================
+PyEDB Local Design Diff & Regression Tool
+=========================================
 Compares two EDB designs (baseline vs. modified) and produces a rich
 diff / regression report covering:
 
@@ -164,11 +164,6 @@ logging.basicConfig(
 log = logging.getLogger("edb_diff")
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Enums & palette
-# ─────────────────────────────────────────────────────────────────────────────
-
-
 class ChangeType(str, Enum):
     ADDED = "Added"
     REMOVED = "Removed"
@@ -209,6 +204,7 @@ class EMCriticalReason(str, Enum):
     NEW_HIGH_SPEED_COMP = "High-speed component added/replaced"
 
 
+# color palette
 _P = {
     "header_bg": "1F3864",
     "header_fg": "FFFFFF",
@@ -239,11 +235,6 @@ def _thin_border() -> Border:
     return Border(left=s, right=s, top=s, bottom=s)
 
 
-# ─────────────────────────────────────────────────────────────────────────────
-# Config
-# ─────────────────────────────────────────────────────────────────────────────
-
-
 @dataclass
 class DiffConfig:
     edb_version: str = "2026.1"
@@ -265,7 +256,7 @@ class DiffConfig:
     critical_categories: list = field(default_factory=lambda: [Category.RULE.value])
     major_categories: list = field(default_factory=lambda: [Category.LAYER.value, Category.PADSTACK.value])
     max_workers: int = 2
-    # ── v3: EM criticality thresholds ────────────────────────────────────────
+    # ── EM criticality thresholds ────────────────────────────────────────
     em_layer_thickness_pct: float = 5.0  # % thickness change triggers EM flag
     em_trace_width_pct: float = 10.0  # % trace width change triggers EM flag
     em_via_drill_pct: float = 15.0  # % drill change triggers EM flag
@@ -278,10 +269,8 @@ class DiffConfig:
     em_power_net_patterns: list = field(default_factory=lambda: ["VDD", "VCC", "PWR", "GND", "VSS", "VBAT"])
     # High-speed component reference patterns
     em_hs_comp_patterns: list = field(default_factory=lambda: ["U", "IC", "MCU", "FPGA", "DDR", "PHY"])
-    # ── v3: Git ───────────────────────────────────────────────────────────────
     git_auto_commit: bool = False
     git_commit_message: str = "edb_diff: automated design checkpoint"
-    # ── v3: DB ────────────────────────────────────────────────────────────────
     db_path: str = ""
 
     @classmethod
@@ -316,7 +305,6 @@ class DiffEntry:
     detail: str = ""
     severity: str = Severity.MINOR.value
     impact_summary: str = ""
-    # v3: EM criticality
     em_sim_required: bool = False
     em_sim_reasons: list = field(default_factory=list)  # list[str]
 
@@ -446,7 +434,7 @@ class DiffReport:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# v3: Git Integration
+# Git Integration
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -500,7 +488,7 @@ def get_git_log(repo_path: str, max_entries: int = 20) -> list[dict]:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# v3: SQLite Database
+# SQLite Database
 # ─────────────────────────────────────────────────────────────────────────────
 
 _DB_SCHEMA = """
@@ -601,9 +589,9 @@ class DiffDatabase:
     def _migrate_schema(self):
         """Apply incremental migrations so existing databases gain new columns."""
         migrations = [
-            # v3.1 – minor_count added to baseline_validations
+            # minor_count added to baseline_validations
             "ALTER TABLE baseline_validations ADD COLUMN minor_count INTEGER",
-            # v3.1 – notes column on runs (was in schema but may be absent in old DBs)
+            # notes column on runs (was in schema but may be absent in old DBs)
             "ALTER TABLE runs ADD COLUMN notes TEXT",
         ]
         for sql in migrations:
@@ -799,7 +787,7 @@ class DiffDatabase:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# v3: EM Simulation Criticality Engine
+# EM Simulation Criticality Engine
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -821,7 +809,7 @@ def _pct_change(old: Any, new: Any) -> float:
 
 def evaluate_em_criticality(entry: DiffEntry, cfg: DiffConfig) -> DiffEntry:
     """
-    Analyse a DiffEntry and tag it with em_sim_required=True / em_sim_reasons
+    Analyze a DiffEntry and tag it with em_sim_required=True / em_sim_reasons
     if it satisfies any EM criticality rule.  Returns the (mutated) entry.
     """
     reasons: list[str] = []
@@ -920,7 +908,7 @@ def apply_em_criticality(diffs: list, cfg: DiffConfig) -> list:
 
 
 # ─────────────────────────────────────────────────────────────────────────────
-# v3: Baseline Reference management
+# Baseline Reference management
 # ─────────────────────────────────────────────────────────────────────────────
 
 
@@ -1156,7 +1144,7 @@ def extract_trace_info(edb: "Edb") -> dict:
     try:
         for name, net in edb.nets.nets.items():
             prims = _safe(lambda n=net: n.primitives, default=[]) or []
-            traces = [p for p in prims if _safe(lambda p=p: p.type, default="") == "Path"]
+            traces = [p for p in prims if _safe(lambda p=p: p.type, default="") == "path"]
             widths, lengths, lyrs = [], [], set()
             for t in traces:
                 w = _safe(lambda t=t: t.width)
@@ -1427,14 +1415,14 @@ def run_diff(
             report.errors.append(ExtractionError(phase=f"diff:{key}", message=str(exc), tb=traceback.format_exc()))
             log.warning(f"  {cat.value} diff failed: {exc}")
 
-    # v3: apply EM criticality tagging
+    # apply EM criticality tagging
     console.rule("Evaluating EM simulation criticality")
     report.em_critical_entries = apply_em_criticality(report.diffs, cfg)
     log.info(f"  EM re-simulation required: {len(report.em_critical_entries)} change(s)")
 
     report.elapsed_sec = round(time.perf_counter() - t0, 2)
 
-    # v3: persist to DB
+    # persist to DB
     if db is not None:
         try:
             report.run_id = db.save_run(report)
