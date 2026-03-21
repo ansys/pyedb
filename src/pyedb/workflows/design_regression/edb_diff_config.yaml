@@ -4,12 +4,12 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 # ── EDB / AEDT ────────────────────────────────────────────────────────────────
-edb_version: "2024.1"          # AEDT version string used to open .aedb files
+edb_version: "2026.1"          # AEDT version string used to open .aedb files
 
 # ── Numeric tolerances ────────────────────────────────────────────────────────
 # Changes below these values are suppressed (noise filter)
 thickness_tol_um:   0.5        # Layer thickness tolerance in micrometres
-position_tol_mm:    0.01       # Component centre position tolerance in mm
+position_tol_mm:    0.01       # Component center position tolerance in mm
 trace_width_tol_mm: 0.001      # Trace width tolerance in mm
 drill_tol_mm:       0.005      # Via drill diameter tolerance in mm
 
