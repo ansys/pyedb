@@ -1,0 +1,83 @@
+# ──────────────────────────────────────────────────────────────────────────────
+# PyEDB Diff & Regression Tool  ·  v3.0  ·  Configuration file
+# Pass this file with:  --config edb_diff_config.yaml
+# ──────────────────────────────────────────────────────────────────────────────
+
+# ── EDB / AEDT ────────────────────────────────────────────────────────────────
+edb_version: "2024.1"          # AEDT version string used to open .aedb files
+
+# ── Numeric tolerances ────────────────────────────────────────────────────────
+# Changes below these values are suppressed (noise filter)
+thickness_tol_um:   0.5        # Layer thickness tolerance in micrometres
+position_tol_mm:    0.01       # Component centre position tolerance in mm
+trace_width_tol_mm: 0.001      # Trace width tolerance in mm
+drill_tol_mm:       0.005      # Via drill diameter tolerance in mm
+
+# ── S-parameter simulation ────────────────────────────────────────────────────
+# Only used when --simulate flag is passed (requires AEDT licence)
+sim_start_freq: "1MHz"
+sim_stop_freq:  "10GHz"        # Overridden by --freq-ghz on the CLI
+sim_step_freq:  "500MHz"
+sim_solver:     "SiwaveSYZ"    # Options: SiwaveSYZ, SiwaveDC, Hfss3dLayout
+
+# ── Regression thresholds ─────────────────────────────────────────────────────
+# A check is FAIL when |delta| > threshold, WARN when |delta| > threshold × 0.8
+thresh_IL_dB:         2.0      # Insertion loss delta (dB)
+thresh_RL_dB:         3.0      # Return loss delta (dB)
+thresh_impedance_ohm: 5.0      # Characteristic impedance delta (Ω)
+
+# ── Severity auto-tagging ─────────────────────────────────────────────────────
+critical_categories:
+  - "Design Rule"
+major_categories:
+  - "Layer"
+  - "Padstack"
+
+# ── Parallel extraction ───────────────────────────────────────────────────────
+max_workers: 2                 # Number of threads for parallel EDB extraction
+
+# ── EM simulation criticality thresholds ──────────────────────────────────────
+# A change exceeding these percentages/values triggers an EM re-simulation flag
+em_layer_thickness_pct:  5.0   # % layer thickness change
+em_trace_width_pct:     10.0   # % trace width narrowing
+em_via_drill_pct:       15.0   # % via drill size change
+em_via_count_pct:       20.0   # % via count decrease on power/RF nets
+em_component_move_mm:    0.5   # mm component displacement
+
+# Net name patterns treated as RF / high-speed (regex-compatible, case-insensitive)
+em_rf_net_patterns:
+  - "RF"
+  - "ANT"
+  - "DIFF"
+  - "CLK"
+  - "DDR"
+  - "SERDES"
+  - "TX"
+  - "RX"
+  - "HS_"
+
+# Net name patterns treated as power / ground
+em_power_net_patterns:
+  - "VDD"
+  - "VCC"
+  - "PWR"
+  - "GND"
+  - "VSS"
+  - "VBAT"
+
+# Component reference prefixes treated as high-speed ICs
+em_hs_comp_patterns:
+  - "U"
+  - "IC"
+  - "MCU"
+  - "FPGA"
+  - "DDR"
+  - "PHY"
+
+# ── Git integration ───────────────────────────────────────────────────────────
+git_auto_commit:    false      # Set true or pass --git-commit to auto-commit dirty tree
+git_commit_message: "edb_diff: automated design checkpoint"
+
+# ── Database ──────────────────────────────────────────────────────────────────
+db_path: ""                    # Override with --db on the CLI, or set a default path here
+                               # e.g.  db_path: "/project/edb_history.db"
