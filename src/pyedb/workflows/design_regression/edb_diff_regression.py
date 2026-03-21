@@ -88,12 +88,14 @@ Usage:
 # ── stdlib ────────────────────────────────────────────────────────────────────
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
+import dataclasses
 from dataclasses import asdict, dataclass, field
 from datetime import datetime
 from enum import Enum
 import json
 import logging
 from pathlib import Path
+import re as _re
 import sqlite3
 import sys
 import time
@@ -289,7 +291,8 @@ class DiffConfig:
             return cls()
         with open(path) as f:
             data = yaml.safe_load(f)
-        return cls(**{k: v for k, v in (data or {}).items() if hasattr(cls, k)})
+        valid_keys = {f.name for f in dataclasses.fields(cls)}
+        return cls(**{k: v for k, v in (data or {}).items() if k in valid_keys})
 
     def to_yaml(self, path: str):
         if not HAS_YAML:
@@ -571,6 +574,7 @@ CREATE TABLE IF NOT EXISTS baseline_validations (
     total_changes       INTEGER,
     critical_count      INTEGER,
     major_count         INTEGER,
+    minor_count         INTEGER,
     em_required_count   INTEGER,
     regression_fails    INTEGER,
     passed              INTEGER,
@@ -592,6 +596,22 @@ class DiffDatabase:
     def _init_schema(self):
         self.conn.executescript(_DB_SCHEMA)
         self.conn.commit()
+        self._migrate_schema()
+
+    def _migrate_schema(self):
+        """Apply incremental migrations so existing databases gain new columns."""
+        migrations = [
+            # v3.1 – minor_count added to baseline_validations
+            "ALTER TABLE baseline_validations ADD COLUMN minor_count INTEGER",
+            # v3.1 – notes column on runs (was in schema but may be absent in old DBs)
+            "ALTER TABLE runs ADD COLUMN notes TEXT",
+        ]
+        for sql in migrations:
+            try:
+                self.conn.execute(sql)
+                self.conn.commit()
+            except sqlite3.OperationalError:
+                pass  # Column already exists – safe to ignore
 
     def save_run(self, report: DiffReport) -> int:
         """Insert a completed DiffReport and return the assigned run_id."""
@@ -672,14 +692,15 @@ class DiffDatabase:
             self.conn.execute(
                 """INSERT INTO baseline_validations
                    (run_id, baseline_name, total_changes, critical_count,
-                    major_count, em_required_count, regression_fails, passed, summary)
-                   VALUES (?,?,?,?,?,?,?,?,?)""",
+                    major_count, minor_count, em_required_count, regression_fails, passed, summary)
+                   VALUES (?,?,?,?,?,?,?,?,?,?)""",
                 (
                     run_id,
                     bv.baseline_name,
                     bv.total_changes,
                     bv.critical_count,
                     bv.major_count,
+                    bv.minor_count,
                     bv.em_required_count,
                     bv.regression_fails,
                     int(bv.passed),
@@ -746,10 +767,30 @@ class DiffDatabase:
         ).fetchall()
         return [dict(r) for r in rows]
 
+    _TREND_FIELDS = frozenset(
+        {
+            "total_diffs",
+            "critical_count",
+            "major_count",
+            "minor_count",
+            "em_required",
+            "reg_pass",
+            "reg_warn",
+            "reg_fail",
+            "elapsed_sec",
+        }
+    )
+
     def get_trend(self, field_name: str = "critical_count", last_n: int = 20) -> list[dict]:
-        """Return (generated_at, value) pairs for trend analysis."""
+        """Return (generated_at, value) pairs for trend analysis.
+
+        ``field_name`` is validated against an allowlist to prevent SQL injection.
+        """
+        if field_name not in self._TREND_FIELDS:
+            raise ValueError(f"Invalid trend field '{field_name}'. Must be one of: {sorted(self._TREND_FIELDS)}")
         rows = self.conn.execute(
-            f"SELECT generated_at, {field_name} FROM runs ORDER BY id DESC LIMIT ?", (last_n,)
+            f"SELECT generated_at, {field_name} FROM runs ORDER BY id DESC LIMIT ?",  # nosec – allowlisted
+            (last_n,),
         ).fetchall()
         return [dict(r) for r in reversed(rows)]
 
@@ -760,8 +801,6 @@ class DiffDatabase:
 # ─────────────────────────────────────────────────────────────────────────────
 # v3: EM Simulation Criticality Engine
 # ─────────────────────────────────────────────────────────────────────────────
-
-import re as _re
 
 
 def _net_matches(net_name: str, patterns: list[str]) -> bool:
@@ -902,8 +941,12 @@ def save_baseline_reference(
     if HAS_EDB:
         log.info(f"[Baseline] Extracting snapshot from {design_path} …")
         edb = _open_edb(design_path, cfg.edb_version)
-        snapshot = extract_all(edb)
-        edb.close()
+        try:
+            snapshot = extract_all(edb)
+        finally:
+            closer = getattr(edb, "close", None) or getattr(edb, "close_edb", None)
+            if closer:
+                closer()
     else:
         log.warning("[Baseline] pyedb not available – storing empty snapshot.")
         snapshot = {}
@@ -938,8 +981,12 @@ def validate_against_baselines(
     # Extract modified design once
     if HAS_EDB:
         edb_mod = _open_edb(modified_path, cfg.edb_version)
-        mod_data = extract_all(edb_mod)
-        edb_mod.close()
+        try:
+            mod_data = extract_all(edb_mod)
+        finally:
+            closer = getattr(edb_mod, "close", None) or getattr(edb_mod, "close_edb", None)
+            if closer:
+                closer()
     else:
         mod_data = {}
 
@@ -1026,11 +1073,11 @@ def _open_edb(path: str, version: str) -> "Edb":
 def extract_net_info(edb: "Edb") -> dict:
     info: dict = {}
     for name, net in edb.nets.nets.items():
-        prims = _safe(lambda: net.primitives, default=[], label="net.primitives")
+        prims = _safe(lambda n=net: n.primitives, default=[], label="net.primitives")
         info[name] = {
-            "component_count": _safe(lambda: len(net.components), default=0),
+            "component_count": _safe(lambda n=net: len(n.components), default=0),
             "primitive_count": len(prims) if prims else 0,
-            "is_power": _safe(lambda: net.is_power_ground, default=False),
+            "is_power": _safe(lambda n=net: n.is_power_ground, default=False),
         }
     return info
 
@@ -1038,17 +1085,17 @@ def extract_net_info(edb: "Edb") -> dict:
 def extract_component_info(edb: "Edb") -> dict:
     info: dict = {}
     for ref, comp in edb.components.components.items():
-        bb = _safe(lambda: comp.bounding_box, default=[0, 0, 0, 0])
+        bb = _safe(lambda c=comp: c.bounding_box, default=[0, 0, 0, 0])
         cx = round((bb[0] + bb[2]) / 2 * 1e3, 4) if bb else 0.0
         cy = round((bb[1] + bb[3]) / 2 * 1e3, 4) if bb else 0.0
         info[ref] = {
-            "part_name": _safe(lambda: comp.partname, default=""),
-            "placement_layer": _safe(lambda: comp.placement_layer, default=""),
+            "part_name": _safe(lambda c=comp: c.partname, default=""),
+            "placement_layer": _safe(lambda c=comp: c.placement_layer, default=""),
             "center_x_mm": cx,
             "center_y_mm": cy,
-            "comp_type": str(_safe(lambda: comp.type, default="")),
-            "value": _safe(lambda: comp.value, default=""),
-            "num_pins": _safe(lambda: len(comp.pins), default=0),
+            "comp_type": str(_safe(lambda c=comp: c.type, default="")),
+            "value": _safe(lambda c=comp: c.value, default=""),
+            "num_pins": _safe(lambda c=comp: len(c.pins), default=0),
         }
     return info
 
@@ -1056,25 +1103,25 @@ def extract_component_info(edb: "Edb") -> dict:
 def extract_stackup_info(edb: "Edb") -> dict:
     info: dict = {}
     for idx, (name, layer) in enumerate(edb.stackup.stackup_layers.items()):
-        mat = _safe(lambda: layer.material, default="")
+        mat = _safe(lambda ly=layer: ly.material, default="")
         mat_props: dict = {}
         if mat:
             try:
                 mo = edb.materials[mat]
                 mat_props = {
-                    "Er": round(_safe(lambda: mo.permittivity, default=0.0), 4),
-                    "loss_tangent": round(_safe(lambda: mo.loss_tangent, default=0.0), 6),
-                    "conductivity": round(_safe(lambda: mo.conductivity, default=0.0), 2),
+                    "Er": round(_safe(lambda m=mo: m.permittivity, default=0.0), 4),
+                    "loss_tangent": round(_safe(lambda m=mo: m.loss_tangent, default=0.0), 6),
+                    "conductivity": round(_safe(lambda m=mo: m.conductivity, default=0.0), 2),
                 }
             except Exception:
                 pass
         info[name] = {
             "stack_order": idx,
-            "layer_type": str(_safe(lambda: layer.type, default="")),
-            "thickness_um": round(_safe(lambda: layer.thickness, default=0.0) * 1e6, 3),
+            "layer_type": str(_safe(lambda ly=layer: ly.type, default="")),
+            "thickness_um": round(_safe(lambda ly=layer: ly.thickness, default=0.0) * 1e6, 3),
             "material": mat,
             **mat_props,
-            "dielectric_fill": _safe(lambda: layer.dielectric_fill, default=""),
+            "dielectric_fill": _safe(lambda ly=layer: ly.dielectric_fill, default=""),
         }
     return info
 
@@ -1082,7 +1129,7 @@ def extract_stackup_info(edb: "Edb") -> dict:
 def extract_padstack_info(edb: "Edb") -> dict:
     info: dict = {}
     for name, ps in edb.padstacks.definitions.items():
-        layers = _safe(lambda: ps.pad_by_layer, default={})
+        layers = _safe(lambda p=ps: p.pad_by_layer, default={})
         per_layer: dict = {}
         for lname, pad in (layers or {}).items():
             try:
@@ -1095,10 +1142,10 @@ def extract_padstack_info(edb: "Edb") -> dict:
             except Exception:
                 per_layer[lname] = {}
         info[name] = {
-            "drill_mm": round((_safe(lambda: ps.hole_range) or 0) * 1e3, 4),
-            "antipad_mm": round((_safe(lambda: ps.antipad_hole_range) or 0) * 1e3, 4),
-            "via_material": _safe(lambda: ps.via_material, default=""),
-            "plating_ratio": _safe(lambda: ps.hole_plating_ratio, default=0),
+            "drill_mm": round((_safe(lambda p=ps: p.hole_range) or 0) * 1e3, 4),
+            "antipad_mm": round((_safe(lambda p=ps: p.antipad_hole_range) or 0) * 1e3, 4),
+            "via_material": _safe(lambda p=ps: p.via_material, default=""),
+            "plating_ratio": _safe(lambda p=ps: p.hole_plating_ratio, default=0),
             "pad_layers": per_layer,
         }
     return info
@@ -1108,17 +1155,17 @@ def extract_trace_info(edb: "Edb") -> dict:
     info: dict = {}
     try:
         for name, net in edb.nets.nets.items():
-            prims = _safe(lambda: net.primitives, default=[]) or []
-            traces = [p for p in prims if _safe(lambda: p.type, default="") == "Path"]
+            prims = _safe(lambda n=net: n.primitives, default=[]) or []
+            traces = [p for p in prims if _safe(lambda p=p: p.type, default="") == "Path"]
             widths, lengths, lyrs = [], [], set()
             for t in traces:
-                w = _safe(lambda: t.width)
+                w = _safe(lambda t=t: t.width)
                 if w is not None:
                     widths.append(round(w * 1e3, 4))
-                ln = _safe(lambda: t.length)
+                ln = _safe(lambda t=t: t.length)
                 if ln is not None:
                     lengths.append(round(ln * 1e3, 4))
-                ly = _safe(lambda: t.layer_name)
+                ly = _safe(lambda t=t: t.layer_name)
                 if ly:
                     lyrs.add(ly)
             info[name] = {
@@ -1137,8 +1184,8 @@ def extract_via_info(edb: "Edb") -> dict:
     info: dict = {}
     try:
         for name, net in edb.nets.nets.items():
-            prims = _safe(lambda: net.primitives, default=[]) or []
-            vias = [p for p in prims if _safe(lambda: p.type, default="") == "Via"]
+            prims = _safe(lambda n=net: n.primitives, default=[]) or []
+            vias = [p for p in prims if _safe(lambda p=p: p.type, default="") == "Via"]
             info[name] = {"via_count": len(vias)}
     except Exception as exc:
         log.warning(f"Via extraction failed: {exc}")
@@ -1292,29 +1339,49 @@ def _dict_diff(
 # ─────────────────────────────────────────────────────────────────────────────
 
 _EXTRACTOR_CATEGORIES = {
-    "nets": (Category.NET, None),
+    "nets": (Category.NET, set()),
     "components": (Category.COMPONENT, {"layers"}),
-    "stackup": (Category.LAYER, None),
+    "stackup": (Category.LAYER, set()),
     "padstacks": (Category.PADSTACK, {"pad_layers"}),
     "traces": (Category.TRACE, {"layers"}),
-    "vias": (Category.VIA, None),
+    "vias": (Category.VIA, set()),
 }
 
 
 def _parallel_extract(paths: list, cfg: DiffConfig) -> list:
+    labels = ["baseline", "modified"]
     results: list = [None, None]
 
     def worker(idx: int, path: str):
-        edb = _open_edb(path, cfg.edb_version)
-        data = extract_all(edb)
-        edb.close_edb()
+        label = labels[idx] if idx < len(labels) else str(idx)
+        try:
+            edb = _open_edb(path, cfg.edb_version)
+        except Exception as exc:
+            raise RuntimeError(f"Failed to open {label} EDB at '{path}': {exc}") from exc
+        try:
+            data = extract_all(edb)
+        except Exception as exc:
+            raise RuntimeError(f"Failed to extract {label} EDB at '{path}': {exc}") from exc
+        finally:
+            # pyedb exposes close() as the public API; fall back to close_edb()
+            closer = getattr(edb, "close", None) or getattr(edb, "close_edb", None)
+            if closer:
+                try:
+                    closer()
+                except Exception:
+                    pass
         return idx, data
 
     with ThreadPoolExecutor(max_workers=cfg.max_workers) as pool:
         futures = {pool.submit(worker, i, p): i for i, p in enumerate(paths)}
         for fut in as_completed(futures):
-            idx, data = fut.result()
+            idx, data = fut.result()  # re-raises any worker exception with clear message
             results[idx] = data
+
+    # Sanity-check: both slots must be populated
+    for i, (res, lbl) in enumerate(zip(results, labels)):
+        if res is None:
+            raise RuntimeError(f"Extraction returned no data for {lbl} (index {i}).")
 
     return results
 
@@ -1391,17 +1458,21 @@ def run_simulation_regression(
 
     def _simulate(path: str, label: str) -> dict:
         edb = _open_edb(path, cfg.edb_version)
-        sim = edb.new_simulation_configuration()
-        sim.solver_type = getattr(sim.SolverType, cfg.sim_solver, sim.SolverType.SiwaveSYZ)
-        sim.start_freq = cfg.sim_start_freq
-        sim.stop_freq = cfg.sim_stop_freq
-        sim.step_freq = cfg.sim_step_freq
-        sim.do_cutout_subdesign = True
-        sim.output_aedb = str(Path(path).parent / f"sim_{label}.aedb")
-        log.info(f"  [{label}] Launching {cfg.sim_solver} …")
-        edb.build_simulation_project(sim)
-        sparams = edb.get_statistics()
-        edb.close_edb()
+        try:
+            sim = edb.new_simulation_configuration()
+            sim.solver_type = getattr(sim.SolverType, cfg.sim_solver, sim.SolverType.SiwaveSYZ)
+            sim.start_freq = cfg.sim_start_freq
+            sim.stop_freq = cfg.sim_stop_freq
+            sim.step_freq = cfg.sim_step_freq
+            sim.do_cutout_subdesign = True
+            sim.output_aedb = str(Path(path).parent / f"sim_{label}.aedb")
+            log.info(f"  [{label}] Launching {cfg.sim_solver} …")
+            edb.build_simulation_project(sim)
+            sparams = edb.get_statistics()
+        finally:
+            closer = getattr(edb, "close", None) or getattr(edb, "close_edb", None)
+            if closer:
+                closer()
         return sparams
 
     results: list = []
@@ -2113,8 +2184,6 @@ def print_baseline_list(db: DiffDatabase):
 
 
 def _demo_report() -> DiffReport:
-    from dataclasses import replace
-
     report = DiffReport(
         baseline_path="baseline_demo.aedb",
         modified_path="modified_demo.aedb",
@@ -2405,6 +2474,13 @@ def _parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--baseline-names", nargs="*", default=None, help="Filter --validate-baselines to specific named baselines"
     )
+    # Utility
+    p.add_argument(
+        "--export-config",
+        default="",
+        metavar="PATH",
+        help="Write current effective config to a YAML file and exit (useful for bootstrapping a config)",
+    )
     return p
 
 
@@ -2420,6 +2496,14 @@ def main():
     cfg.sim_stop_freq = f"{args.freq_ghz}GHz"
     if args.db:
         cfg.db_path = args.db
+
+    # ── Export config and exit ──────────────────────────────────────────────
+    if args.export_config:
+        if not HAS_YAML:
+            sys.exit("--export-config requires pyyaml:  pip install pyyaml")
+        cfg.to_yaml(args.export_config)
+        console.print(f"[bold green]✔ Config exported → {args.export_config}[/bold green]")
+        return
 
     # ── Open DB if requested ────────────────────────────────────────────────
     db: Optional[DiffDatabase] = None
