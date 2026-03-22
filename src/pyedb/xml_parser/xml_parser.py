@@ -213,4 +213,5 @@ class XmlParser(BaseModel):
         >>> parser = XmlParser()
         >>> config_dict = parser.to_dict()
         """
-        return {"stackup": self.stackup.to_dict()}
+        stackup_dict = self.stackup.to_dict()
+        return {"stackup": stackup_dict}
