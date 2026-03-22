@@ -2105,7 +2105,7 @@ class Stackup(LayerCollection):
 
             if val.roughness_enabled:
                 roughness_models[name] = {}
-                model = val.get_roughness_model("top")
+                model = val._get_roughness_model("top")
                 if model.ToString().endswith("GroissRoughnessModel"):
                     roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": model.get_Roughness().ToDouble()}
                 else:
@@ -2113,7 +2113,7 @@ class Stackup(LayerCollection):
                         "HallHuraySurfaceRatio": model.get_NoduleRadius().ToDouble(),
                         "NoduleRadius": model.get_SurfaceRatio().ToDouble(),
                     }
-                model = val.get_roughness_model("bottom")
+                model = val._get_roughness_model("bottom")
                 if model.ToString().endswith("GroissRoughnessModel"):
                     roughness_models[name]["GroissBottomSurfaceRoughness"] = {
                         "Roughness": model.get_Roughness().ToDouble()
@@ -2123,7 +2123,7 @@ class Stackup(LayerCollection):
                         "HallHuraySurfaceRatio": model.get_NoduleRadius().ToDouble(),
                         "NoduleRadius": model.get_SurfaceRatio().ToDouble(),
                     }
-                model = val.get_roughness_model("side")
+                model = val._get_roughness_model("side")
                 if model.ToString().endswith("GroissRoughnessModel"):
                     roughness_models[name]["GroissSideSurfaceRoughness"] = {
                         "Roughness": model.get_Roughness().ToDouble()

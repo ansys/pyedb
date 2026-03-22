@@ -62,18 +62,26 @@ class CfgMaterial(MaterialProperties):
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
 
-class RoughnessSideModel(BaseModel):
-    model: Optional[str] = None
-    nodule_radius: Optional[str] = None  # e.g., '0.1um'
-    surface_ratio: Optional[str] = None  # e.g., '1'
-    roughness: Optional[str] = None  # e.g., '2um' for non-huray
+class CfgHurayRoughnessModel(BaseModel):
+    model:str = "huray"
+    nodule_radius: str|float|int  # e.g., '0.1um'
+    surface_ratio: str|float|int  # e.g., '1'
+    model_config = {"extra": "forbid"}
+
+class CfgGroisseRoughnessModel(BaseModel):
+    model: str = "groisse"
+    roughness: str|float|int
+
+    model_config = {"extra": "forbid"}
 
 
-class RoughnessModel(BaseModel):
+class CfgRoughnessModel(BaseModel):
     enabled: Optional[bool] = False
-    top: Optional[RoughnessSideModel] = None
-    bottom: Optional[RoughnessSideModel] = None
-    side: Optional[RoughnessSideModel] = None
+    top: CfgHurayRoughnessModel|CfgGroisseRoughnessModel|None = None
+    bottom: CfgHurayRoughnessModel|CfgGroisseRoughnessModel|None= None
+    side: CfgHurayRoughnessModel|CfgGroisseRoughnessModel|None = None
+
+    model_config = {"extra": "forbid"}
 
 
 class EtchingModel(BaseModel):
@@ -88,7 +96,7 @@ class CfgLayer(BaseModel):
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[Union[float, str]] = None
-    roughness: Optional[RoughnessModel] = None
+    roughness: Optional[CfgRoughnessModel] = None
     etching: Optional[EtchingModel] = None
 
 

@@ -22,12 +22,14 @@
 
 """XML stackup module for handling EDB stackup configurations."""
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Literal
 
 from pydantic import BaseModel, Field
 
 if TYPE_CHECKING:
     from pyedb.configuration.cfg_data import CfgStackup
+
+SurfaceOption = Literal["all", "top", "bottom", "side"]
 
 
 class XmlMaterialProperty(BaseModel):
@@ -75,8 +77,8 @@ class XmlMaterial(BaseModel):
 class XmlHuraySurfaceRoughness(BaseModel):
     """Represents Huray roughness settings for a conductor surface."""
 
-    hall_huray_surface_ratio: float | None = Field(None, alias="@HallHuraySurfaceRatio")
-    nodule_radius: str | None = Field(None, alias="@NoduleRadius")
+    nodule_radius: str | int | float | None = Field(None, alias="@NoduleRadius")
+    surface_ratio: int | float | None = Field(None, alias="@HallHuraySurfaceRatio")
 
     model_config = dict(populate_by_name=True)
 
@@ -121,15 +123,48 @@ class XmlLayer(BaseModel):
     thickness: float | str | None = Field(None, alias="@Thickness")
     type: str | None = Field(None, alias="@Type")
 
-    huray_surface_roughness: XmlHuraySurfaceRoughness| None = Field(None, alias="HuraySurfaceRoughness")
+    huray_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySurfaceRoughness")
     huray_bottom_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HurayBottomSurfaceRoughness")
-    huray_side_surface_roughness: XmlHuraySurfaceRoughness| None = Field(None, alias="HuraySideSurfaceRoughness")
+    huray_side_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySideSurfaceRoughness")
 
     groiss_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissSurfaceRoughness")
-    groiss_bottom_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissBottomSurfaceRoughness")
+    groiss_bottom_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None,
+                                                                              alias="GroissBottomSurfaceRoughness")
     groiss_side_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissSideSurfaceRoughness")
 
     model_config = dict(populate_by_name=True)
+
+    def set_huray_surface_roughness(self, nodule_radius: int | float | int, surface_ratio=int | float | str,
+                                    surface: SurfaceOption = "all") -> XmlHuraySurfaceRoughness:
+
+        if surface == "top":
+            self.huray_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
+                                                                   surface_ratio=surface_ratio)
+        elif surface == "bottom":
+            self.huray_bottom_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
+                                                                          surface_ratio=surface_ratio)
+        elif surface == "side":
+            self.huray_side_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
+                                                                        surface_ratio=surface_ratio)
+        else:
+            self.huray_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
+                                                                   surface_ratio=surface_ratio)
+            self.huray_bottom_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
+                                                                          hall_huray_surface_ratio=surface_ratio)
+            self.huray_side_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
+                                                                        surface_ratio=surface_ratio)
+
+    def set_groisse_surface_roughness(self, roughness:int|float|str, surface: SurfaceOption = "all") -> XmlGroissSurfaceRoughness:
+        if surface == "top":
+            self.groiss_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
+        elif surface == "bottom":
+            self.groiss_bottom_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
+        elif surface == "side":
+            self.groiss_side_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
+        else:
+            self.groiss_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
+            self.groiss_bottom_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
+            self.groiss_side_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
 
 
 class XmlMaterials(BaseModel):
@@ -347,7 +382,32 @@ class XmlStackup(BaseModel):
 
             if not str(lay.thickness)[-1].isalpha():
                 layer_dict["thickness"] = f"{layer_dict['thickness']}{unit}"
+            # Correct type
             layer_dict["type"] = "signal" if layer_dict["type"].lower() == "conductor" else layer_dict["type"].lower()
+            # Convert roughness
+            huray_top = layer_dict.pop("huray_surface_roughness", None)
+            huray_bottom = layer_dict.pop("huray_bottom_surface_roughness", None)
+            huray_side = layer_dict.pop("huray_side_surface_roughness", None)
+            groiss_top = layer_dict.pop("groiss_surface_roughness", None)
+            groiss_bottom = layer_dict.pop("groiss_bottom_surface_roughness", None)
+            groiss_side = layer_dict.pop("groiss_side_surface_roughness", None)
+
+            if huray_top or huray_bottom or huray_side or groiss_top or groiss_bottom or groiss_side:
+                roughness = {"enabled": True}
+                if huray_top:
+                    roughness["top"] = huray_top
+                if huray_bottom:
+                    roughness["bottom"] = huray_bottom
+                if huray_side:
+                    roughness["side"] = huray_side
+                if groiss_top:
+                    roughness["top"] = groiss_top
+                if groiss_bottom:
+                    roughness["bottom"] = groiss_bottom
+                if groiss_side:
+                    roughness["side"] = groiss_side
+                layer_dict["roughness"] = roughness
+
             layer_data.append(layer_dict)
 
         material_data = []

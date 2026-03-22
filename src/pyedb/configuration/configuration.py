@@ -170,7 +170,7 @@ class Configuration:
         self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
 
         self.__apply_with_logging("Applying materials", self.apply_materials)
-        self.__apply_with_logging("Updating stackup", self.apply_stackup)
+        self.apply_stackup()
 
         self.apply_padstacks()
 
@@ -682,6 +682,8 @@ class Configuration:
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
                 attrs = l.model_dump(exclude_none=True)
+                layer_obj = self._pedb.stackup.layers[layer_name]
+
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
