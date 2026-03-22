@@ -514,6 +514,16 @@ class TestClass(BaseTestClass):
             expansion_factor="1mm",
             preserve_components_with_model=True,
         )
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="conforming",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
+        )
         edbapp.close(terminate_rpc_session=False)
 
     def test_components_bounding_box(self):

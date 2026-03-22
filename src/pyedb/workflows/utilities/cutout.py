@@ -287,9 +287,12 @@ class GrpcCutout:
         if _pins_to_preserve:
             for padstack_instance in _pins_to_preserve:
                 p = padstack_instance.position
+                layer = padstack_instance.start_layer
                 pos_1 = [i - 75e-6 for i in p]
                 pos_2 = [i + 75e-6 for i in p]
-                plane = self._edb.modeler.create_rectangle(lower_left_point=pos_1, upper_right_point=pos_2)
+                plane = self._edb.modeler.create_rectangle(
+                    layer_name=layer, lower_left_point=pos_1, upper_right_point=pos_2
+                )
                 rectangle_data = plane.polygon_data
                 _polys.append(rectangle_data)
 
@@ -1045,6 +1048,8 @@ class DotNetCutout:
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
             for inst in _pins_to_preserve:
+                if isinstance(inst, int):
+                    inst = self._edb.padstacks.instances[inst]
                 p = inst.position
                 pos_1 = [i - 1e-12 for i in p]
                 pos_2 = [i + 1e-12 for i in p]
