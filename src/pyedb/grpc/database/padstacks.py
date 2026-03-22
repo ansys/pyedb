@@ -208,8 +208,7 @@ class Padstacks(object):
         self.__definitions = {}
         for padstack_def in self._pedb.db.padstack_defs:
             try:
-                if len(padstack_def.data.layer_names) >= 1:
-                    self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
+                self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
             except (Exception, InvalidArgumentException) as e:
                 self._logger.warning(f"Error processing padstack definition {padstack_def.name}: {e}")
         return self.__definitions
