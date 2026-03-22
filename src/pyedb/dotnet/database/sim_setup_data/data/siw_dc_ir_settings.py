@@ -241,8 +241,9 @@ class SiwaveDCIRSettings:
                 str: source name,
                 int: node to ground pairs, 0 (unspecified), 1 (negative), 2 (positive) .
         """
-        temp = self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround
-        return convert_netdict_to_pydict(temp)
+        temp = dict(self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround)
+        temp = {name.strip("'"): node for name, node in temp.items()}  # strip single quotes from the source names
+        return temp
 
     @source_terms_to_ground.setter
     def source_terms_to_ground(self, value):

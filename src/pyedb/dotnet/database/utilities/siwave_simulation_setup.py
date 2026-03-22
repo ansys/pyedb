@@ -266,8 +266,7 @@ class DeprecatedSettings:
         """
         terminals = self.dc_ir.source_terms_to_ground
         terminals[source_name] = terminal
-        self._sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(terminals)
-        return self._update_setup()
+        self.dc_ir.source_terms_to_ground = terminals
 
 
 class SIwaveSimulationSetup(SimulationSetup):
