@@ -68,7 +68,7 @@ class TestClass:
         )
         layer.set_huray_surface_roughness(nodule_radius="0.5um", surface_ratio=5, surface="top")
         assert layer.huray_surface_roughness.nodule_radius == "0.5um"
-        assert layer.huray_surface_roughness.hall_huray_surface_ratio == 5
+        assert layer.huray_surface_roughness.surface_ratio == 5
 
         layer.set_huray_surface_roughness(nodule_radius="0.5um", surface_ratio=5, surface="bottom")
         assert layer.huray_bottom_surface_roughness
@@ -108,13 +108,13 @@ class TestClass:
 
         top_layer = next(layer for layer in xml_parser.stackup.layers.layer if layer.name == "top")
         huray_sr = top_layer.huray_surface_roughness
-        assert huray_sr.hall_huray_surface_ratio == 2.9
+        assert huray_sr.surface_ratio == 2.9
         assert huray_sr.nodule_radius == "0.5um"
         huray_bt_sr = top_layer.huray_bottom_surface_roughness
-        assert huray_bt_sr.hall_huray_surface_ratio == 2.9
+        assert huray_bt_sr.surface_ratio == 2.9
         assert huray_bt_sr.nodule_radius == "0.5um"
         huray_side_sr = top_layer.huray_side_surface_roughness
-        assert huray_side_sr.hall_huray_surface_ratio == 2.9
+        assert huray_side_sr.surface_ratio == 2.9
         assert huray_side_sr.nodule_radius == "0.5um"
 
         l2 = next(layer for layer in xml_parser.stackup.layers.layer if layer.name == "inner1_gnd1")
