@@ -338,11 +338,15 @@ class TestClass(BaseTestClass):
         gap_port = edb.ports["pcb_port_2"]
         if edb.grpc:
             assert gap_port.component.is_null
+            assert not gap_port.is_circuit_port
         else:
             assert not gap_port.component
         assert gap_port.source_amplitude == 0.0
         assert gap_port.source_phase == 0.0
         assert gap_port.impedance
+        # temp
+        from ansys.edb.core.database import ProductIdType
+
         assert not gap_port.deembed
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
