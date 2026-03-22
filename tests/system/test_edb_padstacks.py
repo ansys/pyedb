@@ -786,3 +786,12 @@ class TestPadstackInstanceEMProperties(BaseTestClass):
         assert circle.dcir_equipotential_region is True
         assert rect.dcir_equipotential_region is True
         edbapp.close(terminate_rpc_session=False)
+
+    def test_definition_no_layers(self):
+        source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/test_replace_vias.aedb")[0]
+        edbapp = self.edb_examples.load_edb(source_path)
+        assert len(edbapp.padstacks.definitions) == 3
+        via1 = edbapp.padstacks.definitions["PlanarEMVia"]
+        assert via1.name == "PlanarEMVia"
+        assert len(via1.instances) == 4
+        edbapp.close(terminate_rpc_session=False)
