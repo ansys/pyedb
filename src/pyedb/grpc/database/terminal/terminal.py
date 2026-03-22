@@ -36,9 +36,9 @@ from ansys.edb.core.terminal.terminal import (
     BoundaryType as CoreBoundaryType,
     TerminalType as CoreTerminalType,
 )
+from pyedb.grpc.database.terminal.port_post_processing_properties import PortPostProcessingProperties
 
 from pyedb.grpc.database.primitive.primitive import Primitive
-from pyedb.grpc.database.terminal.port_post_processing_properties import PortPostProcessingProperties
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
 from pyedb.misc.decorators import deprecated_property
