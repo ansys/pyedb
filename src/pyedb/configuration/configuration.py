@@ -682,8 +682,6 @@ class Configuration:
                 layer_id = lc_signal_layers[signal_idx]
                 layer_name = id_name[layer_id]
                 attrs = l.model_dump(exclude_none=True)
-                layer_obj = self._pedb.stackup.layers[layer_name]
-
                 self._pedb.stackup.layers[layer_name].update(**attrs)
                 signal_idx = signal_idx + 1
 
