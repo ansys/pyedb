@@ -334,9 +334,11 @@ class TestClass(BaseTestClass):
             )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
         assert sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
-        assert sig.create_edge_port("pcb_port_2", "start", "gap")
+        assert sig.create_edge_port("pcb_port_2", "start", "Gap")
         gap_port = edb.ports["pcb_port_2"]
         if edb.grpc:
+            assert edb.ports["pcb_port_1"].is_wave_port
+            assert not edb.ports["pcb_port_2"].is_wave_port
             assert gap_port.component.is_null
             assert not gap_port.is_circuit_port
         else:

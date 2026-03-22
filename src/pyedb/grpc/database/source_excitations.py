@@ -2060,7 +2060,6 @@ class SourceExcitation(SourceExcitationInternal):
         if reference_layer:
             reference_layer = self._pedb.stackup.signal_layers[reference_layer]
             pos_edge_term.reference_layer = reference_layer
-
         prop = ", ".join(
             [
                 f"HFSS('HFSS Type'='{hfss_type}'",
