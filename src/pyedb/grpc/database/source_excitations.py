@@ -1249,7 +1249,7 @@ class SourceExcitation(SourceExcitationInternal):
             padstack_instance=negative_pin,
             name=negative_pin.name,
             layer=neg_term_layer,
-            is_ref=False,
+            is_ref=True,
             net=negative_pin.net,
         )
         if source_type in ["circuit_port", "lumped_port"]:
@@ -1299,7 +1299,7 @@ class SourceExcitation(SourceExcitationInternal):
 
         else:
             self._pedb.logger.error("No valid source type specified.")
-            return False
+            return None
         return pos_terminal.name
 
     def create_voltage_source_on_pin(
@@ -1583,15 +1583,20 @@ class SourceExcitation(SourceExcitationInternal):
             net=positive_pins[0].net,
             is_ref=False,
         )
-        if not source_type == "dc_terminal":
-            neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
-            neg_pingroup_terminal = PinGroupTerminal.create(
-                layout=self._pedb.active_layout,
-                name=f"{name}_ref",
-                pin_group=neg_pin_group,
-                net=negatives_pins[0].net,
-                is_ref=False,
-            )
+
+        if source_type == "dc_terminal":
+            pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.DC_TERMINAL
+            # returning DC terminal has no reference terminal.
+            return pos_pingroup_terminal.name
+
+        neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
+        neg_pingroup_terminal = PinGroupTerminal.create(
+            layout=self._pedb.active_layout,
+            name=f"{name}_ref",
+            pin_group=neg_pin_group,
+            net=negatives_pins[0].net,
+            is_ref=True,
+        )
         if source_type in ["circuit_port", "lumped_port"]:
             pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.PORT
             pos_pingroup_terminal.impedance = self._pedb._value_setter(impedance)
@@ -1636,10 +1641,6 @@ class SourceExcitation(SourceExcitationInternal):
             Rlc.c = self._pedb._value_setter(c)
             pos_pingroup_terminal.core.rlc_boundary_parameters = Rlc
 
-        elif source_type == "dc_terminal":
-            pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.DC_TERMINAL
-        else:
-            pass
         return pos_pingroup_terminal.name
 
     def _check_gnd(self, component_name: str) -> Optional[str]:
