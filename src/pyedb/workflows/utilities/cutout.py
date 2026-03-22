@@ -285,9 +285,8 @@ class GrpcCutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self._edb.padstacks.instances
-            for i in _pins_to_preserve:
-                p = insts[i].position
+            for padstack_instance in _pins_to_preserve:
+                p = padstack_instance.position
                 pos_1 = [i - 75e-6 for i in p]
                 pos_2 = [i + 75e-6 for i in p]
                 plane = self._edb.modeler.create_rectangle(lower_left_point=pos_1, upper_right_point=pos_2)
@@ -415,7 +414,7 @@ class GrpcCutout:
                     "SParameterModel",
                     "NetlistModel",
                 ] and list(set(el.nets[:]) & set(self.signals[:])):
-                    _pins_to_preserve.extend([i.id for i in el.pins.values()])
+                    _pins_to_preserve.extend([i for i in el.pins.values()])
                     _nets_to_preserve.extend(el.nets)
         if self.include_pingroups:
             for pingroup in self._edb.padstacks.pingroups:
