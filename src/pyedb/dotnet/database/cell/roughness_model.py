@@ -24,9 +24,9 @@ from pydantic import BaseModel, Field
 
 
 class GroisseRoughnessModel(BaseModel):
-    roughness: int|float|int = Field(..., description="Groisse roughness property.")
+    roughness: int | float | int = Field(..., description="Groisse roughness property.")
 
 
 class HurrayRoughnessModel(BaseModel):
-    nodule_radius: int|float|int = Field(..., description="Nodule radius property.")
-    surface_ratio: float|int = Field(..., description="Surface ratio property.")
+    nodule_radius: int | float | int = Field(..., description="Nodule radius property.")
+    surface_ratio: float | int = Field(..., description="Surface ratio property.")
