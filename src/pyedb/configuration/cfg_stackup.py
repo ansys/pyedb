@@ -63,23 +63,24 @@ class CfgMaterial(MaterialProperties):
 
 
 class CfgHurayRoughnessModel(BaseModel):
-    model:str = "huray"
-    nodule_radius: str|float|int  # e.g., '0.1um'
-    surface_ratio: str|float|int  # e.g., '1'
+    model: str = "huray"
+    nodule_radius: str | float | int  # e.g., '0.1um'
+    surface_ratio: str | float | int  # e.g., '1'
     model_config = {"extra": "forbid"}
+
 
 class CfgGroisseRoughnessModel(BaseModel):
     model: str = "groisse"
-    roughness: str|float|int
+    roughness: str | float | int
 
     model_config = {"extra": "forbid"}
 
 
 class CfgRoughnessModel(BaseModel):
     enabled: Optional[bool] = False
-    top: CfgHurayRoughnessModel|CfgGroisseRoughnessModel|None = None
-    bottom: CfgHurayRoughnessModel|CfgGroisseRoughnessModel|None= None
-    side: CfgHurayRoughnessModel|CfgGroisseRoughnessModel|None = None
+    top: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
+    bottom: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
+    side: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
 
     model_config = {"extra": "forbid"}
 

@@ -648,7 +648,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         elif surface == "side":
             return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Side)
 
-    def get_roughness_model(self, surface:str="top")->HurrayRoughnessModel|GroisseRoughnessModel:
+    def get_roughness_model(self, surface: str = "top") -> HurrayRoughnessModel | GroisseRoughnessModel:
         """Get roughness model of the layer.
 
         Parameters

@@ -128,33 +128,43 @@ class XmlLayer(BaseModel):
     huray_side_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySideSurfaceRoughness")
 
     groiss_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissSurfaceRoughness")
-    groiss_bottom_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None,
-                                                                              alias="GroissBottomSurfaceRoughness")
+    groiss_bottom_surface_roughness: XmlGroissSurfaceRoughness | None = Field(
+        None, alias="GroissBottomSurfaceRoughness"
+    )
     groiss_side_surface_roughness: XmlGroissSurfaceRoughness | None = Field(None, alias="GroissSideSurfaceRoughness")
 
     model_config = dict(populate_by_name=True)
 
-    def set_huray_surface_roughness(self, nodule_radius: int | float | int, surface_ratio=int | float | str,
-                                    surface: SurfaceOption = "all") -> XmlHuraySurfaceRoughness:
+    def set_huray_surface_roughness(
+        self, nodule_radius: int | float | int, surface_ratio=int | float | str, surface: SurfaceOption = "all"
+    ) -> XmlHuraySurfaceRoughness:
 
         if surface == "top":
-            self.huray_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
-                                                                   surface_ratio=surface_ratio)
+            self.huray_surface_roughness = XmlHuraySurfaceRoughness(
+                nodule_radius=nodule_radius, surface_ratio=surface_ratio
+            )
         elif surface == "bottom":
-            self.huray_bottom_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
-                                                                          surface_ratio=surface_ratio)
+            self.huray_bottom_surface_roughness = XmlHuraySurfaceRoughness(
+                nodule_radius=nodule_radius, surface_ratio=surface_ratio
+            )
         elif surface == "side":
-            self.huray_side_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
-                                                                        surface_ratio=surface_ratio)
+            self.huray_side_surface_roughness = XmlHuraySurfaceRoughness(
+                nodule_radius=nodule_radius, surface_ratio=surface_ratio
+            )
         else:
-            self.huray_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
-                                                                   surface_ratio=surface_ratio)
-            self.huray_bottom_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
-                                                                          hall_huray_surface_ratio=surface_ratio)
-            self.huray_side_surface_roughness = XmlHuraySurfaceRoughness(nodule_radius=nodule_radius,
-                                                                        surface_ratio=surface_ratio)
+            self.huray_surface_roughness = XmlHuraySurfaceRoughness(
+                nodule_radius=nodule_radius, surface_ratio=surface_ratio
+            )
+            self.huray_bottom_surface_roughness = XmlHuraySurfaceRoughness(
+                nodule_radius=nodule_radius, hall_huray_surface_ratio=surface_ratio
+            )
+            self.huray_side_surface_roughness = XmlHuraySurfaceRoughness(
+                nodule_radius=nodule_radius, surface_ratio=surface_ratio
+            )
 
-    def set_groisse_surface_roughness(self, roughness:int|float|str, surface: SurfaceOption = "all") -> XmlGroissSurfaceRoughness:
+    def set_groisse_surface_roughness(
+        self, roughness: int | float | str, surface: SurfaceOption = "all"
+    ) -> XmlGroissSurfaceRoughness:
         if surface == "top":
             self.groiss_surface_roughness = XmlGroissSurfaceRoughness(roughness=roughness)
         elif surface == "bottom":

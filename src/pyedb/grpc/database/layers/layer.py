@@ -54,7 +54,7 @@ layer_type_mapping = {
 class Layer:
     """Manages Layer."""
 
-    def __init__(self, core:CoreLayerType=None, name="", layer_type="undefined", **kwargs):
+    def __init__(self, core: CoreLayerType = None, name="", layer_type="undefined", **kwargs):
         self.core = core
         self._name = name
         self._color = ()
