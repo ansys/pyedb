@@ -29,9 +29,7 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-import re
 
-from ansys.edb.core.database import ProductIdType
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
     BoundaryType as CoreBoundaryType,
