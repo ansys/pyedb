@@ -2014,9 +2014,9 @@ def print_console_summary(report: DiffReport):
         for key, cnt in report.summary.items():
             print(f"  {key}: {cnt}")
 
-    # v3: EM criticality summary
+    # EM criticality summary
     if report.em_required_count > 0:
-        console.rule("⚡  EM Simulation Required")
+        console.rule("EM Simulation Required")
         if HAS_RICH:
             em_tbl = Table(show_header=True, header_style="bold white on purple", border_style="dim", expand=False)
             em_tbl.add_column("Item", width=28)
@@ -2032,26 +2032,26 @@ def print_console_summary(report: DiffReport):
             if len(report.em_critical_entries) > 20:
                 console.print(f"  … and {len(report.em_critical_entries) - 20} more (see Excel)")
         else:
-            print(f"  EM re-simulation required for {report.em_required_count} change(s).")
+            print(f"EM re-simulation required for {report.em_required_count} change(s).")
 
-    # v3: Git info
+    # vGit info
     if report.git_info and report.git_info.current_commit:
         gi = report.git_info
-        console.rule("🔀  Git")
+        console.rule("Git")
         console.print(
             f"  Branch: [bold]{gi.current_branch}[/bold]  "
             f"Commit: [bold]{gi.current_commit}[/bold]  "
             f"{'[red]Dirty[/red]' if gi.is_dirty else '[green]Clean[/green]'}"
         )
         if gi.new_commit_hash:
-            console.print(f"  Auto-committed → [bold]{gi.new_commit_hash}[/bold]")
+            console.print(f"Auto-committed → [bold]{gi.new_commit_hash}[/bold]")
 
-    # v3: DB run ID
+    # DB run ID
     if report.run_id:
-        console.print(f"  🗄  Saved to DB – run_id={report.run_id}")
+        console.print(f"Saved to DB – run_id={report.run_id}")
 
     if report.regression:
-        console.rule("📡  Regression")
+        console.rule("Regression")
         rs = report.regression_summary
         console.print(
             f"  PASS [green]{rs['PASS']}[/green]  WARN [yellow]{rs['WARN']}[/yellow]  FAIL [red]{rs['FAIL']}[/red]"
@@ -2077,7 +2077,7 @@ def print_console_summary(report: DiffReport):
 
     # v3: Baseline validation summary
     if report.baseline_validations:
-        console.rule("🎯  Baseline Validation Suite")
+        console.rule("Baseline Validation Suite")
         if HAS_RICH:
             bv_tbl = Table(show_header=True, header_style="bold", border_style="dim", expand=False)
             bv_tbl.add_column("Baseline", width=24)
@@ -2108,7 +2108,7 @@ def print_run_history(db: DiffDatabase, limit: int = 20):
     if not rows:
         console.print("[yellow]No runs found in database.[/yellow]")
         return
-    console.rule(f"🗄  Run History ({len(rows)} entries)")
+    console.rule(f"Run History ({len(rows)} entries)")
     if HAS_RICH:
         tbl = Table(show_header=True, header_style="bold white on dark_blue", border_style="dim", expand=False)
         for col in ("ID", "Date", "Baseline", "Modified", "Diffs", "Critical", "EM Req", "Fails", "Branch"):
@@ -2145,7 +2145,7 @@ def print_baseline_list(db: DiffDatabase):
     if not refs:
         console.print("[yellow]No baseline references stored in database.[/yellow]")
         return
-    console.rule("🎯  Stored Baseline References")
+    console.rule("Stored Baseline References")
     if HAS_RICH:
         tbl = Table(show_header=True, header_style="bold white on green", border_style="dim", expand=False)
         for col in ("ID", "Name", "Tag", "Stored At", "Git Commit", "Branch", "Notes"):
@@ -2426,7 +2426,7 @@ def _demo_report() -> DiffReport:
 
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(
-        description="PyEDB Local Design Diff & Regression Tool v3.0",
+        description="PyEDB Local Design Diff & Regression Tool",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=__doc__,
     )
