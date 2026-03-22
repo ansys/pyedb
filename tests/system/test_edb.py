@@ -344,9 +344,6 @@ class TestClass(BaseTestClass):
         assert gap_port.source_amplitude == 0.0
         assert gap_port.source_phase == 0.0
         assert gap_port.impedance
-        # temp
-        from ansys.edb.core.database import ProductIdType
-
         assert not gap_port.deembed
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"
