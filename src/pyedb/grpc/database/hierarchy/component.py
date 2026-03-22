@@ -566,6 +566,8 @@ class Component:
                 return "cylinder"
             elif shape == SolderballShape.SOLDERBALL_SPHEROID:
                 return "spheroid"
+            elif shape == SolderballShape.UNKNOWN_SOLDERBALL_SHAPE:
+                return "unknown"
         return None
 
     @solder_ball_shape.setter
