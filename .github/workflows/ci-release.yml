@@ -601,6 +601,10 @@ jobs:
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
             pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
             pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -704,6 +708,10 @@ jobs:
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
             pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
             pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
 
   docs-build:
     name: Build documentation
