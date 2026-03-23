@@ -1134,7 +1134,10 @@ class EDBPadstack(object):
         """
         cloned_padstack_data = self._edb.Definition.PadstackDefData(self.edb_padstack.GetData())
         new_padstack_data = self._edb.Definition.PadstackDefData.Create()
-        layers_name = cloned_padstack_data.GetLayerNames()
+        layers_name = list(cloned_padstack_data.GetLayerNames())
+        if not layers_name:
+            self._ppadstack._pedb.logger.warning("No layers in the padstack definition.")
+            return False
         layers_to_add = []
         for layer in layers_name:
             if layer == old_name:
