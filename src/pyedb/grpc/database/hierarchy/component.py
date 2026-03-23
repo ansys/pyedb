@@ -573,6 +573,7 @@ class Component:
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
         if not self.component_property.solder_ball_property.is_null:
+            shape = None
             if value is None:
                 shape = SolderballShape.NO_SOLDERBALL
             elif isinstance(value, str):
