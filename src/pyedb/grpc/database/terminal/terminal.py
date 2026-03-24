@@ -157,11 +157,7 @@ class Terminal(ConnObj):
 
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
-        txt = []
-        for k, v in value.__dict__.items():
-            txt.append("'{}'='{}'".format(k, v))
-        txt = ",".join(txt)
-        self._edb_properties = "HFSS({})".format(txt)
+        self._hfss_properties = value
 
     @property
     def hfss_type(self) -> str:

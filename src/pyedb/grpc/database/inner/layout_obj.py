@@ -33,8 +33,8 @@ class HFSSProductProperty:
     hfss_type: str = "Gap"
     orientation: str = ""
     layer_alignment: str = ""
-    horizontal_extent_factor: float = 0.0
-    vertical_extent_factor: float = 0.0
+    horizontal_extent_factor: float | int = 0.0
+    vertical_extent_factor: float | int = 0.0
     pec_launch_width: str = "10um"
 
     def to_hfss_string(self) -> str:
@@ -105,4 +105,4 @@ class LayoutObj(ObjBase):
     @_hfss_properties.setter
     def _hfss_properties(self, value):
         if isinstance(value, HFSSProductProperty):
-            self.core.product_solver_option(CoreProductIdType.DESIGNER, "HFSS", value.to_hfss_string())
+            self.core.set_product_solver_option(CoreProductIdType.DESIGNER, "HFSS", value.to_hfss_string())
