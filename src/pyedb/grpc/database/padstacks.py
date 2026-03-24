@@ -1230,8 +1230,9 @@ class Padstacks(object):
                         poly=pad_polygon.core,
                     )
                 else:
-                    self._pedb.logger.error(f"Polygon used for defining pad-stack {padstackname} pad on layer {layer} "
-                                            f"is not valid")
+                    self._pedb.logger.error(
+                        f"Polygon used for defining pad-stack {padstackname} pad on layer {layer} is not valid"
+                    )
                 if antipad_polygon.core is not None:
                     padstack_data.set_pad_parameters(
                         layer=layer,
@@ -1242,8 +1243,9 @@ class Padstacks(object):
                         poly=antipad_polygon.core,
                     )
                 else:
-                    self._pedb.logger.error(f"Polygon used for defining pad-stack {padstackname} anti-pad on layer "
-                                            f"{layer} is not valid")
+                    self._pedb.logger.error(
+                        f"Polygon used for defining pad-stack {padstackname} anti-pad on layer {layer} is not valid"
+                    )
         else:
             for layer in layers:
                 padstack_data.set_pad_parameters(
