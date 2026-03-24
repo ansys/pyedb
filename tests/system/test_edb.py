@@ -425,6 +425,9 @@ class TestClass(BaseTestClass):
         assert setup.sweep_data[0].enforce_causality
         edb.close()
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_create_various_ports_0(self):
         """Create various ports."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("edb_edge_ports.aedb")[0]
@@ -539,6 +542,9 @@ class TestClass(BaseTestClass):
         assert df_port.deembed_length == 1e-3
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_create_various_ports_1(self):
         """Create various ports."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("edb_edge_ports.aedb")[0]
