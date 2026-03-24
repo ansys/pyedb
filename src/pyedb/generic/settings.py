@@ -310,7 +310,7 @@ class Settings(object):
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
         if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
-            raise RuntimeError(f"No stable version of AEDT is found.")
+            raise RuntimeError("No stable version of AEDT is found.")
 
         if len(self.INSTALLED_VERSIONS):
             for i in sorted([float(i) for i in standard_versions], reverse=True):
