@@ -263,18 +263,36 @@ class SimulationSetup(SimulationSetupDeprecated):
     def add_sweep(
         self,
         name=None,
-        distribution="linear",
-        start_freq="0GHz",
-        stop_freq="20GHz",
-        step="10MHz",
-        discrete=False,
-        frequency_set=None,
+        distribution:str="linear",
+        start_freq:str = "0GHz",
+        stop_freq:str="20GHz",
+        step:str="10MHz",
+        discrete:bool=False,
+        frequency_set:list=None,
     ) -> Union[SweepData, None]:
         """Add a HFSS frequency sweep.
 
-        This method was refactored to reduce complexity. The behaviour is compatible
+        This method was refactored to reduce complexity. The behavior is compatible
         with the previous implementation: it accepts either a legacy `frequency_set`
         or single-sweep parameters.
+
+        Parameters
+        ----------
+        name: str
+            sweep name
+        distribution: str
+            sweep distribution. Supported values `"linear"`, `"linear_count"`, `"decade_count"`, `"exponential"`,
+            `"octave_count"`. Default: `"linear"`
+        start_freq: str or float
+            starting frequency (e.g. "0GHz" or 0)
+        stop_freq: str or float
+            stopping frequency (e.g. "20GHz" or 20000000000)
+        step: str or float
+            frequency step (e.g. "10MHz" or 10000000)
+        discrete: bool
+            whether the sweep is discrete or interpolating
+        frequency_set: list[list[str]] or None
+            legacy multi-sweep format (e.g. [["linear_scale", "0GHz", "20GHz", "10MHz"], [...], ...])
 
         Returns
         -------
