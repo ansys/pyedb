@@ -263,12 +263,12 @@ class SimulationSetup(SimulationSetupDeprecated):
     def add_sweep(
         self,
         name=None,
-        distribution:str="linear",
-        start_freq:str = "0GHz",
-        stop_freq:str="20GHz",
-        step:str="10MHz",
-        discrete:bool=False,
-        frequency_set:list=None,
+        distribution: str = "linear",
+        start_freq: str = "0GHz",
+        stop_freq: str = "20GHz",
+        step: str = "10MHz",
+        discrete: bool = False,
+        frequency_set: list = None,
     ) -> Union[SweepData, None]:
         """Add a HFSS frequency sweep.
 
