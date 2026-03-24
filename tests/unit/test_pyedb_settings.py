@@ -52,6 +52,7 @@ def test_general():
     assert settings.LATEST_STUDENT_VERSION == "2025.2"
     assert settings.aedt_installation_path == "/fake/path251"
 
+
 @patch("os.environ", {"ANSYSEM_ROOT952": "/fake/path952"})
 def test_no_stable_version():
     settings = Settings()
