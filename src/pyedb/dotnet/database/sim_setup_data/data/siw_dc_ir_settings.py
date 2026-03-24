@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.dotnet.database.general import (
-    convert_netdict_to_pydict,
     convert_pydict_to_netdict,
 )
 from pyedb.misc.decorators import deprecated_property
