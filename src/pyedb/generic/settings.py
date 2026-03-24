@@ -318,7 +318,7 @@ class Settings(object):
                     self.LATEST_VERSION = str(i)
                     break
             if self.LATEST_VERSION is None:
-                warnings.warn(f"No stable version of AEDT is found.", stacklevel=2)
+                warnings.warn("No stable version of AEDT is found.", stacklevel=2)
 
         if len(self.INSTALLED_STUDENT_VERSIONS):
             self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))
