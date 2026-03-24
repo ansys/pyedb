@@ -134,8 +134,6 @@ class TestClass(BaseTestClass):
     def test_padstack_properties_getter(self):
         """Evaluate properties"""
         edbapp = self.edb_examples.get_si_verse()
-        # defnition = edbapp.padstacks.definitions["v30h20"]
-        # for el in edbapp.padstacks.definitions:
         padstack = edbapp.padstacks.definitions["v30h20"]
         assert padstack.hole_plating_thickness is not None or False
         if not edbapp.grpc:  # not supported in grpc
