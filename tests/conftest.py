@@ -45,10 +45,12 @@ example_models_path = Path(__file__).parent / "example_models"
 # Initialize default desktop configuration
 
 use_grpc = os.getenv("USE_GRPC") in {"1", True}
+use_in_memory = os.getenv("IN_MEMORY") in {"1", True}
 
 config = {
     "desktopVersion": "2025.2",
     "use_grpc": use_grpc,
+    "in_memory": use_in_memory,
 }
 
 # Check for the local config file, override defaults if found
@@ -63,6 +65,7 @@ if os.path.exists(local_config_file):
 
 desktop_version = config["desktopVersion"]
 GRPC = config["use_grpc"]
+IN_MEMORY = config["in_memory"]
 
 test_subfolder = "TEDB"
 test_project_name = "ANSYS-HSD_V1"
@@ -107,8 +110,9 @@ def local_scratch(init_scratch):
 
 
 class EdbExamples:
-    def __init__(self, local_scratch: "Scratch", grpc=False):
+    def __init__(self, local_scratch: "Scratch", grpc=False, in_memory=False):
         self.grpc = grpc
+        self.in_memory = in_memory
         self.local_scratch = local_scratch
         self.example_models_path = example_models_path
         self.test_folder = ""
@@ -138,7 +142,7 @@ class EdbExamples:
         target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS-HSD_V1.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(edbpath=target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
         else:
             return target_file
 
@@ -146,7 +150,7 @@ class EdbExamples:
         target_file = self.copy_test_files_into_local_folder("wirebond_projects/test_wb_jedec4.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(edbpath=target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
         else:
             return target_file
 
@@ -154,7 +158,7 @@ class EdbExamples:
         target_file = self.copy_test_files_into_local_folder("si_verse/ANSYS_SVP_V1_1_SFP.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
         else:
             return target_file
 
@@ -163,45 +167,45 @@ class EdbExamples:
         target_file = self.copy_test_files_into_local_folder("TEDB/example_package.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
         else:
             return target_file
 
     def create_empty_edb(self):
         aedb = os.path.join(self.test_folder, f"new_layout_{generate_random_string(6)}.aedb")
-        edbapp = Edb(aedb, version=desktop_version, grpc=self.grpc)
-        edbapp.save_edb()
+        edbapp = Edb(edbpath=aedb, version=desktop_version, grpc=self.grpc, in_memory=self.in_memory)
+        edbapp.save()
         return edbapp
 
     def get_multizone_pcb(self, version=None):
         target_file = self.copy_test_files_into_local_folder("multi_zone_project.aedb")[0]
         version = desktop_version if version is None else version
-        return Edb(target_file, version=version, grpc=self.grpc)
+        return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
 
     def get_unit_cell(self, version=None):
         target_file = self.copy_test_files_into_local_folder("TEDB/unitcell.aedb")[0]
         version = desktop_version if version is None else version
-        return Edb(target_file, version=version, grpc=self.grpc)
+        return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
 
     def get_no_ref_pins_component(self, version=None):
         target_file = self.copy_test_files_into_local_folder("TEDB/component_no_ref_pins.aedb")[0]
         version = desktop_version if version is None else version
-        return Edb(target_file, version=version, grpc=self.grpc)
+        return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
 
     def get_si_board(self, edbapp=True, additional_files_folders="", version=None):
         target_file = self.copy_test_files_into_local_folder("si_board/si_board.aedb")[0]
         if edbapp:
             version = desktop_version if version is None else version
-            return Edb(target_file, version=version, grpc=self.grpc)
+            return Edb(edbpath=target_file, version=version, grpc=self.grpc, in_memory=self.in_memory)
         else:
             return target_file
 
     def load_edb(self, edb_path, **kwargs):
-        return Edb(edbpath=edb_path, edbversion=desktop_version, grpc=self.grpc, **kwargs)
+        return Edb(edbpath=edb_path, edbversion=desktop_version, grpc=self.grpc, in_memory=self.in_memory, **kwargs)
 
     def load_dxf_edb(self):
         aedb = self.copy_test_files_into_local_folder("dxf_swap/starting_edb/starting_edb.aedb")[0]
-        return Edb(edbpath=aedb, version=desktop_version, grpc=self.grpc)
+        return Edb(edbpath=aedb, version=desktop_version, grpc=self.grpc, in_memory=self.in_memory)
 
     def get_log_file_example(self):
         return os.path.join(self.example_models_path, "test.log")
@@ -212,7 +216,7 @@ class EdbExamples:
 
 @pytest.fixture(scope="class", autouse=True)
 def get_edb_examples(local_scratch):
-    return EdbExamples(local_scratch, GRPC)
+    return EdbExamples(local_scratch, GRPC, IN_MEMORY)
 
 
 class Scratch:

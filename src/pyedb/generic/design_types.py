@@ -62,7 +62,7 @@ def Edb(
     grpc: bool = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
+    in_memory: bool = False,
 ) -> EdbGrpc | EdbDotnet | None:
     """Provides the EDB application interface.
 
