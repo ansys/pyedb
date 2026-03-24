@@ -562,7 +562,7 @@ class EDBPadstack(object):
         return list(self._padstack_def_data.GetLayerNames())
 
     @property
-    def via_start_layer(self) -> str:
+    def via_start_layer(self) -> str | None:
         """Starting layer.
 
         Returns
@@ -570,10 +570,12 @@ class EDBPadstack(object):
         str
             Name of the starting layer.
         """
+        if not self.via_layers:
+            return None
         return self.via_layers[0]
 
     @property
-    def via_stop_layer(self) -> str:
+    def via_stop_layer(self) -> str | None:
         """Stopping layer.
 
         Returns
@@ -581,6 +583,8 @@ class EDBPadstack(object):
         str
             Name of the stopping layer.
         """
+        if not self.via_layers:
+            return None
         return self.via_layers[-1]
 
     @property

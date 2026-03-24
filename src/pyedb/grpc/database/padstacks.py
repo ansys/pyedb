@@ -1220,22 +1220,30 @@ class Padstacks(object):
             layers = layers + ["Default"]
         if antipad_shape == "Polygon" and pad_shape == "Polygon":
             for layer in layers:
-                padstack_data.set_pad_parameters(
-                    layer=layer,
-                    pad_type=CorePadType.REGULAR_PAD,
-                    offset_x=pad_offset_x,
-                    offset_y=pad_offset_y,
-                    rotation=pad_rotation,
-                    poly=pad_polygon.core,
-                )
-                padstack_data.set_pad_parameters(
-                    layer=layer,
-                    pad_type=CorePadType.ANTI_PAD,
-                    offset_x=pad_offset_x,
-                    offset_y=pad_offset_y,
-                    rotation=pad_rotation,
-                    poly=antipad_polygon.core,
-                )
+                if pad_polygon.core is not None:
+                    padstack_data.set_pad_parameters(
+                        layer=layer,
+                        pad_type=CorePadType.REGULAR_PAD,
+                        offset_x=pad_offset_x,
+                        offset_y=pad_offset_y,
+                        rotation=pad_rotation,
+                        poly=pad_polygon.core,
+                    )
+                else:
+                    self._pedb.logger.error(f"Polygon used for defining pad-stack {padstackname} pad on layer {layer} "
+                                            f"is not valid")
+                if antipad_polygon.core is not None:
+                    padstack_data.set_pad_parameters(
+                        layer=layer,
+                        pad_type=CorePadType.ANTI_PAD,
+                        offset_x=pad_offset_x,
+                        offset_y=pad_offset_y,
+                        rotation=pad_rotation,
+                        poly=antipad_polygon.core,
+                    )
+                else:
+                    self._pedb.logger.error(f"Polygon used for defining pad-stack {padstackname} anti-pad on layer "
+                                            f"{layer} is not valid")
         else:
             for layer in layers:
                 padstack_data.set_pad_parameters(

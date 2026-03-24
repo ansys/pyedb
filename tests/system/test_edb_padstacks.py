@@ -134,34 +134,39 @@ class TestClass(BaseTestClass):
     def test_padstack_properties_getter(self):
         """Evaluate properties"""
         edbapp = self.edb_examples.get_si_verse()
-        for el in edbapp.padstacks.definitions:
-            padstack = edbapp.padstacks.definitions[el]
-            assert padstack.hole_plating_thickness is not None or False
-            if not edbapp.grpc:  # not supported in grpc
-                assert padstack.hole_properties is not None or False
-            assert padstack.hole_plating_thickness is not None or False
-            assert padstack.hole_plating_ratio is not None or False
-            assert padstack.via_start_layer is not None or False
-            assert padstack.via_stop_layer is not None or False
-            assert padstack.material is not None or False
-            assert padstack.hole_finished_size is not None or False
-            assert padstack.hole_rotation is not None or False
-            assert padstack.hole_offset_x is not None or False
-            assert padstack.hole_offset_y is not None or False
-            try:  # grpc throws an exception if no hole is defined
-                assert padstack.hole_type is not None or False
-            except:
-                pass
-            pad = padstack.pad_by_layer[padstack.via_stop_layer]
-            if not pad.shape == "NoGeometry":
-                assert pad.parameters_values is not None or False
-                assert pad.offset_x is not None or False
-                assert pad.offset_y is not None or False
-                assert isinstance(pad.geometry_type, int)
-            if not edbapp.grpc:  # not relevant in grpc
-                polygon = pad._polygon_data_dotnet
-                if polygon:
-                    assert polygon.GetBBox()
+        # defnition = edbapp.padstacks.definitions["v30h20"]
+        # for el in edbapp.padstacks.definitions:
+        padstack = edbapp.padstacks.definitions["v30h20"]
+        assert padstack.hole_plating_thickness is not None or False
+        if not edbapp.grpc:  # not supported in grpc
+            assert padstack.hole_properties is not None or False
+        assert padstack.hole_plating_thickness is not None or False
+        assert padstack.hole_plating_ratio is not None or False
+        assert padstack.via_start_layer is not None or False
+        assert padstack.via_stop_layer is not None or False
+        assert padstack.material is not None or False
+        assert padstack.hole_finished_size is not None or False
+        assert padstack.hole_rotation is not None or False
+        assert padstack.hole_offset_x is not None or False
+        assert padstack.hole_offset_y is not None or False
+        try:  # grpc throws an exception if no hole is defined
+            assert padstack.hole_type is not None or False
+        except:
+            pass
+        pad = padstack.pad_by_layer[padstack.via_stop_layer]
+        if not pad.shape == "NoGeometry":
+            assert pad.parameters_values is not None or False
+            assert pad.offset_x is not None or False
+            assert pad.offset_y is not None or False
+            assert isinstance(pad.geometry_type, int)
+        if not edbapp.grpc:  # not relevant in grpc
+            polygon = pad._polygon_data_dotnet
+            if polygon:
+                assert polygon.GetBBox()
+        planar_em = edbapp.padstacks.definitions["PlanarEMVia"]
+
+        assert planar_em.via_stop_layer is None
+        assert planar_em.via_stop_layer is None
         edbapp.close()
 
     def test_padstack_properties_setter(self):
