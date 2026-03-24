@@ -80,7 +80,7 @@ doc = [
     "nbconvert<7.18",
     "numpydoc==1.10.0",
     "pandas>=1.1.0,<2.4",
-    "pypandoc>=1.10.0,<1.17",
+    "pypandoc>=1.10.0,<1.18",
     # NOTE: Remove recommonmark once examples are reworked.
     "recommonmark",
     "Rtree>=1.2.0",
