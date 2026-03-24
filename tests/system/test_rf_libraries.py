@@ -217,6 +217,9 @@ class TestClass(BaseTestClass):
         assert ustrip.width == 300e-6
         assert ustrip.impedance == 37.52
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
