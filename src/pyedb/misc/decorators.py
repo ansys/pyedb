@@ -114,7 +114,8 @@ def deprecate_argument_name(argument_map):
                 if old_arg in kwargs:
                     warnings.warn(
                         f"Argument `{old_arg}` is deprecated for method `{func_name}`; use `{new_arg}` instead.",
-                    category=FutureWarning)
+                        category=FutureWarning,
+                    )
                     # NOTE: Use old argument if new argument is not provided
                     if new_arg not in kwargs:
                         kwargs[new_arg] = kwargs.pop(old_arg)
