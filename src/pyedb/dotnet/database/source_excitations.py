@@ -22,6 +22,7 @@
 
 import time
 from typing import Set
+
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
 from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
@@ -38,10 +39,10 @@ from pyedb.dotnet.database.edb_data.sources import (
     SourceType,
     VoltageSourceBuilder,
 )
-from pyedb.misc.decorators import deprecated
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 class SourceExcitation:
