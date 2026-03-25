@@ -116,7 +116,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         """SI slider position.
 
         .. deprecated:: 0.70.0
-           Use :attr:`settings.si_slider_position is deprecated. Use :attr:`settings.general.si_slider_position` instead.
+           Use :attr:`settings.general.si_slider_position` instead.
         """
         return self.settings.general.si_slider_position
 
@@ -130,7 +130,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         """I slider position.
 
         .. deprecated:: 0.70.0
-           Use :attr:`settings.pi_slider_position is deprecated. Use :attr:`settings.general.pi_slider_position` instead.
+           Use :attr:`settings.general.pi_slider_position` instead.
         """
         return self.settings.general.pi_slider_pos
 
