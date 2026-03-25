@@ -296,7 +296,6 @@ class Component:
         return self.component_definition
 
     @component_def.setter
-    @deprecated_property("use component_definition property instead")
     def component_def(self, value):
         self.component_definition = value
 

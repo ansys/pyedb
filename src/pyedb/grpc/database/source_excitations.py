@@ -397,6 +397,9 @@ class SourceExcitation(SourceExcitationInternal):
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
+        .. deprecated:: 0.70.0
+           Use :attr: `ports` instead.
+
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
