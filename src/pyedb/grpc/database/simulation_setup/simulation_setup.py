@@ -262,7 +262,7 @@ class SimulationSetup(SimulationSetupDeprecated):
 
     def add_sweep(
         self,
-        name=None,
+        name: str | None = None,
         distribution: str = "linear",
         start_freq: str | float = "0GHz",
         stop_freq: str | float = "20GHz",
