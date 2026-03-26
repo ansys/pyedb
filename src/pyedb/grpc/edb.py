@@ -3308,10 +3308,13 @@ class Edb(EdbInit):
 
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):
         """Copy Cells from another Edb Database into this Database."""
-        edb2 = Edb(edbpath=edb_path, edbversion=self.version)
-        cells = self.copy_cells([edb2.active_cell])
-        cell = cells[0]
-        cell.is_blackbox = True
+        edb2 = Edb(edbpath=edb_path, edbversion=self.version, in_memory=self.in_memory)
+        try:
+            cells = self.copy_cells([edb2.active_cell])
+            cell = cells[0]
+            cell.is_blackbox = True
+        finally:
+            edb2.close(terminate_rpc_session=False)
 
     def _init_objects(self):
         """Initialize commonly used cached objects for the gRPC EDB implementation.

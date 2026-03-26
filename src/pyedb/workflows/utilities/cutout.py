@@ -705,8 +705,8 @@ class GrpcCutout:
 
         # paths
         for path in reference_paths:
-            pdata = path.polygon_data
-            if extent_poly.intersection_type(pdata) == 0:
+            pdata = path.polygon_data.core
+            if extent_poly.intersection_type(pdata).value == 0:
                 prims_to_clip.append(path)
                 continue
             if not path.core.set_clip_info(extent_poly, True):
@@ -715,7 +715,7 @@ class GrpcCutout:
 
         # reference primitives
         for prim in reference_prims:
-            pdata = prim.polygon_data
+            pdata = prim.polygon_data.core
             int_type = extent_poly.intersection_type(pdata).value
             if int_type in (0, 4):  # completely outside
                 prims_to_clip.append(prim)
@@ -726,7 +726,7 @@ class GrpcCutout:
                 for p in clipped_list:
                     if not p.points:
                         continue
-                    voids_data = [v.polygon_data for v in prim.voids]
+                    voids_data = [v.polygon_data.core for v in prim.voids]
                     if voids_data:
                         for poly_void in p.subtract(p, voids_data):
                             if poly_void.points:
@@ -735,8 +735,6 @@ class GrpcCutout:
                         poly_to_create.append([p, prim.layer.name, prim.net_name, []])
                 prims_to_clip.append(prim)
 
-        # components
-        components_to_delete = [comp for comp in all_components if comp.numpins == 0]
         self.logger.info(f"[COMPUTE] Decision lists ready in {time.time() - _t:.3f} s")
         # ------------------------------------------------------------------
         # 3.  WRITE – single serial pass, no interleaved reads
@@ -756,6 +754,8 @@ class GrpcCutout:
         # primitives
         total_primitive_to_delete = prim_to_delete + prims_to_clip + [v for prim in prims_to_clip for v in prim.voids]
         _t1 = time.time()
+        for prim in total_primitive_to_delete:
+            prim.delete()
         self.logger.info(f"{len(total_primitive_to_delete)} primitives deleted in {time.time() - _t1:.3f} s")
 
         # new polygons
@@ -766,6 +766,8 @@ class GrpcCutout:
 
         # components
         _t1 = time.time()
+        # components
+        components_to_delete = [comp for comp in all_components if comp.numpins == 0]
         for comp in components_to_delete:
             comp.delete()
         if self.remove_single_pin_components:

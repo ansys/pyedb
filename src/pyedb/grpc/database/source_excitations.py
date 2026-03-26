@@ -2408,17 +2408,14 @@ class SourceExcitation(SourceExcitationInternal):
             primitives_id = [i.edb_uid for i in primitives_id]
 
         terminals = []
-        _port_name = port_name
         for p_id, loc in list(zip(primitives_id, points_on_edge)):
             _, term = self.create_wave_port(
                 p_id,
                 loc,
-                port_name=_port_name,
                 horizontal_extent_factor=horizontal_extent_factor,
                 vertical_extent_factor=vertical_extent_factor,
                 pec_launch_width=pec_launch_width,
             )
-            _port_name = None
             terminals.append(term)
 
         _edb_bundle_terminal = BundleTerminal.create(self._pedb, port_name, terminals)
