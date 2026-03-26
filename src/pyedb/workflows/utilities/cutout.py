@@ -755,8 +755,11 @@ class GrpcCutout:
 
         # primitives
         total_primitive_to_delete = prim_to_delete + prims_to_clip + [v for prim in prims_to_clip for v in prim.voids]
+        total_primitive_number = len(total_primitive_to_delete)
         _t1 = time.time()
-        self.logger.info(f"{len(total_primitive_to_delete)} primitives deleted in {time.time() - _t1:.3f} s")
+        for primitive in total_primitive_to_delete:
+            primitive.delete()
+        self.logger.info(f"{total_primitive_number} primitives deleted in {time.time() - _t1:.3f} s")
 
         # new polygons
         _t1 = time.time()
