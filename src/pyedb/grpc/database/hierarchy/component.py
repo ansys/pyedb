@@ -565,19 +565,25 @@ class Component:
                 return "cylinder"
             elif shape == SolderballShape.SOLDERBALL_SPHEROID:
                 return "spheroid"
+            elif shape == SolderballShape.UNKNOWN_SOLDERBALL_SHAPE:
+                return "unknown"
         return None
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
         if not self.component_property.solder_ball_property.is_null:
             shape = None
-            if isinstance(value, str):
+            if value is None:
+                shape = SolderballShape.NO_SOLDERBALL
+            elif isinstance(value, str):
                 if value.lower() == "cylinder":
                     shape = SolderballShape.SOLDERBALL_CYLINDER
                 elif value.lower() == "none":
                     shape = SolderballShape.NO_SOLDERBALL
                 elif value.lower() == "spheroid":
                     shape = SolderballShape.SOLDERBALL_SPHEROID
+                elif value.lower() == "none":
+                    shape = SolderballShape.NO_SOLDERBALL
             if shape:
                 cmp_property = self.core.component_property
                 solder_ball_prop = cmp_property.solder_ball_property

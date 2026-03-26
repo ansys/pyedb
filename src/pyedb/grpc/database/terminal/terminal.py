@@ -214,6 +214,31 @@ class Terminal(ConnObj):
         self.port_post_processing_prop.do_renormalize = value
 
     @property
+    def do_deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+        Returns
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @do_deembed.setter
+    def do_deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
+    @deprecated_property("use do_deembed property instead")
+    def deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+
+        .. deprecated:: 0.71.0
+            The `deembed` property is deprecated. Please use `do_deembed` instead.
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @deembed.setter
+    def deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
     def renormalization_impedance(self) -> float:
         """Get the renormalization impedance value.
 

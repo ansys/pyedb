@@ -301,13 +301,15 @@ class TestClass(BaseTestClass):
 
     def test_components_create_solder_ball_on_component(self):
         """Set cylindrical solder balls on a given component"""
-        # Done
         edb = self.edb_examples.get_si_verse()
         assert edb.components.set_solder_ball("U1", shape="Spheroid")
         assert edb.components.set_solder_ball("U6", sball_height=None)
         assert edb.components.set_solder_ball(
             "U6", sball_height="100um", auto_reference_size=False, chip_orientation="chip_up"
         )
+        assert edb.components["U6"].solder_ball_shape == "cylinder"
+        edb.components["U6"].solder_ball_shape = None
+        assert edb.components["U6"].solder_ball_shape == "none"
         edb.close(terminate_rpc_session=False)
 
     def test_components_short_component(self):

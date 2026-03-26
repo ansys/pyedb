@@ -2017,7 +2017,7 @@ class SourceExcitation(SourceExcitationInternal):
         horizontal_extent_factor: Union[int, float] = 5,
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
-    ) -> str:
+    ) -> str | None:
         """Create a vertical edge port.
 
         Parameters
@@ -2080,9 +2080,9 @@ class SourceExcitation(SourceExcitationInternal):
             prop,
         )
         if not pos_edge_term.is_null:
-            return pos_edge_term
+            return pos_edge_term.name
         else:
-            return False
+            return None
 
     def create_edge_port_horizontal(
         self,
