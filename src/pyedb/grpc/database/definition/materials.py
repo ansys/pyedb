@@ -48,8 +48,7 @@ from pydantic import BaseModel, confloat
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated
-from pyedb.misc.decorators import deprecated_property
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -183,7 +182,6 @@ class Material:
             self.__dielectric_model = CoreDjordjecvicSarkarModel(self.core.dielectric_material_model.msg)
         return self.__dielectric_model
 
-
     @property
     def conductivity(self) -> float:
         """Get material conductivity.
@@ -280,7 +278,6 @@ class Material:
 
         """
         return self.dc_relative_permittivity
-
 
     @dc_permittivity.setter
     def dc_permittivity(self, value):
@@ -437,7 +434,6 @@ class Material:
             return Value(self.core.get_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT))
         return 0.0
 
-
     @magnetic_loss_tangent.setter
     def magnetic_loss_tangent(self, value):
         """Set material magnetic loss tangent."""
@@ -577,7 +573,7 @@ class Material:
         res = {"name": self.name}
         for prop, value in properties.model_dump().items():
             res[prop] = value
-        #res.update(properties.model_dump())
+        # res.update(properties.model_dump())
         return res
 
     def update(self, input_dict: dict):
