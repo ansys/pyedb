@@ -1534,7 +1534,7 @@ class SourceExcitation(SourceExcitationInternal):
         r: float = 0.0,
         l: float = 0.0,
         c: float = 0.0,
-    ) -> Optional[str]:
+    ) -> str:
         """Create a pin group terminal.
 
         Parameters
