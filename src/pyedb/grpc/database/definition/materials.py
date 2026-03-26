@@ -515,7 +515,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, self.__edb._value_setter(value))
 
     @property
-    def poisson_ratio(self) -> float | str :
+    def poisson_ratio(self) -> float | str:
         """Material poisson ratio.
 
         Returns
