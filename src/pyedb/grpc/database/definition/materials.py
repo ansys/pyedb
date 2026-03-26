@@ -379,7 +379,7 @@ class Material:
         """
         if "permittivity" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.PERMITTIVITY))
-        return None
+        return 1.0
 
     @permittivity.setter
     def permittivity(self, value):
@@ -387,7 +387,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMITTIVITY, self.__edb._value_setter(value))
 
     @property
-    def permeability(self) -> float | str | None:
+    def permeability(self) -> float | str:
         """Material permeability.
 
         Returns
@@ -398,7 +398,7 @@ class Material:
         """
         if "permeability" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.PERMEABILITY))
-        return None
+        return 0.0
 
     @permeability.setter
     def permeability(self, value):
@@ -406,7 +406,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
-    def dielectric_loss_tangent(self) -> float | str | None:
+    def dielectric_loss_tangent(self) -> float | str:
         """Material loss tangent.
 
         Returns
@@ -417,7 +417,7 @@ class Material:
         """
         if "dielectric_loss_tangent" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT))
-        return None
+        return 0.0
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
@@ -425,7 +425,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT, self.__edb._value_setter(value))
 
     @property
-    def magnetic_loss_tangent(self) -> float | str | None:
+    def magnetic_loss_tangent(self) -> float | str:
         """Material magnetic loss tangent.
 
         Returns
@@ -435,7 +435,7 @@ class Material:
         """
         if "magnetic_loss_tangent" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT))
-        return None
+        return 0.0
 
 
     @magnetic_loss_tangent.setter
@@ -444,7 +444,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT, self.__edb._value_setter(value))
 
     @property
-    def thermal_conductivity(self) -> float | str | None:
+    def thermal_conductivity(self) -> float | str:
         """Material thermal conductivity.
 
         Returns
@@ -455,7 +455,7 @@ class Material:
         """
         if "thermal_conductivity" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY))
-        return None
+        return 0.0
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
@@ -463,7 +463,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY, self.__edb._value_setter(value))
 
     @property
-    def mass_density(self) -> float | str | None:
+    def mass_density(self) -> float | str:
         """Material mass density.
 
         Returns
@@ -474,7 +474,7 @@ class Material:
         """
         if "mass_density" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.MASS_DENSITY))
-        return None
+        return 0.0
 
     @mass_density.setter
     def mass_density(self, value):
@@ -482,7 +482,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.MASS_DENSITY, self.__edb._value_setter(value))
 
     @property
-    def youngs_modulus(self) -> float | str | None:
+    def youngs_modulus(self) -> float | str:
         """Material young modulus.
 
         Returns
@@ -493,7 +493,7 @@ class Material:
         """
         if "youngs_modulus" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.YOUNGS_MODULUS))
-        return None
+        return 0.0
 
     @youngs_modulus.setter
     def youngs_modulus(self, value):
@@ -501,7 +501,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.YOUNGS_MODULUS, self.__edb._value_setter(value))
 
     @property
-    def specific_heat(self) -> float | str | None:
+    def specific_heat(self) -> float | str:
         """Material specific heat.
 
         Returns
@@ -511,7 +511,7 @@ class Material:
         """
         if "specific_heat" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.SPECIFIC_HEAT))
-        return None
+        return 0.0
 
     @specific_heat.setter
     def specific_heat(self, value):
@@ -519,7 +519,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, self.__edb._value_setter(value))
 
     @property
-    def poisson_ratio(self) -> float | str | None:
+    def poisson_ratio(self) -> float | str :
         """Material poisson ratio.
 
         Returns
@@ -529,7 +529,7 @@ class Material:
         """
         if "poissons_ratio" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.POISSONS_RATIO))
-        return None
+        return 0.0
 
     @poisson_ratio.setter
     def poisson_ratio(self, value):
@@ -537,7 +537,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.POISSONS_RATIO, self.__edb._value_setter(value))
 
     @property
-    def thermal_expansion_coefficient(self) -> float | str | None:
+    def thermal_expansion_coefficient(self) -> float | str:
         """Material thermal coefficient.
 
         Returns
@@ -548,7 +548,7 @@ class Material:
         """
         if "thermal_expansion_coefficient" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT))
-        return None
+        return 0.0
 
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):
