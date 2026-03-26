@@ -264,12 +264,12 @@ class SimulationSetup(SimulationSetupDeprecated):
         self,
         name=None,
         distribution: str = "linear",
-        start_freq: str = "0GHz",
-        stop_freq: str = "20GHz",
-        step: str = "10MHz",
+        start_freq: str | float = "0GHz",
+        stop_freq: str | float = "20GHz",
+        step: str | float = "10MHz",
         discrete: bool = False,
-        frequency_set: list = None,
-    ) -> Union[SweepData, None]:
+        frequency_set: list | None = None,
+    ) -> SweepData | None:
         """Add a HFSS frequency sweep.
 
         This method was refactored to reduce complexity. The behavior is compatible
