@@ -37,7 +37,6 @@ import sys
 import time
 import traceback
 from typing import Any, Dict, List, Union
-import warnings
 from zipfile import ZipFile as zpf
 
 from pyedb.configuration.configuration import Configuration
@@ -97,7 +96,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
 from pyedb.dotnet.database.utilities.value import Value
 from pyedb.dotnet.database.Variables import decompose_variable_value
 from pyedb.edb_logger import EdbLogger
-from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
+from pyedb.generic.constants import AEDT_UNITS, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.generic.process import SiwaveSolve
@@ -393,7 +392,11 @@ class Edb:
                 os.path.join(self.base_path, "common", "mono", "Linux64", "lib", "libmonosgen-2.0.so.1")
             )
             ctypes.cdll.LoadLibrary(os.path.join(self.base_path, "libEDBCWrapper.so"))
-        _clr.AddReference("Ansys.Ansoft.Edb")
+        if self.version == "2026.1":
+            dll = os.path.join(os.path.dirname(os.path.abspath(__file__)), "patched_dll", "Ansys.Ansoft.Edb")
+            _clr.AddReference(dll)
+        else:
+            _clr.AddReference("Ansys.Ansoft.Edb")
         _clr.AddReference("Ansys.Ansoft.EdbBuilderUtils")
         _clr.AddReference("Ansys.Ansoft.SimSetupData")
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
