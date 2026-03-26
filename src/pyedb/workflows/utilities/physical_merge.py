@@ -208,8 +208,11 @@ def __add_padstack_instances(hosting_edb, merged_edb, prefix, vector, cache_laye
         rotation = hosting_edb.value(padstack_inst.rotation)
         from_layer = cache_layers[f"{prefix}{padstack_inst.start_layer}"]
         to_layer = cache_layers[f"{prefix}{padstack_inst.stop_layer}"]
-        net = padstack_inst.net.core
+        merged_net = padstack_inst.net
+        # if not merged_net.name in hosting_edb.nets:
+        #     hosting_edb.nets.nets.create(net=merged_net.name)
         name = f"{prefix}{padstack_inst.name}"
+        net = hosting_edb.nets[merged_net.name].core
         padstack_definition = cache_padstack_def[f"{prefix}{padstack_inst.definition.name}"]
         inst = CorePadstackInstance.create(
             layout=layout,
