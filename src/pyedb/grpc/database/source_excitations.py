@@ -1194,7 +1194,7 @@ class SourceExcitation(SourceExcitationInternal):
         r: Union[int, float] = 0,
         l: Union[int, float] = 0,
         c: Union[int, float] = 0,
-    ) -> Optional[str]:
+    ) -> Optional[str] | bool:
         """Create a terminal on pins.
 
         Parameters
@@ -1299,7 +1299,7 @@ class SourceExcitation(SourceExcitationInternal):
 
         else:
             self._pedb.logger.error("No valid source type specified.")
-            return None
+            return False
         return pos_terminal.name
 
     def create_voltage_source_on_pin(
