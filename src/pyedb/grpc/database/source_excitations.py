@@ -967,7 +967,7 @@ class SourceExcitation(SourceExcitationInternal):
                 padstack_instance=pins[1],
                 layer=pin_layers[0],
                 net=pins[1].net,
-                is_ref=False,
+                is_ref=True,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
