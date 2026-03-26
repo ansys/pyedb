@@ -65,8 +65,8 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
     def dc_ir_settings(self):
         """SIWave DCIR simulation settings.
 
-        ... deprecated:: 0.77.3
-        Use :attr:`settings.dc
+        .. deprecated:: 0.77.3
+           Use :attr:`settings.dc
         <pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup.settings.dc>`
         instead.
 

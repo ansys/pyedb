@@ -265,7 +265,6 @@ class EDBComponent(Group):
         return self.enabled
 
     @is_enabled.setter
-    @deprecated_property("use enabled property instead")
     def is_enabled(self, value):
         self.enabled = value
 

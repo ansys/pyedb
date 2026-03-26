@@ -45,7 +45,6 @@ class HFSSDCRSettings:
         return self.max_passes
 
     @conduction_max_passes.setter
-    @deprecated_property("use max_passes property instead.")
     def conduction_max_passes(self, value: int):
         """Set maximum number of conduction adaptive passes.
 
@@ -78,7 +77,6 @@ class HFSSDCRSettings:
         return self.min_converged_passes
 
     @conduction_min_converged_passes.setter
-    @deprecated_property("use min_converged_passes property instead.")
     def conduction_min_converged_passes(self, value: int):
         """Set minimum number of converged conduction adaptive passes.
 
@@ -104,14 +102,13 @@ class HFSSDCRSettings:
     def conduction_min_passes(self) -> int:
         """Minimum number of conduction adaptive passes.
 
-        ... deprecated:: 0.77.3
-        Use :attr:`min_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
+        .. deprecated:: 0.77.3
+           Use :attr:`min_passes <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.min_passes>`
         instead.
         """
         return self.min_passes
 
     @conduction_min_passes.setter
-    @deprecated_property("use min_passes property instead.")
     def conduction_min_passes(self, value: int):
         """Set minimum number of conduction adaptive passes.
 
@@ -137,14 +134,13 @@ class HFSSDCRSettings:
     def conduction_per_error(self) -> float:
         """Conduction adaptive percent error.
 
-        ... deprecated:: 0.77.3
+        .. deprecated:: 0.77.3
         Use :attr:`percent_error <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_error>`
         instead.
         """
         return self.percent_error
 
     @conduction_per_error.setter
-    @deprecated_property("use percent_error property instead.")
     def conduction_per_error(self, value: float):
         """Set conduction adaptive percent error.
 
@@ -169,8 +165,8 @@ class HFSSDCRSettings:
     def conduction_per_refine(self) -> float:
         """Conduction adaptive percent refinement per pass.
 
-        ... deprecated:: 0.77.3
-        Use :attr:
+        .. deprecated:: 0.77.3
+           Use :attr:
         `percent_refinement_per_pass
         <pyedb.grpc.database.simulation_setup.hfss_dcr_settings.HFSSDCRSettings.percent_refinement_per_pass>`
         instead.
@@ -178,7 +174,6 @@ class HFSSDCRSettings:
         return self.percent_refinement_per_pass
 
     @conduction_per_refine.setter
-    @deprecated_property("use percent_refinement_per_pass property instead.")
     def conduction_per_refine(self, value: float):
         """Set conduction adaptive percent refinement per pass.
 

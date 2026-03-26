@@ -119,7 +119,7 @@ class Modeler(object):
         """Primitives.
 
         .. deprecated:: 0.70.0
-                Use :attr:`edb.layout.primitives` instead.
+           Use :attr:`edb.layout.primitives` instead.
 
         Returns
         -------

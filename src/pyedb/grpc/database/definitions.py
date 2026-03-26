@@ -40,7 +40,6 @@ class Definitions:
         """Component definitions.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`components` instead.
 
         """
@@ -52,7 +51,6 @@ class Definitions:
         """Component definitions.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`components` instead.
 
         """
@@ -64,7 +62,6 @@ class Definitions:
         """Get all APD bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`apd_bondwires` instead.
 
         """
@@ -76,7 +73,6 @@ class Definitions:
         """Get all JEDEC4 bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`jedec4_bondwires` instead.
 
         """
@@ -88,7 +84,6 @@ class Definitions:
         """Get all JEDEC5 bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`jedec5_bondwires` instead.
 
         """
@@ -100,7 +95,6 @@ class Definitions:
         """Package definitions.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`packages` instead.
 
         """
@@ -126,7 +120,6 @@ class Definitions:
         """Package definitions.
 
         .. deprecated:: 0.66.0
-
            Use :attr:`packages` instead.
 
         """
