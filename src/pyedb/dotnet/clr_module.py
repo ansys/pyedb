@@ -61,7 +61,7 @@ if is_linux:  # pragma: no cover
     dotnet_root = None
     runtime_config = None
     runtime_spec = None
-    # Use system .NET core runtime or fall back to dotnetcore2
+    # Use system .NET core runtime
     if os.environ.get("DOTNET_ROOT") is None:
         try:
             from clr_loader import get_coreclr
