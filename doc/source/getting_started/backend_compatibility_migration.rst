@@ -32,7 +32,7 @@ Recommended guidance for most users
 If you are new to PyEDB:
 
 #. Install ``pyedb``
-#. Start with the :class:`~pyedb.Edb` entry point
+#. Start with the Edb entry point (:class:`~pyedb.Edb`).
 #. Learn the high-level API through the Getting started guide, User guide, and Examples
 #. Ignore backend details unless you have a specific compatibility or deployment reason to care
 
@@ -83,8 +83,8 @@ Linux
 
 If you are deploying on Linux, prefer the gRPC backend when possible.
 
-Existing .NET-based workflows
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Workflows based on .NET
+~~~~~~~~~~~~~~~~~~~~~~~
 
 Existing workflows can continue to use the current backend behavior during the transition period, especially when compatibility validation is still in progress.
 
