@@ -72,9 +72,10 @@ if is_linux:  # pragma: no cover
             is_clr = True
         # TODO: Fall backing to dotnetcore2 should be removed in a near future.
         except Exception:
-            raise RuntimeError(".NET is not found. For more information, see"
-                               "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
-                               )
+            raise RuntimeError(
+                ".NET is not found. For more information, see"
+                "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
+            )
     # Use specified .NET root folder
     else:
         dotnet_root = Path(os.environ["DOTNET_ROOT"])
