@@ -70,7 +70,6 @@ if is_linux:  # pragma: no cover
             load(runtime)
             os.environ["DOTNET_ROOT"] = runtime.dotnet_root.as_posix()
             is_clr = True
-        # TODO: Fall backing to dotnetcore2 should be removed in a near future.
         except Exception:
             raise RuntimeError(".NET is not found. For more information, see"
                                "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
@@ -78,23 +77,18 @@ if is_linux:  # pragma: no cover
     # Use specified .NET root folder
     else:
         dotnet_root = Path(os.environ["DOTNET_ROOT"])
-        # Patch the case where DOTNET_ROOT leads to dotnetcore2 for more information
-        # see https://github.com/ansys/pyedb/issues/922
-        # TODO: Remove once dotnetcore2 is deprecated
-        if dotnet_root.parent.name == "dotnetcore2":
-            runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
-        else:
-            from clr_loader import find_runtimes
 
-            candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
-            candidates.sort(key=lambda spec: spec.version, reverse=True)
-            if not candidates:
-                raise RuntimeError(
-                    "Configuration file could not be found from DOTNET_ROOT. "
-                    "Please ensure that .NET SDK is correctly installed or "
-                    "that DOTNET_ROOT is correctly set."
-                )
-            runtime_spec = candidates[0]
+        from clr_loader import find_runtimes
+
+        candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
+        candidates.sort(key=lambda spec: spec.version, reverse=True)
+        if not candidates:
+            raise RuntimeError(
+                "Configuration file could not be found from DOTNET_ROOT. "
+                "Please ensure that .NET SDK is correctly installed or "
+                "that DOTNET_ROOT is correctly set."
+            )
+        runtime_spec = candidates[0]
     # Use specific .NET core runtime
     if dotnet_root is not None and (runtime_config is not None or runtime_spec is not None):
         try:
