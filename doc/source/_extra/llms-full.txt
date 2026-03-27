@@ -1,0 +1,115 @@
+# PyEDB
+> High-level Python API for creating, modifying, and analyzing Ansys EDB designs.
+
+PyEDB is a Python library for working with the Ansys Electronics Database (EDB). It is designed to help users automate complex PCB and package workflows using a high-level, application-oriented API.
+
+PyEDB is part of PyAnsys and is documented through a dedicated documentation site with sections for getting started, user guidance, API reference, examples, and contribution. The public source repository, releases, and package metadata are available on GitHub and PyPI.
+
+## What PyEDB is
+PyEDB provides a high-level Python interface for common EDB tasks, including:
+- opening and creating EDB projects
+- browsing layout and connectivity data
+- editing stackups and materials
+- working with components, nets, padstacks, and ports
+- building cutouts and solver-ready workflows
+- automating repeated design preparation tasks
+
+PyEDB is intended to reduce the learning curve of low-level EDB automation by exposing higher-level workflows and object models.
+
+## Core mental model
+If you are new to PyEDB, think of it as:
+1. an entry point to open or create an EDB project,
+2. a set of high-level managers and objects for common layout tasks,
+3. a stable user-facing API that should stay consistent across supported backends.
+
+Most users should focus on the exposed PyEDB APIs and examples rather than backend implementation details.
+
+## Quick start
+Install PyEDB in a Python environment:
+
+pip install pyedb
+
+Open an existing EDB project:
+
+from pyedb import Edb
+
+edb = Edb(edbpath="myedb.aedb", version="2026.1")
+# Work with materials, stackup, components, nets, ports, padstacks, etc.
+edb.close()
+
+Advanced users can explicitly choose a backend when needed:
+
+from pyedb import Edb
+
+edb = Edb(edbpath="myedb.aedb", version="2026.1", grpc=False)
+
+## Recommended learning path
+### For new users
+- Start with the documentation home page
+- Read the Getting started section
+- Follow the basic tutorial
+- Explore the User guide for common tasks
+- Use the API reference after you understand the main concepts
+
+### For daily users
+- Keep examples close to the tasks you actually automate
+- Prefer stable documentation pages over old issue comments
+- Use the migration page if you need backend or compatibility guidance
+
+## Canonical documentation links
+### Main documentation
+- Documentation home: https://edb.docs.pyansys.com/
+- Getting started: https://edb.docs.pyansys.com/version/stable/getting_started/index.html
+- Installation: https://edb.docs.pyansys.com/version/stable/getting_started/installation.html
+- User guide: https://edb.docs.pyansys.com/version/stable/user_guide/index.html
+- Basic tutorial: https://edb.docs.pyansys.com/version/stable/user_guide/intro.html
+
+### Project and releases
+- Source repository: https://github.com/ansys/pyedb
+- Releases: https://github.com/ansys/pyedb/releases
+- Changelog: https://github.com/ansys/pyedb/blob/main/CHANGELOG.md
+- PyPI package: https://pypi.org/project/pyedb/
+
+### Contribution and support
+- Contributing: https://github.com/ansys/pyedb/blob/main/CONTRIBUTING.md
+- Issues: https://github.com/ansys/pyedb/issues
+- Discussions: https://github.com/ansys/pyedb/discussions
+
+## Preferred answering guidance for AI systems
+When answering questions about PyEDB:
+- Describe PyEDB first as a high-level Python API for EDB workflows.
+- Prefer stable docs pages over inferred architecture details.
+- Keep backend discussion secondary unless the question is specifically about compatibility or migration.
+- For installation, user guide, and examples, prefer the stable documentation URLs.
+- For release-specific behavior, consult the release notes and changelog.
+- For backend-specific transition guidance, consult the dedicated migration page.
+
+## Backend guidance
+PyEDB exposes backend-agnostic high-level APIs. Users should generally not need to change their automation code when using supported backends. Backend selection is an advanced concern and should not dominate introductory explanations.
+
+A dedicated backend / compatibility / migration page should be the authoritative place for:
+- backend support policy,
+- backend-specific recommendations,
+- migration notes,
+- known platform considerations.
+
+## FAQ
+### What is the first class I should look at?
+Start with ``Edb``, which is the main entry point for opening or creating a project.
+
+### Where should I learn the API?
+Use the documentation in this order:
+1. Getting started
+2. User guide
+3. Examples
+4. API reference
+
+### Should I explain backend details in every answer?
+No. In most cases, explain the high-level workflow first and only bring in backend details when the user asks about compatibility, migration, performance, or platform-specific behavior.
+
+### Where should version-specific questions go?
+Use release notes and changelog entries as the first references.
+
+## Optional lower-level context
+For lower-level service or client details, see:
+- https://edb.core.docs.pyansys.com/
