@@ -1,5 +1,5 @@
 <!-- -->
-<a name="readme-top"></a>
+<a id="readme-top"></a>
 <!--
 *** PyEDB README
 -->
@@ -117,15 +117,19 @@ combine 3D designs, or perform simulation postprocessing. EDB also supports 3D c
 ## Documentation and issues
 
 Documentation for the latest stable release of PyEDB is hosted at
-[PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.htmldex.html):
+[PyEDB documentation](https://edb.docs.pyansys.com/version/stable/index.html):
   Learn how to install PyEDB, understand the basic concepts, and get started quickly.
+
 - [Installation](https://edb.docs.pyansys.com/version/stable/getting_started/installation.html):
   Install PyEDB and verify your environment.
-- [User guide](https://edb.docs.pyansys.com/version/stable/user_guide/index.html#user-guidews.
-- [API reference](https://edb.docs.pyansys.com/version/stable/api/index.html descriptions and usage details.
+- [User guide](https://edb.docs.pyansys.com/version/stable/user_guide/index.html):
+  The user guide explains workflows and common tasks.
+- [API reference](https://edb.docs.pyansys.com/version/stable/api/index.html):
+  API descriptions and usage details.
 - [Examples](https://examples.aedt.docs.pyansys.com/version/dev/examples/high_frequency/layout/index.html):
   Explore end-to-end workflow examples for PyEDB.
-- [Contribute](https://edb.docs.pyansys.com/version/stable/contributing.html mode and contribute to the codebase or documentation.
+- [Contribute](https://edb.docs.pyansys.com/version/stable/contributing.html):
+  Learn how to contribute to the codebase or documentation.
 
 If you need backend-specific guidance, platform recommendations, or migration planning, see the
 backend / compatibility / migration page in the documentation.
@@ -135,12 +139,12 @@ for switching from viewing the documentation for the latest stable release
 to viewing the documentation for the development version or previously
 released versions.
 
-On the [PyEDB Issues](https://github.com/ansys/pyedb/issues you can
+On the [PyEDB Issues](https://github.com/ansys/pyedb/issues) page you can
 create issues to report bugs and request new features.
 
-On the [PyEDB Discussions](https://github.com/ansys/pyedb/discussionse
-[Discussions](https://discuss.ansys.com/) page on the Ansys Developer portal,
-you can post questions, share ideas, and get community feedback.
+On the [PyEDB Discussions](https://github.com/ansys/pyedb/discussions) or the
+[Ansys Developer Discussions](https://discuss.ansys.com/) page, you can post
+questions, share ideas, and get community feedback.
 
 To reach the project support team, email [pyansys.core@ansys.com](mailto:pyansys.core@ansys.com).
 
@@ -160,12 +164,13 @@ Use the dedicated backend / compatibility / migration documentation page if you 
 
 ## License
 
-PyEDB is licensed under the [MIT License](https://github.com/ansys/pyedb/blob/main/LICENSEbrary extends the
-functionality of EDB by adding a Python interface without changing the
-core behavior or license of the original software.
+PyEDB is licensed under the [MIT License](https://github.com/ansys/pyedb/blob/main/LICENSE).
+
+This library extends the functionality of EDB by adding a Python interface
+without changing the core behavior or license of the original software.
 
 The use of PyEDB requires a legally licensed local copy of AEDT.
 To get a copy of AEDT, see the [Ansys Electronics](https://www.ansys.com/products/electronics)
 page on the Ansys website.
 
-<p style="text-align: right;"> <a href="#readme-top">back to top</a> </p>
+<p style="text-align: right;"> [back to top](#pyedb) </p>
