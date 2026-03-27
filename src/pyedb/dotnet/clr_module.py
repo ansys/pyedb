@@ -71,9 +71,10 @@ if is_linux:  # pragma: no cover
             os.environ["DOTNET_ROOT"] = runtime.dotnet_root.as_posix()
             is_clr = True
         except Exception:
-            raise RuntimeError(".NET is not found. For more information, see"
-                               "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
-                               )
+            raise RuntimeError(
+                ".NET is not found. For more information, see"
+                "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
+            )
     # Use specified .NET root folder
     else:
         dotnet_root = Path(os.environ["DOTNET_ROOT"])
