@@ -32,7 +32,7 @@ Recommended guidance for most users
 If you are new to PyEDB:
 
 #. Install ``pyedb``
-#. Start with the :class:`pyedb.Edb` entry point
+#. Start with the :class:`~pyedb.Edb` entry point
 #. Learn the high-level API through the Getting started guide, User guide, and Examples
 #. Ignore backend details unless you have a specific compatibility or deployment reason to care
 
@@ -133,11 +133,11 @@ The compatibility goal is:
 - **Migration guidance:** should be documented here, not scattered across tutorials
 - **Long-term recommendation:** prefer gRPC for future-facing workflows
 
-FAQ
+Frequently asked questions
 ---
 
-Do I need to care about the backend to start using PyEDB?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Do you need to care about the backend to start using PyEDB?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 No. Most users should start with the high-level API and only consult this page if they hit a platform, compatibility, or migration question.
 
