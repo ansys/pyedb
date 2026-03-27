@@ -173,4 +173,4 @@ The use of PyEDB requires a legally licensed local copy of AEDT.
 To get a copy of AEDT, see the [Ansys Electronics](https://www.ansys.com/products/electronics)
 page on the Ansys website.
 
-<p style="text-align: right;"> [back to top](#pyedb) </p>
+[back to top](#pyedb)
