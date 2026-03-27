@@ -72,15 +72,9 @@ if is_linux:  # pragma: no cover
             is_clr = True
         # TODO: Fall backing to dotnetcore2 should be removed in a near future.
         except Exception:
-            warnings.warn(
-                "Unable to set .NET root and locate the runtime configuration file. Falling back to using dotnetcore2."
-            )
-            warnings.warn(LINUX_WARNING)
-
-            import dotnetcore2
-
-            dotnet_root = Path(dotnetcore2.__file__).parent / "bin"
-            runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
+            raise RuntimeError(".NET is not found. For more information, see"
+                               "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
+                               )
     # Use specified .NET root folder
     else:
         dotnet_root = Path(os.environ["DOTNET_ROOT"])
