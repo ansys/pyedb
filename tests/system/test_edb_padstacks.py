@@ -571,7 +571,6 @@ class TestClass(BaseTestClass):
         assert merged_via[0].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_dbscan(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -691,7 +690,6 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Edb.edb_value doesn't exist in grpc.")
     def test_set_dcir_equipotential_advanced(self):
         edbapp = self.edb_examples.get_si_verse()
         [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
@@ -758,7 +756,6 @@ class TestPadstackInstance(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(config["use_grpc"], reason="The updated method is not in ansys-edb-core yet.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstanceEMProperties(BaseTestClass):
     def test_em_properties(self):
