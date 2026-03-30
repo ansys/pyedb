@@ -1280,7 +1280,6 @@ class TestClass(BaseTestClass):
         assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
         edbapp.close()
 
-    @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
     def test_edb_settings(self):
         edbapp = self.edb_examples.get_si_verse()
         assert type(edbapp.logger) == EdbLogger
@@ -1303,7 +1302,6 @@ class TestClass(BaseTestClass):
         assert edbapp.are_port_reference_terminals_connected()
         edbapp.close()
 
-    @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
     def test_ports_and_sources_creation(self):
         edbapp = self.edb_examples.get_si_verse()
         p1 = edbapp.padstacks.instances_by_name["Via1"].create_terminal("p1")
@@ -1315,7 +1313,6 @@ class TestClass(BaseTestClass):
         edbapp.create_port(p3, p4, False, "test2")
         assert edbapp.ports["test2"]
 
-    @pytest.mark.skip(reason="BUG 1422195")
     def test_siwave_simulation_setup_bug(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")

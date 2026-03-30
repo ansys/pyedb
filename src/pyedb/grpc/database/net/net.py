@@ -138,6 +138,7 @@ class Net:
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
         """
+        from pyedb.grpc.database.primitive.circle import Circle
 
         primitives = self.core.primitives
         if not len(self.__primitives) == len(primitives):

@@ -620,7 +620,6 @@ class TestClass(BaseTestClass):
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
         edbapp.close()
 
-    @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
     def test_dxf_swap_backend_center_point(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf_center_point
 
@@ -639,7 +638,6 @@ class TestClass(BaseTestClass):
         assert edb.modeler.primitives[2].layer_name == layer_name
         assert round(edb.modeler.primitives[2].area(), 6) == 200e-6
 
-    @pytest.mark.skipif(config.get("use_grpc"), reason="Fails in edb.core method query_layout_obj_instance")
     def test_dxf_swap_backend(self):
         from pyedb.extensions.dxf_swap_backend import swap_polygon_with_dxf
 
