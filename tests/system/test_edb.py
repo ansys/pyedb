@@ -103,6 +103,13 @@ class TestClass(BaseTestClass):
         term2 = u6.pins["F1"].get_terminal(create_new_terminal=True)
         voltage_source = edbapp.create_voltage_source(terminal=term1, ref_terminal=term2)
         assert not voltage_source.is_null
+        # testing source to ground assignment
+        setup = edbapp.siwave.add_siwave_dc_analysis(name="Test_dc")
+        setup.settings.add_source_terminal_to_ground("Vsource_U1_USB3_D_P_U1_GND", 1)
+        if edbapp.grpc:
+            assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.dc.source_terms_to_ground
+        else:
+            assert "Vsource_U1_USB3_D_P_U1_GND" in setup.settings.dc_ir.source_terms_to_ground
         edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_create_current_source(self):
@@ -352,6 +359,9 @@ class TestClass(BaseTestClass):
         assert gap_port.source_amplitude == 0.0
         assert gap_port.source_phase == 0.0
         assert gap_port.impedance
+        # temp
+        from ansys.edb.core.database import ProductIdType
+
         assert not gap_port.deembed
         gap_port.name = "gap_port"
         assert gap_port.name == "gap_port"

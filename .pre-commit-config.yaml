@@ -6,7 +6,7 @@ ci:
 repos:
 
 - repo: https://github.com/astral-sh/ruff-pre-commit
-  rev: v0.15.6
+  rev: v0.15.8
   hooks:
   - id: ruff-check
   - id: ruff-format
@@ -41,7 +41,7 @@ repos:
     exclude: tests/example_models
 
 - repo: https://github.com/ansys/pre-commit-hooks
-  rev: v0.5.2
+  rev: v0.6.0
   hooks:
   - id: add-license-headers
     args:

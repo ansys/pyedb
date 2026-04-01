@@ -76,7 +76,7 @@ class Modeler:
         """Primitives.
 
         .. deprecated:: 0.70.0
-                Use layout.primitives instead.
+           Use layout.primitives instead.
 
         Returns
         -------
@@ -1161,7 +1161,7 @@ class Modeler:
         """Dictionary of layers.
 
         .. deprecated:: 0.70.0
-        use stackup.layers instead.
+           Use stackup.layers instead.
 
         Returns
         -------
@@ -1170,12 +1170,12 @@ class Modeler:
         """
         return self._pedb.stackup.layers
 
-    @deprecated("use layout.find_object_by_id method instead.")
+    @deprecated("Use layout.find_object_by_id method instead.")
     def get_primitive(self, primitive_id):
         """Retrieve primitive from give id.
 
         .. deprecated:: 0.70.0
-        use layout.find_object_by_id method instead.
+           Use layout.find_object_by_id method instead.
 
         Parameters
         ----------
@@ -1195,7 +1195,7 @@ class Modeler:
         """Primitives with layer names as keys.
 
         .. deprecated:: 0.70.0
-        use layout.polygons_by_layer instead.
+           Use layout.polygons_by_layer instead.
 
         Returns
         -------
@@ -1210,7 +1210,7 @@ class Modeler:
         """Primitives with net names as keys.
 
         .. deprecated:: 0.70.0
-        use layout.primitives_by_net instead.
+           Use layout.primitives_by_net instead.
 
         Returns
         -------
@@ -1224,6 +1224,9 @@ class Modeler:
     def primitives_by_layer(self) -> dict[str, list[Primitive]]:
         """Primitives with layer names as keys.
 
+        .. deprecated:: 0.70.0
+           Use :attr: layout.primitives_by_layer instead.
+
         Returns
         -------
         dict
@@ -1232,12 +1235,12 @@ class Modeler:
         return self._pedb.layout.primitives_by_layer
 
     @property
-    @deprecated_property("use layout.rectangles property instead.")
+    @deprecated_property("Use layout.rectangles property instead.")
     def rectangles(self) -> list[RectangleDotNet]:
         """Rectangles.
 
         .. deprecated:: 0.70.0
-        use layout.rectangles instead.
+           Use :attr: layout.rectangles instead.
 
         Returns
         -------
@@ -1248,12 +1251,12 @@ class Modeler:
         return self._pedb.layout.rectangles
 
     @property
-    @deprecated_property("use layout.circles property instead.")
+    @deprecated_property("Use layout.circles property instead.")
     def circles(self) -> list[CircleDotNet]:
         """Circles.
 
         .. deprecated:: 0.70.0
-        use layout.circles instead.
+           Use :attr: layout.circles instead.
 
         Returns
         -------
@@ -1264,12 +1267,12 @@ class Modeler:
         return self._pedb.layout.circles
 
     @property
-    @deprecated_property("use layout.paths property instead.")
+    @deprecated_property("Use layout.paths property instead.")
     def paths(self) -> list[PathDotNet]:
         """Paths.
 
         .. deprecated:: 0.70.0
-        use layout.paths instead.
+           Use :attr: layout.paths instead.
 
         Returns
         -------
@@ -1284,6 +1287,7 @@ class Modeler:
         """Polygons.
 
         .. deprecated:: 0.70.0
+           Use :attr: layout.polygons instead.
 
         Returns
         -------
@@ -1292,12 +1296,12 @@ class Modeler:
         """
         return self._pedb.layout.polygons
 
-    @deprecated("use layout.get_polygons_by_layer method instead.")
+    @deprecated("Use layout.get_polygons_by_layer method instead.")
     def get_polygons_by_layer(self, layer_name, net_list=None) -> list[EdbPolygon]:
         """Retrieve polygons by a layer.
 
         .. deprecated:: 0.70.0
-        use layout.get_polygons_by_layer method instead.
+           Use :func: layout.get_polygons_by_layer method instead.
 
         Parameters
         ----------
@@ -1312,12 +1316,12 @@ class Modeler:
         """
         return self._pedb.layout.get_polygons_by_layer(layer_name=layer_name, net_list=net_list)
 
-    @deprecated("use layout.get_primitive_by_layer_and_point method instead.")
+    @deprecated("Use layout.get_primitive_by_layer_and_point method instead.")
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
         """Return primitive given coordinate point [x, y], layer name and nets.
 
         .. deprecated :: 0.70.0
-        use layout.get_primitive_by_layer_and_point method instead.
+           Use :func: layout.get_primitive_by_layer_and_point method instead.
 
         Parameters
         ----------
@@ -1337,12 +1341,12 @@ class Modeler:
         """
         return self._pedb.layout.get_primitive_by_layer_and_point(point=point, layer=layer, nets=nets)
 
-    @deprecated("use layout.get_polygons_by_layer method instead.")
+    @deprecated("Use layout.get_polygons_by_layer method instead.")
     def get_polygon_bounding_box(self, polygon):
         """Retrieve a polygon bounding box.
 
         .. deprecated:: 0.70.0
-        use layout.get_polygon_bounding_box method instead.
+           Use :func: layout.get_polygon_bounding_box method instead.
 
         Parameters
         ----------
@@ -1356,22 +1360,22 @@ class Modeler:
         """
         return self._pedb.layout.get_polygon_bounding_box(polygon)
 
-    @deprecated("use layout.get_polygons_by_layer method instead.")
+    @deprecated("Use layout.get_polygons_by_layer method instead.")
     def get_polygon_points(self, polygon) -> list[float]:
         """Retrieve polygon points.
 
         .. deprecated :: 0.70.0
-        use layout.get_polygon_points method instead.
+           Use :func: layout.get_polygon_points method instead.
 
         """
         return self._pedb.layout.get_polygon_points(polygon)
 
-    @deprecated("use layout.filter_primitives method instead.")
+    @deprecated("Use layout.filter_primitives method instead.")
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
         """Get primitives by conditions.
 
         .. deprecated:: 0.70.0
-        use layout.filter_primitives method instead.
+           Use :func: layout.filter_primitives method instead.
 
         Parameters
         ----------

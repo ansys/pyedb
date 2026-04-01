@@ -22,7 +22,6 @@
 
 import time
 from typing import Set
-import warnings
 
 from pyedb.dotnet.database.cell.primitive.primitive import Primitive
 from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
@@ -43,6 +42,7 @@ from pyedb.dotnet.database.edb_data.sources import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 class SourceExcitation:
@@ -701,11 +701,12 @@ class SourceExcitation:
         neg.SetName(port_name + ":T2")
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
 
+    @deprecated("Use excitation_manager.create_edge_port method instead.")
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_edge_port` instead.
+           Use :func:`excitation_manager.create_edge_port` instead.
 
         Parameters
         ----------
@@ -720,7 +721,6 @@ class SourceExcitation:
         bool
             ``True`` when successful, ``False`` when failed.
         """
-        warnings.warn("Use :func:`pyedb.excitation_manager.create_edge_port` instead.", DeprecationWarning)
         res, fromLayer_pos, toLayer_pos = pinpos.GetLayerRange()
 
         if not portname:
