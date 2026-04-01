@@ -67,4 +67,3 @@ version = __version__
 from pyedb.generic.design_types import Edb, Siwave
 
 __all__ = ["Edb", "Siwave", "__version__", "version", "pyedb_path"]
-
