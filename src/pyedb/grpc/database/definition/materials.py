@@ -329,6 +329,9 @@ class Material:
         """Material relative permittivity at frequency if dielectric model is defined.
 
         Returns
+        -------
+        float
+            Permittivity value.
 
         """
         if not self.core.dielectric_material_model.is_null:
