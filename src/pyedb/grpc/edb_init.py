@@ -146,6 +146,7 @@ class EdbInit(object):
                 self.logger.error("Failed to start RPC server.")
                 return False
         self._db = database.Database.open(db_path, read_only)
+        return self._db
 
     def delete(self, db_path):
         """Delete a database at the specified file location.

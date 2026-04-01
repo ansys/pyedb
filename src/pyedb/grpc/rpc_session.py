@@ -30,7 +30,7 @@ from ansys.edb.core.session import launch_session
 try:
     from ansys.edb.core.session import launch_local_session
 except ImportError:
-    print("local session is development feature")
+    print("Failed to import local session (development feature)")
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -126,8 +126,30 @@ class RpcSession:
                 else:
                     settings.logger.error("Failed to start EDB_RPC_server process")
             else:
-                RpcSession.__start_local_rpc()
-                settings.logger.info("Grpc session started in local mode (fast)")
+                if RpcSession.is_in_memory_lib_file_present():
+                    RpcSession.__start_local_rpc()
+                    settings.logger.info("Grpc session started in local mode (fast)")
+                else:
+                    RpcSession.in_memory = False
+                    settings.logger.warning("Dynamic library for in-memory RPC session not found. "
+                                            "Starting standard RPC session. Make sure you are running ANSYS version "
+                                            "2026 R1 SP1 or later to enable fast grpc protocol.")
+                    RpcSession.__start_rpc_server()
+
+    @staticmethod
+    def is_in_memory_lib_file_present() -> bool:
+        """Determine if RPC in memory library file is present in the base path.
+        This is used to determine if the in-memory RPC session can be started.
+
+        Returns
+        -------
+        bool
+            True if the in-memory RPC library file is present, False otherwise.
+        """
+        if is_linux:
+            return os.path.isfile(os.path.join(RpcSession.base_path, "libEDB_RPC_Services.so"))
+        else:
+            return os.path.isfile(os.path.join(RpcSession.base_path, "EDB_RPC_Services.dll"))
 
     @staticmethod
     def __get_process_id():
