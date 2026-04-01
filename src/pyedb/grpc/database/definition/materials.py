@@ -219,7 +219,6 @@ class Material:
         if not self.core.dielectric_material_model.is_null:
             if hasattr(self.dielectric_material_model, "dc_conductivity"):
                 return self.dielectric_material_model.dc_conductivity
-        return None
 
     @dc_conductivity.setter
     def dc_conductivity(self, value):
