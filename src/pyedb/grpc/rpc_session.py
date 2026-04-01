@@ -131,9 +131,11 @@ class RpcSession:
                     settings.logger.info("Grpc session started in local mode (fast)")
                 else:
                     RpcSession.in_memory = False
-                    settings.logger.warning("Dynamic library for in-memory RPC session not found. "
-                                            "Starting standard RPC session. Make sure you are running ANSYS version "
-                                            "2026 R1 SP1 or later to enable fast grpc protocol.")
+                    settings.logger.warning(
+                        "Dynamic library for in-memory RPC session not found. "
+                        "Starting standard RPC session. Make sure you are running ANSYS version "
+                        "2026 R1 SP1 or later to enable fast grpc protocol."
+                    )
                     RpcSession.__start_rpc_server()
 
     @staticmethod
