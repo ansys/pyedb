@@ -200,7 +200,7 @@ class Material:
         """Set material conductivity."""
         if not self.core.dielectric_material_model.is_null:
             self.__edb.logger.error(
-                f"Dielectric model defined on material {self.name}. Conductivity can not be changed"
+                f"Dielectric model defined on material {self.name}. Conductivity can not be changed."
                 f"Changing conductivity is only allowed when no dielectric model is assigned."
             )
         else:
@@ -219,7 +219,6 @@ class Material:
         if not self.core.dielectric_material_model.is_null:
             if hasattr(self.dielectric_material_model, "dc_conductivity"):
                 return self.dielectric_material_model.dc_conductivity
-        return None
 
     @dc_conductivity.setter
     def dc_conductivity(self, value):
@@ -515,7 +514,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, self.__edb._value_setter(value))
 
     @property
-    def poisson_ratio(self) -> float | str :
+    def poisson_ratio(self) -> float | str:
         """Material poisson ratio.
 
         Returns
