@@ -156,16 +156,14 @@ def test_decorators_stub_maps_custom_deprecators_to_typing_extensions():
     stub_path = Path(__file__).resolve().parents[2] / "src" / "pyedb" / "misc" / "decorators.pyi"
     stub_tree = ast.parse(stub_path.read_text(encoding="utf-8"))
 
-    imported_aliases = {}
-    for node in stub_tree.body:
-        if isinstance(node, ast.ImportFrom):
-            module_name = node.module or ""
-            for alias in node.names:
-                imported_aliases[alias.asname or alias.name] = f"{module_name}.{alias.name}"
+    exported_functions = {
+        node.name: node for node in stub_tree.body if isinstance(node, ast.FunctionDef)
+    }
 
-    assert imported_aliases.get("deprecated") == "typing_extensions.deprecated"
-    assert imported_aliases.get("deprecated_property") == "typing_extensions.deprecated"
-    assert imported_aliases.get("deprecated_class") == "typing_extensions.deprecated"
+    assert {"deprecated", "deprecated_property", "deprecated_class"}.issubset(exported_functions)
+    assert ast.unparse(exported_functions["deprecated"].args.kwonlyargs[0].annotation) == "Any"
+    assert ast.unparse(exported_functions["deprecated_property"].args.kwonlyargs[0].annotation) == "Any"
+    assert ast.unparse(exported_functions["deprecated_class"].args.kwonlyargs[0].annotation) == "Any"
 
 
 def test_all_project_deprecations_use_supported_decorator_paths():
@@ -179,6 +177,7 @@ def test_all_project_deprecations_use_supported_decorator_paths():
     }
 
     checked_files = 0
+    docs_only = []
 
     for py_file in src_root.rglob("*.py"):
         tree = ast.parse(py_file.read_text(encoding="utf-8"))
@@ -199,10 +198,18 @@ def test_all_project_deprecations_use_supported_decorator_paths():
         for node in ast.walk(tree):
             if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
                 continue
+            doc = ast.get_docstring(node) or ""
             for decorator in node.decorator_list:
                 decorator_func = decorator.func if isinstance(decorator, ast.Call) else decorator
                 if isinstance(decorator_func, ast.Name) and decorator_func.id in allowed_import_sources:
                     used_decorators.add(decorator_func.id)
+
+            if ".. deprecated::" in doc and not any(
+                isinstance((decorator.func if isinstance(decorator, ast.Call) else decorator), ast.Name)
+                and (decorator.func if isinstance(decorator, ast.Call) else decorator).id in allowed_import_sources
+                for decorator in node.decorator_list
+            ):
+                docs_only.append((py_file, node.lineno, node.name))
 
         if not used_decorators:
             continue
@@ -214,5 +221,8 @@ def test_all_project_deprecations_use_supported_decorator_paths():
             )
 
     assert checked_files > 0
+    assert not docs_only, "Docstring-only deprecated symbols remain: " + ", ".join(
+        f"{path}:{line}:{name}" for path, line, name in docs_only
+    )
 
 
