@@ -44,10 +44,10 @@ example_models_path = Path(__file__).parent / "example_models"
 
 # Initialize default desktop configuration
 
-use_grpc = os.getenv("USE_GRPC") in {"1", True}
+use_grpc = True #os.getenv("USE_GRPC") in {"1", True}
 
 config = {
-    "desktopVersion": "2025.2",
+    "desktopVersion": "2026.1",
     "use_grpc": use_grpc,
 }
 
