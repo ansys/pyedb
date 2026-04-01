@@ -25,6 +25,9 @@ from pathlib import Path
 
 import pytest
 
+from pyedb.generic.filesystem import Scratch, my_location, search_files
+from pyedb.generic.general_methods import PropsManager, get_filename_without_extension
+
 pytestmark = [pytest.mark.integration, pytest.mark.no_licence]
 
 
@@ -133,3 +136,83 @@ def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
         assert ast.unparse(grpc_arg.annotation) == expected_annotation
         assert ast.unparse(grpc_default) == expected_default
         assert ast.unparse(overload_node.returns) == expected_return
+
+
+@pytest.mark.parametrize(
+    ("symbol", "expected_message"),
+    [
+        (search_files, "Please use pathlib.Path.glob for file searching."),
+        (my_location, "Please use pathlib.Path(__file__).parent.resolve() for current file location."),
+        (get_filename_without_extension, "Please use pathlib.Path.stem to get the filename without its extension."),
+        (Scratch, "This class should only be used for testing purposes."),
+        (PropsManager, ""),
+    ],
+)
+def test_generic_deprecated_symbols_expose_metadata(symbol, expected_message):
+    assert getattr(symbol, "__deprecated__", None) == expected_message
+
+
+def test_decorators_stub_maps_custom_deprecators_to_typing_extensions():
+    stub_path = Path(__file__).resolve().parents[2] / "src" / "pyedb" / "misc" / "decorators.pyi"
+    stub_tree = ast.parse(stub_path.read_text(encoding="utf-8"))
+
+    imported_aliases = {}
+    for node in stub_tree.body:
+        if isinstance(node, ast.ImportFrom):
+            module_name = node.module or ""
+            for alias in node.names:
+                imported_aliases[alias.asname or alias.name] = f"{module_name}.{alias.name}"
+
+    assert imported_aliases.get("deprecated") == "typing_extensions.deprecated"
+    assert imported_aliases.get("deprecated_property") == "typing_extensions.deprecated"
+    assert imported_aliases.get("deprecated_class") == "typing_extensions.deprecated"
+
+
+def test_all_project_deprecations_use_supported_decorator_paths():
+    src_root = Path(__file__).resolve().parents[2] / "src" / "pyedb"
+    allowed_import_sources = {
+        "deprecated": {"pyedb.misc.decorators.deprecated", "typing_extensions.deprecated"},
+        "deprecated_property": {"pyedb.misc.decorators.deprecated_property", "typing_extensions.deprecated"},
+        "deprecated_class": {"pyedb.misc.decorators.deprecated_class", "typing_extensions.deprecated"},
+        "runtime_deprecated": {"pyedb.misc.decorators.deprecated"},
+        "runtime_deprecated_property": {"pyedb.misc.decorators.deprecated_property"},
+    }
+
+    checked_files = 0
+
+    for py_file in src_root.rglob("*.py"):
+        tree = ast.parse(py_file.read_text(encoding="utf-8"))
+        imported_aliases = {}
+
+        for node in tree.body:
+            if isinstance(node, ast.ImportFrom):
+                module_name = node.module or ""
+                if node.level:
+                    package_parts = list(py_file.relative_to(src_root.parent).with_suffix("").parts[:-1])
+                    if node.level > 1:
+                        package_parts = package_parts[: -(node.level - 1)]
+                    module_name = ".".join(package_parts + ([module_name] if module_name else []))
+                for alias in node.names:
+                    imported_aliases[alias.asname or alias.name] = f"{module_name}.{alias.name}"
+
+        used_decorators = set()
+        for node in ast.walk(tree):
+            if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            for decorator in node.decorator_list:
+                decorator_func = decorator.func if isinstance(decorator, ast.Call) else decorator
+                if isinstance(decorator_func, ast.Name) and decorator_func.id in allowed_import_sources:
+                    used_decorators.add(decorator_func.id)
+
+        if not used_decorators:
+            continue
+
+        checked_files += 1
+        for decorator_name in used_decorators:
+            assert imported_aliases.get(decorator_name) in allowed_import_sources[decorator_name], (
+                f"{py_file} uses @{decorator_name} but does not import it from a supported static deprecation path"
+            )
+
+    assert checked_files > 0
+
+
