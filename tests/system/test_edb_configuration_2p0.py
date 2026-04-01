@@ -83,6 +83,7 @@ def check_dictionaries(source_dict, target_dict):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13b_stackup_materials(self):
         data = {
             "stackup": {
@@ -625,6 +626,7 @@ class TestClass(BaseTestClass):
                     assert value == target_pdef[p]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13c_stackup_create_stackup(self):
         data = {
             "stackup": {
@@ -800,6 +802,7 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_16_export_to_external_file(self):
         edbapp = self.edb_examples.get_si_verse()
         data_file_path = Path(self.edb_examples.test_folder) / "test.json"
@@ -1567,6 +1570,7 @@ class TestClassPadstacks(BaseTestClass):
         assert data_from_db["padstacks"]["instances"]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13_stackup_layers(self):
         data = {
             "stackup": {

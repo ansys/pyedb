@@ -523,8 +523,9 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
 
+
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_get_primitives_by_point_layer_and_nets(self):
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner1(GND1)", point=[20e-3, 30e-3])
         assert primitives
@@ -649,6 +650,7 @@ class TestClass(BaseTestClass):
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Not valid for grpc")
     def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
         from pyedb.dotnet.database.dotnet.database import CellDotNet
         from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet

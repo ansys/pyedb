@@ -42,7 +42,7 @@ from pyedb.libraries.rf_libraries.planar_antennas import (
     RectangularPatch,
     TriangularPatch,
 )
-from tests.conftest import config
+from tests.conftest import config, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -87,6 +87,7 @@ class TestClass(BaseTestClass):
         assert edb.variables["w"].value == 1e-05
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_diff_tline(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -139,6 +140,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "P1"
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_radial_stud(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -149,6 +151,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "RF"
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_rat_race(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -203,6 +206,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].net.name == "IN"
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_ustrip(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)

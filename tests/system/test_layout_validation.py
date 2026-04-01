@@ -72,6 +72,7 @@ class TestClass(BaseTestClass):
         edbapp.layout_validation.illegal_rlc_values(fix=True)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_empty_pin_groups(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         _, pg = edbapp.siwave.create_pin_group("U1", ["A30", "AW38"])
