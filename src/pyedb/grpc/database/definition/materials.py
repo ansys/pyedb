@@ -200,7 +200,7 @@ class Material:
         """Set material conductivity."""
         if not self.core.dielectric_material_model.is_null:
             self.__edb.logger.error(
-                f"Dielectric model defined on material {self.name}. Conductivity can not be changed"
+                f"Dielectric model defined on material {self.name}. Conductivity can not be changed."
                 f"Changing conductivity is only allowed when no dielectric model is assigned."
             )
         else:
