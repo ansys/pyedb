@@ -156,9 +156,7 @@ def test_decorators_stub_maps_custom_deprecators_to_typing_extensions():
     stub_path = Path(__file__).resolve().parents[2] / "src" / "pyedb" / "misc" / "decorators.pyi"
     stub_tree = ast.parse(stub_path.read_text(encoding="utf-8"))
 
-    exported_functions = {
-        node.name: node for node in stub_tree.body if isinstance(node, ast.FunctionDef)
-    }
+    exported_functions = {node.name: node for node in stub_tree.body if isinstance(node, ast.FunctionDef)}
 
     assert {"deprecated", "deprecated_property", "deprecated_class"}.issubset(exported_functions)
     assert ast.unparse(exported_functions["deprecated"].args.kwonlyargs[0].annotation) == "Any"
@@ -224,5 +222,3 @@ def test_all_project_deprecations_use_supported_decorator_paths():
     assert not docs_only, "Docstring-only deprecated symbols remain: " + ", ".join(
         f"{path}:{line}:{name}" for path, line, name in docs_only
     )
-
-
