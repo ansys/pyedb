@@ -573,9 +573,7 @@ class Material:
         properties = self.__load_all_properties()
 
         res = {"name": self.name}
-        for prop, value in properties.model_dump().items():
-            res[prop] = value
-        # res.update(properties.model_dump())
+        res.update(properties.model_dump())
         return res
 
     def update(self, input_dict: dict):
