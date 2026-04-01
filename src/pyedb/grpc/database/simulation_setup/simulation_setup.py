@@ -268,7 +268,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         stop_freq: str | float = "20GHz",
         step: str | float = "10MHz",
         discrete: bool = False,
-        frequency_set: list | None = None,
+        frequency_set: list[list[str]] | None = None,
     ) -> SweepData | None:
         """Add a HFSS frequency sweep.
 
