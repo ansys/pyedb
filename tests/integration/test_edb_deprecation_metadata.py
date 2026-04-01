@@ -214,5 +214,3 @@ def test_all_project_deprecations_use_supported_decorator_paths():
             )
 
     assert checked_files > 0
-
-
