@@ -61,13 +61,19 @@ all = [
     "scikit-rf",
     "Rtree>=1.2.0",
     "shapely",
+    "typing_extensions>=4.7,<5",
 ]
 tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.2",
     "pytest-xdist>=3.5.0,<3.7",
+    "typing_extensions>=4.7,<5",
 ]
+dev = [
+    "typing_extensions>=4.7,<5",
+]
+
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.8",
     "ezdxf>=1.4.2",
