@@ -120,7 +120,9 @@ def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
     ]
 
     for overload_node, (expected_annotation, expected_default, expected_return) in zip(overloads, expected_signatures):
-        decorator_names = [decorator.id for decorator in overload_node.decorator_list if isinstance(decorator, ast.Name)]
+        decorator_names = [
+            decorator.id for decorator in overload_node.decorator_list if isinstance(decorator, ast.Name)
+        ]
         assert decorator_names == ["overload"]
 
         parameter_names = [arg.arg for arg in overload_node.args.args]
@@ -131,5 +133,3 @@ def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
         assert ast.unparse(grpc_arg.annotation) == expected_annotation
         assert ast.unparse(grpc_default) == expected_default
         assert ast.unparse(overload_node.returns) == expected_return
-
-

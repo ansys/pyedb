@@ -72,9 +72,8 @@ import time
 import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
-from typing_extensions import deprecated
-
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
+from typing_extensions import deprecated
 
 from pyedb.grpc.database.design_options import EdbDesignOptions
 from pyedb.grpc.database.geometry.point_3d_data import Point3DData

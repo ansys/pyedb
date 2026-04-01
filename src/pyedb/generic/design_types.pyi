@@ -22,10 +22,9 @@
 
 from typing import Any, Literal, overload
 
+from pyedb import siwave as _siwave
 from pyedb.dotnet.edb import Edb as _DotnetEdb
 from pyedb.grpc.edb import Edb as _GrpcEdb
-from pyedb import siwave as _siwave
-
 
 @overload
 def Edb(
@@ -43,8 +42,6 @@ def Edb(
     control_file: str | None = None,
     layer_filter: str | None = None,
 ) -> _GrpcEdb: ...
-
-
 @overload
 def Edb(
     edbpath: str | None = None,
@@ -61,8 +58,6 @@ def Edb(
     control_file: str | None = None,
     layer_filter: str | None = None,
 ) -> _DotnetEdb: ...
-
-
 @overload
 def Edb(
     edbpath: str | None = None,
@@ -79,7 +74,4 @@ def Edb(
     control_file: str | None = None,
     layer_filter: str | None = None,
 ) -> _GrpcEdb | _DotnetEdb: ...
-
-
 def Siwave(specified_version: str | None = None) -> _siwave.Siwave: ...
-
