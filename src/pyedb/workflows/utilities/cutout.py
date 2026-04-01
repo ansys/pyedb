@@ -866,6 +866,7 @@ class GrpcCutout:
                 return False
             return result
 
+
 class DotNetCutout:
     """Create a clipped (cut-out) EDB cell from an existing layout.
     High-performance EDB cut-out utility.
