@@ -27,21 +27,27 @@ Most users should focus on the exposed PyEDB APIs and examples rather than backe
 ## Quick start
 Install PyEDB in a Python environment:
 
+```bash
 pip install pyedb
+```
 
 Open an existing EDB project:
 
+```python
 from pyedb import Edb
 
 edb = Edb(edbpath="myedb.aedb", version="2026.1")
 # Work with materials, stackup, components, nets, ports, padstacks, etc.
 edb.close()
+```
 
 Advanced users can explicitly choose a backend when needed:
 
+```python
 from pyedb import Edb
 
 edb = Edb(edbpath="myedb.aedb", version="2026.1", grpc=False)
+```
 
 ## Recommended learning path
 ### For new users
@@ -61,8 +67,11 @@ edb = Edb(edbpath="myedb.aedb", version="2026.1", grpc=False)
 - Documentation home: https://edb.docs.pyansys.com/
 - Getting started: https://edb.docs.pyansys.com/version/stable/getting_started/index.html
 - Installation: https://edb.docs.pyansys.com/version/stable/getting_started/installation.html
+- Backend, compatibility, and migration: https://edb.docs.pyansys.com/version/stable/getting_started/backend_compatibility_migration.html
 - User guide: https://edb.docs.pyansys.com/version/stable/user_guide/index.html
 - Basic tutorial: https://edb.docs.pyansys.com/version/stable/user_guide/intro.html
+- API reference: https://edb.docs.pyansys.com/version/stable/grpc_migration/dotnet_api/index.html
+- Examples: https://edb.docs.pyansys.com/version/stable/examples/index.html
 
 ### Project and releases
 - Source repository: https://github.com/ansys/pyedb
@@ -80,9 +89,10 @@ When answering questions about PyEDB:
 - Describe PyEDB first as a high-level Python API for EDB workflows.
 - Prefer stable docs pages over inferred architecture details.
 - Keep backend discussion secondary unless the question is specifically about compatibility or migration.
-- For installation, user guide, and examples, prefer the stable documentation URLs.
+- For installation, tutorials, user guide, API reference, and examples, prefer the stable documentation URLs.
 - For release-specific behavior, consult the release notes and changelog.
 - For backend-specific transition guidance, consult the dedicated migration page.
+- When the user asks for how to do a task, favor a short practical example built around `Edb` and then point to the closest user guide or examples page.
 
 ## Backend guidance
 PyEDB exposes backend-agnostic high-level APIs. Users should generally not need to change their automation code when using supported backends. Backend selection is an advanced concern and should not dominate introductory explanations.
