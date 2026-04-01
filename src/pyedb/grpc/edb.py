@@ -550,6 +550,9 @@ class Edb(EdbInit):
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
+        .. deprecated:: 0.71.0
+           Use :attr: `ports` instead.
+
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
@@ -1142,8 +1145,9 @@ class Edb(EdbInit):
     @deprecated_property("use excitation_manager property instead.")
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
+
         .. deprecated:: 0.70
-           Use: func:`excitation_manager` property instead.
+           Use :attr:`excitation_manager` property instead.
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -2320,7 +2324,7 @@ class Edb(EdbInit):
         """Active HFSS setup in EDB.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.hfss` instead.
+           Use :attr:`simulation_setups.hfss` instead.
         """
         return self.simulation_setups.hfss
 
@@ -2330,7 +2334,7 @@ class Edb(EdbInit):
         """Active Siwave DC IR Setups.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.siwave_dcir` instead.
+           Use :attr:`simulation_setups.siwave_dcir` instead.
 
         """
         return self.simulation_setups.siwave_dcir
@@ -2341,7 +2345,7 @@ class Edb(EdbInit):
         """Active Siwave SYZ setups.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.siwave` instead.
+           Use :attr:`simulation_setups.siwave` instead.
         """
         return self.simulation_setups.siwave
 

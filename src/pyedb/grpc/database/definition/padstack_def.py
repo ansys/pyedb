@@ -299,12 +299,12 @@ class PadstackDef:
         return self.core.id
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the padstack definition is null."""
         return self.core.is_null
 
     @classmethod
-    def create(cls, edb, name: str):
+    def create(cls, edb, name: str) -> PadstackDef:
         """Create a new padstack definition."""
         padstack_def = CorePadstackDef.create(edb.db, name)
         return cls(edb, padstack_def)
@@ -325,7 +325,7 @@ class PadstackDef:
         ]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Padstack definition name."""
         return self.core.name
 
@@ -360,7 +360,7 @@ class PadstackDef:
         return self.core.data.layer_names
 
     @property
-    def start_layer(self):
+    def start_layer(self) -> str | None:
         """Starting layer.
 
         Returns
@@ -368,6 +368,8 @@ class PadstackDef:
         str
             Name of the starting layer.
         """
+        if not self.layers:
+            return None
         return self.layers[0]
 
     @property
@@ -387,7 +389,7 @@ class PadstackDef:
         return self.start_layer
 
     @property
-    def stop_layer(self):
+    def stop_layer(self) -> str | None:
         """Stopping layer.
 
         Returns
@@ -395,6 +397,8 @@ class PadstackDef:
         str
             Name of the stopping layer.
         """
+        if not self.layers:
+            return None
         return self.layers[-1]
 
     @property
@@ -414,7 +418,7 @@ class PadstackDef:
         return self.stop_layer
 
     @property
-    def material(self):
+    def material(self) -> str:
         """Return hole material name.
 
         Returns

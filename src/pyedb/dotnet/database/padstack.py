@@ -191,9 +191,7 @@ class EdbPadstacks(object):
             return self._definitions
         self._definitions = {}
         for padstackdef in list(self._pedb._db.PadstackDefs):
-            PadStackData = padstackdef.GetData()
-            if len(PadStackData.GetLayerNames()) >= 1:
-                self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
+            self._definitions[padstackdef.GetName()] = EDBPadstack(padstackdef, self)
         return self._definitions
 
     @property
@@ -1466,9 +1464,12 @@ class EdbPadstacks(object):
                     instances = [inst for inst in instances if inst.component_pin in component_pin]
             return instances
 
-    @deprecated("use get_instances method instead.")
+    @deprecated("Use get_instances method instead.")
     def get_padstack_instance_by_net_name(self, net_name):
         """Get a list of padstack instances by net name.
+
+        .. deprecated:: 0.71.0
+           Use get_instances method instead.
 
         Parameters
         ----------

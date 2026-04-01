@@ -738,7 +738,7 @@ class Components(object):
                 )
         return True
 
-    @deprecated("use excitation_manager.create_port_on_pins method instead")
+    @deprecated("Use excitation_manager.create_port_on_pins method instead.")
     def create_port_on_pins(
         self,
         refdes,
@@ -1416,11 +1416,14 @@ class Components(object):
                     return None
         return componentDefinition
 
-    @deprecated("use create method instead.")
+    @deprecated("Use create method instead.")
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
+
+        .. deprecated:: 0.71.0
+           Use :func:`create` instead.
 
         Parameters
         ----------

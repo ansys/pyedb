@@ -397,6 +397,9 @@ class SourceExcitation(SourceExcitationInternal):
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
 
+        .. deprecated:: 0.70.0
+           Use :attr: `ports` instead.
+
         Returns
         -------
         port dictionary : Dict[str, [:class:`pyedb.grpc.database.ports.ports.ports.GapPort`,
@@ -967,7 +970,7 @@ class SourceExcitation(SourceExcitationInternal):
                 padstack_instance=pins[1],
                 layer=pin_layers[0],
                 net=pins[1].net,
-                is_ref=False,
+                is_ref=True,
             )
             if not neg_pin_term:  # pragma: no cover
                 return False
@@ -1194,7 +1197,7 @@ class SourceExcitation(SourceExcitationInternal):
         r: Union[int, float] = 0,
         l: Union[int, float] = 0,
         c: Union[int, float] = 0,
-    ) -> Optional[str]:
+    ) -> Optional[str] | bool:
         """Create a terminal on pins.
 
         Parameters
@@ -1249,7 +1252,7 @@ class SourceExcitation(SourceExcitationInternal):
             padstack_instance=negative_pin,
             name=negative_pin.name,
             layer=neg_term_layer,
-            is_ref=False,
+            is_ref=True,
             net=negative_pin.net,
         )
         if source_type in ["circuit_port", "lumped_port"]:
@@ -1534,7 +1537,7 @@ class SourceExcitation(SourceExcitationInternal):
         r: float = 0.0,
         l: float = 0.0,
         c: float = 0.0,
-    ) -> Optional[str]:
+    ) -> str:
         """Create a pin group terminal.
 
         Parameters
@@ -1583,15 +1586,20 @@ class SourceExcitation(SourceExcitationInternal):
             net=positive_pins[0].net,
             is_ref=False,
         )
-        if not source_type == "dc_terminal":
-            neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
-            neg_pingroup_terminal = PinGroupTerminal.create(
-                layout=self._pedb.active_layout,
-                name=f"{name}_ref",
-                pin_group=neg_pin_group,
-                net=negatives_pins[0].net,
-                is_ref=False,
-            )
+
+        if source_type == "dc_terminal":
+            pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.DC_TERMINAL
+            # returning DC terminal has no reference terminal.
+            return pos_pingroup_terminal.name
+
+        neg_pin_group = self._pedb.components.create_pingroup_from_pins(negatives_pins)
+        neg_pingroup_terminal = PinGroupTerminal.create(
+            layout=self._pedb.active_layout,
+            name=f"{name}_ref",
+            pin_group=neg_pin_group,
+            net=negatives_pins[0].net,
+            is_ref=True,
+        )
         if source_type in ["circuit_port", "lumped_port"]:
             pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.PORT
             pos_pingroup_terminal.impedance = self._pedb._value_setter(impedance)
@@ -1636,10 +1644,6 @@ class SourceExcitation(SourceExcitationInternal):
             Rlc.c = self._pedb._value_setter(c)
             pos_pingroup_terminal.core.rlc_boundary_parameters = Rlc
 
-        elif source_type == "dc_terminal":
-            pos_pingroup_terminal.core.boundary_type = CoreBoundaryType.DC_TERMINAL
-        else:
-            pass
         return pos_pingroup_terminal.name
 
     def _check_gnd(self, component_name: str) -> Optional[str]:
@@ -2014,7 +2018,7 @@ class SourceExcitation(SourceExcitationInternal):
         horizontal_extent_factor: Union[int, float] = 5,
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
-    ) -> str:
+    ) -> str | None:
         """Create a vertical edge port.
 
         Parameters
@@ -2077,9 +2081,9 @@ class SourceExcitation(SourceExcitationInternal):
             prop,
         )
         if not pos_edge_term.is_null:
-            return pos_edge_term
+            return pos_edge_term.name
         else:
-            return False
+            return None
 
     def create_edge_port_horizontal(
         self,

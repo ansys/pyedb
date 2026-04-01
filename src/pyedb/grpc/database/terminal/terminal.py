@@ -214,6 +214,31 @@ class Terminal(ConnObj):
         self.port_post_processing_prop.do_renormalize = value
 
     @property
+    def do_deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+        Returns
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @do_deembed.setter
+    def do_deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
+    @deprecated_property("use do_deembed property instead")
+    def deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+
+        .. deprecated:: 0.71.0
+            The `deembed` property is deprecated. Please use `do_deembed` instead.
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @deembed.setter
+    def deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
     def renormalization_impedance(self) -> float:
         """Get the renormalization impedance value.
 
@@ -661,7 +686,7 @@ class Terminal(ConnObj):
         """Check if the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Returns
         -------
@@ -671,12 +696,11 @@ class Terminal(ConnObj):
         return self.is_circuit_port
 
     @is_circuit.setter
-    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self, value: bool):
         """Set whether the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           Use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Parameters
         ----------

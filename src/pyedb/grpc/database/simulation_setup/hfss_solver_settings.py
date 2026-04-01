@@ -59,7 +59,6 @@ class HFSSSolverSettings:
         return self.core.max_triangles_for_wave_port
 
     @max_triangles_wave_port.setter
-    @deprecated_property("use max_triangles_for_wave_port property instead.")
     def max_triangles_wave_port(self, value: int):
         self.core.max_triangles_for_wave_port = value
 
@@ -84,7 +83,6 @@ class HFSSSolverSettings:
         return self.core.min_triangles_for_wave_port
 
     @min_triangles_wave_port.setter
-    @deprecated_property("use min_triangles_for_wave_port property instead.")
     def min_triangles_wave_port(self, value: int):
         self.core.min_triangles_for_wave_port = value
 
@@ -109,7 +107,6 @@ class HFSSSolverSettings:
         return self.core.set_triangles_for_wave_port
 
     @enable_set_triangles_wave_port.setter
-    @deprecated_property("use enable_set_triangles_wave_port property instead.")
     def enable_set_triangles_wave_port(self, value: bool):
         self.core.set_triangles_for_wave_port = value
 

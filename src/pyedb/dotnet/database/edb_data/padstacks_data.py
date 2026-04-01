@@ -562,7 +562,7 @@ class EDBPadstack(object):
         return list(self._padstack_def_data.GetLayerNames())
 
     @property
-    def via_start_layer(self) -> str:
+    def via_start_layer(self) -> str | None:
         """Starting layer.
 
         Returns
@@ -570,10 +570,12 @@ class EDBPadstack(object):
         str
             Name of the starting layer.
         """
+        if not self.via_layers:
+            return None
         return self.via_layers[0]
 
     @property
-    def via_stop_layer(self) -> str:
+    def via_stop_layer(self) -> str | None:
         """Stopping layer.
 
         Returns
@@ -581,6 +583,8 @@ class EDBPadstack(object):
         str
             Name of the stopping layer.
         """
+        if not self.via_layers:
+            return None
         return self.via_layers[-1]
 
     @property
@@ -1134,7 +1138,10 @@ class EDBPadstack(object):
         """
         cloned_padstack_data = self._edb.Definition.PadstackDefData(self.edb_padstack.GetData())
         new_padstack_data = self._edb.Definition.PadstackDefData.Create()
-        layers_name = cloned_padstack_data.GetLayerNames()
+        layers_name = list(cloned_padstack_data.GetLayerNames())
+        if not layers_name:
+            self._ppadstack._pedb.logger.warning("No layers in the padstack definition.")
+            return False
         layers_to_add = []
         for layer in layers_name:
             if layer == old_name:

@@ -92,7 +92,7 @@ class Siwave(object):
         """Get all ports.
 
         .. deprecated:: pyedb 0.70.0
-                Use :attr:`ports` property instead.
+           Use :attr:`ports` property instead.
 
         Returns
         -------
