@@ -505,6 +505,27 @@ class TestClass(BaseTestClass):
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
         )
+        # adding cutout section to test pin preservation handle
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="convex_hull",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
+        )
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="conforming",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
+        )
         edbapp.close(terminate_rpc_session=False)
 
     def test_components_bounding_box(self):
