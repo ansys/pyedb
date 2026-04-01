@@ -39,10 +39,10 @@ def deprecated(reason: str = ""):
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            msg = f"Call to deprecated function {func.__qualname__}."
+            msg = f"Call to deprecated function {func.__name__}."  # <-- Changed from __qualname__ to __name__
             if reason:
                 msg += f" {reason}"
-            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            warnings.warn(msg, category=FutureWarning, stacklevel=2)
             return func(*args, **kwargs)
 
         return wrapper
@@ -67,7 +67,7 @@ def deprecated_class(reason: str = ""):
             msg = f"Call to deprecated class {cls.__qualname__}."
             if reason:
                 msg += f" {reason}"
-            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            warnings.warn(msg, category=FutureWarning, stacklevel=2)
             orig_init(self, *args, **kwargs)
 
         cls.__init__ = new_init
@@ -76,17 +76,28 @@ def deprecated_class(reason: str = ""):
     return decorator
 
 
-def deprecated_property(func):
+def deprecated_property(message):
     """
     This decorator marks a property as deprecated.
     It will emit a warning when the property is accessed.
+
+    Parameters
+    ----------
+    message : str
+        Custom message to display after the deprecation warning.
     """
 
-    def wrapper(*args, **kwargs):
-        warnings.warn(f"Access to deprecated property {func.__name__}.", category=DeprecationWarning, stacklevel=2)
-        return func(*args, **kwargs)
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            warnings.warn(
+                f"Accessing deprecated property {func.__name__}. {message}", category=FutureWarning, stacklevel=2
+            )
+            return func(*args, **kwargs)
 
-    return wrapper
+        return wrapper
+
+    return decorator
 
 
 def deprecate_argument_name(argument_map):
@@ -103,6 +114,7 @@ def deprecate_argument_name(argument_map):
                 if old_arg in kwargs:
                     warnings.warn(
                         f"Argument `{old_arg}` is deprecated for method `{func_name}`; use `{new_arg}` instead.",
+                        category=FutureWarning,
                     )
                     # NOTE: Use old argument if new argument is not provided
                     if new_arg not in kwargs:

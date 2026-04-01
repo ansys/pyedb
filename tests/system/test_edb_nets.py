@@ -38,7 +38,6 @@ pytestmark = [pytest.mark.system, pytest.mark.legacy]
 class TestClass(BaseTestClass):
     def test_nets_queries(self):
         """Evaluate nets queries"""
-        # Done
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.nets.netlist) > 0
         signalnets = edbapp.nets.signal

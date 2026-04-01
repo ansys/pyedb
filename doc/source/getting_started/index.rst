@@ -59,8 +59,8 @@ PyEDB is built on top of lower-level APIs and provides a simplified, high-level 
 4. **PyEDB (This Library):** The high-level, user-friendly Python interface that wraps PyEDB-Core with application-oriented
    classes and methods. PyEDB significantly simplifies EDB workflows and reduces the learning curve.
 
-Current architecture: .NET interoperability
--------------------------------------------
+Current architecture with .NET interoperability
+-----------------------------------------------
 
 **How PyEDB works:**
 

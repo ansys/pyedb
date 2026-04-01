@@ -30,7 +30,6 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 import re
-import warnings
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
@@ -41,6 +40,7 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class Terminal(ConnObj):
@@ -212,6 +212,31 @@ class Terminal(ConnObj):
     @do_renormalize.setter
     def do_renormalize(self, value):
         self.port_post_processing_prop.do_renormalize = value
+
+    @property
+    def do_deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+        Returns
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @do_deembed.setter
+    def do_deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
+    @deprecated_property("use do_deembed property instead")
+    def deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+
+        .. deprecated:: 0.71.0
+            The `deembed` property is deprecated. Please use `do_deembed` instead.
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @deembed.setter
+    def deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
 
     @property
     def renormalization_impedance(self) -> float:
@@ -656,18 +681,18 @@ class Terminal(ConnObj):
             self._pedb.logger.warning("Terminal does not support circuit port property.")
 
     @property
+    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self) -> bool:
         """Check if the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Returns
         -------
         bool
             True if the terminal is a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         return self.is_circuit_port
 
     @is_circuit.setter
@@ -675,12 +700,11 @@ class Terminal(ConnObj):
         """Set whether the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           Use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Parameters
         ----------
         value : bool
             True to set the terminal as a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         self.is_circuit_port = value

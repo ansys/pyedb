@@ -50,6 +50,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
 )
 from pyedb.grpc.database.utility.layer_map import LayerMap
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated
 
 
 class PadstackInstance(conn_obj.ConnObj):
@@ -364,6 +365,7 @@ class PadstackInstance(conn_obj.ConnObj):
         """Delete the padstack instance."""
         self.core.delete()
 
+    @deprecated("use set_back_drill_by_layer or set_back_drill_by_depth methods instead")
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from top.
 
@@ -384,10 +386,6 @@ class PadstackInstance(conn_obj.ConnObj):
         bool
             True if success, False otherwise.
         """
-        warnings.warn(
-            "`set_backdrill_top` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
-            DeprecationWarning,
-        )
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(
@@ -401,6 +399,7 @@ class PadstackInstance(conn_obj.ConnObj):
                     self._pedb._value_setter(drill_depth), self._pedb._value_setter(drill_diameter), from_bottom=False
                 )
 
+    @deprecated("use set_back_drill_by_layer or set_back_drill_by_depth methods instead")
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
 
@@ -421,10 +420,6 @@ class PadstackInstance(conn_obj.ConnObj):
         bool
             True if success, False otherwise.
         """
-        warnings.warn(
-            "`set_backdrill_bottom` is deprecated. Use `set_back_drill_by_depth` or `set_back_drill_by_layer` instead.",
-            DeprecationWarning,
-        )
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
                 return self.set_back_drill_by_layer(

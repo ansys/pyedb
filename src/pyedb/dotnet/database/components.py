@@ -31,8 +31,6 @@ import re
 from typing import List, Set, Union
 import warnings
 
-import skrf
-
 from pyedb.component_libraries.ansys_components import (
     ComponentLib,
     ComponentPart,
@@ -40,6 +38,7 @@ from pyedb.component_libraries.ansys_components import (
 )
 from pyedb.dotnet.clr_module import String
 from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
@@ -52,6 +51,7 @@ from pyedb.generic.general_methods import (
     generate_unique_name,
 )
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 def resistor_value_parser(RValue: str | float) -> float:
@@ -106,18 +106,15 @@ class Components(object):
         :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
 
         """
-        if name in self.instances:
-            return self.instances[name]
-        elif name in self.definitions:
-            return self.definitions[name]
-        self._pedb.logger.error("Component or definition not found.")
-        return
+
+        return self.instances[name]
 
     def __init__(self, p_edb):
         self._pedb = p_edb
         self.refresh_components()
         self._pins = {}
         self._comps_by_part = {}
+        self._structures_3d = {}
         self._padstack = EdbPadstacks(self._pedb)
 
     @property
@@ -410,6 +407,16 @@ class Components(object):
 
         """
         return self._others
+
+    @property
+    def structures_3d(self) -> dict[str, Structure3D]:
+        self._structures_3d = {}
+        structures_3d = [
+            obj for obj in list(self._pedb.active_layout.Groups) if str(obj).split(".")[-1] == "Structure3D"
+        ]
+        for comp_3d in structures_3d:
+            self._structures_3d[comp_3d.GetName()] = Structure3D(self._pedb, comp_3d)
+        return self._structures_3d
 
     @property
     def components_by_partname(self) -> dict:
@@ -731,6 +738,7 @@ class Components(object):
                 )
         return True
 
+    @deprecated("Use excitation_manager.create_port_on_pins method instead.")
     def create_port_on_pins(
         self,
         refdes,
@@ -741,12 +749,13 @@ class Components(object):
         pec_boundary=False,
         pingroup_on_single_pin=False,
     ):
-        warnings.warn(
-            "`create_port_on_pins` is deprecated and will be removed in future versions. "
-            "Please use `create_port_on_component` from edb.excitation_manager instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
+        """Create a port on pins.
+
+        .. deprecated:: 0.70.0
+           Use :func:`pyedb.dotnet.database.excitation_manager.ExcitationManager.create_port
+
+        """
+
         self._pedb.excitation_manager.create_port_on_pins(
             refdes,
             pins,
@@ -1407,10 +1416,14 @@ class Components(object):
                     return None
         return componentDefinition
 
+    @deprecated("Use create method instead.")
     def create_rlc_component(
         self, pins, component_name="", r_value=None, c_value=None, l_value=None, is_parallel=False
     ):  # pragma: no cover
         """Create physical Rlc component.
+
+        .. deprecated:: 0.71.0
+           Use :func:`create` instead.
 
         Parameters
         ----------
@@ -1435,7 +1448,6 @@ class Components(object):
             Created EDB component.
 
         """
-        warnings.warn("`create_rlc_component` is deprecated. Use `create` method instead.", DeprecationWarning)
         return self.create(
             pins=pins,
             component_name=component_name,

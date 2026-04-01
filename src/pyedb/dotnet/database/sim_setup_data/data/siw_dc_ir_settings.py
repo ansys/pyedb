@@ -19,12 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import warnings
 
 from pyedb.dotnet.database.general import (
-    convert_netdict_to_pydict,
     convert_pydict_to_netdict,
 )
+from pyedb.misc.decorators import deprecated_property
 
 
 class SiwaveDCIRSettings:
@@ -178,6 +177,7 @@ class SiwaveDCIRSettings:
         self._parent._update_setup()
 
     @property
+    @deprecated_property("use icepak_temp_file property instead")
     def icepak_temp_file_path(self):
         """Icepak Temp File Path.
 
@@ -186,7 +186,6 @@ class SiwaveDCIRSettings:
             str
             path for the Icepak temp file.
         """
-        warnings.warn("Deprecated property. Use 'icepak_temp_file' instead.", DeprecationWarning)
         return self.icepak_temp_file
 
     @icepak_temp_file_path.setter
@@ -241,8 +240,9 @@ class SiwaveDCIRSettings:
                 str: source name,
                 int: node to ground pairs, 0 (unspecified), 1 (negative), 2 (positive) .
         """
-        temp = self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround
-        return convert_netdict_to_pydict(temp)
+        temp = dict(self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround)
+        temp = {name.strip("'"): node for name, node in temp.items()}  # strip single quotes from the source names
+        return temp
 
     @source_terms_to_ground.setter
     def source_terms_to_ground(self, value):

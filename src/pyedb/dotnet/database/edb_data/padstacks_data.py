@@ -47,6 +47,7 @@ from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.generic.data_handlers import float_units
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class EDBPadProperties(object):
@@ -561,7 +562,7 @@ class EDBPadstack(object):
         return list(self._padstack_def_data.GetLayerNames())
 
     @property
-    def via_start_layer(self) -> str:
+    def via_start_layer(self) -> str | None:
         """Starting layer.
 
         Returns
@@ -569,10 +570,12 @@ class EDBPadstack(object):
         str
             Name of the starting layer.
         """
+        if not self.via_layers:
+            return None
         return self.via_layers[0]
 
     @property
-    def via_stop_layer(self) -> str:
+    def via_stop_layer(self) -> str | None:
         """Stopping layer.
 
         Returns
@@ -580,6 +583,8 @@ class EDBPadstack(object):
         str
             Name of the stopping layer.
         """
+        if not self.via_layers:
+            return None
         return self.via_layers[-1]
 
     @property
@@ -881,14 +886,15 @@ class EDBPadstack(object):
         layout = self._ppadstack._pedb.active_layout
         layers = self._ppadstack._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
+        # All nets by default
+        nets = list(self._ppadstack._pedb.nets.nets.keys())
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._ppadstack._pedb.nets.signal_nets.keys())]
-
+            nets = [i for i in list(self._ppadstack._pedb.nets.signal.keys())]
         layer_count = len(self._ppadstack._pedb.stackup.signal_layers)
 
         i = 0
         for via in self.padstack_instances.values():
-            if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
+            if via.net_name in nets:
                 pos = via.position
                 started = False
                 if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
@@ -1132,7 +1138,10 @@ class EDBPadstack(object):
         """
         cloned_padstack_data = self._edb.Definition.PadstackDefData(self.edb_padstack.GetData())
         new_padstack_data = self._edb.Definition.PadstackDefData.Create()
-        layers_name = cloned_padstack_data.GetLayerNames()
+        layers_name = list(cloned_padstack_data.GetLayerNames())
+        if not layers_name:
+            self._ppadstack._pedb.logger.warning("No layers in the padstack definition.")
+            return False
         layers_to_add = []
         for layer in layers_name:
             if layer == old_name:
@@ -1474,7 +1483,8 @@ class EDBPadstackInstance(Connectable):
     def solderball_layer(self, solderball_layer):
         self.core.SetSolderBallLayer(solderball_layer)
 
-    def get_terminal(self, name=None, create_new_terminal=False) -> "PadstackInstanceTerminal | None":
+    @deprecated("use terminal property instead.")
+    def get_terminal(self, name=None, create_new_terminal=False):
         """Get PadstackInstanceTerminal object.
 
         Parameters
@@ -1488,7 +1498,6 @@ class EDBPadstackInstance(Connectable):
         -------
         :class:`database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal`
         """
-        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
             term = self._create_terminal(name)
         else:
@@ -1543,9 +1552,9 @@ class EDBPadstackInstance(Connectable):
         term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
         return term if not term.is_null else None
 
+    @deprecated("use create_terminal method instead.")
     def _create_terminal(self, name=None):
         """Create a padstack instance terminal"""
-        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
         return self.create_terminal(name)
 
     def create_terminal(self, name=None) -> "PadstackInstanceTerminal":
@@ -1723,7 +1732,6 @@ class EDBPadstackInstance(Connectable):
     @property
     def pin(self) -> "EDBPadstackInstance":
         """EDB padstack object."""
-        warnings.warn("`pin` is deprecated.", DeprecationWarning)
         return self._edb_padstackinstance
 
     @property
@@ -2149,15 +2157,15 @@ class EDBPadstackInstance(Connectable):
         return volume
 
     @property
-    def pin_number(self) -> str:
+    @deprecated_property("use name property instead.")
+    def pin_number(self):
         """Get pin number."""
-        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
         return self.name
 
     @property
-    def component_pin(self) -> str:
+    @deprecated_property("use name property instead.")
+    def component_pin(self):
         """Get component pin."""
-        warnings.warn("`pin_number` is deprecated. Use `name` method instead.", DeprecationWarning)
         return self.name
 
     @property

@@ -325,13 +325,16 @@ class Settings(object):
         self.INSTALLED_STUDENT_VERSIONS = student_versions
         self.INSTALLED_CLIENT_VERSIONS = client_versions
 
+        if not self.INSTALLED_VERSIONS and not self.INSTALLED_STUDENT_VERSIONS and not self.INSTALLED_CLIENT_VERSIONS:
+            raise RuntimeError("No stable version of AEDT is found.")
+
         if len(self.INSTALLED_VERSIONS):
             for i in sorted([float(i) for i in standard_versions], reverse=True):
                 if i <= self.CURRENT_STABLE_AEDT_VERSION:
                     self.LATEST_VERSION = str(i)
                     break
             if self.LATEST_VERSION is None:
-                raise RuntimeError(f"No stable version of AEDT is found.")
+                warnings.warn("No stable version of AEDT is found.", stacklevel=2)
 
         if len(self.INSTALLED_STUDENT_VERSIONS):
             self.LATEST_STUDENT_VERSION = max(student_versions.keys(), key=lambda x: tuple(map(int, x.split("."))))

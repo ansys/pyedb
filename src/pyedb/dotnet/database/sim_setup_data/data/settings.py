@@ -19,11 +19,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import warnings
 
 from pyedb.dotnet.database.sim_setup_data.data.adaptive_frequency_data import (
     AdaptiveFrequencyData,
 )
+from pyedb.misc.decorators import deprecated_property
 
 
 class AdaptiveSettings(object):
@@ -904,6 +904,7 @@ class HfssSolverSettings(object):
         return self._parent.sim_setup_info.core.SimulationSettings.HFSSSolverSettings
 
     @property
+    @deprecated_property("use enhanced_low_frequency_accuracy property instead")
     def enhanced_low_freq_accuracy(self):
         """Whether to enable legacy low-frequency sampling.
 
@@ -915,10 +916,6 @@ class HfssSolverSettings(object):
         bool
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
         """
-        warnings.warn(
-            "`enhanced_low_freq_accuracy` is deprecated, use `enhanced_low_frequency_accuracy` instead.",
-            DeprecationWarning,
-        )
         return self._hfss_solver_settings.EnhancedLowFreqAccuracy
 
     @property

@@ -258,7 +258,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -327,7 +327,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -402,7 +402,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -477,7 +477,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -523,7 +523,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up headless display
-        uses: pyvista/setup-headless-display-action@7d84ae825e6d9297a8e99bdbbae20d1b919a0b19 # v4.2
+        uses: pyvista/setup-headless-display-action@5bc8de3bc71fcda7a96439571287a554901541a0 # v4.3
 
       - name: Setup Python
         uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
@@ -560,7 +560,7 @@ jobs:
           python -m pip install .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
@@ -575,7 +575,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -587,7 +587,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -601,6 +601,10 @@ jobs:
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
             pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
             pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
 
 # =================================================================================================
 # vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv    RUNNING ON SELF-HOSTED RUNNER    vvvvvvvvvvvvvvvvvvvvvvvvvvvvvv
@@ -620,7 +624,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up headless display
-        uses: pyvista/setup-headless-display-action@7d84ae825e6d9297a8e99bdbbae20d1b919a0b19 # v4.2
+        uses: pyvista/setup-headless-display-action@5bc8de3bc71fcda7a96439571287a554901541a0 # v4.3
 
       - name: Install OS packages
         run: |
@@ -664,7 +668,7 @@ jobs:
           python -m pip install .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -678,7 +682,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -690,7 +694,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -704,6 +708,10 @@ jobs:
             pytest -v external/pyaedt/tests/system/extensions/test_via_design.py
             pytest -v external/pyaedt/tests/system/extensions/test_parametrize_edb.py
             pytest -v external/pyaedt/tests/system/extensions/test_generate_arbitrary_wave_ports.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_to_3d.py
+            pytest -v external/pyaedt/tests/system/extensions/test_export_layout.py
+            pytest -v external/pyaedt/tests/system/extensions/test_post_layout_design.py
+            pytest -v external/pyaedt/tests/system/extensions/test_via_clustering.py
 
   docs-build:
     name: Build documentation
@@ -750,7 +758,7 @@ jobs:
     steps:
 
       - name: Download the library artifacts from build-library step
-        uses: actions/download-artifact@70fc10c6e5e1ce46ad2ea6f2b72d43f7d47b13c3 # v8.0.0
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
         with:
           name: ${{ env.PACKAGE_NAME }}-artifacts
           path: ${{ env.PACKAGE_NAME }}-artifacts

@@ -25,7 +25,7 @@ This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
-from typing import Any, Dict, Iterable, List, Optional, Union
+from typing import Any, Iterable, List, Optional, Union
 import warnings
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -41,8 +41,7 @@ from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -120,7 +119,7 @@ class Modeler(object):
         """Primitives.
 
         .. deprecated:: 0.70.0
-                Use :attr:`edb.layout.primitives` instead.
+           Use :attr:`edb.layout.primitives` instead.
 
         Returns
         -------
@@ -131,95 +130,127 @@ class Modeler(object):
         return self._pedb.layout.primitives
 
     @property
+    @deprecated_property("use layout.primitives_by_layer property instead.")
     def primitives_by_layer(self):
-        if self._primitives_by_layer is None:
-            d = {}
-            for p in self._pedb.layout.primitives:
-                if p.layer_name:
-                    d.setdefault(p.layer_name, []).append(p)
-            self._primitives_by_layer = d
-        return self._primitives_by_layer
+        """Primitives organized by layer names.
 
-    def get_primitive(self, primitive_id: int, edb_uid=True) -> Optional[Primitive]:
-        """Retrieve primitive by ID.
+        .. deprecated:: 0.70.0
+        use layout.primitives_by_layer property instead.
+
+        """
+        return self._pedb.layout.primitives_by_layer
+
+    @deprecated("use layout.find_object_by_id instead.")
+    def get_primitive(self, primitive_id: int) -> list[Primitive]:
+        """Retrieve primitive from give id.
+
+        .. deprecated:: 0.70.0
+        use layout.find_object_by_id method instead.
 
         Parameters
         ----------
         primitive_id : int
-            Primitive ID.
+            Primitive id.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive` or bool
-            Primitive object if found, False otherwise.
+        list of :class:`pyedb.grpc.database.primitive.primitive.Primitive`
+            List of primitives.
         """
-        for p in self._pedb.layout.primitives:
-            if (edb_uid and p.edb_uid == primitive_id) or (not edb_uid and p.id == primitive_id):
-                return p
-            for v in p.voids:
-                if (edb_uid and v.edb_uid == primitive_id) or (not edb_uid and v.id == primitive_id):
-                    return v
+        return self._pedb.layout.find_object_by_id(primitive_id)
 
     @property
-    def polygons_by_layer(self) -> Dict[str, List[Primitive]]:
-        """Primitives organized by layer names.
+    @deprecated_property("use layout.polygons_by_layer property instead.")
+    def polygons_by_layer(self) -> dict[str, List[Polygon]]:
+        """Primitives with layer names as keys.
+
+        .. deprecated:: 0.70.0
+        use layout.polygons_by_layer property instead.
 
         Returns
         -------
         dict
-            Dictionary where keys are layer names and values are lists of polygons.
+            Dictionary of polygons with layer names as keys.
         """
-        polygon_by_layer = {}
-        for lay in self._pedb.stackup.layers:
-            polygon_by_layer[lay] = [i for i in self._pedb.layout.find_primitive(layer_name=lay) if i.type == "polygon"]
-        return polygon_by_layer
+        return self._pedb.layout.polygons_by_layer
 
     @property
+    @deprecated_property("use layout.rectangles property instead.")
     def rectangles(self) -> List[Union[Rectangle, Primitive]]:
         """All rectangle primitives.
 
         Returns
         -------
-        list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
+        List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
         """
-        return [i for i in self._pedb.layout.primitives if i.type == "rectangle"]
+        return self._pedb.layout.rectangles
 
     @property
+    @deprecated_property("use layout.circles property instead.")
     def circles(self) -> List[Union[Circle, Primitive]]:
         """All circle primitives.
+
+        .. deprecated:: 0.70.0
+        use layout.circles instead.
 
         Returns
         -------
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
         """
-        return [i for i in self._pedb.layout.primitives if i.type == "circle"]
+        return self._pedb.layout.circles
 
     @property
+    @deprecated_property("use layout.paths property instead.")
     def paths(self) -> List[Union[Path, Primitive]]:
         """All path primitives.
+
+        .. deprecated:: 0.70.0
+        use layout.paths instead.
 
         Returns
         -------
         list
             List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
         """
-        return [i for i in self._pedb.layout.primitives if i.primitive_type == "path"]
+        return self._pedb.layout.paths
 
     @property
+    @deprecated_property("use layout.polygons property instead.")
     def polygons(self) -> List[Union[Polygon, Primitive]]:
         """All polygon primitives.
+
+        .. deprecated:: 0.70.0
+        use layout.polygons instead.
 
         Returns
         -------
         list
             List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
         """
-        return [i for i in self._pedb.layout.primitives if i.primitive_type == "polygon"]
+        return self._pedb.layout.polygons
 
+    @property
+    @deprecated_property("use layout.primitives_by_net property instead.")
+    def primitives_by_net(self) -> dict[str, List[Primitive]]:
+        """Primitives with net names as keys.
+
+        .. deprecated:: 0.70.0
+        use layout.primitives_by_net instead.
+
+        Returns
+        -------
+        dict
+            Dictionary of primitives with net names as keys.
+        """
+        return self._pedb.layout.primitives_by_net
+
+    @deprecated("use layout.get_polygons_by_layer method instead.")
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
         """Retrieve polygons by layer.
+
+        .. deprecated:: 0.70.0
+        use layout.get_polygons_by_layer method instead.
 
         Parameters
         ----------
@@ -233,11 +264,9 @@ class Modeler(object):
         list
             List of polygon objects.
         """
-        polygons = self.polygons_by_layer.get(layer_name, [])
-        if net_list:
-            polygons = [p for p in polygons if p.net_name in net_list]
-        return polygons
+        return self._pedb.layout.get_polygons_by_layer(layer=layer_name, nets=net_list)
 
+    @deprecated("use layout.get_primitive_by_layer_and_point method instead.")
     def get_primitive_by_layer_and_point(
         self,
         point: Optional[List[float]] = None,
@@ -265,50 +294,14 @@ class Modeler(object):
         ValueError
             If point is invalid.
         """
-        from ansys.edb.core.primitive.circle import Circle as GrpcCircle
-        from ansys.edb.core.primitive.path import Path as GrpcPath
-        from ansys.edb.core.primitive.polygon import Polygon as GrpcPolygon
-        from ansys.edb.core.primitive.rectangle import Rectangle as GrpcRectangle
+        return self._pedb.layout.get_primitive_by_layer_and_point(point=point, layer=layer, nets=nets)
 
-        if isinstance(layer, str) and layer not in list(self._pedb.stackup.signal_layers.keys()):
-            layer = None
-        if not isinstance(point, list) and len(point) == 2:
-            self._pedb.logger.error("Provided point must be a list of two values")
-            return []
-        pt = CorePointData(point)
-        if isinstance(nets, str):
-            nets = [nets]
-        elif nets and not isinstance(nets, list) and len(nets) == len([net for net in nets if isinstance(net, str)]):
-            _nets = []
-            for net in nets:
-                if net not in self._pedb.nets:
-                    self._pedb.logger.error(
-                        f"Net {net} used to find primitive from layer point and net not found, skipping it."
-                    )
-                else:
-                    _nets.append(self._pedb.nets[net])
-            if _nets:
-                nets = _nets
-        if not isinstance(layer, list) and layer:
-            layer = [layer]
-        _obj_instances = self._pedb.layout_instance.query_layout_obj_instances(
-            layer_filter=layer, net_filter=nets, spatial_filter=pt
-        )
-        returned_obj = []
-        for inst in _obj_instances:
-            primitive = inst.layout_obj.cast()
-            if isinstance(primitive, GrpcPath):
-                returned_obj.append(Path(self._pedb, primitive))
-            elif isinstance(primitive, GrpcPolygon):
-                returned_obj.append(Polygon(self._pedb, primitive))
-            elif isinstance(primitive, GrpcRectangle):
-                returned_obj.append(Rectangle(self._pedb, primitive))
-            elif isinstance(primitive, GrpcCircle):
-                returned_obj.append(Circle(self._pedb, primitive))
-        return returned_obj
-
+    @deprecated("use layout.get_polygon_bounding_box method instead.")
     def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
         """Get bounding box of polygon.
+
+        .. deprecated:: 0.70.0
+        use layout.get_polygon_bounding_box method instead.
 
         Parameters
         ----------
@@ -320,16 +313,14 @@ class Modeler(object):
         list
             Bounding box coordinates [min_x, min_y, max_x, max_y].
         """
-        bounding_box = polygon.polygon_data.bbox()
-        return [
-            self._pedb.value(bounding_box[0].x),
-            self._pedb.value(bounding_box[0].y),
-            self._pedb.value(bounding_box[1].x),
-            self._pedb.value(bounding_box[1].y),
-        ]
+        return self._pedb.layout.get_polygon_bounding_box(polygon)
 
+    @deprecated("use layout.get_polygon_points method instead.")
     def get_polygon_points(self, polygon) -> List[List[float]]:
         """Get points defining a polygon.
+
+        .. deprecated:: 0.70.0
+        use layout.get_polygon_points method instead.
 
         Parameters
         ----------
@@ -341,25 +332,7 @@ class Modeler(object):
         list
             List of point coordinates.
         """
-        points = []
-        i = 0
-        continue_iterate = True
-        prev_point = None
-        while continue_iterate:
-            try:
-                point = polygon.polygon_data.points[i]
-                if prev_point != point:
-                    if point.is_arc:
-                        points.append([self._pedb.value(point.x)])
-                    else:
-                        points.append([self._pedb.value(point.x), self._pedb.value(point.y)])
-                    prev_point = point
-                    i += 1
-                else:
-                    continue_iterate = False
-            except:
-                continue_iterate = False
-        return points
+        return self._pedb.layout.get_polygon_points(polygon)
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None) -> bool:
         """Parametrize polygon points based on another polygon.
