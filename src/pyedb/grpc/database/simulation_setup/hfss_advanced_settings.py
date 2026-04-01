@@ -44,7 +44,6 @@ class HFSSAdvancedSettings:
         return self.defeature_absolute_length
 
     @defeature_abs_length.setter
-    @deprecated_property("use defeature_absolute_length property instead.")
     def defeature_abs_length(self, value):
         self.defeature_absolute_length = value
 
@@ -186,7 +185,6 @@ class HFSSAdvancedSettings:
         return self.num_via_sides
 
     @via_num_sides.setter
-    @deprecated_property("use num_via_sides property instead.")
     def via_num_sides(self, value: int):
         self.num_via_sides = value
 
@@ -282,7 +280,6 @@ class HFSSAdvancedSettings:
         return self.use_defeature_absolute_length
 
     @use_defeature_abs_length.setter
-    @deprecated_property("use use_defeature_absolute_length property instead.")
     def use_defeature_abs_length(self, value: bool):
         self.use_defeature_absolute_length = value
 
@@ -330,7 +327,6 @@ class HFSSAdvancedSettings:
         return self.via_model_type
 
     @via_style.setter
-    @deprecated_property("use via_model_type property instead.")
     def via_style(self, value):
         self.via_model_type = value
 

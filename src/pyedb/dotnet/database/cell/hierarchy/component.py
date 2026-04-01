@@ -265,7 +265,6 @@ class EDBComponent(Group):
         return self.enabled
 
     @is_enabled.setter
-    @deprecated_property("use enabled property instead")
     def is_enabled(self, value):
         self.enabled = value
 
@@ -335,6 +334,8 @@ class EDBComponent(Group):
                 return "cylinder"
             elif shape.value__ == 2:
                 return "spheroid"
+            elif shape.value__ == 3:
+                return "unknown"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
@@ -353,6 +354,8 @@ class EDBComponent(Group):
                 shape = self._edb.Definition.SolderballShape.Cylinder
             elif value == 2:
                 shape = self._edb.Definition.SolderballShape.Spheroid
+        if shape is None:
+            shape = self._edb.Definition.SolderballShape.NoSolderball
         if shape:
             cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()

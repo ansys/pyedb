@@ -22,7 +22,6 @@
 import warnings
 
 from pyedb.dotnet.database.general import (
-    convert_netdict_to_pydict,
     convert_pydict_to_netdict,
 )
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
@@ -245,7 +244,7 @@ class DeprecatedSettings:
     def via_report_path(self, value: str):
         self.dc_ir.via_report_path = value
 
-    def add_source_terminal_to_ground(self, source_name, terminal=0):
+    def add_source_terminal_to_ground(self, source_name, terminal=0) -> None:
         """Add a source terminal to ground.
 
         Parameters
@@ -261,13 +260,11 @@ class DeprecatedSettings:
 
         Returns
         -------
-        bool
-
+        None
         """
         terminals = self.dc_ir.source_terms_to_ground
         terminals[source_name] = terminal
-        self._sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround = convert_pydict_to_netdict(terminals)
-        return self._update_setup()
+        self.dc_ir.source_terms_to_ground = terminals
 
 
 class SIwaveSimulationSetup(SimulationSetup):

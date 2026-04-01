@@ -280,12 +280,6 @@ class Path(Primitive):
         """
         center_line = self.get_center_line()
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
-
-        # if port_type.lower() == "wave":
-        #     return self._pedb.excitation_manager.create_wave_port(
-        #         self.id, pos, name, 50, horizontal_extent_factor, vertical_extent_factor, pec_launch_width
-        #     )
-        # else:
         return self._pedb.excitation_manager.create_edge_port_vertical(
             self.edb_uid,
             pos,

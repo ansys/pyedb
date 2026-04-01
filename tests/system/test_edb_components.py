@@ -301,13 +301,15 @@ class TestClass(BaseTestClass):
 
     def test_components_create_solder_ball_on_component(self):
         """Set cylindrical solder balls on a given component"""
-        # Done
         edb = self.edb_examples.get_si_verse()
         assert edb.components.set_solder_ball("U1", shape="Spheroid")
         assert edb.components.set_solder_ball("U6", sball_height=None)
         assert edb.components.set_solder_ball(
             "U6", sball_height="100um", auto_reference_size=False, chip_orientation="chip_up"
         )
+        assert edb.components["U6"].solder_ball_shape == "cylinder"
+        edb.components["U6"].solder_ball_shape = None
+        assert edb.components["U6"].solder_ball_shape == "none"
         edb.close(terminate_rpc_session=False)
 
     def test_components_short_component(self):
@@ -502,6 +504,27 @@ class TestClass(BaseTestClass):
 
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
+        )
+        # adding cutout section to test pin preservation handle
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="convex_hull",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
+        )
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="conforming",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
         )
         edbapp.close(terminate_rpc_session=False)
 

@@ -258,7 +258,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -327,7 +327,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -402,7 +402,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -477,7 +477,7 @@ jobs:
           python -m pip install .[all,tests]
 
       - name: Executing system tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         with:
           max_attempts: 3
           retry_on: error
@@ -560,7 +560,7 @@ jobs:
           python -m pip install .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
           PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
@@ -575,7 +575,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -587,7 +587,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -668,7 +668,7 @@ jobs:
           python -m pip install .[all]
 
       - name: Run PyAEDT general and layout tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -682,7 +682,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
 
       - name: Run PyAEDT solvers tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:
@@ -694,7 +694,7 @@ jobs:
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
 
       - name: Run PyAEDT extensions tests
-        uses: nick-fields/retry@ce71cc2ab81d554ebbe88c79ab5975992d79ba08 # v3.0.2
+        uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
         with:

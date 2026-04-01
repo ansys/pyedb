@@ -511,7 +511,7 @@ class Edb:
         """Base path for EDB installation.
 
         .. deprecated:: 0.70.0
-            use :attr:`base_path` property instead.
+           Use :attr:`base_path` property instead.
 
         Returns
         -------
@@ -576,7 +576,7 @@ class Edb:
         """Get all ports.
 
         .. deprecated:: 0.70.0
-            Use :attr:`ports <pyedb.dotnet.database.edb_data.ports.G
+           Use :attr:`ports <pyedb.dotnet.database.edb_data.ports.G
 
         Returns
         -------
@@ -1043,7 +1043,7 @@ class Edb:
         """Source excitation management.
 
         .. deprecated:: 0.70.0
-           Use: func:`excitation_manager` property instead.
+           Use: attr:`excitation_manager` property instead.
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
@@ -1479,12 +1479,12 @@ class Edb:
                 times = 0
                 time.sleep(0.250)
 
-    @deprecated("use close method instead.")
+    @deprecated("Use close method instead.")
     def close_edb(self) -> bool:
         """Close EDB and cleanup variables.
 
-        . deprecated:: pyedb 0.47.0
-        Use: func:`close` instead.
+        .. deprecated:: pyedb 0.47.0
+           Use: func:`close` instead.
 
         Returns
         -------
@@ -1516,12 +1516,12 @@ class Edb:
         self._clean_variables()
         return True
 
-    @deprecated("use save method instead.")
+    @deprecated("Use save method instead.")
     def save_edb(self) -> bool:
         """Save the EDB file.
 
-        . deprecated:: pyedb 0.47.0
-        Use: func:`save` instead.
+        .. deprecated:: pyedb 0.47.0
+           Use: func:`save` instead.
 
         Returns
         -------
@@ -1546,12 +1546,12 @@ class Edb:
         self._wait_for_file_release()
         return True
 
-    @deprecated("use save_as method instead.")
+    @deprecated("Use save_as method instead.")
     def save_edb_as(self, path) -> bool:
         """Save the EDB file as another file.
 
-        . deprecated:: pyedb 0.47.0
-        Use: func:`save_as` instead.
+        .. deprecated:: pyedb 0.47.0
+           Use: func:`save_as` instead.
 
 
         Parameters
@@ -3277,32 +3277,32 @@ class Edb:
         """
         return {name: i for name, i in self.setups.items() if isinstance(i, SIwaveSimulationSetup)}
 
-    @deprecated("use simulation_setups.create_hfss_setup instead")
+    @deprecated("Use simulation_setups.create_hfss_setup method instead")
     def create_hfss_setup(self, name=None):
         """Create an HFSS simulation setup from a template.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_hfss_setup` instead.
+           Use :func:`legacy.simulation_setups.create_hfss_setup` instead.
 
         """
         return self.simulation_setups.create_hfss_setup(name)
 
-    @deprecated("use simulation_setups.create_raptor_x_setup instead")
+    @deprecated("Use simulation_setups.create_raptor_x_setup method instead.")
     def create_raptorx_setup(self, name=None):
         """Create a RaptorX simulation setup.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_raptor_x_setup` instead.
+           Use :func:`legacy.simulation_setups.create_raptor_x_setup` instead.
 
         """
         return self.simulation_setups.create_raptor_x_setup(name)
 
-    @deprecated("use simulation_setups.create_hfss_pi_setup instead")
+    @deprecated("Use simulation_setups.create_hfss_pi_setup method instead.")
     def create_hfsspi_setup(self, name=None):
         """Create an HFSS PI simulation setup from a template.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_hfss_pi_setup` instead.
+           Use :func:`legacy.simulation_setups.create_hfss_pi_setup` instead.
 
         Parameters
         ----------
@@ -3317,22 +3317,22 @@ class Edb:
         """
         return self.simulation_setups.create_hfss_pi_setup(name=name)
 
-    @deprecated("use simulation_setups.create_siwave_setup instead")
+    @deprecated("Use simulation_setups.create_siwave_setup method instead.")
     def create_siwave_syz_setup(self, name=None, **kwargs):
         """Create a Siwave SYZ setup from a template.
 
         .. deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_siwave_setup` instead.
+           Use :func:`legacy.simulation_setups.create_siwave_setup` instead.
 
         """
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
-    @deprecated("use simulation_setups.create_siwave_dcir_setup instead")
+    @deprecated("Use simulation_setups.create_siwave_dcir_setup method instead.")
     def create_siwave_dc_setup(self, name=None, **kwargs):
         """Create a Siwave DC IR setup from a template.
 
-        ..  deprecated:: 0.70.0
-                Use :func:`legacy.simulation_setups.create_siwave_dcir_setup` instead
+        .. deprecated:: 0.70.0
+           Use :func:`legacy.simulation_setups.create_siwave_dcir_setup` instead
 
         """
         return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
@@ -3551,7 +3551,7 @@ class Edb:
                                                 connected_ports_list.append((port1_connexion, port2_connexion))
             return connected_ports_list
 
-    @deprecated("use excitation_manager.create_port method instead")
+    @deprecated("Use excitation_manager.create_port method instead.")
     def create_port(
         self,
         terminal: EdgeTerminal | PadstackInstanceTerminal | PointTerminal | PinGroupTerminal,
@@ -3561,8 +3561,8 @@ class Edb:
     ):
         """Create a port.
 
-        ..deprecated:: 0.70.0
-           :func:`create_port` has been moved to edb.excitation_manager.create_port.
+        .. deprecated:: 0.70.0
+           Use :func:`create_port` has been moved to edb.excitation_manager.create_port.
 
         Parameters
         ----------
@@ -3590,12 +3590,12 @@ class Edb:
             terminal=terminal, ref_terminal=ref_terminal, is_circuit_port=is_circuit_port, name=name
         )
 
-    @deprecated("use excitation_manager.create_voltage_probe method instead")
+    @deprecated("Use excitation_manager.create_voltage_probe method instead")
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
-        ..deprecated:: 0.70.0
-           :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
+        .. deprecated:: 0.70.0
+           Use :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
 
         Parameters
         ----------
@@ -3616,12 +3616,12 @@ class Edb:
         """
         return self.excitation_manager.create_voltage_probe(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated("use excitation_manager.create_voltage_source method instead")
+    @deprecated("Use excitation_manager.create_voltage_source method instead.")
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
-        ..deprecated:: 0.70.0
-           :func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
+        .. deprecated:: 0.70.0
+           Use :func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
 
         Parameters
         ----------
@@ -3642,12 +3642,12 @@ class Edb:
         """
         return self.excitation_manager.create_voltage_source(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated("use excitation_manager.create_current_source method instead")
+    @deprecated("Use excitation_manager.create_current_source method instead.")
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
-        ..deprecated:: 0.70.0
-           :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
+        .. deprecated:: 0.70.0
+           Use :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
 
         Parameters
         ----------
@@ -3668,12 +3668,12 @@ class Edb:
         """
         return self.excitation_manager.create_current_source(terminal=terminal, ref_terminal=ref_terminal)
 
-    @deprecated("use excitation_manager.get_point_terminal method instead")
+    @deprecated("Use excitation_manager.get_point_terminal method instead.")
     def get_point_terminal(self, name, net_name, location, layer):
         """Place a voltage probe between two points.
 
-        ..deprecated:: 0.70.0
-           :func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
+        .. deprecated:: 0.70.0
+           Use :func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
 
         Parameters
         ----------
