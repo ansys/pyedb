@@ -602,7 +602,6 @@ class TestClass(BaseTestClass):
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
     def test_solder_ball_getter_setter(self):
-        # Done
         edb = self.edb_examples.get_si_verse()
         cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0
@@ -618,12 +617,28 @@ class TestClass(BaseTestClass):
         assert cmp.solder_ball_diameter == (0.0, 0.0)
         cmp.solder_ball_diameter = "200um"
         diam1, diam2 = cmp.solder_ball_diameter
-        assert round(diam1, 6) == 200e-6
-        assert round(diam2, 6) == 200e-6
+        assert diam1 == pytest.approx(200e-6)
+        assert diam2 == pytest.approx(200e-6)
         cmp.solder_ball_diameter = ("100um", "100um")
         diam1, diam2 = cmp.solder_ball_diameter
-        assert round(diam1, 6) == 100e-6
-        assert round(diam2, 6) == 100e-6
+        assert diam1 == pytest.approx(100e-6)
+        assert diam2 == pytest.approx(100e-6)
+        cmp.solder_ball_material = "copper"
+        assert cmp.solder_ball_material == "copper"
+        # material not defined is not applied
+        cmp.solder_ball_material = "copper_2"
+        assert not cmp.solder_ball_material == "copper_2"
+        edb.components.set_solder_ball(component="U1",
+                                       sball_diam="100um",
+                                       sball_height="150um",
+                                       shape="cylinder",
+                                       material_name="copper_test",)
+        cmp2 = edb.components.instances["U1"]
+        assert "copper_test" in edb.materials
+        assert cmp2.solder_ball_material == "copper_test"
+        assert cmp2.solder_ball_height == pytest.approx(150e-6)
+        assert cmp.solder_ball_diameter == (pytest.approx(100e-6), pytest.approx(100e-6))
+        edb.close(terminate_rpc_session=False)
 
     def test_create_pingroup_from_pins_types(self):
         # Done

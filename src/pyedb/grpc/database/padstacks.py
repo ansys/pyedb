@@ -701,7 +701,8 @@ class Padstacks(object):
             "ballDIam": "solder_ball_diameter",
         }
     )
-    def set_solderball(self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6):
+    def set_solderball(self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6,
+                       material:str=None):
         """Set solderball for the given PadstackInstance.
 
         Parameters
@@ -714,6 +715,9 @@ class Padstacks(object):
             Boolean triggering is the solder ball is placed on Top or Bottom of the layer stackup.
         solder_ball_diameter : double, optional,
             Solder ball diameter value.
+        material : str, optional,
+            Material name for the solder ball. If the material does not exist in the central material library,
+            it will be created on the fly with a default conductivity of 1e7 Siemens.
 
         Returns
         -------
@@ -733,6 +737,10 @@ class Padstacks(object):
             CoreSolderballPlacement.ABOVE_PADSTACK if top_placed else CoreSolderballPlacement.BELOW_PADSTACK
         )
         newdefdata.solder_ball_placement = sball_placement
+        if material:
+            if material not in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(name=material, conductivity=1e7)
+            newdefdata.solder_ball_material = material
         psdef.data = newdefdata
         sball_layer = [lay.core for lay in list(self._layers.values()) if lay.name == solder_ball_layer][0]
         if sball_layer is not None:

@@ -633,7 +633,10 @@ class Component:
 
     @solder_ball_material.setter
     def solder_ball_material(self, value):
-        self.component_property.solder_ball_property.material_name = value
+        if value in self._pedb.materials:
+            self.component_property.solder_ball_property.material_name = value
+        else:
+            self._pedb.logger.error(f"Material {value} not found. Create this material first.")
 
     @property
     def uses_solderball(self) -> bool:

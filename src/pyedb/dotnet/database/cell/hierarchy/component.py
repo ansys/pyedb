@@ -409,9 +409,20 @@ class EDBComponent(Group):
 
     @property
     def solder_ball_material(self):
-        if "GetMaterialName" in dir(self.component_property.core):
+        if "GetSolderBallProperty" in dir(self.component_property.core):
             return self.component_property.core.GetSolderBallProperty().GetMaterialName()
         return ""
+
+    @solder_ball_material.setter
+    def solder_ball_material(self, value):
+        if value in self._pedb.materials:
+            cmp_property = self.component_property.core.Clone()
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetMaterialName(value)
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
+        else:
+            self._pedb.logger.error(f"Material {value} not found. Create this material first.")
 
     @property
     def refdes(self):
