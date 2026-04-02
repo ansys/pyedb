@@ -25,8 +25,8 @@ from ansys.edb.core.primitive.bondwire import (
     BondwireCrossSectionType as CoreBondwireCrossSectionType,
     BondwireType as CoreBondWireType,
 )
-from pyedb.grpc.database.primitive.primitive import Primitive
 
+from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.value import Value
 
 
