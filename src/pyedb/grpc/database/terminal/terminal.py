@@ -696,6 +696,7 @@ class Terminal(ConnObj):
         return self.is_circuit_port
 
     @is_circuit.setter
+    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self, value: bool):
         """Set whether the terminal is a circuit terminal.
 

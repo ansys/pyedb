@@ -31,19 +31,61 @@ from pyedb.misc.decorators import deprecate_argument_name
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
     from pyedb.grpc.edb import Edb as EdbGrpc
-    from pyedb.siwave import Siwave
+    from pyedb.siwave import Siwave as SiwaveApp
 
 
 @overload
-def Edb(*, grpc: Literal[True], **kwargs) -> "EdbGrpc": ...
+def Edb(
+    edbpath: str | None = None,
+    cellname: str | None = None,
+    isreadonly: bool = False,
+    version: str | None = None,
+    isaedtowned: bool = False,
+    oproject: Any = None,
+    student_version: bool = False,
+    use_ppe: bool = False,
+    map_file: str | None = None,
+    technology_file: str | None = None,
+    grpc: Literal[True] = True,
+    control_file: str | None = None,
+    layer_filter: str | None = None,
+) -> "EdbGrpc": ...
 
 
 @overload
-def Edb(*, grpc: Literal[False] = False, **kwargs) -> "EdbDotnet": ...
+def Edb(
+    edbpath: str | None = None,
+    cellname: str | None = None,
+    isreadonly: bool = False,
+    version: str | None = None,
+    isaedtowned: bool = False,
+    oproject: Any = None,
+    student_version: bool = False,
+    use_ppe: bool = False,
+    map_file: str | None = None,
+    technology_file: str | None = None,
+    grpc: Literal[False] = False,
+    control_file: str | None = None,
+    layer_filter: str | None = None,
+) -> "EdbDotnet": ...
 
 
 @overload
-def Edb(*, grpc: bool, **kwargs) -> "EdbGrpc" | "EdbDotnet": ...
+def Edb(
+    edbpath: str | None = None,
+    cellname: str | None = None,
+    isreadonly: bool = False,
+    version: str | None = None,
+    isaedtowned: bool = False,
+    oproject: Any = None,
+    student_version: bool = False,
+    use_ppe: bool = False,
+    map_file: str | None = None,
+    technology_file: str | None = None,
+    grpc: bool = False,
+    control_file: str | None = None,
+    layer_filter: str | None = None,
+) -> "EdbGrpc | EdbDotnet": ...
 
 
 # lazy imports
@@ -311,6 +353,11 @@ def Edb(
                 f"Please use version 2025.2 or later."
             )
 
+        raise RuntimeError(
+            f"gRPC backend selection is only supported for AEDT versions between 2025.2 and 2027.1. "
+            f"Got {settings.specified_version}."
+        )
+
     else:
         from pyedb.dotnet.edb import Edb
 
@@ -330,7 +377,7 @@ def Edb(
 
 def Siwave(
     specified_version=None,
-) -> "Siwave":
+) -> "SiwaveApp":
     """Provides the SIwave application interface.
 
     Parameters

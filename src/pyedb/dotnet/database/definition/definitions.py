@@ -25,6 +25,7 @@ import warnings
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.definition.wirebond_def import ApdBondwireDef, Jedec4BondwireDef, Jedec5BondwireDef
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class Definitions:
@@ -32,6 +33,7 @@ class Definitions:
         self._pedb = pedb
 
     @property
+    @deprecated_property("use components property instead.", category=None)
     def component(self):
         """Component definitions.
 
@@ -48,6 +50,7 @@ class Definitions:
         return {l.GetName(): EDBComponentDef(self._pedb, l) for l in list(self._pedb.active_db.ComponentDefs)}
 
     @property
+    @deprecated_property("use packages property instead.", category=None)
     def package(self):
         """Package definitions.
 
@@ -86,6 +89,7 @@ class Definitions:
             return {}
         return {l.GetName(): ApdBondwireDef(self._pedb, l) for l in list(objs)}
 
+    @deprecated("use add_package method instead.", category=None)
     def add_packages(self, name, component_part_name=None, boundary_points=None):
         """Add a package definition.
 

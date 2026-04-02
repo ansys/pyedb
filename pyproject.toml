@@ -68,6 +68,7 @@ tests = [
     "pytest-cov>=4.0.0,<7.2",
     "pytest-xdist>=3.5.0,<3.7",
 ]
+
 doc = [
     "ansys-sphinx-theme[autoapi]>=1.0.0,<1.8",
     "ezdxf>=1.4.2",
