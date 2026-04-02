@@ -1854,6 +1854,7 @@ class Components(object):
         reference_size_x=0,
         reference_size_y=0,
         reference_height=0,
+        material_name: str = None,
     ):
         """Set cylindrical solder balls on a given component.
 
@@ -1881,6 +1882,9 @@ class Components(object):
             Y size of the reference. Applicable when auto_reference_size is False.
         reference_height : int, str, float, optional
             Height of the reference. Applicable when auto_reference_size is False.
+        material_name : str, optional
+            Material name. If material is not defined in database, a new one is created on the fly with 1e7 Siemens
+            default conductivity.
 
         Returns
         -------
@@ -1935,8 +1939,12 @@ class Components(object):
         solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
         solder_ball_prop.SetDiameter(self._get_edb_value(sball_diam), self._get_edb_value(sball_mid_diam))
         solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
-
         solder_ball_prop.SetShape(sball_shape)
+        if material_name:
+            if not material_name in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
+            solder_ball_prop.SetMaterialName(material_name)
+
         cmp_property.SetSolderBallProperty(solder_ball_prop)
 
         port_prop = cmp_property.GetPortProperty().Clone()
