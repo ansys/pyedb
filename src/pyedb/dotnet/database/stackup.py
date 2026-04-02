@@ -27,12 +27,12 @@ This module contains the `EdbStackup` class.
 
 from __future__ import absolute_import  # noreorder
 
-import warnings
 from collections import OrderedDict
 import json
 import logging
 import math
 from pathlib import Path
+import warnings
 
 from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
@@ -2182,7 +2182,7 @@ class Stackup(LayerCollection):
                     material.loss_tanget = material_properties["DielectricLossTangent"]
         return True
 
-    def _import_xml(self, file_path:str|Path):
+    def _import_xml(self, file_path: str | Path):
         """Load stackup from a XML file.
 
         Parameters
