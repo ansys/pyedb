@@ -48,7 +48,7 @@ from pydantic import BaseModel, confloat
 from pyedb import Edb
 from pyedb.exceptions import MaterialModelException
 from pyedb.grpc.database.utility.value import Value
-from pyedb.misc.decorators import deprecated
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -139,6 +139,17 @@ class Material:
         return self.__name
 
     @property
+    def all_properties(self) -> list[str]:
+        """All properties defined in the material definition.
+
+        Returns
+        -------
+        list[str]
+            List of all material properties available.
+        """
+        return [prop.name.lower() for prop in self.core.all_properties]
+
+    @property
     def dc_model(self) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:
         """Dielectric material model.
 
@@ -161,16 +172,15 @@ class Material:
         ``0.0`` when no dielectric model is assigned.
         """
         # Todo missing wrapper classes for dielctric model classes.
-        try:
-            if self.core.dielectric_material_model.type.name.lower() == "debye":
-                self.__dielectric_model = CoreDebyeModel(self.core.dielectric_material_model.msg)
-            elif self.core.dielectric_material_model.type.name.lower() == "multipole_debye":
-                self.__dielectric_model = CoreMultipoleDebyeModel(self.core.dielectric_material_model.msg)
-            elif self.core.dielectric_material_model.type.name.lower() == "djordjecvic_sarkar":
-                self.__dielectric_model = CoreDjordjecvicSarkarModel(self.core.dielectric_material_model.msg)
-            return self.__dielectric_model
-        except:
+        if self.core.dielectric_material_model.is_null:
             return 0.0
+        elif self.core.dielectric_material_model.type.name.lower() == "debye":
+            self.__dielectric_model = CoreDebyeModel(self.core.dielectric_material_model.msg)
+        elif self.core.dielectric_material_model.type.name.lower() == "multipole_debye":
+            self.__dielectric_model = CoreMultipoleDebyeModel(self.core.dielectric_material_model.msg)
+        elif self.core.dielectric_material_model.type.name.lower() == "djordjecvic_sarkar":
+            self.__dielectric_model = CoreDjordjecvicSarkarModel(self.core.dielectric_material_model.msg)
+        return self.__dielectric_model
 
     @property
     def conductivity(self) -> float:
@@ -181,17 +191,16 @@ class Material:
         float
             Conductivity value.
         """
-        try:
+        if "conductivity" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.CONDUCTIVITY))
-        except:
-            return 0.0
+        return 0.0
 
     @conductivity.setter
     def conductivity(self, value):
         """Set material conductivity."""
-        if self.dielectric_material_model:
+        if not self.core.dielectric_material_model.is_null:
             self.__edb.logger.error(
-                f"Dielectric model defined on material {self.name}. Conductivity can not be changed"
+                f"Dielectric model defined on material {self.name}. Conductivity can not be changed."
                 f"Changing conductivity is only allowed when no dielectric model is assigned."
             )
         else:
@@ -207,18 +216,38 @@ class Material:
             DC conductivity value.
 
         """
-        try:
-            return self.dielectric_material_model.dc_conductivity
-        except:
-            return None
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "dc_conductivity"):
+                return self.dielectric_material_model.dc_conductivity
 
     @dc_conductivity.setter
     def dc_conductivity(self, value):
-        if self.dielectric_material_model:
-            self.dielectric_material_model.dc_conductivity = float(value)
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "dc_conductivity"):
+                self.dielectric_material_model.dc_conductivity = float(value)
 
     @property
-    def dc_permittivity(self) -> float | str | None:
+    def use_dc_relative_conductivity(self) -> bool:
+        """Flag indicating whether the DC relative permittivity nominal value is used.
+
+        Returns
+        -------
+        bool
+            Whether the DC relative permittivity nominal value is used.
+        """
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "use_dc_relative_conductivity"):
+                return self.core.dielectric_material_model.use_dc_relative_conductivity
+        return False
+
+    @use_dc_relative_conductivity.setter
+    def use_dc_relative_conductivity(self, value):
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "use_dc_relative_conductivity"):
+                self.core.dielectric_material_model.use_dc_relative_conductivity = value
+
+    @property
+    def dc_relative_permittivity(self) -> float | None:
         """Material DC permittivity.
 
         Returns
@@ -227,15 +256,31 @@ class Material:
             DC permittivity value.
 
         """
-        try:
-            return self.dielectric_material_model.dc_relative_permittivity
-        except:
-            return None
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "dc_relative_permittivity"):
+                return self.dielectric_material_model.dc_relative_permittivity
+        return None
+
+    @dc_relative_permittivity.setter
+    def dc_relative_permittivity(self, value):
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "dc_relative_permittivity"):
+                self.dielectric_material_model.dc_relative_permittivity = float(value)
+
+    @property
+    @deprecated_property("Use dc_relative_permittivity property instead.")
+    def dc_permittivity(self) -> float | str | None:
+        """Material DC permittivity.
+
+        .. deprecated:: 0.71.0
+           Use :attr: dc_relative_permittivity property instead.
+
+        """
+        return self.dc_relative_permittivity
 
     @dc_permittivity.setter
     def dc_permittivity(self, value):
-        if self.dielectric_material_model:
-            self.dielectric_material_model.dc_relative_permittivity = float(value)
+        self.dc_relative_permittivity = value
 
     @property
     def loss_tangent_at_frequency(self) -> float | str | None:
@@ -247,15 +292,16 @@ class Material:
             Loss tangent value.
 
         """
-        try:
-            return self.dielectric_material_model.loss_tangent_at_frequency
-        except:
-            return None
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "loss_tangent_at_frequency"):
+                return self.dielectric_material_model.loss_tangent_at_frequency
+        return None
 
     @loss_tangent_at_frequency.setter
     def loss_tangent_at_frequency(self, value):
-        if self.dielectric_material_model:
-            self.dielectric_material_model.loss_tangent_at_frequency = float(value)
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "loss_tangent_at_frequency"):
+                self.dielectric_material_model.loss_tangent_at_frequency = float(value)
 
     @property
     def dielectric_model_frequency(self) -> float | str | None:
@@ -267,20 +313,20 @@ class Material:
             Frequency value.
 
         """
-        try:
-            return self.dielectric_material_model.frequency
-        except:
-            return None
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "frequency"):
+                return self.dielectric_material_model.frequency
+        return None
 
     @dielectric_model_frequency.setter
     def dielectric_model_frequency(self, value):
-        if self.dielectric_material_model:
-            self.dielectric_material_model.frequency = float(value)
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "frequency"):
+                self.dielectric_material_model.frequency = float(value)
 
     @property
-    def permittivity_at_frequency(self) -> float | str | None:
-        """Material permittivity at frequency if model is defined.
-
+    def relative_permittivity_at_frequency(self) -> float | str | None:
+        """Material relative permittivity at frequency if dielectric model is defined.
 
         Returns
         -------
@@ -288,15 +334,36 @@ class Material:
             Permittivity value.
 
         """
-        try:
-            return self.dielectric_material_model.relative_permittivity_at_frequency
-        except:
-            return None
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "relative_permittivity_at_frequency"):
+                return self.dielectric_material_model.relative_permittivity_at_frequency
+        return None
+
+    @relative_permittivity_at_frequency.setter
+    def relative_permittivity_at_frequency(self, value):
+        if not self.core.dielectric_material_model.is_null:
+            if hasattr(self.dielectric_material_model, "relative_permittivity_at_frequency"):
+                self.dielectric_material_model.relative_permittivity_at_frequency = float(value)
+
+    @property
+    @deprecated_property("Use relative_permittivity_at_frequency property instead.")
+    def permittivity_at_frequency(self) -> float | str | None:
+        """Material permittivity at frequency if model is defined.
+
+        .. deprecated:: 0.71.0
+           Use :attr: relative_permittivity_at_frequency property instead.
+
+        Returns
+        -------
+        float
+            Permittivity value.
+
+        """
+        return self.relative_permittivity_at_frequency
 
     @permittivity_at_frequency.setter
     def permittivity_at_frequency(self, value):
-        if self.dielectric_material_model:
-            self.dielectric_material_model.relative_permittivity_at_frequency = float(value)
+        self.relative_permittivity_at_frequency = value
 
     @property
     def permittivity(self) -> float | str | None:
@@ -309,10 +376,9 @@ class Material:
             Permittivity value.
 
         """
-        try:
+        if "permittivity" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.PERMITTIVITY))
-        except:
-            return 0.0
+        return 1.0
 
     @permittivity.setter
     def permittivity(self, value):
@@ -320,7 +386,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMITTIVITY, self.__edb._value_setter(value))
 
     @property
-    def permeability(self) -> float | str | None:
+    def permeability(self) -> float | str:
         """Material permeability.
 
         Returns
@@ -329,10 +395,9 @@ class Material:
             Permeability value.
 
         """
-        try:
+        if "permeability" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.PERMEABILITY))
-        except:
-            return 0.0
+        return 0.0
 
     @permeability.setter
     def permeability(self, value):
@@ -340,7 +405,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.PERMEABILITY, self.__edb._value_setter(value))
 
     @property
-    def dielectric_loss_tangent(self) -> float | str | None:
+    def dielectric_loss_tangent(self) -> float | str:
         """Material loss tangent.
 
         Returns
@@ -349,10 +414,9 @@ class Material:
             Loss tangent value.
 
         """
-        try:
+        if "dielectric_loss_tangent" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT))
-        except:
-            return 0.0
+        return 0.0
 
     @dielectric_loss_tangent.setter
     def dielectric_loss_tangent(self, value):
@@ -360,7 +424,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.DIELECTRIC_LOSS_TANGENT, self.__edb._value_setter(value))
 
     @property
-    def magnetic_loss_tangent(self) -> float | str | None:
+    def magnetic_loss_tangent(self) -> float | str:
         """Material magnetic loss tangent.
 
         Returns
@@ -368,10 +432,9 @@ class Material:
         float
             Magnetic loss tangent value.
         """
-        try:
+        if "magnetic_loss_tangent" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT))
-        except:
-            return 0.0
+        return 0.0
 
     @magnetic_loss_tangent.setter
     def magnetic_loss_tangent(self, value):
@@ -379,7 +442,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT, self.__edb._value_setter(value))
 
     @property
-    def thermal_conductivity(self) -> float | str | None:
+    def thermal_conductivity(self) -> float | str:
         """Material thermal conductivity.
 
         Returns
@@ -388,10 +451,9 @@ class Material:
             Thermal conductivity value.
 
         """
-        try:
+        if "thermal_conductivity" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY))
-        except:
-            return 0.0
+        return 0.0
 
     @thermal_conductivity.setter
     def thermal_conductivity(self, value):
@@ -399,7 +461,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.THERMAL_CONDUCTIVITY, self.__edb._value_setter(value))
 
     @property
-    def mass_density(self) -> float | str | None:
+    def mass_density(self) -> float | str:
         """Material mass density.
 
         Returns
@@ -408,10 +470,9 @@ class Material:
             Mass density value.
 
         """
-        try:
+        if "mass_density" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.MASS_DENSITY))
-        except:
-            return 0.0
+        return 0.0
 
     @mass_density.setter
     def mass_density(self, value):
@@ -419,7 +480,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.MASS_DENSITY, self.__edb._value_setter(value))
 
     @property
-    def youngs_modulus(self) -> float | str | None:
+    def youngs_modulus(self) -> float | str:
         """Material young modulus.
 
         Returns
@@ -428,10 +489,9 @@ class Material:
             Material young modulus value.
 
         """
-        try:
+        if "youngs_modulus" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.YOUNGS_MODULUS))
-        except:
-            return 0.0
+        return 0.0
 
     @youngs_modulus.setter
     def youngs_modulus(self, value):
@@ -439,7 +499,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.YOUNGS_MODULUS, self.__edb._value_setter(value))
 
     @property
-    def specific_heat(self) -> float | str | None:
+    def specific_heat(self) -> float | str:
         """Material specific heat.
 
         Returns
@@ -447,10 +507,9 @@ class Material:
         float
             Material specific heat value.
         """
-        try:
+        if "specific_heat" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.SPECIFIC_HEAT))
-        except:
-            return 0.0
+        return 0.0
 
     @specific_heat.setter
     def specific_heat(self, value):
@@ -458,7 +517,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.SPECIFIC_HEAT, self.__edb._value_setter(value))
 
     @property
-    def poisson_ratio(self) -> float | str | None:
+    def poisson_ratio(self) -> float | str:
         """Material poisson ratio.
 
         Returns
@@ -466,10 +525,9 @@ class Material:
         float
             Material poisson ratio value.
         """
-        try:
+        if "poissons_ratio" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.POISSONS_RATIO))
-        except:
-            return 0.0
+        return 0.0
 
     @poisson_ratio.setter
     def poisson_ratio(self, value):
@@ -477,7 +535,7 @@ class Material:
         self.core.set_property(CoreMaterialProperty.POISSONS_RATIO, self.__edb._value_setter(value))
 
     @property
-    def thermal_expansion_coefficient(self) -> float | str | None:
+    def thermal_expansion_coefficient(self) -> float | str:
         """Material thermal coefficient.
 
         Returns
@@ -486,10 +544,9 @@ class Material:
             Material thermal coefficient value.
 
         """
-        try:
+        if "thermal_expansion_coefficient" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.THERMAL_EXPANSION_COEFFICIENT))
-        except:
-            return 0.0
+        return 0.0
 
     @thermal_expansion_coefficient.setter
     def thermal_expansion_coefficient(self, value):
@@ -549,8 +606,9 @@ class Material:
         """Load all properties of the material."""
         res = MaterialProperties()
         for property in res.model_dump().keys():
-            value = getattr(self, property)
-            setattr(res, property, value)
+            if hasattr(self, property):
+                value = getattr(self, property)
+                setattr(res, property, value)
         return res
 
 
