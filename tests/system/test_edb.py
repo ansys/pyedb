@@ -47,6 +47,9 @@ class TestClass(BaseTestClass):
         assert edbapp.excitation_manager.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_layout_bounding_box(self):
         """Evaluate layout bounding box"""
         edbapp = self.edb_examples.get_si_verse()
@@ -285,6 +288,9 @@ class TestClass(BaseTestClass):
 
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/edge_ports.aedb")[0]
@@ -341,9 +347,11 @@ class TestClass(BaseTestClass):
             )
         sig = edb.modeler.create_trace([[0, 0], ["9mm", 0]], "sig2", "1mm", "SIG", "Flat", "Flat")
         assert sig.create_edge_port("pcb_port_1", "end", "Wave", None, 8, 8)
-        assert sig.create_edge_port("pcb_port_2", "start", "gap")
+        assert sig.create_edge_port("pcb_port_2", "start", "Gap")
         gap_port = edb.ports["pcb_port_2"]
         if edb.grpc:
+            assert edb.ports["pcb_port_1"].is_wave_port
+            assert not edb.ports["pcb_port_2"].is_wave_port
             assert gap_port.component.is_null
             assert not gap_port.is_circuit_port
         else:
@@ -362,6 +370,9 @@ class TestClass(BaseTestClass):
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_edb_statistics(self):
         """Get statistics."""
         edb = self.edb_examples.get_si_verse_sfp()
@@ -424,6 +435,9 @@ class TestClass(BaseTestClass):
         assert setup.sweep_data[0].enforce_causality
         edb.close()
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_create_various_ports_0(self):
         """Create various ports."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("edb_edge_ports.aedb")[0]
@@ -538,6 +552,9 @@ class TestClass(BaseTestClass):
         assert df_port.deembed_length == 1e-3
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_create_various_ports_1(self):
         """Create various ports."""
         target_path = self.edb_examples.copy_test_files_into_local_folder("edb_edge_ports.aedb")[0]
@@ -1291,7 +1308,9 @@ class TestClass(BaseTestClass):
         assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
         edbapp.close()
 
-    @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_edb_settings(self):
         edbapp = self.edb_examples.get_si_verse()
         assert type(edbapp.logger) == EdbLogger
@@ -1314,7 +1333,9 @@ class TestClass(BaseTestClass):
         assert edbapp.are_port_reference_terminals_connected()
         edbapp.close()
 
-    @pytest.mark.skipif(config["use_grpc"], reason="only dotnet")
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+    )
     def test_ports_and_sources_creation(self):
         edbapp = self.edb_examples.get_si_verse()
         p1 = edbapp.padstacks.instances_by_name["Via1"].create_terminal("p1")

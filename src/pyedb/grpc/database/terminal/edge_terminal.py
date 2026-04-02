@@ -107,8 +107,9 @@ class EdgeTerminal(Terminal):
 
     @property
     def is_wave_port(self) -> bool:
-        if self._hfss_port_property:
-            return True if "Wave" in self._hfss_port_property else False
+        if self.hfss_type == "Wave":
+            return True
+        return False
 
     @property
     def is_reference_terminal(self) -> bool:
