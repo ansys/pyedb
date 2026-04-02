@@ -27,13 +27,13 @@ This module contains the `EdbStackup` class.
 
 from __future__ import absolute_import, annotations
 
-import warnings
 from collections import OrderedDict
 import json
 import logging
 import math
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+import warnings
 
 if TYPE_CHECKING:
     from pyedb import Edb
