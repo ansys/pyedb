@@ -1854,7 +1854,7 @@ class Components(object):
         reference_size_x=0,
         reference_size_y=0,
         reference_height=0,
-        material_name:str=None,
+        material_name: str = None,
     ):
         """Set cylindrical solder balls on a given component.
 

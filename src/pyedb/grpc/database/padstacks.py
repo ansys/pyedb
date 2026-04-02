@@ -701,8 +701,9 @@ class Padstacks(object):
             "ballDIam": "solder_ball_diameter",
         }
     )
-    def set_solderball(self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6,
-                       material:str=None):
+    def set_solderball(
+        self, padstack_instance, solder_ball_layer, top_placed=True, solder_ball_diameter=100e-6, material: str = None
+    ):
         """Set solderball for the given PadstackInstance.
 
         Parameters

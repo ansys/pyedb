@@ -628,11 +628,13 @@ class TestClass(BaseTestClass):
         # material not defined is not applied
         cmp.solder_ball_material = "copper_2"
         assert not cmp.solder_ball_material == "copper_2"
-        edb.components.set_solder_ball(component="U1",
-                                       sball_diam="100um",
-                                       sball_height="150um",
-                                       shape="cylinder",
-                                       material_name="copper_test",)
+        edb.components.set_solder_ball(
+            component="U1",
+            sball_diam="100um",
+            sball_height="150um",
+            shape="cylinder",
+            material_name="copper_test",
+        )
         cmp2 = edb.components.instances["U1"]
         assert "copper_test" in edb.materials
         assert cmp2.solder_ball_material == "copper_test"
