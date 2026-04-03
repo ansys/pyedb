@@ -301,13 +301,15 @@ class TestClass(BaseTestClass):
 
     def test_components_create_solder_ball_on_component(self):
         """Set cylindrical solder balls on a given component"""
-        # Done
         edb = self.edb_examples.get_si_verse()
         assert edb.components.set_solder_ball("U1", shape="Spheroid")
         assert edb.components.set_solder_ball("U6", sball_height=None)
         assert edb.components.set_solder_ball(
             "U6", sball_height="100um", auto_reference_size=False, chip_orientation="chip_up"
         )
+        assert edb.components["U6"].solder_ball_shape == "cylinder"
+        edb.components["U6"].solder_ball_shape = None
+        assert edb.components["U6"].solder_ball_shape == "none"
         edb.close(terminate_rpc_session=False)
 
     def test_components_short_component(self):
@@ -503,6 +505,27 @@ class TestClass(BaseTestClass):
         edbapp.components["C164"].assign_spice_model(
             spice_path, sub_circuit_name="GRM32ER60J227ME05_DC0V_25degC", terminal_pairs=[["port1", 2], ["port2", 1]]
         )
+        # adding cutout section to test pin preservation handle
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="convex_hull",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
+        )
+        assert edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N", "5V"],
+            reference_nets=["GND"],
+            extent_type="conforming",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            preserve_components_with_model=True,
+        )
         edbapp.close(terminate_rpc_session=False)
 
     def test_components_bounding_box(self):
@@ -579,7 +602,6 @@ class TestClass(BaseTestClass):
         reason="This test is failing in grpc. To be validated in 26R1.",
     )
     def test_solder_ball_getter_setter(self):
-        # Done
         edb = self.edb_examples.get_si_verse()
         cmp = edb.components.instances["X1"]
         cmp.solder_ball_height = 0.0
@@ -595,12 +617,30 @@ class TestClass(BaseTestClass):
         assert cmp.solder_ball_diameter == (0.0, 0.0)
         cmp.solder_ball_diameter = "200um"
         diam1, diam2 = cmp.solder_ball_diameter
-        assert round(diam1, 6) == 200e-6
-        assert round(diam2, 6) == 200e-6
+        assert diam1 == pytest.approx(200e-6)
+        assert diam2 == pytest.approx(200e-6)
         cmp.solder_ball_diameter = ("100um", "100um")
         diam1, diam2 = cmp.solder_ball_diameter
-        assert round(diam1, 6) == 100e-6
-        assert round(diam2, 6) == 100e-6
+        assert diam1 == pytest.approx(100e-6)
+        assert diam2 == pytest.approx(100e-6)
+        cmp.solder_ball_material = "copper"
+        assert cmp.solder_ball_material == "copper"
+        # material not defined is not applied
+        cmp.solder_ball_material = "copper_2"
+        assert not cmp.solder_ball_material == "copper_2"
+        edb.components.set_solder_ball(
+            component="U1",
+            sball_diam="100um",
+            sball_height="150um",
+            shape="cylinder",
+            material_name="copper_test",
+        )
+        cmp2 = edb.components.instances["U1"]
+        assert "copper_test" in edb.materials
+        assert cmp2.solder_ball_material == "copper_test"
+        assert cmp2.solder_ball_height == pytest.approx(150e-6)
+        assert cmp.solder_ball_diameter == (pytest.approx(100e-6), pytest.approx(100e-6))
+        edb.close(terminate_rpc_session=False)
 
     def test_create_pingroup_from_pins_types(self):
         # Done

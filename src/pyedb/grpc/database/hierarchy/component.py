@@ -24,7 +24,6 @@ import logging
 from pathlib import Path
 import re
 from typing import List, Optional, Union
-import warnings
 
 from ansys.edb.core.definition.component_model import (
     NPortComponentModel as CoreNPortComponentModel,
@@ -58,6 +57,7 @@ from pyedb.grpc.database.terminal.padstack_instance_terminal import (
     PadstackInstanceTerminal,
 )
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 component_type_mapping = {
     CoreComponentType.OTHER: "other",
@@ -286,18 +286,17 @@ class Component:
             self._pedb.logger.error("Invalid input. Set component definition failed.")
 
     @property
+    @deprecated_property("use component_definition property instead")
     def component_def(self):
         """Component definition.
 
         deprecated: use `component_definition` instead.
 
         """
-        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
         return self.component_definition
 
     @component_def.setter
     def component_def(self, value):
-        warnings.warn("`component_def` is deprecated. Use `component_definition` instead.", DeprecationWarning)
         self.component_definition = value
 
     @property
@@ -566,19 +565,25 @@ class Component:
                 return "cylinder"
             elif shape == SolderballShape.SOLDERBALL_SPHEROID:
                 return "spheroid"
+            elif shape == SolderballShape.UNKNOWN_SOLDERBALL_SHAPE:
+                return "unknown"
         return None
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
         if not self.component_property.solder_ball_property.is_null:
             shape = None
-            if isinstance(value, str):
+            if value is None:
+                shape = SolderballShape.NO_SOLDERBALL
+            elif isinstance(value, str):
                 if value.lower() == "cylinder":
                     shape = SolderballShape.SOLDERBALL_CYLINDER
                 elif value.lower() == "none":
                     shape = SolderballShape.NO_SOLDERBALL
                 elif value.lower() == "spheroid":
                     shape = SolderballShape.SOLDERBALL_SPHEROID
+                elif value.lower() == "none":
+                    shape = SolderballShape.NO_SOLDERBALL
             if shape:
                 cmp_property = self.core.component_property
                 solder_ball_prop = cmp_property.solder_ball_property
@@ -628,7 +633,10 @@ class Component:
 
     @solder_ball_material.setter
     def solder_ball_material(self, value):
-        self.component_property.solder_ball_property.material_name = value
+        if value in self._pedb.materials:
+            self.component_property.solder_ball_property.material_name = value
+        else:
+            self._pedb.logger.error(f"Material {value} not found. Create this material first.")
 
     @property
     def uses_solderball(self) -> bool:
@@ -1096,6 +1104,7 @@ class Component:
         self.component_type = new_type
 
     @property
+    @deprecated_property("use num_pins property instead")
     def numpins(self) -> int:
         """Number of Pins of Component.
 
@@ -1107,7 +1116,6 @@ class Component:
             Component pins number.
         """
 
-        warnings.warn("Use num_pins instead.", DeprecationWarning)
         try:
             return self.core.num_pins
         except Exception as e:

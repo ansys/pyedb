@@ -73,10 +73,12 @@ import traceback
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Union
 
 from ansys.edb.core.inner.exceptions import InvalidArgumentException
+from typing_extensions import deprecated
 
 from pyedb.grpc.database.design_options import EdbDesignOptions
 from pyedb.grpc.database.geometry.point_3d_data import Point3DData
 from pyedb.grpc.database.variables import Variable
+from pyedb.misc.decorators import deprecated as runtime_deprecated, deprecated_property as runtime_deprecated_property
 
 if TYPE_CHECKING:
     from pyedb import Edb
@@ -545,8 +547,13 @@ class Edb(EdbInit):
         return {i.name: i for i in self.layout.terminals}
 
     @property
+    @deprecated("Use ports property instead.", category=None)
+    @runtime_deprecated_property("use ports property instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
         """Get all ports.
+
+        .. deprecated:: 0.71.0
+           Use :attr: `ports` instead.
 
         Returns
         -------
@@ -557,7 +564,6 @@ class Edb(EdbInit):
                    :class:`pyedb.grpc.database.ports.ports.BundleWavePort`]]
 
         """
-        warnings.warn("Use property ''ports'' instead.", DeprecationWarning)
         return self.ports
 
     @property
@@ -751,6 +757,8 @@ class Edb(EdbInit):
             return self
         return None
 
+    @deprecated("Use import_layout_file() instead.", category=None)
+    @runtime_deprecated("Use import_layout_file() instead.")
     def import_layout_pcb(
         self,
         input_file,
@@ -763,6 +771,10 @@ class Edb(EdbInit):
         layer_filter=None,
     ) -> bool:
         """Import layout file and generate AEDB.
+
+        .. deprecated:: v0.50.0
+                Use :func:`import_layout_file() <pyedb.grpc.edb.Edb.import_layout_file>` instead,
+                which supports all AEDT formats and has improved error handling.
 
         Supported formats: BRD, MCM, XML (IPC2581), GDS, ODB++ (TGZ/ZIP), DXF
 
@@ -790,7 +802,6 @@ class Edb(EdbInit):
         bool
             True if translation is successful, False otherwise.
         """
-        self.logger.warning("import_layout_pcb method is deprecated, use import_layout_file instead.")
         return self.import_layout_file(
             input_file,
             working_dir,
@@ -1134,19 +1145,20 @@ class Edb(EdbInit):
         return self._stackup
 
     @property
+    @deprecated("Use excitation_manager property instead.", category=None)
+    @runtime_deprecated_property("use excitation_manager property instead.")
     def source_excitation(self) -> Optional[SourceExcitation]:
         """Source excitation management.
+
         .. deprecated:: 0.70
-           Use: func:`excitation_manager` property instead.
+           Use :attr:`excitation_manager` property instead.
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
             Source and port creation tools.
         """
-        warnings.warn("Use property excitation_manager instead.", DeprecationWarning)
-
         if self.active_db:
-            return self._source_excitation
+            return self.excitation_manager
         return None
 
     @property
@@ -1468,6 +1480,8 @@ class Edb(EdbInit):
                 times = 0
                 time.sleep(0.250)
 
+    @deprecated("Use close() instead.", category=None)
+    @runtime_deprecated("Use close() instead.")
     def close_edb(self) -> bool:
         """Close EDB and clean up resources.
 
@@ -1485,9 +1499,10 @@ class Edb(EdbInit):
         >>> edb = Edb()
         >>> edb.close()
         """
-        warnings.warn("Use method close instead.", DeprecationWarning)
         return self.close()
 
+    @deprecated("Use save() instead.", category=None)
+    @runtime_deprecated("Use save() instead.")
     def save_edb(self) -> bool:
         """Save current EDB database.
 
@@ -1495,16 +1510,16 @@ class Edb(EdbInit):
            Use :func:`save` instead.
 
         """
-        warnings.warn("Use method save instead.", DeprecationWarning)
         return self.save()
 
+    @deprecated("Use save_as() instead.", category=None)
+    @runtime_deprecated("Use save_as() instead.")
     def save_edb_as(self, fname) -> bool:
         """Save EDB database to new location.
 
         ..deprecated:: 0.51.0
            Use :func:`save_as` instead.
         """
-        warnings.warn("Use method save_as instead.", DeprecationWarning)
         return self.save_as(fname)
 
     def execute(self, func):
@@ -2311,34 +2326,41 @@ class Edb(EdbInit):
         return SimulationSetups(self)
 
     @property
+    @deprecated("Use simulation_setups.hfss property instead.", category=None)
+    @runtime_deprecated_property("use simulation_setups.hfss property instead")
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:
         """Active HFSS setup in EDB.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.hfss` instead.
-
+           Use :attr:`simulation_setups.hfss` instead.
         """
         return self.simulation_setups.hfss
 
     @property
+    @deprecated("Use simulation_setups.siwave_dcir property instead.", category=None)
+    @runtime_deprecated_property("use simulation_setups.siwave_dcir property instead")
     def siwave_dc_setups(self) -> dict[str, SIWaveDCIRSimulationSetup]:
         """Active Siwave DC IR Setups.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.siwave_dcir` instead.
+           Use :attr:`simulation_setups.siwave_dcir` instead.
 
         """
         return self.simulation_setups.siwave_dcir
 
     @property
+    @deprecated("Use simulation_setups.siwave property instead.", category=None)
+    @runtime_deprecated_property("use simulation_setups.siwave property instead")
     def siwave_ac_setups(self) -> dict[str, SiwaveSimulationSetup]:
         """Active Siwave SYZ setups.
 
         .. deprecated:: pyedb 0.67.0
-            Use :attr:`simulation_setups.siwave` instead.
+           Use :attr:`simulation_setups.siwave` instead.
         """
         return self.simulation_setups.siwave
 
+    @deprecated("Use simulation_setups.create() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create() instead.")
     def create_hfss_setup(
         self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"
     ) -> HfssSimulationSetup:
@@ -2347,10 +2369,6 @@ class Edb(EdbInit):
         . deprecated:: pyedb 0.67.0
         Use :func:`self.simulation_setups.create` instead.
         """
-        warnings.warn(
-            "`create_hfss_setup` is deprecated and is now located here `self.simulation_setups.create` instead.",
-            DeprecationWarning,
-        )
         return self.simulation_setups.create_hfss_setup(
             name=name,
             distribution="linear",
@@ -2359,23 +2377,28 @@ class Edb(EdbInit):
             step_freq=self._value_setter(step_frequency),
         )
 
+    @deprecated("Use simulation_setups.create_raptor_x_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_raptor_x_setup() instead.")
     def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
         """Create RaptorX analysis setup (2024R2+ only).
 
         ..deprecated:: pyedb 0.67.0
               Use :func:`self.simulation_setups.create` instead.
         """
-
         return self.simulation_setups.create_raptor_x_setup(name=name, start_freq=None, stop_freq=None, step_freq=None)
 
+    @deprecated("Use simulation_setups.create_siwave_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_siwave_setup() instead.")
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
         """Create SIwave SYZ analysis setup.
 
         .. deprecated:: pyedb 0.67.0
-            Use :func:`self.simulation_setups.create` instead.
+            Use :func:`self.simulation_setups.create_siwave_setup` instead.
         """
         return self.simulation_setups.create_siwave_setup(name=name, **kwargs)
 
+    @deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.", category=None)
+    @runtime_deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.")
     def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
         """Create SIwave DC analysis setup.
 
@@ -2602,6 +2625,8 @@ class Edb(EdbInit):
         # If no terminal info provided, return empty list to keep return type consistent.
         return []
 
+    @deprecated("Use excitation_manager.create_port() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_port() instead.")
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
         """Create a port.
 
@@ -2609,10 +2634,10 @@ class Edb(EdbInit):
            Use :func:`create_port` has been moved to source_excitation.create_port.
 
         """
-
-        warnings.warn("Use create_port from edb.excitation_manager.create_port", DeprecationWarning)
         return self.excitation_manager.create_port(terminal, ref_terminal, is_circuit_port, name)
 
+    @deprecated("Use excitation_manager.create_voltage_probe() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_voltage_probe() instead.")
     def create_voltage_probe(self, terminal, ref_terminal):
         """Create a voltage probe.
 
@@ -2620,9 +2645,10 @@ class Edb(EdbInit):
            Use :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
 
         """
-        warnings.warn("Use create_voltage_probe located in edb.excitation_manager instead", DeprecationWarning)
         return self.excitation_manager.create_voltage_probe(terminal, ref_terminal)
 
+    @deprecated("Use excitation_manager.create_voltage_source() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_voltage_source() instead.")
     def create_voltage_source(self, terminal, ref_terminal):
         """Create a voltage source.
 
@@ -2630,12 +2656,10 @@ class Edb(EdbInit):
            Use: func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
 
         """
-        warnings.warn(
-            "use create_voltage_source located in edb.excitation_manager.create_voltage_source instead",
-            DeprecationWarning,
-        )
         return self.excitation_manager.create_voltage_source(terminal, ref_terminal)
 
+    @deprecated("Use excitation_manager.create_current_source() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.create_current_source() instead.")
     def create_current_source(self, terminal, ref_terminal):
         """Create a current source.
 
@@ -2643,22 +2667,16 @@ class Edb(EdbInit):
            Use :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
 
         """
-        warnings.warn(
-            "use create_current_source located in edb.excitation_manager.create_current_source instead",
-            DeprecationWarning,
-        )
         return self.excitation_manager.create_current_source(terminal, ref_terminal)
 
+    @deprecated("Use excitation_manager.get_point_terminal() instead.", category=None)
+    @runtime_deprecated("Use excitation_manager.get_point_terminal() instead.")
     def get_point_terminal(self, name, net_name, location, layer):
         """Place terminal between two points.
 
         ..deprecated:: 0.50.0
            Use: func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
         """
-
-        warnings.warn(
-            "use get_point_terminal located in edb.excitation_manager.get_point_terminal instead", DeprecationWarning
-        )
         return self.excitation_manager.get_point_terminal(name, net_name, location, layer)
 
     def auto_parametrize_design(

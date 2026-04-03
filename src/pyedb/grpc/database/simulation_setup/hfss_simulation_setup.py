@@ -26,7 +26,6 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.edb import Edb
 from typing import Union
-import warnings
 
 from ansys.edb.core.simulation_setup.adaptive_solutions import AdaptiveFrequency as CoreAdaptiveFrequency
 from ansys.edb.core.simulation_setup.hfss_simulation_settings import (
@@ -42,7 +41,7 @@ from pyedb.grpc.database.simulation_setup.hfss_simulation_settings import HFSSSi
 from pyedb.grpc.database.simulation_setup.mesh_operation import LengthMeshOperation
 from pyedb.grpc.database.simulation_setup.simulation_setup import SimulationSetup
 from pyedb.grpc.database.simulation_setup.skin_depth_mesh_operation import SkinDepthMeshOperation
-from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
+from pyedb.misc.decorators import deprecated_property
 
 
 class HfssSimulationSetup(SimulationSetup):
@@ -96,6 +95,7 @@ class HfssSimulationSetup(SimulationSetup):
         self.core.mesh_operations = [mesh_operation.core for mesh_operation in mesh_operations]
 
     @property
+    @deprecated_property("use settings.advanced instead")
     def defeature_settings(self):
         """HFSS defeature settings class.
 
@@ -105,13 +105,10 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         """
-        warnings.warn(
-            "The 'defeature_settings' property is deprecated. Use 'settings.advanced' property instead.",
-            DeprecationWarning,
-        )
         return self.settings.advanced
 
     @property
+    @deprecated_property("use settings.advanced instead")
     def via_settings(self):
         """HFSS via settings class.
 
@@ -121,12 +118,10 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         """
-        warnings.warn(
-            "The 'via_settings' property is deprecated. Use 'settings.advanced' property instead.", DeprecationWarning
-        )
         return self.settings.advanced
 
     @property
+    @deprecated_property("use settings.advanced_meshing property instead")
     def advanced_mesh_settings(self):
         """HFSS advanced meshing settings class.
 
@@ -136,13 +131,10 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         """
-        warnings.warn(
-            "The 'advanced_mesh_settings' property is deprecated. Use 'settings.advanced_meshing' property instead.",
-            DeprecationWarning,
-        )
         return self.settings.advanced_meshing
 
     @property
+    @deprecated_property("use settings.general property instead")
     def hfss_solver_settings(self):
         """Legacy compatibility to settings properties.
 
@@ -151,9 +143,6 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         #"""
-        warnings.warn(
-            "The 'hfss_solver_settings' property is deprecated. Use 'settings' property instead.", DeprecationWarning
-        )
         return self.settings
 
     @property
@@ -170,6 +159,7 @@ class HfssSimulationSetup(SimulationSetup):
         return HFSSSimulationSettings(self)
 
     @property
+    @deprecated_property("use settings.general property instead")
     def adaptive_settings(self):
         """Legacy compatibility to general settings.
 
@@ -179,13 +169,10 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         """
-        warnings.warn(
-            "The 'adaptive_settings' property is deprecated. Use 'settings.general' property instead.",
-            DeprecationWarning,
-        )
         return HFSSGeneralSettings(self.settings)
 
     @property
+    @deprecated_property("use settings.advanced_meshing property instead")
     def curve_approx_settings(self):
         """Legacy compatibility to advanced meshing settings.
 
@@ -195,13 +182,10 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         """
-        warnings.warn(
-            "The 'curve_approx_settings' property is deprecated. Use 'settings.advanced_meshing' property instead.",
-            DeprecationWarning,
-        )
         return self.settings.advanced_meshing
 
     @property
+    @deprecated_property("use settings.dcr property instead")
     def dcr_settings(self):
         """HFSS DCR settings class.
 
@@ -210,12 +194,10 @@ class HfssSimulationSetup(SimulationSetup):
         <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings.dcr>`
         instead.
         """
-        warnings.warn(
-            "The 'dcr_settings' property is deprecated. Use 'settings.dcr' property instead.", DeprecationWarning
-        )
         return self.settings.dcr
 
     @property
+    @deprecated_property("use settings.solver property instead")
     def hfss_port_settings(self):
         """HFSS port settings class.
 
@@ -225,9 +207,6 @@ class HfssSimulationSetup(SimulationSetup):
         instead.
 
         """
-        warnings.warn(
-            "The 'hfss_port_settings' property is deprecated. Use 'settings' property instead.", DeprecationWarning
-        )
         return self.settings.solver
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:

@@ -43,6 +43,7 @@ from ansys.edb.core.hierarchy.structure3d import MeshClosure as CoreMeshClosure,
 from pyedb.generic.general_methods import generate_unique_name
 from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class PadProperties:
@@ -135,7 +136,7 @@ class PadProperties:
             )
 
     @property
-    def parameters_values(self):
+    def parameters_values(self) -> list[float] | None:
         """Parameters.
 
         Returns
@@ -146,7 +147,7 @@ class PadProperties:
         try:
             return [Value(i) for i in self._pad_parameter_value[1]]
         except TypeError:
-            return []
+            return None
 
     @parameters_values.setter
     def parameters_values(self, value):
@@ -155,12 +156,12 @@ class PadProperties:
         self._update_pad_parameters_parameters(params=value)
 
     @property
-    def parameters_values_string(self):
+    def parameters_values_string(self) -> list[str] | None:
         """Parameters value in string format."""
         try:
             return [str(i) for i in self._pad_parameter_value[1]]
         except TypeError:
-            return []
+            return None
 
     @property
     def polygon_data(self) -> CorePolygonData:
@@ -298,12 +299,12 @@ class PadstackDef:
         return self.core.id
 
     @property
-    def is_null(self):
+    def is_null(self) -> bool:
         """Check if the padstack definition is null."""
         return self.core.is_null
 
     @classmethod
-    def create(cls, edb, name: str):
+    def create(cls, edb, name: str) -> PadstackDef:
         """Create a new padstack definition."""
         padstack_def = CorePadstackDef.create(edb.db, name)
         return cls(edb, padstack_def)
@@ -324,7 +325,7 @@ class PadstackDef:
         ]
 
     @property
-    def name(self):
+    def name(self) -> str:
         """Padstack definition name."""
         return self.core.name
 
@@ -359,7 +360,7 @@ class PadstackDef:
         return self.core.data.layer_names
 
     @property
-    def start_layer(self):
+    def start_layer(self) -> str | None:
         """Starting layer.
 
         Returns
@@ -367,9 +368,12 @@ class PadstackDef:
         str
             Name of the starting layer.
         """
+        if not self.layers:
+            return None
         return self.layers[0]
 
     @property
+    @deprecated_property("use start_layer property instead")
     def via_start_layer(self):
         """Via starting layer.
 
@@ -382,11 +386,10 @@ class PadstackDef:
         str
             Name of the via starting layer.
         """
-        warnings.warn("via_start_layer is deprecated. Use start_layer instead.", DeprecationWarning)
         return self.start_layer
 
     @property
-    def stop_layer(self):
+    def stop_layer(self) -> str | None:
         """Stopping layer.
 
         Returns
@@ -394,9 +397,12 @@ class PadstackDef:
         str
             Name of the stopping layer.
         """
+        if not self.layers:
+            return None
         return self.layers[-1]
 
     @property
+    @deprecated_property("use stop_layer property instead")
     def via_stop_layer(self):
         """Via stop layer.
 
@@ -409,11 +415,10 @@ class PadstackDef:
         str
             Name of the via stop layer.
         """
-        warnings.warn("via_stop_layer is deprecated. Use stop_layer instead.", DeprecationWarning)
         return self.stop_layer
 
     @property
-    def material(self):
+    def material(self) -> str:
         """Return hole material name.
 
         Returns
@@ -743,8 +748,10 @@ class PadstackDef:
         layout = self._pedb.active_layout
         layers = self._pedb.stackup.signal_layers
         layer_names = [i for i in list(layers.keys())]
+        # All nets by default
+        nets = list(self._pedb.nets.nets.keys())
         if convert_only_signal_vias:
-            signal_nets = [i for i in list(self._pedb._pedb.nets.signal_nets.keys())]
+            nets = [i for i in list(self._pedb.nets.signal.keys())]
         topl, topz, bottoml, bottomz = self._pedb.stackup.limits(True)
         if self.start_layer in layers:
             start_elevation = layers[self.start_layer].lower_elevation
@@ -767,10 +774,11 @@ class PadstackDef:
             rad1, rad2 = rad2, rad1
         i = 0
         for via in self.instances:
-            if convert_only_signal_vias and via.net_name in signal_nets or not convert_only_signal_vias:
+            # Check if via belongs to the nets to convert if the user wants to convert only signal vias or all vias.
+            if via.net_name in nets:
                 pos = via.position
                 started = False
-                if len(self.pad_by_layer[self.start_layer].parameters_values) == 0:
+                if self.pad_by_layer[self.start_layer].polygon_data is not None:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.start_layer].polygon_data,
                         layer_name=self.start_layer,
@@ -785,7 +793,7 @@ class PadstackDef:
                         self._pedb._value_setter(pos[1]),
                         self._pedb._value_setter(self.pad_by_layer[self.start_layer].parameters_values[0] / 2),
                     )
-                if len(self.pad_by_layer[self.stop_layer].parameters_values) == 0:
+                if self.pad_by_layer[self.stop_layer].polygon_data is not None:
                     self._pedb.modeler.create_polygon(
                         self.pad_by_layer[self.stop_layer].polygon_data,
                         layer_name=self.stop_layer,

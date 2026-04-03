@@ -19,13 +19,13 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import warnings
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.sim_setup_data.data.sim_setup_info import SimSetupInfo
 from pyedb.dotnet.database.sim_setup_data.data.sweep_data import SweepData
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.decorators import deprecated_property
 
 
 class RaptorXSimulationSetup(SimulationSetup):
@@ -132,8 +132,8 @@ class RaptorXSimulationSettings(object):
         return RaptorXGeneralSettings(self._edb_setup_info, self)
 
     @property
+    @deprecated_property("use settings.advanced property instead.")
     def advanced_settings(self):
-        warnings.warn("Deprecated: advanced_settings is deprecated, use advanced instead.", DeprecationWarning)
         return self._advanced_settings
 
     @property

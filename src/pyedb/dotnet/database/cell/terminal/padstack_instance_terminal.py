@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from pyedb.dotnet.database.cell.terminal.terminal import Terminal
-from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
 from pyedb.generic.general_methods import generate_unique_name
 
 
@@ -38,6 +37,8 @@ class PadstackInstanceTerminal(Terminal):
         -------
         Position [x,y] : [float, float]
         """
+        from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+
         edb_padstack_instance = self._edb_object.GetParameters()
         if edb_padstack_instance[0]:
             return EDBPadstackInstance(edb_padstack_instance[1], self._pedb).position

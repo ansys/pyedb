@@ -33,7 +33,7 @@ LINUX_WARNING = (
     "for example Ubuntu 22.04, we are going to stop depending on `dotnetcore2`."
     "Instead of using this package which embeds .NET Core 3, users will be required to "
     "install .NET themselves. For more information, see "
-    "https://edb.docs.pyansys.com/version/stable/build_breaking_change.html"
+    "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
 )
 
 existing_showwarning = warnings.showwarning
@@ -61,7 +61,7 @@ if is_linux:  # pragma: no cover
     dotnet_root = None
     runtime_config = None
     runtime_spec = None
-    # Use system .NET core runtime or fall back to dotnetcore2
+    # Use system .NET core runtime
     if os.environ.get("DOTNET_ROOT") is None:
         try:
             from clr_loader import get_coreclr
@@ -70,37 +70,26 @@ if is_linux:  # pragma: no cover
             load(runtime)
             os.environ["DOTNET_ROOT"] = runtime.dotnet_root.as_posix()
             is_clr = True
-        # TODO: Fall backing to dotnetcore2 should be removed in a near future.
         except Exception:
-            warnings.warn(
-                "Unable to set .NET root and locate the runtime configuration file. Falling back to using dotnetcore2."
+            raise RuntimeError(
+                ".NET is not found. For more information, see"
+                "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
             )
-            warnings.warn(LINUX_WARNING)
-
-            import dotnetcore2
-
-            dotnet_root = Path(dotnetcore2.__file__).parent / "bin"
-            runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
     # Use specified .NET root folder
     else:
         dotnet_root = Path(os.environ["DOTNET_ROOT"])
-        # Patch the case where DOTNET_ROOT leads to dotnetcore2 for more information
-        # see https://github.com/ansys/pyedb/issues/922
-        # TODO: Remove once dotnetcore2 is deprecated
-        if dotnet_root.parent.name == "dotnetcore2":
-            runtime_config = pyedb_path / "misc" / "pyedb.runtimeconfig.json"
-        else:
-            from clr_loader import find_runtimes
 
-            candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
-            candidates.sort(key=lambda spec: spec.version, reverse=True)
-            if not candidates:
-                raise RuntimeError(
-                    "Configuration file could not be found from DOTNET_ROOT. "
-                    "Please ensure that .NET SDK is correctly installed or "
-                    "that DOTNET_ROOT is correctly set."
-                )
-            runtime_spec = candidates[0]
+        from clr_loader import find_runtimes
+
+        candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
+        candidates.sort(key=lambda spec: spec.version, reverse=True)
+        if not candidates:
+            raise RuntimeError(
+                "Configuration file could not be found from DOTNET_ROOT. "
+                "Please ensure that .NET SDK is correctly installed or "
+                "that DOTNET_ROOT is correctly set."
+            )
+        runtime_spec = candidates[0]
     # Use specific .NET core runtime
     if dotnet_root is not None and (runtime_config is not None or runtime_spec is not None):
         try:

@@ -21,10 +21,10 @@
 # SOFTWARE.
 
 from typing import List, Tuple, Union
-import warnings
 
 from pyedb.generic.constants import NodeType, SourceType
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class Node(object):
@@ -303,9 +303,9 @@ class PinGroup(object):
             self._edb_object.RemovePin(p._edb_object)
 
     @property
+    @deprecated_property("use pins property instead.")
     def node_pins(self):
         """Node pins."""
-        warnings.warn("`node_pins` is deprecated. Use `pins` method instead.", DeprecationWarning)
         return self._node_pins
 
     @node_pins.setter
@@ -325,11 +325,11 @@ class PinGroup(object):
     def net_name(self):
         return self._edb_pin_group.GetNet().GetName()
 
+    @deprecated("use terminal property instead.")
     def get_terminal(self, name=None, create_new_terminal=False):
         """Terminal."""
-        warnings.warn("Use new property :func:`terminal` instead.", DeprecationWarning)
         if create_new_terminal:
-            term = self._create_terminal(name)
+            return self.create_terminal(name)
         else:
             return self.terminal
 
@@ -343,6 +343,7 @@ class PinGroup(object):
         term = PinGroupTerminal(self._pedb, self._edb_pin_group.GetPinGroupTerminal())
         return term if not term.is_null else None
 
+    @deprecated("use create_terminal method instead.")
     def _create_terminal(self, name=None):
         """Create a terminal on the pin group.
 
@@ -356,8 +357,6 @@ class PinGroup(object):
         -------
         :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
         """
-        warnings.warn("`_create_terminal` is deprecated. Use `create_terminal` instead.", DeprecationWarning)
-
         terminal = self.get_terminal()
         if terminal:
             return terminal

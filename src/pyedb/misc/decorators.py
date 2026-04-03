@@ -20,43 +20,59 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+from __future__ import annotations
+
 import functools
 import time
+from typing import Any, TypeVar
 import warnings
 
 from pyedb.generic.settings import settings
 
+_T = TypeVar("_T")
 
-def deprecated(reason: str = ""):
+
+def _mark_deprecated(target: _T, message: str) -> _T:
+    """Attach deprecation metadata used by IDEs and tests."""
+    setattr(target, "__deprecated__", message)
+    return target
+
+
+def deprecated(reason: str = "", *, category: Any = FutureWarning):
     """Decorator to mark functions or methods as deprecated.
 
     Parameters
     ----------
     reason : str, optional
         Message to display with the deprecation warning.
+    category : Warning, optional
+        Warning category to emit. Use ``None`` to disable runtime warnings while preserving metadata.
     """
 
     def decorator(func):
         @functools.wraps(func)
         def wrapper(*args, **kwargs):
-            msg = f"Call to deprecated function {func.__qualname__}."
+            msg = f"Call to deprecated function {func.__name__}."  # <-- Changed from __qualname__ to __name__
             if reason:
                 msg += f" {reason}"
-            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            if category is not None:
+                warnings.warn(msg, category=FutureWarning, stacklevel=2)
             return func(*args, **kwargs)
 
-        return wrapper
+        return _mark_deprecated(wrapper, reason)
 
     return decorator
 
 
-def deprecated_class(reason: str = ""):
+def deprecated_class(reason: str = "", *, category: Any = FutureWarning):
     """Decorator to mark a class as deprecated.
 
     Parameters
     ----------
     reason : str, optional
         Message to display with the deprecation warning.
+    category : Warning, optional
+        Warning category to emit. Use ``None`` to disable runtime warnings while preserving metadata.
     """
 
     def decorator(cls):
@@ -67,26 +83,41 @@ def deprecated_class(reason: str = ""):
             msg = f"Call to deprecated class {cls.__qualname__}."
             if reason:
                 msg += f" {reason}"
-            warnings.warn(msg, category=DeprecationWarning, stacklevel=2)
+            if category is not None:
+                warnings.warn(msg, category=FutureWarning, stacklevel=2)
             orig_init(self, *args, **kwargs)
 
-        cls.__init__ = new_init
-        return cls
+        cls.__init__ = _mark_deprecated(new_init, reason)
+        return _mark_deprecated(cls, reason)
 
     return decorator
 
 
-def deprecated_property(func):
+def deprecated_property(message: str, *, category: Any = FutureWarning):
     """
     This decorator marks a property as deprecated.
     It will emit a warning when the property is accessed.
+
+    Parameters
+    ----------
+    message : str
+        Custom message to display after the deprecation warning.
+    category : Warning, optional
+        Warning category to emit. Use ``None`` to disable runtime warnings while preserving metadata.
     """
 
-    def wrapper(*args, **kwargs):
-        warnings.warn(f"Access to deprecated property {func.__name__}.", category=DeprecationWarning, stacklevel=2)
-        return func(*args, **kwargs)
+    def decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            if category is not None:
+                warnings.warn(
+                    f"Accessing deprecated property {func.__name__}. {message}", category=FutureWarning, stacklevel=2
+                )
+            return func(*args, **kwargs)
 
-    return wrapper
+        return _mark_deprecated(wrapper, message)
+
+    return decorator
 
 
 def deprecate_argument_name(argument_map):
@@ -103,6 +134,7 @@ def deprecate_argument_name(argument_map):
                 if old_arg in kwargs:
                     warnings.warn(
                         f"Argument `{old_arg}` is deprecated for method `{func_name}`; use `{new_arg}` instead.",
+                        category=FutureWarning,
                     )
                     # NOTE: Use old argument if new argument is not provided
                     if new_arg not in kwargs:

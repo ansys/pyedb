@@ -24,18 +24,17 @@ import logging
 from pathlib import Path
 import re
 from typing import Optional
-import warnings
 
 import numpy as np
 
 from pyedb.dotnet.database.cell.hierarchy.hierarchy_obj import Group
 from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel
 from pyedb.dotnet.database.cell.hierarchy.netlist_model import NetlistModel
-from pyedb.dotnet.database.cell.hierarchy.pin_pair_model import PinPair
 from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SParameterModel
 from pyedb.dotnet.database.cell.hierarchy.spice_model import SPICEModel
 from pyedb.dotnet.database.definition.package_def import PackageDef
 from pyedb.dotnet.database.edb_data.padstacks_data import EDBPadstackInstance
+from pyedb.misc.decorators import deprecated_property
 
 
 class ICDieProperties:
@@ -254,6 +253,7 @@ class EDBComponent(Group):
             return False
 
     @property
+    @deprecated_property("use enabled property instead")
     def is_enabled(self):
         """Get or Set the component to active mode.
 
@@ -262,12 +262,10 @@ class EDBComponent(Group):
         bool
             ``True`` if component is active, ``False`` if is disabled..
         """
-        warnings.warn("Use new property :func:`enabled` instead.", DeprecationWarning)
         return self.enabled
 
     @is_enabled.setter
     def is_enabled(self, value):
-        warnings.warn("Use new property :func:`enabled` instead.", DeprecationWarning)
         self.enabled = value
 
     @property
@@ -336,6 +334,8 @@ class EDBComponent(Group):
                 return "cylinder"
             elif shape.value__ == 2:
                 return "spheroid"
+            elif shape.value__ == 3:
+                return "unknown"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
@@ -354,6 +354,8 @@ class EDBComponent(Group):
                 shape = self._edb.Definition.SolderballShape.Cylinder
             elif value == 2:
                 shape = self._edb.Definition.SolderballShape.Spheroid
+        if shape is None:
+            shape = self._edb.Definition.SolderballShape.NoSolderball
         if shape:
             cmp_property = self.component_property.core
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
@@ -407,9 +409,20 @@ class EDBComponent(Group):
 
     @property
     def solder_ball_material(self):
-        if "GetMaterialName" in dir(self.component_property.core):
+        if "GetSolderBallProperty" in dir(self.component_property.core):
             return self.component_property.core.GetSolderBallProperty().GetMaterialName()
         return ""
+
+    @solder_ball_material.setter
+    def solder_ball_material(self, value):
+        if value in self._pedb.materials:
+            cmp_property = self.component_property.core.Clone()
+            solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
+            solder_ball_prop.SetMaterialName(value)
+            cmp_property.SetSolderBallProperty(solder_ball_prop)
+            self.component_property = cmp_property
+        else:
+            self._pedb.logger.error(f"Material {value} not found. Create this material first.")
 
     @property
     def refdes(self):

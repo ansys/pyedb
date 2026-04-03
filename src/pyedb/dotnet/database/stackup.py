@@ -31,6 +31,7 @@ from collections import OrderedDict
 import json
 import logging
 import math
+from pathlib import Path
 import warnings
 
 from defusedxml.ElementTree import parse as defused_parse
@@ -44,6 +45,7 @@ from pyedb.dotnet.database.edb_data.layer_data import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
+from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -254,9 +256,14 @@ class LayerCollection(object):
         return obj
 
     @property
+    @deprecated_property("use layers property instead.")
     def stackup_layers(self):
-        """Retrieve the dictionary of signal and dielectric layers."""
-        warnings.warn("Use new property :func:`layers` instead.", DeprecationWarning)
+        """Retrieve the dictionary of signal and dielectric layers.
+
+        .. deprecated:: 0.71.0
+           Use :attr: layers property instead.
+
+        """
         return self.layers
 
     @property
@@ -2105,7 +2112,7 @@ class Stackup(LayerCollection):
 
             if val.roughness_enabled:
                 roughness_models[name] = {}
-                model = val.get_roughness_model("top")
+                model = val._get_roughness_model("top")
                 if model.ToString().endswith("GroissRoughnessModel"):
                     roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": model.get_Roughness().ToDouble()}
                 else:
@@ -2113,7 +2120,7 @@ class Stackup(LayerCollection):
                         "HallHuraySurfaceRatio": model.get_NoduleRadius().ToDouble(),
                         "NoduleRadius": model.get_SurfaceRatio().ToDouble(),
                     }
-                model = val.get_roughness_model("bottom")
+                model = val._get_roughness_model("bottom")
                 if model.ToString().endswith("GroissRoughnessModel"):
                     roughness_models[name]["GroissBottomSurfaceRoughness"] = {
                         "Roughness": model.get_Roughness().ToDouble()
@@ -2123,7 +2130,7 @@ class Stackup(LayerCollection):
                         "HallHuraySurfaceRatio": model.get_NoduleRadius().ToDouble(),
                         "NoduleRadius": model.get_SurfaceRatio().ToDouble(),
                     }
-                model = val.get_roughness_model("side")
+                model = val._get_roughness_model("side")
                 if model.ToString().endswith("GroissRoughnessModel"):
                     roughness_models[name]["GroissSideSurfaceRoughness"] = {
                         "Roughness": model.get_Roughness().ToDouble()
@@ -2175,7 +2182,7 @@ class Stackup(LayerCollection):
                     material.loss_tanget = material_properties["DielectricLossTangent"]
         return True
 
-    def _import_xml(self, file_path):
+    def _import_xml(self, file_path: str | Path):
         """Load stackup from a XML file.
 
         Parameters
@@ -2191,62 +2198,18 @@ class Stackup(LayerCollection):
         try:
             import matplotlib.colors as colors
         except ImportError:
-            raise ImportError(
+            warnings.warn(
                 "Matplotlib library is required for plotting. "
-                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+                "Please install it using 'pip install pyedb[graphics]' "
+                "or 'pip install matplotlib'.",
+                UserWarning,
             )
+        from pyedb.xml_parser.xml_parser import XmlParser
 
-        tree = ET.parse(file_path)
-        root = tree.getroot()
-        stackup = root.find("Stackup")
-        stackup_dict = {}
-        if stackup.find("Materials"):
-            mats = []
-            for m in stackup.find("Materials").findall("Material"):
-                temp = dict()
-                for i in list(m):
-                    value = list(i)[0].text
-                    temp[i.tag] = value
-                mat = {"name": m.attrib["Name"]}
-                temp_dict = {
-                    "Permittivity": "permittivity",
-                    "Conductivity": "conductivity",
-                    "DielectricLossTangent": "dielectric_loss_tangent",
-                }
-                for i in temp_dict.keys():
-                    value = temp.get(i, None)
-                    if value:
-                        mat[temp_dict[i]] = value
-                mats.append(mat)
-            stackup_dict["materials"] = mats
+        file_path = Path(file_path)
 
-        stackup_section = stackup.find("Layers")
-        if stackup_section:
-            length_unit = stackup_section.attrib["LengthUnit"]
-            layers = []
-            for l in stackup.find("Layers").findall("Layer"):
-                temp = l.attrib
-                layer = dict()
-                temp_dict = {
-                    "Name": "name",
-                    "Color": "color",
-                    "Material": "material",
-                    "Thickness": "thickness",
-                    "Type": "type",
-                    "FillMaterial": "fill_material",
-                }
-                for i in temp_dict.keys():
-                    value = temp.get(i, None)
-                    if value:
-                        if i == "Thickness":
-                            value = str(round(float(value), 6)) + length_unit
-                        value = "signal" if value == "conductor" else value
-                        if i == "Color":
-                            value = [int(x * 255) for x in list(colors.to_rgb(value))]
-                        layer[temp_dict[i]] = value
-                layers.append(layer)
-            stackup_dict["layers"] = layers
-        cfg = {"stackup": stackup_dict}
+        xml = XmlParser.load_xml_file(file_path)
+        cfg = xml.to_dict()
         self._pedb.configuration.load(cfg)
         return self._pedb.configuration.run()
 

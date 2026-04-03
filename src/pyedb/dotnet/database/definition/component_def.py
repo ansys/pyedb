@@ -25,6 +25,7 @@ import os
 from pyedb.dotnet.database.definition.component_model import NPortComponentModel
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
+from pyedb.misc.decorators import deprecate_argument_name
 
 
 class EDBComponentDef(ObjBase):
@@ -113,7 +114,8 @@ class EDBComponentDef(ObjBase):
             comp.assign_rlc_model(res, ind, cap, is_parallel)
         return True
 
-    def assign_s_param_model(self, file_path, model_name=None, reference_net=None):
+    @deprecate_argument_name({"model_name": "name"})
+    def assign_s_param_model(self, file_path, name=None, reference_net=None):
         """Assign S-parameter to all components under this part name.
 
         Parameters
@@ -122,13 +124,15 @@ class EDBComponentDef(ObjBase):
             File path of the S-parameter model.
         name : str, optional
             Name of the S-parameter model.
+        reference_net : str, optional
+            Reference net for the S-parameter model.
 
         Returns
         -------
 
         """
         for comp in list(self.components.values()):
-            comp.assign_s_param_model(file_path, model_name, reference_net)
+            comp.assign_s_param_model(file_path, name, reference_net)
         return True
 
     def assign_spice_model(

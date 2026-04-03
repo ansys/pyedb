@@ -29,8 +29,6 @@ from pyedb.grpc.database.inner.conn_obj import ConnObj
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
-import re
-import warnings
 
 from ansys.edb.core.terminal.edge_terminal import EdgeType as CoreEdgeType
 from ansys.edb.core.terminal.terminal import (
@@ -41,6 +39,7 @@ from ansys.edb.core.terminal.terminal import (
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.utility.port_post_processing_prop import PortPostProcessingProp
 from pyedb.grpc.database.utility.value import Value
+from pyedb.misc.decorators import deprecated_property
 
 
 class Terminal(ConnObj):
@@ -96,30 +95,7 @@ class Terminal(ConnObj):
     @property
     def _hfss_port_property(self):
         """HFSS port property."""
-        hfss_prop = re.search(r"HFSS\(.*?\)", self._edb_properties)
-        p = {}
-        if hfss_prop:
-            hfss_type = re.search(r"'HFSS Type'='([^']+)'", hfss_prop.group())
-            orientation = re.search(r"'Orientation'='([^']+)'", hfss_prop.group())
-            horizontal_ef = re.search(r"'Horizontal Extent Factor'='([^']+)'", hfss_prop.group())
-            vertical_ef = re.search(r"'Vertical Extent Factor'='([^']+)'", hfss_prop.group())
-            radial_ef = re.search(r"'Radial Extent Factor'='([^']+)'", hfss_prop.group())
-            pec_w = re.search(r"'PEC Launch Width'='([^']+)'", hfss_prop.group())
-
-            p["HFSS Type"] = hfss_type.group(1) if hfss_type else ""
-            p["Orientation"] = orientation.group(1) if orientation else ""
-            p["Horizontal Extent Factor"] = float(horizontal_ef.group(1)) if horizontal_ef else ""
-            p["Vertical Extent Factor"] = float(vertical_ef.group(1)) if vertical_ef else ""
-            p["Radial Extent Factor"] = float(radial_ef.group(1)) if radial_ef else ""
-            p["PEC Launch Width"] = pec_w.group(1) if pec_w else ""
-        else:
-            p["HFSS Type"] = ""
-            p["Orientation"] = ""
-            p["Horizontal Extent Factor"] = ""
-            p["Vertical Extent Factor"] = ""
-            p["Radial Extent Factor"] = ""
-            p["PEC Launch Width"] = ""
-        return p
+        return self._hfss_properties
 
     @property
     def horizontal_extent_factor(self) -> float:
@@ -130,12 +106,12 @@ class Terminal(ConnObj):
         float
             Extent value.
         """
-        return self._hfss_port_property["Horizontal Extent Factor"]
+        return self._hfss_port_property.horizontal_extent_factor
 
     @horizontal_extent_factor.setter
     def horizontal_extent_factor(self, value):
         p = self._hfss_port_property
-        p["Horizontal Extent Factor"] = value
+        p.horizontal_extent_factor = value
         self._hfss_port_property = p
 
     @property
@@ -148,16 +124,16 @@ class Terminal(ConnObj):
             Vertical extent value.
 
         """
-        return self._hfss_port_property["Vertical Extent Factor"]
+        return self._hfss_port_property.vertical_extent_factor
 
     @vertical_extent_factor.setter
     def vertical_extent_factor(self, value):
         p = self._hfss_port_property
-        p["Vertical Extent Factor"] = value
+        p.vertical_extent_factor = value
         self._hfss_port_property = p
 
     @property
-    def pec_launch_width(self) -> float:
+    def pec_launch_width(self) -> str:
         """Launch width for the printed electronic component (PEC).
 
         Returns
@@ -165,12 +141,12 @@ class Terminal(ConnObj):
         float
             Pec launch width value.
         """
-        return self._hfss_port_property["PEC Launch Width"]
+        return self._hfss_port_property.pec_launch_width
 
     @pec_launch_width.setter
     def pec_launch_width(self, value):
         p = self._hfss_port_property
-        p["PEC Launch Width"] = value
+        p.pec_launch_width = value
         self._hfss_port_property = p
 
     @property
@@ -181,21 +157,17 @@ class Terminal(ConnObj):
 
     @_hfss_port_property.setter
     def _hfss_port_property(self, value):
-        txt = []
-        for k, v in value.items():
-            txt.append("'{}'='{}'".format(k, v))
-        txt = ",".join(txt)
-        self._edb_properties = "HFSS({})".format(txt)
+        self._hfss_properties = value
 
     @property
     def hfss_type(self) -> str:
         """HFSS port type."""
-        return self._hfss_port_property["HFSS Type"]
+        return self._hfss_port_property.hfss_type
 
     @hfss_type.setter
     def hfss_type(self, value):
         p = self._hfss_port_property
-        p["HFSS Type"] = value
+        p.hfss_type = value
         self._hfss_port_property = p
 
     @property
@@ -212,6 +184,31 @@ class Terminal(ConnObj):
     @do_renormalize.setter
     def do_renormalize(self, value):
         self.port_post_processing_prop.do_renormalize = value
+
+    @property
+    def do_deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+        Returns
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @do_deembed.setter
+    def do_deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
+
+    @property
+    @deprecated_property("use do_deembed property instead")
+    def deembed(self) -> bool:
+        """Determine whether port deembed is enabled.
+
+        .. deprecated:: 0.71.0
+            The `deembed` property is deprecated. Please use `do_deembed` instead.
+        """
+        return self.port_post_processing_prop.do_deembed
+
+    @deembed.setter
+    def deembed(self, value):
+        self.port_post_processing_prop.do_deembed = value
 
     @property
     def renormalization_impedance(self) -> float:
@@ -371,7 +368,7 @@ class Terminal(ConnObj):
         self.core.impedance = self._pedb._value_setter(value)
 
     @property
-    def reference_object(self) -> any:
+    def reference_object(self) -> Primitive | PadstackInstance | bool:
         """This returns the object assigned as reference. It can be a primitive or a padstack instance.
 
 
@@ -436,7 +433,7 @@ class Terminal(ConnObj):
         pins = self._pedb.components.get_pin_from_component(self.core.component.name)
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
-    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
+    def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance | bool | None:
         """Return a list of pins and serves terminals connected to pingroups.
 
         Parameters
@@ -469,7 +466,7 @@ class Terminal(ConnObj):
                     return False
         return False
 
-    def get_edge_terminal_reference_primitive(self) -> any:
+    def get_edge_terminal_reference_primitive(self) -> Primitive | None:
         """Check and return a primitive instance that serves Edge ports,
         wave-ports and coupled-edge ports that are directly connected to primitives.
 
@@ -477,7 +474,7 @@ class Terminal(ConnObj):
         -------
         :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
         """
-
+        # TODO check this method most likely does not work : issue #1903
         ref_layer = self.reference_layer
         edges = self.core.edges
         _, _, point_data = edges[0].get_parameters()
@@ -485,10 +482,10 @@ class Terminal(ConnObj):
         for primitive in self._pedb.layout.primitives:
             if primitive.layer.name == layer_name:
                 if primitive.polygon_data.point_in_polygon(point_data):
-                    return (primitive, self._pedb)
+                    return Primitive(primitive, self._pedb)
         return None  # pragma: no cover
 
-    def get_point_terminal_reference_primitive(self) -> Primitive:
+    def get_point_terminal_reference_primitive(self) -> Primitive | PadstackInstance | bool:
         """
         Find and return the primitive reference for the point terminal or the padstack instance.
 
@@ -656,31 +653,31 @@ class Terminal(ConnObj):
             self._pedb.logger.warning("Terminal does not support circuit port property.")
 
     @property
+    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self) -> bool:
         """Check if the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Returns
         -------
         bool
             True if the terminal is a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         return self.is_circuit_port
 
     @is_circuit.setter
+    @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self, value: bool):
         """Set whether the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
-            The `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
+           Use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
 
         Parameters
         ----------
         value : bool
             True to set the terminal as a circuit terminal, False otherwise.
         """
-        warnings.warn("`is_circuit` is deprecated. Use `is_circuit_port` instead.", DeprecationWarning)
         self.is_circuit_port = value

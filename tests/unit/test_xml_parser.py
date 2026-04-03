@@ -60,12 +60,28 @@ class TestClass:
         assert xml_parser.stackup.materials.material[1].permittivity.value == 4.5
 
         xml_layers = xml_stackup.add_layers()
-        xml_layers.add_layer(
+        layer = xml_layers.add_layer(
             name="Layer_TOP",
             type="signal",
             thickness=0.035,
             material="copper",
         )
+        layer.set_huray_surface_roughness(nodule_radius="0.5um", surface_ratio=5, surface="top")
+        assert layer.huray_surface_roughness.nodule_radius == "0.5um"
+        assert layer.huray_surface_roughness.surface_ratio == 5
+
+        layer.set_huray_surface_roughness(nodule_radius="0.5um", surface_ratio=5, surface="bottom")
+        assert layer.huray_bottom_surface_roughness
+        layer.set_huray_surface_roughness(nodule_radius="0.5um", surface_ratio=5, surface="side")
+        assert layer.huray_side_surface_roughness
+
+        layer.set_groisse_surface_roughness(roughness="1um", surface="top")
+        assert layer.groiss_surface_roughness.roughness == "1um"
+        layer.set_groisse_surface_roughness(roughness="1um", surface="bottom")
+        assert layer.groiss_bottom_surface_roughness
+        layer.set_groisse_surface_roughness(roughness="1um", surface="side")
+        assert layer.groiss_side_surface_roughness
+
         assert xml_parser.stackup.layers.layer[0].name == "Layer_TOP"
 
         xml_layers.add_layer(
@@ -90,7 +106,24 @@ class TestClass:
         assert len(xml_parser.stackup.layers.layer) == 20
         assert xml_parser.stackup.layers.layer[0].name == "top_soldermask"
 
-    def test_load_from_cfg(self):
+        top_layer = next(layer for layer in xml_parser.stackup.layers.layer if layer.name == "top")
+        huray_sr = top_layer.huray_surface_roughness
+        assert huray_sr.surface_ratio == 2.9
+        assert huray_sr.nodule_radius == "0.5um"
+        huray_bt_sr = top_layer.huray_bottom_surface_roughness
+        assert huray_bt_sr.surface_ratio == 2.9
+        assert huray_bt_sr.nodule_radius == "0.5um"
+        huray_side_sr = top_layer.huray_side_surface_roughness
+        assert huray_side_sr.surface_ratio == 2.9
+        assert huray_side_sr.nodule_radius == "0.5um"
+
+        l2 = next(layer for layer in xml_parser.stackup.layers.layer if layer.name == "inner1_gnd1")
+
+        assert l2.groiss_surface_roughness.roughness == "1um"
+        assert l2.groiss_bottom_surface_roughness.roughness == "1um"
+        assert l2.groiss_side_surface_roughness.roughness == "1um"
+
+    def test_load_from_cfg_stackup(self):
         from pyedb.configuration.cfg_data import CfgStackup
 
         xml_file = self.edb_examples.copy_test_files_into_local_folder(
