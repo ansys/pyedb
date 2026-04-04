@@ -43,6 +43,7 @@ def test_rpc_session_falls_back_to_standard_rpc_when_in_memory_library_is_missin
     _reset_rpc_session_state()
     launched = {}
 
+    monkeypatch.setattr(rpc_session_module, "is_linux", False)
     monkeypatch.setattr(rpc_session_module, "env_path", lambda version: r"C:\\fake\\AnsysEM")
     monkeypatch.setattr(rpc_session_module, "start_managing", lambda *args, **kwargs: None)
     monkeypatch.setattr(RpcSession, "is_in_memory_lib_file_present", staticmethod(lambda: False))
@@ -72,6 +73,7 @@ def test_rpc_session_uses_launch_session_for_in_memory_transport(monkeypatch):
     launched = {}
     session = SimpleNamespace(in_memory=True)
 
+    monkeypatch.setattr(rpc_session_module, "is_linux", False)
     monkeypatch.setattr(rpc_session_module, "env_path", lambda version: r"C:\\fake\\AnsysEM")
     monkeypatch.setattr(RpcSession, "is_in_memory_lib_file_present", staticmethod(lambda: True))
 
