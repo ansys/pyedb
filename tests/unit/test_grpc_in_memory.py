@@ -23,8 +23,7 @@
 from types import SimpleNamespace
 
 from pyedb.generic.settings import settings
-from pyedb.grpc import edb_init as edb_init_module
-from pyedb.grpc import rpc_session as rpc_session_module
+from pyedb.grpc import edb_init as edb_init_module, rpc_session as rpc_session_module
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.grpc.rpc_session import RpcSession
 
@@ -106,7 +105,9 @@ def test_edb_init_create_always_starts_rpc_session(monkeypatch):
         RpcSession.rpc_session = SimpleNamespace(in_memory=False)
 
     monkeypatch.setattr(RpcSession, "start", staticmethod(fake_start))
-    monkeypatch.setattr(edb_init_module.database.Database, "create", lambda db_path: created_paths.append(db_path) or created_db)
+    monkeypatch.setattr(
+        edb_init_module.database.Database, "create", lambda db_path: created_paths.append(db_path) or created_db
+    )
 
     edb = EdbInit.__new__(EdbInit)
     edb.version = "2026.1"
@@ -120,4 +121,3 @@ def test_edb_init_create_always_starts_rpc_session(monkeypatch):
     assert created_paths == ["dummy.aedb"]
     assert start_calls == [("2026.1", 0, False, False)]
     assert settings.is_in_memory is False
-
