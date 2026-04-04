@@ -47,8 +47,8 @@ example_models_path = Path(__file__).parent / "example_models"
 use_grpc = os.getenv("USE_GRPC") in {"1", True}
 
 config = {
-    "desktopVersion": "2026.1",
-    "use_grpc": True,
+    "desktopVersion": "2025.2",
+    "use_grpc": use_grpc,
 }
 
 # Check for the local config file, override defaults if found
