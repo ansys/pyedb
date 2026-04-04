@@ -1243,6 +1243,7 @@ class Components(object):
         reference_size_x: float = 0,
         reference_size_y: float = 0,
         reference_height: float = 0,
+        material_name: str = None,
     ) -> bool:
         """Set solder ball properties for a component.
 
@@ -1268,6 +1269,9 @@ class Components(object):
             Reference size Y.
         reference_height : float, optional
             Reference height.
+        material_name : str, optional
+            Material name. If material is not defined in database, a new one is created on the fly with 1e7 Siemens
+            default conductivity.
 
         Returns
         -------
@@ -1296,7 +1300,7 @@ class Components(object):
         if not sball_height:
             sball_height = self._pedb._value_setter(sball_diam)
         else:
-            sball_height = self._pedb._value_setter(sball_diam)
+            sball_height = self._pedb._value_setter(sball_height)
 
         if not sball_mid_diam:
             sball_mid_diam = self._pedb._value_setter(sball_diam)
@@ -1323,6 +1327,10 @@ class Components(object):
         solder_ball_prop.height = self._pedb._value_setter(sball_height)
 
         solder_ball_prop.shape = sball_shape
+        if material_name:
+            if not material_name in self._pedb.materials:
+                self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
+            solder_ball_prop.material_name = material_name
         cmp_property.solder_ball_property = solder_ball_prop
 
         port_prop = cmp_property.port_property

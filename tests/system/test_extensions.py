@@ -104,6 +104,7 @@ PADSTACK_DEFS = [
 
 
 @pytest.mark.usefixtures("close_rpc_session")
+@pytest.mark.skipif(config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release")
 class TestClass(BaseTestClass):
     def test_backend_single(self):
         cfg = {

@@ -31,7 +31,9 @@ from collections import OrderedDict
 import json
 import logging
 import math
+from pathlib import Path
 from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple, Union
+import warnings
 
 if TYPE_CHECKING:
     from pyedb import Edb
@@ -2348,81 +2350,36 @@ class Stackup:
                 )
         return True
 
-    def _import_xml(self, file_path: str, rename: bool = False) -> bool:
-        """Read external XML file and convert into JSON format.
+    def _import_xml(self, file_path: str | Path):
+        """Load stackup from a XML file.
 
         Parameters
         ----------
-        file_path : str
+        file_path: str
             Path to external XML file.
-        rename : bool, optional
-            Whether to rename layers. The default is ``False``.
 
         Returns
         -------
         bool
-            ``True`` when successful.
+            ``True`` when successful, ``False`` when failed.
         """
         try:
             import matplotlib.colors as colors
         except ImportError:
-            raise ImportError(
+            warnings.warn(
                 "Matplotlib library is required for plotting. "
-                "Please install it using 'pip install pyedb[graphics]' or 'pip install matplotlib'."
+                "Please install it using 'pip install pyedb[graphics]' "
+                "or 'pip install matplotlib'.",
+                UserWarning,
             )
+        from pyedb.xml_parser.xml_parser import XmlParser
 
-        tree = defused_parse(file_path)
-        root = tree.getroot()
-        stackup = root.find("Stackup")
-        stackup_dict = {}
-        if stackup.find("Materials"):
-            mats = []
-            for m in stackup.find("Materials").findall("Material"):
-                temp = dict()
-                for i in list(m):
-                    value = list(i)[0].text
-                    temp[i.tag] = value
-                mat = {"name": m.attrib["Name"]}
-                temp_dict = {
-                    "Permittivity": "permittivity",
-                    "Conductivity": "conductivity",
-                    "DielectricLossTangent": "dielectric_loss_tangent",
-                }
-                for i in temp_dict.keys():
-                    value = temp.get(i, None)
-                    if value:
-                        mat[temp_dict[i]] = value
-                mats.append(mat)
-            stackup_dict["materials"] = mats
+        file_path = Path(file_path)
 
-        stackup_section = stackup.find("Layers")
-        if stackup_section:
-            length_unit = stackup_section.attrib["LengthUnit"]
-            layers = []
-            for l in stackup.find("Layers").findall("Layer"):
-                temp = l.attrib
-                layer = dict()
-                temp_dict = {
-                    "Name": "name",
-                    "Color": "color",
-                    "Material": "material",
-                    "Thickness": "thickness",
-                    "Type": "type",
-                    "FillMaterial": "fill_material",
-                }
-                for i in temp_dict.keys():
-                    value = temp.get(i, None)
-                    if value:
-                        if i == "Thickness":
-                            value = str(round(float(value), 6)) + length_unit
-                        value = "signal" if value == "conductor" else value
-                        if i == "Color":
-                            value = [int(x * 255) for x in list(colors.to_rgb(value))]
-                        layer[temp_dict[i]] = value
-                layers.append(layer)
-            stackup_dict["layers"] = layers
-        cfg = {"stackup": stackup_dict}
-        return self._pedb.configuration.load(cfg, apply_file=True)
+        xml = XmlParser.load_xml_file(file_path)
+        cfg = xml.to_dict()
+        self._pedb.configuration.load(cfg)
+        return self._pedb.configuration.run()
 
     def _export_xml(self, file_path: str) -> bool:
         """Export stackup information to an external XML file.

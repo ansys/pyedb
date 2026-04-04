@@ -37,6 +37,7 @@ from pyedb.dotnet.database.sim_setup_data.io.siwave import (
 from pyedb.dotnet.database.utilities.simulation_setup import SimulationSetup
 from pyedb.generic.general_methods import is_linux
 from pyedb.generic.settings import settings
+from pyedb.misc.decorators import deprecated_property
 
 
 def _parse_value(v):
@@ -223,6 +224,7 @@ class DeprecatedSettings:
         self.dc_ir.use_loop_res_for_per_pin = value
 
     @property
+    @deprecated_property("use settings.dc.per_pin_use_pin_format property instead.")
     def per_pin_use_pin_format(self):
         """Flag to use pin format for per-pin calculations.
         .. deprecated:: 0.68.2
@@ -232,6 +234,7 @@ class DeprecatedSettings:
         return self.dc_ir.per_pin_use_pin_format
 
     @per_pin_use_pin_format.setter
+    @deprecated_property("use settings.dc.per_pin_use_pin_format property instead.")
     def per_pin_use_pin_format(self, value: bool):
         self.dc_ir.per_pin_use_pin_format = value
 
@@ -537,6 +540,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         return Settings(self)
 
     @property
+    @deprecated_property("use settings.dc_ir property instead.", category=None)
     def dc_ir_settings(self):
         """DC IR settings.
         ..deprecated:: 0.68.2

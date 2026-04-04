@@ -31,6 +31,7 @@ from pyedb.dotnet.database.definition.dielectric_material_model import (
     MultipoleDebyeModel,
 )
 from pyedb.dotnet.database.utilities.obj_base import ObjBase
+from pyedb.misc.decorators import deprecated_property
 
 try:
     from annotated_types import Gt
@@ -99,6 +100,7 @@ class DeprecatedMaterial:
     """Manage EDB methods for material property management."""
 
     @property
+    @deprecated_property("use dielectric_material_model property instead.", category=None)
     def dc_model(self):
         """
         Material dielectric model.

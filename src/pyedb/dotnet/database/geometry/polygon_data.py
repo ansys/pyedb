@@ -25,6 +25,7 @@ import warnings
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.dotnet.database.utilities.obj_base import BBox
+from pyedb.misc.decorators import deprecated
 
 if TYPE_CHECKING:  # pragma: no cover
     from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
@@ -164,6 +165,7 @@ class PolygonData:
         return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
 
     # TODO: Same argument as above
+    @deprecated("Use is_inside method instead.", category=None)
     def point_in_polygon(self, x: str | float | list[Any], y: str | float | None = None) -> bool:
         """Determines whether a point is inside the polygon.
 
