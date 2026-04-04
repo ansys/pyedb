@@ -193,6 +193,9 @@ class Edb(EdbInit):
         Layer filter file for import.
     restart_rpc_server : bool, optional
         Restart gRPC server. Use with caution. Default False.
+    in_memory : bool, optional
+        Whether to use the in-memory gRPC transport when available. The default is ``True``.
+        If the required native library is unavailable, PyEDB falls back to the standard socket-based RPC session.
 
     Examples
     --------
@@ -225,7 +228,7 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
-        in_memory: bool = False,
+        in_memory: bool = True,
     ):
         edbversion = get_string_version(version)
         self._clean_variables()
@@ -681,7 +684,7 @@ class Edb(EdbInit):
         ]
         return {ter.name: ter for ter in terms}
 
-    def open(self, restart_rpc_server: bool = False, in_memory: bool = False) -> bool:
+    def open(self, restart_rpc_server: bool = False, in_memory: bool | None = None) -> bool:
         """Open EDB database.
 
         Returns
@@ -694,6 +697,10 @@ class Edb(EdbInit):
         >>> # Open an existing EDB database:
         >>> edb = Edb("myproject.aedb")
         """
+        if in_memory is None:
+            in_memory = self.in_memory
+        else:
+            self.in_memory = in_memory
         self.standalone = self.standalone
         n_try = 10
         while not self.db and n_try:
@@ -2515,7 +2522,7 @@ class Edb(EdbInit):
         defined_ports = {}
         project_connexions = None
         for edb_path, zone_info in zones.items():
-            edb = Edb(edbversion=self.version, edbpath=edb_path)
+            edb = Edb(edbversion=self.version, edbpath=edb_path, in_memory=self.in_memory)
             edb.cutout(
                 use_pyaedt_cutout=True,
                 custom_extent=zone_info[1],
@@ -3074,7 +3081,12 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.version, restart_rpc_server=True)
+        cloned_edb = Edb(
+            edbpath=output_edb,
+            edbversion=self.version,
+            restart_rpc_server=True,
+            in_memory=self.in_memory,
+        )
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",

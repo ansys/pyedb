@@ -30,7 +30,7 @@ from ansys.edb.core.session import launch_session
 try:
     from ansys.edb.core.session import launch_local_session
 except ImportError:
-    print("Failed to import local session (development feature)")
+    launch_local_session = None
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -53,6 +53,7 @@ class RpcSession:
     rpc_session = None
     base_path = None
     port = 10000
+    server_pid = 0
     in_memory = False
 
     @staticmethod
@@ -110,33 +111,57 @@ class RpcSession:
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
 
-        if RpcSession.pid:
-            if restart_server and not RpcSession.in_memory:
-                settings.logger.logger.info("Restarting RPC server")
-                RpcSession.kill()
-                RpcSession.__start_rpc_server()
-            elif not RpcSession.in_memory:
-                settings.logger.info(f"Server already running on port {RpcSession.port}")
-        else:
-            if not RpcSession.in_memory:
-                RpcSession.__start_rpc_server()
-                if RpcSession.rpc_session:
-                    RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
-                    settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
-                else:
-                    settings.logger.error("Failed to start EDB_RPC_server process")
+        requested_in_memory = RpcSession.in_memory
+        current_in_memory = getattr(RpcSession.rpc_session, "in_memory", None)
+
+        if RpcSession.rpc_session:
+            if restart_server or current_in_memory != requested_in_memory:
+                reason = "restart requested" if restart_server else "transport mode changed"
+                settings.logger.info(f"Restarting gRPC session because {reason}.")
+                RpcSession.close()
+                RpcSession.in_memory = requested_in_memory
+            elif current_in_memory:
+                settings.logger.info("gRPC session already running in local in-memory mode.")
+                settings.is_in_memory = True
+                return
             else:
-                if RpcSession.is_in_memory_lib_file_present():
-                    RpcSession.__start_local_rpc()
+                settings.logger.info(f"Server already running on port {RpcSession.port}")
+                settings.is_in_memory = False
+                return
+
+        if RpcSession.in_memory:
+            if launch_local_session is None:
+                RpcSession.in_memory = False
+                settings.logger.warning(
+                    "In-memory RPC session is not available with the installed ansys-edb-core package. "
+                    "Starting standard RPC session instead."
+                )
+            elif RpcSession.is_in_memory_lib_file_present():
+                RpcSession.__start_local_rpc()
+                if RpcSession.rpc_session:
                     settings.logger.info("Grpc session started in local mode (fast)")
-                else:
-                    RpcSession.in_memory = False
-                    settings.logger.warning(
-                        "Dynamic library for in-memory RPC session not found. "
-                        "Starting standard RPC session. Make sure you are running ANSYS version "
-                        "2026 R1 SP1 or later to enable fast grpc protocol."
-                    )
-                    RpcSession.__start_rpc_server()
+                    settings.is_in_memory = True
+                    return
+
+                RpcSession.in_memory = False
+                settings.logger.warning(
+                    "Failed to initialize the in-memory RPC session. Starting standard RPC session instead."
+                )
+            else:
+                RpcSession.in_memory = False
+                settings.logger.warning(
+                    "Dynamic library for in-memory RPC session not found. "
+                    "Starting standard RPC session. Make sure you are running ANSYS version "
+                    "2026 R1 SP1 or later to enable fast grpc protocol."
+                )
+
+        RpcSession.__start_rpc_server()
+        if RpcSession.rpc_session:
+            RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
+            settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
+        else:
+            settings.logger.error("Failed to start EDB_RPC_server process")
+        settings.is_in_memory = RpcSession.in_memory
 
     @staticmethod
     def is_in_memory_lib_file_present() -> bool:
@@ -148,6 +173,8 @@ class RpcSession:
         bool
             True if the in-memory RPC library file is present, False otherwise.
         """
+        if not RpcSession.base_path:
+            return False
         if is_linux:
             return os.path.isfile(os.path.join(RpcSession.base_path, "libEDB_RPC_Services.so"))
         else:
@@ -173,7 +200,12 @@ class RpcSession:
 
     @staticmethod
     def __start_local_rpc():
-        RpcSession.rpc_session = launch_local_session(RpcSession.base_path)
+        try:
+            RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port, in_memory=True)
+        except TypeError:
+            RpcSession.rpc_session = launch_local_session(RpcSession.base_path)
+        RpcSession.pid = 0
+        RpcSession.server_pid = 0
 
     @staticmethod
     def kill():
@@ -213,10 +245,13 @@ class RpcSession:
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:
-            end_managing()
+            if not RpcSession.in_memory:
+                end_managing()
             RpcSession.rpc_session.disconnect()
             time.sleep(latency_delay)
-            RpcSession.__get_process_id()
+            RpcSession.rpc_session = None
+        RpcSession.pid = 0
+        RpcSession.server_pid = 0
 
     @staticmethod
     def __get_random_free_port():

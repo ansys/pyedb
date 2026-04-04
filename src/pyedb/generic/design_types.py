@@ -49,6 +49,7 @@ def Edb(
     grpc: Literal[True] = True,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> "EdbGrpc": ...
 
 
@@ -67,6 +68,7 @@ def Edb(
     grpc: Literal[False] = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> "EdbDotnet": ...
 
 
@@ -85,6 +87,7 @@ def Edb(
     grpc: bool = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> "EdbGrpc | EdbDotnet": ...
 
 
@@ -145,9 +148,10 @@ def Edb(
         the XML file in the same directory as the board file. To succeed, the XML file and board file
         must have the same name. Only the extension differs.
     in_memory : bool, optional
-        When grpc is set to `True`, this flag enable or not the `in_memory` feature to bypass the network socket.
-        Enabling this option is intended to increase performances when processes are running locally on the same
-        machine. This feature status is Beta and default value is `False`.
+        When grpc is set to `True`, this flag enables the in-memory transport to bypass the network socket.
+        Enabling this option is intended to increase performance when processes are running locally on the same
+        machine. This feature status is Beta and the default value is `True`. If the required native library is
+        not available, PyEDB automatically falls back to the standard RPC session.
 
 
     Returns

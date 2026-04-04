@@ -82,6 +82,12 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
+    def _sync_transport_mode(self):
+        """Synchronize the effective transport mode after session startup or fallback."""
+        settings.is_in_memory = RpcSession.in_memory
+        if hasattr(self, "in_memory"):
+            self.in_memory = RpcSession.in_memory
+
     def _create(self, db_path, port=0, restart_rpc_server=False, in_memory=False):
         """Create a Database at the specified file location.
 
@@ -101,15 +107,15 @@ class EdbInit(object):
         Database
         """
         RpcSession.in_memory = in_memory
-        if RpcSession.in_memory and not RpcSession.pid:
-            RpcSession.start(
-                edb_version=self.version,
-                port=port,
-                restart_server=restart_rpc_server,
-            )
-            if not RpcSession.pid and not RpcSession.in_memory:
-                self.logger.error("Failed to start RPC server.")
-                return False
+        RpcSession.start(
+            edb_version=self.version,
+            port=port,
+            restart_server=restart_rpc_server,
+        )
+        self._sync_transport_mode()
+        if not RpcSession.rpc_session:
+            self.logger.error("Failed to start RPC server.")
+            return False
 
         self._db = database.Database.create(db_path)
         return self._db
@@ -133,18 +139,16 @@ class EdbInit(object):
         Database or None
             The opened Database object, or None if not found.
         """
-        if restart_rpc_server:
-            RpcSession.pid = 0
         RpcSession.in_memory = in_memory
-        if not RpcSession.pid:
-            RpcSession.start(
-                edb_version=self.version,
-                port=port,
-                restart_server=restart_rpc_server,
-            )
-            if not RpcSession.pid and not RpcSession.in_memory:
-                self.logger.error("Failed to start RPC server.")
-                return False
+        RpcSession.start(
+            edb_version=self.version,
+            port=port,
+            restart_server=restart_rpc_server,
+        )
+        self._sync_transport_mode()
+        if not RpcSession.rpc_session:
+            self.logger.error("Failed to start RPC server.")
+            return False
         self._db = database.Database.open(db_path, read_only)
         return self._db
 
@@ -202,9 +206,9 @@ class EdbInit(object):
         """
         self._db.close()
         self._db = None
-        if terminate_rpc_session and not RpcSession.in_memory:
-            RpcSession.rpc_session.disconnect()
-            RpcSession.pid = 0
+        if terminate_rpc_session:
+            RpcSession.close()
+            self._sync_transport_mode()
         self._clean_variables()
         return True
 

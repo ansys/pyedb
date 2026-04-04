@@ -935,6 +935,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
