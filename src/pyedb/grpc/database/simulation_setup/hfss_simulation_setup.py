@@ -450,8 +450,7 @@ class HfssSimulationSetup(SimulationSetup):
     def auto_mesh_operation(
         self,
         trace_ratio_seeding: float = 3,
-        signal_via_side_number: int = 12,
-        power_ground_via_side_number: int = 6,
+        signal_via_side_number: int|None = None,
     ) -> bool:
         """
         Automatically create and apply a length-based mesh operation for all nets in the design.
@@ -468,13 +467,10 @@ class HfssSimulationSetup(SimulationSetup):
             Ratio used to compute the maximum allowed element length from the
             smallest trace width found in the design.  The resulting length is
             ``min_width * trace_ratio_seeding``.  Defaults to ``3``.
-        signal_via_side_number : int, optional
+        signal_via_side_number : int, None, optional
             Number of sides (i.e. faceting resolution) assigned to **signal**
             padstack instances that belong to the nets being meshed.
-            Defaults to ``12``.
-        power_ground_via_side_number : int, optional
-            Number of sides assigned to **power/ground** vias via the global
-            ``advanced.num_via_sides`` setting.  Defaults to ``6``.
+            Defaults to ``None``.
 
         Returns
         -------
@@ -516,12 +512,12 @@ class HfssSimulationSetup(SimulationSetup):
             layers = list(set([trace.layer.name for trace in traces]))
             for layer in layers:
                 layer_info.append((net, layer, False))
-            for inst in self._pedb.padstacks.instances_by_net[net]:
-                inst.side_number = signal_via_side_number
+            if signal_via_side_number is not None:
+                for inst in self._pedb.padstacks.instances_by_net[net]:
+                    inst.side_number = signal_via_side_number
         meshop.max_length = f"{round(float((smallest_width * trace_ratio_seeding)), 9) * 1e6}um"
         meshop.net_layer_info = layer_info
         self.mesh_operations = [meshop]
-        self.settings.advanced.num_via_sides = power_ground_via_side_number
         if self.mesh_operations:
             return True
         return False
