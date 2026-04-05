@@ -450,7 +450,7 @@ class HfssSimulationSetup(SimulationSetup):
     def auto_mesh_operation(
         self,
         trace_ratio_seeding: float = 3,
-        signal_via_side_number: int|None = None,
+        signal_via_side_number: int | None = None,
     ) -> bool:
         """
         Automatically create and apply a length-based mesh operation for all nets in the design.
