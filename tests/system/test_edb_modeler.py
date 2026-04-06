@@ -674,3 +674,21 @@ class TestClass(BaseTestClass):
         circle.layer_name = "Bottom"
         assert circle.layer_name == "Bottom"
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="increase coverage path primitives for grpc")
+    def test_paths_for_grpc(self):
+        edbapp = self.edb_examples.get_si_board()
+        path = edbapp.modeler.paths[0]
+        path.width = 1.5
+        assert path.width.real == 1.5
+        assert path.length
+        assert path.center_line
+        assert path.get_center_line() == path.center_line
+        # TODO create_path is not covered using core in modeler
+        # TODO why have both get_center_line() and path.center_line?
+        path.corner_style = "round"
+        # assert path.corner_style == "round"
+        # TODO corner setter does not work, and move does not work
+        assert path.end_cap1 == "flat"
+        path.end_cap2 = "round"
+        assert path.end_cap2 == "round"
