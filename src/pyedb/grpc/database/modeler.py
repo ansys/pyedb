@@ -734,7 +734,7 @@ class Modeler(object):
     def create_text(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], text: str
     ) -> Optional[Primitive]:
-        """Create circle primitive.
+        """Create text primitive.
 
         Parameters
         ----------
