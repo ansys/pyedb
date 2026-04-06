@@ -19,8 +19,10 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import re
-import warnings
+
+from pyedb.misc.decorators import deprecated
 
 
 class SweepData(object):
@@ -409,11 +411,12 @@ class SweepData(object):
         self._edb_object.UseQ3DForDC = value
         self._update_sweep()
 
+    @deprecated("use add method instead")
     def _set_frequencies(self, freq_sweep_string="Linear Step: 0GHz to 20GHz, step=0.05GHz"):
-        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         self._edb_object.SetFrequencies(freq_sweep_string)
         self._update_sweep()
 
+    @deprecated("use add method instead")
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
         """Set a linear scale frequency sweep.
 
@@ -431,10 +434,10 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         self._edb_object.Frequencies = self._edb_object.SetFrequencies(start, stop, step)
         return self._update_sweep()
 
+    @deprecated("use add method instead")
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
         """Set a linear count frequency sweep.
 
@@ -452,12 +455,12 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
         stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
         self._edb_object.Frequencies = self._edb_object.SetFrequencies(start, stop, count)
         return self._update_sweep()
 
+    @deprecated("use add method instead")
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
         """Set a log-count frequency sweep.
 
@@ -475,12 +478,12 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
         stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
         self._edb_object.Frequencies = self._edb_object.SetLogFrequencies(start, stop, samples)
         return self._update_sweep()
 
+    @deprecated("use add method instead")
     def set_frequencies(self, frequency_list=None, update=True):
         """Set frequency list to the sweep frequencies.
 
@@ -497,7 +500,6 @@ class SweepData(object):
         bool
             ``True`` if correctly executed, ``False`` otherwise.
         """
-        warnings.warn("Use new property :func:`add` instead.", DeprecationWarning)
         if not frequency_list:
             frequency_list = [
                 ["linear count", "0", "1kHz", 1],

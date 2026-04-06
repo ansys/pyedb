@@ -192,6 +192,20 @@ class SIWaveDCIRSettings:
     def per_pin_use_pin_format(self, value):
         self.core.per_pin_use_pin_format = value
 
+    def add_source_terminal_to_ground(self, source_name: str, terminal: int = 1) -> None:
+        """Add source terminal to ground mapping.
+
+        Parameters
+        ----------
+        source_name : str
+            Source terminal name.
+        terminal : int
+            The terminal number to reference. `0` set the positive terminal `1` set the negative terminal as reference.
+            Default is `1`
+        """
+        temp = {source_name: terminal}
+        self.source_terms_to_ground = {**self.source_terms_to_ground, **temp}
+
     @property
     def source_terms_to_ground(self) -> dict[str, int]:
         """Source terms to ground mapping.

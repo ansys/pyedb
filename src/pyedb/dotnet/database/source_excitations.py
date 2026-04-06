@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 import time
 from typing import Set
 
@@ -41,6 +42,7 @@ from pyedb.dotnet.database.edb_data.sources import (
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.generic.general_methods import _retry_ntimes, generate_unique_name
 from pyedb.generic.geometry_operators import GeometryOperators
+from pyedb.misc.decorators import deprecated
 
 
 class SourceExcitation:
@@ -699,11 +701,12 @@ class SourceExcitation:
         neg.SetName(port_name + ":T2")
         return port_name, BundleWavePort(self._pedb, _edb_boundle_terminal)
 
+    @deprecated("Use excitation_manager.create_edge_port method instead.")
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
         """Create an HFSS port on a padstack.
 
         .. deprecated:: 0.70.0
-            Use :func:`pyedb.excitation_manager.create_edge_port` instead.
+           Use :func:`excitation_manager.create_edge_port` instead.
 
         Parameters
         ----------

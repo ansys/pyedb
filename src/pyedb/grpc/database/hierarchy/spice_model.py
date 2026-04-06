@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import warnings
-
 from ansys.edb.core.hierarchy.spice_model import SPICEModel as CoreSpiceModel
+
+from pyedb.misc.decorators import deprecated_property
 
 
 class SpiceModel:  # pragma: no cover
@@ -53,6 +53,7 @@ class SpiceModel:  # pragma: no cover
         return self.core.model_name
 
     @property
+    @deprecated_property("use name property instead.")
     def model_name(self):
         """Model name.
 
@@ -65,7 +66,6 @@ class SpiceModel:  # pragma: no cover
             Model name.
 
         """
-        warnings.warn("`model_name` is deprecated. Use `name` instead.", DeprecationWarning)
         return self.core.model_name
 
     @property

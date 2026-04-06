@@ -26,10 +26,10 @@ import difflib
 import logging
 import os
 import re
-from typing import Optional, Union
+from typing import Union
 import warnings
 
-from pydantic import BaseModel, confloat
+from pydantic import confloat
 
 from pyedb import Edb
 from pyedb.dotnet.database.definition.definition_obj import (
@@ -40,7 +40,7 @@ from pyedb.dotnet.database.definition.definition_obj import (
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.exceptions import MaterialModelException
-from pyedb.misc.decorators import deprecate_argument_name
+from pyedb.misc.decorators import deprecate_argument_name, deprecated
 
 logger = logging.getLogger(__name__)
 
@@ -274,6 +274,7 @@ class Materials(object):
         except MaterialModelException:
             raise ValueError("Use realistic values to define DS model.")
 
+    @deprecated("use add_djordjevic_sarkar_dielectric method instead.")
     def add_djordjevicsarkar_dielectric(
         self,
         name,
@@ -290,13 +291,6 @@ class Materials(object):
             This method name contains a typo and is deprecated.
             Use :func:`add_djordjevic_sarkar_dielectric` instead.
         """
-        warnings.warn(
-            "add_djordjevicsarkar_dielectric is deprecated due to a typo in the method name. "
-            "Use add_djordjevic_sarkar_dielectric instead.",
-            DeprecationWarning,
-            stacklevel=2,
-        )
-
         return self.add_djordjevic_sarkar_dielectric(
             name,
             permittivity_at_frequency,

@@ -22,7 +22,6 @@
 
 
 from ansys.edb.core.utility.rlc import Rlc as CoreRlc
-from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class Rlc(CoreRlc):

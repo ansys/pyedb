@@ -284,6 +284,8 @@ class Net:
 
         Examples
         --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("myedb", version="2026.1")
         >>> edb.nets["BST_V3P3_S5"].extended_net
         """
         if self.name in self._pedb.extended_nets.items:

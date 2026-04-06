@@ -22,16 +22,12 @@
 
 from typing import TYPE_CHECKING, Union
 
-from pyedb.misc.decorators import deprecated_class
+from pyedb.misc.decorators import deprecated
 
 if TYPE_CHECKING:
     from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetup as CoreSimulationSetup
 
-from ansys.edb.core.simulation_setup.simulation_setup import (
-    FreqSweepType,
-    FrequencyData as CoreFrequencyData,
-    SimulationSetupType as CoreSimulationSetupType,
-)
+from ansys.edb.core.simulation_setup.simulation_setup import SimulationSetupType as CoreSimulationSetupType
 
 from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
@@ -45,11 +41,9 @@ _mapping_simulation_types = {
 }
 
 
-@deprecated_class("The 'SimulationSetupDeprecated' class is deprecated. Please use 'SimulationSetup' instead.")
 class SimulationSetupDeprecated:
     @property
     def type(self):
-        self._pedb.logger.warning("The 'type' property is deprecated. Please use 'setup_type' instead.")
         return self.setup_type
 
     @property
@@ -247,6 +241,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         self.core.sweep_data = self.core.sweep_data + [sweep.core]
         return self.sweep_data[-1]
 
+    @deprecated("use add_sweep method instead")
     def add_frequency_sweep(self, frequency_sweep: list[str]):
         """This method is deprecated. Please use 'add_sweep' with appropriate parameters instead."""
         # converting frequency sweep to frequency set
@@ -267,19 +262,37 @@ class SimulationSetup(SimulationSetupDeprecated):
 
     def add_sweep(
         self,
-        name=None,
-        distribution="linear",
-        start_freq="0GHz",
-        stop_freq="20GHz",
-        step="10MHz",
-        discrete=False,
-        frequency_set=None,
-    ) -> Union[SweepData, None]:
+        name: str | None = None,
+        distribution: str = "linear",
+        start_freq: str | float = "0GHz",
+        stop_freq: str | float = "20GHz",
+        step: str | float = "10MHz",
+        discrete: bool = False,
+        frequency_set: list[list[str]] | None = None,
+    ) -> SweepData | None:
         """Add a HFSS frequency sweep.
 
-        This method was refactored to reduce complexity. The behaviour is compatible
+        This method was refactored to reduce complexity. The behavior is compatible
         with the previous implementation: it accepts either a legacy `frequency_set`
         or single-sweep parameters.
+
+        Parameters
+        ----------
+        name: str
+            sweep name
+        distribution: str
+            sweep distribution. Supported values `"linear"`, `"linear_count"`, `"decade_count"`, `"exponential"`,
+            `"octave_count"`. Default: `"linear"`
+        start_freq: str or float
+            starting frequency (e.g. "0GHz" or 0)
+        stop_freq: str or float
+            stopping frequency (e.g. "20GHz" or 20000000000)
+        step: str or float
+            frequency step (e.g. "10MHz" or 10000000)
+        discrete: bool
+            whether the sweep is discrete or interpolating
+        frequency_set: list[list[str]] or None
+            legacy multi-sweep format (e.g. [["linear_scale", "0GHz", "20GHz", "10MHz"], [...], ...])
 
         Returns
         -------

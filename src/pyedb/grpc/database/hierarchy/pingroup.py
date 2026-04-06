@@ -203,13 +203,16 @@ class PinGroup:
         """
         return CorePinGroup.unique_name(layout.core, base_name)
 
-    def create_terminal(self, name=None) -> PinGroupTerminal:
+    def create_terminal(self, name=None, is_ref: bool = False) -> PinGroupTerminal:
         """Create a terminal.
 
         Parameters
         ----------
         name : str, optional
             Name of the terminal.
+
+        is_ref : bool, optional
+            Whether the terminal is a reference terminal. Default is ``False``.
 
         Returns
         -------
@@ -225,11 +228,11 @@ class PinGroup:
         if not name:
             name = generate_unique_name(self.name)
         term = PinGroupTerminal.create(
-            layout=self._active_layout, name=name, pin_group=self, net=self.net, is_ref=False
+            layout=self._active_layout, name=name, pin_group=self, net=self.net, is_ref=is_ref
         )
         return term
 
-    def _json_format(self) -> dict[str, any]:
+    def _json_format(self) -> dict[str, Component | str | Net | int]:
         """Format json.
 
         Returns

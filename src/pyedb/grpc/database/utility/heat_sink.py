@@ -23,7 +23,6 @@
 from ansys.edb.core.utility.heat_sink import (
     HeatSinkFinOrientation as CoreHeatSinkFinOrientation,
 )
-from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class HeatSink:

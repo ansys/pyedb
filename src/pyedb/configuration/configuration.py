@@ -170,7 +170,7 @@ class Configuration:
         self.__apply_with_logging("Placing sources", self.cfg_data.sources.apply)
 
         self.__apply_with_logging("Applying materials", self.apply_materials)
-        self.__apply_with_logging("Updating stackup", self.apply_stackup)
+        self.apply_stackup()
 
         self.apply_padstacks()
 

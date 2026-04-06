@@ -22,11 +22,10 @@
 
 from __future__ import absolute_import  # noreorder
 
-import warnings
-
 from pyedb.common.nets import CommonNets
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 from pyedb.generic.general_methods import generate_unique_name
+from pyedb.misc.decorators import deprecated
 from pyedb.misc.utilities import compute_arc_points
 
 
@@ -659,13 +658,14 @@ class EdbNets(CommonNets):
                 return True
         return False
 
+    @deprecated("Use layout_validation.disjoint_nets method instead.")
     def find_and_fix_disjoint_nets(
         self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
     ):
         """Find and fix disjoint nets from a given netlist.
 
         .. deprecated::
-           Use new property :func:`edb.layout_validation.disjoint_nets` instead.
+           Use :attr:`layout_validation.disjoint_nets` instead.
 
         Parameters
         ----------
@@ -689,7 +689,6 @@ class EdbNets(CommonNets):
 
         >>> renamed_nets = database.nets.find_and_fix_disjoint_nets(["GND", "Net2"])
         """
-        warnings.warn("Use new function :func:`edb.layout_validation.disjoint_nets` instead.", DeprecationWarning)
         return self._pedb.layout_validation.disjoint_nets(
             net_list, keep_only_main_net, clean_disjoints_less_than, order_by_area
         )

@@ -285,12 +285,14 @@ class GrpcCutout:
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
-            insts = self._edb.padstacks.instances
-            for i in _pins_to_preserve:
-                p = insts[i].position
+            for padstack_instance in _pins_to_preserve:
+                p = padstack_instance.position
+                layer = padstack_instance.start_layer
                 pos_1 = [i - 75e-6 for i in p]
                 pos_2 = [i + 75e-6 for i in p]
-                plane = self._edb.modeler.create_rectangle(lower_left_point=pos_1, upper_right_point=pos_2)
+                plane = self._edb.modeler.create_rectangle(
+                    layer_name=layer, lower_left_point=pos_1, upper_right_point=pos_2
+                )
                 rectangle_data = plane.polygon_data
                 _polys.append(rectangle_data)
 
@@ -415,7 +417,7 @@ class GrpcCutout:
                     "SParameterModel",
                     "NetlistModel",
                 ] and list(set(el.nets[:]) & set(self.signals[:])):
-                    _pins_to_preserve.extend([i.id for i in el.pins.values()])
+                    _pins_to_preserve.extend([i for i in el.pins.values()])
                     _nets_to_preserve.extend(el.nets)
         if self.include_pingroups:
             for pingroup in self._edb.padstacks.pingroups:
@@ -755,8 +757,11 @@ class GrpcCutout:
 
         # primitives
         total_primitive_to_delete = prim_to_delete + prims_to_clip + [v for prim in prims_to_clip for v in prim.voids]
+        total_primitive_number = len(total_primitive_to_delete)
         _t1 = time.time()
-        self.logger.info(f"{len(total_primitive_to_delete)} primitives deleted in {time.time() - _t1:.3f} s")
+        for primitive in total_primitive_to_delete:
+            primitive.delete()
+        self.logger.info(f"{total_primitive_number} primitives deleted in {time.time() - _t1:.3f} s")
 
         # new polygons
         _t1 = time.time()
@@ -1046,6 +1051,8 @@ class DotNetCutout:
         _pins_to_preserve, _ = self.pins_to_preserve()
         if _pins_to_preserve:
             for inst in _pins_to_preserve:
+                if isinstance(inst, int):
+                    inst = self._edb.padstacks.instances[inst]
                 p = inst.position
                 pos_1 = [i - 1e-12 for i in p]
                 pos_2 = [i + 1e-12 for i in p]
