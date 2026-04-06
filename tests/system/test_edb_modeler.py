@@ -655,7 +655,7 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_board()
         edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
         edbapp.close(terminate_rpc_session=False)
-        
+
     @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
     def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
         from pyedb.dotnet.database.dotnet.database import CellDotNet
