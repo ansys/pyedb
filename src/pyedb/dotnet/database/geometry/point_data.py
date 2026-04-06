@@ -19,52 +19,88 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import warnings
+from typing import Any, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from pyedb.dotnet.edb import Edb
 
-from typing import Any
+from pyedb.dotnet.database.utilities.value import Value
 
 
 class PointData:
     """Point Data."""
 
-    def __init__(self, pedb: Any, edb_object: Any | None = None) -> None:
+    def __init__(self, pedb: "Edb", core: Any | None = None) -> None:
         self._pedb = pedb
-        self._edb_object = edb_object
+        self.core = core
+
+    @classmethod
+    def create(cls, pedb: "Edb", x: float | str, y: float | str) -> "PointData":
+        """Create a new PointData object."""
+        edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x), pedb.edb_value(y))
+        return cls(pedb, edb_object)
+
+    @classmethod
+    def create_arc_point(cls, pedb, arc_height):
+        edb_object = pedb.core.Geometry.PointData(pedb.edb_value(arc_height))
+        return cls(pedb, edb_object)
 
     @classmethod
     def create_from_x(cls, pedb: Any, x: float) -> "PointData":
         """Create a new PointData object."""
+        warnings.deprecated("Use create_arc_point instead", stacklevel=2)
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x))
         return cls(pedb, edb_object)
 
     @classmethod
     def create_from_xy(cls, pedb: Any, x: float, y: float) -> "PointData":
         """Create a new PointData object."""
+        warnings.deprecated("Use create instead", stacklevel=2)
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x), pedb.edb_value(y))
         return cls(pedb, edb_object)
 
     @property
-    def x(self) -> str:
+    def x(self) -> Value:
         """X value of point."""
-        return self._edb_object.X.ToString()
+        return self._pedb.value(self.core.X)
 
     @x.setter
-    def x(self, value: float) -> None:
-        self._edb_object.X = self._pedb.edb_value(value)
+    def x(self, value: float|Value) -> None:
+        self.core.X = self._pedb.edb_value(value)
 
     @property
     def x_evaluated(self) -> float:
-        return self._edb_object.X.ToDouble()
+        return self.core.X.ToDouble()
 
     @property
-    def y(self) -> str:
+    def y(self) -> Value:
         """Y value of point."""
-        return self._edb_object.Y.ToString()
+        return self._pedb.value(self.core.Y)
 
     @y.setter
-    def y(self, value: float) -> None:
-        self._edb_object.Y = self._pedb.edb_value(value)
+    def y(self, value: float|Value) -> None:
+        self.core.Y = self._pedb.edb_value(value)
 
     @property
     def y_evaluated(self) -> float:
-        return self._edb_object.Y.ToDouble()
+        return self.core.Y.ToDouble()
+
+    @property
+    def arc_height(self)->Value:
+        return self._pedb.value(self.core.GetArcHeight())
+
+    @property
+    def is_arc(self)->bool:
+        return self.core.IsArc()
+
+    def rotate(self, angle:str|float|Value, center:str|float|Value)->"PointData":
+        cx = self._pedb.value(center[0])
+        cy = self._pedb.value(center[1])
+        angle = self._pedb.value(angle)
+        dx = self.x - cx
+        dy = self.y - cy
+
+        xi  = dx*angle.cos() - dy*angle.sin() + cx
+        yi  = dx*angle.sin() + dy*angle.cos() + cy
+        return PointData.create(self._pedb, str(xi), str(yi))
