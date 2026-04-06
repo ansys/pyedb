@@ -642,3 +642,9 @@ class TestClass(BaseTestClass):
         )
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing coverage for Text prims")
+    def test_prims(self):
+        edbapp = self.edb_examples.get_si_board()
+        edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
+        edbapp.close(terminate_rpc_session=False)
