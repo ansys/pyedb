@@ -752,7 +752,7 @@ class Modeler(object):
         :class:`pyedb.grpc.database.edb_data.primitives_data.Text` or bool
             Text object if created, False otherwise.
         """
-        circle = Text(self._pedb).create(
+        text = Text.create(
             layout=self._pedb.active_layout,
             layer=layer_name,
             center_x=self._pedb.value(x),
