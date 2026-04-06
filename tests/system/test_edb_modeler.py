@@ -675,9 +675,11 @@ class TestClass(BaseTestClass):
         assert circle.layer_name == "Bottom"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="increase coverage path primitives for grpc")
+    @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
     def test_paths_for_grpc(self):
         edbapp = self.edb_examples.get_si_board()
+
+        # Paths
         path = edbapp.modeler.paths[0]
         path.width = 1.5
         assert path.width.real == 1.5
@@ -692,3 +694,9 @@ class TestClass(BaseTestClass):
         assert path.end_cap1 == "flat"
         path.end_cap2 = "round"
         assert path.end_cap2 == "round"
+
+        # Circle
+        cir = edbapp.modeler.create_circle(layer_name="s1", x=0, y=0, radius=0.1, net_name="GND")
+        assert cir
+        cir.set_parameters(0.1, 0.1, 0.3)
+        assert cir.get_parameters()[2].real == 0.3
