@@ -686,7 +686,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
-    def test_paths_for_grpc(self):
+    def test_prims_for_grpc(self):
         edbapp = self.edb_examples.get_si_board()
 
         # Paths
@@ -710,3 +710,21 @@ class TestClass(BaseTestClass):
         assert cir
         cir.set_parameters(0.1, 0.1, 0.3)
         assert cir.get_parameters()[2].real == 0.3
+
+        # Rectangle
+        rect = edbapp.layout.rectangles[0]
+        rect.representation_type = "center_width_height"
+        assert rect.representation_type == "center_width_height"
+        # TODO create does not work
+        # TODO if representation_type is not set first it breaks the code
+        assert rect.get_parameters()
+        # TODO representation type does not change
+        rect.corner_radius = 1.0
+        assert rect.corner_radius == 1.0
+        rect.rotation = 90
+        assert rect.rotation == 90
+        assert rect.width
+        rect.width = 0.2
+        rect.height = 0.1
+        assert rect.height == 0.1
+        assert rect.duplicate_across_layers("d1")

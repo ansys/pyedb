@@ -624,7 +624,7 @@ class Modeler(object):
         ----------
         layer_name : str
             Layer name.
-        net_name : str, optional
+        net_name : str
             Associated net name.
         lower_left_point : list, optional
             [x,y] lower left point.
