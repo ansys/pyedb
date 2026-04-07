@@ -37,12 +37,13 @@ class PointData:
 
     @classmethod
     def create(cls, pedb: "Edb", x: float | str, y: float | str) -> "PointData":
-        """Create a new PointData object."""
+        """Create a PointData object."""
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x), pedb.edb_value(y))
         return cls(pedb, edb_object)
 
     @classmethod
     def create_arc_point(cls, pedb, arc_height):
+        """Create a arc PointData object."""
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(arc_height))
         return cls(pedb, edb_object)
 
@@ -62,7 +63,7 @@ class PointData:
 
     @property
     def x(self) -> Value:
-        """X value of point."""
+        """X coordinate."""
         return self._pedb.value(self.core.X)
 
     @x.setter
@@ -75,7 +76,7 @@ class PointData:
 
     @property
     def y(self) -> Value:
-        """Y value of point."""
+        """Y coordinate."""
         return self._pedb.value(self.core.Y)
 
     @y.setter
@@ -88,10 +89,16 @@ class PointData:
 
     @property
     def arc_height(self)->Value:
+        """Height of the arc. This property is read-only."""
         return self._pedb.value(self.core.GetArcHeight())
 
     @property
     def is_arc(self)->bool:
+        """
+        Flag indicating if the point represents an arc.
+
+        This property is read-only.
+        """
         return self.core.IsArc()
 
     def rotate(self, angle:str|float|Value, center:str|float|Value)->"PointData":

@@ -26,11 +26,16 @@ import pytest
 from tests import conftest
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
-from pyedb.dotnet.database.geometry.point_data import PointData
+
+if config["use_grpc"]:
+    from pyedb.grpc.database.geometry.point_data import PointData
+else:
+    from pyedb.dotnet.database.geometry.point_data import PointData
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
+@pytest.mark.skipif(config["use_grpc"], reason="bug #2005")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPointData(BaseTestClass):
 
