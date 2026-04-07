@@ -653,11 +653,12 @@ class Modeler(object):
         :class:`pyedb.grpc.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
+        net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
             rect = Rectangle(self._pedb).create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net_name,
+                net=net.core,
                 rep_type=representation_type,
                 param1=self._pedb.value(lower_left_point[0]),
                 param2=self._pedb.value(lower_left_point[1]),

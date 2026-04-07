@@ -367,7 +367,7 @@ class Rectangle(Primitive):
                 duplicate_rectangle = self.create(
                     layout=self._pedb.active_layout,
                     layer=layer,
-                    net=self.net.name,
+                    net=self.net.core,
                     param1=self.center[0],
                     param2=self.center[1],
                     param3=self.width,
