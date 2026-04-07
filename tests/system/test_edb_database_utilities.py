@@ -155,4 +155,3 @@ class TestDatabaseUtilities(BaseTestClass):
         assert float(edbapp.value("z")) == pytest.approx(float(z_obj))
 
         edbapp.close(terminate_rpc_session=False)
-
