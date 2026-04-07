@@ -36,7 +36,7 @@ class NetClass:
     --------
     >>> from pyedb import Edb
     >>> myedb = "path_to_your_edb_file.edb"
-    >>> edb = Edb(myedb, version="2025.1")
+    >>> edb = Edb(myedb, version="2026.1")
     >>> edb.net_classes
     """
 

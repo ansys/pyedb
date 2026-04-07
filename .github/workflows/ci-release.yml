@@ -368,7 +368,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
@@ -400,6 +400,7 @@ jobs:
         run: |
           . .venv/bin/activate
           python -m pip install .[all,tests]
+          python -m pip install --upgrade ansys-edb-core==0.3.0.dev10
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -443,7 +444,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
@@ -475,6 +476,7 @@ jobs:
         run: |
           . .venv/bin/activate
           python -m pip install .[all,tests]
+          python -m pip install --upgrade ansys-edb-core==0.3.0.dev10
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -615,7 +617,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -655,7 +657,7 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           . .venv/bin/activate
           cd external/pyaedt
@@ -663,7 +665,7 @@ jobs:
 
       - name: Install PyEDB
         env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           python -m pip install .[all]
 

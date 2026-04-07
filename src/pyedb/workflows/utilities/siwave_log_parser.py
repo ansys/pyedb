@@ -192,7 +192,7 @@ class AEDTVersion:
     Attributes
     ----------
     version : str
-        AEDT version number (e.g., ``'2025.1'``).
+        AEDT version number (e.g., ``'2026.1'``).
     build : str
         Build identifier.
     location : str
@@ -200,9 +200,9 @@ class AEDTVersion:
 
     Examples
     --------
-    >>> version = AEDTVersion(version="2025.1", build="12345", location="C:\\Program Files\\AnsysEM")
+    >>> version = AEDTVersion(version="2026.1", build="12345", location="C:\\Program Files\\AnsysEM")
     >>> version.version
-    '2025.1'
+    '2026.1'
     """
 
     version: str
@@ -433,13 +433,13 @@ class HeaderBlockParser(BlockParser):
     Examples
     --------
     >>> lines = [
-    ...     "ANSYS Electromagnetics Suite Version 2025.1 Build: 12345",
-    ...     "Location: C:\\Program Files\\AnsysEM\\v251",
+    ...     "ANSYS Electromagnetics Suite Version 2026.1 Build: 12345",
+    ...     "Location: C:\\Program Files\\AnsysEM\\v261",
     ... ]
     >>> parser = HeaderBlockParser(lines)
     >>> version = parser.parse()
     >>> version.version
-    '2025.1'
+    '2026.1'
     """
 
     def parse(self) -> AEDTVersion:
@@ -452,7 +452,7 @@ class HeaderBlockParser(BlockParser):
 
         Examples
         --------
-        >>> lines = ["Version 2025.1 Build: 12345", "Location: C:\\AnsysEM"]
+        >>> lines = ["Version 2026.1 Build: 12345", "Location: C:\\AnsysEM"]
         >>> parser = HeaderBlockParser(lines)
         >>> info = parser.parse()
         >>> info.build
@@ -767,7 +767,7 @@ class ParsedSiwaveLog:
     >>> from datetime import datetime
     >>> from pathlib import Path
     >>> log = ParsedSiwaveLog(
-    ...     aedt=AEDTVersion(version="2025.1", build="123", location="C:\\AEDT"),
+    ...     aedt=AEDTVersion(version="2026.1", build="123", location="C:\\AEDT"),
     ...     batch=BatchInfo(
     ...         path="C:\\project\\test.siw",
     ...         started=datetime(2025, 11, 10, 9, 0, 0),
@@ -830,7 +830,7 @@ class ParsedSiwaveLog:
         Examples
         --------
         >>> log = ParsedSiwaveLog(
-        ...     aedt=AEDTVersion("2025.1", "123", "C:\\AEDT"),
+        ...     aedt=AEDTVersion("2026.1", "123", "C:\\AEDT"),
         ...     batch=BatchInfo(
         ...         path="test.siw",
         ...         started=datetime(2025, 1, 1),
@@ -858,7 +858,7 @@ class ParsedSiwaveLog:
         Examples
         --------
         >>> log = ParsedSiwaveLog(
-        ...     aedt=AEDTVersion("2025.1", "123", "C:\\AEDT"),
+        ...     aedt=AEDTVersion("2026.1", "123", "C:\\AEDT"),
         ...     batch=BatchInfo(
         ...         path="test.siw",
         ...         started=datetime(2025, 1, 1),

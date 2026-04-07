@@ -92,7 +92,7 @@ class DifferentialPairs:
         Examples
         --------
         >>> from pyedb import Edb
-        >>> edbapp = Edb("myaedbfolder", edbversion="2025.2")
+        >>> edbapp = Edb("myaedbfolder", edbversion="2026.1")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
         """
         nets = self._pedb.nets.nets
