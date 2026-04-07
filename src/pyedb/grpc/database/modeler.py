@@ -624,7 +624,7 @@ class Modeler(object):
         ----------
         layer_name : str
             Layer name.
-        net_name : str
+        net_name : str, optional
             Associated net name.
         lower_left_point : list
             Required for representation type: "lower_left_upper_right"
@@ -686,7 +686,7 @@ class Modeler(object):
             rect = Rectangle.create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net_name,
+                net=net.core,
                 rep_type=rep_type,
                 param1=self._pedb.value(center_point[0]),
                 param2=self._pedb.value(center_point[1]),

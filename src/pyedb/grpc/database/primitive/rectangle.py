@@ -91,10 +91,10 @@ class Rectangle(Primitive):
         layer : Union[str, Layer]
             The layer in which the rectangle will be created. This parameter is required and must be specified.
         net : Union[str, Net]
-            The net to which the rectangle will belong. This parameter is required and must be specified.
+            The net to which the rectangle will belong. If not provided, a random net will be created.
         rep_type : str, optional
             The representation type of the rectangle. Options are `"center_width_height"` or `"lower_left_upper_right"`.
-            The default value is `"center_width_height"`.
+            The default value is `"lower_left_upper_right"`.
         param1 : float, optional
             The first parameter defining the rectangle. Its meaning depends on the `rep_type`.
         param2 : float, optional
