@@ -1411,7 +1411,7 @@ class Modeler:
         start_width: str | float,
         end_width: str | float,
         layer_name: str = "",
-        voids=[],
+        voids: list|None=None,
         net_name: str = "",
     ) -> EdbPolygon:
         """Create RF trace taper.

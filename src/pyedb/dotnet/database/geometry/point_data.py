@@ -25,8 +25,6 @@ import warnings
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb
 
-from pyedb.dotnet.database.utilities.value import Value
-
 
 class PointData:
     """Point Data."""

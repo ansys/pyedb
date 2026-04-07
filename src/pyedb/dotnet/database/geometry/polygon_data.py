@@ -65,7 +65,7 @@ class PolygonData:
             if isinstance(pt, PointData):
                 list_of_point_data.append(pt.core)
             else:
-                list_of_point_data.append(PointData.create(self._pedb, x=pt[0], y=pt[1]).core)
+                list_of_point_data.append(PointData.create(pedb, x=pt[0], y=pt[1]).core)
         return pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
     @property
