@@ -23,6 +23,7 @@
 
 import pytest
 
+from pyedb.grpc.database.variables import Variable as GrpcVariable
 from tests import conftest
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
@@ -120,3 +121,38 @@ class TestDatabaseUtilities(BaseTestClass):
         assert str(value2) == "(var1)**0.5"
 
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(
+        config["use_grpc"] and config["desktopVersion"] < "2026.1",
+        reason="Check issue #709 status in pyedb-core.",
+    )
+    def test_variable_value_workflow(self):
+        edbapp = self.edb_examples.create_empty_edb()
+
+        edbapp["x"] = "1mm"
+        edbapp["y"] = "2mm"
+
+        x_obj = edbapp.value("x")
+        y_obj = edbapp.value("y")
+
+        if conftest.config["use_grpc"]:
+            assert isinstance(x_obj, GrpcVariable)
+            assert isinstance(y_obj, GrpcVariable)
+
+        assert float(x_obj) == pytest.approx(0.001)
+        assert float(y_obj) == pytest.approx(0.002)
+        assert str(x_obj) == "x"
+        assert str(y_obj) == "y"
+
+        z_obj = x_obj + y_obj + y_obj
+        assert float(z_obj) > 0
+        assert str(z_obj) == "((x)+(y))+(y)"
+
+        edbapp.add_design_variable(variable_name="z", variable_value=z_obj)
+
+        assert edbapp.variable_exists("z")
+        assert edbapp["z"].value == pytest.approx(float(z_obj))
+        assert float(edbapp.value("z")) == pytest.approx(float(z_obj))
+
+        edbapp.close(terminate_rpc_session=False)
+

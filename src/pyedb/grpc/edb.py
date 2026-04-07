@@ -85,7 +85,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
     from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-import warnings
 from zipfile import ZipFile as Zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -463,8 +462,12 @@ class Edb(EdbInit):
             return None
         return None
 
-    def value(self, val) -> Value | float | str:
+    def value(self, val) -> Variable | Value | float | str:
         """Convert a value into a pyedb value."""
+        if isinstance(val, Variable):
+            return val.value_object
+        if isinstance(val, str) and self.variable_exists(val):
+            return self.variables[val]
         return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
 
     def _value_setter(self, val) -> Value | float | str:
@@ -474,6 +477,12 @@ class Edb(EdbInit):
             return float(val) if isinstance(val, float) else val  # Return numeric values as-is
         except (ValueError, TypeError):
             return self.value(val)  # Convert strings with units or variables to Value objects
+
+    def _normalize_variable_value(self, variable_value: Any) -> Any:
+        """Convert variable proxy inputs to value objects before assignment."""
+        if isinstance(variable_value, Variable):
+            return variable_value.value_object
+        return variable_value
 
     @property
     def cell_names(self) -> List[str]:
@@ -495,7 +504,7 @@ class Edb(EdbInit):
         dict[str, Variable]
             Variable names and values.
         """
-        return {i: Variable(self.active_cell, i) for i in self.active_cell.get_all_variable_names()}
+        return {i: Variable(self, i) for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self) -> Dict[str, Variable]:
@@ -506,7 +515,7 @@ class Edb(EdbInit):
         dict[str, Variable]
             Variable names and values.
         """
-        return {i: Variable(self.active_db, i) for i in self.active_db.get_all_variable_names()}
+        return {i: Variable(self, i) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
@@ -2069,7 +2078,7 @@ class Edb(EdbInit):
             return True
         return False
 
-    def get_variable(self, variable_name) -> Value | bool:
+    def get_variable(self, variable_name) -> Variable | bool:
         """Get variable value.
 
         Parameters
@@ -2079,16 +2088,11 @@ class Edb(EdbInit):
 
         Returns
         -------
-        float or bool
-            Variable value if exists, else False.
+        Variable or bool
+            Variable object if exists, else False.
         """
         if self.variable_exists(variable_name):
-            if variable_name.startswith("$"):
-                variable = next(var for var in self.active_db.get_all_variable_names())
-                return self.db.get_variable_value(variable)
-            else:
-                variable = next(var for var in self.active_cell.get_all_variable_names())
-                return self.active_cell.get_variable_value(variable)
+            return self.variables[variable_name]
         self.logger.info(f"Variable {variable_name} doesn't exists.")
         return False
 
@@ -2120,6 +2124,7 @@ class Edb(EdbInit):
         bool
             True if successful, False if variable exists.
         """
+        variable_value = self._normalize_variable_value(variable_value)
         if not variable_name.startswith("$"):
             variable_name = f"${variable_name}"
         if not self.variable_exists(variable_name):
@@ -2148,6 +2153,7 @@ class Edb(EdbInit):
         bool
             True if successful, False if variable exists.
         """
+        variable_value = self._normalize_variable_value(variable_value)
         if variable_name.startswith("$"):
             variable_name = variable_name[1:]
         if not self.variable_exists(variable_name):
@@ -2169,6 +2175,7 @@ class Edb(EdbInit):
         variable_value : str, float
             New value with units.
         """
+        variable_value = self._normalize_variable_value(variable_value)
         if self.variable_exists(variable_name):
             if variable_name in self.db.get_all_variable_names():
                 self.db.set_variable_value(variable_name, Value(variable_value))

@@ -20,7 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from ansys.edb.core.utility.value import Value as CoreValue
+import warnings
+
+from pyedb.grpc.database.utility.value import Value
 
 
 class Variable:
@@ -33,15 +35,33 @@ class Variable:
     @property
     def _is_design_varible(self):
         """Determines whether this variable is a design variable."""
-        if self.name.startswith("$"):
-            return False
-        else:
-            return True
+        return not self.name.startswith("$")
+
+    @property
+    def _var_server(self):
+        """Return the server containing this variable."""
+        return self._pedb.active_cell if self._is_design_varible else self._pedb.active_db
 
     @property
     def name(self):
         """Get the name of this variable."""
         return self._name
+
+    @property
+    def value_string(self):
+        """Get the string representation of this variable value."""
+        warnings.warn(
+            "`value_string` is deprecated. Use `str(value)` method instead.", DeprecationWarning, stacklevel=2
+        )
+        return str(self.value)
+
+    @property
+    def value_object(self):
+        """Get a symbolic value object bound to this variable name."""
+        try:
+            return Value(self.name, self._var_server)
+        except Exception:
+            return self._pedb.value(self.name)
 
     @property
     def value(self):
@@ -51,25 +71,29 @@ class Variable:
         -------
         float
         """
-        return CoreValue(self._pedb.get_variable_value(self.name))
+        return self._pedb.value(self._var_server.get_variable_value(self.name))
 
     @value.setter
     def value(self, value):
-        self._pedb.set_variable_value(self.name, CoreValue(value))
+        self._var_server.set_variable_value(self.name, self._pedb.value(value))
 
     @property
     def description(self):
         """Get the description of this variable."""
-        return self._pedb.get_variable_desc(self.name)
+        return self._var_server.get_variable_desc(self.name)
 
     @description.setter
     def description(self, value):
-        self._pedb.set_variable_desc(self.name, value)
+        self._var_server.set_variable_desc(name=self.name, desc=value)
 
     @property
     def is_parameter(self):
         """Determine whether this variable is a parameter."""
-        return self._pedb.is_parameter(self.name)
+        for method_name in ("is_variable_parameter", "is_parameter"):
+            method = getattr(self._var_server, method_name, None)
+            if callable(method):
+                return method(self.name)
+        return False
 
     def delete(self):
         """Delete this variable.
@@ -85,4 +109,71 @@ class Variable:
         >>> edb = Edb()
         >>> edb.design_variables["new_variable"].delete()
         """
-        return self._pedb.delete(self.name)
+        delete_method = getattr(self._var_server, "delete_variable", None)
+        if callable(delete_method):
+            return delete_method(self.name)
+        return False
+
+    def __float__(self):
+        return float(self.value)
+
+    def __str__(self):
+        return str(self.value_object)
+
+    def __repr__(self):
+        return f"Variable(name={self.name!r}, value={str(self.value)!r})"
+
+    def __add__(self, other):
+        return self.value_object + other
+
+    def __radd__(self, other):
+        return other + self.value_object
+
+    def __sub__(self, other):
+        return self.value_object - other
+
+    def __rsub__(self, other):
+        return other - self.value_object
+
+    def __mul__(self, other):
+        return self.value_object * other
+
+    def __rmul__(self, other):
+        return other * self.value_object
+
+    def __truediv__(self, other):
+        return self.value_object / other
+
+    def __rtruediv__(self, other):
+        return other / self.value_object
+
+    @property
+    def expression(self):
+        return self.name
+
+    def sqrt(self):
+        return self.value_object.sqrt()
+
+    def log10(self):
+        return self.value_object.log10()
+
+    def sin(self):
+        return self.value_object.sin()
+
+    def cos(self):
+        return self.value_object.cos()
+
+    def asin(self):
+        return self.value_object.asin()
+
+    def acos(self):
+        return self.value_object.acos()
+
+    def tan(self):
+        return self.value_object.tan()
+
+    def atan(self):
+        return self.value_object.atan()
+
+    def __abs__(self):
+        return abs(self.value_object)
