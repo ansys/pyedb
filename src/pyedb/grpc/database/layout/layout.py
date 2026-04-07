@@ -64,6 +64,11 @@ _PRIMITIVE_TYPE_MAP = {
     "Rectangle": ("pyedb.grpc.database.primitive.rectangle", "Rectangle"),
     "Circle": ("pyedb.grpc.database.primitive.circle", "Circle"),
     "Bondwire": ("pyedb.grpc.database.primitive.bondwire", "Bondwire"),
+    "Text": ("pyedb.grpc.database.primitive.text", "Text"),
+    "PrimitiveInstanceCollection": (
+        "pyedb.grpc.database.primitive.primitive_instance_collection",
+        "PrimitiveInstanceCollection",
+    ),
 }
 
 # Cache wrapper classes after first import
