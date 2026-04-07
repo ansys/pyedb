@@ -728,6 +728,11 @@ class TestClass(BaseTestClass):
             end_width="w1",
             layer_name="Top",
         )
-        assert taper.polygon_data.points == [(0.0005, 0.001), (0.0015, 0.001), (0.00125, 0.002), (0.00075, 0.002),
-                                             (0.0005, 0.001)]
+        assert taper.polygon_data.points == [
+            (0.0005, 0.001),
+            (0.0015, 0.001),
+            (0.00125, 0.002),
+            (0.00075, 0.002),
+            (0.0005, 0.001),
+        ]
         edbapp.close(terminate_rpc_session=False)

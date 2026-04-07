@@ -23,8 +23,9 @@
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pyedb.grpc.edb import Edb
     from ansys.edb.core.geometry.point_data import PointData as CorePointData
+
+    from pyedb.grpc.edb import Edb
 
 from pyedb.grpc.database.utility.value import Value
 
@@ -37,13 +38,13 @@ class PointData:
         self.core = core
 
     @classmethod
-    def create(cls, pedb: "Edb", x: float|str, y: float|str) -> "PointData":
+    def create(cls, pedb: "Edb", x: float | str, y: float | str) -> "PointData":
         """Create a new PointData object."""
         core = pedb.core.geometry.point_data.PointData(pedb.value(x), pedb.value(y))
         return cls(pedb, core)
 
     @property
-    def x(self)->Value:
+    def x(self) -> Value:
         """
         X coordinate.
 
@@ -52,7 +53,7 @@ class PointData:
         return self._pedb.value(self.core.x)
 
     @property
-    def y(self)->Value:
+    def y(self) -> Value:
         """
         Y coordinate.
 
@@ -61,7 +62,7 @@ class PointData:
         return self._pedb.value(self.core.y)
 
     @property
-    def arc_height(self)->Value:
+    def arc_height(self) -> Value:
         """Height of the arc. This property is read-only."""
         return self._pedb.value(self.core.arc_height)
 
@@ -74,7 +75,7 @@ class PointData:
         """
         return self.core.is_arc
 
-    def rotate(self, angle:str|float|Value, center:list[str|float|Value])->"PointData":
+    def rotate(self, angle: str | float | Value, center: list[str | float | Value]) -> "PointData":
         """Rotate a point at a given center by a given angle.
 
         Parameters
@@ -95,6 +96,6 @@ class PointData:
         dx = self.x - cx
         dy = self.y - cy
 
-        xi  = dx*angle.cos() - dy*angle.sin() + cx
-        yi  = dx*angle.sin() + dy*angle.cos() + cy
+        xi = dx * angle.cos() - dy * angle.sin() + cx
+        yi = dx * angle.sin() + dy * angle.cos() + cy
         return PointData.create(self._pedb, str(xi), str(yi))

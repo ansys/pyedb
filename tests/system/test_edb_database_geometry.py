@@ -38,11 +38,10 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 @pytest.mark.skipif(config["use_grpc"], reason="bug #2005")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPointData(BaseTestClass):
-
     def test_create(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp["X"] = 1
-        pdata =PointData.create(edbapp, "X", 2)
+        pdata = PointData.create(edbapp, "X", 2)
         assert str(pdata.x) == "X"
         assert pdata.x == 1
         assert pdata.y == 2
@@ -64,7 +63,7 @@ class TestPointData(BaseTestClass):
         edbapp["X"] = 1
         edbapp["Y"] = 2
         edbapp["angle"] = "90deg"
-        pdata =PointData.create(edbapp, "X", "Y")
+        pdata = PointData.create(edbapp, "X", "Y")
         pdata2 = pdata.rotate("angle", [1, 1])
         assert pdata2.x == pytest.approx(0)
         assert pdata2.y == pytest.approx(1)
