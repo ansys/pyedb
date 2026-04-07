@@ -62,12 +62,12 @@ class PointData:
         return cls(pedb, edb_object)
 
     @property
-    def x(self) -> Value:
+    def x(self) -> float:
         """X coordinate."""
         return self._pedb.value(self.core.X)
 
     @x.setter
-    def x(self, value: float|Value) -> None:
+    def x(self, value: float) -> None:
         self.core.X = self._pedb.edb_value(value)
 
     @property
@@ -75,12 +75,12 @@ class PointData:
         return self.core.X.ToDouble()
 
     @property
-    def y(self) -> Value:
+    def y(self) -> float:
         """Y coordinate."""
         return self._pedb.value(self.core.Y)
 
     @y.setter
-    def y(self, value: float|Value) -> None:
+    def y(self, value: float) -> None:
         self.core.Y = self._pedb.edb_value(value)
 
     @property
@@ -88,7 +88,7 @@ class PointData:
         return self.core.Y.ToDouble()
 
     @property
-    def arc_height(self)->Value:
+    def arc_height(self)->float:
         """Height of the arc. This property is read-only."""
         return self._pedb.value(self.core.GetArcHeight())
 
