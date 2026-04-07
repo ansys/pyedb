@@ -1,8 +1,8 @@
 # Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 
-from unittest.mock import MagicMock
 from typing import cast
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -180,4 +180,3 @@ def test_grpc_edb_returns_variable_proxies_for_existing_variables():
     assert design_variables["x"]._pedb is edb
     assert project_variables["$g"]._pedb is edb
     assert edb.get_variable("missing") is False
-
