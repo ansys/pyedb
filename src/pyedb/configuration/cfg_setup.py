@@ -100,7 +100,6 @@ class CfgHFSSSetup(CfgSetupAC):
         enabled: bool = False
         trace_ratio_seeding: float = 3
         signal_via_side_number: int = 12
-        power_ground_via_side_number: int = 6
 
     class CfgMultiFrequencyAdaptiveSolution(CfgBaseModel):
         class CfgAdaptFrequency(CfgBaseModel):
