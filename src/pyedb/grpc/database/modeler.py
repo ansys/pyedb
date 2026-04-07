@@ -40,6 +40,7 @@ from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.primitive import Primitive
 from pyedb.grpc.database.primitive.rectangle import Rectangle
+from pyedb.grpc.database.primitive.text import Text
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
@@ -182,7 +183,8 @@ class Modeler(object):
 
         Returns
         -------
-        List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` objects.
+        list
+            List of :class:`pyedb.grpc.database.edb_data.primitives_data.Rectangle` objects.
         """
         return self._pedb.layout.rectangles
 
@@ -197,7 +199,7 @@ class Modeler(object):
         Returns
         -------
         list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` objects.
+            List of :class:`pyedb.grpc.database.edb_data.primitives_data.Circle` objects.
         """
         return self._pedb.layout.circles
 
@@ -212,9 +214,20 @@ class Modeler(object):
         Returns
         -------
         list
-            List of :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` objects.
+            List of :class:`pyedb.grpc.database.edb_data.primitives_data.Path` objects.
         """
         return self._pedb.layout.paths
+
+    @property
+    def texts(self) -> List[Union[Text, Primitive]]:
+        """All text primitives.
+
+        Returns
+        -------
+        list
+            List of :class:`pyedb.grpc.database.edb_data.primitives_data.Text` objects.
+        """
+        return [i for i in self._pedb.layout.primitives if i.primitive_type == "text"]
 
     @property
     @deprecated_property("use layout.polygons property instead.")
@@ -306,7 +319,7 @@ class Modeler(object):
 
         Parameters
         ----------
-        polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        polygon : :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             Polygon primitive.
 
         Returns
@@ -325,7 +338,7 @@ class Modeler(object):
 
         Parameters
         ----------
-        polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        polygon : :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             Polygon primitive.
 
         Returns
@@ -340,9 +353,9 @@ class Modeler(object):
 
         Parameters
         ----------
-        polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        polygon : :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             Polygon to parametrize.
-        selection_polygon : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        selection_polygon : :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             Polygon used for selection.
         offset_name : str, optional
             Name of offset parameter.
@@ -453,7 +466,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             ``True`` when successful, ``False`` when failed.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -520,7 +533,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Path` or bool
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Path` or bool
             Path object if created, False otherwise.
         """
 
@@ -558,7 +571,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon` or bool
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Polygon` or bool
             Polygon object if created, False otherwise.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -632,7 +645,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Rectangle` or bool
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
@@ -701,7 +714,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Circle` or bool
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Circle` or bool
             Circle object if created, False otherwise.
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
@@ -716,6 +729,38 @@ class Modeler(object):
         )
         if not circle.is_null:
             return circle
+        return False
+
+    def create_text(
+        self, layer_name: str, x: Union[float, str], y: Union[float, str], text: str
+    ) -> Optional[Primitive]:
+        """Create text primitive.
+
+        Parameters
+        ----------
+        layer_name : str
+            Layer name.
+        x : float
+            Center x-coordinate.
+        y : float
+            Center y-coordinate.
+        text : str
+            Text of the displayed object.
+
+        Returns
+        -------
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Text` or bool
+            Text object if created, False otherwise.
+        """
+        text = Text.create(
+            layout=self._pedb.active_layout,
+            layer=layer_name,
+            center_x=self._pedb.value(x),
+            center_y=self._pedb.value(y),
+            text=text,
+        )
+        if not text.is_null:
+            return text
         return False
 
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
@@ -980,7 +1025,7 @@ class Modeler(object):
 
         Parameters
         ----------
-        poly : :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon`
+        poly : :class:`pyedb.grpc.database.edb_data.primitives_data.Polygon`
             Polygon to defeature.
         tolerance : float, optional
             Maximum surface deviation tolerance.
@@ -1104,7 +1149,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.primitives_data.Bondwire` or bool
+        :class:`pyedb.grpc.database.edb_data.primitives_data.Bondwire` or bool
             Bondwire object if created, False otherwise.
         """
 
@@ -1171,7 +1216,7 @@ class Modeler(object):
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.siwave.pin_group.PinGroup` or bool
+        :class:`pyedb.grpc.database.siwave.pin_group.PinGroup` or bool
             PinGroup object if created, False otherwise.
         """
         # TODO move this method to components and merge with existing one
@@ -1221,9 +1266,9 @@ class Modeler(object):
 
         Parameters
         ----------
-        shape : :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        shape : :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             Main shape.
-        void_shape : list or :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+        void_shape : list or :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             Void shape(s).
 
         Returns
