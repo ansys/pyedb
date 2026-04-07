@@ -30,7 +30,7 @@ class Variable:
         self._name = name
 
     @property
-    def _is_design_varible(self):
+    def _is_design_variable(self):
         """Determines whether this variable is a design variable."""
         if self.name.startswith("$"):
             return False
@@ -39,7 +39,7 @@ class Variable:
 
     @property
     def _var_server(self):
-        if self._is_design_varible:
+        if self._is_design_variable:
             return self._pedb.active_cell.GetVariableServer()
         else:
             return self._pedb._db.GetVariableServer()
