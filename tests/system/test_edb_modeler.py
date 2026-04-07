@@ -676,7 +676,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
-    def test_prims_for_grpc(self):
+    def test_primitives_for_grpc(self):
         edbapp = self.edb_examples.get_si_board()
 
         # Paths
