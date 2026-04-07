@@ -705,7 +705,6 @@ class TestClass(BaseTestClass):
         rect = edbapp.layout.rectangles[0]
         rect.representation_type = "center_width_height"
         assert rect.representation_type == "center_width_height"
-        # TODO create does not work
         # TODO if representation_type is not set first it breaks the code
         assert rect.get_parameters()
         # TODO representation type does not change
