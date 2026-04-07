@@ -626,18 +626,23 @@ class Modeler(object):
             Layer name.
         net_name : str
             Associated net name.
-        lower_left_point : list, optional
+        lower_left_point : list
+            Required for representation type: "lower_left_upper_right"
             [x,y] lower left point.
-        upper_right_point : list, optional
+        upper_right_point : list
+            Required for representation type: "lower_left_upper_right"
             [x,y] upper right point.
-        center_point : list, optional
+        center_point : list
+            Required for representation type: "center_width_height"
             [x,y] center point.
         width : str or float, optional
+            Required for representation type: "center_width_height"
             Rectangle width.
         height : str or float, optional
+             Required for representation type: "center_width_height"
             Rectangle height.
         representation_type : str, optional
-            "lower_left_upper_right" or "center_width_height".
+            "lower_left_upper_right" or "center_width_height". Default value is "lower_left_upper_right".
         corner_radius : str, optional
             Corner radius with units.
         rotation : str, optional
@@ -648,12 +653,11 @@ class Modeler(object):
         :class:`pyedb.grpc.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
         """
-        net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
             rect = Rectangle(self._pedb).create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net,
+                net=net_name,
                 rep_type=representation_type,
                 param1=self._pedb.value(lower_left_point[0]),
                 param2=self._pedb.value(lower_left_point[1]),
@@ -681,7 +685,7 @@ class Modeler(object):
             rect = Rectangle.create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net,
+                net=net_name,
                 rep_type=rep_type,
                 param1=self._pedb.value(center_point[0]),
                 param2=self._pedb.value(center_point[1]),

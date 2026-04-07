@@ -717,12 +717,15 @@ class TestClass(BaseTestClass):
         rect.width = 0.2
         rect.height = 0.1
         assert rect.height == 0.1
-        assert rect.duplicate_across_layers("d1")
+        assert rect.duplicate_across_layers("s2")
+        edbapp.modeler.create_rectangle(
+            "s3", "GND", representation_type="center_width_height", width=0.1, height=0.1, center_point=[0, 0]
+        )
 
         # Texts
         edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
         prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
         assert prim
         assert not prim[0].is_null
-        assert prim[0].aedt_name == "text_8"
+        assert prim[0].aedt_name == "text_11"
         edbapp.close(terminate_rpc_session=False)
