@@ -50,14 +50,14 @@ class PointData:
     @classmethod
     def create_from_x(cls, pedb: Any, x: float) -> "PointData":
         """Create a new PointData object."""
-        warnings.deprecated("Use create_arc_point instead", stacklevel=2)
+        warnings.warn("Use create_arc_point instead",DeprecationWarning, stacklevel=2)
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x))
         return cls(pedb, edb_object)
 
     @classmethod
     def create_from_xy(cls, pedb: Any, x: float, y: float) -> "PointData":
         """Create a new PointData object."""
-        warnings.deprecated("Use create instead", stacklevel=2)
+        warnings.warn("Use create instead", DeprecationWarning, stacklevel=2)
         edb_object = pedb.core.Geometry.PointData(pedb.edb_value(x), pedb.edb_value(y))
         return cls(pedb, edb_object)
 
@@ -101,7 +101,8 @@ class PointData:
         """
         return self.core.IsArc()
 
-    def rotate(self, angle:str|float|Value, center:str|float|Value)->"PointData":
+    def rotate(self, angle:str|float, center: tuple[str|float])->"PointData":
+        """Rotate the point."""
         cx = self._pedb.value(center[0])
         cy = self._pedb.value(center[1])
         angle = self._pedb.value(angle)
@@ -111,3 +112,9 @@ class PointData:
         xi  = dx*angle.cos() - dy*angle.sin() + cx
         yi  = dx*angle.sin() + dy*angle.cos() + cy
         return PointData.create(self._pedb, str(xi), str(yi))
+
+    def move(self, dx:str|float, dy:str|float)->"PointData":
+        """Move the point."""
+        dx = self._pedb.value(dx)
+        dy = self._pedb.value(dy)
+        return PointData.create(self._pedb, str(self.x + dx), str(self.y + dy))

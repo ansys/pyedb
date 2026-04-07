@@ -57,6 +57,17 @@ class PolygonData:
                 "Please provide either an 'edb_object', 'create_from_points', or 'create_from_bounding_box' argument."
             )
 
+    @classmethod
+    def create(cls, pedb, points: list[tuple[float, float]], closed: bool = True) -> Any:
+        """Create a polygon from a list of points."""
+        list_of_point_data = []
+        for pt in points:
+            if isinstance(pt, PointData):
+                list_of_point_data.append(pt.core)
+            else:
+                list_of_point_data.append(PointData.create(self._pedb, x=pt[0], y=pt[1]).core)
+        return pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
+
     @property
     def bounding_box(self) -> list[float]:
         """Bounding box.
@@ -101,7 +112,7 @@ class PolygonData:
         """Create a polygon from a list of points."""
         list_of_point_data = []
         for pt in points:
-            list_of_point_data.append(PointData.create_from_xy(self._pedb, x=pt[0], y=pt[1])._edb_object)
+            list_of_point_data.append(PointData.create_from_xy(self._pedb, x=pt[0], y=pt[1]).core)
         return self._pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
 
     @property

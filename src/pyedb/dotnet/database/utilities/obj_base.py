@@ -44,7 +44,7 @@ class SystemObject(object):
 
     @property
     def _edb_object(self):
-        warnings.warn("Deprecated internal property. Use `core` property instead.", DeprecationWarning)
+        warnings.warn("Deprecated internal property. Use `core` property instead.", DeprecationWarning, stacklevel=2)
         return self.__core
 
     @_edb_object.setter
@@ -63,7 +63,7 @@ class BBox:
             point_1 = PointData.create_from_xy(self._pedb, x=point_1[0], y=point_1[1])
             point_2 = PointData.create_from_xy(self._pedb, x=point_2[0], y=point_2[1])
             self._edb_object = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
-                point_1._edb_object, point_2._edb_object
+                point_1.core, point_2.core
             )
 
     @property

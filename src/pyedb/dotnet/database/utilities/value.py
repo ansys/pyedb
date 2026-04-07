@@ -76,6 +76,14 @@ class Value(float):
     def __rtruediv__(self, other):
         return self._pedb.value(f"({str(other)})/({self._edb_obj.ToString()})")
 
+    def __pow__(self, value):
+        """Square of the value.
+        Returns
+        -------
+        Value object
+        """
+        return self._pedb.value(f"({self._edb_obj.ToString()})**({str(value)})")
+
     def sqrt(self):
         """Square root of the value.
         Returns

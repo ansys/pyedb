@@ -674,3 +674,24 @@ class TestClass(BaseTestClass):
         circle.layer_name = "Bottom"
         assert circle.layer_name == "Bottom"
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(config.get("use_grpc"), reason="bug #2005")
+    def test_create_rf_trace_taper(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp["p0_x"] = "1mm"
+        edbapp["p0_y"] = "1mm"
+        edbapp["p1_x"] = "1mm"
+        edbapp["p1_y"] = "2mm"
+        edbapp["w0"] = "1mm"
+        edbapp["w1"] = "0.5mm"
+        taper = edbapp.modeler.create_taper(
+            start_point=["p0_x", "p0_y"],
+            end_point=["p1_x", "p1_y"],
+            start_width="w0",
+            end_width="w1",
+            layer_name="Top",
+        )
+        assert taper.polygon_data.points == [(0.0005, 0.001), (0.0015, 0.001), (0.00125, 0.002), (0.00075, 0.002),
+                                             (0.0005, 0.001)]
+        edbapp.close(terminate_rpc_session=False)

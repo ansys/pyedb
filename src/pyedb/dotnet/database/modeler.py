@@ -60,9 +60,9 @@ class Modeler:
         """
         for i in self.primitives:
             if (
-                (isinstance(name, str) and i.aedt_name == name)
-                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
-                or (isinstance(name, int) and i.id == name)
+                    (isinstance(name, str) and i.aedt_name == name)
+                    or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
+                    or (isinstance(name, int) and i.id == name)
             ):
                 return i
         raise ValueError(f"Primitive {name} not found.")
@@ -175,14 +175,14 @@ class Modeler:
         return True
 
     def _create_path(
-        self,
-        path_list,
-        layer_name,
-        width=1,
-        net_name="",
-        start_cap_style="Round",
-        end_cap_style="Round",
-        corner_style="Round",
+            self,
+            path_list,
+            layer_name,
+            width=1,
+            net_name="",
+            start_cap_style="Round",
+            end_cap_style="Round",
+            corner_style="Round",
     ):
         """
         Create a path based on a list of points.
@@ -253,14 +253,14 @@ class Modeler:
         return polygon
 
     def create_trace(
-        self,
-        path_list,
-        layer_name,
-        width=1,
-        net_name="",
-        start_cap_style="Round",
-        end_cap_style="Round",
-        corner_style="Round",
+            self,
+            path_list,
+            layer_name,
+            width=1,
+            net_name="",
+            start_cap_style="Round",
+            end_cap_style="Round",
+            corner_style="Round",
     ):
         """
         Create a trace based on a list of points.
@@ -306,11 +306,11 @@ class Modeler:
 
     @deprecate_argument_name({"main_shape": "points"})
     def create_polygon(
-        self,
-        points=None,
-        layer_name="",
-        voids=[],
-        net_name="",
+            self,
+            points=None,
+            layer_name="",
+            voids=[],
+            net_name="",
     ):
         """Create a polygon based on a list of points and voids.
 
@@ -392,17 +392,17 @@ class Modeler:
             return cast(polygon, self._pedb)
 
     def create_rectangle(
-        self,
-        layer_name,
-        net_name="",
-        lower_left_point="",
-        upper_right_point="",
-        center_point="",
-        width="",
-        height="",
-        representation_type="LowerLeftUpperRight",
-        corner_radius="0mm",
-        rotation="0deg",
+            self,
+            layer_name,
+            net_name="",
+            lower_left_point="",
+            upper_right_point="",
+            center_point="",
+            width="",
+            height="",
+            representation_type="LowerLeftUpperRight",
+            corner_radius="0mm",
+            rotation="0deg",
     ):
         """Create rectangle.
 
@@ -625,11 +625,11 @@ class Modeler:
             endPoint = [self._get_edb_value(i) for i in endPoint]
             if len(endPoint) == 2:
                 is_parametric = (
-                    is_parametric
-                    or startPoint[0].IsParametric()
-                    or startPoint[1].IsParametric()
-                    or endPoint[0].IsParametric()
-                    or endPoint[1].IsParametric()
+                        is_parametric
+                        or startPoint[0].IsParametric()
+                        or startPoint[1].IsParametric()
+                        or endPoint[0].IsParametric()
+                        or endPoint[1].IsParametric()
                 )
                 arc = self._edb.Geometry.ArcData(
                     self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
@@ -638,12 +638,12 @@ class Modeler:
                 arcs.append(arc)
             elif len(endPoint) == 3:
                 is_parametric = (
-                    is_parametric
-                    or startPoint[0].IsParametric()
-                    or startPoint[1].IsParametric()
-                    or endPoint[0].IsParametric()
-                    or endPoint[1].IsParametric()
-                    or endPoint[2].IsParametric()
+                        is_parametric
+                        or startPoint[0].IsParametric()
+                        or startPoint[1].IsParametric()
+                        or endPoint[0].IsParametric()
+                        or endPoint[1].IsParametric()
+                        or endPoint[2].IsParametric()
                 )
                 arc = self._edb.Geometry.Arc_data(
                     self._pedb.point_data(startPoint[0].ToDouble(), startPoint[1].ToDouble()),
@@ -653,13 +653,13 @@ class Modeler:
                 arcs.append(arc)
             elif len(endPoint) == 5:
                 is_parametric = (
-                    is_parametric
-                    or startPoint[0].IsParametric()
-                    or startPoint[1].IsParametric()
-                    or endPoint[0].IsParametric()
-                    or endPoint[1].IsParametric()
-                    or endPoint[3].IsParametric()
-                    or endPoint[4].IsParametric()
+                        is_parametric
+                        or startPoint[0].IsParametric()
+                        or startPoint[1].IsParametric()
+                        or endPoint[0].IsParametric()
+                        or endPoint[1].IsParametric()
+                        or endPoint[3].IsParametric()
+                        or endPoint[4].IsParametric()
                 )
                 if endPoint[2].ToString() == "cw":
                     rotationDirection = self._edb.geometry.geometry.RotationDirection.CW
@@ -770,14 +770,14 @@ class Modeler:
         """
 
         def __init__(
-            self,
-            type="unknown",  # noqa
-            pointA=None,
-            pointB=None,
-            centerPoint=None,
-            radius=None,
-            points=None,
-            properties={},
+                self,
+                type="unknown",  # noqa
+                pointA=None,
+                pointB=None,
+                centerPoint=None,
+                radius=None,
+                points=None,
+                properties={},
         ):  # noqa
             self.type = type
             self.pointA = pointA
@@ -788,11 +788,11 @@ class Modeler:
             self.properties = properties
 
     def parametrize_trace_width(
-        self,
-        nets_name,
-        layers_name=None,
-        parameter_name="trace_width",
-        variable_value=None,
+            self,
+            nets_name,
+            layers_name=None,
+            parameter_name="trace_width",
+            variable_value=None,
     ):
         """Parametrize a Trace on specific layer or all stackup.
 
@@ -963,7 +963,7 @@ class Modeler:
         bbox = self._pedb._hfss.get_layout_bounding_box(self._active_layout)
         stat_model._layout_size = round(bbox[2] - bbox[0], 6), round(bbox[3] - bbox[1], 6)
         stat_model.num_discrete_components = (
-            len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
+                len(self._pedb.components.Others) + len(self._pedb.components.ICs) + len(self._pedb.components.IOs)
         )
         stat_model.num_nets = len(self._pedb.nets.nets)
         stat_model.num_traces = len(self._pedb.modeler.paths)
@@ -989,20 +989,20 @@ class Modeler:
         return stat_model
 
     def create_bondwire(
-        self,
-        definition_name,
-        placement_layer,
-        width,
-        material,
-        start_layer_name,
-        start_x,
-        start_y,
-        end_layer_name,
-        end_x,
-        end_y,
-        net,
-        bondwire_type="jedec4",
-        start_cell_instance_name=None,
+            self,
+            definition_name,
+            placement_layer,
+            width,
+            material,
+            start_layer_name,
+            start_x,
+            start_y,
+            end_layer_name,
+            end_x,
+            end_y,
+            net,
+            bondwire_type="jedec4",
+            start_cell_instance_name=None,
     ):
         """Create a bondwire object.
 
@@ -1059,11 +1059,11 @@ class Modeler:
         )
 
     def create_pin_group(
-        self,
-        name: str,
-        pins_by_id=None,
-        pins_by_aedt_name=None,
-        pins_by_name=None,
+            self,
+            name: str,
+            pins_by_id=None,
+            pins_by_aedt_name=None,
+            pins_by_name=None,
     ):
         """Create a PinGroup.
 
@@ -1403,3 +1403,57 @@ class Modeler:
     def clear_cache():
         """Force reload of all primitives and reset indexes."""
         warnings.warn("Redundant methods. Not use.", DeprecationWarning)
+
+    def create_taper(self, start_point: tuple[str | float, str | float],
+                     end_point: tuple[str | float,str | float],
+                     start_width: str | float ,
+                     end_width: str | float,
+                     layer_name: str="",
+                     voids=[],
+                     net_name: str="",
+                     )->EdbPolygon:
+        """Create RF trace taper.
+        (y)
+         ↑
+         |              <─      End Width      ─>
+         |              ─────── End Point ───────
+         |             /           |             \
+         |            /            |              \
+         |           /             |               \
+         |          ────────── Start Point ─────────
+         |          <─         Start Width        ─>
+         +──────────────────────────────────────→ (x)
+        """
+        from pyedb.dotnet.database.geometry.point_data import PointData
+        from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
+        p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
+        p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
+        angle = ((p1_y - p0_y)/(p1_x - p0_x)).atan()
+        w0 = self._pedb.value(start_width)
+        w1 = self._pedb.value(end_width)
+
+        h = ((p0_x - p1_x) ** 2 + (p0_y - p1_y) ** 2) ** 0.5
+
+        t_p0_y = w0/2
+        t_p1_y = w0/-2
+        t_p0_x = t_p1_x = 0
+
+        t_p2_y = w1/-2
+        t_p3_y = w1/2
+        t_p2_x = t_p3_x = h
+
+        point_data = []
+        for i in [
+            [t_p0_x, t_p0_y],
+            [t_p1_x, t_p1_y],
+            [t_p2_x, t_p2_y],
+            [t_p3_x, t_p3_y],
+            [t_p0_x, t_p0_y],
+        ]:
+            temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
+            temp = temp.rotate(angle=str(angle), center=[0, 0])
+            temp = temp.move(p0_y, p0_y)
+            point_data.append(temp)
+            poly_data = PolygonData.create(self._pedb, point_data, closed=True)
+        return self.create_polygon(poly_data, layer_name=layer_name, voids=voids, net_name=net_name)
