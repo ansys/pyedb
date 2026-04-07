@@ -1455,7 +1455,7 @@ class Modeler:
         ]:
             temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
             temp = temp.rotate(angle=str(angle), center=[0, 0])
-            temp = temp.move(p0_y, p0_y)
+            temp = temp.move(p0_x, p0_y)
             point_data.append(temp)
             poly_data = PolygonData.create(self._pedb, point_data, closed=True)
         return self.create_polygon(poly_data, layer_name=layer_name, voids=voids, net_name=net_name)
