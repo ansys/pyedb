@@ -26,7 +26,6 @@ import math
 import re
 import sys
 
-
 import numpy as np
 
 from pyedb.generic.constants import SWEEPDRAFT, scale_units
