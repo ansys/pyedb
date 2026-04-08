@@ -1458,4 +1458,5 @@ class Modeler:
             temp = temp.move(p0_x, p0_y)
             point_data.append(temp)
             poly_data = PolygonData.create(self._pedb, point_data, closed=True)
-        return self.create_polygon(poly_data, layer_name=layer_name, voids=voids, net_name=net_name)
+        _voids = [] if voids is None else voids
+        return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)
