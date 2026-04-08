@@ -26,6 +26,7 @@ import sys
 import time
 
 from ansys.edb.core.session import launch_session
+from ansys.edb.core.session import is_in_memory
 
 try:
     from ansys.edb.core.session import launch_local_session
@@ -164,8 +165,9 @@ class RpcSession:
 
     @staticmethod
     def __start_rpc_server():
-        RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port, shared_memory=True)
-        #start_managing(IOMangementType.READ_AND_WRITE)
+        RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+        if not is_in_memory():
+            start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
@@ -213,7 +215,8 @@ class RpcSession:
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:
-            #end_managing()
+            if not is_in_memory():
+                end_managing()
             RpcSession.rpc_session.disconnect()
             time.sleep(latency_delay)
             RpcSession.__get_process_id()
