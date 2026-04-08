@@ -1406,8 +1406,8 @@ class Modeler:
 
     def create_taper(
         self,
-        start_point: tuple[str | float, str | float],
-        end_point: tuple[str | float, str | float],
+        start_point: tuple[str | float, str | float, str | float, str | float],
+        end_point: tuple[str | float, str | float, str | float, str | float],
         start_width: str | float,
         end_width: str | float,
         layer_name: str = "",
@@ -1454,7 +1454,7 @@ class Modeler:
             [t_p0_x, t_p0_y],
         ]:
             temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
-            temp = temp.rotate(angle=str(angle), center=[0, 0])
+            temp = temp.rotate(angle=str(angle), center=(0, 0))
             temp = temp.move(p0_x, p0_y)
             point_data.append(temp)
             poly_data = PolygonData.create(self._pedb, point_data, closed=True)
