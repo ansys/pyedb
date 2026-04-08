@@ -438,6 +438,8 @@ class TestClass(BaseTestClass):
         assert "16_Bottom_renamed" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
+
+    @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_in_3d_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
@@ -505,6 +507,7 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         edb1.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_instance_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
@@ -574,6 +577,7 @@ class TestClass(BaseTestClass):
         # edb2.close(terminate_rpc_session=False)
         pass
 
+    @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_on_top_of_lam_with_mold(self):
         """Place on top lam with mold using 3d placement method"""
         fpath, chip = self.edb_examples.copy_test_files_into_local_folder(["TEDB/lam_with_mold.aedb", "TEDB/chip.aedb"])
@@ -657,6 +661,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting for SP1 grpc.")
     def test_stackup_place_on_bottom_of_lam_with_mold(self):
         """Place on lam with mold using 3d placement method"""
 
@@ -742,6 +747,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting SP1 grpc.")
     def test_stackup_place_on_top_of_lam_with_mold_solder(self):
         """Place on top of lam with mold solder using 3d placement method."""
         path1, path2 = self.edb_examples.copy_test_files_into_local_folder(
@@ -827,6 +833,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(reason="Waiting SP1 grpc.")
     def test_stackup_place_on_bottom_of_lam_with_mold_solder(self):
         """Place on bottom of lam with mold solder using 3d placement method."""
 
@@ -913,6 +920,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting SP1 grpc")
     def test_stackup_place_on_top_with_zoffset_chip(self):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
@@ -997,6 +1005,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting SP1 grpc")
     def test_stackup_place_on_bottom_with_zoffset_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
 
@@ -1083,6 +1092,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting SP1 grpc")
     def test_stackup_place_on_top_with_zoffset_solder_chip(self):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
@@ -1167,6 +1177,7 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Waiting SP1 grpc.")
     def test_stackup_place_on_bottom_with_zoffset_solder_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
 
