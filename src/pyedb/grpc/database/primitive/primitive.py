@@ -410,7 +410,9 @@ class Primitive:
             if callable(get_fallback_polygon_points):
                 fallback_points = get_fallback_polygon_points()
                 if fallback_points:
-                    polygon = self._pedb.modeler.create_polygon(fallback_points, self.layer_name, [], self.net_name or "")
+                    polygon = self._pedb.modeler.create_polygon(
+                        fallback_points, self.layer_name, [], self.net_name or ""
+                    )
                     if polygon:
                         self.core.delete()
                         self._pedb.modeler.clear_cache()
