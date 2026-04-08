@@ -438,7 +438,6 @@ class TestClass(BaseTestClass):
         assert "16_Bottom_renamed" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-
     @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_in_3d_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
