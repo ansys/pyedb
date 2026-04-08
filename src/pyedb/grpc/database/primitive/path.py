@@ -52,22 +52,24 @@ class Path(Primitive):
             Primitive.__init__(self, pedb, core)
         self._pedb = pedb
 
-    @staticmethod
-    def _extract_center_line_points(points) -> list[list[float]]:
-        return [[Value(pt.x), Value(pt.y)] for pt in points]
-
-    def _cache_center_line(self, points) -> None:
+    def _set_center_line_cache(self, points) -> None:
         if isinstance(points, CorePolygonData):
             points = points.points
-        self._center_line_cache = self._extract_center_line_points(points)
+        self._center_line_cache = [[Value(pt.x), Value(pt.y)] for pt in points]
+
+    def _get_cached_center_line(self) -> list[list[float]] | None:
+        if not self._center_line_cache:
+            return None
+        return [point[:] for point in self._center_line_cache]
 
     def _get_cached_center_line_polygon_data(self) -> CorePolygonData | None:
-        if not self._center_line_cache:
+        center_line = self._get_cached_center_line()
+        if center_line is None:
             return None
         return CorePolygonData(
             points=[
                 CorePointData([self._pedb._value_setter(point[0]), self._pedb._value_setter(point[1])])
-                for point in self._center_line_cache
+                for point in center_line
             ],
             closed=False,
         )
@@ -324,7 +326,7 @@ class Path(Primitive):
 
         # keeping cache synced
         new_path = cls(layout._pedb, _path)
-        new_path._cache_center_line(points)
+        new_path._set_center_line_cache(points)
         return new_path
 
     def add_point(self, x, y, incremental=True) -> bool:
@@ -563,19 +565,13 @@ class Path(Primitive):
         List[List[float, float]].
 
         """
-        if self._center_line_cache:
-            return [point[:] for point in self._center_line_cache]
+        center_line = self._get_cached_center_line()
+        if center_line is not None:
+            return center_line
 
-        try:
-            center_line = self.core.center_line
-            points = self._extract_center_line_points(center_line.points)
-            if points:
-                self._center_line_cache = points
-            return points
-        except Exception:
-            if self._center_line_cache:
-                return [point[:] for point in self._center_line_cache]
-            raise
+        center_line = self.core.center_line
+        self._set_center_line_cache(center_line.points)
+        return self._get_cached_center_line() or []
 
     @property
     def corner_style(self) -> str:

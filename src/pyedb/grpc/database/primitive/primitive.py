@@ -387,61 +387,44 @@ class Primitive:
             Polygon when successful, ``False`` when failed.
 
         """
-        if self.type == "path":
-            polygon_data = None
-
-            try:
-                polygon_data = self.core.cast().polygon_data
-                if not polygon_data.points:
-                    polygon_data = None
-            except Exception:
-                polygon_data = None
-
-            if polygon_data is None:
-                center_line = None
-                get_cached_center_line = getattr(self, "_get_cached_center_line_polygon_data", None)
-                if callable(get_cached_center_line):
-                    center_line = get_cached_center_line()
-
-                if center_line is None:
-                    try:
-                        center_line = self.core.center_line
-                    except Exception:
-                        center_line = None
-
-                if center_line is not None:
-                    polygon_data = CorePath.render(
-                        width=self.core.width,
-                        end_cap1=self.core.get_end_cap_style()[0],
-                        end_cap2=self.core.get_end_cap_style()[1],
-                        corner_style=self.core.corner_style,
-                        path=center_line,
-                    )
-
-            if polygon_data is None or not polygon_data.points:
-                get_fallback_polygon_points = getattr(self, "_get_fallback_polygon_points", None)
-                if callable(get_fallback_polygon_points):
-                    fallback_points = get_fallback_polygon_points()
-                    if fallback_points:
-                        polygon = self._pedb.modeler.create_polygon(
-                            fallback_points, self.layer_name, [], self.net_name or ""
-                        )
-                        if polygon:
-                            self.core.delete()
-                            self._pedb.modeler.clear_cache()
-                            return polygon
-
-                self._pedb.logger.error("Failed to create main shape polygon data")
-                return False
-
-            polygon = self._pedb.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name or "")
-            if not polygon:
-                return False
-            self.core.delete()
-            self._pedb.modeler.clear_cache()
-            return polygon
-        else:
+        if self.type != "path":
             return False
+
+        polygon_data = self.core.cast().polygon_data
+        if not polygon_data.points:
+            get_cached_center_line = getattr(self, "_get_cached_center_line_polygon_data", None)
+            center_line = get_cached_center_line() if callable(get_cached_center_line) else None
+            if center_line is None:
+                center_line = self.core.center_line
+
+            polygon_data = CorePath.render(
+                width=self.core.width,
+                end_cap1=self.core.get_end_cap_style()[0],
+                end_cap2=self.core.get_end_cap_style()[1],
+                corner_style=self.core.corner_style,
+                path=center_line,
+            )
+
+        if not polygon_data.points:
+            get_fallback_polygon_points = getattr(self, "_get_fallback_polygon_points", None)
+            if callable(get_fallback_polygon_points):
+                fallback_points = get_fallback_polygon_points()
+                if fallback_points:
+                    polygon = self._pedb.modeler.create_polygon(fallback_points, self.layer_name, [], self.net_name or "")
+                    if polygon:
+                        self.core.delete()
+                        self._pedb.modeler.clear_cache()
+                        return polygon
+
+            self._pedb.logger.error("Failed to create main shape polygon data")
+            return False
+
+        polygon = self._pedb.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name or "")
+        if not polygon:
+            return False
+        self.core.delete()
+        self._pedb.modeler.clear_cache()
+        return polygon
 
     def intersection_type(self, primitive) -> int:
         """Get intersection type between actual primitive and another primitive or polygon data.
