@@ -140,7 +140,7 @@ class Value(float, CoreValue):
         Value object
         """
         if self.__core is None and (
-                (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+            (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
         ):
             return self.__class__(float(self) ** float(other))
         core = CoreValue(f"({str(self.core)})**({str(other)})", self.owner)

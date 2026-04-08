@@ -33,9 +33,9 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, PathDotNet, Rec
 from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon, Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 from pyedb.dotnet.database.geometry.point_data import PointData
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
 class Modeler:

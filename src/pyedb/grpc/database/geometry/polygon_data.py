@@ -30,8 +30,8 @@ from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 if TYPE_CHECKING:
     from ansys.edb.core.geometry.polygon_data import PolygonSenseType as CorePolygonSenseType
 from pyedb.grpc.database.geometry.arc_data import ArcData
-from pyedb.grpc.database.utility.value import Value
 from pyedb.grpc.database.geometry.point_data import PointData
+from pyedb.grpc.database.utility.value import Value
 
 
 class PolygonData:

@@ -33,6 +33,8 @@ from ansys.edb.core.geometry.polygon_data import (
     PolygonData as CorePolygonData,
 )
 
+from pyedb.grpc.database.geometry.point_data import PointData
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -43,8 +45,6 @@ from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.primitive.text import Text
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
-from pyedb.grpc.database.geometry.point_data import PointData
-from pyedb.grpc.database.geometry.polygon_data import PolygonData
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:

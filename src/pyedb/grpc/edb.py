@@ -468,7 +468,7 @@ class Edb(EdbInit):
         if isinstance(val, Value):
             return val
         elif isinstance(val, str):
-            if  "$" in val:
+            if "$" in val:
                 return Value(val, self.active_db)
             else:
                 return Value(val, self.active_cell)
