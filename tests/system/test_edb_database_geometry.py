@@ -35,7 +35,7 @@ else:
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-@pytest.mark.skipif(config["use_grpc"], reason="bug #2005")
+# @pytest.mark.skipif(config["use_grpc"], reason="bug #2005")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPointData(BaseTestClass):
     def test_create(self):
@@ -45,11 +45,6 @@ class TestPointData(BaseTestClass):
         assert str(pdata.x) == "X"
         assert pdata.x == 1
         assert pdata.y == 2
-
-        pdata.x = 1.1
-        assert pdata.x == 1.1
-        pdata.y = 2.1
-        assert pdata.y == 2.1
 
         pdata2 = PointData.create_arc_point(edbapp, "X")
         assert str(pdata2.arc_height) == "X"

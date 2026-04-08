@@ -64,10 +64,6 @@ class PointData:
         """X coordinate."""
         return self._pedb.value(self.core.X)
 
-    @x.setter
-    def x(self, value: float) -> None:
-        self.core.X = self._pedb.edb_value(value)
-
     @property
     def x_evaluated(self) -> float:
         return self.core.X.ToDouble()
@@ -76,10 +72,6 @@ class PointData:
     def y(self) -> float:
         """Y coordinate."""
         return self._pedb.value(self.core.Y)
-
-    @y.setter
-    def y(self, value: float) -> None:
-        self.core.Y = self._pedb.edb_value(value)
 
     @property
     def y_evaluated(self) -> float:

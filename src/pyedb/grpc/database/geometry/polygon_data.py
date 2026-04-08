@@ -31,6 +31,7 @@ if TYPE_CHECKING:
     from ansys.edb.core.geometry.polygon_data import PolygonSenseType as CorePolygonSenseType
 from pyedb.grpc.database.geometry.arc_data import ArcData
 from pyedb.grpc.database.utility.value import Value
+from pyedb.grpc.database.geometry.point_data import PointData
 
 
 class PolygonData:
@@ -38,6 +39,7 @@ class PolygonData:
 
     def __init__(
         self,
+        pedb,
         core=None,
         create_from_points=None,
         create_from_circle=None,
@@ -45,6 +47,7 @@ class PolygonData:
         create_from_bounding_box=None,
         **kwargs,
     ):
+        self._pedb = pedb
         if create_from_points:
             self.core = self.create_from_points(**kwargs)
         elif create_from_circle:
@@ -55,6 +58,18 @@ class PolygonData:
             self.core = self.create_from_bounding_box(**kwargs)
         else:  # pragma: no cover
             self.core = core
+
+    @classmethod
+    def create(cls, pedb, points: list[tuple[float, float]], closed: bool = True) -> PolygonData:
+        """Create a polygon from a list of points."""
+        list_of_point_data = []
+        for pt in points:
+            if isinstance(pt, PointData):
+                list_of_point_data.append(pt.core)
+            else:
+                list_of_point_data.append(PointData.create(pedb, x=pt[0], y=pt[1]).core)
+        core = CorePolygonData(points=list_of_point_data, closed=closed)
+        return cls(pedb, core)
 
     @property
     def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:

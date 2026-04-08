@@ -43,6 +43,12 @@ class PointData:
         core = pedb.core.geometry.point_data.PointData(pedb.value(x), pedb.value(y))
         return cls(pedb, core)
 
+    @classmethod
+    def create_arc_point(cls, pedb: "Edb", arc_height):
+        """Create a arc PointData object."""
+        core = pedb.core.geometry.point_data.PointData(pedb.value(arc_height))
+        return cls(pedb, core)
+
     @property
     def x(self) -> Value:
         """
@@ -99,3 +105,9 @@ class PointData:
         xi = dx * angle.cos() - dy * angle.sin() + cx
         yi = dx * angle.sin() + dy * angle.cos() + cy
         return PointData.create(self._pedb, str(xi), str(yi))
+
+    def move(self, dx: str | float, dy: str | float) -> "PointData":
+        """Move the point."""
+        dx = self._pedb.value(dx)
+        dy = self._pedb.value(dy)
+        return PointData.create(self._pedb, str(self.x + dx), str(self.y + dy))

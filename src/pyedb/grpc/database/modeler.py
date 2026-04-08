@@ -43,6 +43,8 @@ from pyedb.grpc.database.primitive.rectangle import Rectangle
 from pyedb.grpc.database.primitive.text import Text
 from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
+from pyedb.grpc.database.geometry.point_data import PointData
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
@@ -586,8 +588,7 @@ class Modeler(object):
         else:
             polygon_data = points
         if not polygon_data.points:
-            self._pedb.logger.error("Failed to create main shape polygon data")
-            return False
+            raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:
             if isinstance(void, list):
                 void_polygon_data = CorePolygonData(points=void)
@@ -596,13 +597,11 @@ class Modeler(object):
             else:
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:
-                self._pedb.logger.error("Failed to create void polygon data")
-                return False
+                raise RuntimeError("Failed to create void polygon data")
             polygon_data.holes.append(void_polygon_data)
         polygon = Polygon.create(layout=self._pedb.active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
         if polygon.is_null or polygon_data is False:  # pragma: no cover
-            self._pedb.logger.error("Null polygon created")
-            return False
+            raise RuntimeError("Null polygon created")
         return polygon
 
     def create_rectangle(
@@ -1606,3 +1605,58 @@ class Modeler(object):
                 local_origin_z=local_origin_z,
             )
         return cell_inst
+
+    def create_taper(
+        self,
+        start_point: tuple[str | float, str | float, str | float, str | float],
+        end_point: tuple[str | float, str | float, str | float, str | float],
+        start_width: str | float,
+        end_width: str | float,
+        layer_name: str = "",
+        voids: list | None = None,
+        net_name: str = "",
+    ) -> Polygon:
+        """Create RF trace taper.
+        (y)
+         ↑
+         |              <─      End Width      ─>
+         |              ─────── End Point ───────
+         |             /           |             \
+         |            /            |              \
+         |           /             |               \
+         |          ────────── Start Point ─────────
+         |          <─         Start Width        ─>
+         +──────────────────────────────────────→ (x)
+        """
+
+        p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
+        p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
+        angle = ((p1_y - p0_y) / (p1_x - p0_x)).atan()
+        w0 = self._pedb.value(start_width)
+        w1 = self._pedb.value(end_width)
+
+        h = ((p0_x - p1_x) ** 2 + (p0_y - p1_y) ** 2) ** 0.5
+
+        t_p0_y = w0 / 2
+        t_p1_y = w0 / -2
+        t_p0_x = t_p1_x = 0
+
+        t_p2_y = w1 / -2
+        t_p3_y = w1 / 2
+        t_p2_x = t_p3_x = h
+
+        point_data = []
+        for i in [
+            [t_p0_x, t_p0_y],
+            [t_p1_x, t_p1_y],
+            [t_p2_x, t_p2_y],
+            [t_p3_x, t_p3_y],
+            # [t_p0_x, t_p0_y],
+        ]:
+            temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
+            temp = temp.rotate(angle=str(angle), center=(0, 0))
+            temp = temp.move(p0_x, p0_y)
+            point_data.append(temp)
+            poly_data = PolygonData.create(self._pedb, point_data, closed=True)
+        _voids = [] if voids is None else voids
+        return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)

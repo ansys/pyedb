@@ -1451,7 +1451,6 @@ class Modeler:
             [t_p1_x, t_p1_y],
             [t_p2_x, t_p2_y],
             [t_p3_x, t_p3_y],
-            [t_p0_x, t_p0_y],
         ]:
             temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
             temp = temp.rotate(angle=str(angle), center=(0, 0))

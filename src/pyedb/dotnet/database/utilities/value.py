@@ -77,7 +77,7 @@ class Value(float):
         return self._pedb.value(f"({str(other)})/({self._edb_obj.ToString()})")
 
     def __pow__(self, value):
-        """Square of the value.
+        """Power of the value.
         Returns
         -------
         Value object

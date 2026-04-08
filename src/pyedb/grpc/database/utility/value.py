@@ -133,6 +133,19 @@ class Value(float, CoreValue):
         core = CoreValue(f"({str(other)})/({str(self.core)})", self.owner)
         return self.__class__(core, self.owner)
 
+    def __pow__(self, other):
+        """Power of the value.
+        Returns
+        -------
+        Value object
+        """
+        if self.__core is None and (
+                (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))
+        ):
+            return self.__class__(float(other) / float(self))
+        core = CoreValue(f"({str(self.core)})**({str(other)})", self.owner)
+        return self.__class__(core, self.owner)
+
     @property
     def expression(self):
         return str(self)
