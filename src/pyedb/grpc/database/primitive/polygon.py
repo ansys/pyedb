@@ -157,10 +157,6 @@ class Polygon(Primitive):
         core = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
         return cls(layout._pedb, core)
 
-    @property
-    def polygon_data(self):
-        return PolygonData(self._pedb, self.core.polygon_data)
-
     def fix_self_intersections(self) -> list[Polygon]:
         """Remove self intersections if they exist.
 

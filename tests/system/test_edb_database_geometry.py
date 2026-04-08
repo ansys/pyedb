@@ -29,8 +29,11 @@ from tests.system.base_test_class import BaseTestClass
 
 if config["use_grpc"]:
     from pyedb.grpc.database.geometry.point_data import PointData
+    from pyedb.grpc.database.geometry.polygon_data import PolygonData
 else:
     from pyedb.dotnet.database.geometry.point_data import PointData
+    from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
@@ -63,4 +66,19 @@ class TestPointData(BaseTestClass):
         assert pdata2.x == pytest.approx(0)
         assert pdata2.y == pytest.approx(1)
 
+        edbapp.close(terminate_rpc_session=False)
+
+
+@pytest.mark.usefixtures("close_rpc_session")
+class TestPolygonData(BaseTestClass):
+    def test_create(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp["X"] = 1
+        pdata1 = PointData.create(edbapp, "X", 2)
+        pdata2 = PointData.create(edbapp, "X", 3)
+        pdata3 = PointData.create(edbapp, 2, 3)
+
+        poly_data = PolygonData.create(edbapp, points=[pdata1, pdata2, pdata3])
+        assert poly_data
         edbapp.close(terminate_rpc_session=False)

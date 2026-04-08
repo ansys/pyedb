@@ -295,4 +295,4 @@ class PolygonData:
         :class:`PolygonData <pyedb.grpc.database.geometry.polygon_data.PolygonData>`
         """
         new_poly = self.core.without_arcs()
-        return PolygonData(new_poly)
+        return PolygonData(self._pedb, new_poly)

@@ -66,7 +66,8 @@ class PolygonData:
                 list_of_point_data.append(pt.core)
             else:
                 list_of_point_data.append(PointData.create(pedb, x=pt[0], y=pt[1]).core)
-        return pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
+        core = pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
+        return cls(pedb, core)
 
     @property
     def bounding_box(self) -> list[float]:
