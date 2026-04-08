@@ -472,11 +472,14 @@ class Edb(EdbInit):
 
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""
+        val = self._normalize_variable_value(val)
+        if isinstance(val, Value):
+            return val
         try:
             float(val)
             return float(val) if isinstance(val, float) else val  # Return numeric values as-is
         except (ValueError, TypeError):
-            return self.value(val)  # Convert strings with units or variables to Value objects
+            return self._normalize_variable_value(self.value(val))  # Convert strings with units or variables to Value
 
     def _normalize_variable_value(self, variable_value: Any) -> Any:
         """Convert variable proxy inputs to value objects before assignment."""

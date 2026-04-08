@@ -103,6 +103,8 @@ class Modeler(object):
         self._primitives_by_name: dict[str, Primitive] | None = None
         self._primitives_by_net: dict[str, list[Primitive]] | None = None
         self._primitives_by_layer: dict[str, list[Primitive]] | None = None
+        self._polygon_points_cache: dict[int, list[list[float]]] = {}
+        self._polygon_void_points_cache: dict[int, list[list[list[float]]]] = {}
 
         # ============================================================
 
@@ -474,14 +476,10 @@ class Modeler(object):
         if isinstance(points, (list, tuple)):
             points = normalize_pairs(points)
             for pt in points:
-                _pt = []
-                for coord in pt:
-                    coord = self._pedb.value(coord)
-                    _pt.append(coord)
-                _points.append(_pt)
+                _points.append(CorePointData([self._pedb._value_setter(pt[0]), self._pedb._value_setter(pt[1])]))
             points = _points
-            width = self._pedb.value(width)
-            polygon_data = CorePolygonData(points)
+            width = self._pedb._value_setter(width)
+            polygon_data = CorePolygonData(points=points, closed=False)
         elif isinstance(points, CorePolygonData):
             polygon_data = points
         else:
@@ -575,11 +573,14 @@ class Modeler(object):
             Polygon object if created, False otherwise.
         """
         net = self._pedb.nets.find_or_create_net(net_name)
+        normalized_points = None
+        normalized_voids = []
         if isinstance(points, list):
-            new_points = []
-            for idx, i in enumerate(points):
-                new_points.append(CorePointData([self._pedb.value(i[0]), self._pedb.value(i[1])]))
-            polygon_data = CorePolygonData(points=new_points)
+            normalized_points = normalize_pairs(points)
+            flat_points = []
+            for point in normalized_points:
+                flat_points.extend([self._pedb.value(point[0]), self._pedb.value(point[1])])
+            polygon_data = CorePolygonData(points=flat_points)
 
         elif isinstance(points, CorePolygonData):
             polygon_data = points
@@ -590,7 +591,12 @@ class Modeler(object):
             return False
         for void in voids:
             if isinstance(void, list):
-                void_polygon_data = CorePolygonData(points=void)
+                normalized_void = normalize_pairs(void)
+                normalized_voids.append(normalized_void)
+                flat_void = []
+                for point in normalized_void:
+                    flat_void.extend([self._pedb.value(point[0]), self._pedb.value(point[1])])
+                void_polygon_data = CorePolygonData(points=flat_void)
             elif isinstance(void, CorePolygonData):
                 void_polygon_data = void
             else:
@@ -603,6 +609,11 @@ class Modeler(object):
         if polygon.is_null or polygon_data is False:  # pragma: no cover
             self._pedb.logger.error("Null polygon created")
             return False
+        if normalized_points is not None:
+            polygon._points_cache = normalized_points
+            polygon._void_points_cache = normalized_voids
+            self._polygon_points_cache[polygon.id] = normalized_points
+            self._polygon_void_points_cache[polygon.id] = normalized_voids
         return polygon
 
     def create_rectangle(
@@ -664,31 +675,19 @@ class Modeler(object):
             )
         else:
             rep_type = "center_width_height"
-            if isinstance(width, str):
-                if width in self._pedb.variables:
-                    width = self._pedb.value(width, self._pedb.active_cell)
-                else:
-                    width = self._pedb.value(width)
-            else:
-                width = self._pedb.value(width)
-            if isinstance(height, str):
-                if height in self._pedb.variables:
-                    height = self._pedb.value(height, self._pedb.active_cell)
-                else:
-                    height = self._pedb.value(width)
-            else:
-                height = self._pedb.value(width)
+            width = self._pedb._value_setter(width)
+            height = self._pedb._value_setter(height)
             rect = Rectangle.create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
                 net=net,
                 rep_type=rep_type,
-                param1=self._pedb.value(center_point[0]),
-                param2=self._pedb.value(center_point[1]),
-                param3=self._pedb.value(width),
-                param4=self._pedb.value(height),
-                corner_rad=self._pedb.value(corner_radius),
-                rotation=self._pedb.value(rotation),
+                param1=self._pedb._value_setter(center_point[0]),
+                param2=self._pedb._value_setter(center_point[1]),
+                param3=width,
+                param4=height,
+                corner_rad=self._pedb._value_setter(corner_radius),
+                rotation=self._pedb._value_setter(rotation),
             )
         if not rect.is_null:
             return rect
@@ -977,30 +976,89 @@ class Modeler(object):
         if net_names_list is None:
             net_names_list = []
 
+        def _unite_with_cached_points(polygons):
+            try:
+                from shapely.geometry import MultiPolygon as ShapelyMultiPolygon
+                from shapely.geometry import Polygon as ShapelyPolygon
+                from shapely.ops import unary_union
+            except ImportError:
+                return None
+
+            shapely_polygons = []
+            for polygon in polygons:
+                points_cache = getattr(polygon, "_points_cache", None) or self._polygon_points_cache.get(polygon.id)
+                if not points_cache:
+                    return None
+                voids_cache = getattr(polygon, "_void_points_cache", None)
+                if voids_cache is None:
+                    voids_cache = self._polygon_void_points_cache.get(polygon.id, [])
+                shapely_polygons.append(ShapelyPolygon(points_cache, holes=voids_cache))
+
+            united_shape = unary_union(shapely_polygons)
+            if united_shape.is_empty:
+                return []
+            if isinstance(united_shape, ShapelyPolygon):
+                united_shape = [united_shape]
+            elif isinstance(united_shape, ShapelyMultiPolygon):
+                united_shape = list(united_shape.geoms)
+            else:
+                united_shape = [geom for geom in getattr(united_shape, "geoms", []) if isinstance(geom, ShapelyPolygon)]
+
+            created_polygons = []
+            for shape in united_shape:
+                shell = [list(point) for point in list(shape.exterior.coords)[:-1]]
+                holes = [[list(point) for point in list(interior.coords)[:-1]] for interior in shape.interiors]
+                created_polygon = self.create_polygon(shell, layer_name=lay, voids=holes, net_name=target_net_name)
+                if created_polygon:
+                    created_polygons.append(created_polygon)
+            return created_polygons
+
         for lay in layer_name:
             self._pedb.logger.info(f"Uniting Objects on layer {lay}.")
             poly_by_nets = {}
             all_voids = []
             list_polygon_data = []
             delete_list = []
+            selected_polygons = []
+            target_net_name = ""
             for poly in self.polygons_by_layer.get(lay, []):
                 if poly.net_name:
                     poly_by_nets.setdefault(poly.net_name, []).append(poly)
             for net, polys in poly_by_nets.items():
                 if net in net_names_list or not net_names_list:
+                    if not target_net_name:
+                        target_net_name = net
                     for p in polys:
                         list_polygon_data.append(p.core.polygon_data)
                         delete_list.append(p)
+                        selected_polygons.append(p)
                         all_voids.extend([v for v in p.voids])
-            united = CorePolygonData.unite(list_polygon_data)
-            for item in united:
-                _added_voids = []
-                for void in all_voids:
-                    if item.intersection_type(void.core.polygon_data).value == 2:
-                        _added_voids.append(void)
-                self.create_polygon(item, layer_name=lay, voids=_added_voids, net_name=net)
+            if not list_polygon_data:
+                continue
+            created_united_polygons = []
+            cached_united_polygons = _unite_with_cached_points(selected_polygons)
+            if cached_united_polygons is not None:
+                created_united_polygons = cached_united_polygons
+            else:
+                try:
+                    united = CorePolygonData.unite(list_polygon_data)
+                    for item in united:
+                        _added_voids = []
+                        for void in all_voids:
+                            if item.intersection_type(void.core.polygon_data).value == 2:
+                                _added_voids.append(void)
+                        created_polygon = self.create_polygon(
+                            item, layer_name=lay, voids=_added_voids, net_name=target_net_name
+                        )
+                        if created_polygon:
+                            created_united_polygons.append(created_polygon)
+                except Exception:
+                    created_united_polygons = []
+
+            if not created_united_polygons:
+                continue
             for void in all_voids:
-                for poly in poly_by_nets[net]:  # pragma no cover
+                for poly in selected_polygons:  # pragma no cover
                     if void.core.polygon_data.intersection_type(poly.core.polygon_data).value >= 2:
                         try:
                             id = delete_list.index(poly)

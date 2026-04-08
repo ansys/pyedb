@@ -28,6 +28,8 @@ class Value(float, CoreValue):
     """Class defining Edb Value properties."""
 
     def __new__(cls, val, owner=None) -> float:
+        if hasattr(val, "value_object"):
+            val = val.value_object
         if isinstance(val, (int, float)):
             inst = super().__new__(cls, val)
             inst.__core = None

@@ -22,6 +22,7 @@
 import math
 from typing import TYPE_CHECKING, Union
 
+from ansys.edb.core.geometry.point_data import PointData as CorePointData
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
@@ -45,10 +46,156 @@ mapping = {
 
 class Path(Primitive):
     def __init__(self, pedb, core=None):
+        self._center_line_cache = None
         if core:
             self.core = core
             Primitive.__init__(self, pedb, core)
         self._pedb = pedb
+
+    @staticmethod
+    def _extract_center_line_points(points) -> list[list[float]]:
+        return [[Value(pt.x), Value(pt.y)] for pt in points]
+
+    def _cache_center_line(self, points) -> None:
+        if isinstance(points, CorePolygonData):
+            points = points.points
+        self._center_line_cache = self._extract_center_line_points(points)
+
+    def _get_cached_center_line_polygon_data(self) -> CorePolygonData | None:
+        if not self._center_line_cache:
+            return None
+        return CorePolygonData(
+            points=[
+                CorePointData([self._pedb._value_setter(point[0]), self._pedb._value_setter(point[1])])
+                for point in self._center_line_cache
+            ],
+            closed=False,
+        )
+
+    @staticmethod
+    def _normalize_vector(vector) -> tuple[float, float]:
+        length = math.hypot(vector[0], vector[1])
+        if not length:
+            return 0.0, 0.0
+        return vector[0] / length, vector[1] / length
+
+    @staticmethod
+    def _line_intersection(p1, p2, p3, p4):
+        x1, y1 = p1
+        x2, y2 = p2
+        x3, y3 = p3
+        x4, y4 = p4
+        denominator = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4)
+        if abs(denominator) < 1e-18:
+            return None
+        det1 = x1 * y2 - y1 * x2
+        det2 = x3 * y4 - y3 * x4
+        x = (det1 * (x3 - x4) - (x1 - x2) * det2) / denominator
+        y = (det1 * (y3 - y4) - (y1 - y2) * det2) / denominator
+        return [x, y]
+
+    @staticmethod
+    def _deduplicate_points(points, tol=1e-15):
+        out = []
+        for point in points:
+            if not out or math.hypot(point[0] - out[-1][0], point[1] - out[-1][1]) > tol:
+                out.append(point)
+        if len(out) > 1 and math.hypot(out[0][0] - out[-1][0], out[0][1] - out[-1][1]) <= tol:
+            out.pop()
+        return out
+
+    def _get_fallback_polygon_points(self) -> list[list[float]]:
+        center_line = self.get_center_line()
+        if len(center_line) < 2:
+            return []
+
+        points = [[float(point[0]), float(point[1])] for point in center_line]
+        width = float(self.width)
+        half_width = width / 2.0
+        if half_width <= 0:
+            return []
+
+        cleaned_points = [points[0]]
+        for point in points[1:]:
+            if math.hypot(point[0] - cleaned_points[-1][0], point[1] - cleaned_points[-1][1]) > 1e-18:
+                cleaned_points.append(point)
+        if len(cleaned_points) < 2:
+            return []
+
+        directions = []
+        normals = []
+        for start, end in zip(cleaned_points, cleaned_points[1:]):
+            direction = self._normalize_vector((end[0] - start[0], end[1] - start[1]))
+            if direction == (0.0, 0.0):
+                continue
+            directions.append(direction)
+            normals.append((-direction[1], direction[0]))
+        if not directions:
+            return []
+
+        start_cap = self.end_cap1.lower()
+        end_cap = self.end_cap2.lower()
+        start_extension = [-directions[0][0] * half_width, -directions[0][1] * half_width] if start_cap == "extended" else [0.0, 0.0]
+        end_extension = [directions[-1][0] * half_width, directions[-1][1] * half_width] if end_cap == "extended" else [0.0, 0.0]
+
+        left_points = [
+            [
+                cleaned_points[0][0] + start_extension[0] + normals[0][0] * half_width,
+                cleaned_points[0][1] + start_extension[1] + normals[0][1] * half_width,
+            ]
+        ]
+        right_points = [
+            [
+                cleaned_points[0][0] + start_extension[0] - normals[0][0] * half_width,
+                cleaned_points[0][1] + start_extension[1] - normals[0][1] * half_width,
+            ]
+        ]
+
+        for index in range(1, len(cleaned_points) - 1):
+            point = cleaned_points[index]
+            prev_direction = directions[index - 1]
+            next_direction = directions[index]
+            prev_normal = normals[index - 1]
+            next_normal = normals[index]
+
+            prev_left_1 = [point[0] - prev_direction[0] + prev_normal[0] * half_width, point[1] - prev_direction[1] + prev_normal[1] * half_width]
+            prev_left_2 = [point[0] + prev_direction[0] + prev_normal[0] * half_width, point[1] + prev_direction[1] + prev_normal[1] * half_width]
+            next_left_1 = [point[0] - next_direction[0] + next_normal[0] * half_width, point[1] - next_direction[1] + next_normal[1] * half_width]
+            next_left_2 = [point[0] + next_direction[0] + next_normal[0] * half_width, point[1] + next_direction[1] + next_normal[1] * half_width]
+            left_intersection = self._line_intersection(prev_left_1, prev_left_2, next_left_1, next_left_2)
+            if left_intersection is None:
+                left_intersection = [
+                    point[0] + (prev_normal[0] + next_normal[0]) * half_width / 2.0,
+                    point[1] + (prev_normal[1] + next_normal[1]) * half_width / 2.0,
+                ]
+            left_points.append(left_intersection)
+
+            prev_right_1 = [point[0] - prev_direction[0] - prev_normal[0] * half_width, point[1] - prev_direction[1] - prev_normal[1] * half_width]
+            prev_right_2 = [point[0] + prev_direction[0] - prev_normal[0] * half_width, point[1] + prev_direction[1] - prev_normal[1] * half_width]
+            next_right_1 = [point[0] - next_direction[0] - next_normal[0] * half_width, point[1] - next_direction[1] - next_normal[1] * half_width]
+            next_right_2 = [point[0] + next_direction[0] - next_normal[0] * half_width, point[1] + next_direction[1] - next_normal[1] * half_width]
+            right_intersection = self._line_intersection(prev_right_1, prev_right_2, next_right_1, next_right_2)
+            if right_intersection is None:
+                right_intersection = [
+                    point[0] - (prev_normal[0] + next_normal[0]) * half_width / 2.0,
+                    point[1] - (prev_normal[1] + next_normal[1]) * half_width / 2.0,
+                ]
+            right_points.append(right_intersection)
+
+        left_points.append(
+            [
+                cleaned_points[-1][0] + end_extension[0] + normals[-1][0] * half_width,
+                cleaned_points[-1][1] + end_extension[1] + normals[-1][1] * half_width,
+            ]
+        )
+        right_points.append(
+            [
+                cleaned_points[-1][0] + end_extension[0] - normals[-1][0] * half_width,
+                cleaned_points[-1][1] + end_extension[1] - normals[-1][1] * half_width,
+            ]
+        )
+
+        return self._deduplicate_points(left_points + list(reversed(right_points)))
 
     @property
     def width(self) -> float:
@@ -163,12 +310,12 @@ class Path(Primitive):
         if not points:
             raise ValueError("Points are required to create a path.")
         if isinstance(points, list):
-            points = CorePolygonData(points=points)
+            points = CorePolygonData(points=[CorePointData(point) for point in points], closed=False)
         _path = CorePath.create(
             layout=layout.core,
             layer=layer,
             net=net.core,
-            width=Value(width),
+            width=layout._pedb._value_setter(width),
             end_cap1=end_cap1,
             end_cap2=end_cap2,
             corner_style=corner_style,
@@ -177,6 +324,7 @@ class Path(Primitive):
 
         # keeping cache synced
         new_path = cls(layout._pedb, _path)
+        new_path._cache_center_line(points)
         return new_path
 
     def add_point(self, x, y, incremental=True) -> bool:
@@ -415,7 +563,19 @@ class Path(Primitive):
         List[List[float, float]].
 
         """
-        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
+        if self._center_line_cache:
+            return [point[:] for point in self._center_line_cache]
+
+        try:
+            center_line = self.core.center_line
+            points = self._extract_center_line_points(center_line.points)
+            if points:
+                self._center_line_cache = points
+            return points
+        except Exception:
+            if self._center_line_cache:
+                return [point[:] for point in self._center_line_cache]
+            raise
 
     @property
     def corner_style(self) -> str:

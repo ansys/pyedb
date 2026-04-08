@@ -32,6 +32,7 @@ from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
 from ansys.edb.core.layer.layer import LayerType as CoreLayerType
 from ansys.edb.core.primitive.circle import Circle as CoreCircle
+from ansys.edb.core.primitive.path import Path as CorePath
 
 from pyedb.generic.geometry_operators import GeometryOperators
 from pyedb.grpc.database.geometry.polygon_data import PolygonData
@@ -387,7 +388,55 @@ class Primitive:
 
         """
         if self.type == "path":
-            polygon = self._pedb.modeler.create_polygon(self.polygon_data, self.layer_name, [], self.net.name)
+            polygon_data = None
+
+            try:
+                polygon_data = self.core.cast().polygon_data
+                if not polygon_data.points:
+                    polygon_data = None
+            except Exception:
+                polygon_data = None
+
+            if polygon_data is None:
+                center_line = None
+                get_cached_center_line = getattr(self, "_get_cached_center_line_polygon_data", None)
+                if callable(get_cached_center_line):
+                    center_line = get_cached_center_line()
+
+                if center_line is None:
+                    try:
+                        center_line = self.core.center_line
+                    except Exception:
+                        center_line = None
+
+                if center_line is not None:
+                    polygon_data = CorePath.render(
+                        width=self.core.width,
+                        end_cap1=self.core.get_end_cap_style()[0],
+                        end_cap2=self.core.get_end_cap_style()[1],
+                        corner_style=self.core.corner_style,
+                        path=center_line,
+                    )
+
+            if polygon_data is None or not polygon_data.points:
+                get_fallback_polygon_points = getattr(self, "_get_fallback_polygon_points", None)
+                if callable(get_fallback_polygon_points):
+                    fallback_points = get_fallback_polygon_points()
+                    if fallback_points:
+                        polygon = self._pedb.modeler.create_polygon(
+                            fallback_points, self.layer_name, [], self.net_name or ""
+                        )
+                        if polygon:
+                            self.core.delete()
+                            self._pedb.modeler.clear_cache()
+                            return polygon
+
+                self._pedb.logger.error("Failed to create main shape polygon data")
+                return False
+
+            polygon = self._pedb.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name or "")
+            if not polygon:
+                return False
             self.core.delete()
             self._pedb.modeler.clear_cache()
             return polygon
@@ -568,26 +617,19 @@ class Primitive:
             List of Primitive objects.
 
         """
-        poly = self.core.cast().polygon_data
+        poly = self.core.polygon_data if hasattr(self.core, "polygon_data") else self.core.cast().polygon_data
         if not isinstance(primitives, list):
             primitives = [primitives]
         primi_polys = []
-        voids_of_prims = []
         for prim in primitives:
             if isinstance(prim, Primitive):
-                primi_polys.append(prim.core.cast().polygon_data)
-                for void in prim.voids:
-                    voids_of_prims.append(void.cast().polygon_data)
+                primi_polys.append(prim.core.polygon_data if hasattr(prim.core, "polygon_data") else prim.core.cast().polygon_data)
             else:
                 try:
-                    primi_polys.append(prim.cast().polygon_data)
+                    primi_polys.append(prim.polygon_data if hasattr(prim, "polygon_data") else prim.cast().polygon_data)
                 except:
                     primi_polys.append(prim)
-        for v in self.voids[:]:
-            primi_polys.append(v.polygon_data)
-        primi_polys = poly.unite(primi_polys)
-        p_to_sub = poly.unite([poly] + voids_of_prims)
-        list_poly = poly.subtract(p_to_sub, primi_polys)
+        list_poly = poly.subtract([poly], primi_polys)
         new_polys = []
         if list_poly:
             for p in list_poly:
