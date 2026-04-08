@@ -978,8 +978,7 @@ class Modeler(object):
 
         def _unite_with_cached_points(polygons):
             try:
-                from shapely.geometry import MultiPolygon as ShapelyMultiPolygon
-                from shapely.geometry import Polygon as ShapelyPolygon
+                from shapely.geometry import MultiPolygon as ShapelyMultiPolygon, Polygon as ShapelyPolygon
                 from shapely.ops import unary_union
             except ImportError:
                 return None

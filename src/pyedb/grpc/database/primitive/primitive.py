@@ -623,7 +623,9 @@ class Primitive:
         primi_polys = []
         for prim in primitives:
             if isinstance(prim, Primitive):
-                primi_polys.append(prim.core.polygon_data if hasattr(prim.core, "polygon_data") else prim.core.cast().polygon_data)
+                primi_polys.append(
+                    prim.core.polygon_data if hasattr(prim.core, "polygon_data") else prim.core.cast().polygon_data
+                )
             else:
                 try:
                     primi_polys.append(prim.polygon_data if hasattr(prim, "polygon_data") else prim.cast().polygon_data)

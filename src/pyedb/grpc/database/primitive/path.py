@@ -23,6 +23,7 @@ import math
 from typing import TYPE_CHECKING, Union
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
@@ -135,8 +136,12 @@ class Path(Primitive):
 
         start_cap = self.end_cap1.lower()
         end_cap = self.end_cap2.lower()
-        start_extension = [-directions[0][0] * half_width, -directions[0][1] * half_width] if start_cap == "extended" else [0.0, 0.0]
-        end_extension = [directions[-1][0] * half_width, directions[-1][1] * half_width] if end_cap == "extended" else [0.0, 0.0]
+        start_extension = (
+            [-directions[0][0] * half_width, -directions[0][1] * half_width] if start_cap == "extended" else [0.0, 0.0]
+        )
+        end_extension = (
+            [directions[-1][0] * half_width, directions[-1][1] * half_width] if end_cap == "extended" else [0.0, 0.0]
+        )
 
         left_points = [
             [
@@ -158,10 +163,22 @@ class Path(Primitive):
             prev_normal = normals[index - 1]
             next_normal = normals[index]
 
-            prev_left_1 = [point[0] - prev_direction[0] + prev_normal[0] * half_width, point[1] - prev_direction[1] + prev_normal[1] * half_width]
-            prev_left_2 = [point[0] + prev_direction[0] + prev_normal[0] * half_width, point[1] + prev_direction[1] + prev_normal[1] * half_width]
-            next_left_1 = [point[0] - next_direction[0] + next_normal[0] * half_width, point[1] - next_direction[1] + next_normal[1] * half_width]
-            next_left_2 = [point[0] + next_direction[0] + next_normal[0] * half_width, point[1] + next_direction[1] + next_normal[1] * half_width]
+            prev_left_1 = [
+                point[0] - prev_direction[0] + prev_normal[0] * half_width,
+                point[1] - prev_direction[1] + prev_normal[1] * half_width,
+            ]
+            prev_left_2 = [
+                point[0] + prev_direction[0] + prev_normal[0] * half_width,
+                point[1] + prev_direction[1] + prev_normal[1] * half_width,
+            ]
+            next_left_1 = [
+                point[0] - next_direction[0] + next_normal[0] * half_width,
+                point[1] - next_direction[1] + next_normal[1] * half_width,
+            ]
+            next_left_2 = [
+                point[0] + next_direction[0] + next_normal[0] * half_width,
+                point[1] + next_direction[1] + next_normal[1] * half_width,
+            ]
             left_intersection = self._line_intersection(prev_left_1, prev_left_2, next_left_1, next_left_2)
             if left_intersection is None:
                 left_intersection = [
@@ -170,10 +187,22 @@ class Path(Primitive):
                 ]
             left_points.append(left_intersection)
 
-            prev_right_1 = [point[0] - prev_direction[0] - prev_normal[0] * half_width, point[1] - prev_direction[1] - prev_normal[1] * half_width]
-            prev_right_2 = [point[0] + prev_direction[0] - prev_normal[0] * half_width, point[1] + prev_direction[1] - prev_normal[1] * half_width]
-            next_right_1 = [point[0] - next_direction[0] - next_normal[0] * half_width, point[1] - next_direction[1] - next_normal[1] * half_width]
-            next_right_2 = [point[0] + next_direction[0] - next_normal[0] * half_width, point[1] + next_direction[1] - next_normal[1] * half_width]
+            prev_right_1 = [
+                point[0] - prev_direction[0] - prev_normal[0] * half_width,
+                point[1] - prev_direction[1] - prev_normal[1] * half_width,
+            ]
+            prev_right_2 = [
+                point[0] + prev_direction[0] - prev_normal[0] * half_width,
+                point[1] + prev_direction[1] - prev_normal[1] * half_width,
+            ]
+            next_right_1 = [
+                point[0] - next_direction[0] - next_normal[0] * half_width,
+                point[1] - next_direction[1] - next_normal[1] * half_width,
+            ]
+            next_right_2 = [
+                point[0] + next_direction[0] - next_normal[0] * half_width,
+                point[1] + next_direction[1] - next_normal[1] * half_width,
+            ]
             right_intersection = self._line_intersection(prev_right_1, prev_right_2, next_right_1, next_right_2)
             if right_intersection is None:
                 right_intersection = [
