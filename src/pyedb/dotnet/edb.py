@@ -97,7 +97,7 @@ from pyedb.dotnet.database.utilities.siwave_simulation_setup import (
     SIwaveSimulationSetup,
 )
 from pyedb.dotnet.database.utilities.value import Value
-from pyedb.dotnet.database.Variables import decompose_variable_value
+from pyedb.generic.constants import decompose_variable_value
 from pyedb.edb_logger import EdbLogger
 from pyedb.generic.constants import AEDT_UNITS, SolverType, unit_converter
 from pyedb.generic.general_methods import generate_unique_name, is_linux, is_windows
