@@ -1122,7 +1122,6 @@ class TestClassSetups(BaseTestClass):
                     "freq_sweep": [],
                     "auto_mesh_operation": {
                         "enabled": False,
-                        "power_ground_via_side_number": 6,
                         "signal_via_side_number": 12,
                         "trace_ratio_seeding": 3,
                     },
@@ -1208,7 +1207,6 @@ class TestClassSetups(BaseTestClass):
                         "enabled": True,
                         "trace_ratio_seeding": 3,
                         "signal_via_side_number": 12,
-                        "power_ground_via_side_number": 6,
                     },
                 },
             ],

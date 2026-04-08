@@ -470,7 +470,10 @@ class Edb(EdbInit):
 
     def value(self, val) -> Value | float | str:
         """Convert a value into a pyedb value."""
-        return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
+        if isinstance(val, str) and "$" in val:
+            return Value(val, self.active_db)
+        else:
+            return Value(val, self.active_cell)
 
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""

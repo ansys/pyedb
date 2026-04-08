@@ -645,7 +645,17 @@ class TestClass(BaseTestClass):
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Not valid for grpc")
+    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing coverage for Text prims")
+    def test_prims(self):
+        edbapp = self.edb_examples.get_si_board()
+        edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
+        prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
+        assert prim
+        assert not prim[0].is_null
+        assert prim[0].aedt_name == "text_8"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
     def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
         from pyedb.dotnet.database.dotnet.database import CellDotNet
         from pyedb.dotnet.database.dotnet.primitive import PrimitiveDotNet
@@ -669,3 +679,29 @@ class TestClass(BaseTestClass):
         circle.layer_name = "Bottom"
         assert circle.layer_name == "Bottom"
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
+    def test_paths_for_grpc(self):
+        edbapp = self.edb_examples.get_si_board()
+
+        # Paths
+        path = edbapp.modeler.paths[0]
+        path.width = 1.5
+        assert path.width.real == 1.5
+        assert path.length
+        assert path.center_line
+        assert path.get_center_line() == path.center_line
+        # TODO create_path is not covered using core in modeler
+        # TODO why have both get_center_line() and path.center_line?
+        path.corner_style = "round"
+        # assert path.corner_style == "round"
+        # TODO corner setter does not work, and move does not work
+        assert path.end_cap1 == "flat"
+        path.end_cap2 = "round"
+        assert path.end_cap2 == "round"
+
+        # Circle
+        cir = edbapp.modeler.create_circle(layer_name="s1", x=0, y=0, radius=0.1, net_name="GND")
+        assert cir
+        cir.set_parameters(0.1, 0.1, 0.3)
+        assert cir.get_parameters()[2].real == 0.3
