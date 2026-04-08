@@ -99,7 +99,7 @@ class PointData:
         """
         return self.core.IsArc()
 
-    def rotate(self, angle: str | float, center: tuple[str | float]) -> "PointData":
+    def rotate(self, angle: str | float | int, center: tuple[str | float | int, str | float | int]) -> "PointData":
         """Rotate the point."""
         cx = self._pedb.value(center[0])
         cy = self._pedb.value(center[1])

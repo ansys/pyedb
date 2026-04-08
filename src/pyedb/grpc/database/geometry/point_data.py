@@ -75,7 +75,7 @@ class PointData:
         """
         return self.core.is_arc
 
-    def rotate(self, angle: str | float | Value, center: list[str | float | Value]) -> "PointData":
+    def rotate(self, angle: str | float | int, center: tuple[str | float | int, str | float | int]) -> "PointData":
         """Rotate a point at a given center by a given angle.
 
         Parameters
