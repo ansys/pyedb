@@ -580,7 +580,8 @@ class TestClass(BaseTestClass):
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
-            "analysis", "1_Top", "180deg",0, 0,  "1mm", "2mm", True)
+            "analysis", "1_Top", "180deg", 0, 0, "1mm", "2mm", True
+        )
         assert cell_inst.transform3d.shift.x.value == pytest.approx(0.001)
         assert cell_inst.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
