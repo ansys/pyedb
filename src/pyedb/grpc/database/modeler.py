@@ -1569,12 +1569,6 @@ class Modeler(object):
             X offset.
         y : float or str
             Y offset.
-        rotation_x : float or str
-            Rotation around X axis in radians.
-        rotation_y : float or str
-            Rotation around Y axis in radians.
-        rotation_z : float or str
-            Rotation around Z axis in radians.
         place_on_bottom : bool
             Whether to place the layout instance on the bottom of the layer.
         local_origin_x: float or str
