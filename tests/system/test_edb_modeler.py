@@ -579,7 +579,8 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "1_Top", "180deg", "1mm", "2mm", True)
+        cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
+            "analysis", "1_Top", 0, 0, "180deg", "1mm", "2mm", True)
         assert cell_inst.transform3d.shift.x.value == pytest.approx(0.001)
         assert cell_inst.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
@@ -591,7 +592,14 @@ class TestClass(BaseTestClass):
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
-            "analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True
+            cell_name="analysis",
+            placement_layer="16_Bottom",
+            rotation_x=0,
+            rotation_y="0deg",
+            rotation_z="180deg",
+            x="32mm",
+            y="-1mm",
+            place_on_bottom=True,
         )
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)

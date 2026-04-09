@@ -1292,12 +1292,14 @@ class Modeler(object):
         self,
         cell_name: str,
         placement_layer: str,
-        rotation: Union[float, str] = 0,
-        x: Union[float, str] = 0,
-        y: Union[float, str] = 0,
+        rotation_x: float| str = 0,
+        rotation_y:  float| str = 0,
+        rotation_z:  float| str = 0,
+        x:  float| str = 0,
+        y:  float| str = 0,
         place_on_bottom: bool = False,
-        local_origin_x: Optional[Union[float, str]] = 0,
-        local_origin_y: Optional[Union[float, str]] = 0,
+        local_origin_x:  float| str| None = 0,
+        local_origin_y: float| str| None = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1307,12 +1309,12 @@ class Modeler(object):
             Name of the layout to insert.
         placement_layer: str
             Placement Layer.
-        scaling : float
-            Scale parameter.
-        rotation : float or str
-            Rotation angle, specified counter-clockwise in radians.
-        mirror : bool
-            Mirror about Y-axis.
+        rotation_x : float or str
+            Rotation angle around X-axis, specified counter-clockwise in radians.
+        rotation_y : float or str
+            Rotation angle around Y-axis, specified counter-clockwise in radians.
+        rotation_z : float or str
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
         x : float or str
             X offset.
         y : float or str
@@ -1332,9 +1334,9 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.upper_elevation,
-                rotation_x="0deg",
-                rotation_y=0,
-                rotation_z=rotation,
+                rotation_x=rotation_x,
+                rotation_y=rotation_y,
+                rotation_z=rotation_z,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
             )
@@ -1344,9 +1346,9 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.lower_elevation,
-                rotation_x="180deg",
-                rotation_y=0,
-                rotation_z=rotation,
+                rotation_x=self._pedb.value(rotation_x) + self._pedb.value("180deg"),
+                rotation_y=rotation_y,
+                rotation_z=rotation_z,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
             )
@@ -1567,6 +1569,12 @@ class Modeler(object):
             X offset.
         y : float or str
             Y offset.
+        rotation_x : float or str
+            Rotation around X axis in radians.
+        rotation_y : float or str
+            Rotation around Y axis in radians.
+        rotation_z : float or str
+            Rotation around Z axis in radians.
         place_on_bottom : bool
             Whether to place the layout instance on the bottom of the layer.
         local_origin_x: float or str
