@@ -1545,15 +1545,17 @@ class Modeler(object):
 
     def insert_3d_component_on_layer(
         self,
-        a3dcomp_path: Union[str, Path],
+        a3dcomp_path: str|Path,
         placement_layer: str,
-        rotation: Union[float, str] = 0,
-        x: Union[float, str] = 0,
-        y: Union[float, str] = 0,
+        rotation: float| str = 0,
+        rotation_x: float | str = 0,
+        rotation_y: float | str = 0,
+        x:  float| str = 0,
+        y:  float| str = 0,
         place_on_bottom: bool = False,
-        local_origin_x: Optional[Union[float, str]] = 0,
-        local_origin_y: Optional[Union[float, str]] = 0,
-        local_origin_z: Optional[Union[float, str]] = 0,
+        local_origin_x:  float| str|None = 0,
+        local_origin_y: float| str|None = 0,
+        local_origin_z: float| str|None = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1564,6 +1566,10 @@ class Modeler(object):
         placement_layer: str
             Placement Layer.
         rotation : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        rotation_x : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        rotation_y : float or str
             Rotation angle, specified counter-clockwise in radians.
         x : float or str
             X offset.
@@ -1586,8 +1592,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.upper_elevation,
-                rotation_x=0,
-                rotation_y=0,
+                rotation_x=rotation_x,
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1599,8 +1605,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.lower_elevation,
-                rotation_x="180deg",
-                rotation_y=0,
+                rotation_x=self._pedb.value(rotation_x)+self._pedb.value("180deg"),
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
