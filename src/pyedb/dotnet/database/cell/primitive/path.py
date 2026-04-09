@@ -122,7 +122,7 @@ class Path(Primitive):
             last_point = list(center_line.Points)[-1]
             x = "({})+({})".format(x, last_point.X.ToString())
             y = "({})+({})".format(y, last_point.Y.ToString())
-        center_line.AddPoint(PointData.create_from_xy(self._pedb, x=x, y=y)._edb_object)
+        center_line.AddPoint(PointData.create_from_xy(self._pedb, x=x, y=y).core)
         return self._edb_object.SetCenterLine(center_line)
 
     def get_center_line(self, to_string=False):
