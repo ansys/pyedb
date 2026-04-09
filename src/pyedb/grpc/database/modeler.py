@@ -1292,9 +1292,9 @@ class Modeler(object):
         self,
         cell_name: str,
         placement_layer: str,
+        rotation: Union[float, str] = 0.0,
         rotation_x: float| str = 0,
         rotation_y:  float| str = 0,
-        rotation_z:  float| str = 0,
         x:  float| str = 0,
         y:  float| str = 0,
         place_on_bottom: bool = False,
@@ -1309,12 +1309,12 @@ class Modeler(object):
             Name of the layout to insert.
         placement_layer: str
             Placement Layer.
+        rotation : float or str
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
         rotation_x : float or str
             Rotation angle around X-axis, specified counter-clockwise in radians.
         rotation_y : float or str
             Rotation angle around Y-axis, specified counter-clockwise in radians.
-        rotation_z : float or str
-            Rotation angle around Z-axis, specified counter-clockwise in radians.
         x : float or str
             X offset.
         y : float or str
@@ -1336,7 +1336,7 @@ class Modeler(object):
                 z=placement_layer.upper_elevation,
                 rotation_x=rotation_x,
                 rotation_y=rotation_y,
-                rotation_z=rotation_z,
+                rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
             )
@@ -1348,7 +1348,7 @@ class Modeler(object):
                 z=placement_layer.lower_elevation,
                 rotation_x=self._pedb.value(rotation_x) + self._pedb.value("180deg"),
                 rotation_y=rotation_y,
-                rotation_z=rotation_z,
+                rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
             )
