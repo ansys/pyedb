@@ -26,11 +26,8 @@ import sys
 import time
 
 from ansys.edb.core.session import launch_session
+from ansys.edb.core.session import is_in_memory
 
-try:
-    from ansys.edb.core.session import launch_local_session
-except ImportError:
-    launch_local_session = None
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -130,30 +127,11 @@ class RpcSession:
                 return
 
         if RpcSession.in_memory:
-            if launch_local_session is None:
-                RpcSession.in_memory = False
-                settings.logger.warning(
-                    "In-memory RPC session is not available with the installed ansys-edb-core package. "
-                    "Starting standard RPC session instead."
-                )
-            elif RpcSession.is_in_memory_lib_file_present():
-                RpcSession.__start_local_rpc()
-                if RpcSession.rpc_session:
-                    settings.logger.info("Grpc session started in local mode (fast)")
-                    settings.is_in_memory = True
-                    return
-
-                RpcSession.in_memory = False
-                settings.logger.warning(
-                    "Failed to initialize the in-memory RPC session. Starting standard RPC session instead."
-                )
-            else:
-                RpcSession.in_memory = False
-                settings.logger.warning(
-                    "Dynamic library for in-memory RPC session not found. "
-                    "Starting standard RPC session. Make sure you are running ANSYS version "
-                    "2026 R1 SP1 or later to enable fast grpc protocol."
-                )
+            RpcSession.__start_rpc_server()
+            if RpcSession.rpc_session:
+                settings.logger.info("Grpc session started in local mode (fast)")
+                settings.is_in_memory = True
+                return
 
         RpcSession.__start_rpc_server()
         if RpcSession.rpc_session:
@@ -162,23 +140,6 @@ class RpcSession:
         else:
             settings.logger.error("Failed to start EDB_RPC_server process")
         settings.is_in_memory = RpcSession.in_memory
-
-    @staticmethod
-    def is_in_memory_lib_file_present() -> bool:
-        """Determine if RPC in memory library file is present in the base path.
-        This is used to determine if the in-memory RPC session can be started.
-
-        Returns
-        -------
-        bool
-            True if the in-memory RPC library file is present, False otherwise.
-        """
-        if not RpcSession.base_path:
-            return False
-        if is_linux:
-            return os.path.isfile(os.path.join(RpcSession.base_path, "libEDB_RPC_Services.so"))
-        else:
-            return os.path.isfile(os.path.join(RpcSession.base_path, "EDB_RPC_Services.dll"))
 
     @staticmethod
     def __get_process_id():
@@ -192,23 +153,17 @@ class RpcSession:
     @staticmethod
     def __start_rpc_server():
         RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
-        start_managing(IOMangementType.READ_AND_WRITE)
+        if not is_in_memory():
+            start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
             settings.logger.logger.info("Grpc session started")
 
-    @staticmethod
-    def __start_local_rpc():
-        try:
-            RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port, in_memory=True)
-        except TypeError:
-            RpcSession.rpc_session = launch_local_session(RpcSession.base_path)
-        RpcSession.pid = 0
-        RpcSession.server_pid = 0
 
     @staticmethod
     def kill():
+        """Kill RPC process."""
         p = psutil.Process(RpcSession.pid)
         time.sleep(latency_delay)
         try:
@@ -220,6 +175,7 @@ class RpcSession:
 
     @staticmethod
     def kill_all_instances():
+        """Kill all RPC process."""
         # collect PIDs safely
         proc = []
         for p in psutil.process_iter(["pid", "name"]):
