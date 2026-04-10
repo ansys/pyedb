@@ -483,7 +483,9 @@ class TestClass(BaseTestClass):
             assert len(test) == 175
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1",
+    @pytest.mark.skipif(
+        config["use_grpc"],
+        reason="Waiting SP1",
     )
     def test_polygon_based_padstack(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
