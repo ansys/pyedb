@@ -706,7 +706,7 @@ class TestClass(BaseTestClass):
         cir.set_parameters(0.1, 0.1, 0.3)
         assert cir.get_parameters()[2].real == 0.3
 
-    # @pytest.mark.skipif(config.get("use_grpc"), reason="bug #2005")
+    @pytest.mark.skipif(config.get("use_grpc"), reason="Waiting SP1")
     def test_create_rf_trace_taper(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)

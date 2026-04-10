@@ -42,6 +42,18 @@ class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, version, in_memory=False, is_linux=False):
+        """Initialize the gRPC EDB database helper.
+
+        Parameters
+        ----------
+        version : str
+            AEDT/EDB version to initialize, for example ``"2026.1"``.
+        in_memory : bool, optional
+            Whether to request the local in-memory gRPC transport. The default is ``False``.
+        is_linux : bool, optional
+            Whether to initialize environment paths using the Linux-specific startup flow.
+            The default is ``False``.
+        """
         self.logger = settings.logger
         self._db = None
         self.version = version

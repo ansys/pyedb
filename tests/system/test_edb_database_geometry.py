@@ -56,6 +56,7 @@ class TestPointData(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1.")
     def test_operations(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp["X"] = 1
