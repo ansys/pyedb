@@ -138,4 +138,3 @@ def test_edb_prefers_dotnet_when_dll_path_is_forced(restore_settings_state, fake
     assert settings.specified_version == "2026.1"
     assert settings.is_grpc is False
     assert settings.is_in_memory is False
-

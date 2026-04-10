@@ -25,9 +25,7 @@ import secrets
 import sys
 import time
 
-from ansys.edb.core.session import launch_session
-from ansys.edb.core.session import is_in_memory
-
+from ansys.edb.core.session import is_in_memory, launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -159,7 +157,6 @@ class RpcSession:
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
             settings.logger.logger.info("Grpc session started")
-
 
     @staticmethod
     def kill():

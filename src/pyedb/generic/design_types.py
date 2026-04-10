@@ -28,7 +28,6 @@ from pyedb.generic.grpc_warnings import GRPC_BETA_WARNING, GRPC_NOT_SUPPORTED_WA
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
-
 DEFAULT_GRPC_VERSION = 2026.1
 
 if TYPE_CHECKING:
