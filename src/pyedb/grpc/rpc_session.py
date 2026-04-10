@@ -124,14 +124,20 @@ class RpcSession:
                 settings.is_in_memory = False
                 return
 
+        session_started = False
         if RpcSession.in_memory:
             RpcSession.__start_rpc_server()
-            if RpcSession.rpc_session:
+            session_started = True
+            RpcSession.in_memory = is_in_memory()
+            if RpcSession.rpc_session and RpcSession.in_memory:
                 settings.logger.info("Grpc session started in local mode (fast)")
                 settings.is_in_memory = True
                 return
+            if RpcSession.rpc_session:
+                settings.logger.info("In-memory transport unavailable. Falling back to standard gRPC transport.")
 
-        RpcSession.__start_rpc_server()
+        if not session_started:
+            RpcSession.__start_rpc_server()
         if RpcSession.rpc_session:
             RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
             settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")

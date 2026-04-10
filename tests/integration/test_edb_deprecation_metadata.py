@@ -116,12 +116,13 @@ def test_public_edb_stub_overloads_resolve_to_backend_classes(
 
     assert imported_aliases.get("_GrpcEdb") == expected_grpc_import
     assert imported_aliases.get("_DotnetEdb") == expected_dotnet_import
-    assert len(overloads) == 3
+    assert len(overloads) == 4
 
     expected_signatures = [
-        ("Literal[True]", "True", "_GrpcEdb"),
-        ("Literal[False]", "False", "_DotnetEdb"),
-        ("bool", "False", "_GrpcEdb | _DotnetEdb"),
+        ("Literal[True]", "...", "_GrpcEdb"),
+        ("Literal[False]", "...", "_DotnetEdb"),
+        ("bool", "...", "_GrpcEdb | _DotnetEdb"),
+        ("None", "None", "_GrpcEdb | _DotnetEdb"),
     ]
 
     expected_parameter_names = [
