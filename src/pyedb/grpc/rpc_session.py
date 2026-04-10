@@ -107,7 +107,7 @@ class RpcSession:
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
 
         requested_in_memory = RpcSession.in_memory
-        current_in_memory = getattr(RpcSession.rpc_session, "in_memory", None)
+        current_in_memory = is_in_memory() if RpcSession.rpc_session else None
 
         if RpcSession.rpc_session:
             if restart_server or current_in_memory != requested_in_memory:
