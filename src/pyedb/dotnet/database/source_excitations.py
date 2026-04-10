@@ -84,14 +84,21 @@ class SourceExcitation:
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = self._pedb._edb.Geometry.PointData(
-                self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
-            )
+            point_on_edge = [self._pedb._edb.Geometry.PointData(
+                self._pedb.edb_value(pt[0]), self._pedb.edb_value(pt[1])) for pt in point_on_edge
+                    ]
+        else:
+            point_on_edge = [self._pedb._edb.Geometry.PointData(
+                self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1]))]
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:
-            prim = [i for i in self._pedb.modeler.primitives if i.id == prim_id][0].primitive_object
-        pos_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, point_on_edge)
+            prim = self._pedb.layout.find_object_by_id(prim_id).core
+        pos_edge = []
+        for pt in point_on_edge:
+            edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, pt)
+            pos_edge.append(edge)
+        # pos_edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(prim, point_on_edge)
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb._edb.Cell.Terminal.Edge)
         return self._pedb._edb.Cell.Terminal.EdgeTerminal.Create(
             prim.GetLayout(), prim.GetNet(), terminal_name, pos_edge, isRef=is_ref

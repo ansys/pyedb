@@ -58,11 +58,13 @@ class Modeler:
         :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`
 
         """
+        if isinstance(name, int):
+            return self._pedb.layout.find_object_by_id(name)
+
         for i in self.primitives:
             if (
                 (isinstance(name, str) and i.aedt_name == name)
                 or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
-                or (isinstance(name, int) and i.id == name)
             ):
                 return i
         raise ValueError(f"Primitive {name} not found.")
@@ -1371,7 +1373,7 @@ class Modeler:
         return self._pedb.layout.get_polygon_points(polygon)
 
     @deprecated("Use layout.filter_primitives method instead.")
-    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[Primitive]:
         """Get primitives by conditions.
 
         .. deprecated:: 0.70.0
@@ -1385,8 +1387,8 @@ class Modeler:
             Set filter on layer_name. Default is ``None``.
         prim_type :  str, optional
             Set filter on primitive type. Default is ``None``.
-        is_void : bool
-            Set filter on is_void. Default is '``False'``
+        is_void : bool, optional
+            Set filter on is_void. When ``None``, both standard primitives and voids are returned.
         Returns
         -------
         list

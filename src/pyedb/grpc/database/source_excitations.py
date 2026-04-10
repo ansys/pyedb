@@ -218,12 +218,18 @@ class SourceExcitationInternal:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = CorePointData(point_on_edge)
-        prim = [i for i in self._pedb.layout.primitives if i.edb_uid == prim_id]
-        if not prim:
-            self._pedb.logger.error(f"No primitive found for ID {prim_id}")
+        elif isinstance(point_on_edge, list):
+            point_on_edge = [CorePointData(point) for point in point_on_edge]
+        primitive_lookup_id = prim_id.edb_uid if isinstance(prim_id, Primitive) else prim_id
+        try:
+            prim = self._pedb.layout.find_object_by_id(primitive_lookup_id)
+        except RuntimeError:
+            self._pedb.logger.error(f"No primitive found for ID {primitive_lookup_id}")
             return False
-        prim = prim[0]
-        pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
+        if isinstance(point_on_edge, list):
+            pos_edge = [CorePrimitiveEdge.create(prim.core, pt) for pt in point_on_edge]
+        else:
+            pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
         return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edge=pos_edge, net=prim.net, is_ref=is_ref)
 
 
@@ -2598,12 +2604,18 @@ class SourceExcitation(SourceExcitationInternal):
         from ansys.edb.core.terminal.edge_terminal import (
             EdgeTerminal as GrpcEdgeTerminal,
         )
-
-        point_on_edge = CorePointData([self._pedb.value(i) for i in location])
-        primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
-        pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)
+        points_on_edge = []
+        for point in location:
+            point_on_edge = CorePointData(list(point))
+            points_on_edge.append(point_on_edge)
+        primitive = self._pedb.layout.find_primitive(name=primitive_name)
+        if primitive:
+            primitive = primitive[0]
+        else:
+            raise "Primitive not found"
+        edges = [CorePrimitiveEdge.create(primitive.core, point) for point in points_on_edge]
         edge_term = GrpcEdgeTerminal.create(
-            layout=primitive.core.layout, edges=[pos_edge], net=primitive.core.net, name=name, is_ref=False
+            layout=primitive.core.layout, edges=edges, net=primitive.core.net, name=name, is_ref=False
         )
 
         edge_term.impedance = self._pedb._value_setter(impedance)

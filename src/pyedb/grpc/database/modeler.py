@@ -93,7 +93,7 @@ class Modeler(object):
         """
 
         if isinstance(name, int):
-            return self._pedb.core.layout.layout.Primitive.find_by_id(name)
+            return self._pedb.layout.find_object_by_id(name)
         return self._pedb.layout.find_primitive(name=name)[0]
 
     def __init__(self, p_edb) -> None:
@@ -789,7 +789,7 @@ class Modeler(object):
         net_name: Optional[str] = None,
         layer_name: Optional[str] = None,
         prim_type: Optional[str] = None,
-        is_void: bool = False,
+        is_void: Optional[bool] = None,
     ) -> List[Primitive]:
         """Get primitives with filtering.
 
@@ -802,30 +802,19 @@ class Modeler(object):
         prim_type : str, optional
             Primitive type filter.
         is_void : bool, optional
-            Void primitive filter.
+            Void primitive filter. When ``None``, both standard primitives and voids are returned.
 
         Returns
         -------
         list
             List of filtered primitives.
         """
-        prims = []
-        for el in self._pedb.layout.primitives:
-            if not el.primitive_type:
-                continue
-            if net_name:
-                if not el.net.name == net_name:
-                    continue
-            if layer_name:
-                if not el.layer.name == layer_name:
-                    continue
-            if prim_type:
-                if not el.primitive_type == prim_type:
-                    continue
-            if not el.is_void == is_void:
-                continue
-            prims.append(el)
-        return prims
+        return self._pedb.layout.filter_primitives(
+            net_name=net_name,
+            layer_name=layer_name,
+            prim_type=prim_type,
+            is_void=is_void,
+        )
 
     def fix_circle_void_for_clipping(self) -> bool:
         """Fix circle void clipping issues.
