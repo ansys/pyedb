@@ -168,8 +168,6 @@ class EdbInit(object):
         return True
 
     def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
-        # if not file_to_release:
-        #     file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
         while True:
             if self._is_file_existing_and_released(file_to_release):

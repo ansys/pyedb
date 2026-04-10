@@ -28,6 +28,9 @@ from pyedb.generic.grpc_warnings import GRPC_BETA_WARNING, GRPC_NOT_SUPPORTED_WA
 from pyedb.generic.settings import settings
 from pyedb.misc.decorators import deprecate_argument_name
 
+
+DEFAULT_GRPC_VERSION = 2026.1
+
 if TYPE_CHECKING:
     from pyedb.dotnet.edb import Edb as EdbDotnet
     from pyedb.grpc.edb import Edb as EdbGrpc
@@ -46,7 +49,7 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: Literal[True] = True,
+    grpc: Literal[True] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
     in_memory: bool = True,
@@ -65,7 +68,7 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: Literal[False] = False,
+    grpc: Literal[False] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
     in_memory: bool = True,
@@ -84,11 +87,37 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: bool = False,
+    grpc: bool = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
     in_memory: bool = True,
 ) -> "EdbGrpc | EdbDotnet": ...
+
+
+@overload
+def Edb(
+    edbpath: str | None = None,
+    cellname: str | None = None,
+    isreadonly: bool = False,
+    version: str | None = None,
+    isaedtowned: bool = False,
+    oproject: Any = None,
+    student_version: bool = False,
+    use_ppe: bool = False,
+    map_file: str | None = None,
+    technology_file: str | None = None,
+    grpc: None = None,
+    control_file: str | None = None,
+    layer_filter: str | None = None,
+    in_memory: bool = True,
+) -> "EdbGrpc | EdbDotnet": ...
+
+
+def _use_grpc_by_default(specified_version: str) -> bool:
+    if settings.edb_dll_path is not None:
+        settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
+        return False
+    return float(specified_version) >= DEFAULT_GRPC_VERSION
 
 
 # lazy imports
@@ -104,7 +133,7 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: bool = False,
+    grpc: bool | None = None,
     control_file: str | None = None,
     layer_filter: str | None = None,
     in_memory: bool = True,
@@ -139,8 +168,12 @@ def Edb(
         Layer MAP file. The default is ``None``.
     technology_file : str, optional
         Full path to technology file to be converted to xml before importing or xml. Supported by GDS format only.
-    grpc : bool, optional
-        Whether to enable gRPC. Default value is ``False``.
+    grpc : bool | None, optional
+        Whether to enable gRPC. When omitted or set to ``None``, PyEDB selects the backend
+        automatically from the resolved AEDT version: ``False`` below ``2026.1`` and ``True``
+        from ``2026.1`` onward. Set this argument explicitly to ``False`` or ``True`` to force
+        the backend selection. If ``settings.edb_dll_path`` is defined, the automatic selection
+        falls back to the DotNet backend.
     layer_filter: str,optional
         Layer filter .txt file.
     control_file : str, optional
@@ -148,7 +181,7 @@ def Edb(
         the XML file in the same directory as the board file. To succeed, the XML file and board file
         must have the same name. Only the extension differs.
     in_memory : bool, optional
-        When grpc is set to `True`, this flag enables the in-memory transport to bypass the network socket.
+        When the selected backend is gRPC, this flag enables the in-memory transport to bypass the network socket.
         Enabling this option is intended to increase performance when processes are running locally on the same
         machine. This feature status is Beta and the default value is `True`. If the required native library is
         not available, PyEDB automatically falls back to the standard RPC session.
@@ -306,12 +339,7 @@ def Edb(
     >>> workflow.run()
     """
     settings.is_student_version = student_version
-    settings.is_grpc = grpc
-    settings.is_in_memory = in_memory
-    if grpc is False and settings.edb_dll_path is not None:
-        # Check if the user specified a .dll path
-        settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
-    elif version is None:
+    if version is None:
         if settings.specified_version is not None:
             settings.logger.info(f"Use {settings.specified_version} defined in settings.")
             # Use the latest version
@@ -338,6 +366,10 @@ def Edb(
                 raise RuntimeWarning(f"AEDT version {version} is not properly installed.")
             else:
                 settings.specified_version = version
+
+    grpc = grpc if grpc is not None else _use_grpc_by_default(settings.specified_version)
+    settings.is_grpc = grpc
+    settings.is_in_memory = in_memory if grpc else False
 
     if grpc:
         if 2025.2 <= float(settings.specified_version) <= 2027.1:
