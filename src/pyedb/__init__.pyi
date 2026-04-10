@@ -41,6 +41,7 @@ def Edb(
     grpc: Literal[True] = True,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> _GrpcEdb: ...
 @overload
 def Edb(
@@ -57,6 +58,7 @@ def Edb(
     grpc: Literal[False] = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> _DotnetEdb: ...
 @overload
 def Edb(
@@ -73,6 +75,7 @@ def Edb(
     grpc: bool = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> _GrpcEdb | _DotnetEdb: ...
 
 pyedb_path: str

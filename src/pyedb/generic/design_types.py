@@ -49,6 +49,7 @@ def Edb(
     grpc: Literal[True] = True,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> "EdbGrpc": ...
 
 
@@ -67,6 +68,7 @@ def Edb(
     grpc: Literal[False] = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> "EdbDotnet": ...
 
 
@@ -85,6 +87,7 @@ def Edb(
     grpc: bool = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> "EdbGrpc | EdbDotnet": ...
 
 
@@ -104,7 +107,8 @@ def Edb(
     grpc: bool = False,
     control_file: str | None = None,
     layer_filter: str | None = None,
-) -> EdbGrpc | EdbDotnet:
+    in_memory: bool = True,
+) -> EdbGrpc | EdbDotnet | None:
     """Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
@@ -143,6 +147,12 @@ def Edb(
         Path to the XML file. The default is ``None``, in which case an attempt is made to find
         the XML file in the same directory as the board file. To succeed, the XML file and board file
         must have the same name. Only the extension differs.
+    in_memory : bool, optional
+        When grpc is set to `True`, this flag enables the in-memory transport to bypass the network socket.
+        Enabling this option is intended to increase performance when processes are running locally on the same
+        machine. This feature status is Beta and the default value is `True`. If the required native library is
+        not available, PyEDB automatically falls back to the standard RPC session.
+
 
     Returns
     -------
@@ -297,6 +307,7 @@ def Edb(
     """
     settings.is_student_version = student_version
     settings.is_grpc = grpc
+    settings.is_in_memory = in_memory
     if grpc is False and settings.edb_dll_path is not None:
         # Check if the user specified a .dll path
         settings.logger.info(f"Force to use .dll from {settings.edb_dll_path} defined in settings.")
@@ -344,6 +355,7 @@ def Edb(
                 map_file=map_file,
                 technology_file=technology_file,
                 control_file=control_file,
+                in_memory=in_memory,
             )
 
         elif float(settings.specified_version) < 2025.2:

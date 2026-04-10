@@ -594,7 +594,7 @@ class Modeler(object):
             elif isinstance(void, CorePolygonData):
                 void_polygon_data = void
             else:
-                void_polygon_data = void.polygon_data
+                void_polygon_data = void.polygon_data.core
             if not void_polygon_data.points:
                 self._pedb.logger.error("Failed to create void polygon data")
                 return False
