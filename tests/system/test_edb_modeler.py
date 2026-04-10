@@ -659,16 +659,6 @@ class TestClass(BaseTestClass):
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing coverage for Text prims")
-    def test_prims(self):
-        edbapp = self.edb_examples.get_si_board()
-        edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
-        prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
-        assert prim
-        assert not prim[0].is_null
-        assert prim[0].aedt_name == "text_8"
-        edbapp.close(terminate_rpc_session=False)
-
     @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
     def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
         from pyedb.dotnet.database.dotnet.database import CellDotNet
@@ -695,7 +685,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
-    def test_paths_for_grpc(self):
+    def test_primitives_for_grpc(self):
         edbapp = self.edb_examples.get_si_board()
 
         # Paths
@@ -719,6 +709,34 @@ class TestClass(BaseTestClass):
         assert cir
         cir.set_parameters(0.1, 0.1, 0.3)
         assert cir.get_parameters()[2].real == 0.3
+
+        # Rectangle
+        rect = edbapp.layout.rectangles[0]
+        rect.representation_type = "center_width_height"
+        assert rect.representation_type == "center_width_height"
+        # TODO if representation_type is not set first it breaks the code
+        assert rect.get_parameters()
+        # TODO representation type does not change
+        rect.corner_radius = 1.0
+        assert rect.corner_radius == 1.0
+        rect.rotation = 90
+        assert rect.rotation == 90
+        assert rect.width
+        rect.width = 0.2
+        rect.height = 0.1
+        assert rect.height == 0.1
+        assert rect.duplicate_across_layers("s2")
+        edbapp.modeler.create_rectangle(
+            "s3", "GND", representation_type="center_width_height", width=0.1, height=0.1, center_point=[0, 0]
+        )
+
+        # Texts
+        edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
+        prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
+        assert prim
+        assert not prim[0].is_null
+        assert prim[0].aedt_name == "text_11"
+        edbapp.close(terminate_rpc_session=False)
 
     # @pytest.mark.skipif(config.get("use_grpc"), reason="bug #2005")
     def test_create_rf_trace_taper(self):
