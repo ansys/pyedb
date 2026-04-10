@@ -1262,7 +1262,7 @@ class EdbPadstacks(object):
                 net._edb_object,
                 via_name,
                 padstack,
-                position._edb_object,
+                position.core,
                 rotation,
                 fromlayer,
                 tolayer,
