@@ -599,6 +599,7 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1.")
     def test_arbitrary_wave_ports(self):
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
