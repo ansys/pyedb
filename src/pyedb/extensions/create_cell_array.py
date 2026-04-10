@@ -358,7 +358,7 @@ class _DotNetAdapter(_BaseAdapter):
 
         vector = PointData.create_from_xy(self.edb, x=dx, y=dy)
         moved_pd = prim.polygon_data
-        moved_pd._edb_object.Move(vector._edb_object)
+        moved_pd._edb_object.Move(vector.core)
         return self.edb.modeler.create_polygon(
             moved_pd,
             layer_name=prim.layer.name,
@@ -370,7 +370,7 @@ class _DotNetAdapter(_BaseAdapter):
 
         vector = PointData.create_from_xy(self.edb, x=dx, y=dy)
         moved_path = path._edb_object.GetCenterLine()
-        moved_path.Move(vector._edb_object)
+        moved_path.Move(vector.core)
         moved_path = [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(moved_path.Points)]
         end_caps = path._edb_object.GetEndCapStyle()
 

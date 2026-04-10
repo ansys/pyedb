@@ -579,7 +579,9 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "1_Top", "180deg", "1mm", "2mm", True)
+        cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
+            "analysis", "1_Top", "180deg", 0, 0, "1mm", "2mm", True
+        )
         assert cell_inst.transform3d.shift.x.value == pytest.approx(0.001)
         assert cell_inst.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
@@ -591,7 +593,14 @@ class TestClass(BaseTestClass):
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
-            "analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True
+            cell_name="analysis",
+            placement_layer="16_Bottom",
+            rotation="180deg",
+            rotation_x=0,
+            rotation_y="0deg",
+            x="32mm",
+            y="-1mm",
+            place_on_bottom=True,
         )
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
@@ -727,4 +736,29 @@ class TestClass(BaseTestClass):
         assert prim
         assert not prim[0].is_null
         assert prim[0].aedt_name == "text_11"
+        edbapp.close(terminate_rpc_session=False)
+
+    # @pytest.mark.skipif(config.get("use_grpc"), reason="bug #2005")
+    def test_create_rf_trace_taper(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp["p0_x"] = "1mm"
+        edbapp["p0_y"] = "1mm"
+        edbapp["p1_x"] = "1mm"
+        edbapp["p1_y"] = "2mm"
+        edbapp["w0"] = "1mm"
+        edbapp["w1"] = "0.5mm"
+        taper = edbapp.modeler.create_taper(
+            start_point=["p0_x", "p0_y"],
+            end_point=["p1_x", "p1_y"],
+            start_width="w0",
+            end_width="w1",
+            layer_name="Top",
+        )
+        assert taper.polygon_data.points == [
+            (0.0005, 0.001),
+            (0.0015, 0.001),
+            (0.00125, 0.002),
+            (0.00075, 0.002),
+        ]
         edbapp.close(terminate_rpc_session=False)

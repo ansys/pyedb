@@ -110,7 +110,7 @@ class Primitive:
 
         """
         primitive = self.core.cast()
-        return PolygonData(primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
+        return PolygonData(self._pedb, primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
 
     @polygon_data.setter
     def polygon_data(self, value):

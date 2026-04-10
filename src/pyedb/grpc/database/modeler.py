@@ -33,6 +33,8 @@ from ansys.edb.core.geometry.polygon_data import (
     PolygonData as CorePolygonData,
 )
 
+from pyedb.grpc.database.geometry.point_data import PointData
+from pyedb.grpc.database.geometry.polygon_data import PolygonData
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.primitive.bondwire import Bondwire
 from pyedb.grpc.database.primitive.circle import Circle
@@ -586,8 +588,7 @@ class Modeler(object):
         else:
             polygon_data = points
         if not polygon_data.points:
-            self._pedb.logger.error("Failed to create main shape polygon data")
-            return False
+            raise RuntimeError("Failed to create main shape polygon data")
         for void in voids:
             if isinstance(void, list):
                 void_polygon_data = CorePolygonData(points=void)
@@ -596,13 +597,11 @@ class Modeler(object):
             else:
                 void_polygon_data = void.polygon_data
             if not void_polygon_data.points:
-                self._pedb.logger.error("Failed to create void polygon data")
-                return False
+                raise RuntimeError("Failed to create void polygon data")
             polygon_data.holes.append(void_polygon_data)
         polygon = Polygon.create(layout=self._pedb.active_layout, layer=layer_name, net=net, polygon_data=polygon_data)
         if polygon.is_null or polygon_data is False:  # pragma: no cover
-            self._pedb.logger.error("Null polygon created")
-            return False
+            raise RuntimeError("Null polygon created")
         return polygon
 
     def create_rectangle(
@@ -1298,12 +1297,14 @@ class Modeler(object):
         self,
         cell_name: str,
         placement_layer: str,
-        rotation: Union[float, str] = 0,
-        x: Union[float, str] = 0,
-        y: Union[float, str] = 0,
+        rotation: Union[float, str] = 0.0,
+        rotation_x: float | str = 0,
+        rotation_y: float | str = 0,
+        x: float | str = 0,
+        y: float | str = 0,
         place_on_bottom: bool = False,
-        local_origin_x: Optional[Union[float, str]] = 0,
-        local_origin_y: Optional[Union[float, str]] = 0,
+        local_origin_x: float | str | None = 0,
+        local_origin_y: float | str | None = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1313,12 +1314,12 @@ class Modeler(object):
             Name of the layout to insert.
         placement_layer: str
             Placement Layer.
-        scaling : float
-            Scale parameter.
         rotation : float or str
-            Rotation angle, specified counter-clockwise in radians.
-        mirror : bool
-            Mirror about Y-axis.
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
+        rotation_x : float or str
+            Rotation angle around X-axis, specified counter-clockwise in radians.
+        rotation_y : float or str
+            Rotation angle around Y-axis, specified counter-clockwise in radians.
         x : float or str
             X offset.
         y : float or str
@@ -1338,8 +1339,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.upper_elevation,
-                rotation_x="0deg",
-                rotation_y=0,
+                rotation_x=rotation_x,
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1350,8 +1351,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.lower_elevation,
-                rotation_x="180deg",
-                rotation_y=0,
+                rotation_x=self._pedb.value(rotation_x) + self._pedb.value("180deg"),
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1549,15 +1550,17 @@ class Modeler(object):
 
     def insert_3d_component_on_layer(
         self,
-        a3dcomp_path: Union[str, Path],
+        a3dcomp_path: str | Path,
         placement_layer: str,
-        rotation: Union[float, str] = 0,
-        x: Union[float, str] = 0,
-        y: Union[float, str] = 0,
+        rotation: float | str = 0,
+        rotation_x: float | str = 0,
+        rotation_y: float | str = 0,
+        x: float | str = 0,
+        y: float | str = 0,
         place_on_bottom: bool = False,
-        local_origin_x: Optional[Union[float, str]] = 0,
-        local_origin_y: Optional[Union[float, str]] = 0,
-        local_origin_z: Optional[Union[float, str]] = 0,
+        local_origin_x: float | str | None = 0,
+        local_origin_y: float | str | None = 0,
+        local_origin_z: float | str | None = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1568,6 +1571,10 @@ class Modeler(object):
         placement_layer: str
             Placement Layer.
         rotation : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        rotation_x : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        rotation_y : float or str
             Rotation angle, specified counter-clockwise in radians.
         x : float or str
             X offset.
@@ -1590,8 +1597,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.upper_elevation,
-                rotation_x=0,
-                rotation_y=0,
+                rotation_x=rotation_x,
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1603,11 +1610,66 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.lower_elevation,
-                rotation_x="180deg",
-                rotation_y=0,
+                rotation_x=self._pedb.value(rotation_x) + self._pedb.value("180deg"),
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
                 local_origin_z=local_origin_z,
             )
         return cell_inst
+
+    def create_taper(
+        self,
+        start_point: tuple[str | float, str | float, str | float, str | float],
+        end_point: tuple[str | float, str | float, str | float, str | float],
+        start_width: str | float,
+        end_width: str | float,
+        layer_name: str = "",
+        voids: list | None = None,
+        net_name: str = "",
+    ) -> Polygon:
+        """Create RF trace taper.
+        (y)
+         ↑
+         |              <─      End Width      ─>
+         |              ─────── End Point ───────
+         |             /           |             \
+         |            /            |              \
+         |           /             |               \
+         |          ────────── Start Point ─────────
+         |          <─         Start Width        ─>
+         +──────────────────────────────────────→ (x)
+        """
+
+        p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
+        p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
+        angle = ((p1_y - p0_y) / (p1_x - p0_x)).atan()
+        w0 = self._pedb.value(start_width)
+        w1 = self._pedb.value(end_width)
+
+        h = ((p0_x - p1_x) ** 2 + (p0_y - p1_y) ** 2) ** 0.5
+
+        t_p0_y = w0 / 2
+        t_p1_y = w0 / -2
+        t_p0_x = t_p1_x = 0
+
+        t_p2_y = w1 / -2
+        t_p3_y = w1 / 2
+        t_p2_x = t_p3_x = h
+
+        point_data = []
+        for i in [
+            [t_p0_x, t_p0_y],
+            [t_p1_x, t_p1_y],
+            [t_p2_x, t_p2_y],
+            [t_p3_x, t_p3_y],
+            # [t_p0_x, t_p0_y],
+        ]:
+            temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
+            temp = temp.rotate(angle=str(angle), center=(0, 0))
+            temp = temp.move(p0_x, p0_y)
+            point_data.append(temp)
+            poly_data = PolygonData.create(self._pedb, point_data, closed=True)
+        _voids = [] if voids is None else voids
+        return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)
