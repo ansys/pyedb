@@ -42,7 +42,8 @@ class EdbInit(object):
     """Edb Dot Net Class."""
 
     def __init__(self, version, in_memory=False, is_linux=False):
-        """Initialize the gRPC EDB database helper.
+        """
+        Initialize the gRPC EDB database helper.
 
         Parameters
         ----------
