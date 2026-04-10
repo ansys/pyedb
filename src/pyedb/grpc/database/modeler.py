@@ -625,18 +625,23 @@ class Modeler(object):
             Layer name.
         net_name : str, optional
             Associated net name.
-        lower_left_point : list, optional
+        lower_left_point : list
+            Required for representation type: "lower_left_upper_right"
             [x,y] lower left point.
-        upper_right_point : list, optional
+        upper_right_point : list
+            Required for representation type: "lower_left_upper_right"
             [x,y] upper right point.
-        center_point : list, optional
+        center_point : list
+            Required for representation type: "center_width_height"
             [x,y] center point.
         width : str or float, optional
+            Required for representation type: "center_width_height"
             Rectangle width.
         height : str or float, optional
+             Required for representation type: "center_width_height"
             Rectangle height.
         representation_type : str, optional
-            "lower_left_upper_right" or "center_width_height".
+            "lower_left_upper_right" or "center_width_height". Default value is "lower_left_upper_right".
         corner_radius : str, optional
             Corner radius with units.
         rotation : str, optional
@@ -652,7 +657,7 @@ class Modeler(object):
             rect = Rectangle(self._pedb).create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net,
+                net=net.core,
                 rep_type=representation_type,
                 param1=self._pedb.value(lower_left_point[0]),
                 param2=self._pedb.value(lower_left_point[1]),
@@ -680,7 +685,7 @@ class Modeler(object):
             rect = Rectangle.create(
                 layout=self._pedb.active_layout,
                 layer=layer_name,
-                net=net,
+                net=net.core,
                 rep_type=rep_type,
                 param1=self._pedb.value(center_point[0]),
                 param2=self._pedb.value(center_point[1]),
@@ -1292,12 +1297,14 @@ class Modeler(object):
         self,
         cell_name: str,
         placement_layer: str,
-        rotation: Union[float, str] = 0,
-        x: Union[float, str] = 0,
-        y: Union[float, str] = 0,
+        rotation: Union[float, str] = 0.0,
+        rotation_x: float | str = 0,
+        rotation_y: float | str = 0,
+        x: float | str = 0,
+        y: float | str = 0,
         place_on_bottom: bool = False,
-        local_origin_x: Optional[Union[float, str]] = 0,
-        local_origin_y: Optional[Union[float, str]] = 0,
+        local_origin_x: float | str | None = 0,
+        local_origin_y: float | str | None = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1307,12 +1314,12 @@ class Modeler(object):
             Name of the layout to insert.
         placement_layer: str
             Placement Layer.
-        scaling : float
-            Scale parameter.
         rotation : float or str
-            Rotation angle, specified counter-clockwise in radians.
-        mirror : bool
-            Mirror about Y-axis.
+            Rotation angle around Z-axis, specified counter-clockwise in radians.
+        rotation_x : float or str
+            Rotation angle around X-axis, specified counter-clockwise in radians.
+        rotation_y : float or str
+            Rotation angle around Y-axis, specified counter-clockwise in radians.
         x : float or str
             X offset.
         y : float or str
@@ -1332,8 +1339,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.upper_elevation,
-                rotation_x="0deg",
-                rotation_y=0,
+                rotation_x=rotation_x,
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1344,8 +1351,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.lower_elevation,
-                rotation_x="180deg",
-                rotation_y=0,
+                rotation_x=self._pedb.value(rotation_x) + self._pedb.value("180deg"),
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1543,15 +1550,17 @@ class Modeler(object):
 
     def insert_3d_component_on_layer(
         self,
-        a3dcomp_path: Union[str, Path],
+        a3dcomp_path: str | Path,
         placement_layer: str,
-        rotation: Union[float, str] = 0,
-        x: Union[float, str] = 0,
-        y: Union[float, str] = 0,
+        rotation: float | str = 0,
+        rotation_x: float | str = 0,
+        rotation_y: float | str = 0,
+        x: float | str = 0,
+        y: float | str = 0,
         place_on_bottom: bool = False,
-        local_origin_x: Optional[Union[float, str]] = 0,
-        local_origin_y: Optional[Union[float, str]] = 0,
-        local_origin_z: Optional[Union[float, str]] = 0,
+        local_origin_x: float | str | None = 0,
+        local_origin_y: float | str | None = 0,
+        local_origin_z: float | str | None = 0,
     ) -> Any:
         """Insert a layout instance into the active layout.
 
@@ -1562,6 +1571,10 @@ class Modeler(object):
         placement_layer: str
             Placement Layer.
         rotation : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        rotation_x : float or str
+            Rotation angle, specified counter-clockwise in radians.
+        rotation_y : float or str
             Rotation angle, specified counter-clockwise in radians.
         x : float or str
             X offset.
@@ -1584,8 +1597,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.upper_elevation,
-                rotation_x=0,
-                rotation_y=0,
+                rotation_x=rotation_x,
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
@@ -1597,8 +1610,8 @@ class Modeler(object):
                 x=x,
                 y=y,
                 z=placement_layer.lower_elevation,
-                rotation_x="180deg",
-                rotation_y=0,
+                rotation_x=self._pedb.value(rotation_x) + self._pedb.value("180deg"),
+                rotation_y=rotation_y,
                 rotation_z=rotation,
                 local_origin_x=local_origin_x,
                 local_origin_y=local_origin_y,
