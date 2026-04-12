@@ -2142,7 +2142,7 @@ class SourceExcitation(SourceExcitationInternal):
 
         # --- Create the BundleTerminal grouping positive (edge) and negative (padstack) ---
         bundle_terminal = CoreBundleTerminal.create(terminals=[edge_term, neg_term, pos_term])
-        return bundle_terminal
+        return BundleTerminal(self._pedb, bundle_terminal)
 
     def create_wave_port(
         self,
