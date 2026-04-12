@@ -515,16 +515,31 @@ class Layout(PrimitivesQuery):
             Dictionary of terminals.
         """
         temp = []
-        for i in self._pedb.active_cell.layout.terminals:
-            if i.type.name.lower() == "pin_group":
+        try:
+            raw_terminals = self._pedb.active_cell.layout.terminals
+        except Exception as exc:
+            self._pedb.logger.warning("Failed to enumerate raw layout terminals: %s", exc)
+            return temp
+
+        for i in raw_terminals:
+            if i is None:
+                continue
+            try:
+                type_name_obj = i.type.name
+            except Exception as exc:
+                self._pedb.logger.warning("Skipping invalid terminal object during enumeration: %s", exc)
+                continue
+
+            type_name = type_name_obj.lower()
+            if type_name == "pin_group":
                 temp.append(PinGroupTerminal(self._pedb, i))
-            elif i.type.name.lower() == "padstack_inst":
+            elif type_name == "padstack_inst":
                 temp.append(PadstackInstanceTerminal(self._pedb, i))
-            elif i.type.name.lower() == "edge":
+            elif type_name == "edge":
                 temp.append(EdgeTerminal(self._pedb, i))
-            elif i.type.name.lower() == "bundle":
+            elif type_name == "bundle":
                 temp.append(BundleTerminal(self._pedb, i))
-            elif i.type.name.lower() == "point":
+            elif type_name == "point":
                 temp.append(PointTerminal(self._pedb, i))
         return temp
 
