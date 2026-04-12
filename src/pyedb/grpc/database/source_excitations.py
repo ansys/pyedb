@@ -1998,9 +1998,13 @@ class SourceExcitation(SourceExcitationInternal):
                                    negative_pin:PadstackInstance=None) -> bool | BundleTerminal:
         """Create a horizontal wave port."""
         from ansys.edb.core.database import ProductIdType
+        from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
+        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
+        from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
 
         pos_via = positive_pin
         neg_via = negative_pin
+        port_number = len(self._pedb.ports) + 1
         if isinstance(void, int):
             void = self._pedb.layout.get_object_by_id(void)
             if not void:
@@ -2038,18 +2042,18 @@ class SourceExcitation(SourceExcitationInternal):
         # void terminal
         segments = void.core.polygon_data.arc_data
         edges = [CorePrimitiveEdge.create(void.core, seg.midpoint) for seg in segments]
-        edge_term = EdgeTerminal.create(layout=void.layout, edges=edges, net=void.net, name=f"{void.id}",
-                                        is_ref=False)
-
+        edge_term = CoreEdgeTerminal.create(
+            layout=void.core.layout, edges=edges, net=void.core.net, name=f"Ref_void_{void.id}", is_ref=False
+        )
         # AEDT creates a new padstack instance using the "Symbol" def at the net1_n
         # padstack position, with is_layout_pin=True, for the port's negative terminal.
-        symbol_def = self._pedb.padstacks.definitions["symbol"]
-        port_neg_net = Net.create(layout=self._pedb.layout, name=f"Port:{neg_via.net.name}")
+        symbol_def = CorePadstackDef.find_by_name(self._pedb.db, "Symbol")
+        port_neg_net = Net.create(layout=self._pedb.layout, name=f"Port{port_number}:{neg_via.net.name}")
         symbol_psi = PadstackInstance.create(
             layout=self._pedb.layout,
             net=port_neg_net,
-            name="Port1_neg_psi",
-            padstack_definition=symbol_def,
+            name=f"Port{port_number}_neg_psi",
+            padstack_definition=symbol_def.name,
             position_x=neg_via.position[0],
             position_y=neg_via.position[1],
             rotation=neg_via.rotation,
@@ -2057,7 +2061,7 @@ class SourceExcitation(SourceExcitationInternal):
             bottom_layer=neg_via.stop_layer,
         )
         symbol_psi.is_layout_pin = True
-        symbol_psi.aedt_name = f"Port:{neg_via.net.name}"
+        symbol_psi.aedt_name = f"Port{port_number}:{neg_via.net.name}"
         # AEDT name for the Symbol PSI (attr_id=11) and its material/mesh descriptor (attr_id=21)
         # symbol_psi.set_product_property(ProductIdType.DESIGNER, 11, "Port1:net1_n")
         symbol_psi.core.set_product_property(ProductIdType.DESIGNER, 21,
@@ -2065,20 +2069,20 @@ class SourceExcitation(SourceExcitationInternal):
 
         psi_term = PadstackInstanceTerminal.create(
             layout=self._pedb.layout,
-            name=f"Port:{neg_via.net.name}",
+            name=symbol_psi.aedt_name,
             padstack_instance=symbol_psi,
-            layer=neg_via.start_layer,
+            layer=symbol_psi.start_layer,
             net=port_neg_net,
-        )
+        ).core
 
         # Set port descriptor (attr_id=25) on both child terminals ---
         # This is the HorizWavePort metadata AEDT uses to identify the port geometry.
-        edge_term.core.set_product_property(
+        edge_term.set_product_property(
             ProductIdType.DESIGNER, 25,
             f"$begin ''\n\tType='Pad Port'\n\tArms=2\n\tHFSSLastType=8\n"
             f"\tHorizWavePort('{pos_via.aedt_name}', '{neg_via.aedt_name}')\n\tHorizWavePrimary=true\n\tIsGapSource=true\n$end ''\n",
         )
-        psi_term.core.set_product_property(
+        psi_term.set_product_property(
             ProductIdType.DESIGNER, 25,
             f"$begin ''\n\tType='Pad Port'\n\tArms=2\n\tHFSSLastType=8\n"
             f"\tHorizWavePort('{neg_via.aedt_name}')\n\tIsGapSource=true\n$end ''\n",
@@ -2095,22 +2099,20 @@ class SourceExcitation(SourceExcitationInternal):
         siwave_str = "SIwave('Reference Net'='')"
 
         for term in [edge_term, psi_term]:
-            term.core.set_product_solver_option(ProductIdType.DESIGNER, "HFSS", hfss_solver_str)
-            term.core.set_product_solver_option(ProductIdType.DESIGNER, "PlanarEM", planar_em_str)
-            term.core.set_product_solver_option(ProductIdType.DESIGNER, "SIwave", siwave_str)
+            term.set_product_solver_option(ProductIdType.DESIGNER, "HFSS", hfss_solver_str)
+            term.set_product_solver_option(ProductIdType.DESIGNER, "PlanarEM", planar_em_str)
+            term.set_product_solver_option(ProductIdType.DESIGNER, "SIwave", siwave_str)
 
         # --- Set port post-processing properties on both terminals ---
         for term in [edge_term, psi_term]:
-            pp = term.core.port_post_processing_prop
+            pp = term.port_post_processing_prop
             pp.voltage_magnitude = self._pedb.value(1.0)
             pp.do_deembed = True
             pp.do_renormalize = True
-            term.core.port_post_processing_prop = pp
+            term.port_post_processing_prop = pp
 
         # --- Create the BundleTerminal grouping positive (edge) and negative (padstack) ---
-        bundle_terminal = BundleTerminal.create(self._pedb,
-                                                terminals=[edge_term, psi_term],
-                                                name=f"{pos_via.aedt_name}.{neg_via.aedt_name}")
+        bundle_terminal = CoreBundleTerminal.create(terminals=[edge_term, psi_term])
         return bundle_terminal
 
     def create_wave_port(
