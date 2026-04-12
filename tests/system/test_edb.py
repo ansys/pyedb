@@ -1357,3 +1357,14 @@ class TestClass(BaseTestClass):
         setup = edbapp.setups["setup_1"]
         assert not setup.settings.use_loop_res_for_per_pin  # fail on .net
         edbapp.close()
+
+    def test_horizontal_wave_ports(self):
+        local_path = Path(__file__).parent.parent
+        example_folder = os.path.join(local_path, "example_models", "TEDB")
+        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
+
+        edbapp = self.edb_examples.load_edb(source_path_edb)
+        voids = edbapp.layout.primitives[0].voids
+        for void in voids:
+            edbapp.excitation_manager.create_horizontal_waveport(void)
+        edbapp.close(terminate_rpc_session=False)
