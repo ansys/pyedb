@@ -62,9 +62,8 @@ class Modeler:
             return self._pedb.layout.find_object_by_id(name)
 
         for i in self.primitives:
-            if (
-                (isinstance(name, str) and i.aedt_name == name)
-                or (isinstance(name, str) and i.aedt_name == name.replace("__", "_"))
+            if (isinstance(name, str) and i.aedt_name == name) or (
+                isinstance(name, str) and i.aedt_name == name.replace("__", "_")
             ):
                 return i
         raise ValueError(f"Primitive {name} not found.")

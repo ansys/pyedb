@@ -63,7 +63,9 @@ class TestClass(BaseTestClass):
     def test_filter_primitives_includes_voids(self):
         edbapp = self.edb_examples.get_si_verse()
         void = next(void for poly in edbapp.layout.polygons if poly.has_voids for void in poly.voids)
-        net_void = next(void for poly in edbapp.layout.polygons if poly.has_voids for void in poly.voids if void.net_name)
+        net_void = next(
+            void for poly in edbapp.layout.polygons if poly.has_voids for void in poly.voids if void.net_name
+        )
         kwargs = {"name": void.aedt_name, "layer_name": void.layer_name}
         if void.net_name:
             kwargs["net_name"] = void.net_name

@@ -45,6 +45,7 @@ class HFSSProductProperty:
         pec_launch_width (str): PEC (Perfect Electric Conductor) launch width. Default is "10um".
         reference_name (str): Reference name for the port. Default is "".
     """
+
     hfss_type: str = "Gap"
     orientation: str = ""
     layer_alignment: str = ""
@@ -60,6 +61,7 @@ class HFSSProductProperty:
         Returns:
             str: A formatted HFSS configuration string with all properties encoded.
         """
+
         def _fmt_num(val: float) -> str:
             try:
                 v = float(val)
@@ -142,7 +144,7 @@ def parse_hfss_string(s: str | None) -> HFSSProductProperty:
 @dataclass
 class HorizontalWavePortProperty:
     """Represents the properties of a horizontal wave port.
-    
+
     This class encapsulates configuration settings for horizontal wave ports used in
     electromagnetic simulations. It stores port characteristics such as type, geometry
     (arms), and associated port names (padstack instances).
@@ -166,7 +168,7 @@ class HorizontalWavePortProperty:
         ...     hfss_last_type=8,
         ...     port_names=("pos_via", "neg_via"),
         ...     horizontal_wave_primary=True,
-        ...     is_gap_source=True
+        ...     is_gap_source=True,
         ... )
         >>> print(prop.to_property_string())
         $begin ''
@@ -291,6 +293,7 @@ class PadstackInstanceMeshingProperty:
         material (str): Material name for the padstack instance. Default is "".
         meshing_setting (str): Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
     """
+
     sid: int = 0
     material: str = ""
     meshing_setting: str = ""
@@ -361,6 +364,7 @@ class ViaMeshingProperty:
         material (str): Material name for the via. Default is "".
         meshing_setting (str): Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
     """
+
     sid: int = 0
     material: str = ""
     meshing_setting: str = ""
@@ -431,6 +435,7 @@ class PlanarEMProperty:
         port_solver (bool): Whether to use port solver. Default is True.
         ignore_reference (bool): Whether to ignore reference. Default is False.
     """
+
     port_type: str = "Pad Port Gap Source"
     port_solver: bool = True
     ignore_reference: bool = False
@@ -444,13 +449,7 @@ class PlanarEMProperty:
         port_solver_str = "true" if self.port_solver else "false"
         ignore_ref_str = "true" if self.ignore_reference else "false"
 
-        return (
-            "PlanarEM("
-            f"Type='{self.port_type}', "
-            f"PortSolver={port_solver_str}, "
-            f"'Ignore Reference'={ignore_ref_str}"
-            ")"
-        )
+        return f"PlanarEM(Type='{self.port_type}', PortSolver={port_solver_str}, 'Ignore Reference'={ignore_ref_str})"
 
 
 def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
@@ -501,6 +500,7 @@ class SiwaveProperty:
     Attributes:
         reference_net (str): The reference net name. Default is an empty string.
     """
+
     reference_net: str = ""
 
     def to_property_string(self) -> str:
@@ -603,4 +603,3 @@ class LayoutObj(ObjBase):
     def _siwave_properties(self, value):
         if isinstance(value, SiwaveProperty):
             self.core.set_product_solver_option(CoreProductIdType.DESIGNER, "SIwave", value.to_property_string())
-

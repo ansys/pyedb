@@ -1992,11 +1992,13 @@ class SourceExcitation(SourceExcitationInternal):
         boundle_terminal = BundleTerminal.create(self._pedb, port_name, edb_list)
         return boundle_terminal
 
-    def create_horizontal_wave_port(self,
-                                   void:int | Primitive, 
-                                   padstack_instances:list[PadstackInstance]=None,
-                                   pec_launch_width:str="0.04mm",
-                                   layer_alignment:str="Lower") -> bool | BundleTerminal:
+    def create_horizontal_wave_port(
+        self,
+        void: int | Primitive,
+        padstack_instances: list[PadstackInstance] = None,
+        pec_launch_width: str = "0.04mm",
+        layer_alignment: str = "Lower",
+    ) -> bool | BundleTerminal:
         """Create a horizontal wave port around one or more vias inside a void.
 
         A horizontal wave port is a higher-fidelity alternative to coaxial lumped
@@ -2040,8 +2042,8 @@ class SourceExcitation(SourceExcitationInternal):
         results for differential links and other high-speed interconnect channels.
         """
         from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
-        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
         from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
+        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
 
         port_number = len(self._pedb.ports) + 1
         terminals = []
@@ -2056,11 +2058,14 @@ class SourceExcitation(SourceExcitationInternal):
             )
             padstack_instances = [self._pedb.padstacks.instances[inst_id] for inst_id in instance_ids]
             if not padstack_instances:
-                self._pedb.logger.error(f"No padstack instance find inside void primitive {void}, "
-                                        "no horizontal wave port created.")
+                self._pedb.logger.error(
+                    f"No padstack instance find inside void primitive {void}, no horizontal wave port created."
+                )
                 return False
-            self._pedb.logger.info(f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
-                                   "inside the void.")
+            self._pedb.logger.info(
+                f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
+                "inside the void."
+            )
             self._pedb.logger.info(f"{len(padstack_instances)} padstack instances found inside the void.")
 
         # void terminal
@@ -2116,7 +2121,7 @@ class SourceExcitation(SourceExcitationInternal):
             horizontal_wave_port_property.port_type = "Pad Port"
             horizontal_wave_port_property.arms = 2
             horizontal_wave_port_property.hfss_last_type = 8
-            horizontal_wave_port_property.port_names = (term.padstack_instance.aedt_name)
+            horizontal_wave_port_property.port_names = term.padstack_instance.aedt_name
             term._horizontal_wave_port_properties = horizontal_wave_port_property
 
         terminals.append(edge_term)
@@ -2803,6 +2808,7 @@ class SourceExcitation(SourceExcitationInternal):
         from ansys.edb.core.terminal.edge_terminal import (
             EdgeTerminal as GrpcEdgeTerminal,
         )
+
         points_on_edge = []
         for point in location:
             point_on_edge = CorePointData(list(point))

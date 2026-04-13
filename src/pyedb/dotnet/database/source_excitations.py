@@ -84,12 +84,16 @@ class SourceExcitation:
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = [self._pedb._edb.Geometry.PointData(
-                self._pedb.edb_value(pt[0]), self._pedb.edb_value(pt[1])) for pt in point_on_edge
-                    ]
+            point_on_edge = [
+                self._pedb._edb.Geometry.PointData(self._pedb.edb_value(pt[0]), self._pedb.edb_value(pt[1]))
+                for pt in point_on_edge
+            ]
         else:
-            point_on_edge = [self._pedb._edb.Geometry.PointData(
-                self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1]))]
+            point_on_edge = [
+                self._pedb._edb.Geometry.PointData(
+                    self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
+                )
+            ]
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:
@@ -1173,11 +1177,13 @@ class SourceExcitation:
             edge_term.SetReferenceTerminal(ref_edge_term)
         return True
 
-    def create_horizontal_wave_port(self,
-                                   void:int | Primitive,
-                                   padstack_instances:list=None,
-                                   pec_launch_width:str="0.04mm",
-                                   layer_alignment:str="Lower") -> bool:
+    def create_horizontal_wave_port(
+        self,
+        void: int | Primitive,
+        padstack_instances: list = None,
+        pec_launch_width: str = "0.04mm",
+        layer_alignment: str = "Lower",
+    ) -> bool:
         """Create a horizontal wave port around one or more vias inside a void.
 
         A horizontal wave port is a higher-fidelity alternative to coaxial lumped
@@ -1223,7 +1229,6 @@ class SourceExcitation:
         from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
         from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
-
         port_number = len(self._pedb.ports) + 1
         terminals = []
         if isinstance(void, int):
@@ -1237,11 +1242,14 @@ class SourceExcitation:
             )
             padstack_instances = [self._pedb.padstacks.instances[inst_id] for inst_id in instance_ids]
             if not padstack_instances:
-                self._pedb.logger.error(f"No padstack instance find inside void primitive {void}, "
-                                        "no horizontal wave port created.")
+                self._pedb.logger.error(
+                    f"No padstack instance find inside void primitive {void}, no horizontal wave port created."
+                )
                 return False
-            self._pedb.logger.info(f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
-                                   "inside the void.")
+            self._pedb.logger.info(
+                f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
+                "inside the void."
+            )
             self._pedb.logger.info(f"{len(padstack_instances)} padstack instances found inside the void.")
 
         # void terminal
@@ -1265,34 +1273,34 @@ class SourceExcitation:
                 via_name=f"Port{port_number}_psi{inst_ind}",
                 rotation=via.rotation,
                 fromlayer=via.start_layer,
-                tolayer=via.stop_layer,)
+                tolayer=via.stop_layer,
+            )
             symbol.is_layout_pin = True
             symbol.aedt_name = f"Port{port_number}:{via.net.name}"
 
-            symbol.core.SetProductProperty(self._pedb.core.ProductId.Designer, 21,
-                                            "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Mesh'\n$end ''\n")
+            symbol.core.SetProductProperty(
+                self._pedb.core.ProductId.Designer, 21, "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Mesh'\n$end ''\n"
+            )
 
             term = PadstackInstanceTerminal.create(
-                 edb=self._pedb,
-                 padstack_instance=symbol,
-                 name=symbol.aedt_name,
-                 layer=symbol.start_layer,
-                 is_ref=False)
+                edb=self._pedb, padstack_instance=symbol, name=symbol.aedt_name, layer=symbol.start_layer, is_ref=False
+            )
             terminals.append(term)
 
         port_names_str = ", ".join(f"'{inst.aedt_name}'" for inst in padstack_instances)
         edge_term.core.SetProductProperty(
-             self._pedb.core.ProductId.Designer, 25,
-             f"$begin ''\n\tType='Pad Port'\n\tArms=2\n\tHFSSLastType=8\n"
-             f"\tHorizWavePort({port_names_str})\n\tHorizWavePrimary=true\n\tIsGapSource=true\n$end ''\n",
+            self._pedb.core.ProductId.Designer,
+            25,
+            f"$begin ''\n\tType='Pad Port'\n\tArms=2\n\tHFSSLastType=8\n"
+            f"\tHorizWavePort({port_names_str})\n\tHorizWavePrimary=true\n\tIsGapSource=true\n$end ''\n",
         )
         for term in terminals:
             term.core.SetProductProperty(
-             self._pedb.core.ProductId.Designer, 25,
-             f"$begin ''\n\tType='Pad Port'\n\tArms=3\n\tHFSSLastType=8\n"
-             f"\tHorizWavePort('{term.padstack_instance.aedt_name}')\n\tIsGapSource=true\n$end ''\n",
-        )
-
+                self._pedb.core.ProductId.Designer,
+                25,
+                f"$begin ''\n\tType='Pad Port'\n\tArms=3\n\tHFSSLastType=8\n"
+                f"\tHorizWavePort('{term.padstack_instance.aedt_name}')\n\tIsGapSource=true\n$end ''\n",
+            )
 
         hfss_solver_str = (
             f"HFSS('HFSS Type'='Wave(coax)', Orientation='Horizontal', "
@@ -1315,7 +1323,9 @@ class SourceExcitation:
             pp.DoRenormalize = True
             term.core.SetPortPostProcessingProp(pp)
 
-        edb_list = convert_py_list_to_net_list([term.core for term in terminals], self._pedb._edb.Cell.Terminal.Terminal)
+        edb_list = convert_py_list_to_net_list(
+            [term.core for term in terminals], self._pedb._edb.Cell.Terminal.Terminal
+        )
         self._pedb._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
         return True
 
