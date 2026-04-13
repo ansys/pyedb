@@ -595,7 +595,10 @@ class Modeler(object):
             elif isinstance(void, CorePolygonData):
                 void_polygon_data = void
             else:
-                void_polygon_data = void.polygon_data
+                if hasattr(void, "polygon_data"):
+                    void_polygon_data = void.polygon_data
+                elif hasattr(void, "core"):
+                    void_polygon_data = void.core
             if not void_polygon_data.points:
                 raise RuntimeError("Failed to create void polygon data")
             polygon_data.holes.append(void_polygon_data)
