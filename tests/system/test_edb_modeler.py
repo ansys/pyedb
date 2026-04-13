@@ -579,7 +579,9 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
-        cell_inst = edbapp.modeler.insert_layout_instance_on_layer("analysis", "1_Top", "180deg", "1mm", "2mm", True)
+        cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
+            "analysis", "1_Top", "180deg", 0, 0, "1mm", "2mm", True
+        )
         assert cell_inst.transform3d.shift.x.value == pytest.approx(0.001)
         assert cell_inst.transform3d.shift.y.value == pytest.approx(0.002)
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
@@ -591,7 +593,14 @@ class TestClass(BaseTestClass):
         edb2_path = self.edb_examples.get_package(edbapp=False)
         edbapp.copy_cell_from_edb(edb2_path)
         cell_inst = edbapp.modeler.insert_layout_instance_on_layer(
-            "analysis", "16_Bottom", 2, "180deg", "32mm", "-1mm", True, True
+            cell_name="analysis",
+            placement_layer="16_Bottom",
+            rotation="180deg",
+            rotation_x=0,
+            rotation_y="0deg",
+            x="32mm",
+            y="-1mm",
+            place_on_bottom=True,
         )
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
@@ -650,16 +659,6 @@ class TestClass(BaseTestClass):
         assert not cell_inst_2.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config.get("use_grpc"), reason="dotnet is missing coverage for Text prims")
-    def test_prims(self):
-        edbapp = self.edb_examples.get_si_board()
-        edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
-        prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
-        assert prim
-        assert not prim[0].is_null
-        assert prim[0].aedt_name == "text_8"
-        edbapp.close(terminate_rpc_session=False)
-
     @pytest.mark.skipif(condition=config["use_grpc"], reason="PrimitiveDotNet is only available on the .NET backend")
     def test_primitive_dotnet_layer_name_getter_setter_low_level(self):
         from pyedb.dotnet.database.dotnet.database import CellDotNet
@@ -686,7 +685,7 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
-    def test_paths_for_grpc(self):
+    def test_primitives_for_grpc(self):
         edbapp = self.edb_examples.get_si_board()
 
         # Paths
@@ -710,3 +709,56 @@ class TestClass(BaseTestClass):
         assert cir
         cir.set_parameters(0.1, 0.1, 0.3)
         assert cir.get_parameters()[2].real == 0.3
+
+        # Rectangle
+        rect = edbapp.layout.rectangles[0]
+        rect.representation_type = "center_width_height"
+        assert rect.representation_type == "center_width_height"
+        # TODO if representation_type is not set first it breaks the code
+        assert rect.get_parameters()
+        # TODO representation type does not change
+        rect.corner_radius = 1.0
+        assert rect.corner_radius == 1.0
+        rect.rotation = 90
+        assert rect.rotation == 90
+        assert rect.width
+        rect.width = 0.2
+        rect.height = 0.1
+        assert rect.height == 0.1
+        assert rect.duplicate_across_layers("s2")
+        edbapp.modeler.create_rectangle(
+            "s3", "GND", representation_type="center_width_height", width=0.1, height=0.1, center_point=[0, 0]
+        )
+
+        # Texts
+        edbapp.modeler.create_text(layer_name="s1", x=0.0, y=0.0, text="test")
+        prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
+        assert prim
+        assert not prim[0].is_null
+        assert prim[0].aedt_name == "text_11"
+        edbapp.close(terminate_rpc_session=False)
+
+    # @pytest.mark.skipif(config.get("use_grpc"), reason="bug #2005")
+    def test_create_rf_trace_taper(self):
+        edbapp = self.edb_examples.create_empty_edb()
+        edbapp.stackup.create_symmetric_stackup(2)
+        edbapp["p0_x"] = "1mm"
+        edbapp["p0_y"] = "1mm"
+        edbapp["p1_x"] = "1mm"
+        edbapp["p1_y"] = "2mm"
+        edbapp["w0"] = "1mm"
+        edbapp["w1"] = "0.5mm"
+        taper = edbapp.modeler.create_taper(
+            start_point=["p0_x", "p0_y"],
+            end_point=["p1_x", "p1_y"],
+            start_width="w0",
+            end_width="w1",
+            layer_name="Top",
+        )
+        assert taper.polygon_data.points == [
+            (0.0005, 0.001),
+            (0.0015, 0.001),
+            (0.00125, 0.002),
+            (0.00075, 0.002),
+        ]
+        edbapp.close(terminate_rpc_session=False)

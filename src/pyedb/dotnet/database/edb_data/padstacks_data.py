@@ -2062,7 +2062,7 @@ class EDBPadstackInstance(Connectable):
         point_data = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
             self._pedb, pos[0], pos[1]
         )
-        self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, self._pedb.edb_value(self.rotation))
+        self._edb_padstackinstance.SetPositionAndRotation(point_data.core, self._pedb.edb_value(self.rotation))
 
     @property
     def position_and_rotation(self) -> list[float]:
@@ -2103,7 +2103,7 @@ class EDBPadstackInstance(Connectable):
         point_data = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
             self._pedb, pos[0], pos[1]
         )
-        self._edb_padstackinstance.SetPositionAndRotation(point_data._edb_object, pos[2])
+        self._edb_padstackinstance.SetPositionAndRotation(point_data.core, pos[2])
 
     @property
     def rotation(self) -> float:

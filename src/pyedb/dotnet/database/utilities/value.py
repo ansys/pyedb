@@ -50,39 +50,39 @@ class Value(float):
 
     def __add__(self, other):
         """Adds two Edb Values."""
-        edb_object = self._pedb.core.Utility.Value(f"({self._edb_obj.ToString()})+({str(other)})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({self._edb_obj.ToString()})+({str(other)})")
 
     def __radd__(self, other):
-        edb_object = self._pedb.core.Utility.Value(f"({str(other)})+({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({str(other)})+({self._edb_obj.ToString()})")
 
     def __sub__(self, other):
         """Subtracts two Edb Values."""
-        edb_object = self._pedb.core.Utility.Value(f"({self._edb_obj.ToString()})-({str(other)})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({self._edb_obj.ToString()})-({str(other)})")
 
     def __rsub__(self, other):
-        edb_object = self._pedb.core.Utility.Value(f"({str(other)})-({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({str(other)})-({self._edb_obj.ToString()})")
 
     def __mul__(self, other):
         """Multiplies two Edb Values."""
-        edb_object = self._pedb.core.Utility.Value(f"({self._edb_obj.ToString()})*({str(other)})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({self._edb_obj.ToString()})*({str(other)})")
 
     def __rmul__(self, other):
-        edb_object = self._pedb.core.Utility.Value(f"({str(other)})*({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({str(other)})*({self._edb_obj.ToString()})")
 
     def __truediv__(self, other):
         """Divides two Edb Values."""
-        edb_object = self._pedb.core.Utility.Value(f"({self._edb_obj.ToString()})/({str(other)})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({self._edb_obj.ToString()})/({str(other)})")
 
     def __rtruediv__(self, other):
-        edb_object = self._pedb.core.Utility.Value(f"({str(other)})/({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({str(other)})/({self._edb_obj.ToString()})")
+
+    def __pow__(self, value):
+        """Power of the value.
+        Returns
+        -------
+        Value object
+        """
+        return self._pedb.value(f"({self._edb_obj.ToString()})**({str(value)})")
 
     def sqrt(self):
         """Square root of the value.
@@ -90,8 +90,7 @@ class Value(float):
         -------
         Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"({self._edb_obj.ToString()})**0.5")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"({self._edb_obj.ToString()})**0.5")
 
     def log10(self):
         """Base-10 logarithm of the value.
@@ -99,8 +98,7 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"log10({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"log10({self._edb_obj.ToString()})")
 
     def sin(self):
         """Sine of the value.
@@ -108,8 +106,7 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"sin({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"sin({self._edb_obj.ToString()})")
 
     def cos(self):
         """Cosine of the value.
@@ -117,8 +114,7 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"cos({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"cos({self._edb_obj.ToString()})")
 
     def asin(self):
         """Arcsine of the value.
@@ -126,8 +122,7 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"asin({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"asin({self._edb_obj.ToString()})")
 
     def acos(self):
         """Arccosine of the value.
@@ -135,8 +130,7 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"acos({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"acos({self._edb_obj.ToString()})")
 
     def tan(self):
         """Tangent of the value.
@@ -144,8 +138,7 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"tan({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"tan({self._edb_obj.ToString()})")
 
     def atan(self):
         """Arctangent of the value.
@@ -153,5 +146,4 @@ class Value(float):
         -------
             Value object
         """
-        edb_object = self._pedb.core.Utility.Value(f"atan({self._edb_obj.ToString()})")
-        return self.__class__(self._pedb, edb_object)
+        return self._pedb.value(f"atan({self._edb_obj.ToString()})")
