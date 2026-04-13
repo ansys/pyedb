@@ -49,11 +49,13 @@ class PadstackInstanceTerminal(Terminal):
         """Location of the padstack instance."""
         return self.position
 
-    def create(self, padstack_instance, name=None, layer=None, is_ref=False):
+    @classmethod
+    def create(cls, edb, padstack_instance, name=None, layer=None, is_ref=False):
         """Create an edge terminal.
 
         Parameters
         ----------
+        edb : pyedb.dotnet.DotNet.DotNet
         prim_id : int
             Primitive ID.
         point_on_edge : list
@@ -79,20 +81,20 @@ class PadstackInstanceTerminal(Terminal):
         if not layer:
             layer = padstack_instance.start_layer
 
-        layer_obj = self._pedb.stackup.signal_layers[layer]
+        layer_obj = edb.stackup.signal_layers[layer]
 
-        terminal = self._edb.Cell.Terminal.PadstackInstanceTerminal.Create(
-            self._pedb.active_layout,
+        terminal = edb._edb.Cell.Terminal.PadstackInstanceTerminal.Create(
+            edb.active_layout,
             padstack_instance.net.net_object,
             name,
-            padstack_instance._edb_object,
-            layer_obj._edb_layer,
+            padstack_instance.core,
+            layer_obj.core,
             isRef=is_ref,
         )
-        terminal = PadstackInstanceTerminal(self._pedb, terminal)
+        terminal = PadstackInstanceTerminal(edb, terminal)
         if terminal.is_null:
             msg = f"Failed to create terminal. "
-            if name in self._pedb.terminals:
+            if name in edb.terminals:
                 msg += f"Terminal {name} already exists."
             raise Exception(msg)
         else:
