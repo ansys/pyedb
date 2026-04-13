@@ -27,8 +27,8 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
-    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from typing import Union
+from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 from ansys.edb.core.hierarchy.pin_group import PinGroup as CorePinGroup
 from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
