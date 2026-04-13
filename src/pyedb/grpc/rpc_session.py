@@ -25,7 +25,14 @@ import secrets
 import sys
 import time
 
-from ansys.edb.core.session import is_in_memory, launch_session
+
+try:
+    from ansys.edb.core.session import is_in_memory
+except ImportError:
+    def is_in_memory():
+        return False
+
+from ansys.edb.core.session import launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
