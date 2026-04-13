@@ -1366,5 +1366,5 @@ class TestClass(BaseTestClass):
         edbapp = self.edb_examples.load_edb(source_path_edb)
         voids = edbapp.layout.primitives[0].voids
         for void in voids:
-            edbapp.excitation_manager.create_horizontal_waveport(void)
+            edbapp.excitation_manager.create_horizontal_wave_port(void)
         edbapp.close(terminate_rpc_session=False)
