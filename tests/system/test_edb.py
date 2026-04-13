@@ -1362,9 +1362,9 @@ class TestClass(BaseTestClass):
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
         source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
-        edb_file = r"D:\Data\pyedb\Nvidia\2026.1_horizontal_wave_port\single_void_for_h_wave_port.aedb"
         edbapp = self.edb_examples.load_edb(source_path_edb)
         voids = edbapp.layout.primitives[0].voids
         for void in voids:
             edbapp.excitation_manager.create_horizontal_wave_port(void)
+        assert len(edbapp.ports) == 6
         edbapp.close(terminate_rpc_session=False)

@@ -350,6 +350,76 @@ def parse_padstack_instance_meshing_string(s: str | None) -> PadstackInstanceMes
 
 
 @dataclass
+class ViaMeshingProperty:
+    """Represents the via meshing properties.
+
+    This class encapsulates configuration settings for via meshing,
+    including stack identifier, material type, and meshing settings.
+
+    Attributes:
+        sid (int): Stack identifier. Default is 0.
+        material (str): Material name for the via. Default is "".
+        meshing_setting (str): Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
+    """
+    sid: int = 0
+    material: str = ""
+    meshing_setting: str = ""
+
+    def to_property_string(self) -> str:
+        """Convert ViaMeshingProperty instance into a property string.
+
+        Returns:
+            str: A formatted property string with all properties encoded.
+        """
+        lines = [
+            "$begin ''",
+            f"\tsid={self.sid}",
+            f"\tmat='{self.material}'",
+            f"\tvs='{self.meshing_setting}'",
+            "$end ''",
+        ]
+        return "\n".join(lines) + "\n"
+
+
+def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
+    """Parse a via meshing property string into a ViaMeshingProperty object.
+
+    This function extracts configuration settings from a formatted string representation of
+    via meshing properties and reconstructs them into a structured object.
+
+    Parameters
+    ----------
+    s (str | None): A formatted string containing via meshing configuration settings.
+        If None, returns a ViaMeshingProperty with default values.
+        Expected format includes key-value pairs like "sid=3", "mat='copper'", "vs='Mesh'", etc.
+
+    Returns
+    -------
+    ViaMeshingProperty: An object containing the parsed via meshing properties
+        with all settings extracted from the input string. If the string is None or any specific
+        property is not found, default values are used.
+    """
+    if s is None:
+        return ViaMeshingProperty()
+
+    def get(key: str) -> str | None:
+        match = re.search(rf"{re.escape(key)}='([^']*)'", s)
+        return match.group(1) if match else None
+
+    def get_int(key: str, default: int) -> int:
+        match = re.search(rf"{re.escape(key)}=(\d+)", s)
+        return int(match.group(1)) if match else default
+
+    defaults = ViaMeshingProperty()
+
+    return ViaMeshingProperty(
+        sid=get_int("sid", defaults.sid),
+        material=get("mat") or defaults.material,
+        meshing_setting=get("vs") or defaults.meshing_setting,
+    )
+
+
+@dataclass
 class PlanarEMProperty:
     """Represents the PlanarEM solver properties.
 

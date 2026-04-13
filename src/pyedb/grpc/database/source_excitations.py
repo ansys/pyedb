@@ -1997,8 +1997,48 @@ class SourceExcitation(SourceExcitationInternal):
                                    padstack_instances:list[PadstackInstance]=None,
                                    pec_launch_width:str="0.04mm",
                                    layer_alignment:str="Lower") -> bool | BundleTerminal:
-        """Create a horizontal wave port."""
-        from ansys.edb.core.database import ProductIdType
+        """Create a horizontal wave port around one or more vias inside a void.
+
+        A horizontal wave port is a higher-fidelity alternative to coaxial lumped
+        ports for vertical interconnect excitation. Unlike a gap or lumped port,
+        which assumes a uniform current distribution, a wave port solves the field
+        distribution at the launch and therefore captures a more realistic
+        characteristic impedance. This usually improves the evaluation of fringing
+        fields and can noticeably affect results for differential pairs and other
+        high-speed channel structures.
+
+        Parameters
+        ----------
+        void : int | Primitive
+            Void primitive, or void primitive ID, used to define the horizontal
+            wave-port reference contour.
+        padstack_instances : list[PadstackInstance], optional
+            Padstack instances to connect to the horizontal wave port. When not
+            provided, padstack instances are automatically detected from the vias
+            intersecting the void polygon.
+        pec_launch_width : str, optional
+            PEC launch width assigned to the HFSS solver option. The default is
+            ``"0.04mm"``.
+        layer_alignment : str, optional
+            HFSS layer alignment for the wave port. Typical values are
+            ``"Lower"`` and ``"Upper"``. The default is ``"Lower"``.
+
+        Returns
+        -------
+        bool | BundleTerminal
+            Bundle terminal representing the created horizontal wave port. If no
+            padstack instance is found inside the target void, ``False`` is
+            returned.
+
+        Notes
+        -----
+        Horizontal wave ports can be used in place of coaxial lumped ports when a
+        more physical launch model is required. Because the wave port computes the
+        electromagnetic field distribution, it produces a more realistic impedance
+        than gap-port formulations that assume uniform current. This also improves
+        fringing-field estimation and can have a significant impact on extracted
+        results for differential links and other high-speed interconnect channels.
+        """
         from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
         from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
         from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
@@ -2022,6 +2062,7 @@ class SourceExcitation(SourceExcitationInternal):
             self._pedb.logger.info(f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
                                    "inside the void.")
             self._pedb.logger.info(f"{len(padstack_instances)} padstack instances found inside the void.")
+
         # void terminal
         segments = void.core.polygon_data.arc_data
         edges = [CorePrimitiveEdge.create(void.core, seg.midpoint) for seg in segments]
@@ -2033,7 +2074,7 @@ class SourceExcitation(SourceExcitationInternal):
         symbol_def = CorePadstackDef.find_by_name(self._pedb.db, "Symbol")
         for via in padstack_instances:
             port_net = Net.create(layout=self._pedb.layout, name=f"Port{port_number}:{via.net.name}")
-            symbol_neg = PadstackInstance.create(
+            symbol = PadstackInstance.create(
                 layout=self._pedb.layout,
                 net=port_net,
                 name=f"Port{port_number}_neg_psi",
@@ -2044,16 +2085,19 @@ class SourceExcitation(SourceExcitationInternal):
                 top_layer=via.start_layer,
                 bottom_layer=via.stop_layer,
             )
-            symbol_neg.is_layout_pin = True
-            symbol_neg.aedt_name = f"Port{port_number}:{via.net.name}"
-            symbol_neg.core.set_product_property(ProductIdType.DESIGNER, 21,
-                                            "$begin ''\n\tsid=3\n\tmat='copper'\n\tvs='Mesh'\n$end ''\n")
+            symbol.is_layout_pin = True
+            symbol.aedt_name = f"Port{port_number}:{via.net.name}"
+            via_meshing_prop = symbol._padstack_instance_meshing_properties
+            via_meshing_prop.sid = 3
+            via_meshing_prop.material = "copper"
+            via_meshing_prop.meshing_setting = "Mesh"
+            symbol._padstack_instance_meshing_properties = via_meshing_prop
 
             term = PadstackInstanceTerminal.create(
                 layout=self._pedb.layout,
-                name=symbol_neg.aedt_name,
-                padstack_instance=symbol_neg,
-                layer=symbol_neg.start_layer,
+                name=symbol.aedt_name,
+                padstack_instance=symbol,
+                layer=symbol.start_layer,
                 net=port_net,
             )
             terminals.append(term)
@@ -2075,26 +2119,30 @@ class SourceExcitation(SourceExcitationInternal):
             horizontal_wave_port_property.port_names = (term.padstack_instance.aedt_name)
             term._horizontal_wave_port_properties = horizontal_wave_port_property
 
-
-
-        # --- Set HFSS solver options on both terminals ---
-        hfss_solver_str = (
-            "HFSS('HFSS Type'='Wave(coax)', Orientation='Horizontal', "
-            "'Layer Alignment'='Lower', 'Horizontal Extent Factor'='5', "
-            "'Vertical Extent Factor'='3', 'Radial Extent Factor'='0', "
-            "'PEC Launch Width'='0.04mm', ReferenceName='')"
-        )
-        planar_em_str = "PlanarEM(Type='Pad Port Gap Source', PortSolver=true, 'Ignore Reference'=false)"
-        siwave_str = "SIwave('Reference Net'='')"
-
         terminals.append(edge_term)
         for term in terminals:
-            term.core.set_product_solver_option(ProductIdType.DESIGNER, "HFSS", hfss_solver_str)
-            term.core.set_product_solver_option(ProductIdType.DESIGNER, "PlanarEM", planar_em_str)
-            term.core.set_product_solver_option(ProductIdType.DESIGNER, "SIwave", siwave_str)
-
-        # --- Set port post-processing properties on both terminals ---
-        for term in terminals:
+            # HFSS properties
+            hfss_prop = term._hfss_properties
+            hfss_prop.hfss_type = "Wave(coax)"
+            hfss_prop.orientation = "Horizontal"
+            hfss_prop.layer_alignment = layer_alignment
+            hfss_prop.horizontal_extent_factor = 5
+            hfss_prop.vertical_extent_factor = 3
+            hfss_prop.radial_extent_factor = 0
+            hfss_prop.pec_launch_width = pec_launch_width
+            hfss_prop.reference_name = ""
+            term._hfss_properties = hfss_prop
+            # planar EM properties (required to build valid ports)
+            planar_em_prop = term._planar_em_properties
+            planar_em_prop.ignore_reference = False
+            planar_em_prop.port_solver = True
+            planar_em_prop.port_type = "Pad Port Gap Source"
+            term._planar_em_properties = planar_em_prop
+            # Siwave properties
+            siwave_prop = term._siwave_properties
+            siwave_prop.reference_net = ""
+            term._siwave_properties = siwave_prop
+            # Terminal post porcessing
             pp = term.core.port_post_processing_prop
             pp.voltage_magnitude = self._pedb.value(1.0)
             pp.do_deembed = True
