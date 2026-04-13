@@ -1735,7 +1735,7 @@ class Stackup:
             if cell.name == edb_cell.name:
                 edb_cell = cell
         # Keep Cell Independent
-        edb_cell.is_black_box = True
+        edb_cell.is_blackbox = True
         rotation = 0.0
         if flipped_stackup:
             rotation = math.pi
@@ -1753,10 +1753,11 @@ class Stackup:
         stackup_target = self._pedb.layout.core.layer_collection
 
         if place_on_top:
+            cell_inst2.placement_3d = True
             cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[0]
         else:
+            cell_inst2.placement_3d = True
             cell_inst2.placement_layer = stackup_target.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)[-1]
-        cell_inst2.placement_3d = True
         res = stackup_target.get_top_bottom_stackup_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         target_top_elevation = res[1]
         target_bottom_elevation = res[3]

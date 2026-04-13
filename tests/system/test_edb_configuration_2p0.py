@@ -83,6 +83,7 @@ def check_dictionaries(source_dict, target_dict):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13b_stackup_materials(self):
         data = {
             "stackup": {
@@ -625,6 +626,7 @@ class TestClass(BaseTestClass):
                     assert value == target_pdef[p]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13c_stackup_create_stackup(self):
         data = {
             "stackup": {
@@ -800,6 +802,7 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_16_export_to_external_file(self):
         edbapp = self.edb_examples.get_si_verse()
         data_file_path = Path(self.edb_examples.test_folder) / "test.json"
@@ -932,6 +935,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
@@ -1000,7 +1004,7 @@ class TestClassTerminals(BaseTestClass):
                 "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
                 "boundary_type": "port" if edbapp.grpc else "PortBoundary",
                 "terminal_type": "point",
-                "x": 0.10400000000000001,
+                "x": 0.104,
                 "y": 0.037,
                 "layer": "1_Top",
                 "net": "AVCC_1V3",
@@ -1014,7 +1018,7 @@ class TestClassTerminals(BaseTestClass):
                 "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
                 "boundary_type": "port" if edbapp.grpc else "PortBoundary",
                 "terminal_type": "point",
-                "x": 0.10400000000000001,
+                "x": 0.104,
                 "y": 0.037,
                 "layer": "Inner6(GND2)",
                 "net": "GND",
@@ -1565,6 +1569,7 @@ class TestClassPadstacks(BaseTestClass):
         assert data_from_db["padstacks"]["instances"]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13_stackup_layers(self):
         data = {
             "stackup": {

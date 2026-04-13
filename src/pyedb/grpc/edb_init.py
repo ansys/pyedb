@@ -33,7 +33,7 @@ import time
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.general_methods import env_path, env_value
 from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
 
@@ -41,10 +41,23 @@ from pyedb.grpc.rpc_session import RpcSession
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, edbversion):
+    def __init__(self, version, in_memory=False, is_linux=False):
+        """Initialize the gRPC EDB database helper.
+
+        Parameters
+        ----------
+        version : str
+            AEDT/EDB version to initialize, for example ``"2026.1"``.
+        in_memory : bool, optional
+            Whether to request the local in-memory gRPC transport. The default is ``False``.
+        is_linux : bool, optional
+            Whether to initialize environment paths using the Linux-specific startup flow.
+            The default is ``False``.
+
+        """
         self.logger = settings.logger
         self._db = None
-        self.version = edbversion
+        self.version = version
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
@@ -71,6 +84,7 @@ class EdbInit(object):
         # register signal handlers
         signal.signal(signal.SIGTERM, self._signal_handler)
         signal.signal(signal.SIGINT, self._signal_handler)
+        RpcSession.in_memory = in_memory
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
@@ -81,7 +95,13 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
-    def _create(self, db_path, port=0, restart_rpc_server=False):
+    def _sync_transport_mode(self):
+        """Synchronize the effective transport mode after session startup or fallback."""
+        settings.is_in_memory = RpcSession.in_memory
+        if hasattr(self, "in_memory"):
+            self.in_memory = RpcSession.in_memory
+
+    def _create(self, db_path, port=0, restart_rpc_server=False, in_memory=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -99,19 +119,21 @@ class EdbInit(object):
         -------
         Database
         """
-        if not RpcSession.pid:
-            RpcSession.start(
-                edb_version=self.version,
-                port=port,
-                restart_server=restart_rpc_server,
-            )
-            if not RpcSession.pid:
-                self.logger.error("Failed to start RPC server.")
-                return False
+        RpcSession.in_memory = in_memory
+        RpcSession.start(
+            edb_version=self.version,
+            port=port,
+            restart_server=restart_rpc_server,
+        )
+        self._sync_transport_mode()
+        if not RpcSession.rpc_session:
+            self.logger.error("Failed to start RPC server.")
+            return False
+
         self._db = database.Database.create(db_path)
         return self._db
 
-    def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
+    def _open(self, db_path, read_only, port=0, restart_rpc_server=False, in_memory=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -130,18 +152,18 @@ class EdbInit(object):
         Database or None
             The opened Database object, or None if not found.
         """
-        if restart_rpc_server:
-            RpcSession.pid = 0
-        if not RpcSession.pid:
-            RpcSession.start(
-                edb_version=self.version,
-                port=port,
-                restart_server=restart_rpc_server,
-            )
-            if not RpcSession.pid:
-                self.logger.error("Failed to start RPC server.")
-                return False
+        RpcSession.in_memory = in_memory
+        RpcSession.start(
+            edb_version=self.version,
+            port=port,
+            restart_server=restart_rpc_server,
+        )
+        self._sync_transport_mode()
+        if not RpcSession.rpc_session:
+            self.logger.error("Failed to start RPC server.")
+            return False
         self._db = database.Database.open(db_path, read_only)
+        return self._db
 
     def delete(self, db_path):
         """Delete a database at the specified file location.
@@ -159,8 +181,6 @@ class EdbInit(object):
         return True
 
     def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
-        # if not file_to_release:
-        #     file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
         while True:
             if self._is_file_existing_and_released(file_to_release):
@@ -198,8 +218,8 @@ class EdbInit(object):
         self._db.close()
         self._db = None
         if terminate_rpc_session:
-            RpcSession.rpc_session.disconnect()
-            RpcSession.pid = 0
+            RpcSession.close()
+            self._sync_transport_mode()
         self._clean_variables()
         return True
 

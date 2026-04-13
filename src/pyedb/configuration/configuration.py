@@ -35,6 +35,11 @@ from pyedb.generic.settings import settings
 from pyedb.misc.decorators import execution_timer
 
 
+def _normalize_export_float(value: float, digits: int = 12) -> float:
+    """Round exported floating-point values to remove representation artifacts."""
+    return round(float(value), digits)
+
+
 def set_padstack_definition(pdef, pdef_obj):
     if pdef.hole_parameters:
         pdef_obj.set_hole_parameters(pdef.hole_parameters)
@@ -985,8 +990,8 @@ class Configuration:
                 )
             elif i.terminal_type == TerminalTypeMapper.get("PointTerminal", as_grpc=settings.is_grpc):
                 manager.add_point_terminal(
-                    x=i.location[0],
-                    y=i.location[1],
+                    x=_normalize_export_float(i.location[0]),
+                    y=_normalize_export_float(i.location[1]),
                     layer=i.layer.name,
                     name=i.name,
                     impedance=i.impedance,
