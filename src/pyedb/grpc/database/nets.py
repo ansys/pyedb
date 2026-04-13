@@ -709,15 +709,32 @@ class Nets(CommonNets):
         if isinstance(netlist, str):
             netlist = [netlist]
 
-        self._pedb.modeler.delete_primitives(netlist)
-        self._pedb.padstacks.delete_padstack_instances(netlist)
+        requested_names = set(netlist)
+        if not requested_names:
+            return []
+
+        target_nets: List[Net] = []
+        primitives_to_delete: List[Any] = []
+        padstacks_to_delete: List[Any] = []
+
+        for net in self._pedb.layout.nets:
+            if net.name in requested_names:
+                target_nets.append(net)
+                primitives_to_delete.extend(list(net.core.primitives))
+                padstacks_to_delete.extend(list(net.core.padstack_instances))
+
+        for primitive in primitives_to_delete:
+            primitive.delete()
+
+        for padstack in padstacks_to_delete:
+            padstack.delete()
 
         nets_deleted = []
 
-        for i in self._pedb.nets.nets.values():
-            if i.name in netlist:
-                i.delete()
-                nets_deleted.append(i.name)
+        for net in target_nets:
+            net_name = net.name
+            net.delete()
+            nets_deleted.append(net_name)
         return nets_deleted
 
     def find_or_create_net(
