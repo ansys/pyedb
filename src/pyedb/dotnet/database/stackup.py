@@ -1160,6 +1160,7 @@ class Stackup(LayerCollection):
                 cmp = pyaedt_cmp.edbcomponent
                 cmp_type = cmp.GetComponentType()
                 cmp_prop = cmp.GetComponentProperty().Clone()
+                clear_is_owner(cmp_prop)
                 try:
                     if (
                         cmp_prop.GetSolderBallProperty().GetPlacement()
@@ -1229,7 +1230,7 @@ class Stackup(LayerCollection):
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
-                comp_prop = val.component_property.core
+                comp_prop = val._get_component_property_clone()
                 port_property = comp_prop.GetPortProperty().Clone()
                 port_property.SetReferenceSizeAuto(False)
                 port_property.SetReferenceSize(self._edb_value(0.0), self._edb_value(0.0))
