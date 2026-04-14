@@ -34,10 +34,9 @@ import math
 from pathlib import Path
 import warnings
 
+import numpy as np
 import System  # type: ignore
 from System.Reflection import BindingFlags  # type: ignore
-
-import numpy as np
 
 from pyedb.dotnet.database.edb_data.layer_data import (
     LayerEdbClass,
@@ -51,18 +50,16 @@ from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
 
+
 def clear_is_owner(obj):
     """Use reflection to set the protected IsOwner property to False,
     preventing the buggy EDBLayer_Cleanup from being called in the destructor.
-    
+
     This must be called immediately after creating a Layer object to prevent
     it from being owned by the LayerCollection, which causes crashes when
     accessed outside the collection scope.
     """
-    prop = obj.GetType().GetProperty(
-        "IsOwner",
-        BindingFlags.NonPublic | BindingFlags.Instance
-    )
+    prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
     prop.SetValue(obj, False, None)
 
 
@@ -138,11 +135,11 @@ class LayerCollection(object):
             obj = obj if method_top_bottom(obj._edb_object) else False
         elif method_above_below:
             obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
-        
+
         # Bug Release 2016.1 fix: Call clear_is_owner AFTER layer is successfully added to collection
         if obj:
             clear_is_owner(obj._edb_object)
-        
+
         self.update_layout()
         return obj
 
