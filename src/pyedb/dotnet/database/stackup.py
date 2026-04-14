@@ -35,7 +35,6 @@ from pathlib import Path
 import warnings
 
 import numpy as np
-import System  # type: ignore
 from System.Reflection import BindingFlags  # type: ignore
 
 from pyedb.dotnet.database.edb_data.layer_data import (
