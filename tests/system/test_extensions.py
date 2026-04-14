@@ -104,11 +104,11 @@ PADSTACK_DEFS = [
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(
+class TestClass(BaseTestClass):
+    @pytest.mark.skipif(
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
-class TestClass(BaseTestClass):
     def test_backend_single(self):
         cfg = {
             "title": "Test Design",
@@ -297,6 +297,10 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_backend_diff(self):
         cfg = {
             "title": "Test Design",
@@ -509,6 +513,10 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_backend_diff_pcb(self):
         cfg = {
             "title": "Test Design",
