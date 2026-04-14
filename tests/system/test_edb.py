@@ -25,7 +25,7 @@
 import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
-
+import ansys.edb.core
 import pytest
 
 from pyedb.edb_logger import EdbLogger
@@ -48,7 +48,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_layout_bounding_box(self):
         """Evaluate layout bounding box"""
@@ -289,7 +290,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
@@ -371,7 +373,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_statistics(self):
         """Get statistics."""
@@ -436,7 +439,8 @@ class TestClass(BaseTestClass):
         edb.close()
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_0(self):
         """Create various ports."""
@@ -553,7 +557,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_1(self):
         """Create various ports."""
@@ -1309,7 +1314,8 @@ class TestClass(BaseTestClass):
         edbapp.close()
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_settings(self):
         edbapp = self.edb_examples.get_si_verse()

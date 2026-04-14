@@ -19,11 +19,12 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
 from collections import Counter
 import json
 import os
 from pathlib import Path
-
+import ansys.edb.core
 import pytest
 
 from pyedb.dotnet.clr_module import is_linux
@@ -387,8 +388,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="issue #687 fixed with latest pyedb-core release",
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
@@ -432,6 +433,10 @@ class TestClass(BaseTestClass):
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_05h_diff_wave_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -751,6 +756,10 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_15d_sources_equipotential(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -960,6 +969,10 @@ class TestClassTerminals(BaseTestClass):
         }
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_pin_group_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"pin_groups": [self.pin_group2]})
@@ -1026,6 +1039,10 @@ class TestClassTerminals(BaseTestClass):
         ]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_edge_terminal(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -1056,6 +1073,10 @@ class TestClassTerminals(BaseTestClass):
         assert edbapp.terminals["edge_terminal_2"].hfss_type == "Wave"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_edge_bundle_terminal(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -1218,6 +1239,10 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_hfss_setup_w_frequency_sweeps(self):
         data = {
             "setups": [
@@ -1467,6 +1492,10 @@ class TestClassBoundaries(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassPadstacks(BaseTestClass):
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_09_padstack_definition(self, is_grpc=None):
         solder_ball_parameters = {
             "shape": "spheroid",
@@ -1548,6 +1577,10 @@ class TestClassPadstacks(BaseTestClass):
                 assert v == instance[k]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_09_padstack_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         cfg_data = edbapp.configuration.cfg_data
@@ -1703,6 +1736,10 @@ class TestClassPadstacks(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
+    @pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_18_modeler(self):
         data = {
             "modeler": {

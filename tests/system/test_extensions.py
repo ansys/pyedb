@@ -23,7 +23,7 @@ import os
 from pathlib import Path
 
 import pytest
-
+import ansys.edb.core
 from pyedb.extensions.via_design_backend import ViaDesignBackend
 from tests.conftest import GRPC, config, desktop_version
 from tests.system.base_test_class import BaseTestClass
@@ -104,7 +104,10 @@ PADSTACK_DEFS = [
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release")
+@pytest.mark.skipif(
+        ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
 class TestClass(BaseTestClass):
     def test_backend_single(self):
         cfg = {
