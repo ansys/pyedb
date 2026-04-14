@@ -25,6 +25,7 @@
 import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+
 import ansys.edb.core
 import pytest
 
