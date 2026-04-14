@@ -351,6 +351,7 @@ class PinGroup:
 
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
+
         # Create a mapping of pin names to core pin objects for O(1) lookup
         pin_map = {pin.name: pin for pin in self.core.pins}
 
