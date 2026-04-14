@@ -104,6 +104,8 @@ jobs:
     permissions:
       contents: read
     env:
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
+      ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
       - name: Checkout repository
@@ -163,6 +165,8 @@ jobs:
     permissions:
       contents: read
     env:
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
+      ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
       - name: Checkout repository
@@ -327,7 +331,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 70
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -vvv --cov=pyedb --color=yes -ra
@@ -364,7 +368,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
@@ -439,7 +443,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
@@ -477,7 +481,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 70
           command: |
             . .venv/bin/activate
             pytest tests/system -vvv --cov=pyedb --color=yes -ra

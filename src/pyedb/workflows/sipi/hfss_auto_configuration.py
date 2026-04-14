@@ -234,7 +234,7 @@ class HFSSAutoConfiguration:
     Attributes
     ----------
     ansys_version : str
-        ANSYS Electronics Desktop version to use. The default is ``"2025.2"``.
+        ANSYS Electronics Desktop version to use. The default is ``"2026.1"``.
     grpc : bool
         Whether to use gRPC API mode. The default is ``True``.
     source_edb_path : str
@@ -301,7 +301,7 @@ class HFSSAutoConfiguration:
             Existing EDB object instance. The default is ``None``.
         """
         self._pedb = edb
-        self.ansys_version: str = "2025.2"
+        self.ansys_version: str = "2026.1"
         self.grpc: bool = True
         self.source_edb_path: str = ""
         self.target_edb_path: str = ""

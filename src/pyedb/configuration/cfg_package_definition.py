@@ -28,7 +28,7 @@ class CfgPackage(CfgBase):
     """Configuration package class."""
 
     # Attributes cannot be set to package definition class or don't exist in package definition class.
-    protected_attributes = ["apply_to_all", "components", "extent_bounding_box", "component_definition"]
+    protected_attributes = ["name", "apply_to_all", "components", "extent_bounding_box", "component_definition"]
 
     def __init__(self, **kwargs):
         self.name = kwargs.get("name", None)
