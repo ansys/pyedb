@@ -252,7 +252,7 @@ class Edb(EdbInit):
         self._active_cell = None
         if not float(self.version) >= 2025.2:
             raise "EDB gRPC is only supported with ANSYS release 2025R2 and higher."
-        self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2025R2 official release.")
+        self.logger.info("Using PyEDB with gRPC as Beta until ANSYS 2027R1 official release.")
         self.isaedtowned = isaedtowned
         self.isreadonly = isreadonly
         self._setups = {}
@@ -465,7 +465,15 @@ class Edb(EdbInit):
 
     def value(self, val) -> Value | float | str:
         """Convert a value into a pyedb value."""
-        return Value(val, self.active_db) if isinstance(val, str) and "$" in val else Value(val, self.active_cell)
+        if isinstance(val, Value):
+            return val
+        elif isinstance(val, str):
+            if "$" in val:
+                return Value(val, self.active_db)
+            else:
+                return Value(val, self.active_cell)
+        else:
+            return Value(val, self.active_db)
 
     def _value_setter(self, val) -> Value | float | str:
         """Helper for setting variable values with unit handling."""
