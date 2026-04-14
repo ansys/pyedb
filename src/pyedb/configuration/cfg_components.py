@@ -129,14 +129,13 @@ class CfgComponent(CfgBase):
             self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
-        if hasattr(self.pyedb_obj.component_property, "core"):
-            cp = self.pyedb_obj.component_property.core
-        else:
-            # grpc is returning pyedb-core object directly as it is internal.
-            cp = self.pyedb_obj.component_property
         if self._pedb.grpc:
+            cp = self.pyedb_obj.component_property
             port_prop = cp.port_property
         else:
+            # Use a mutable clone so SetPortProperty does not raise
+            # ReadOnlyModificationAttemptException on the live object.
+            cp = self.pyedb_obj._get_component_property_clone()
             port_prop = cp.GetPortProperty().Clone()
         height = self.port_properties.get("reference_height")
         if height:
@@ -158,7 +157,7 @@ class CfgComponent(CfgBase):
         else:
             port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
             cp.SetPortProperty(port_prop)
-        self.pyedb_obj.component_property = cp
+            self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _set_model_properties_to_edb(self):
         if hasattr(self.pyedb_obj.component_property, "core"):
@@ -197,17 +196,16 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
-        if hasattr(self.pyedb_obj.component_property, "core"):
-            cp = self.pyedb_obj.component_property.core
-        else:
-            # grpc is returning pyedb-core object directly as it is internal.
-            cp = self.pyedb_obj.component_property
         if self._pedb.grpc:
+            cp = self.pyedb_obj.component_property
             solder_ball_prop = cp.solder_ball_property
             shape = self.solder_ball_properties.get("shape")
             if shape:
                 solder_ball_prop.shape = _solder_shape_mapping.get(shape, CoreSolderballShape.NO_SOLDERBALL)
         else:
+            # Use a mutable clone so SetSolderBallProperty does not raise
+            # ReadOnlyModificationAttemptException on the live object.
+            cp = self.pyedb_obj._get_component_property_clone()
             solder_ball_prop = cp.GetSolderBallProperty().Clone()
             shape = self.solder_ball_properties.get("shape")
             if shape:
@@ -238,7 +236,7 @@ class CfgComponent(CfgBase):
             solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
             solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
             cp.SetSolderBallProperty(solder_ball_prop)
-        self.pyedb_obj.component_property = cp
+            self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()
