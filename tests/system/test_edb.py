@@ -48,8 +48,8 @@ class TestClass(BaseTestClass):
         assert edbapp.excitation_manager.create_coax_port_on_component("U1", ["DDR4_DQS0_P", "DDR4_DQS0_N"], True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and
-        ansys.edb.core.__version__ == "0.2.6",
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_layout_bounding_box(self):
@@ -290,8 +290,8 @@ class TestClass(BaseTestClass):
 
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and
-        ansys.edb.core.__version__ == "0.2.6",
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_edge_port_on_polygon(self):
@@ -373,8 +373,8 @@ class TestClass(BaseTestClass):
         assert gap_port.is_circuit_port
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and
-        ansys.edb.core.__version__ == "0.2.6",
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_statistics(self):
@@ -439,8 +439,8 @@ class TestClass(BaseTestClass):
         assert setup.sweep_data[0].enforce_causality
         edb.close()
 
-    @pytest.mark.skipif(config["use_grpc"] and
-        ansys.edb.core.__version__ == "0.2.6",
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_0(self):
@@ -557,8 +557,8 @@ class TestClass(BaseTestClass):
         assert df_port.deembed_length == 1e-3
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and
-        ansys.edb.core.__version__ == "0.2.6",
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_1(self):
@@ -1314,8 +1314,8 @@ class TestClass(BaseTestClass):
         assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
         edbapp.close()
 
-    @pytest.mark.skipif(config["use_grpc"] and
-        ansys.edb.core.__version__ == "0.2.6",
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_settings(self):
