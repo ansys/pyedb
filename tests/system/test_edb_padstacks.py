@@ -25,12 +25,12 @@
 import math
 import os
 
+import ansys.edb.core
 import pytest
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-import ansys.edb.core
 from pyedb.generic.settings import settings
 from tests.conftest import GRPC, config, use_grpc
 from tests.system.base_test_class import BaseTestClass

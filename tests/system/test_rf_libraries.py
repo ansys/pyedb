@@ -24,8 +24,9 @@
 
 import os
 
-import pytest
 import ansys.edb.core
+import pytest
+
 from pyedb.libraries.common import MicroStripTechnologyStackup
 from pyedb.libraries.rf_libraries.base_functions import (
     CPW,
@@ -52,9 +53,9 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
+    ansys.edb.core.__version__ == "0.2.6",
+    reason="Test skipped for ansys-edb-core version 0.2.6",
+)
 class TestClass(BaseTestClass):
     def test_stackup(self):
         edb = self.edb_examples.create_empty_edb()

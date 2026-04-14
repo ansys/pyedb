@@ -22,8 +22,8 @@
 import os
 from pathlib import Path
 
-import pytest
 import ansys.edb.core
+import pytest
 
 from tests.conftest import local_path, test_subfolder
 from tests.system.base_test_class import BaseTestClass

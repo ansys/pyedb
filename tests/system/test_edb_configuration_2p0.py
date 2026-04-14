@@ -24,6 +24,7 @@ from collections import Counter
 import json
 import os
 from pathlib import Path
+
 import ansys.edb.core
 import pytest
 
