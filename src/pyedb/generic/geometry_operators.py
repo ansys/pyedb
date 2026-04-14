@@ -25,11 +25,6 @@ from collections import defaultdict
 import math
 import re
 import sys
-from typing import TYPE_CHECKING, Any
-
-if TYPE_CHECKING:
-    from pyedb.dotnet.database.Variables import VariableManager as DotNetVariableManager
-    from pyedb.grpc.database.variables import Variable as CoreVariableManager
 
 import numpy as np
 

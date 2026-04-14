@@ -88,13 +88,13 @@ class Rectangle(Primitive):
         layout : Layout
             The layout in which the rectangle will be created. If not provided, the active layout of the `pedb` instance
             will be used.
-        layer : Union[str, Layer], optional
+        layer : Union[str, Layer]
             The layer in which the rectangle will be created. This parameter is required and must be specified.
-        net : Union[str, Net], optional
-            The net to which the rectangle will belong. This parameter is required and must be specified.
+        net : Union[str, Net]
+            The net to which the rectangle will belong. If not provided, a random net will be created.
         rep_type : str, optional
             The representation type of the rectangle. Options are `"center_width_height"` or `"lower_left_upper_right"`.
-            The default value is `"center_width_height"`.
+            The default value is `"lower_left_upper_right"`.
         param1 : float, optional
             The first parameter defining the rectangle. Its meaning depends on the `rep_type`.
         param2 : float, optional
@@ -144,7 +144,7 @@ class Rectangle(Primitive):
         edb_object = CoreRectangle.create(
             layout=layout.core,
             layer=layer,
-            net=net.core,
+            net=net,
             rep_type=rep_type,
             param1=layout._pedb._value_setter(param1),
             param2=layout._pedb._value_setter(param2),
@@ -221,7 +221,7 @@ class Rectangle(Primitive):
         """
 
         return self.core.set_parameters(
-            self.representation_type[rep_type],
+            self._mapping_representation_type[rep_type],
             Value(param1),
             Value(param2),
             Value(param3),
@@ -243,6 +243,13 @@ class Rectangle(Primitive):
 
     @corner_radius.setter
     def corner_radius(self, value):
+        """Set corner radius.
+
+        Parameters
+        -------
+        float
+            Corner radius.
+        """
         parameters = self.get_parameters()
         self.set_parameters(
             rep_type=parameters[0],
@@ -345,7 +352,7 @@ class Rectangle(Primitive):
 
         Parameters:
 
-        layers: list
+        layers: list or str
             list of str, with layer names
 
         Returns
@@ -353,12 +360,14 @@ class Rectangle(Primitive):
         bool
             ``True`` when successful, ``False`` when failed.
         """
+        if isinstance(layers, str):
+            layers = [layers]
         for layer in layers:
             if layer in self._pedb.stackup.layers:
                 duplicate_rectangle = self.create(
                     layout=self._pedb.active_layout,
                     layer=layer,
-                    net=self.net.name,
+                    net=self.net.core,
                     param1=self.center[0],
                     param2=self.center[1],
                     param3=self.width,

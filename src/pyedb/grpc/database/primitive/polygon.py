@@ -154,9 +154,8 @@ class Polygon(Primitive):
             layer = layer.core
         if isinstance(net, Net):
             net = net.core
-        edb_object = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
-        new_polygon = cls(layout._pedb, edb_object)
-        return new_polygon
+        core = CorePolygon.create(layout=layout.core, layer=layer, net=net, polygon_data=polygon_data)
+        return cls(layout._pedb, core)
 
     def fix_self_intersections(self) -> list[Polygon]:
         """Remove self intersections if they exist.
