@@ -25,6 +25,14 @@ import secrets
 import sys
 import time
 
+try:
+    from ansys.edb.core.session import is_in_memory
+except ImportError:
+
+    def is_in_memory():
+        return False
+
+
 from ansys.edb.core.session import launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
@@ -48,6 +56,8 @@ class RpcSession:
     rpc_session = None
     base_path = None
     port = 10000
+    server_pid = 0
+    in_memory = False
 
     @staticmethod
     def start(edb_version, port=0, restart_server=False):
@@ -104,20 +114,44 @@ class RpcSession:
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
 
-        if RpcSession.pid:
-            if restart_server:
-                settings.logger.logger.info("Restarting RPC server")
-                RpcSession.kill()
-                RpcSession.__start_rpc_server()
+        requested_in_memory = RpcSession.in_memory
+        current_in_memory = is_in_memory() if RpcSession.rpc_session else None
+
+        if RpcSession.rpc_session:
+            if restart_server or current_in_memory != requested_in_memory:
+                reason = "restart requested" if restart_server else "transport mode changed"
+                settings.logger.info(f"Restarting gRPC session because {reason}.")
+                RpcSession.close()
+                RpcSession.in_memory = requested_in_memory
+            elif current_in_memory:
+                settings.logger.info("gRPC session already running in local in-memory mode.")
+                settings.is_in_memory = True
+                return
             else:
                 settings.logger.info(f"Server already running on port {RpcSession.port}")
-        else:
+                settings.is_in_memory = False
+                return
+
+        session_started = False
+        if RpcSession.in_memory:
             RpcSession.__start_rpc_server()
+            session_started = True
+            RpcSession.in_memory = is_in_memory()
+            if RpcSession.rpc_session and RpcSession.in_memory:
+                settings.logger.info("Grpc session started in local mode (fast)")
+                settings.is_in_memory = True
+                return
             if RpcSession.rpc_session:
-                RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
-                settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
-            else:
-                settings.logger.error("Failed to start EDB_RPC_server process")
+                settings.logger.info("In-memory transport unavailable. Falling back to standard gRPC transport.")
+
+        if not session_started:
+            RpcSession.__start_rpc_server()
+        if RpcSession.rpc_session:
+            RpcSession.server_pid = RpcSession.rpc_session.local_server_proc.pid
+            settings.logger.info(f"Grpc session started: pid={RpcSession.server_pid}")
+        else:
+            settings.logger.error("Failed to start EDB_RPC_server process")
+        settings.is_in_memory = RpcSession.in_memory
 
     @staticmethod
     def __get_process_id():
@@ -131,7 +165,8 @@ class RpcSession:
     @staticmethod
     def __start_rpc_server():
         RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
-        start_managing(IOMangementType.READ_AND_WRITE)
+        if not is_in_memory():
+            start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
@@ -139,6 +174,7 @@ class RpcSession:
 
     @staticmethod
     def kill():
+        """Kill RPC process."""
         p = psutil.Process(RpcSession.pid)
         time.sleep(latency_delay)
         try:
@@ -150,6 +186,7 @@ class RpcSession:
 
     @staticmethod
     def kill_all_instances():
+        """Kill all RPC process."""
         # collect PIDs safely
         proc = []
         for p in psutil.process_iter(["pid", "name"]):
@@ -175,10 +212,13 @@ class RpcSession:
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:
-            end_managing()
+            if not RpcSession.in_memory:
+                end_managing()
             RpcSession.rpc_session.disconnect()
             time.sleep(latency_delay)
-            RpcSession.__get_process_id()
+            RpcSession.rpc_session = None
+        RpcSession.pid = 0
+        RpcSession.server_pid = 0
 
     @staticmethod
     def __get_random_free_port():

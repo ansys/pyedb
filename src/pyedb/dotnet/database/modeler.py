@@ -33,6 +33,8 @@ from pyedb.dotnet.database.dotnet.primitive import CircleDotNet, PathDotNet, Rec
 from pyedb.dotnet.database.edb_data.primitives_data import EdbPolygon, Primitive, cast
 from pyedb.dotnet.database.edb_data.utilities import EDBStatistics
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.geometry.point_data import PointData
+from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecated_property
 
 
@@ -1404,3 +1406,57 @@ class Modeler:
     def clear_cache():
         """Force reload of all primitives and reset indexes."""
         warnings.warn("Redundant methods. Not use.", DeprecationWarning)
+
+    def create_taper(
+        self,
+        start_point: tuple[str | float, str | float, str | float, str | float],
+        end_point: tuple[str | float, str | float, str | float, str | float],
+        start_width: str | float,
+        end_width: str | float,
+        layer_name: str = "",
+        voids: list | None = None,
+        net_name: str = "",
+    ) -> EdbPolygon:
+        """Create RF trace taper.
+        (y)
+         ↑
+         |              <─      End Width      ─>
+         |              ─────── End Point ───────
+         |             /           |             \
+         |            /            |              \
+         |           /             |               \
+         |          ────────── Start Point ─────────
+         |          <─         Start Width        ─>
+         +──────────────────────────────────────→ (x)
+        """
+
+        p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
+        p1_x, p1_y = self._pedb.value(end_point[0]), self._pedb.value(end_point[1])
+        angle = ((p1_y - p0_y) / (p1_x - p0_x)).atan()
+        w0 = self._pedb.value(start_width)
+        w1 = self._pedb.value(end_width)
+
+        h = ((p0_x - p1_x) ** 2 + (p0_y - p1_y) ** 2) ** 0.5
+
+        t_p0_y = w0 / 2
+        t_p1_y = w0 / -2
+        t_p0_x = t_p1_x = 0
+
+        t_p2_y = w1 / -2
+        t_p3_y = w1 / 2
+        t_p2_x = t_p3_x = h
+
+        point_data = []
+        for i in [
+            [t_p0_x, t_p0_y],
+            [t_p1_x, t_p1_y],
+            [t_p2_x, t_p2_y],
+            [t_p3_x, t_p3_y],
+        ]:
+            temp = PointData.create(self._pedb, x=str(i[0]), y=str(i[1]))
+            temp = temp.rotate(angle=str(angle), center=(0, 0))
+            temp = temp.move(p0_x, p0_y)
+            point_data.append(temp)
+            poly_data = PolygonData.create(self._pedb, point_data, closed=True)
+        _voids = [] if voids is None else voids
+        return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)

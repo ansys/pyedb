@@ -25,12 +25,12 @@
 import math
 import os
 
+import ansys.edb.core
 import pytest
 
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 from pyedb.dotnet.database.padstack import EDBPadstackInstance
-from pyedb.generic.general_methods import is_windows
 from pyedb.generic.settings import settings
 from tests.conftest import GRPC, config, use_grpc
 from tests.system.base_test_class import BaseTestClass
@@ -62,7 +62,10 @@ class TestClass(BaseTestClass):
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="Not implemented with grpc")
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_create_with_packstack_name(self):
         """Create a padstack"""
         edbapp = self.edb_examples.get_si_verse()
@@ -296,6 +299,10 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
         fpath = self.edb_examples.copy_test_files_into_local_folder(target_path4)[0]
@@ -387,6 +394,10 @@ class TestClass(BaseTestClass):
                 assert confirmed_pads == 19
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
         edb_plot = self.edb_examples.get_si_verse_sfp()
@@ -463,6 +474,10 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_padstack_instances_rtree_index(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
@@ -484,8 +499,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
+        config["use_grpc"],
+        reason="Waiting SP1",
     )
     def test_polygon_based_padstack(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
@@ -555,8 +570,8 @@ class TestClass(BaseTestClass):
         edbapp.close_edb()
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_via_merge(self):
         edbapp = self.edb_examples.get_si_verse()
@@ -566,8 +581,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_via_merge3(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
@@ -584,7 +599,6 @@ class TestClass(BaseTestClass):
         assert merged_via[0].stop_layer == "layer2"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"] and is_windows, reason="Test hanging on windows with grpc")
     def test_dbscan(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -704,7 +718,6 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Edb.edb_value doesn't exist in grpc.")
     def test_set_dcir_equipotential_advanced(self):
         edbapp = self.edb_examples.get_si_verse()
         [oval, circle, rect] = edbapp.layout.find_padstack_instances(aedt_name=["J1-22", "J6-11", "D2-1"])
@@ -771,7 +784,6 @@ class TestPadstackInstance(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(config["use_grpc"], reason="The updated method is not in ansys-edb-core yet.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstanceEMProperties(BaseTestClass):
     def test_em_properties(self):

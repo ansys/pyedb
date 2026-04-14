@@ -975,7 +975,7 @@ class SourceExcitation:
 
         pt = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(self._pedb, x=x, y=y)
         primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
-        edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt._edb_object)
+        edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, pt.core)
         edge = convert_py_list_to_net_list(edge, self._pedb.core.Cell.Terminal.Edge)
         _terminal = self._pedb.core.Cell.Terminal.EdgeTerminal.Create(
             primitive._edb_object.GetLayout(),
@@ -1038,7 +1038,7 @@ class SourceExcitation:
         """
         point_on_edge = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
             self._pedb, self._pedb.value(location[0]), self._pedb.value(location[1])
-        )._edb_object
+        ).core
         primitive = self._pedb.layout.primitives_by_aedt_name[primitive_name]
         pos_edge = self._pedb.core.Cell.Terminal.PrimitiveEdge.Create(primitive._edb_object, point_on_edge)
         pos_edge = convert_py_list_to_net_list(pos_edge, self._pedb.core.Cell.Terminal.Edge)
@@ -1132,12 +1132,12 @@ class SourceExcitation:
             return False
         terminal_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
             self._pedb, terminal_point[0], terminal_point[1]
-        )._edb_object
+        ).core
 
         if reference_point and isinstance(reference_point, list):
             reference_point = self._pedb.pedb_class.database.geometry.point_data.PointData.create_from_xy(
                 self._pedb, reference_point[0], reference_point[1]
-            )._edb_object
+            ).core
         if not port_name:
             port_name = generate_unique_name("Port_")
         edge = self._pedb._edb.Cell.Terminal.PrimitiveEdge.Create(polygon._edb_object, terminal_point)

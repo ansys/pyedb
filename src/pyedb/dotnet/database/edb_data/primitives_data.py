@@ -261,7 +261,7 @@ class EdbPolygon(Primitive):
             point_data = self._app.pedb_class.database.geometry.point_data.PointData.create_from_xy(
                 self._app, self._app.edb_value(point_data[0]), self._app.edb_value(point_data[1])
             )
-        int_val = int(self.polygon_data._edb_object.PointInPolygon(point_data._edb_object))
+        int_val = int(self.polygon_data._edb_object.PointInPolygon(point_data.core))
 
         # Intersection type:
         # 0 = objects do not intersect

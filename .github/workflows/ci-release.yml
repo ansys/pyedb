@@ -27,7 +27,7 @@ jobs:
       contents: write # Needed to create PR for changelog
       pull-requests: write # Needed to create PR for changelog
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+      - uses: ansys/actions/doc-deploy-changelog@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -40,7 +40,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-vulnerabilities@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+      - uses: ansys/actions/check-vulnerabilities@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           python-package-name: ${{ env.PACKAGE_NAME }}
@@ -53,7 +53,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-actions-security@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+      - uses: ansys/actions/check-actions-security@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
       contents: read
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-style@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -85,7 +85,7 @@ jobs:
     steps:
       - name: Build wheelhouse and perform smoke test
         id: build-wheelhouse
-        uses: ansys/actions/build-wheelhouse@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/build-wheelhouse@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -108,6 +108,8 @@ jobs:
     permissions:
       contents: read
     env:
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
+      ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
       - name: Checkout repository
@@ -167,6 +169,8 @@ jobs:
     permissions:
       contents: read
     env:
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
+      ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
       - name: Checkout repository
@@ -256,6 +260,7 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           python -m pip install .[all,tests]
+          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -325,6 +330,7 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           python -m pip install .[all,tests]
+          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -368,7 +374,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
@@ -400,6 +406,7 @@ jobs:
         run: |
           . .venv/bin/activate
           python -m pip install .[all,tests]
+          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -443,7 +450,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
@@ -475,6 +482,7 @@ jobs:
         run: |
           . .venv/bin/activate
           python -m pip install .[all,tests]
+          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -615,7 +623,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -655,7 +663,7 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           . .venv/bin/activate
           cd external/pyaedt
@@ -663,7 +671,7 @@ jobs:
 
       - name: Install PyEDB
         env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           python -m pip install .[all]
 
@@ -718,7 +726,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-build@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -740,7 +748,7 @@ jobs:
       id-token: write # Required for OIDC token generation (for provenance signing)
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/build-library@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -764,7 +772,7 @@ jobs:
           path: ${{ env.PACKAGE_NAME }}-artifacts
 
       - name: Release to PyPI using trusted publisher
-        uses: pypa/gh-action-pypi-publish@ed0c53931b1dc9bd32cbe73a98c7f6766f8a527e # v1.13.0
+        uses: pypa/gh-action-pypi-publish@cef221092ed1bacb1cc03d23a2d87d1d172e277b # v1.14.0
         with:
           repository-url: "https://upload.pypi.org/legacy/"
           print-hash: true
@@ -772,7 +780,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/release-github@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -786,7 +794,7 @@ jobs:
       contents: write # Needed to update files on the gh-pages branch
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-deploy-stable@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

@@ -110,7 +110,7 @@ class Primitive:
 
         """
         primitive = self.core.cast()
-        return PolygonData(primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
+        return PolygonData(self._pedb, primitive.polygon_data) if hasattr(primitive, "polygon_data") else None
 
     @polygon_data.setter
     def polygon_data(self, value):
@@ -584,7 +584,7 @@ class Primitive:
                 except:
                     primi_polys.append(prim)
         for v in self.voids[:]:
-            primi_polys.append(v.polygon_data)
+            primi_polys.append(v.polygon_data.core)
         primi_polys = poly.unite(primi_polys)
         p_to_sub = poly.unite([poly] + voids_of_prims)
         list_poly = poly.subtract(p_to_sub, primi_polys)
@@ -624,12 +624,12 @@ class Primitive:
         primi_polys = []
         for prim in primitives:
             if isinstance(prim, Primitive):
-                primi_polys.append(prim.polygon_data)
+                primi_polys.append(prim.polygon_data.core)
             else:
                 if isinstance(prim, CoreCircle):
-                    primi_polys.append(prim.polygon_data)
+                    primi_polys.append(prim.polygon_data.core)
                 else:
-                    primi_polys.append(prim.polygon_data)
+                    primi_polys.append(prim.polygon_data.core)
         list_poly = poly.intersect([poly], primi_polys)
         new_polys = []
         if list_poly:
@@ -641,7 +641,7 @@ class Primitive:
                 void_to_subtract = []
                 if voids:
                     for void in voids:
-                        void_pdata = void.polygon_data
+                        void_pdata = void.polygon_data.core
                         int_data2 = p.intersection_type(void_pdata).value
                         if int_data2 > 2 or int_data2 == 1:
                             void_to_subtract.append(void_pdata)

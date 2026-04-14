@@ -158,3 +158,18 @@ class ArcData:
 
         """
         return self.core.is_ccw()
+
+    @property
+    def radius(self) -> float:
+        """Arc data radius.
+
+        Returns
+        -------
+        float
+            Radius value.
+        """
+        return self.core.radius
+
+    @radius.setter
+    def radius(self, value):
+        self.core.radius.value = value

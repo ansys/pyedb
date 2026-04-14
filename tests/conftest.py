@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-""" """
-
 import json
 import os
 from pathlib import Path
@@ -47,7 +45,7 @@ example_models_path = Path(__file__).parent / "example_models"
 use_grpc = os.getenv("USE_GRPC") in {"1", True}
 
 config = {
-    "desktopVersion": "2025.2",
+    "desktopVersion": "2026.1",
     "use_grpc": use_grpc,
 }
 

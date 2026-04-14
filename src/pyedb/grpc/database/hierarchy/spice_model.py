@@ -36,7 +36,6 @@ class SpiceModel:  # pragma: no cover
                 sub_circuit = name
             edb_object = CoreSpiceModel.create(name=name, path=file_path, sub_circuit=sub_circuit)
             self.core = edb_object
-            self._component.component_property = self.core
         else:
             self.core = component.component_property.model
 

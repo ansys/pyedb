@@ -38,9 +38,10 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: Literal[True] = True,
+    grpc: Literal[True] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> _GrpcEdb: ...
 @overload
 def Edb(
@@ -54,9 +55,10 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: Literal[False] = False,
+    grpc: Literal[False] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> _DotnetEdb: ...
 @overload
 def Edb(
@@ -70,9 +72,27 @@ def Edb(
     use_ppe: bool = False,
     map_file: str | None = None,
     technology_file: str | None = None,
-    grpc: bool = False,
+    grpc: bool = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
+    in_memory: bool = True,
+) -> _GrpcEdb | _DotnetEdb: ...
+@overload
+def Edb(
+    edbpath: str | None = None,
+    cellname: str | None = None,
+    isreadonly: bool = False,
+    version: str | None = None,
+    isaedtowned: bool = False,
+    oproject: Any = None,
+    student_version: bool = False,
+    use_ppe: bool = False,
+    map_file: str | None = None,
+    technology_file: str | None = None,
+    grpc: None = None,
+    control_file: str | None = None,
+    layer_filter: str | None = None,
+    in_memory: bool = True,
 ) -> _GrpcEdb | _DotnetEdb: ...
 
 pyedb_path: str

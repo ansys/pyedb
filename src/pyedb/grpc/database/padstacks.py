@@ -1173,7 +1173,7 @@ class Padstacks(object):
                 offset_y=value0,
                 rotation=value0,
                 type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
-                poly=polygon_hole,
+                poly=polygon_hole.core,
             )
             padstack_data.plating_percentage = 20.0
         else:
@@ -1212,7 +1212,7 @@ class Padstacks(object):
             pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_polygon = PolygonData(edb_object=CorePolygonData(points=pad_polygon))
+                pad_polygon = PolygonData(core=CorePolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
@@ -1221,7 +1221,7 @@ class Padstacks(object):
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_polygon = PolygonData(edb_object=CorePolygonData(points=antipad_polygon))
+                antipad_polygon = PolygonData(core=CorePolygonData(points=antipad_polygon))
         else:
             antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
