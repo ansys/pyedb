@@ -27,13 +27,13 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
     from pyedb.grpc.database.net.net import Net
+    from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from typing import Union
 
 from ansys.edb.core.hierarchy.pin_group import PinGroup as CorePinGroup
 from ansys.edb.core.terminal.terminal import BoundaryType as CoreBoundaryType
 
 from pyedb.generic.general_methods import generate_unique_name
-from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from pyedb.grpc.database.terminal.pingroup_terminal import PinGroupTerminal
 from pyedb.grpc.database.utility.value import Value
 
@@ -350,6 +350,7 @@ class PinGroup:
             List of pin names or PadstackInstance objects to remove from pin group.
 
         """
+        from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
         # Create a mapping of pin names to core pin objects for O(1) lookup
         pin_map = {pin.name: pin for pin in self.core.pins}
 
