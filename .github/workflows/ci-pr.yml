@@ -364,7 +364,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
@@ -439,7 +439,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
