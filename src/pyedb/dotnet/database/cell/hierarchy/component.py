@@ -87,7 +87,7 @@ def _clear_dotnet_owner(obj):
         _prop = obj.GetType().GetProperty("IsOwner", _bf)
         if _prop is not None:
             _prop.SetValue(obj, False, None)
-    except Exception:
+    except Exception:  # nosec B110
         pass
 
 
