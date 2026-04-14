@@ -969,7 +969,7 @@ class TestClassTerminals(BaseTestClass):
         }
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -1039,7 +1039,7 @@ class TestClassTerminals(BaseTestClass):
         ]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -1073,7 +1073,7 @@ class TestClassTerminals(BaseTestClass):
         assert edbapp.terminals["edge_terminal_2"].hfss_type == "Wave"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -1239,7 +1239,7 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -1492,7 +1492,7 @@ class TestClassBoundaries(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassPadstacks(BaseTestClass):
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -1577,7 +1577,7 @@ class TestClassPadstacks(BaseTestClass):
                 assert v == instance[k]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -1736,7 +1736,7 @@ class TestClassPadstacks(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )

@@ -62,7 +62,7 @@ class TestClass(BaseTestClass):
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -299,7 +299,7 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -394,7 +394,7 @@ class TestClass(BaseTestClass):
                 assert confirmed_pads == 19
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -474,7 +474,7 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -569,7 +569,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
@@ -580,7 +580,7 @@ class TestClass(BaseTestClass):
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
+    @pytest.mark.skipif(config["use_grpc"] and
         ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
