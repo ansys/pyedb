@@ -28,7 +28,11 @@ import time
 
 from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType, PolygonData as CorePolygonData
 
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
+def _get_convert_py_list_to_net_list():
+    """Lazy import to avoid loading .NET when using gRPC."""
+    from pyedb.dotnet.database.general import convert_py_list_to_net_list
+    return convert_py_list_to_net_list
 
 
 class Cutout:
@@ -1065,6 +1069,7 @@ class DotNetCutout:
             objs_data = self._smart_cut()
             if objs_data:
                 _polys.extend(objs_data)
+        convert_py_list_to_net_list = _get_convert_py_list_to_net_list()
         _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(convert_py_list_to_net_list(_polys))
         _poly = _poly.Expand(self.expansion_size, tolerance, self.use_round_corner, self.expansion_size)
         _poly_list = convert_py_list_to_net_list(list(_poly)[0])
@@ -1139,6 +1144,7 @@ class DotNetCutout:
                                     if void_polydata.Area() >= 0.05 * area:
                                         voids_poly.append(void_polydata)
                                 if voids_poly:
+                                    convert_py_list_to_net_list = _get_convert_py_list_to_net_list()
                                     obj_data = obj_data[0].Subtract(
                                         convert_py_list_to_net_list(list(obj_data)),
                                         convert_py_list_to_net_list(voids_poly),
@@ -1150,7 +1156,9 @@ class DotNetCutout:
                             )
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
+            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(
+                _get_convert_py_list_to_net_list()(unite_polys)
+            )
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]
@@ -1260,7 +1268,7 @@ class DotNetCutout:
             _poly = self._create_convex_hull(
                 1e-12,
             )
-            _poly_list = convert_py_list_to_net_list([_poly])
+            _poly_list = _get_convert_py_list_to_net_list()([_poly])
             _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(_poly_list)
         return _poly
 
@@ -1364,6 +1372,7 @@ class DotNetCutout:
         ref_nets = [net for net in self._edb.layout.nets if net.name in self.references]
 
         # validate references in layout
+        convert_py_list_to_net_list = _get_convert_py_list_to_net_list()
         _netsClip = convert_py_list_to_net_list(
             [net.api_object for net in self._edb.layout.nets if net.name in self.references]
         )
@@ -1380,7 +1389,7 @@ class DotNetCutout:
         if self.output_file:
             db2 = self._edb.core.Database.Create(self.output_file)
             _success = db2.Save()
-            _dbCells = convert_py_list_to_net_list(_dbCells)
+            _dbCells = _get_convert_py_list_to_net_list()(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.CircuitCells)) > 0:
                 for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):
@@ -1512,7 +1521,7 @@ class DotNetCutout:
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
 
-        _poly_list = convert_py_list_to_net_list([_poly])
+        _poly_list = _get_convert_py_list_to_net_list()([_poly])
         prims_to_delete = []
         poly_to_create = []
         pins_to_delete = []
@@ -1520,15 +1529,17 @@ class DotNetCutout:
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
+            _cvt = _get_convert_py_list_to_net_list()
             return list(
                 poly1.Intersect(
-                    convert_py_list_to_net_list(poly1),
-                    convert_py_list_to_net_list(poly2),
+                    _cvt(poly1),
+                    _cvt(poly2),
                 )
             )
 
         def subtract(poly, voids):
-            return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
+            _cvt = _get_convert_py_list_to_net_list()
+            return poly.Subtract(_cvt(poly), _cvt(voids))
 
         def clip_path(path):
             pdata = path.polygon_data._edb_object
