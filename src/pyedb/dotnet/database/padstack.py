@@ -1604,8 +1604,8 @@ class EdbPadstacks(object):
             raise Exception("No points defining polygon was provided")
         if not padstack_instances_index:
             padstack_instances_index = {}
-            for id, inst in self.instances.items():
-                padstack_instances_index[id] = inst.position
+            for inst_id, inst in self.instances.items():
+                padstack_instances_index[inst_id] = inst.position
         _x = [pt[0] for pt in points]
         _y = [pt[1] for pt in points]
         points = [_x, _y]

@@ -30,20 +30,30 @@ from pyedb.grpc.database.inner.base import ObjBase
 
 @dataclass
 class HFSSProductProperty:
-    """Represents the HFSS product properties.
+    r"""Represents the HFSS product properties.
 
     This class encapsulates configuration settings for HFSS simulations, including
     port type, orientation, layer alignment, and extent factors for various dimensions.
 
-    Attributes:
-        hfss_type (str): The type of HFSS port (e.g., "Gap", "Wave(coax)"). Default is "Gap".
-        orientation (str): The orientation of the port (e.g., "Horizontal", "Vertical"). Default is "".
-        layer_alignment (str): The layer alignment setting (e.g., "Upper", "Lower"). Default is "".
-        horizontal_extent_factor (float | int): Horizontal extent factor for the port. Default is 0.0.
-        vertical_extent_factor (float | int): Vertical extent factor for the port. Default is 0.0.
-        radial_extent_factor (float | int): Radial extent factor for the port. Default is 0.0.
-        pec_launch_width (str): PEC (Perfect Electric Conductor) launch width. Default is "10um".
-        reference_name (str): Reference name for the port. Default is "".
+    Attributes
+    ----------
+    hfss_type : str
+        The type of HFSS port (e.g., "Gap", "Wave(coax)"). Default is "Gap".
+    orientation : str
+        The orientation of the port (e.g., "Horizontal", "Vertical"). Default is "".
+    layer_alignment : str
+        The layer alignment setting (e.g., "Upper", "Lower"). Default is "".
+    horizontal_extent_factor : float | int
+        Horizontal extent factor for the port. Default is 0.0.
+    vertical_extent_factor : float | int
+        Vertical extent factor for the port. Default is 0.0.
+    radial_extent_factor : float | int
+        Radial extent factor for the port. Default is 0.0.
+    pec_launch_width : str
+        PEC (Perfect Electric Conductor) launch width. Default is "10um".
+    reference_name : str
+        Reference name for the port. Default is "".
+
     """
 
     hfss_type: str = "Gap"
@@ -58,8 +68,11 @@ class HFSSProductProperty:
     def to_hfss_string(self) -> str:
         """Convert HFSSProductProperty instance into an HFSS configuration string.
 
-        Returns:
-            str: A formatted HFSS configuration string with all properties encoded.
+        Returns
+        -------
+        str
+            A formatted HFSS configuration string with all properties encoded.
+
         """
 
         def _fmt_num(val: float) -> str:
@@ -67,7 +80,7 @@ class HFSSProductProperty:
                 v = float(val)
             except Exception:
                 return str(val)
-            # Render as integer when the float is integral
+            # Render as integer when the float is i ntegral
             if v.is_integer():
                 return str(int(v))
             return str(v)
@@ -91,23 +104,26 @@ class HFSSProductProperty:
 
 
 def parse_hfss_string(s: str | None) -> HFSSProductProperty:
-    """Parse an HFSS property string into an HFSSProductProperty object.
+    r"""Parse an HFSS property string into an HFSSProductProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     HFSS properties and reconstructs them into a structured object.
 
     Parameters
     ----------
-    s (str | None): A formatted string containing HFSS configuration settings.
+    s : str | None
+        A formatted string containing HFSS configuration settings.
         If None, returns an HFSSProductProperty with default values.
         Expected format includes key-value pairs like "'HFSS Type'='value'", etc.,
         and may contain parameters like Orientation, Layer Alignment, extent factors, etc.
 
     Returns
     -------
-    HFSSProductProperty: An object containing the parsed HFSS properties
+    HFSSProductProperty
+        An object containing the parsed HFSS properties
         with all settings extracted from the input string. If the string is None or any specific
         property is not found, default values are used.
+
     """
     if s is None:
         return HFSSProductProperty()
@@ -149,36 +165,46 @@ class HorizontalWavePortProperty:
     electromagnetic simulations. It stores port characteristics such as type, geometry
     (arms), and associated port names (padstack instances).
 
-    Attributes:
-        port_type (str): The type of port. Default is "Pad Port".
-        arms (int): The number of arms for the port structure. Default is 2.
-        hfss_last_type (int): The last HFSS type identifier. Default is 8.
-        port_names (tuple[str, ...]): Tuple of port/via names (padstack instance names) associated
-            with this property. Can contain multiple via names (e.g., positive and negative vias).
-            Default is an empty tuple.
-        horizontal_wave_primary (bool): Whether this is a primary horizontal wave port.
-            Default is False.
-        is_gap_source (bool): Whether the port is a gap source. Default is True.
+    Attributes
+    ----------
+    port_type : str
+        The type of port. Default is "Pad Port".
+    arms : int
+        The number of arms for the port structure. Default is 2.
+    hfss_last_type : int
+        The last HFSS type identifier. Default is 8.
+    port_names : tuple[str, ...]
+        Tuple of port/via names (padstack instance names) associated
+        with this property. Can contain multiple via names (e.g., positive and negative vias).
+        Default is an empty tuple.
+    horizontal_wave_primary : bool
+        Whether this is a primary horizontal wave port.
+        Default is False.
+    is_gap_source : bool
+        Whether the port is a gap source. Default is True.
 
-    Examples:
-        Create with two vias:
-        >>> prop = HorizontalWavePortProperty(
-        ...     port_type="Pad Port",
-        ...     arms=2,
-        ...     hfss_last_type=8,
-        ...     port_names=("pos_via", "neg_via"),
-        ...     horizontal_wave_primary=True,
-        ...     is_gap_source=True,
-        ... )
-        >>> print(prop.to_property_string())
-        $begin ''
-        \tType='Pad Port'
-        \tArms=2
-        \tHFSSLastType=8
-        \tHorizWavePort('pos_via', 'neg_via')
-        \tHorizWavePrimary=true
-        \tIsGapSource=true
-        $end ''
+    Examples
+    --------
+    Create with two vias:
+
+    >>> prop = HorizontalWavePortProperty(
+    ...     port_type="Pad Port",
+    ...     arms=2,
+    ...     hfss_last_type=8,
+    ...     port_names=("pos_via", "neg_via"),
+    ...     horizontal_wave_primary=True,
+    ...     is_gap_source=True,
+    ... )
+    >>> print(prop.to_property_string())
+    $begin ''
+    \tType='Pad Port'
+    \tArms=2
+    \tHFSSLastType=8
+    \tHorizWavePort('pos_via', 'neg_via')
+    \tHorizWavePrimary=true
+    \tIsGapSource=true
+    $end ''
+
     """
 
     port_type: str = "Pad Port"
@@ -195,9 +221,12 @@ class HorizontalWavePortProperty:
         including all port names (padstack instances) as a comma-separated list within the
         HorizWavePort(...) section.
 
-        Returns:
-            str: A formatted property string with all attributes encoded, suitable for
-                storage or transmission.
+        Returns
+        -------
+        str
+            A formatted property string with all attributes encoded, suitable for
+            storage or transmission.
+
         """
         lines = [
             "$begin ''",
@@ -229,7 +258,8 @@ def parse_horizontal_wave_port_string(s: str | None) -> HorizontalWavePortProper
 
     Parameters
     ----------
-    s (str | None): A formatted string containing horizontal wave port configuration settings.
+    s : str | None
+        A formatted string containing horizontal wave port configuration settings.
         If None, returns a HorizontalWavePortProperty with default values.
         Expected format includes key-value pairs like "Type='value'", "Arms=2", etc.,
         and may contain a "HorizWavePort(...)" section with one or more port/via names.
@@ -238,10 +268,12 @@ def parse_horizontal_wave_port_string(s: str | None) -> HorizontalWavePortProper
 
     Returns
     -------
-    HorizontalWavePortProperty: An object containing the parsed horizontal wave port properties
+    HorizontalWavePortProperty
+        An object containing the parsed horizontal wave port properties
         with all settings extracted from the input string. The port_names attribute will be
         a tuple containing all parsed via names. If the string is None or any specific
         property is not found, default values are used.
+
     """
     if s is None:
         return HorizontalWavePortProperty()
@@ -282,10 +314,15 @@ class PadstackInstanceMeshingProperty:
     This class encapsulates configuration settings for padstack instance meshing,
     including stack identifier, material type, and meshing settings.
 
-    Attributes:
-        sid (int): Stack identifier. Default is 0.
-        material (str): Material name for the padstack instance. Default is "".
-        meshing_setting (str): Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
+    Attributes
+    ----------
+    sid : int
+        Stack identifier. Default is 0.
+    material : str
+        Material name for the padstack instance. Default is "".
+    meshing_setting : str
+        Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
+
     """
 
     sid: int = 0
@@ -295,8 +332,11 @@ class PadstackInstanceMeshingProperty:
     def to_property_string(self) -> str:
         """Convert PadstackInstanceMeshingProperty instance into a property string.
 
-        Returns:
-            str: A formatted property string with all properties encoded.
+        Returns
+        -------
+        str
+            A formatted property string with all properties encoded.
+
         """
         lines = [
             "$begin ''",
@@ -316,15 +356,18 @@ def parse_padstack_instance_meshing_string(s: str | None) -> PadstackInstanceMes
 
     Parameters
     ----------
-    s (str | None): A formatted string containing padstack instance meshing configuration settings.
+    s : str | None
+        A formatted string containing padstack instance meshing configuration settings.
         If None, returns a PadstackInstanceMeshingProperty with default values.
         Expected format includes key-value pairs like "sid=3", "mat='copper'", "vs='Mesh'", etc.
 
     Returns
     -------
-    PadstackInstanceMeshingProperty: An object containing the parsed padstack instance meshing properties
+    PadstackInstanceMeshingProperty
+        An object containing the parsed padstack instance meshing properties
         with all settings extracted from the input string. If the string is None or any specific
         property is not found, default values are used.
+
     """
     if s is None:
         return PadstackInstanceMeshingProperty()
@@ -353,10 +396,15 @@ class ViaMeshingProperty:
     This class encapsulates configuration settings for via meshing,
     including stack identifier, material type, and meshing settings.
 
-    Attributes:
-        sid (int): Stack identifier. Default is 0.
-        material (str): Material name for the via. Default is "".
-        meshing_setting (str): Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
+    Attributes
+    ----------
+    sid : int
+        Stack identifier. Default is 0.
+    material : str
+        Material name for the via. Default is "".
+    meshing_setting : str
+        Meshing setting or technique (e.g., "Mesh", "Auto"). Default is "".
+
     """
 
     sid: int = 0
@@ -366,8 +414,11 @@ class ViaMeshingProperty:
     def to_property_string(self) -> str:
         """Convert ViaMeshingProperty instance into a property string.
 
-        Returns:
-            str: A formatted property string with all properties encoded.
+        Returns
+        -------
+        str
+            A formatted property string with all properties encoded.
+
         """
         lines = [
             "$begin ''",
@@ -387,15 +438,18 @@ def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
 
     Parameters
     ----------
-    s (str | None): A formatted string containing via meshing configuration settings.
+    s : str | None
+        A formatted string containing via meshing configuration settings.
         If None, returns a ViaMeshingProperty with default values.
         Expected format includes key-value pairs like "sid=3", "mat='copper'", "vs='Mesh'", etc.
 
     Returns
     -------
-    ViaMeshingProperty: An object containing the parsed via meshing properties
+    ViaMeshingProperty
+        An object containing the parsed via meshing properties
         with all settings extracted from the input string. If the string is None or any specific
         property is not found, default values are used.
+
     """
     if s is None:
         return ViaMeshingProperty()

@@ -2050,7 +2050,7 @@ class SourceExcitation(SourceExcitationInternal):
         if isinstance(void, int):
             void = self._pedb.layout.get_object_by_id(void)
             if not void:
-                raise f"No void found for given ID {void}"
+                raise Exception(f"No void found for given ID {void}")
         if not padstack_instances:
             # finding padstack instances included inside the void
             instance_ids = self._pedb.padstacks.get_padstack_instances_id_intersecting_polygon(
@@ -2814,7 +2814,7 @@ class SourceExcitation(SourceExcitationInternal):
         if primitive:
             primitive = primitive[0]
         else:
-            raise "Primitive not found"
+            raise Exception("Primitive not found")
         edges = [CorePrimitiveEdge.create(primitive.core, point) for point in points_on_edge]
         edge_term = GrpcEdgeTerminal.create(
             layout=primitive.core.layout, edges=edges, net=primitive.core.net, name=name, is_ref=False

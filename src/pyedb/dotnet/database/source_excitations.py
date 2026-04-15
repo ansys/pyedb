@@ -1228,14 +1228,13 @@ class SourceExcitation:
         results for differential links and other high-speed interconnect channels.
         """
         from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
-        from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
 
         port_number = len(self._pedb.ports) + 1
         terminals = []
         if isinstance(void, int):
             void = self._pedb.layout.get_object_by_id(void)
             if not void:
-                raise f"No void found for given ID {void}"
+                raise Exception(f"No void found for given ID {void}")
         if not padstack_instances:
             # finding padstack instances included inside the void
             instance_ids = self._pedb.padstacks.get_padstack_instances_id_intersecting_polygon(
