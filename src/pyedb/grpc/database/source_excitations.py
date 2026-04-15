@@ -2147,7 +2147,7 @@ class SourceExcitation(SourceExcitationInternal):
             siwave_prop = term._siwave_properties
             siwave_prop.reference_net = ""
             term._siwave_properties = siwave_prop
-            # Terminal post porcessing
+            # Terminal post-processing
             pp = term.core.port_post_processing_prop
             pp.voltage_magnitude = self._pedb.value(1.0)
             pp.do_deembed = True
