@@ -1185,7 +1185,8 @@ class SourceExcitation:
         pec_launch_width: str = "0.04mm",
         layer_alignment: str = "Lower",
     ) -> bool:
-        """Create a horizontal wave port around one or more vias inside a void.
+        """
+        Create a horizontal wave port around one or more vias inside a void.
 
         A horizontal wave port is a higher-fidelity alternative to coaxial lumped
         ports for vertical interconnect excitation. Unlike a gap or lumped port,
@@ -1226,6 +1227,7 @@ class SourceExcitation:
         than gap-port formulations that assume uniform current. This also improves
         fringing-field estimation and can have a significant impact on extracted
         results for differential links and other high-speed interconnect channels.
+
         """
         from pyedb.dotnet.database.cell.terminal.edge_terminal import EdgeTerminal
 

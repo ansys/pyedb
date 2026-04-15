@@ -66,7 +66,8 @@ class SourceExcitationInternal:
 
     @staticmethod
     def _is_negative_net(net_name: str) -> bool:
-        """Identify if a net belongs to a negative terminal based on naming conventions.
+        """
+        Identify if a net belongs to a negative terminal based on naming conventions.
 
         Parameters
         ----------
