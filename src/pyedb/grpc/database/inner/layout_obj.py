@@ -66,7 +66,7 @@ class HFSSProductProperty:
     reference_name: str = ""
 
     def to_hfss_string(self) -> str:
-        """Convert HFSSProductProperty instance into an HFSS configuration string.
+        r"""Convert HFSSProductProperty instance into an HFSS configuration string.
 
         Returns
         -------
@@ -157,6 +157,8 @@ def parse_hfss_string(s: str | None) -> HFSSProductProperty:
     )
 
 
+
+
 @dataclass
 class HorizontalWavePortProperty:
     """Represents the properties of a horizontal wave port.
@@ -215,7 +217,7 @@ class HorizontalWavePortProperty:
     is_gap_source: bool = True
 
     def to_property_string(self) -> str:
-        """Convert HorizontalWavePortProperty instance into an interpretable property string.
+        r"""Convert HorizontalWavePortProperty instance into an interpretable property string.
 
         Generates a formatted string representation of the horizontal wave port properties,
         including all port names (padstack instances) as a comma-separated list within the
@@ -307,6 +309,8 @@ def parse_horizontal_wave_port_string(s: str | None) -> HorizontalWavePortProper
     )
 
 
+
+
 @dataclass
 class PadstackInstanceMeshingProperty:
     """Represents the padstack instance meshing properties.
@@ -387,6 +391,8 @@ def parse_padstack_instance_meshing_string(s: str | None) -> PadstackInstanceMes
         material=get("mat") or defaults.material,
         meshing_setting=get("vs") or defaults.meshing_setting,
     )
+
+
 
 
 @dataclass
@@ -473,6 +479,8 @@ def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
 
 
 
+
+
 @dataclass
 class PlanarEMProperty:
     """Represents the PlanarEM solver properties.
@@ -549,6 +557,8 @@ def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
         port_solver=get_bool("PortSolver", defaults.port_solver),
         ignore_reference=get_bool("Ignore Reference", defaults.ignore_reference),
     )
+
+
 
 
 
