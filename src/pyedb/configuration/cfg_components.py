@@ -30,7 +30,9 @@ def _get_snake_to_pascal():
     """Lazy import of snake_to_pascal to avoid loading .NET when using gRPC."""
     # Import from dotnet module - only called in non-gRPC mode
     from pyedb.dotnet.database.general import snake_to_pascal
+
     return snake_to_pascal
+
 
 _solder_shape_mapping = {
     "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,

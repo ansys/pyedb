@@ -32,6 +32,7 @@ from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType, P
 def _get_convert_py_list_to_net_list():
     """Lazy import to avoid loading .NET when using gRPC."""
     from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
     return convert_py_list_to_net_list
 
 
@@ -1156,9 +1157,7 @@ class DotNetCutout:
                             )
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(
-                _get_convert_py_list_to_net_list()(unite_polys)
-            )
+            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(_get_convert_py_list_to_net_list()(unite_polys))
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]

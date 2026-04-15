@@ -379,6 +379,7 @@ class TestClass(BaseTestClass):
                             # refer to comment in _get_padstack_polygon_data body to see why we're skipping this check
                             continue
                         from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
                         rect_pd = PolygonData(
                             padstack_instance._pedb,
                             create_from_points=True,
