@@ -471,8 +471,6 @@ def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
     )
 
 
-
-
 @dataclass
 class PlanarEMProperty:
     """Represents the PlanarEM solver properties.
@@ -549,8 +547,6 @@ def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
         port_solver=get_bool("PortSolver", defaults.port_solver),
         ignore_reference=get_bool("Ignore Reference", defaults.ignore_reference),
     )
-
-
 
 
 @dataclass
