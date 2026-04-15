@@ -131,7 +131,7 @@ class TestClass(BaseTestClass):
         assert edbapp.nets.nets["1.2V_DVDDL"].primitives[0].arcs[0].height
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="get_connected_object returns empty list, needs investigation.")
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_nets_dc_shorts(self):
         # TODO get_connected_object return empty list.
         edbapp = self.edb_examples.get_si_verse()

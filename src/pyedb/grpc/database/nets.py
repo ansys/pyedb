@@ -46,7 +46,7 @@ class Nets(CommonNets):
     >>> from pyedb import Edb
 
     >>> # Initialize EDB session
-    >>> edbapp = Edb(edbversion="2025.2")
+    >>> edbapp = Edb(edbversion="2026.1")
 
     >>> # Access Nets class
     >>> nets = edbapp.nets

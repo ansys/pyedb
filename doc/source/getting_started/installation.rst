@@ -35,4 +35,4 @@ To test your installation and connection to the ``ansys-edb-core`` service, run 
    :caption: test_installation.py
 
    from pyedb import Edb
-   edb = Edb(version="2025.2")
+   edb = Edb(version="2026.1")

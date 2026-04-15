@@ -25,7 +25,7 @@ If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-o
 
     from pyedb import Edb
 
-    edb = Edb("my_project.aedb", version="2025.2")
+    edb = Edb("my_project.aedb", version="2026.1")
     edb.core_components.components["R1"].r_value = 40
     edb.close_edb()
 

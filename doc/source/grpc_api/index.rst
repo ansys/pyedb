@@ -3,7 +3,7 @@ API reference
 =============
 
 This section describes EDB functions, classes, and methods
-for EDB gRPC applications and modules. Use the search feature or click links
+for EDB applications and modules. Use the search feature or click links
 to view API documentation.
 
 The PyEDB API includes classes for apps and modules. You must initialize the
@@ -13,12 +13,10 @@ methods are inherited into the ``Edb`` class.
 If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
 
 .. note:: PyEDB is now supporting gRPC
-   **Starting ANSYS release 2025.2 PyEDB is compatible with gRPC.**
+   **Starting ANSYS release 2025.2 PyEDB is compatible with gRPC as Beta.**
    The two main advantages are:
    - Better compatibility with Linux
-   - PyEDB becomes ready to remote - client services
-
-   If you want to know more about `gRPC <https://grpc.io>`_.
+   - Better performances starting ANSYS release 2026.1
 
    PyEDB gRPC is providing backward compatibility with previous versions.
 
@@ -42,7 +40,7 @@ To enable PyEDB gRPC you have two options.
    # Using grpc flag
    from pyedb import Edb
 
-   edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=False)
+   edb = Edb(edbpath=r"my_edb_path", edbversion="2026.1", grpc=True)
 
 
 API documentation
