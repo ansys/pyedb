@@ -104,7 +104,7 @@ Discussions = "https://github.com/ansys/pyedb/discussions"
 Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.ruff]
-ignore = ["D203", "D213"]
+ignore = ["D203", "D213", "212"]
 line-length = 120
 fix = true
 
