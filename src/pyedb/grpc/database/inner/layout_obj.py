@@ -80,7 +80,7 @@ class HFSSProductProperty:
                 v = float(val)
             except Exception:
                 return str(val)
-            # Render as integer when the float is i ntegral
+            # Render as integer when the float is integral
             if v.is_integer():
                 return str(int(v))
             return str(v)
