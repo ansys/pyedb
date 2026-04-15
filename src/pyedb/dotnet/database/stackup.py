@@ -34,8 +34,8 @@ import math
 from pathlib import Path
 import warnings
 
-from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
+from System.Reflection import BindingFlags  # type: ignore
 
 from pyedb.dotnet.database.edb_data.layer_data import (
     LayerEdbClass,
@@ -48,6 +48,18 @@ from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
+
+
+def clear_is_owner(obj):
+    """Use reflection to set the protected IsOwner property to False,
+    preventing the buggy EDBLayer_Cleanup from being called in the destructor.
+
+    This must be called immediately after creating a Layer object to prevent
+    it from being owned by the LayerCollection, which causes crashes when
+    accessed outside the collection scope.
+    """
+    prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
+    prop.SetValue(obj, False, None)
 
 
 class LayerCollection(object):
@@ -122,6 +134,11 @@ class LayerCollection(object):
             obj = obj if method_top_bottom(obj._edb_object) else False
         elif method_above_below:
             obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
+
+        # Bug Release 2016.1 fix: Call clear_is_owner AFTER layer is successfully added to collection
+        if obj:
+            clear_is_owner(obj._edb_object)
+
         self.update_layout()
         return obj
 
@@ -225,6 +242,7 @@ class LayerCollection(object):
         return self._add_layer(add_method="add_layer_bottom", **kwargs)
 
     def set_layer_clone(self, layer_clone):
+        # Fixing Ansys release 26.1 bug
         lc = self._pedb.core.Cell.LayerCollection()  # empty layer collection
         lc.SetMode(self._edb_object.GetMode())
         if self.mode.lower() == "laminate":
@@ -238,6 +256,8 @@ class LayerCollection(object):
             if i.id == layer_clone.id:  # replace layer
                 add_method(layer_clone._edb_object)
                 obj = layer_clone
+                # Clear is_owner AFTER layer is added to new LayerCollection
+                clear_is_owner(layer_clone._edb_object)
             else:  # keep existing layer
                 add_method(i._edb_object)
         # Add non stackup layers
@@ -245,6 +265,8 @@ class LayerCollection(object):
             if i.id == layer_clone.id:
                 lc.AddLayerBottom(layer_clone._edb_object)
                 obj = layer_clone
+                # Clear is_owner AFTER layer is added to new LayerCollection
+                clear_is_owner(layer_clone._edb_object)
             else:
                 lc.AddLayerBottom(i._edb_object)
 
@@ -1138,6 +1160,7 @@ class Stackup(LayerCollection):
                 cmp = pyaedt_cmp.edbcomponent
                 cmp_type = cmp.GetComponentType()
                 cmp_prop = cmp.GetComponentProperty().Clone()
+                clear_is_owner(cmp_prop)
                 try:
                     if (
                         cmp_prop.GetSolderBallProperty().GetPlacement()
@@ -1207,7 +1230,7 @@ class Stackup(LayerCollection):
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
-                comp_prop = val.component_property.core
+                comp_prop = val._get_component_property_clone()
                 port_property = comp_prop.GetPortProperty().Clone()
                 port_property.SetReferenceSizeAuto(False)
                 port_property.SetReferenceSize(self._edb_value(0.0), self._edb_value(0.0))
