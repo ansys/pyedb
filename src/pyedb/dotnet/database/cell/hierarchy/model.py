@@ -141,6 +141,6 @@ class PinPairModel(Model):
             is_parallel,
         )
         m.SetPinPairRlc(p, rlc)
-        core = self.component.component_property.core.Clone()
+        core = self.component._get_component_property_clone()
         core.SetModel(m)
-        self.component.component_property = core
+        self.component.edbcomponent.SetComponentProperty(core)
