@@ -50,7 +50,8 @@ class BundleTerminal(Terminal):
 
     @classmethod
     def create(cls, pedb, name="", terminals=None) -> bool:
-        """Create a new bundle terminal from a collection of individual terminals.
+        """
+        Create a new bundle terminal from a collection of individual terminals.
 
         A bundle terminal groups multiple terminals (edge terminals, padstack instance
         terminals, or other terminal types) into a single logical entity. This is useful
@@ -107,6 +108,7 @@ class BundleTerminal(Terminal):
         >>> bundle = BundleTerminal.create(edb, name="DifferentialPair", terminals=[term1, term2])
         >>> if bundle:
         ...     print(f"Bundle created with {len(edb.terminals['DifferentialPair'].terminals)} terminals")
+
         """
         if isinstance(terminals[0], str):
             terminal_list = [pedb.terminals[i]._edb_object for i in terminals]

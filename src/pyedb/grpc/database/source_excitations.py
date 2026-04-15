@@ -84,6 +84,7 @@ class SourceExcitationInternal:
         - _n, _neg, _negative (lowercase)
         - _N, _NEG, _NEGATIVE (uppercase)
         - :n, :neg, :negative (with colon)
+
         """
         if not net_name or not isinstance(net_name, str):
             return False
@@ -1999,7 +2000,8 @@ class SourceExcitation(SourceExcitationInternal):
         pec_launch_width: str = "0.04mm",
         layer_alignment: str = "Lower",
     ) -> bool | BundleTerminal:
-        """Create a horizontal wave port around one or more vias inside a void.
+        """
+        Create a horizontal wave port around one or more vias inside a void.
 
         A horizontal wave port is a higher-fidelity alternative to coaxial lumped
         ports for vertical interconnect excitation. Unlike a gap or lumped port,
@@ -2040,6 +2042,7 @@ class SourceExcitation(SourceExcitationInternal):
         than gap-port formulations that assume uniform current. This also improves
         fringing-field estimation and can have a significant impact on extracted
         results for differential links and other high-speed interconnect channels.
+
         """
         from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
         from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
