@@ -24,7 +24,15 @@ from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrie
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.database.general import snake_to_pascal
+
+
+def _get_snake_to_pascal():
+    """Lazy import of snake_to_pascal to avoid loading .NET when using gRPC."""
+    # Import from dotnet module - only called in non-gRPC mode
+    from pyedb.dotnet.database.general import snake_to_pascal
+
+    return snake_to_pascal
+
 
 _solder_shape_mapping = {
     "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,
@@ -106,6 +114,7 @@ class CfgComponent(CfgBase):
         if self._pedb.grpc:
             ic_die_prop.die_type = _die_type_mapping[die_type]
         else:
+            snake_to_pascal = _get_snake_to_pascal()
             ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
         if not die_type == "no_die":
             orientation = self.ic_die_properties.get("orientation")
@@ -113,6 +122,7 @@ class CfgComponent(CfgBase):
                 if self._pedb.grpc:
                     ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
                 else:
+                    snake_to_pascal = _get_snake_to_pascal()
                     ic_die_prop.SetOrientation(
                         getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
                     )
@@ -209,6 +219,7 @@ class CfgComponent(CfgBase):
             solder_ball_prop = cp.GetSolderBallProperty().Clone()
             shape = self.solder_ball_properties.get("shape")
             if shape:
+                snake_to_pascal = _get_snake_to_pascal()
                 solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
             else:
                 return
