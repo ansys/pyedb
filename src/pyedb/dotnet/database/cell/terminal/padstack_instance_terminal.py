@@ -56,25 +56,22 @@ class PadstackInstanceTerminal(Terminal):
         Parameters
         ----------
         edb : pyedb.dotnet.DotNet.DotNet
-        prim_id : int
-            Primitive ID.
-        point_on_edge : list
-            Coordinate of the point to define the edge terminal.
-            The point must be on the target edge but not on the two
-            ends of the edge.
-        terminal_name : str, optional
+        name : str, optional
             Name of the terminal. The default is ``None``, in which case the
-            default name is assigned.
+        padstack_instance : PadstackInstance object
+        layer : str, optional
+            Layer name for the terminal. The default is ``None``, in which case the
+            start layer of the padstack instance will be used.
         is_ref : bool, optional
-            Whether it is a reference terminal. The default is ``False``.
+            Whether the terminal is a reference terminal. The default is ``False``.
 
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
         """
         if not name:
-            pin_name = padstack_instance._edb_object.GetName()
-            refdes = padstack_instance.component.refdes
+            pin_name = padstack_instance.name
+            refdes = padstack_instance.component
             name = "{}_{}".format(refdes, pin_name)
             name = generate_unique_name(name)
 

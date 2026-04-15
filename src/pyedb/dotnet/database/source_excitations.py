@@ -84,16 +84,17 @@ class SourceExcitation:
         if not terminal_name:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, (list, tuple)):
-            point_on_edge = [
-                self._pedb._edb.Geometry.PointData(self._pedb.edb_value(pt[0]), self._pedb.edb_value(pt[1]))
-                for pt in point_on_edge
-            ]
-        else:
-            point_on_edge = [
-                self._pedb._edb.Geometry.PointData(
-                    self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
-                )
-            ]
+            if len(point_on_edge) > 2:
+                point_on_edge = [
+                    self._pedb._edb.Geometry.PointData(self._pedb.edb_value(pt[0]), self._pedb.edb_value(pt[1]))
+                    for pt in point_on_edge
+                ]
+            else:
+                point_on_edge = [
+                    self._pedb._edb.Geometry.PointData(
+                        self._pedb.edb_value(point_on_edge[0]), self._pedb.edb_value(point_on_edge[1])
+                    )
+                ]
         if hasattr(prim_id, "GetId"):
             prim = prim_id
         else:

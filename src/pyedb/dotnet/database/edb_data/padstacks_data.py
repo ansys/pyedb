@@ -1569,8 +1569,8 @@ class EDBPadstackInstance(Connectable):
             PadstackInstanceTerminal,
         )
 
-        term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
-        return term.create(self, name)
+        term = PadstackInstanceTerminal.create(self._pedb, self)
+        return term
 
     def create_coax_port(self, name=None, radial_extent_factor=0) -> CoaxPort:
         """Create a coax port."""
