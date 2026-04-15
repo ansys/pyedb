@@ -30,7 +30,7 @@ from pyedb.grpc.database.inner.base import ObjBase
 
 @dataclass
 class HFSSProductProperty:
-    r"""Represents the HFSS product properties.
+    """Represents the HFSS product properties.
 
     This class encapsulates configuration settings for HFSS simulations, including
     port type, orientation, layer alignment, and extent factors for various dimensions.
@@ -66,7 +66,7 @@ class HFSSProductProperty:
     reference_name: str = ""
 
     def to_hfss_string(self) -> str:
-        r"""Convert HFSSProductProperty instance into an HFSS configuration string.
+        """Convert HFSSProductProperty instance into an HFSS configuration string.
 
         Returns
         -------
@@ -104,7 +104,7 @@ class HFSSProductProperty:
 
 
 def parse_hfss_string(s: str | None) -> HFSSProductProperty:
-    r"""Parse an HFSS property string into an HFSSProductProperty object.
+    """Parse an HFSS property string into an HFSSProductProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     HFSS properties and reconstructs them into a structured object.
@@ -215,7 +215,7 @@ class HorizontalWavePortProperty:
     is_gap_source: bool = True
 
     def to_property_string(self) -> str:
-        r"""Convert HorizontalWavePortProperty instance into an interpretable property string.
+        """Convert HorizontalWavePortProperty instance into an interpretable property string.
 
         Generates a formatted string representation of the horizontal wave port properties,
         including all port names (padstack instances) as a comma-separated list within the
