@@ -26,7 +26,6 @@ import time
 
 import pytest
 
-from pyedb.siwave import Siwave
 from tests.conftest import config, desktop_version, local_path
 from tests.system.base_test_class import BaseTestClass
 
@@ -42,6 +41,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 class TestClass(BaseTestClass):
     def test_siwave(self):
         """Create Siwave."""
+        from pyedb.siwave import Siwave
 
         siw = Siwave(desktop_version)
         time.sleep(10)
