@@ -71,7 +71,7 @@ class PadstackInstanceTerminal(Terminal):
         """
         if not name:
             pin_name = padstack_instance.name
-            refdes = padstack_instance.component
+            refdes = padstack_instance.component_name
             name = "{}_{}".format(refdes, pin_name)
             name = generate_unique_name(name)
 
