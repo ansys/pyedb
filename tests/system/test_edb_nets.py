@@ -91,6 +91,14 @@ class TestClass(BaseTestClass):
         assert "JTAG_TCK" not in edbapp.nets.nets
         edbapp.close(terminate_rpc_session=False)
 
+    def test_nets_delete_multiple_returns_requested_existing_nets(self):
+        edbapp = self.edb_examples.get_si_verse()
+        deleted = edbapp.nets.delete(["JTAG_TCK", "AVCC_1V3", "NET_DOES_NOT_EXIST"])
+        assert set(["JTAG_TCK", "AVCC_1V3"]).issubset(set(deleted))
+        assert "JTAG_TCK" not in edbapp.nets.nets
+        assert "AVCC_1V3" not in edbapp.nets.nets
+        edbapp.close(terminate_rpc_session=False)
+
     def test_nets_classify_nets(self):
         """Reassign power based on list of nets."""
         # Done
