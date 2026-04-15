@@ -242,12 +242,6 @@ def parse_horizontal_wave_port_string(s: str | None) -> HorizontalWavePortProper
         with all settings extracted from the input string. The port_names attribute will be
         a tuple containing all parsed via names. If the string is None or any specific
         property is not found, default values are used.
-
-    Examples:
-        >>> s = "$begin ''\\n\\tType='Pad Port'\\n\\tArms=2\\n\\tHFSSLastType=8\\n\\tHorizWavePort('via1', 'via2')\\n$end ''\\n"
-        >>> prop = parse_horizontal_wave_port_string(s)
-        >>> prop.port_names
-        ('via1', 'via2')
     """
     if s is None:
         return HorizontalWavePortProperty()
