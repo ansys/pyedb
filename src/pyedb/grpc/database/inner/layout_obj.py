@@ -471,6 +471,8 @@ def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
     )
 
 
+
+
 @dataclass
 class PlanarEMProperty:
     """Represents the PlanarEM solver properties.
@@ -478,10 +480,15 @@ class PlanarEMProperty:
     This class encapsulates configuration settings for PlanarEM simulations, including
     port type, solver options, and reference handling.
 
-    Attributes:
-        port_type (str): The type of port (e.g., "Pad Port Gap Source", "Gap Source"). Default is "Pad Port Gap Source".
-        port_solver (bool): Whether to use port solver. Default is True.
-        ignore_reference (bool): Whether to ignore reference. Default is False.
+    Attributes
+    ----------
+    port_type : str
+        The type of port (e.g., "Pad Port Gap Source", "Gap Source"). Default is "Pad Port Gap Source".
+    port_solver : bool
+        Whether to use port solver. Default is True.
+    ignore_reference : bool
+        Whether to ignore reference. Default is False.
+
     """
 
     port_type: str = "Pad Port Gap Source"
@@ -491,8 +498,11 @@ class PlanarEMProperty:
     def to_property_string(self) -> str:
         """Convert PlanarEMProperty instance into a PlanarEM configuration string.
 
-        Returns:
-            str: A formatted PlanarEM configuration string with all properties encoded.
+        Returns
+        -------
+        str
+            A formatted PlanarEM configuration string with all properties encoded.
+
         """
         port_solver_str = "true" if self.port_solver else "false"
         ignore_ref_str = "true" if self.ignore_reference else "false"
@@ -508,15 +518,18 @@ def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
 
     Parameters
     ----------
-    s (str | None): A formatted string containing PlanarEM configuration settings.
+    s : str | None
+        A formatted string containing PlanarEM configuration settings.
         If None, returns a PlanarEMProperty with default values.
         Expected format includes key-value pairs like "Type='value'", "PortSolver=true", etc.
 
     Returns
     -------
-    PlanarEMProperty: An object containing the parsed PlanarEM properties
+    PlanarEMProperty
+        An object containing the parsed PlanarEM properties
         with all settings extracted from the input string. If the string is None or any specific
         property is not found, default values are used.
+
     """
     if s is None:
         return PlanarEMProperty()
@@ -538,6 +551,8 @@ def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
     )
 
 
+
+
 @dataclass
 class SiwaveProperty:
     """Represents the SIwave solver properties.
@@ -545,8 +560,11 @@ class SiwaveProperty:
     This class encapsulates configuration settings for SIwave simulations, including
     reference net specification.
 
-    Attributes:
-        reference_net (str): The reference net name. Default is an empty string.
+    Attributes
+    ----------
+    reference_net : str
+        The reference net name. Default is an empty string.
+
     """
 
     reference_net: str = ""
@@ -554,8 +572,11 @@ class SiwaveProperty:
     def to_property_string(self) -> str:
         """Convert SiwaveProperty instance into a SIwave configuration string.
 
-        Returns:
-            str: A formatted SIwave configuration string with all properties encoded.
+        Returns
+        -------
+        str
+            A formatted SIwave configuration string with all properties encoded.
+
         """
         return f"SIwave('Reference Net'='{self.reference_net}')"
 
@@ -568,15 +589,18 @@ def parse_siwave_string(s: str | None) -> SiwaveProperty:
 
     Parameters
     ----------
-    s (str | None): A formatted string containing SIwave configuration settings.
+    s : str | None
+        A formatted string containing SIwave configuration settings.
         If None, returns a SiwaveProperty with default values.
         Expected format includes key-value pairs like "'Reference Net'='value'", etc.
 
     Returns
     -------
-    SiwaveProperty: An object containing the parsed SIwave properties
+    SiwaveProperty
+        An object containing the parsed SIwave properties
         with all settings extracted from the input string. If the string is None or any specific
         property is not found, default values are used.
+
     """
     if s is None:
         return SiwaveProperty()
