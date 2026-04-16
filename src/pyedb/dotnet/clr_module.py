@@ -62,8 +62,8 @@ if is_linux:  # pragma: no cover
     # Use system .NET core runtime
     if os.environ.get("DOTNET_ROOT") is None:
         try:
-            from pythonnet import load
             from clr_loader import get_coreclr
+            from pythonnet import load
 
             runtime = get_coreclr()
             load(runtime)
@@ -92,9 +92,7 @@ if is_linux:  # pragma: no cover
             else:
                 runtime_spec = candidates[0]
         except Exception:
-            warnings.warn(
-                "Could not find .NET runtimes. PyEDB will work only in gRPC (client) mode."
-            )
+            warnings.warn("Could not find .NET runtimes. PyEDB will work only in gRPC (client) mode.")
     # Use specific .NET core runtime
     if dotnet_root is not None and (runtime_config is not None or runtime_spec is not None):
         try:

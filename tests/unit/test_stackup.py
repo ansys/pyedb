@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 from unittest.mock import MagicMock, PropertyMock, patch
+
 import pytest
 
 pytest.importorskip("pyedb.dotnet.database.stackup", reason="Requires .NET runtime")

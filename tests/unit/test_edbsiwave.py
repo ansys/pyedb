@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 import os
-
 from unittest.mock import Mock
+
 import pytest
 
 pytest.importorskip("pyedb.dotnet.database.siwave", reason="Requires .NET runtime")

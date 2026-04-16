@@ -22,6 +22,7 @@
 
 
 from unittest.mock import MagicMock, PropertyMock, patch
+
 import pytest
 
 pytest.importorskip("pyedb.dotnet.database.padstack", reason="Requires .NET runtime")
