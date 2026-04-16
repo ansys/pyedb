@@ -1365,6 +1365,10 @@ class TestClass(BaseTestClass):
         assert not setup.settings.use_loop_res_for_per_pin  # fail on .net
         edbapp.close()
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
     def test_horizontal_wave_ports(self):
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
