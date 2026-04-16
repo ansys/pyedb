@@ -68,6 +68,12 @@ class LayerCollection(object):
 
         if edb_object:
             self._edb_object = self._pedb.core.Cell.LayerCollection(edb_object)
+            # Bug fix: when wrapping an existing LayerCollection, all layer objects
+            # have IsOwner=True which causes EDBLayer_Cleanup to be called in the
+            # destructor and triggers memory access violations during GC.
+            # Clear ownership on every layer immediately after construction.
+            for layer in self._edb_object.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
+                clear_is_owner(layer)
         else:
             self._edb_object = self._pedb.core.Cell.LayerCollection()
 
@@ -95,6 +101,9 @@ class LayerCollection(object):
     def refresh_layer_collection(self):
         """Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup."""
         self._edb_object = self._pedb.core.Cell.LayerCollection(self._pedb.layout.layer_collection)
+        # Clear ownership on all layers to prevent EDBLayer_Cleanup destructor access violations
+        for layer in self._edb_object.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
+            clear_is_owner(layer)
         self._lc = self._edb_object
 
     def _add_layer(self, add_method, base_layer_name="", **kwargs):

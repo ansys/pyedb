@@ -1477,7 +1477,10 @@ class EDBPadstackInstance(Connectable):
 
     @property
     def solderball_layer(self) -> str:
-        return self.core.GetSolderBallLayer().GetName()
+        layer = self.core.GetSolderBallLayer()
+        if layer is None or layer.IsNull():
+            return None
+        return layer.GetName()
 
     @solderball_layer.setter
     def solderball_layer(self, solderball_layer):
@@ -2044,10 +2047,16 @@ class EDBPadstackInstance(Connectable):
         """
         self._position = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        if not out[0]:
+            return self._position
         if self._edb_padstackinstance.GetComponent():
-            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            self._position = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6)]
-        elif out[0]:
+            transform = self._edb_padstackinstance.GetComponent().GetTransform()
+            if transform is not None:
+                out2 = transform.TransformPoint(out[1])
+                self._position = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6)]
+            else:
+                self._position = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6)]
+        else:
             self._position = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6)]
         return self._position
 
@@ -2075,20 +2084,29 @@ class EDBPadstackInstance(Connectable):
         """
         _position_and_rotation = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        if not out[0]:
+            return _position_and_rotation
         if self._edb_padstackinstance.GetComponent():
-            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            _position_and_rotation = [
-                round(out2.X.ToDouble(), 6),
-                round(out2.Y.ToDouble(), 6),
-                round(out[2].ToDouble(), 6),
-            ]
-        elif out[0]:
+            transform = self._edb_padstackinstance.GetComponent().GetTransform()
+            if transform is not None:
+                out2 = transform.TransformPoint(out[1])
+                _position_and_rotation = [
+                    round(out2.X.ToDouble(), 6),
+                    round(out2.Y.ToDouble(), 6),
+                    round(out[2].ToDouble(), 6),
+                ]
+            else:
+                _position_and_rotation = [
+                    round(out[1].X.ToDouble(), 6),
+                    round(out[1].Y.ToDouble(), 6),
+                    round(out[2].ToDouble(), 6),
+                ]
+        else:
             _position_and_rotation = [
                 round(out[1].X.ToDouble(), 6),
                 round(out[1].Y.ToDouble(), 6),
                 round(out[2].ToDouble(), 6),
             ]
-        _position_and_rotation.append(round(out[2].ToDouble(), 6))
 
         return _position_and_rotation
 
