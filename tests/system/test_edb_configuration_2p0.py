@@ -947,7 +947,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
-    @pytest.mark.skip(reason="Wait SP1 fix in backend, randon crash when running full CICD.")
+    @pytest.mark.skip(reason="Wait SP1 fix in backend, random crash when running full CICD.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
