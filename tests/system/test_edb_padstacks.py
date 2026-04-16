@@ -28,9 +28,6 @@ import os
 import ansys.edb.core
 import pytest
 
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
-from pyedb.dotnet.database.geometry.polygon_data import PolygonData
-from pyedb.dotnet.database.padstack import EDBPadstackInstance
 from pyedb.generic.settings import settings
 from tests.conftest import GRPC, config, use_grpc
 from tests.system.base_test_class import BaseTestClass
@@ -381,6 +378,8 @@ class TestClass(BaseTestClass):
                         if pad_pd is None:
                             # refer to comment in _get_padstack_polygon_data body to see why we're skipping this check
                             continue
+                        from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
                         rect_pd = PolygonData(
                             padstack_instance._pedb,
                             create_from_points=True,
@@ -745,15 +744,14 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-def _get_padstack_polygon_data(edb, padstack_instance: EDBPadstackInstance, layer_name: str) -> PolygonData:
+def _get_padstack_polygon_data(edb, padstack_instance, layer_name: str):
+    from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
     edb.layout_instance.Refresh()
     loi = edb.layout_instance.GetLayoutObjInstance(padstack_instance._edb_object, None)
     geometries = loi.GetGeometries(edb.modeler.layers[layer_name]._edb_object)
     pds = [g.GetPolygonData(True) for g in geometries]
     if not pds:
-        # unknown issue here: sometimes the LayoutInstance returns nothing even though there are shapes on the layer for
-        # the instance; as this is used in tests I'm going to return None and check that we successfully confirmed at
-        # least one case
         return None
     result = edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(pds))[0]
     return result
