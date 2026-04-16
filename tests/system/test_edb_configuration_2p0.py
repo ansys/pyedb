@@ -947,7 +947,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
-    @pytest.mark.skip(reason="Wait SP1 fix in backend, random crash when running full CICD.")
+    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
@@ -973,7 +973,7 @@ class TestClassTerminals(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config and ansys.edb.core.__version__ == "0.2.6",
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_pin_group_terminal(self):
@@ -1004,7 +1004,6 @@ class TestClassTerminals(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Causing random failure when running full CICD. Waiting 2026R1 SP1.")
     def test_point_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load({"terminals": [self.terminal3, self.terminal3_ref]}, apply_file=True)

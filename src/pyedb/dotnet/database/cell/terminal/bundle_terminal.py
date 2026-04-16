@@ -49,7 +49,7 @@ class BundleTerminal(Terminal):
         return self._edb_object.Ungroup()
 
     @classmethod
-    def create(cls, pedb, name="", terminals=None) -> bool:
+    def create(cls, pedb, name="", terminals=None) -> "BundleTerminal":
         """
         Create a new bundle terminal from a collection of individual terminals.
 
@@ -79,9 +79,8 @@ class BundleTerminal(Terminal):
 
         Returns
         -------
-        bool
-            ``True`` if the bundle terminal is successfully created. Raises a
-            ``ValueError`` if the underlying EDB bundle creation fails.
+        BundleTerminal
+            The newly created bundle terminal instance.
 
         Raises
         ------
@@ -122,9 +121,9 @@ class BundleTerminal(Terminal):
         _edb_boundle_terminal = pedb._edb.Cell.Terminal.BundleTerminal.Create(edb_list)
         if _edb_boundle_terminal.IsNull():  # pragma no cover
             raise ValueError(f"Failed to create bundle terminal: {name}.")
-        _edb_boundle_terminal.SetName(f"wave_port_{name}")
+        _edb_boundle_terminal.SetName(name)
         term_ind = 0
         for term in list(_edb_boundle_terminal.GetTerminals()):
             term_ind += 1
             term.SetName(name + f":T{term_ind}")
-        return True
+        return cls(pedb, _edb_boundle_terminal)

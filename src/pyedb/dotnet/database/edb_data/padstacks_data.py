@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Any
 import warnings
 
 from pyedb.dotnet.database.edb_data.ports import CoaxPort, WavePort
+from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 
 if TYPE_CHECKING:
     from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
@@ -1770,6 +1771,7 @@ class EDBPadstackInstance(Connectable):
             Tuple of the layer name, drill diameter, and offset if it exists.
         """
         layer = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
+        clear_is_owner(layer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
         (
@@ -1836,6 +1838,7 @@ class EDBPadstackInstance(Connectable):
             Tuple of the layer name, drill diameter, and drill offset if it exists.
         """
         layer = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
+        clear_is_owner(layer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
         (
@@ -1859,6 +1862,7 @@ class EDBPadstackInstance(Connectable):
         value_0 = self._pedb.edb_value(0)
         value_00 = self._pedb.edb_value(0.0)
         value_signal = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
+        clear_is_owner(value_signal)
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
             value_signal,
             value_0,
@@ -1956,7 +1960,7 @@ class EDBPadstackInstance(Connectable):
         str
             Name of the starting layer.
         """
-        _, start_layer, stop_layer = self._edb_object.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
 
         if start_layer:
             return start_layer.GetName()
@@ -2291,7 +2295,7 @@ class EDBPadstackInstance(Connectable):
         str
             Name of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetName()
+        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetName()
 
     @property
     def lower_elevation(self) -> float | None:
@@ -2303,7 +2307,7 @@ class EDBPadstackInstance(Connectable):
             Lower elavation of the placement layer.
         """
         try:
-            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation(), 6)
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetLowerElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 
@@ -2317,7 +2321,7 @@ class EDBPadstackInstance(Connectable):
            Upper elevation of the placement layer.
         """
         try:
-            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation(), 6)
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetUpperElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 

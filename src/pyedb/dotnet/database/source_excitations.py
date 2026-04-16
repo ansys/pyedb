@@ -1000,9 +1000,7 @@ class SourceExcitation:
         _name = name if name else f"{generate_unique_name('bundle')}"
 
         terminal = BundleTerminal.create(self._pedb, _name, terminals)
-        bundle_term = terminal.terminals
-        bundle_term[0].name = _name + ":T1"
-        bundle_term[1].mame = _name + ":T2"
+        return terminal
 
     def create_edge_port(
         self,
