@@ -112,7 +112,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.layout.bondwires) == 0
         polygon_by_layers = edbapp.layout.polygons_by_layer
         assert len(polygon_by_layers) == 19
-        assert len(edbapp.layout.primitives_by_layer["1_Top"]) == 1289 # -> voids were added
+        assert len(edbapp.layout.primitives_by_layer["1_Top"]) == 1289  # -> voids were added
         assert len(edbapp.layout.polygons_by_layer) == 19
         primitives_top_layer = polygon_by_layers["1_Top"]
         assert len(primitives_top_layer) == 134
@@ -125,14 +125,16 @@ class TestClass(BaseTestClass):
             len(edbapp.layout.get_primitive_by_layer_and_point(point=[10e-3, 10e-3], layer="Inner1(GND1)", nets="GND"))
             == 1
         )
-        assert len(edbapp.layout.find_primitive(layer_name="1_Top", net_name="GND")) == 439 # -> from 383 to 439 (voids)
-        assert len(edbapp.layout.primitives_by_net["GND"]) == 2179 # from 446 to 2179 -> void were added
+        assert (
+            len(edbapp.layout.find_primitive(layer_name="1_Top", net_name="GND")) == 439
+        )  # -> from 383 to 439 (voids)
+        assert len(edbapp.layout.primitives_by_net["GND"]) == 2179  # from 446 to 2179 -> void were added
         assert len(edbapp.layout.rectangles) == 1
         assert len(edbapp.layout.circles) == 1
         assert len(edbapp.layout.paths) == 1839
-        assert len(edbapp.layout.get_polygons_by_layer(layer="1_Top", nets="GND")) == 80 # from 24 to 80 with voids
+        assert len(edbapp.layout.get_polygons_by_layer(layer="1_Top", nets="GND")) == 80  # from 24 to 80 with voids
         polygon_to_test = edbapp.layout.polygons_by_layer["1_Top"][0]
         assert edbapp.layout.get_polygon_bounding_box(polygon_to_test)
         assert edbapp.layout.get_polygon_points(polygon_to_test)
-        assert len(edbapp.layout.get_primitives(layer_name="1_Top", net_name="GND", prim_type="polygon")) == 80 # voids
+        assert len(edbapp.layout.get_primitives(layer_name="1_Top", net_name="GND", prim_type="polygon")) == 80  # voids
         edbapp.close(terminate_rpc_session=False)
