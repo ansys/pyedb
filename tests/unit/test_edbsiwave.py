@@ -22,9 +22,10 @@
 
 import os
 
-from mock import Mock
+from unittest.mock import Mock
 import pytest
 
+pytest.importorskip("pyedb.dotnet.database.siwave", reason="Requires .NET runtime")
 from pyedb.dotnet.database.siwave import EdbSiwave
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
