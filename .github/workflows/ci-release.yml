@@ -560,7 +560,7 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           cd external/pyaedt
-          pip install --no-cache-dir --group tests .
+          pip install --no-cache-dir --group tests .[all]
 
       - name: Install PyEDB
         run: |
@@ -667,7 +667,7 @@ jobs:
         run: |
           . .venv/bin/activate
           cd external/pyaedt
-          pip install --no-cache-dir --group tests .
+          pip install --no-cache-dir --group tests .[all]
 
       - name: Install PyEDB
         env:
