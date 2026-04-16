@@ -35,7 +35,6 @@ from pathlib import Path
 import warnings
 
 import numpy as np
-from System.Reflection import BindingFlags  # type: ignore
 
 from pyedb.dotnet.database.edb_data.layer_data import (
     LayerEdbClass,
@@ -43,23 +42,12 @@ from pyedb.dotnet.database.edb_data.layer_data import (
     layer_cast,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
 from pyedb.misc.decorators import deprecated_property
 
 logger = logging.getLogger(__name__)
-
-
-def clear_is_owner(obj):
-    """Use reflection to set the protected IsOwner property to False,
-    preventing the buggy EDBLayer_Cleanup from being called in the destructor.
-
-    This must be called immediately after creating a Layer object to prevent
-    it from being owned by the LayerCollection, which causes crashes when
-    accessed outside the collection scope.
-    """
-    prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
-    prop.SetValue(obj, False, None)
 
 
 class LayerCollection(object):
@@ -68,6 +56,12 @@ class LayerCollection(object):
 
         if edb_object:
             self._edb_object = self._pedb.core.Cell.LayerCollection(edb_object)
+            # Bug fix: when wrapping an existing LayerCollection, all layer objects
+            # have IsOwner=True which causes EDBLayer_Cleanup to be called in the
+            # destructor and triggers memory access violations during GC.
+            # Clear ownership on every layer immediately after construction.
+            for layer in self._edb_object.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
+                clear_is_owner(layer)
         else:
             self._edb_object = self._pedb.core.Cell.LayerCollection()
 
@@ -95,6 +89,9 @@ class LayerCollection(object):
     def refresh_layer_collection(self):
         """Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup."""
         self._edb_object = self._pedb.core.Cell.LayerCollection(self._pedb.layout.layer_collection)
+        # Clear ownership on all layers to prevent EDBLayer_Cleanup destructor access violations
+        for layer in self._edb_object.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
+            clear_is_owner(layer)
         self._lc = self._edb_object
 
     def _add_layer(self, add_method, base_layer_name="", **kwargs):
@@ -324,7 +321,7 @@ class LayerCollection(object):
         if obj.IsNull():
             raise ValueError("Layer with name '{}' was not found.".format(name))
         else:
-            return layer_cast(self._pedb, obj.Clone())
+            return layer_cast(self._pedb, obj)  # layer_cast/LayerEdbClass already clones internally
 
 
 class Stackup(LayerCollection):
@@ -615,7 +612,10 @@ class Stackup(LayerCollection):
     @property
     def _edb_layer_list(self):
         layer_list = list(self._layer_collection.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet))
-        return [i.Clone() for i in layer_list]
+        clones = [i.Clone() for i in layer_list]
+        for c in clones:
+            clear_is_owner(c)
+        return clones
 
     @property
     def signal_layers(self):
@@ -673,9 +673,13 @@ class Stackup(LayerCollection):
             layers = [
                 i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet)))
             ]
+            for layer in layers:
+                clear_is_owner(layer)
             non_stackup = [
                 i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.NonStackupLayerSet)))
             ]
+            for layer in non_stackup:
+                clear_is_owner(layer)
             _lc = self._pedb.core.Cell.LayerCollection()
             mode = lc_readonly.GetMode()
             _lc.SetMode(lc_readonly.GetMode())
@@ -723,6 +727,7 @@ class Stackup(LayerCollection):
             self._edb_value(0),
             "",
         )
+        clear_is_owner(result)
         self.refresh_layer_collection()
         return result
 
@@ -761,6 +766,7 @@ class Stackup(LayerCollection):
             _layer_type = self._pedb.core.Cell.LayerType.UndefinedLayerType
 
         result = self._pedb.core.Cell.layer(layer_name, _layer_type)
+        clear_is_owner(result)
         self.refresh_layer_collection()
         return result
 
@@ -1098,13 +1104,16 @@ class Stackup(LayerCollection):
             max_elevation = 0.0
             for layer in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet):
                 if "RadBox" not in layer.GetName():  # Ignore RadBox
-                    lower_elevation = layer.Clone().GetLowerElevation() * 1.0e6
-                    upper_elevation = layer.Clone().GetUpperElevation() * 1.0e6
+                    _tmp_clone = layer.Clone()
+                    clear_is_owner(_tmp_clone)
+                    lower_elevation = _tmp_clone.GetLowerElevation() * 1.0e6
+                    upper_elevation = _tmp_clone.GetUpperElevation() * 1.0e6
                     max_elevation = max([max_elevation, lower_elevation, upper_elevation])
 
             non_stackup_layers = []
             for layer in lc.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
                 cloned_layer = layer.Clone()
+                clear_is_owner(cloned_layer)
                 if not cloned_layer.IsStackupLayer():
                     non_stackup_layers.append(cloned_layer)
                     continue
@@ -1122,11 +1131,15 @@ class Stackup(LayerCollection):
                         cloned_layer.SetTopBottomAssociation(self._pedb.core.Cell.TopBottomAssociation.TopAssociated)
                     new_lc.AddStackupLayerAtElevation(cloned_layer)
 
-            vialayers = [
-                lay for lay in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet) if lay.Clone().IsViaLayer()
-            ]
+            vialayers = []
+            for lay in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet):
+                _tmp = lay.Clone()
+                clear_is_owner(_tmp)
+                if _tmp.IsViaLayer():
+                    vialayers.append(lay)
             for layer in vialayers:
                 cloned_via_layer = layer.Clone()
+                clear_is_owner(cloned_via_layer)
                 upper_ref_name = cloned_via_layer.GetRefLayerName(True)
                 lower_ref_name = cloned_via_layer.GetRefLayerName(False)
                 upper_ref = [

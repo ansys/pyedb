@@ -23,6 +23,7 @@
 from __future__ import absolute_import
 
 from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel, HurrayRoughnessModel
+from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 
 
 def layer_cast(pedb, edb_object):
@@ -43,6 +44,9 @@ class LayerEdbClass(object):
 
         if edb_object:
             self._edb_object = edb_object.Clone()
+            # Prevent EDBLayer_Cleanup from firing in the destructor on Python-owned wrappers,
+            # which causes memory access violations when the GC finalizer runs.
+            clear_is_owner(self._edb_object)
         else:
             self._create(layer_type)
             self.update(**kwargs)
@@ -55,6 +59,7 @@ class LayerEdbClass(object):
             self._name,
             layer_type,
         )
+        clear_is_owner(self._edb_object)
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
@@ -299,6 +304,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             self._pedb.edb_value(0),
             "copper",
         )
+        clear_is_owner(self._edb_object)
 
     @property
     def lower_elevation(self):
