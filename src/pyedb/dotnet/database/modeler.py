@@ -1415,8 +1415,9 @@ class Modeler:
         layer_name: str = "",
         voids: list | None = None,
         net_name: str = "",
-    ) -> EdbPolygon:
-        """Create RF trace taper.
+    ) -> bool:
+        """
+        Create RF trace taper.
         (y)
          ↑
          |              <─      End Width      ─>
@@ -1427,6 +1428,24 @@ class Modeler:
          |          ────────── Start Point ─────────
          |          <─         Start Width        ─>
          +──────────────────────────────────────→ (x)
+
+        Parameters
+        ----------
+        start_point : tuple[str | float, str | float, str | float, str | float]
+            start point of the taper.
+        end_point : tuple[str | float, str | float, str | float, str | float]
+            end point of the taper.
+        start_width : str | float
+            start width of the taper.
+        end_width : str | float
+            end width of the taper.
+        layer_name : str, optional
+            Layer of the taper. Default is ``""``.
+        voids : list, optional
+            Voids of the taper. Default is ``None``.
+        net_name : str, optional
+            Netname of the taper. Default is ``""``.
+
         """
 
         p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
@@ -1459,3 +1478,23 @@ class Modeler:
             poly_data = PolygonData.create(self._pedb, point_data, closed=True)
         _voids = [] if voids is None else voids
         return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)
+
+    def open_solder_mask(self,
+                         open_components:bool=True,
+                         components_opening_offset:float|str=0.0,
+                         open_voids:bool=True,
+                         voids_opening_offset:float|str=0.0,
+                         open_traces:bool=True,
+                         traces_offset:float|str=0.0,
+                         solder_mask_layer_name:str="Solder",
+                         solder_mask_thickness:float|str="30um") -> bool:
+        if solder_mask_layer_name is self._pedb.stackup.layers:
+            layer = self._pedb.stackup.layers[solder_mask_layer_name]
+        else:
+            layer = self._pedb.stackup.add_layer(solder_mask_layer_name)
+        layer.is_negative = True
+        layer.thickness = solder_mask_thickness
+
+        if open_components:
+
+        return False
