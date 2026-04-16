@@ -9,6 +9,213 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.72.0 <https://github.com/ansys/pyedb/releases/tag/v0.72.0>`_ - April 16, 2026
+================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Xml roughness etch
+          - `#1940 <https://github.com/ansys/pyedb/pull/1940>`_
+
+        * - Grpc in memory new feature for SP1
+          - `#1974 <https://github.com/ansys/pyedb/pull/1974>`_
+
+        * - Path coverage
+          - `#1998 <https://github.com/ansys/pyedb/pull/1998>`_
+
+        * - RF trace taper
+          - `#2008 <https://github.com/ansys/pyedb/pull/2008>`_
+
+        * - Horizontal wave port
+          - `#2031 <https://github.com/ansys/pyedb/pull/2031>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump pyvista/setup-headless-display-action from 4.2 to 4.3
+          - `#1938 <https://github.com/ansys/pyedb/pull/1938>`_
+
+        * - Bump actions/download-artifact from 8.0.0 to 8.0.1
+          - `#1950 <https://github.com/ansys/pyedb/pull/1950>`_
+
+        * - Update pypandoc requirement from <1.17,>=1.10.0 to >=1.10.0,<1.18
+          - `#1951 <https://github.com/ansys/pyedb/pull/1951>`_
+
+        * - Bump nick-fields/retry from 3.0.2 to 4.0.0
+          - `#1975 <https://github.com/ansys/pyedb/pull/1975>`_
+
+        * - Update pytest-cov requirement from <7.1,>=4.0.0 to >=4.0.0,<7.2
+          - `#1976 <https://github.com/ansys/pyedb/pull/1976>`_
+
+        * - Bump codecov/codecov-action from 5.5.2 to 6.0.0
+          - `#1994 <https://github.com/ansys/pyedb/pull/1994>`_
+
+        * - Bump pypa/gh-action-pypi-publish from 1.13.0 to 1.14.0
+          - `#2013 <https://github.com/ansys/pyedb/pull/2013>`_
+
+        * - Bump ansys/actions from 10.2.7 to 10.2.12
+          - `#2027 <https://github.com/ansys/pyedb/pull/2027>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Add_sweep method doc string
+          - `#1956 <https://github.com/ansys/pyedb/pull/1956>`_
+
+        * - Doc string
+          - `#1964 <https://github.com/ansys/pyedb/pull/1964>`_
+
+        * - Add LLM-friendly files, backend compatibility page, and new-user README path
+          - `#1970 <https://github.com/ansys/pyedb/pull/1970>`_
+
+        * - Documentation improvement
+          - `#1996 <https://github.com/ansys/pyedb/pull/1996>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Issue #1930 fix
+          - `#1941 <https://github.com/ansys/pyedb/pull/1941>`_
+
+        * - Issue #1936 grpc cutout multithread with preserve model pin
+          - `#1942 <https://github.com/ansys/pyedb/pull/1942>`_
+
+        * - Issue 1939 fix grpc Terminal not set as reference causing random failure on SIwave
+          - `#1944 <https://github.com/ansys/pyedb/pull/1944>`_
+
+        * - Wave port terminal fixed issue #1909
+          - `#1945 <https://github.com/ansys/pyedb/pull/1945>`_
+
+        * - Issue#1407 solder ball shape none
+          - `#1946 <https://github.com/ansys/pyedb/pull/1946>`_
+
+        * - Issue #1063 fixed source to ground
+          - `#1947 <https://github.com/ansys/pyedb/pull/1947>`_
+
+        * - Issue#1900 padstacks def
+          - `#1948 <https://github.com/ansys/pyedb/pull/1948>`_
+
+        * - Add all PyAEDT Extension tests
+          - `#1949 <https://github.com/ansys/pyedb/pull/1949>`_
+
+        * - No stable version
+          - `#1960 <https://github.com/ansys/pyedb/pull/1960>`_
+
+        * - Enabling pyaedt warning propagation
+          - `#1961 <https://github.com/ansys/pyedb/pull/1961>`_
+
+        * - Grpc materials fixed
+          - `#1966 <https://github.com/ansys/pyedb/pull/1966>`_
+
+        * - Remove dotnetcore2
+          - `#1972 <https://github.com/ansys/pyedb/pull/1972>`_
+
+        * - Expose Edb deprecations statically for grpc and dotnet backends
+          - `#1980 <https://github.com/ansys/pyedb/pull/1980>`_
+
+        * - Issue#1979 set solder ball material
+          - `#1982 <https://github.com/ansys/pyedb/pull/1982>`_
+
+        * - Issue#1969 fix bondwire missing primitive attribute
+          - `#1984 <https://github.com/ansys/pyedb/pull/1984>`_
+
+        * - Stackup.py roughness import
+          - `#1985 <https://github.com/ansys/pyedb/pull/1985>`_
+
+        * - Grpc import xml with roughness
+          - `#1986 <https://github.com/ansys/pyedb/pull/1986>`_
+
+        * - Auto_mesh_operation
+          - `#1989 <https://github.com/ansys/pyedb/pull/1989>`_
+
+        * - Text in prims
+          - `#1992 <https://github.com/ansys/pyedb/pull/1992>`_
+
+        * - Physical merged fixed
+          - `#1999 <https://github.com/ansys/pyedb/pull/1999>`_
+
+        * - Coverage rects and bugs in functions
+          - `#2007 <https://github.com/ansys/pyedb/pull/2007>`_
+
+        * - Grpc value.py
+          - `#2012 <https://github.com/ansys/pyedb/pull/2012>`_
+
+        * - Remove pyaedt code
+          - `#2019 <https://github.com/ansys/pyedb/pull/2019>`_
+
+        * - Insert layout instance
+          - `#2020 <https://github.com/ansys/pyedb/pull/2020>`_
+
+        * - Grpc information
+          - `#2022 <https://github.com/ansys/pyedb/pull/2022>`_
+
+        * - Improve grpc Nets.delete performance for large net deletions
+          - `#2034 <https://github.com/ansys/pyedb/pull/2034>`_
+
+        * - DotNet GC fix with release 2026.1
+          - `#2037 <https://github.com/ansys/pyedb/pull/2037>`_
+
+        * - Bug dotnet import with gpc fix
+          - `#2039 <https://github.com/ansys/pyedb/pull/2039>`_
+
+        * - Guard gRPC layout terminal enumeration against null terminals
+          - `#2040 <https://github.com/ansys/pyedb/pull/2040>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.71.0
+          - `#1934 <https://github.com/ansys/pyedb/pull/1934>`_
+
+        * - Bump release 0.72.dev0
+          - `#1935 <https://github.com/ansys/pyedb/pull/1935>`_
+
+        * - Pre-commit automatic update
+          - `#1952 <https://github.com/ansys/pyedb/pull/1952>`_, `#1977 <https://github.com/ansys/pyedb/pull/1977>`_, `#2002 <https://github.com/ansys/pyedb/pull/2002>`_, `#2033 <https://github.com/ansys/pyedb/pull/2033>`_
+
+        * - Migrate \`\`pyedb\`\` CI to AEDT 2026.1
+          - `#2014 <https://github.com/ansys/pyedb/pull/2014>`_
+
+        * - Fix pyaedt testing missing dependencies
+          - `#2042 <https://github.com/ansys/pyedb/pull/2042>`_
+
+        * - Timeout
+          - `#2047 <https://github.com/ansys/pyedb/pull/2047>`_
+
+
+  .. tab-item:: Miscellaneous
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Grpc primitive queries refactoring
+          - `#1916 <https://github.com/ansys/pyedb/pull/1916>`_
+
+
 `0.71.0 <https://github.com/ansys/pyedb/releases/tag/v0.71.0>`_ - March 20, 2026
 ================================================================================
 
