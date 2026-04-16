@@ -34,4 +34,3 @@ def clear_is_owner(obj):
     """
     prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
     prop.SetValue(obj, False, None)
-
