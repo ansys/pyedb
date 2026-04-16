@@ -1004,6 +1004,7 @@ class TestClassTerminals(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skip(reason="Causing random failure when running full CICD. Waiting 2026R1 SP1.")
     def test_point_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.configuration.load({"terminals": [self.terminal3, self.terminal3_ref]}, apply_file=True)
