@@ -1487,13 +1487,20 @@ class Modeler:
                          open_traces:bool=True,
                          traces_offset:float|str=0.0,
                          solder_mask_layer_name:str="Solder",
-                         solder_mask_thickness:float|str="30um") -> bool:
+                         solder_mask_thickness:float|str="30um",
+                         solder_mask_material:str="") -> bool:
         if solder_mask_layer_name is self._pedb.stackup.layers:
             layer = self._pedb.stackup.layers[solder_mask_layer_name]
         else:
             layer = self._pedb.stackup.add_layer(solder_mask_layer_name)
         layer.is_negative = True
         layer.thickness = solder_mask_thickness
+        if not solder_mask_material in self._pedb.materials:
+            solder_mask_material = "SolderMask"
+            self._pedb.materials.add_dielectric(permittivity=4, name=solder_mask_material)
+            self._pedb.logger.warning(f"No Material name provided or found for {solder_mask_material}.")
+            self._pedb.logger.warning(f"Creating default solder mask material {solder_mask_material} with epsr=4.")
+
 
         if open_components:
 
