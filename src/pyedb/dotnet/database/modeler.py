@@ -1481,11 +1481,13 @@ class Modeler:
 
     def open_solder_mask(self,
                          open_components:bool=True,
+                         component_filter:list[str] | None = None,
                          components_opening_offset:float|str=0.0,
                          open_voids:bool=True,
                          voids_opening_offset:float|str=0.0,
                          open_traces:bool=True,
                          traces_offset:float|str=0.0,
+                         open_traces_net_filter:list[str] | None = None,
                          solder_mask_layer_name:str="Solder",
                          solder_mask_thickness:float|str="30um",
                          solder_mask_material:str="") -> bool:
@@ -1500,8 +1502,35 @@ class Modeler:
             self._pedb.materials.add_dielectric(permittivity=4, name=solder_mask_material)
             self._pedb.logger.warning(f"No Material name provided or found for {solder_mask_material}.")
             self._pedb.logger.warning(f"Creating default solder mask material {solder_mask_material} with epsr=4.")
-
-
         if open_components:
-
-        return False
+            if component_filter:
+                components = [component for ref_des, component in self._pedb.components.instances.items()
+                              if ref_des in component_filter]
+                if not components:
+                    raise ValueError(f"No components found for {component_filter}.")
+            else:
+                components = list(self._pedb.components.instances.values())
+            for component in components:
+                comp_box = component.bbox
+                x1 = comp_box[0] - components_opening_offset
+                y1 = comp_box[1] + components_opening_offset
+                x2 = comp_box[2] - components_opening_offset
+                y2 = comp_box[3] + components_opening_offset
+                self.create_rectangle(layer_name=solder_mask_layer_name,
+                                      lower_left_point=(x1, y1),
+                                      upper_right_point=(x2, y2))
+        if open_voids:
+            voids = self._pedb.layout.find_primitive(prim_type="polygon", is_void=True)
+            for void in voids:
+                polygon_data = void.polygon_data
+                if voids_opening_offset:
+                    polygon_data = polygon_data.scale(voids_opening_offset)
+                self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
+        if open_traces:
+            traces = self._pedb.layout.find_primitive(prim_type="path", net_filter=open_traces_net_filter )
+            for trace in traces:
+                polygon_data = trace.polygon_data
+                if traces_offset:
+                    polygon_data = polygon_data.scale(traces_offset)
+                self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
+        return True
