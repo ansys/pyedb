@@ -260,7 +260,6 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           python -m pip install .[all,tests]
-          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -330,7 +329,6 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           python -m pip install .[all,tests]
-          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -406,7 +404,6 @@ jobs:
         run: |
           . .venv/bin/activate
           python -m pip install .[all,tests]
-          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -482,7 +479,6 @@ jobs:
         run: |
           . .venv/bin/activate
           python -m pip install .[all,tests]
-          python -m pip install --upgrade ansys-edb-core==0.3.0
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
