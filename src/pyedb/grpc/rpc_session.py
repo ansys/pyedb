@@ -24,10 +24,19 @@ import os
 import secrets
 import sys
 import time
+try:
+    from ansys.edb.core.session import is_in_memory
+except ImportError:
 
+    def is_in_memory():
+        return False
+from ansys.edb.core.utility.io_manager import (
+    IOMangementType,
+    end_managing,
+    start_managing,
+)
 from ansys.edb.core.session import launch_session
 import psutil
-
 from pyedb import __version__
 from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.generic.settings import settings
@@ -127,6 +136,7 @@ class RpcSession:
     @staticmethod
     def __start_rpc_server():
         RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+        start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
@@ -172,6 +182,7 @@ class RpcSession:
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:
+            end_managing()
             RpcSession.rpc_session.disconnect()
             time.sleep(latency_delay)
             RpcSession.rpc_session = None

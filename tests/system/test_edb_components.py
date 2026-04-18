@@ -564,7 +564,7 @@ class TestClass(BaseTestClass):
         assert edbapp.components.instances["U1"].is_top_mounted
         assert not edbapp.components.instances["C347"].is_top_mounted
         assert not edbapp.components.instances["R67"].is_top_mounted
-        edbapp.close_edb()
+        edbapp.close_edb(terminate_rpc_session=False)
 
     def test_instances(self):
         """Check instances access and values."""
@@ -583,7 +583,7 @@ class TestClass(BaseTestClass):
             assert edbapp.components.instances["Test"].center == (0.07950000102, 0.03399999804)
         else:
             assert edbapp.components.instances["Test"].center == [0.068, 0.0165]
-        edbapp.close_edb()
+        edbapp.close_edb(terminate_rpc_session=False)
 
     def test_create_package_def(self):
         """Check the creation of package definition."""

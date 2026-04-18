@@ -632,7 +632,7 @@ class TestClass(BaseTestClass):
 
         edbapp = self.edb_examples.get_unit_cell()
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_dxf_swap_backend_center_point(self):

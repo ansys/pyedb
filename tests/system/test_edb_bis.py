@@ -31,7 +31,7 @@ from tests.conftest import GRPC, desktop_version
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
-
+@pytest.mark.usefixtures("close_rpc_session")
 class TestClass:
     @pytest.fixture(autouse=True)
     def init(self, local_scratch):
