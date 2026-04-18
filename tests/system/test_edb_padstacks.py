@@ -566,7 +566,7 @@ class TestClass(BaseTestClass):
 
         assert edbapp.padstacks.reduce_via_in_bounding_box([-20e-3, -10e-3, 20e-3, 10e-3], 10, 10) is True
         assert len(edbapp.padstacks.instances) == 96
-        edbapp.close_edb(terminate_rpc_session=False)
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",

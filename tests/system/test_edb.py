@@ -42,6 +42,7 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
+    pytest.mark.skipif(not config["use_grpc"], reason="Test skipped for DotNet")
     def test_grpc_reuses_rpc_session_after_close_without_termination(self):
         edb_path = self.edb_examples.get_si_verse(edbapp=False)
 
