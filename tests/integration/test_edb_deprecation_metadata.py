@@ -157,7 +157,6 @@ def test_public_edb_stub_overloads_resolve_to_backend_classes(
         assert ast.unparse(overload_node.returns) == expected_return
 
 
-
 @pytest.mark.parametrize(
     ("symbol", "expected_message"),
     [

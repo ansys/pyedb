@@ -129,7 +129,9 @@ def test_edb_init_registers_shutdown_hooks_only_once(monkeypatch):
 
     monkeypatch.setattr(edb_init_module, "env_path", lambda version: r"C:\\fake\\AnsysEM")
     monkeypatch.setattr(edb_init_module.atexit, "register", lambda handler: atexit_calls.append(handler))
-    monkeypatch.setattr(edb_init_module.signal, "signal", lambda signum, handler: signal_calls.append((signum, handler)))
+    monkeypatch.setattr(
+        edb_init_module.signal, "signal", lambda signum, handler: signal_calls.append((signum, handler))
+    )
 
     EdbInit("2026.1")
     EdbInit("2026.1")

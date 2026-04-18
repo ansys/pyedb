@@ -93,7 +93,6 @@ class Settings(object):
     def is_grpc(self, value):
         self.__is_grpc = value
 
-
     @property
     def edb_environment_variables(self):
         """Environment variables that are set before launching a new AEDT session,
