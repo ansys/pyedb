@@ -312,7 +312,6 @@ class TestClass(BaseTestClass):
         assert os.path.exists(export_stackup_path)
         edbapp.close(terminate_rpc_session=False)
 
-
     def test_stackup_load_json(self):
         """Import stackup from a file."""
 

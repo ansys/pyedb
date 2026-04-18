@@ -24,19 +24,23 @@ import os
 import secrets
 import sys
 import time
+
 try:
     from ansys.edb.core.session import is_in_memory
 except ImportError:
 
     def is_in_memory():
         return False
+
+
+from ansys.edb.core.session import launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
     start_managing,
 )
-from ansys.edb.core.session import launch_session
 import psutil
+
 from pyedb import __version__
 from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.generic.settings import settings
