@@ -41,7 +41,6 @@ def Edb(
     grpc: Literal[True] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> _GrpcEdb: ...
 @overload
 def Edb(
@@ -58,7 +57,6 @@ def Edb(
     grpc: Literal[False] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> _DotnetEdb: ...
 @overload
 def Edb(
@@ -75,7 +73,6 @@ def Edb(
     grpc: bool = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> _GrpcEdb | _DotnetEdb: ...
 @overload
 def Edb(
@@ -92,6 +89,5 @@ def Edb(
     grpc: None = None,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> _GrpcEdb | _DotnetEdb: ...
 def Siwave(specified_version: str | None = None) -> _siwave.Siwave: ...

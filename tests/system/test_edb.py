@@ -31,6 +31,7 @@ import pytest
 
 from pyedb.edb_logger import EdbLogger
 from pyedb.generic.general_methods import is_linux
+from pyedb.grpc.rpc_session import RpcSession
 from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
@@ -41,6 +42,32 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
+    def test_grpc_reuses_rpc_session_after_close_without_termination(self):
+        edb_path = self.edb_examples.get_si_verse(edbapp=False)
+
+        edbapp_1 = self.edb_examples.load_edb(edb_path)
+        first_pid = RpcSession.server_pid
+        assert first_pid
+        assert RpcSession.rpc_session is not None
+        assert RpcSession.rpc_session.local_server_proc.pid == first_pid
+
+        edbapp_1.close(terminate_rpc_session=False)
+
+        assert RpcSession.rpc_session is not None
+        assert RpcSession.server_pid == first_pid
+
+        edbapp_2 = self.edb_examples.load_edb(edb_path)
+        second_pid = RpcSession.server_pid
+
+        assert second_pid == first_pid
+        assert RpcSession.rpc_session is not None
+        assert RpcSession.rpc_session.local_server_proc.pid == first_pid
+
+        edbapp_2.close(terminate_rpc_session=True)
+
+        assert RpcSession.rpc_session is None
+        assert RpcSession.server_pid == 0
+
     def test_hfss_create_coax_port_on_component_from_hfss(self):
         """Create a coaxial port on a component from its pin."""
         edbapp = self.edb_examples.get_si_verse()
@@ -437,7 +464,7 @@ class TestClass(BaseTestClass):
             sweep.enforce_causality = True
         setup.sweep_data = sweeps
         assert setup.sweep_data[0].enforce_causality
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
@@ -1312,7 +1339,7 @@ class TestClass(BaseTestClass):
 
         setup2 = edbapp.simulation_setups.create_siwave_setup("setup_2")
         assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
@@ -1338,7 +1365,7 @@ class TestClass(BaseTestClass):
         assert edbapp.get_bounding_box()
         assert edbapp.get_statistics()
         assert edbapp.are_port_reference_terminals_connected()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
@@ -1363,7 +1390,7 @@ class TestClass(BaseTestClass):
 
         setup = edbapp.setups["setup_1"]
         assert not setup.settings.use_loop_res_for_per_pin  # fail on .net
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",

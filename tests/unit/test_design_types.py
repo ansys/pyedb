@@ -35,7 +35,6 @@ def restore_settings_state():
         "specified_version": settings.specified_version,
         "is_student_version": settings.is_student_version,
         "is_grpc": settings.is_grpc,
-        "is_in_memory": settings.is_in_memory,
         "LATEST_VERSION": settings.LATEST_VERSION,
         "LATEST_STUDENT_VERSION": settings.LATEST_STUDENT_VERSION,
         "INSTALLED_VERSIONS": settings.INSTALLED_VERSIONS,
@@ -50,7 +49,6 @@ def restore_settings_state():
     settings.specified_version = None
     settings.is_student_version = False
     settings.is_grpc = False
-    settings.is_in_memory = False
     settings._edb_dll_path = None
 
     yield
@@ -58,7 +56,6 @@ def restore_settings_state():
     settings.specified_version = original_state["specified_version"]
     settings.is_student_version = original_state["is_student_version"]
     settings.is_grpc = original_state["is_grpc"]
-    settings.is_in_memory = original_state["is_in_memory"]
     settings.LATEST_VERSION = original_state["LATEST_VERSION"]
     settings.LATEST_STUDENT_VERSION = original_state["LATEST_STUDENT_VERSION"]
     settings.INSTALLED_VERSIONS = original_state["INSTALLED_VERSIONS"]
@@ -92,7 +89,6 @@ def test_edb_defaults_to_grpc_for_2026_1_and_later(restore_settings_state, fake_
     assert kwargs["version"] == "2026.1"
     assert settings.specified_version == "2026.1"
     assert settings.is_grpc is True
-    assert settings.is_in_memory is True
 
 
 def test_edb_defaults_to_dotnet_before_2026_1(restore_settings_state, fake_backends):
@@ -102,7 +98,6 @@ def test_edb_defaults_to_dotnet_before_2026_1(restore_settings_state, fake_backe
     assert "version" not in kwargs
     assert settings.specified_version == "2025.2"
     assert settings.is_grpc is False
-    assert settings.is_in_memory is False
 
 
 def test_edb_uses_resolved_default_version_for_backend_selection(restore_settings_state, fake_backends):
@@ -119,13 +114,12 @@ def test_edb_uses_resolved_default_version_for_backend_selection(restore_setting
 
 
 def test_edb_respects_explicit_grpc_override(restore_settings_state, fake_backends):
-    backend, kwargs = design_types.Edb(version="2026.1", grpc=False, in_memory=True)
+    backend, kwargs = design_types.Edb(version="2026.1", grpc=False)
 
     assert backend == "dotnet"
     assert "version" not in kwargs
     assert settings.specified_version == "2026.1"
     assert settings.is_grpc is False
-    assert settings.is_in_memory is False
 
 
 def test_edb_prefers_dotnet_when_dll_path_is_forced(restore_settings_state, fake_backends):
@@ -137,4 +131,3 @@ def test_edb_prefers_dotnet_when_dll_path_is_forced(restore_settings_state, fake
     assert "version" not in kwargs
     assert settings.specified_version == "2026.1"
     assert settings.is_grpc is False
-    assert settings.is_in_memory is False

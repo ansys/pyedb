@@ -41,7 +41,9 @@ from pyedb.grpc.rpc_session import RpcSession
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, version, in_memory=False, is_linux=False):
+    _shutdown_hooks_registered = False
+
+    def __init__(self, version, is_linux=False):
         """
         Initialize the gRPC EDB database helper.
 
@@ -49,8 +51,6 @@ class EdbInit(object):
         ----------
         version : str
             AEDT/EDB version to initialize, for example ``"2026.1"``.
-        in_memory : bool, optional
-            Whether to request the local in-memory gRPC transport. The default is ``False``.
         is_linux : bool, optional
             Whether to initialize environment paths using the Linux-specific startup flow.
             The default is ``False``.
@@ -80,29 +80,31 @@ class EdbInit(object):
         oa_directory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
         os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
-        # register server kill
-        atexit.register(self._signal_handler)
-        # register signal handlers
-        signal.signal(signal.SIGTERM, self._signal_handler)
-        signal.signal(signal.SIGINT, self._signal_handler)
-        RpcSession.in_memory = in_memory
+        self._register_shutdown_hooks()
+
+    @classmethod
+    def _register_shutdown_hooks(cls):
+        if cls._shutdown_hooks_registered:
+            return
+        atexit.register(cls._signal_handler)
+        signal.signal(signal.SIGTERM, cls._signal_handler)
+        signal.signal(signal.SIGINT, cls._signal_handler)
+        cls._shutdown_hooks_registered = True
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
-        RpcSession.kill_all_instances()
+        if RpcSession.rpc_session or RpcSession.pid or RpcSession.server_pid:
+            try:
+                RpcSession.close()
+            except Exception:
+                RpcSession.kill_all_instances()
 
     @property
     def db(self):
         """Active database object."""
         return self._db
 
-    def _sync_transport_mode(self):
-        """Synchronize the effective transport mode after session startup or fallback."""
-        settings.is_in_memory = RpcSession.in_memory
-        if hasattr(self, "in_memory"):
-            self.in_memory = RpcSession.in_memory
-
-    def _create(self, db_path, port=0, restart_rpc_server=False, in_memory=False):
+    def _create(self, db_path, port=0, restart_rpc_server=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -120,13 +122,11 @@ class EdbInit(object):
         -------
         Database
         """
-        RpcSession.in_memory = in_memory
         RpcSession.start(
             edb_version=self.version,
             port=port,
             restart_server=restart_rpc_server,
         )
-        self._sync_transport_mode()
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
@@ -134,7 +134,7 @@ class EdbInit(object):
         self._db = database.Database.create(db_path)
         return self._db
 
-    def _open(self, db_path, read_only, port=0, restart_rpc_server=False, in_memory=False):
+    def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -153,13 +153,11 @@ class EdbInit(object):
         Database or None
             The opened Database object, or None if not found.
         """
-        RpcSession.in_memory = in_memory
         RpcSession.start(
             edb_version=self.version,
             port=port,
             restart_server=restart_rpc_server,
         )
-        self._sync_transport_mode()
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
@@ -220,7 +218,6 @@ class EdbInit(object):
         self._db = None
         if terminate_rpc_session:
             RpcSession.close()
-            self._sync_transport_mode()
         self._clean_variables()
         return True
 
