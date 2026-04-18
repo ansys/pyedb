@@ -47,6 +47,6 @@ API documentation
 -----------------
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 5
 
    ../autoapi/pyedb/grpc/index
