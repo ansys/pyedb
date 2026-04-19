@@ -1,0 +1,176 @@
+
+
+
+
+
+
+:class:`ExtendedNetDotNet`
+==========================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.ExtendedNetDotNet(app, api_object=None)
+
+   Bases: :py:obj:`NetClassDotNet`
+
+
+   
+   Extended net class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ExtendedNetDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_by_name`
+            - Edb Dotnet Api Database `Edb.ExtendedNet.FindByName`.
+          * - :py:attr:`~api_create`
+            - Edb Dotnet Api Database `Edb.ExtendedNet.Create`.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cell_extended_net`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import ExtendedNetDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: cell_extended_net
+
+
+
+Method detail
+-------------
+
+.. py:method:: find_by_name(layout, net)
+
+   
+   Edb Dotnet Api Database `Edb.ExtendedNet.FindByName`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: api_create(name)
+
+   
+   Edb Dotnet Api Database `Edb.ExtendedNet.Create`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

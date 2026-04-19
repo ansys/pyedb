@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_operations`` library
+==================================================
+
+.. py:module:: pyedb.configuration.cfg_operations
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_operations
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations.CfgCutout`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_operations.CfgOperations`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgCutout</autoapi/pyedb/configuration/cfg_operations/CfgCutout>
+    <span class="nf nf-cod-symbol_class"></span> CfgOperations</autoapi/pyedb/configuration/cfg_operations/CfgOperations>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,261 @@
+
+
+
+
+
+
+:class:`VoltageRegulator`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.cell.voltage_regulator.VoltageRegulator(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.connectable.Connectable`
+
+
+   
+   Class managing EDB voltage regulator.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: VoltageRegulator
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~load_regulator_current`
+            - Get load regulator current value.
+          * - :py:attr:`~load_regulation_percent`
+            - Get load regulation percent value.
+          * - :py:attr:`~negative_remote_sense_pin`
+            - Get negative remote sense pin.
+          * - :py:attr:`~positive_remote_sense_pin`
+            - Get positive remote sense pin.
+          * - :py:attr:`~voltage`
+            - Get voltage value.
+          * - :py:attr:`~is_active`
+            - Check if voltage regulator is active.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.voltage_regulator import VoltageRegulator
+
+Property detail
+---------------
+
+.. py:property:: load_regulator_current
+   :type: float
+
+
+   
+   Get load regulator current value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Load regulator current.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: load_regulation_percent
+   :type: float
+
+
+   
+   Get load regulation percent value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Load regulation percentage.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_remote_sense_pin
+   :type: pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance
+
+
+   
+   Get negative remote sense pin.
+
+
+
+
+
+   :Returns:
+
+       :obj:`EDBPadstackInstance`
+           Negative remote sense pin instance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: positive_remote_sense_pin
+   :type: pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance
+
+
+   
+   Get positive remote sense pin.
+
+
+
+
+
+   :Returns:
+
+       :obj:`EDBPadstackInstance`
+           Positive remote sense pin instance.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: voltage
+   :type: float
+
+
+   
+   Get voltage value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Voltage of the regulator.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_active
+   :type: bool
+
+
+   
+   Check if voltage regulator is active.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if active, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

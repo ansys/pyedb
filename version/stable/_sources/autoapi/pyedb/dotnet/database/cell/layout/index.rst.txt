@@ -1,0 +1,117 @@
+
+
+
+
+
+
+The ``layout.py`` module
+========================
+
+.. py:module:: pyedb.dotnet.database.cell.layout
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layout
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.layout.PrimitivesQuery`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.layout.Layout`
+            - Manages EDB functionalities for a base object.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~primitive_cast`
+            - 
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~TPrimitiveClass`
+            - 
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> PrimitivesQuery</autoapi/pyedb/dotnet/database/cell/layout/PrimitivesQuery>
+    <span class="nf nf-cod-symbol_class"></span> Layout</autoapi/pyedb/dotnet/database/cell/layout/Layout>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains these classes: `EdbLayout` and `Shape`.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: primitive_cast(pedb, edb_object)
+
+.. py:data:: TPrimitiveClass
+
+
+

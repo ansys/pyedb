@@ -1,0 +1,487 @@
+
+
+
+
+
+
+:class:`PolygonData`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.geometry.polygon_data.PolygonData(pedb: pyedb.dotnet.edb.Edb, edb_object: Any | None = None, create_from_points: Any | None = None, create_from_bounding_box: Any | None = None, **kwargs)
+
+   
+   Polygon Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: PolygonData
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a polygon from a list of points.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_from_points`
+            - Create a polygon from a list of points.
+          * - :py:attr:`~create_from_bounding_box`
+            - Create a polygon from a bounding box defined by two corner points.
+          * - :py:attr:`~expand`
+            - Expand the polygon shape by an absolute value in all direction.
+          * - :py:attr:`~create_from_arcs`
+            - Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+          * - :py:attr:`~is_inside`
+            - Determines whether a point is inside the polygon.
+          * - :py:attr:`~point_in_polygon`
+            - Determines whether a point is inside the polygon.
+          * - :py:attr:`~get_point`
+            - Gets the point at the index as a PointData object.
+          * - :py:attr:`~set_point`
+            - Sets the point at the index from a PointData object.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~bounding_box`
+            - Bounding box.
+          * - :py:attr:`~arcs`
+            - Get the Primitive Arc Data.
+          * - :py:attr:`~points`
+            - Get all points in polygon.
+          * - :py:attr:`~points_without_arcs`
+            - Get all points in polygon without arcs.
+          * - :py:attr:`~area`
+            - Get the area of the polygon.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.geometry.polygon_data import PolygonData
+
+Property detail
+---------------
+
+.. py:property:: bounding_box
+   :type: list[float]
+
+
+   
+   Bounding box.
+
+
+
+
+
+   :Returns:
+
+       :obj:`List`\[:class:`python:float`]
+           List of coordinates for the component's bounding box, with the list of
+           coordinates in this order: [X lower left corner, Y lower left corner,
+           X upper right corner, Y upper right corner].
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: arcs
+   :type: list[pyedb.dotnet.database.edb_data.primitives_data.EDBArcs]
+
+
+   
+   Get the Primitive Arc Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points
+   :type: list[tuple[float, float]]
+
+
+   
+   Get all points in polygon.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:tuple`\[:class:`python:float`, :class:`python:float`]]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: points_without_arcs
+   :type: list[tuple[float, float]]
+
+
+   
+   Get all points in polygon without arcs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: area
+   :type: float
+
+
+   
+   Get the area of the polygon.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb, points: list[tuple[float, float]], closed: bool = True) -> Any
+   :classmethod:
+
+
+   
+   Create a polygon from a list of points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_points(points: list[tuple[float, float]], closed: bool = True) -> Any
+
+   
+   Create a polygon from a list of points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_bounding_box(points: list[Any]) -> Any
+
+   
+   Create a polygon from a bounding box defined by two corner points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: expand(offset: float = 0.001, tolerance: float = 1e-12, round_corners: bool = True, maximum_corner_extension: float = 0.001) -> bool
+
+   
+   Expand the polygon shape by an absolute value in all direction.
+
+   Offset can be negative for negative expansion.
+
+   :Parameters:
+
+       **offset** : :class:`python:float`, :obj:`optional`
+           Offset value in meters.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters.
+
+       **round_corners** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to round corners or not.
+           If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+
+       **maximum_corner_extension** : :class:`python:float`, :obj:`optional`
+           The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_arcs(arcs: list[Any], flag: bool) -> PolygonData
+
+   
+   Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+
+
+   :Parameters:
+
+       **arcs** : :class:`python:list` or `Edb.Geometry.ArcData`
+           List of ArcData.
+
+       **flag** : :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: is_inside(x: str | float | list[Any], y: str | float | None = None) -> bool
+
+   
+   Determines whether a point is inside the polygon.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: point_in_polygon(x: str | float | list[Any], y: str | float | None = None) -> bool
+
+   
+   Determines whether a point is inside the polygon.
+
+   ..deprecated:: 0.48.0
+      Use: func:`is_inside` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_point(index: int) -> pyedb.dotnet.database.geometry.point_data.PointData
+
+   
+   Gets the point at the index as a PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_point(index: int, point_data: pyedb.dotnet.database.geometry.point_data.PointData) -> None
+
+   
+   Sets the point at the index from a PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,74 @@
+﻿EdgeTerminal
+============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. autoclass:: EdgeTerminal
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      EdgeTerminal.cast
+      
+      
+      EdgeTerminal.couple_ports
+      
+      
+      EdgeTerminal.create
+      
+      
+      EdgeTerminal.create_3d_comp
+      
+      
+      EdgeTerminal.create_hfss
+      
+      
+      EdgeTerminal.create_stride
+      
+      
+      EdgeTerminal.delete
+      
+      
+      EdgeTerminal.find
+      
+      
+      EdgeTerminal.find_by_id
+      
+      
+      EdgeTerminal.get_product_property
+      
+      
+      EdgeTerminal.get_product_property_ids
+      
+      
+      EdgeTerminal.product_solver_names
+      
+      
+      EdgeTerminal.product_solver_option
+      
+      
+      EdgeTerminal.set_product_property
+      
+      
+      EdgeTerminal.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      EdgeTerminal.layout_obj_type
+      EdgeTerminal.type
+   
+   

@@ -1,0 +1,455 @@
+
+
+
+
+
+
+:class:`SiwaveDCIRSettings`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings.SiwaveDCIRSettings(parent)
+
+   
+   Class for DC IR settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SiwaveDCIRSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~export_dc_thermal_data`
+            - Export DC Thermal Data.
+          * - :py:attr:`~import_thermal_data`
+            - Import Thermal Data.
+          * - :py:attr:`~dc_report_show_active_devices`
+            - DC Report Show Active Devices.
+          * - :py:attr:`~per_pin_use_pin_format`
+            - Per Pin Use Pin Format.
+          * - :py:attr:`~use_loop_res_for_per_pin`
+            - Use loop Res Per Pin.
+          * - :py:attr:`~dc_report_config_file`
+            - DC Report Config File.
+          * - :py:attr:`~full_dc_report_path`
+            - Full DC Report Path.
+          * - :py:attr:`~icepak_temp_file`
+            - Icepack Temp File.
+          * - :py:attr:`~icepak_temp_file_path`
+            - Icepak Temp File Path.
+          * - :py:attr:`~per_pin_res_path`
+            - Per Pin Res Path.
+          * - :py:attr:`~via_report_path`
+            - Via Report Path.
+          * - :py:attr:`~source_terms_to_ground`
+            - A dictionary of SourceName, NodeToGround pairs,
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.siw_dc_ir_settings import SiwaveDCIRSettings
+
+Property detail
+---------------
+
+.. py:property:: export_dc_thermal_data
+
+   
+   Export DC Thermal Data.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated`, ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: import_thermal_data
+
+   
+   Import Thermal Data.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated`, ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_show_active_devices
+
+   
+   DC Report Show Active Devices.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated`, ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_use_pin_format
+
+   
+   Per Pin Use Pin Format.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated`, ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_loop_res_for_per_pin
+
+   
+   Use loop Res Per Pin.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated`, ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_config_file
+
+   
+   DC Report Config File.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`path` :obj:`to` :obj:`the` :obj:`DC` :obj:`report` :obj:`configuration` file.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: full_dc_report_path
+
+   
+   Full DC Report Path.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`full` :obj:`path` :obj:`to` :obj:`the` :obj:`DC` :obj:`report` file.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_temp_file
+
+   
+   Icepack Temp File.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`path` :obj:`to` :obj:`the` :obj:`temp` :obj:`Icepak` file.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: icepak_temp_file_path
+
+   
+   Icepak Temp File Path.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`path` :obj:`for` :obj:`the` :obj:`Icepak` :obj:`temp` file.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: per_pin_res_path
+
+   
+   Per Pin Res Path.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`path` :obj:`for` :obj:`per` :obj:`pin` res.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_report_path
+
+   
+   Via Report Path.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`path` :obj:`for` :obj:`the` :obj:`Via` Report.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_terms_to_ground
+
+   
+   A dictionary of SourceName, NodeToGround pairs,
+   where NodeToGround is one of 0 (unspecified), 1 (negative), 2 (positive).
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict` <str, int>
+           str: source name,
+           int: node to ground pairs, 0 (unspecified), 1 (negative), 2 (positive) .
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

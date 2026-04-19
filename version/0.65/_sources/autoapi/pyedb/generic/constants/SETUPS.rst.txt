@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SETUPS`
+===============
+
+
+.. py:class:: pyedb.generic.constants.SETUPS
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides constants for the default setup types.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SETUPS
+
+
+
+
+

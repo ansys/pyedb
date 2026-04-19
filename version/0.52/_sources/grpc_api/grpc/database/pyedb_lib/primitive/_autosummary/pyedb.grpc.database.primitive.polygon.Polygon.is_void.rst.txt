@@ -1,0 +1,6 @@
+is\_void
+========
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.is_void

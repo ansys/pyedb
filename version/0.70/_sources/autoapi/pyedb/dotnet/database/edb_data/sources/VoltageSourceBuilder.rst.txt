@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`VoltageSourceBuilder`
+=============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.VoltageSourceBuilder
+
+   Bases: :py:obj:`SourceBuilder`
+
+
+   
+   Manages a voltage source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: VoltageSourceBuilder
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~magnitude`
+            - Magnitude.
+          * - :py:attr:`~phase`
+            - Phase.
+          * - :py:attr:`~impedance`
+            - Impedance.
+          * - :py:attr:`~source_type`
+            - SourceBuilder type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import VoltageSourceBuilder
+
+Property detail
+---------------
+
+.. py:property:: magnitude
+
+   
+   Magnitude.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Phase.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   SourceBuilder type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

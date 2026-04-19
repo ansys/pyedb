@@ -1,0 +1,58 @@
+
+
+
+
+
+
+:class:`SystemObject`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.obj_base.SystemObject(pedb: pyedb.dotnet.edb.Edb, edb_object)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: SystemObject
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.obj_base import SystemObject
+
+Property detail
+---------------
+
+.. py:property:: core
+
+
+
+
+
+

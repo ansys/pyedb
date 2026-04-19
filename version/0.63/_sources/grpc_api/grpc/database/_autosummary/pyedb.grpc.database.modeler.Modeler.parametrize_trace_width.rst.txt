@@ -1,0 +1,6 @@
+parametrize\_trace\_width
+=========================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.parametrize_trace_width

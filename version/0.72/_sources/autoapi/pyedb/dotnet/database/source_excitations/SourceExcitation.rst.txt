@@ -1,0 +1,1859 @@
+
+
+
+
+
+
+:class:`SourceExcitation`
+=========================
+
+
+.. py:class:: pyedb.dotnet.database.source_excitations.SourceExcitation(pedb)
+
+   
+   Manage sources and excitations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SourceExcitation
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_edge_from_port`
+            - 
+          * - :py:attr:`~create_circuit_port_on_pin`
+            - Create a circuit port on a pin.
+          * - :py:attr:`~create_voltage_source_on_pin`
+            - Create a voltage source.
+          * - :py:attr:`~create_current_source_on_pin`
+            - Create a current source.
+          * - :py:attr:`~create_resistor_on_pin`
+            - Create a Resistor boundary between two given pins..
+          * - :py:attr:`~create_circuit_port_on_net`
+            - Create a circuit port on a NET.
+          * - :py:attr:`~create_voltage_source_on_net`
+            - Create a voltage source.
+          * - :py:attr:`~create_current_source_on_net`
+            - Create a current source.
+          * - :py:attr:`~create_coax_port_on_component`
+            - Create a coaxial port on a component or component list on a net or net list.
+          * - :py:attr:`~create_bundle_wave_port`
+            - Create a bundle wave port.
+          * - :py:attr:`~create_differential_wave_port`
+            - Create a differential wave port.
+          * - :py:attr:`~create_hfss_ports_on_padstack`
+            - Create an HFSS port on a padstack.
+          * - :py:attr:`~create_port_between_pin_and_layer`
+            - Create circuit port between pin and a reference layer.
+          * - :py:attr:`~create_padstack_instance_terminal`
+            - 
+          * - :py:attr:`~create_pin_group_terminal`
+            - 
+          * - :py:attr:`~create_terminal_from_pin_group`
+            - 
+          * - :py:attr:`~create_point_terminal`
+            - 
+          * - :py:attr:`~create_edge_terminal`
+            - 
+          * - :py:attr:`~create_bundle_terminal`
+            - 
+          * - :py:attr:`~create_edge_port`
+            - Create an edge port on a primitive specific location.
+          * - :py:attr:`~create_edge_port_on_polygon`
+            - Create lumped port between two edges from two different polygons. Can also create a vertical port when
+          * - :py:attr:`~create_horizontal_wave_port`
+            - Create a horizontal wave port around one or more vias inside a void.
+          * - :py:attr:`~create_wave_port`
+            - Create a wave port.
+          * - :py:attr:`~create_edge_port_vertical`
+            - Create a vertical edge port.
+          * - :py:attr:`~create_edge_port_horizontal`
+            - Create a horizontal edge port.
+          * - :py:attr:`~create_lumped_port_on_net`
+            - Create an edge port on nets. This command looks for traces and polygons on the
+          * - :py:attr:`~create_vertical_circuit_port_on_clipped_traces`
+            - Create an edge port on clipped signal traces.
+          * - :py:attr:`~create_rlc_boundary_on_pins`
+            - Create hfss rlc boundary on pins.
+          * - :py:attr:`~create_circuit_port_on_pin_group`
+            - Create a port between two pin groups.
+          * - :py:attr:`~create_current_source_on_pin_group`
+            - Create current source between two pin groups.
+          * - :py:attr:`~create_voltage_source_on_pin_group`
+            - Create voltage source between two pin groups.
+          * - :py:attr:`~create_voltage_probe_on_pin_group`
+            - Create voltage probe between two pin groups.
+          * - :py:attr:`~create_port_on_component`
+            - Create ports on a component.
+          * - :py:attr:`~create_pingroup_from_pins`
+            - Create a pin group on a component.
+          * - :py:attr:`~create_port_on_pins`
+            - Create circuit port between pins and reference ones.
+          * - :py:attr:`~create_port`
+            - Create a port.
+          * - :py:attr:`~create_voltage_probe`
+            - Create a voltage probe.
+          * - :py:attr:`~create_voltage_source`
+            - Create a voltage source.
+          * - :py:attr:`~create_current_source`
+            - Create a current source.
+          * - :py:attr:`~get_point_terminal`
+            - Place a voltage probe between two points.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pin_groups`
+            - All Layout Pin groups.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.source_excitations import SourceExcitation
+
+Property detail
+---------------
+
+.. py:property:: pin_groups
+
+   
+   All Layout Pin groups.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of all layout pin groups.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_edge_from_port(port)
+
+.. py:method:: create_circuit_port_on_pin(pos_pin, neg_pin, impedance=50, port_name=None)
+
+   
+   Create a circuit port on a pin.
+
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Edb Pin
+
+       **neg_pin** : :obj:`Object`
+           Edb Pin
+
+       **impedance** : :class:`python:float`
+           Port Impedance
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port Name
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port Name.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> pins = edbapp.components.get_pin_from_component("U2A5")
+   >>> edbapp.excitation_manager.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_pin(pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name='')
+
+   
+   Create a voltage source.
+
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Positive Pin.
+
+       **neg_pin** : :obj:`Object`
+           Negative Pin.
+
+       **voltage_value** : :class:`python:float`, :obj:`optional`
+           Value for the voltage. The default is ``3.3``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. The default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source Name.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> pins = edbapp.components.get_pin_from_component("U2A5")
+   >>> edbapp.excitation_manager.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_pin(pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name='')
+
+   
+   Create a current source.
+
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Positive pin.
+
+       **neg_pin** : :obj:`Object`
+           Negative pin.
+
+       **current_value** : :class:`python:float`, :obj:`optional`
+           Value for the current. The default is ``0.1``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. The default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source Name.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> pins = edbapp.components.get_pin_from_component("U2A5")
+   >>> edbapp.excitation_manager.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_resistor_on_pin(pos_pin, neg_pin, rvalue=1, resistor_name='')
+
+   
+   Create a Resistor boundary between two given pins..
+
+
+   :Parameters:
+
+       **pos_pin** : :obj:`Object`
+           Positive Pin.
+
+       **neg_pin** : :obj:`Object`
+           Negative Pin.
+
+       **rvalue** : :class:`python:float`, :obj:`optional`
+           Resistance value. The default is ``1``.
+
+       **resistor_name** : :class:`python:str`, :obj:`optional`
+           Name of the resistor. The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the resistor.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> pins = edbapp.components.get_pin_from_component("U2A5")
+   >>> edbapp.excitation_manager.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circuit_port_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name=None, impedance_value=50, port_name='')
+
+   
+   Create a circuit port on a NET.
+
+   It groups all pins belonging to the specified net and then applies the port on PinGroups.
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative component. The default is ``None``, in which case the name of
+           the positive net is assigned.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative net name. The default is ``None`` which will look for GND Nets.
+
+       **impedance_value** : :class:`python:float`, :obj:`optional`
+           Port impedance value. The default is ``50``.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the port.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name=None, voltage_value=3.3, phase_value=0, source_name='')
+
+   
+   Create a voltage source.
+
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative component. The default is ``None``, in which case the name of
+           the positive net is assigned.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative net name. The default is ``None`` which will look for GND Nets.
+
+       **voltage_value** : :class:`python:float`, :obj:`optional`
+           Value for the voltage. The default is ``3.3``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. The default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the source.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edb.excitation_manager.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_net(positive_component_name, positive_net_name, negative_component_name=None, negative_net_name=None, current_value=0.1, phase_value=0, source_name='')
+
+   
+   Create a current source.
+
+
+   :Parameters:
+
+       **positive_component_name** : :class:`python:str`
+           Name of the positive component.
+
+       **positive_net_name** : :class:`python:str`
+           Name of the positive net.
+
+       **negative_component_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative component. The default is ``None``, in which case the name of
+           the positive net is assigned.
+
+       **negative_net_name** : :class:`python:str`, :obj:`optional`
+           Name of the negative net name. The default is ``None`` which will look for GND Nets.
+
+       **current_value** : :class:`python:float`, :obj:`optional`
+           Value for the current. The default is ``0.1``.
+
+       **phase_value** : :obj:`optional`
+           Value for the phase. The default is ``0``.
+
+       **source_name** : :class:`python:str`, :obj:`optional`
+           Name of the source. The default is ``""``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the source.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder", "project name", "release version")
+   >>> edb.excitation_manager.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_coax_port_on_component(ref_des_list, net_list, delete_existing_terminal=False)
+
+   
+   Create a coaxial port on a component or component list on a net or net list.
+      The name of the new coaxial port is automatically assigned.
+
+
+   :Parameters:
+
+       **ref_des_list** : :class:`python:list`, :class:`python:str`
+           List of one or more reference designators.
+
+       **net_list** : :class:`python:list`, :class:`python:str`
+           List of one or more nets.
+
+       **delete_existing_terminal** : :ref:`bool <python:bltin-boolean-values>`
+           Only active with grpc version. This argument is added only to ensure compatibility between DotNet and grpc.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_bundle_wave_port(primitives_id, points_on_edge, port_name=None, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create a bundle wave port.
+
+
+   :Parameters:
+
+       **primitives_id** : :class:`python:list`
+           Primitive ID of the positive terminal.
+
+       **points_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be close to the target edge but not on the two
+           ends of the edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor. The default value is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor. The default value is ``3``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Launch Width of PEC. The default value is ``"0.01mm"``.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The tuple contains: (port_name, pyedb.egacy.database.edb_data.sources.ExcitationDifferential).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb.excitation_manager.create_bundle_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_differential_wave_port(positive_primitive_id, positive_points_on_edge, negative_primitive_id, negative_points_on_edge, port_name=None, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create a differential wave port.
+
+
+   :Parameters:
+
+       **positive_primitive_id** : :class:`python:int`, :obj:`EDBPrimitives`
+           Primitive ID of the positive terminal.
+
+       **positive_points_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be close to the target edge but not on the two
+           ends of the edge.
+
+       **negative_primitive_id** : :class:`python:int`, :obj:`EDBPrimitives`
+           Primitive ID of the negative terminal.
+
+       **negative_points_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be close to the target edge but not on the two
+           ends of the edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor. The default value is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor. The default value is ``3``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Launch Width of PEC. The default value is ``"0.01mm"``.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The tuple contains: (port_name, pyedb.dotnet.database.edb_data.sources.ExcitationDifferential).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb.excitation_manager.create_differential_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_hfss_ports_on_padstack(pinpos, portname=None)
+
+   
+   Create an HFSS port on a padstack.
+
+   .. deprecated:: 0.70.0
+      Use :func:`excitation_manager.create_edge_port` instead.
+
+   :Parameters:
+
+       **pinpos**
+           Position of the pin.
+
+       **portname** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_between_pin_and_layer(component_name=None, pins_name=None, layer_name=None, reference_net=None, impedance=50.0)
+
+   
+   Create circuit port between pin and a reference layer.
+
+
+   :Parameters:
+
+       **component_name** : :class:`python:str`
+           Component name. The default is ``None``.
+
+       **pins_name** : :class:`python:str`
+           Pin name or list of pin names. The default is ``None``.
+
+       **layer_name** : :class:`python:str`
+           Layer name. The default is ``None``.
+
+       **reference_net** : :class:`python:str`
+           Reference net name. The default is ``None``.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Port impedance. The default is ``50.0`` in ohms.
+
+
+
+   :Returns:
+
+       :obj:`PadstackInstanceTerminal`
+           Created terminal.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_padstack_instance_terminal(name='', padstack_instance_id=None, padstack_instance_name=None)
+
+.. py:method:: create_pin_group_terminal(pin_group)
+
+.. py:method:: create_terminal_from_pin_group(pin_group, name='')
+
+.. py:method:: create_point_terminal(x, y, layer, net, name='')
+
+.. py:method:: create_edge_terminal(primitive_name, x, y, name='')
+
+.. py:method:: create_bundle_terminal(terminals, name='')
+
+.. py:method:: create_edge_port(location, primitive_name, name, impedance=50, is_wave_port=True, horizontal_extent_factor=1, vertical_extent_factor=1, pec_launch_width=0.0001) -> pyedb.dotnet.database.edb_data.ports.WavePort
+
+   
+   Create an edge port on a primitive specific location.
+
+
+   :Parameters:
+
+       **location** : :class:`python:list`
+           Port location.
+
+       **primitive_name** : :class:`python:str`
+           Name of primitive.
+
+       **name** : :class:`python:str`
+           Port name.
+
+       **impedance** : :class:`python:float`, :obj:`optional`
+           Impedance.
+
+       **is_wave_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether if it is a wave port or gap port.
+
+       **horizontal_extent_factor** : :class:`python:float`, :obj:`optional`
+           Horizontal extent factor for wave ports.
+
+       **vertical_extent_factor** : :class:`python:float`, :obj:`optional`
+           Vertical extent factor for wave ports.
+
+       **pec_launch_width** : :class:`python:float`, :obj:`optional`
+           Pec launcher width for wave ports.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port_on_polygon(polygon=None, reference_polygon=None, terminal_point=None, reference_point=None, reference_layer=None, port_name=None, port_impedance=50.0, force_circuit_port=False)
+
+   
+   Create lumped port between two edges from two different polygons. Can also create a vertical port when
+   the reference layer name is only provided. When a port is created between two edge from two polygons which don't
+   belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
+   port instead of lumped,use the boolean force_circuit_port.
+
+
+   :Parameters:
+
+       **polygon** : :obj:`The` :obj:`EDB` :obj:`polygon` :obj:`object` :obj:`used` :obj:`to` :obj:`assign` :obj:`the` port.
+           Edb.Cell.Primitive.Polygon object.
+
+       **reference_polygon** : :obj:`The` :obj:`EDB` :obj:`polygon` :obj:`object` :obj:`used` :obj:`to` :obj:`define` :obj:`the` :obj:`port` reference.
+           Edb.Cell.Primitive.Polygon object.
+
+       **terminal_point** : :obj:`The` :obj:`coordinate` :obj:`of` :obj:`the` :obj:`point` :obj:`to` :obj:`define` :obj:`the` :obj:`edge` :obj:`terminal` :obj:`of` :obj:`the` port. :obj:`This` :obj:`point` :obj:`must` :obj:`be`
+           ..
+
+       **located on the edge of the polygon where the port has to be placed. For instance taking the middle point**
+           ..
+
+       **of an edge is a good practice but any point of the edge should be valid. Taking a corner might cause unwanted**
+           ..
+
+       **port location.**
+           list[float, float] with values provided in meter.
+
+       **reference_point** : :obj:`same` :obj:`as` :obj:`terminal_point` :obj:`but` :obj:`used` :obj:`for` :obj:`defining` :obj:`the` :obj:`reference` :obj:`location` :obj:`on` :obj:`the` edge.
+           list[float, float] with values provided in meter.
+
+       **reference_layer** : :obj:`Name` :obj:`used` :obj:`to` :obj:`define` :obj:`port` :obj:`reference` :obj:`for` :obj:`vertical` ports.
+           str the layer name.
+
+       **port_name** : :obj:`Name` :obj:`of` :obj:`the` port.
+           str.
+
+       **port_impedance** : :obj:`port` :obj:`impedance` value. :obj:`Default` :obj:`value` :obj:`is` 50 Ohms.
+           float, impedance value.
+
+       **force_circuit_port ; used to force circuit port creation instead of lumped. Works for vertical and coplanar**
+           ..
+
+       **ports.**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb_path = path_to_edb
+   >>> edb = Edb(edb_path)
+   >>> poly_list = [poly for poly in list(edb.layout.primitives) if poly.GetPrimitiveType() == 2]
+   >>> port_poly = [poly for poly in poly_list if poly.GetId() == 17][0]
+   >>> ref_poly = [poly for poly in poly_list if poly.GetId() == 19][0]
+   >>> port_location = [-65e-3, -13e-3]
+   >>> ref_location = [-63e-3, -13e-3]
+   >>> edb.excitation_manager.create_edge_port_on_polygon(polygon=port_poly, reference_polygon=ref_poly,
+   >>> terminal_point=port_location, reference_point=ref_location)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_horizontal_wave_port(void: int | pyedb.dotnet.database.cell.primitive.primitive.Primitive, padstack_instances: list = None, pec_launch_width: str = '0.04mm', layer_alignment: str = 'Lower') -> bool
+
+   
+   Create a horizontal wave port around one or more vias inside a void.
+
+   A horizontal wave port is a higher-fidelity alternative to coaxial lumped
+   ports for vertical interconnect excitation. Unlike a gap or lumped port,
+   which assumes a uniform current distribution, a wave port solves the field
+   distribution at the launch and therefore captures a more realistic
+   characteristic impedance. This usually improves the evaluation of fringing
+   fields and can noticeably affect results for differential pairs and other
+   high-speed channel structures.
+
+   :Parameters:
+
+       **void** : :class:`python:int` | :obj:`Primitive`
+           Void primitive, or void primitive ID, used to define the horizontal
+           wave-port reference contour.
+
+       **padstack_instances** : :class:`python:list`\[:obj:`PadstackInstance`], :obj:`optional`
+           Padstack instances to connect to the horizontal wave port. When not
+           provided, padstack instances are automatically detected from the vias
+           intersecting the void polygon.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           PEC launch width assigned to the HFSS solver option. The default is
+           ``"0.04mm"``.
+
+       **layer_alignment** : :class:`python:str`, :obj:`optional`
+           HFSS layer alignment for the wave port. Typical values are
+           ``"Lower"`` and ``"Upper"``. The default is ``"Lower"``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>` | :obj:`BundleTerminal`
+           Bundle terminal representing the created horizontal wave port. If no
+           padstack instance is found inside the target void, ``False`` is
+           returned.
+
+
+
+
+
+
+
+
+   .. rubric:: Notes
+
+   Horizontal wave ports can be used in place of coaxial lumped ports when a
+   more physical launch model is required. Because the wave port computes the
+   electromagnetic field distribution, it produces a more realistic impedance
+   than gap-port formulations that assume uniform current. This also improves
+   fringing-field estimation and can have a significant impact on extracted
+   results for differential links and other high-speed interconnect channels.
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_wave_port(prim_id, point_on_edge, port_name=None, impedance=50, horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create a wave port.
+
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`, :obj:`Primitive`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be on the target edge but not on the two
+           ends of the edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Impedance of the port. The default value is ``50``.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor. The default value is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor. The default value is ``3``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Launch Width of PEC. The default value is ``"0.01mm"``.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The tuple contains: (Port name, pyedb.dotnet.database.edb_data.sources.Excitation).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> edb.excitation_manager.create_wave_port(0, ["-50mm", "-0mm"])
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port_vertical(prim_id, point_on_edge, port_name=None, impedance=50, reference_layer=None, hfss_type='Gap', horizontal_extent_factor=5, vertical_extent_factor=3, pec_launch_width='0.01mm')
+
+   
+   Create a vertical edge port.
+
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be on the target edge but not on the two
+           ends of the edge.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Impedance of the port. The default value is ``50``.
+
+       **reference_layer** : :class:`python:str`, :obj:`optional`
+           Reference layer of the port. The default is ``None``.
+
+       **hfss_type** : :class:`python:str`, :obj:`optional`
+           Type of the port. The default value is ``"Gap"``. Options are ``"Gap"``, ``"Wave"``.
+
+       **horizontal_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Horizontal extent factor. The default value is ``5``.
+
+       **vertical_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Vertical extent factor. The default value is ``3``.
+
+       **radial_extent_factor** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Radial extent factor. The default value is ``0``.
+
+       **pec_launch_width** : :class:`python:str`, :obj:`optional`
+           Launch Width of PEC. The default value is ``"0.01mm"``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Port name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_edge_port_horizontal(prim_id, point_on_edge, ref_prim_id=None, point_on_ref_edge=None, port_name=None, impedance=50, layer_alignment='Upper')
+
+   
+   Create a horizontal edge port.
+
+
+   :Parameters:
+
+       **prim_id** : :class:`python:int`
+           Primitive ID.
+
+       **point_on_edge** : :class:`python:list`
+           Coordinate of the point to define the edge terminal.
+           The point must be on the target edge but not on the two
+           ends of the edge.
+
+       **ref_prim_id** : :class:`python:int`, :obj:`optional`
+           Reference primitive ID. The default is ``None``.
+
+       **point_on_ref_edge** : :class:`python:list`, :obj:`optional`
+           Coordinate of the point to define the reference edge
+           terminal. The point must be on the target edge but not
+           on the two ends of the edge. The default is ``None``.
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Name of the port. The default is ``None``.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Impedance of the port. The default value is ``50``.
+
+       **layer_alignment** : :class:`python:str`, :obj:`optional`
+           Layer alignment. The default value is ``Upper``. Options are ``"Upper"``, ``"Lower"``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the port.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_lumped_port_on_net(nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True)
+
+   
+   Create an edge port on nets. This command looks for traces and polygons on the
+   nets and tries to assign vertical lumped port.
+
+
+   :Parameters:
+
+       **nets** : :class:`python:list`, :obj:`optional`
+           List of nets, str or Edb net.
+
+       **reference_layer** : :class:`python:str`, :obj:`Edb` layer.
+           Name or Edb layer object.
+
+       **return_points_only** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Use this boolean when you want to return only the points from the edges and not creating ports. Default
+           value is ``False``.
+
+       **digit_resolution** : :class:`python:int`, :obj:`optional`
+           The number of digits carried for the edge location accuracy. The default value is ``6``.
+
+       **at_bounding_box** : :ref:`bool <python:bltin-boolean-values>`
+           When ``True`` will keep the edges from traces at the layout bounding box location. This is recommended when
+            a cutout has been performed before and lumped ports have to be created on ending traces. Default value is
+            ``True``.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_vertical_circuit_port_on_clipped_traces(nets=None, reference_net=None, user_defined_extent=None)
+
+   
+   Create an edge port on clipped signal traces.
+
+
+   :Parameters:
+
+       **nets** : :class:`python:list`, :obj:`optional`
+           String of one net or EDB net or a list of multiple nets or EDB nets.
+
+       **reference_net** : :class:`python:str`, :obj:`Edb` net.
+           Name or EDB reference net.
+
+       **user_defined_extent** : [:obj:`x`, :obj:`y`], :obj:`EDB` :obj:`PolygonData`
+           Use this point list or PolygonData object to check if ports are at this polygon border.
+
+
+
+   :Returns:
+
+       [[:class:`python:str`]]
+           Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
+           and terminal name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_rlc_boundary_on_pins(positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0)
+
+   
+   Create hfss rlc boundary on pins.
+
+
+   :Parameters:
+
+       **positive_pin** : :obj:`Positive` pin.
+           Edb.Cell.Primitive.PadstackInstance
+
+       **negative_pin** : :obj:`Negative` pin.
+           Edb.Cell.Primitive.PadstackInstance
+
+       **rvalue** : :obj:`Resistance` :obj:`value`
+           ..
+
+       **lvalue** : :obj:`Inductance` :obj:`value`
+           ..
+
+       **cvalue . Capacitance value.**
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when successful, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_circuit_port_on_pin_group(pos_pin_group_name, neg_pin_group_name, impedance=50, name=None)
+
+   
+   Create a port between two pin groups.
+
+
+   :Parameters:
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Impedance of the port. Default is ``50``.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Port name.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source_on_pin_group(pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None)
+
+   
+   Create current source between two pin groups.
+
+
+   :Parameters:
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **magnitude** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Magnitude of the source.
+
+       **phase** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Phase of the source
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source_on_pin_group(pos_pin_group_name, neg_pin_group_name, magnitude=1, phase=0, name=None, impedance=0.001)
+
+   
+   Create voltage source between two pin groups.
+
+
+   :Parameters:
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **magnitude** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Magnitude of the source.
+
+       **phase** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Phase of the source
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_probe_on_pin_group(probe_name, pos_pin_group_name, neg_pin_group_name, impedance=1000000)
+
+   
+   Create voltage probe between two pin groups.
+
+
+   :Parameters:
+
+       **probe_name** : :class:`python:str`
+           Name of the probe.
+
+       **pos_pin_group_name** : :class:`python:str`
+           Name of the positive pin group.
+
+       **neg_pin_group_name** : :class:`python:str`
+           Name of the negative pin group.
+
+       **impedance** : :class:`python:int`, :class:`python:float`, :obj:`optional`
+           Phase of the source.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_on_component(component, net_list, port_type=SourceType.CoaxPort, do_pingroup=True, reference_net='gnd', port_name=None, solder_balls_height=None, solder_balls_size=None, solder_balls_mid_size=None, extend_reference_pins_outside_component=False)
+
+   
+   Create ports on a component.
+
+
+   :Parameters:
+
+       **component** : :class:`python:str` or  :obj:`self._pedb.component`
+           EDB component or str component name.
+
+       **net_list** : :class:`python:str` or :class:`python:list` :obj:`of` string.
+           List of nets where ports must be created on the component.
+           If the net is not part of the component, this parameter is skipped.
+
+       **port_type** : :obj:`SourceType` :obj:`enumerator`, :obj:`CoaxPort` or :obj:`CircuitPort`
+           Type of port to create. ``CoaxPort`` generates solder balls.
+           ``CircuitPort`` generates circuit ports on pins belonging to the net list.
+
+       **do_pingroup** : :ref:`bool <python:bltin-boolean-values>`
+           True activate pingroup during port creation (only used with combination of CircPort),
+           False will take the closest reference pin and generate one port per signal pin.
+
+       **refnet** : :class:`python:str` or :class:`python:list` :obj:`of` string.
+           list of the reference net.
+
+       **port_name** : :class:`python:str`
+           Port name for overwriting the default port-naming convention,
+           which is ``[component][net][pin]``. The port name must be unique.
+           If a port with the specified name already exists, the
+           default naming convention is used so that port creation does
+           not fail.
+
+       **solder_balls_height** : :class:`python:float`, :obj:`optional`
+           Solder balls height used for the component. When provided default value is overwritten and must be
+           provided in meter.
+
+       **solder_balls_size** : :class:`python:float`, :obj:`optional`
+           Solder balls diameter. When provided auto evaluation based on padstack size will be disabled.
+
+       **solder_balls_mid_size** : :class:`python:float`, :obj:`optional`
+           Solder balls mid-diameter. When provided if value is different than solder balls size, spheroid shape will
+           be switched.
+
+       **extend_reference_pins_outside_component** : :ref:`bool <python:bltin-boolean-values>`
+           When no reference pins are found on the component extend the pins search with taking the closest one. If
+           `do_pingroup` is `True` will be set to `False`. Default value is `False`.
+
+
+
+   :Returns:
+
+       :obj:`double`, :ref:`bool <python:bltin-boolean-values>`
+           Salder ball height vale, ``False`` when failed.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> net_list = ["M_DQ<1>", "M_DQ<2>", "M_DQ<3>", "M_DQ<4>", "M_DQ<5>"]
+   >>> edbapp.components.create_port_on_component(cmp="U2A5", net_list=net_list,
+   >>> port_type=SourceType.CoaxPort, do_pingroup=False, refnet="GND")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_pingroup_from_pins(pins, group_name=None)
+
+   
+   Create a pin group on a component.
+
+
+   :Parameters:
+
+       **pins** : :class:`python:list`
+           List of EDB pins.
+
+       **group_name** : :class:`python:str`, :obj:`optional`
+           Name for the group. The default is ``None``, in which case
+           a default name is assigned as follows: ``[component Name] [NetName]``.
+
+
+
+   :Returns:
+
+       :class:`python:tuple`
+           The tuple is structured as: (bool, pingroup).
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edbapp = Edb("myaedbfolder")
+   >>> edbapp.components.create_pingroup_from_pins(gndpinlist, "MyGNDPingroup")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port_on_pins(refdes, pins, reference_pins, impedance=50.0, port_name=None, pec_boundary=False, pingroup_on_single_pin=False)
+
+   
+   Create circuit port between pins and reference ones.
+
+
+   :Parameters:
+
+       **refdes** : :obj:`Component` :obj:`reference` :obj:`designator`
+           str or EDBComponent object.
+
+       **pins** : :obj:`pin` :obj:`specifier`\(:obj:`s`) :obj:`or` :obj:`instance`\(:obj:`s`) :obj:`where` :obj:`the` :obj:`port` :obj:`terminal` :obj:`is` :obj:`to` :obj:`be` created. :obj:`Single` :obj:`pin` :obj:`name` or :obj:`a` :class:`python:list` :obj:`of`
+           ..
+
+       **several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the**
+           ..
+
+       **global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances**
+           ..
+
+       **can be provided as ``EDBPadstackInstance`` objects.**
+           ..
+
+       **For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with**
+           ..
+
+       **``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be**
+           ..
+
+       **provided.**
+           Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+
+       **reference_pins** : :obj:`reference` :obj:`pin` :obj:`specifier`\(:obj:`s`) :obj:`or` :obj:`instance`\(:obj:`s`) :obj:`for` :obj:`the` :obj:`port` :obj:`reference` terminal. :obj:`Allowed` :obj:`values` :obj:`are`
+           ..
+
+       **the same as for the ``pins`` parameter.**
+           Union[int, str, EDBPadstackInstance], List[Union[int, str, EDBPadstackInstance]]
+
+       **impedance** : :obj:`Port` :obj:`impedance`
+           str, float
+
+       **port_name** : :class:`python:str`, :obj:`optional`
+           Port name. The default is ``None``, in which case a name is automatically assigned.
+
+       **pec_boundary** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ..
+
+       **Whether to define the PEC boundary, The default is ``False``. If set to ``True``,**
+           ..
+
+       **a perfect short is created between the pin and impedance is ignored. This**
+           ..
+
+       **parameter is only supported on a port created between two pins, such as**
+           ..
+
+       **when there is no pin group.**
+           ..
+
+       **pingroup_on_single_pin** : :ref:`bool <python:bltin-boolean-values>`
+           If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
+           ``False`` the port is created at the pad edge. Default value is ``False``.
+
+
+
+   :Returns:
+
+       :obj:`EDB` :obj:`terminal` :obj:`created`, :obj:`or` :data:`python:False` :obj:`if` :obj:`failed` :obj:`to` create.
+           ..
+
+       Example:
+           ..
+
+       >>> :obj:`from` :obj:`pyedb` :obj:`import` :obj:`Edb`
+           ..
+
+       >>> :obj:`edb` = :obj:`Edb`\(:obj:`path_to_edb_file`)
+           ..
+
+       >>> :obj:`pin` = "AJ6"
+           ..
+
+       >>> :obj:`ref_pins` = ["AM7", "AM4"]
+           ..
+
+       :obj:`Or` :obj:`to` :obj:`take` :obj:`all` :obj:`reference` :obj:`pins`
+           ..
+
+       >>> :obj:`ref_pins` = [:obj:`pin` :obj:`for` :obj:`pin` :obj:`in` :class:`python:list`\(:obj:`edb.components`\["U2A5"]:obj:`.pins.values`\()) :obj:`if` :obj:`pin.net_name` == "GND"]
+           ..
+
+       >>> :obj:`edb.components.create_port_on_pins`\(refdes="U2A5", pins=pin, reference_pins=ref_pins)
+           ..
+
+       >>> :obj:`edb.save`\()
+           ..
+
+       >>> :obj:`edb.close`\()
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_port(terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal, ref_terminal=None, is_circuit_port=False, name=None) -> pyedb.dotnet.database.edb_data.ports.CircuitPort | pyedb.dotnet.database.edb_data.ports.BundleWavePort | pyedb.dotnet.database.edb_data.ports.WavePort | pyedb.dotnet.database.edb_data.ports.CoaxPort | pyedb.dotnet.database.edb_data.ports.GapPort
+
+   
+   Create a port.
+
+
+   :Parameters:
+
+       **terminal** : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           Positive terminal of the port.
+
+       **ref_terminal** : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           optional
+           Negative terminal of the port.
+
+       **is_circuit_port** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether it is a circuit port. The default is ``False``.
+
+       **name: str, optional**
+           Name of the created port. The default is None, a random name is generated.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **list: [:class:`pyedb.dotnet.database.edb_data.ports.GapPort`,**
+           :class:`pyedb.dotnet.database.edb_data.ports.WavePort`,].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_probe(terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal, ref_terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal) -> pyedb.dotnet.database.cell.terminal.terminal.Terminal
+
+   
+   Create a voltage probe.
+
+
+   :Parameters:
+
+       **terminal** : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           Positive terminal of the port.
+
+       **ref_terminal** : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,
+           :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`,
+           Negative terminal of the probe.
+
+
+
+   :Returns:
+
+       :obj:`pyedb.dotnet.database.edb_data.terminals.Terminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_voltage_source(terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal, ref_terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal) -> pyedb.dotnet.database.cell.terminal.terminal.Terminal
+
+   
+   Create a voltage source.
+
+
+   :Parameters:
+
+       **terminal** : :class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+           Positive terminal of the port.
+
+       **ref_terminal** : class:`pyedb.dotnet.database.edb_data.terminals.EdgeTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PadstackInstanceTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`,             :class:`pyedb.dotnet.database.edb_data.terminals.PinGroupTerminal`
+           Negative terminal of the source.
+
+
+
+   :Returns:
+
+       class:`legacy.database.edb_data.ports.ExcitationSources`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_current_source(terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal, ref_terminal: pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal | pyedb.dotnet.database.cell.terminal.padstack_instance_terminal.PadstackInstanceTerminal | pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal | pyedb.dotnet.database.cell.terminal.pingroup_terminal.PinGroupTerminal) -> pyedb.dotnet.database.cell.terminal.terminal.Terminal
+
+   
+   Create a current source.
+
+
+   :Parameters:
+
+       **terminal** : :class:`legacy.database.edb_data.terminals.EdgeTerminal`,
+           :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`legacy.database.edb_data.terminals.PointTerminal`,
+           :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+           Positive terminal of the port.
+
+       **ref_terminal** : class:`legacy.database.edb_data.terminals.EdgeTerminal`,
+           :class:`legacy.database.edb_data.terminals.PadstackInstanceTerminal`,
+           :class:`legacy.database.edb_data.terminals.PointTerminal`,
+           :class:`legacy.database.edb_data.terminals.PinGroupTerminal`,
+           Negative terminal of the source.
+
+
+
+   :Returns:
+
+       :class:`legacy.edb_core.edb_data.ports.ExcitationSources`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_point_terminal(name, net_name, location, layer) -> pyedb.dotnet.database.cell.terminal.point_terminal.PointTerminal
+
+   
+   Place a voltage probe between two points.
+
+
+   :Parameters:
+
+       **name** : str,
+           Name of the terminal.
+
+       **net_name** : :class:`python:str`
+           Name of the net.
+
+       **location** : :class:`python:list`
+           Location of the terminal.
+
+       **layer** : str,
+           Layer of the terminal.
+
+
+
+   :Returns:
+
+       :class:`legacy.edb_core.edb_data.terminals.PointTerminal`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

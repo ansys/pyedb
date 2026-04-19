@@ -1,0 +1,6 @@
+type
+====
+
+.. currentmodule:: pyedb.grpc.database.primitive.polygon
+
+.. autoproperty:: Polygon.type

@@ -1,0 +1,162 @@
+
+
+
+
+
+
+:class:`ChannelSetup`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup.ChannelSetup(pedb, cfg_channel_setup=None)
+
+   
+   A class to manage the channel setup configuration for SIWave CPA simulations.
+
+   Attributes:
+       die_name (str): The name of the die associated with the channel setup.
+       pin_grouping_mode (str): The mode for pin grouping, e.g., "perpin", "ploc", or "usediepingroups".
+       channel_component_exposure (dict): A dictionary mapping component names to their exposure status (True/False).
+       vrm (list): A list of VRM (Voltage Regulator Module) configurations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ChannelSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~die_name`
+            - 
+          * - :py:attr:`~pin_grouping_mode`
+            - Get the pin grouping mode from the SIWave properties.
+          * - :py:attr:`~channel_component_exposure`
+            - Get the channel component exposure configuration from the SIWave properties.
+          * - :py:attr:`~vrm`
+            - Get the VRM (Voltage Regulator Module) setup from the SIWave properties.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.siwave_cpa_simulation_setup import ChannelSetup
+
+Property detail
+---------------
+
+.. py:property:: die_name
+
+.. py:property:: pin_grouping_mode
+
+   
+   Get the pin grouping mode from the SIWave properties.
+
+   Returns:
+       str: The pin grouping mode ("perpin", "ploc", or "usediepingroups").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: channel_component_exposure
+
+   
+   Get the channel component exposure configuration from the SIWave properties.
+
+   Returns:
+       dict: A dictionary mapping component names to their exposure status (True/False).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: vrm
+
+   
+   Get the VRM (Voltage Regulator Module) setup from the SIWave properties.
+
+   Returns:
+       list: A list of VRM objects.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

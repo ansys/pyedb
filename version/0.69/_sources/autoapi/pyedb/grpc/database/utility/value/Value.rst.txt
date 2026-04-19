@@ -1,0 +1,490 @@
+
+
+
+
+
+
+:class:`Value`
+==============
+
+
+.. py:class:: pyedb.grpc.database.utility.value.Value
+
+   Bases: :py:obj:`float`, :py:obj:`ansys.edb.core.utility.value.Value`
+
+
+   
+   Class defining Edb Value properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: Value
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~sqrt`
+            - Square root of the value.
+          * - :py:attr:`~log10`
+            - Base-10 logarithm of the value.
+          * - :py:attr:`~sin`
+            - Sine of the value.
+          * - :py:attr:`~cos`
+            - Cosine of the value.
+          * - :py:attr:`~asin`
+            - Arcsine of the value.
+          * - :py:attr:`~acos`
+            - Arccosine of the value.
+          * - :py:attr:`~tan`
+            - Tangent of the value.
+          * - :py:attr:`~atan`
+            - Arctangent of the value.
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__add__`
+            - Adds two Edb Values.
+          * - :py:attr:`~__radd__`
+            - Return value+self.
+          * - :py:attr:`~__sub__`
+            - Subtracts two Edb Values.
+          * - :py:attr:`~__rsub__`
+            - Return value-self.
+          * - :py:attr:`~__mul__`
+            - Multiplies two Edb Values.
+          * - :py:attr:`~__rmul__`
+            - Return value*self.
+          * - :py:attr:`~__truediv__`
+            - Divides two Edb Values.
+          * - :py:attr:`~__rtruediv__`
+            - Return value/self.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.value import Value
+
+
+
+Method detail
+-------------
+
+.. py:method:: __add__(other)
+
+   
+   Adds two Edb Values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __radd__(other)
+
+   
+   Return value+self.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __sub__(other)
+
+   
+   Subtracts two Edb Values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __rsub__(other)
+
+   
+   Return value-self.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __mul__(other)
+
+   
+   Multiplies two Edb Values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __rmul__(other)
+
+   
+   Return value*self.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __truediv__(other)
+
+   
+   Divides two Edb Values.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __rtruediv__(other)
+
+   
+   Return value/self.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: sqrt()
+
+   
+   Square root of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: log10()
+
+   
+   Base-10 logarithm of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: sin()
+
+   
+   Sine of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: cos()
+
+   
+   Cosine of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: asin()
+
+   
+   Arcsine of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: acos()
+
+   
+   Arccosine of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: tan()
+
+   
+   Tangent of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: atan()
+
+   
+   Arctangent of the value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

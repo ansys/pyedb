@@ -1,0 +1,6 @@
+configuration
+=============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.configuration

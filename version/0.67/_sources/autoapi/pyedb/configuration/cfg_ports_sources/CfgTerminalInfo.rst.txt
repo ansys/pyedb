@@ -1,0 +1,103 @@
+
+
+
+
+
+
+:class:`CfgTerminalInfo`
+========================
+
+
+.. py:class:: pyedb.configuration.cfg_ports_sources.CfgTerminalInfo(pedb, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+
+.. py:currentmodule:: CfgTerminalInfo
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update_contact_radius`
+            - 
+          * - :py:attr:`~export_properties`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~CFG_TERMINAL_TYPES`
+            - 
+          * - :py:attr:`~value`
+            - 
+          * - :py:attr:`~reference_designator`
+            - 
+          * - :py:attr:`~contact_type`
+            - 
+          * - :py:attr:`~contact_radius`
+            - 
+          * - :py:attr:`~num_of_contact`
+            - 
+          * - :py:attr:`~contact_expansion`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_ports_sources import CfgTerminalInfo
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: CFG_TERMINAL_TYPES
+   :value: ['pin', 'net', 'pin_group', 'nearest_pin', 'coordinates']
+
+
+.. py:attribute:: value
+
+.. py:attribute:: reference_designator
+
+.. py:attribute:: contact_type
+
+.. py:attribute:: contact_radius
+
+.. py:attribute:: num_of_contact
+
+.. py:attribute:: contact_expansion
+
+
+
+Method detail
+-------------
+
+.. py:method:: update_contact_radius(radius)
+
+.. py:method:: export_properties()
+
+
+
+

@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`PointData`
+==================
+
+
+.. py:class:: pyedb.grpc.database.geometry.point_data.PointData(edb_object=None)
+
+   Bases: :py:obj:`ansys.edb.core.geometry.point_data.PointData`
+
+
+   
+   Class managing :class:`Point Data <ansys.edb.core.geometry.point_data.PointData>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.geometry.point_data import PointData
+
+
+
+
+

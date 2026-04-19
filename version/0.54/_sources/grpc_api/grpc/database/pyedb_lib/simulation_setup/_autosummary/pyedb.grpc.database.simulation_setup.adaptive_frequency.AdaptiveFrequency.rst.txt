@@ -1,0 +1,24 @@
+﻿AdaptiveFrequency
+=================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.adaptive_frequency
+
+.. autoclass:: AdaptiveFrequency
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      AdaptiveFrequency.adaptive_frequency
+      AdaptiveFrequency.max_delta
+      AdaptiveFrequency.output_variables
+   
+   

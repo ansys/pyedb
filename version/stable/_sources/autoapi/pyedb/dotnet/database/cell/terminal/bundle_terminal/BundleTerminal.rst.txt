@@ -1,0 +1,230 @@
+
+
+
+
+
+
+:class:`BundleTerminal`
+=======================
+
+
+.. py:class:: pyedb.dotnet.database.cell.terminal.bundle_terminal.BundleTerminal(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.terminal.Terminal`
+
+
+   
+   Manages bundle terminal properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal`
+           BundleTerminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: BundleTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new bundle terminal from a collection of individual terminals.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~decouple`
+            - Ungroup a bundle of terminals.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~terminals`
+            - Get terminals belonging to this excitation.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.terminal.bundle_terminal import BundleTerminal
+
+Property detail
+---------------
+
+.. py:property:: terminals
+
+   
+   Get terminals belonging to this excitation.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: decouple()
+
+   
+   Ungroup a bundle of terminals.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create(pedb, name='', terminals=None) -> BundleTerminal
+   :classmethod:
+
+
+   
+   Create a new bundle terminal from a collection of individual terminals.
+
+   A bundle terminal groups multiple terminals (edge terminals, padstack instance
+   terminals, or other terminal types) into a single logical entity. This is useful
+   for creating multi-pin ports, differential pairs, or complex port definitions
+   where multiple physical terminals must be managed together.
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library, used to access terminal collection
+           and convert Python objects to .NET equivalents.
+
+       **name** : :class:`python:str`, :obj:`optional`
+           Name to assign to the new bundle terminal. The default is an empty string.
+           Individual terminals within the bundle will be renamed to ``{name}:T1``,
+           ``{name}:T2``, etc.
+
+       **terminals** : :class:`python:list`, :obj:`optional`
+           List of terminals to group into the bundle. Each element can be:
+           
+           - A string representing a terminal name (will be looked up in ``pedb.terminals``)
+           - A terminal object with a ``.name`` attribute (the object itself or its name
+             will be resolved from ``pedb.terminals``)
+           - An EDB terminal object (used directly without lookup)
+           
+           If ``None``, an empty bundle is created. The default is ``None``.
+
+
+
+   :Returns:
+
+       :obj:`BundleTerminal`
+           The newly created bundle terminal instance.
+
+
+
+
+   :Raises:
+
+       :obj:`ValueError`
+           If the EDB bundle terminal creation returns a null object, indicating
+           a failure to create the bundle with the provided terminals.
+
+       :obj:`KeyError`
+           If a terminal name string is provided but cannot be found in
+           ``pedb.terminals``.
+
+
+
+
+   .. rubric:: Notes
+
+   The method automatically renames each terminal in the bundle by appending
+   a sequence index (`:T1`, `:T2`, etc.) to the base bundle name. This ensures
+   unique identification of each terminal within the bundle. If no name is
+   provided, terminals are still renamed but without a meaningful prefix.
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb import Edb
+   >>> edb = Edb("myproject.aedb")
+   >>> term1 = edb.terminals["Port1"]
+   >>> term2 = edb.terminals["Port2"]
+   >>> bundle = BundleTerminal.create(edb, name="DifferentialPair", terminals=[term1, term2])
+   >>> if bundle:
+   ...     print(f"Bundle created with {len(edb.terminals['DifferentialPair'].terminals)} terminals")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,194 @@
+
+
+
+
+
+
+:class:`Rlc`
+============
+
+
+.. py:class:: pyedb.grpc.database.utility.rlc.Rlc(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.utility.rlc.Rlc`
+
+
+   
+   Represents an RLC.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   :Attributes:
+
+       **r** : :term:`ValueLike`, default: 0
+           Resistance value. This parameter is only used if
+           ``r_enabled=True``.
+
+       **r_enabled** : :ref:`bool <python:bltin-boolean-values>`, default: ``False``
+           Whether resistance is enabled.
+
+       **l** : :term:`ValueLike`, default: 0
+           Inductance value. This parameter is only used if
+           ``c-l_enabled=True``.
+
+       **l_enabled** : :ref:`bool <python:bltin-boolean-values>`, default: ``False``
+           Whether inductance is enabled.
+
+       **c** : :term:`ValueLike`, default: 0
+           Capacitance value. This parameter is only used if
+           ``c_enabled=True``.
+
+       **c_enabled** : :ref:`bool <python:bltin-boolean-values>`, default: ``False``
+           Whether capacitance is enabled.
+
+       **is_parallel** : :ref:`bool <python:bltin-boolean-values>`, default: ``True``
+           Whether the r, l, and c elements are in parallel. If ``False``, these
+           elements are in series.
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Rlc
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~r`
+            - R value.
+          * - :py:attr:`~l`
+            - L value.
+          * - :py:attr:`~c`
+            - C value.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.rlc import Rlc
+
+Property detail
+---------------
+
+.. py:property:: r
+   :type: float
+
+
+   
+   R value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resistor value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: l
+   :type: float
+
+
+   
+   L value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Inductor value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: c
+   :type: float
+
+
+   
+   C value.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitor value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

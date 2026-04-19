@@ -1,0 +1,122 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_stackup`` library
+===============================================
+
+.. py:module:: pyedb.configuration.cfg_stackup
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_stackup
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgMaterialPropertyThermalModifier`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.MaterialProperties`
+            - Store material properties.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgMaterial`
+            - Store material properties.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.RoughnessSideModel`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.RoughnessModel`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.EtchingModel`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgLayer`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_stackup.CfgStackup`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgMaterialPropertyThermalModifier</autoapi/pyedb/configuration/cfg_stackup/CfgMaterialPropertyThermalModifier>
+    <span class="nf nf-cod-symbol_class"></span> MaterialProperties</autoapi/pyedb/configuration/cfg_stackup/MaterialProperties>
+    <span class="nf nf-cod-symbol_class"></span> CfgMaterial</autoapi/pyedb/configuration/cfg_stackup/CfgMaterial>
+    <span class="nf nf-cod-symbol_class"></span> RoughnessSideModel</autoapi/pyedb/configuration/cfg_stackup/RoughnessSideModel>
+    <span class="nf nf-cod-symbol_class"></span> RoughnessModel</autoapi/pyedb/configuration/cfg_stackup/RoughnessModel>
+    <span class="nf nf-cod-symbol_class"></span> EtchingModel</autoapi/pyedb/configuration/cfg_stackup/EtchingModel>
+    <span class="nf nf-cod-symbol_class"></span> CfgLayer</autoapi/pyedb/configuration/cfg_stackup/CfgLayer>
+    <span class="nf nf-cod-symbol_class"></span> CfgStackup</autoapi/pyedb/configuration/cfg_stackup/CfgStackup>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

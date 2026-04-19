@@ -1,0 +1,202 @@
+
+
+
+
+
+
+The ``siwave_log_parser.py`` module
+===================================
+
+.. py:module:: pyedb.workflows.utilities.siwave_log_parser
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_log_parser
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.AEDTVersion`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.BatchInfo`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.SimSettings`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.WarningEntry`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.ProfileEntry`
+            - 
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.BlockParser`
+            - Base class for a single block parser.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.HeaderBlockParser`
+            - Extract AEDT version information from the log header.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.BatchSettingsBlockParser`
+            - Extract batch info and simulation settings.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.WarningsBlockParser`
+            - Extract warning entries from the log.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.ProfileBlockParser`
+            - Extract profile entries from the log.
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.ParsedSiwaveLog`
+            - Root container returned by SiwaveLogParser.parse().
+
+
+          * - :py:obj:`~pyedb.workflows.utilities.siwave_log_parser.SiwaveLogParser`
+            - High-level façade that orchestrates all block parsers.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~parser`
+            - 
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~RE_TS_DATE_FIRST`
+            - 
+
+
+          * - :py:obj:`~RE_TS_TIME_FIRST`
+            - 
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> AEDTVersion</autoapi/pyedb/workflows/utilities/siwave_log_parser/AEDTVersion>
+    <span class="nf nf-cod-symbol_class"></span> BatchInfo</autoapi/pyedb/workflows/utilities/siwave_log_parser/BatchInfo>
+    <span class="nf nf-cod-symbol_class"></span> SimSettings</autoapi/pyedb/workflows/utilities/siwave_log_parser/SimSettings>
+    <span class="nf nf-cod-symbol_class"></span> WarningEntry</autoapi/pyedb/workflows/utilities/siwave_log_parser/WarningEntry>
+    <span class="nf nf-cod-symbol_class"></span> ProfileEntry</autoapi/pyedb/workflows/utilities/siwave_log_parser/ProfileEntry>
+    <span class="nf nf-cod-symbol_class"></span> BlockParser</autoapi/pyedb/workflows/utilities/siwave_log_parser/BlockParser>
+    <span class="nf nf-cod-symbol_class"></span> HeaderBlockParser</autoapi/pyedb/workflows/utilities/siwave_log_parser/HeaderBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> BatchSettingsBlockParser</autoapi/pyedb/workflows/utilities/siwave_log_parser/BatchSettingsBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> WarningsBlockParser</autoapi/pyedb/workflows/utilities/siwave_log_parser/WarningsBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> ProfileBlockParser</autoapi/pyedb/workflows/utilities/siwave_log_parser/ProfileBlockParser>
+    <span class="nf nf-cod-symbol_class"></span> ParsedSiwaveLog</autoapi/pyedb/workflows/utilities/siwave_log_parser/ParsedSiwaveLog>
+    <span class="nf nf-cod-symbol_class"></span> SiwaveLogParser</autoapi/pyedb/workflows/utilities/siwave_log_parser/SiwaveLogParser>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+siwave_log_parser.py
+Parse Ansys SIwave batch logs into dataclasses.
+
+Usage
+-----
+>>> from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
+>>> parser = SiwaveLogParser(r"C:\path  o\siwave.log")
+>>> log = parser.parse()
+>>> log.summary()
+>>> log.to_json("siwave.json")
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: RE_TS_DATE_FIRST
+
+.. py:data:: RE_TS_TIME_FIRST
+
+.. py:data:: parser
+
+
+

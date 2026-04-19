@@ -1,0 +1,253 @@
+
+
+
+
+
+
+:class:`DjordjecvicSarkarModel`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.definition.dielectric_material_model.DjordjecvicSarkarModel(pedb: pyedb.dotnet.edb.Edb, edb_object)
+
+   Bases: :py:obj:`DielectricMaterialModel`
+
+
+   
+   Class for Djordjecvic-Sarkar model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: DjordjecvicSarkarModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Constructs a Djordjecvic-Sarkar model with the following default values.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_conductivity`
+            - DC conductivity.
+          * - :py:attr:`~dc_relative_permittivity`
+            - DC relative permittivity.
+          * - :py:attr:`~frequency`
+            - Frequency in Hz.
+          * - :py:attr:`~loss_tangent_at_frequency`
+            - Loss tangent at frequency.
+          * - :py:attr:`~relative_permittivity_at_frequency`
+            - 
+          * - :py:attr:`~use_dc_relative_permittivity`
+            - whether the DC relative permittivity nominal value is used
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.dielectric_material_model import DjordjecvicSarkarModel
+
+Property detail
+---------------
+
+.. py:property:: dc_conductivity
+   :type: float | pyedb.dotnet.database.utilities.value.Value
+
+
+   
+   DC conductivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_relative_permittivity
+   :type: float | pyedb.dotnet.database.utilities.value.Value
+
+
+   
+   DC relative permittivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: frequency
+   :type: float | pyedb.dotnet.database.utilities.value.Value
+
+
+   
+   Frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: loss_tangent_at_frequency
+   :type: float | pyedb.dotnet.database.utilities.value.Value
+
+
+   
+   Loss tangent at frequency.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_permittivity_at_frequency
+
+.. py:property:: use_dc_relative_permittivity
+
+   
+   whether the DC relative permittivity nominal value is used
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb) -> DjordjecvicSarkarModel
+   :classmethod:
+
+
+   
+   Constructs a Djordjecvic-Sarkar model with the following default values.
+   Frequency: 1GHz. Relative Permitivity: 4. Loss Tangent: 0.02.Use DC relative permitivity: false.
+   DC relative permitivity: 5.DC conductivity: 1e-12.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

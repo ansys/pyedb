@@ -1,0 +1,205 @@
+
+
+
+
+
+
+:class:`PointData`
+==================
+
+
+.. py:class:: pyedb.dotnet.database.geometry.point_data.PointData(pedb: Any, edb_object: Any | None = None)
+
+   
+   Point Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: PointData
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create_from_x`
+            - Create a new PointData object.
+          * - :py:attr:`~create_from_xy`
+            - Create a new PointData object.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~x`
+            - X value of point.
+          * - :py:attr:`~x_evaluated`
+            - 
+          * - :py:attr:`~y`
+            - Y value of point.
+          * - :py:attr:`~y_evaluated`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.geometry.point_data import PointData
+
+Property detail
+---------------
+
+.. py:property:: x
+   :type: str
+
+
+   
+   X value of point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: x_evaluated
+   :type: float
+
+
+.. py:property:: y
+   :type: str
+
+
+   
+   Y value of point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: y_evaluated
+   :type: float
+
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create_from_x(pedb: Any, x: float) -> PointData
+   :classmethod:
+
+
+   
+   Create a new PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_xy(pedb: Any, x: float, y: float) -> PointData
+   :classmethod:
+
+
+   
+   Create a new PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

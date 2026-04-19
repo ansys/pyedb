@@ -1,0 +1,94 @@
+
+
+
+
+
+
+:class:`SParameterModel`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.s_parameter_model.SParameterModel(pedb, edb_object=None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.hierarchy.model.Model`
+
+
+   
+   Manages S-parameter model class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SParameterModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component_model_name`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~reference_net`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.s_parameter_model import SParameterModel
+
+Property detail
+---------------
+
+.. py:property:: reference_net
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: component_model_name()
+
+
+
+

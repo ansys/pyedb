@@ -1,0 +1,81 @@
+
+
+
+
+
+
+The ``siwave.py`` module
+========================
+
+.. py:module:: pyedb.grpc.database.siwave
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.siwave.Siwave`
+            - Manages EDB methods related to Siwave Setup accessible from `Edb.siwave` property.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Siwave</autoapi/pyedb/grpc/database/siwave/Siwave>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains these classes: ``CircuitPort``, ``CurrentSource``, ``EdbSiwave``,
+``PinGroup``, ``ResistorSource``, ``Source``, ``SourceType``, and ``VoltageSource``.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

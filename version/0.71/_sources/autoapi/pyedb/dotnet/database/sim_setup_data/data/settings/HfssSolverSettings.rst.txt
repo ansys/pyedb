@@ -1,0 +1,260 @@
+
+
+
+
+
+
+:class:`HfssSolverSettings`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.settings.HfssSolverSettings(sim_setup)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Manages EDB methods for HFSS solver settings.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HfssSolverSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~enhanced_low_freq_accuracy`
+            - Whether to enable legacy low-frequency sampling.
+          * - :py:attr:`~enhanced_low_frequency_accuracy`
+            - Whether to enable legacy low-frequency sampling.
+          * - :py:attr:`~order_basis`
+            - Order of the basic functions for HFSS.
+          * - :py:attr:`~relative_residual`
+            - Residual for use by the iterative solver.
+          * - :py:attr:`~solver_type`
+            - Get solver type to use (Direct/Iterative/Auto) for HFSS.
+          * - :py:attr:`~use_shell_elements`
+            - Whether to enable use of shell elements.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.settings import HfssSolverSettings
+
+Property detail
+---------------
+
+.. py:property:: enhanced_low_freq_accuracy
+
+   
+   Whether to enable legacy low-frequency sampling.
+
+   .. deprecated:: pyedb 0.54.0
+       Use :func:`enhanced_low_frequency_accuracy` instead.
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if low frequency accuracy is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enhanced_low_frequency_accuracy
+
+   
+   Whether to enable legacy low-frequency sampling.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if low frequency accuracy is used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: order_basis
+
+   
+   Order of the basic functions for HFSS.
+   - 0=Zero.
+   - 1=1st order.
+   - 2=2nd order.
+   - 3=Mixed.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Integer value according to the description.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_residual
+
+   
+   Residual for use by the iterative solver.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver_type
+
+   
+   Get solver type to use (Direct/Iterative/Auto) for HFSS.
+   Options:
+   1- ``kAutoSolver``.
+   2- ``kDirectSolver``.
+   3- ``kIterativeSolver``.
+   4- ``kNumSolverTypes``.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_shell_elements
+
+   
+   Whether to enable use of shell elements.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if shall elements are used, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

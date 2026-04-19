@@ -1,0 +1,33 @@
+﻿CircuitPort
+===========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoclass:: CircuitPort
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      CircuitPort.amplitude
+      CircuitPort.c_value
+      CircuitPort.create_physical_resistor
+      CircuitPort.get_type
+      CircuitPort.impedance
+      CircuitPort.l_value
+      CircuitPort.name
+      CircuitPort.negative_node
+      CircuitPort.phase
+      CircuitPort.positive_node
+      CircuitPort.r_value
+      CircuitPort.source_type
+   
+   

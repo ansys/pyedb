@@ -1,0 +1,296 @@
+
+
+
+
+
+
+:class:`Structure3D`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.structure_3d.Structure3D(pedb, core)
+
+
+
+.. py:currentmodule:: Structure3D
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new structure 3D object
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete`
+            - "Delete the structure 3D object
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~id`
+            - The id of the structure 3D object
+          * - :py:attr:`~location`
+            - The location of the structure 3D object.
+          * - :py:attr:`~name`
+            - The name of the structure 3D object.
+          * - :py:attr:`~material`
+            - The material name of the structure 3D object.
+          * - :py:attr:`~net`
+            - The net of the structure 3D object.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
+
+Property detail
+---------------
+
+.. py:property:: id
+   :type: int
+
+
+   
+   The id of the structure 3D object
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           The id of the structure 3D object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: location
+   :type: tuple[float, float]
+
+
+   
+   The location of the structure 3D object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[:class:`python:float`, :class:`python:float`]
+           The location of the structure 3D object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: name
+   :type: str
+
+
+   
+   The name of the structure 3D object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The name of the structure 3D object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material
+   :type: str
+
+
+   
+   The material name of the structure 3D object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The material name of the structure 3D object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net
+   :type: str
+
+
+   
+   The net of the structure 3D object.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The net of the structure 3D object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb, name: str) -> Structure3D
+   :classmethod:
+
+
+   
+   Create a new structure 3D object
+
+
+
+
+
+   :Returns:
+
+       :obj:`Structure3D`
+           The created structure 3D object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete()
+
+   
+   "Delete the structure 3D object
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

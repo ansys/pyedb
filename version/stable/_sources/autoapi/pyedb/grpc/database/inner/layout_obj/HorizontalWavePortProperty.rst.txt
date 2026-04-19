@@ -1,0 +1,183 @@
+
+
+
+
+
+
+:class:`HorizontalWavePortProperty`
+===================================
+
+
+.. py:class:: pyedb.grpc.database.inner.layout_obj.HorizontalWavePortProperty
+
+   
+   Represents the properties of a horizontal wave port.
+
+   This class encapsulates configuration settings for horizontal wave ports used in
+   electromagnetic simulations. It stores port characteristics such as type, geometry
+   (arms), and associated port names (padstack instances).
+
+
+   :Attributes:
+
+       **port_type** : :class:`python:str`
+           The type of port. Default is "Pad Port".
+
+       **arms** : :class:`python:int`
+           The number of arms for the port structure. Default is 2.
+
+       **hfss_last_type** : :class:`python:int`
+           The last HFSS type identifier. Default is 8.
+
+       **port_names** : :class:`python:tuple`\[:class:`python:str`, ...]
+           Tuple of port/via names (padstack instance names) associated
+           with this property. Can contain multiple via names (e.g., positive and negative vias).
+           Default is an empty tuple.
+
+       **horizontal_wave_primary** : :ref:`bool <python:bltin-boolean-values>`
+           Whether this is a primary horizontal wave port.
+           Default is False.
+
+       **is_gap_source** : :ref:`bool <python:bltin-boolean-values>`
+           Whether the port is a gap source. Default is True.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HorizontalWavePortProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~to_property_string`
+            - Convert HorizontalWavePortProperty instance into an interpretable property string.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~port_type`
+            - 
+          * - :py:attr:`~arms`
+            - 
+          * - :py:attr:`~hfss_last_type`
+            - 
+          * - :py:attr:`~port_names`
+            - 
+          * - :py:attr:`~horizontal_wave_primary`
+            - 
+          * - :py:attr:`~is_gap_source`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.inner.layout_obj import HorizontalWavePortProperty
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: port_type
+   :type:  str
+   :value: 'Pad Port'
+
+
+.. py:attribute:: arms
+   :type:  int
+   :value: 2
+
+
+.. py:attribute:: hfss_last_type
+   :type:  int
+   :value: 8
+
+
+.. py:attribute:: port_names
+   :type:  tuple[str, Ellipsis]
+   :value: ()
+
+
+.. py:attribute:: horizontal_wave_primary
+   :type:  bool
+   :value: False
+
+
+.. py:attribute:: is_gap_source
+   :type:  bool
+   :value: True
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: to_property_string() -> str
+
+   
+   Convert HorizontalWavePortProperty instance into an interpretable property string.
+
+   Generates a formatted string representation of the horizontal wave port properties,
+   including all port names (padstack instances) as a comma-separated list within the
+   HorizWavePort(...) section.
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           A formatted property string with all attributes encoded, suitable for
+           storage or transmission.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

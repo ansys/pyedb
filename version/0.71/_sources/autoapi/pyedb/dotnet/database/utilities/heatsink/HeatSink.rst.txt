@@ -1,0 +1,234 @@
+
+
+
+
+
+
+:class:`HeatSink`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.heatsink.HeatSink(pedb, edb_object=None)
+
+   
+   Heatsink model description.
+
+
+   :Parameters:
+
+       **pedb** : :class:`pyedb.dotnet.edb.Edb`
+           Inherited object.
+
+       **edb_object** : :class:`Ansys.Ansoft.Edb.Utility.HeatSink`,
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HeatSink
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~fin_base_height`
+            - The base elevation of the fins.
+          * - :py:attr:`~fin_height`
+            - The fin height.
+          * - :py:attr:`~fin_orientation`
+            - The fin orientation.
+          * - :py:attr:`~fin_spacing`
+            - The fin spacing.
+          * - :py:attr:`~fin_thickness`
+            - The fin thickness.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.heatsink import HeatSink
+
+Property detail
+---------------
+
+.. py:property:: fin_base_height
+   :type: float
+
+
+   
+   The base elevation of the fins.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: fin_height
+   :type: float
+
+
+   
+   The fin height.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: fin_orientation
+   :type: str
+
+
+   
+   The fin orientation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`, :obj:`can` :obj:`be` :obj:`either` x_oriented", "y_oriented" or "other_oriented"
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: fin_spacing
+   :type: float
+
+
+   
+   The fin spacing.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: fin_thickness
+   :type: float
+
+
+   
+   The fin thickness.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

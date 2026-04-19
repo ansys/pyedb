@@ -1,0 +1,6 @@
+num\_nets
+=========
+
+.. currentmodule:: pyedb.grpc.database.utility.layout_statistics
+
+.. autoproperty:: LayoutStatistics.num_nets

@@ -1,0 +1,93 @@
+
+
+
+
+
+
+The ``scan_config.py`` module
+=============================
+
+.. py:module:: pyedb.misc.siw_feature_config.xtalk_scan.scan_config
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: scan_config
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.xtalk_scan.scan_config.SiwaveScanConfig`
+            - XML control file handle for Siwave crosstalk scan.
+
+
+
+    .. tab-item:: Enums
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.misc.siw_feature_config.xtalk_scan.scan_config.ScanType`
+            - Generic enumeration.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SiwaveScanConfig</autoapi/pyedb/misc/siw_feature_config/xtalk_scan/scan_config/SiwaveScanConfig>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_enum"></span> ScanType</autoapi/pyedb/misc/siw_feature_config/xtalk_scan/scan_config/ScanType>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

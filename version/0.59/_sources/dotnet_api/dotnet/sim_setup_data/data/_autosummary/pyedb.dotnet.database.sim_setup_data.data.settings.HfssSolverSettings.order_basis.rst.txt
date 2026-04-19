@@ -1,0 +1,6 @@
+order\_basis
+============
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.settings
+
+.. autoproperty:: HfssSolverSettings.order_basis

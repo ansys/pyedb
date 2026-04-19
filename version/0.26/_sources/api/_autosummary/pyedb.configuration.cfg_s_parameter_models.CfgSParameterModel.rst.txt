@@ -1,0 +1,24 @@
+﻿CfgSParameterModel
+==================
+
+.. currentmodule:: pyedb.configuration.cfg_s_parameter_models
+
+.. autoclass:: CfgSParameterModel
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      CfgSParameterModel.apply
+      
+   
+   
+
+   
+   
+   

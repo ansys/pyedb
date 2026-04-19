@@ -1,0 +1,227 @@
+
+
+
+
+
+
+:class:`EdgeTerminal`
+=====================
+
+
+.. py:class:: pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal(pedb, edb_object)
+
+   Bases: :py:obj:`ansys.edb.core.terminal.edge_terminal.EdgeTerminal`
+
+
+   
+   Represents an edge terminal.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: EdgeTerminal
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~couple_ports`
+            - Create a bundle wave port.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~boundary_type`
+            - Boundary type.
+          * - :py:attr:`~is_wave_port`
+            - 
+          * - :py:attr:`~is_port`
+            - Added for dotnet compatibility
+          * - :py:attr:`~ref_terminal`
+            - Return refeference terminal.
+          * - :py:attr:`~hfss_type`
+            - 
+          * - :py:attr:`~terminal_type`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.terminal.edge_terminal import EdgeTerminal
+
+Property detail
+---------------
+
+.. py:property:: boundary_type
+   :type: str
+
+
+   
+   Boundary type.
+
+
+
+   :Returns:
+
+       **str** : :obj:`boundary` type.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_wave_port
+   :type: bool
+
+
+.. py:property:: is_port
+   :type: bool
+
+
+   
+   Added for dotnet compatibility
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ref_terminal
+   :type: any
+
+
+   
+   Return refeference terminal.
+
+   ..deprecated:: 0.44.0
+      Use: func:`reference_terminal` property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: hfss_type
+   :type: str
+
+
+.. py:property:: terminal_type
+   :type: str
+
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: couple_ports(port)
+
+   
+   Create a bundle wave port.
+
+
+   :Parameters:
+
+       **port** : :class:`Waveport <pyedb.grpc.database.ports.ports.WavePort>`,
+           ..
+
+       **:class:`GapPOrt <pyedb.grpc.database.ports.ports.GapPort>`, list, optional**
+           Ports to be added.
+
+   :Returns:
+
+       :class:`BundleWavePort <pyedb.grpc.database.ports.ports.BundleWavePort>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

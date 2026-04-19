@@ -1,0 +1,6 @@
+polygons
+========
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. autoproperty:: Modeler.polygons

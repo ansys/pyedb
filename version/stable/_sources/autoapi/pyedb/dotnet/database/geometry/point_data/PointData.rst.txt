@@ -1,0 +1,390 @@
+
+
+
+
+
+
+:class:`PointData`
+==================
+
+
+.. py:class:: pyedb.dotnet.database.geometry.point_data.PointData(pedb: pyedb.dotnet.edb.Edb, core: Any | None = None)
+
+   
+   Point Data.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+
+.. py:currentmodule:: PointData
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a PointData object.
+          * - :py:attr:`~create_arc_point`
+            - Create a arc PointData object.
+          * - :py:attr:`~create_from_x`
+            - Create a new PointData object.
+          * - :py:attr:`~create_from_xy`
+            - Create a new PointData object.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~rotate`
+            - Rotate the point.
+          * - :py:attr:`~move`
+            - Move the point.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~x`
+            - X coordinate.
+          * - :py:attr:`~x_evaluated`
+            - 
+          * - :py:attr:`~y`
+            - Y coordinate.
+          * - :py:attr:`~y_evaluated`
+            - 
+          * - :py:attr:`~arc_height`
+            - Height of the arc. This property is read-only.
+          * - :py:attr:`~is_arc`
+            - Flag indicating if the point represents an arc.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.geometry.point_data import PointData
+
+Property detail
+---------------
+
+.. py:property:: x
+   :type: float
+
+
+   
+   X coordinate.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: x_evaluated
+   :type: float
+
+
+.. py:property:: y
+   :type: float
+
+
+   
+   Y coordinate.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: y_evaluated
+   :type: float
+
+
+.. py:property:: arc_height
+   :type: float
+
+
+   
+   Height of the arc. This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_arc
+   :type: bool
+
+
+   
+   Flag indicating if the point represents an arc.
+
+   This property is read-only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :value: None
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb: pyedb.dotnet.edb.Edb, x: float | str, y: float | str) -> PointData
+   :classmethod:
+
+
+   
+   Create a PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_arc_point(pedb, arc_height)
+   :classmethod:
+
+
+   
+   Create a arc PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_x(pedb: Any, x: float) -> PointData
+   :classmethod:
+
+
+   
+   Create a new PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: create_from_xy(pedb: Any, x: float, y: float) -> PointData
+   :classmethod:
+
+
+   
+   Create a new PointData object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: rotate(angle: str | float | int, center: tuple[str | float | int, str | float | int]) -> PointData
+
+   
+   Rotate the point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: move(dx: str | float, dy: str | float) -> PointData
+
+   
+   Move the point.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,83 @@
+
+
+
+
+
+
+:class:`SIWaveGeneralSettings`
+==============================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.siwave_simulation_setup.SIWaveGeneralSettings(parent)
+
+   
+   Class to manage global settings for the Siwave simulation setup module.
+   Added to be compliant with ansys-edbe-core settings structure.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: SIWaveGeneralSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattribute__`
+            - 
+          * - :py:attr:`~__setattr__`
+            - 
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.siwave_simulation_setup import SIWaveGeneralSettings
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattribute__(item)
+
+.. py:method:: __setattr__(key, value)
+
+
+
+

@@ -1,0 +1,46 @@
+
+
+
+
+
+
+:class:`Settings`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.hfss_simulation_setup.HfssSimulationSetup.Settings(sim_setup)
+
+   
+   HFSS simulation setup settings container.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.hfss_simulation_setup.HfssSimulationSetup import Settings
+
+
+
+
+

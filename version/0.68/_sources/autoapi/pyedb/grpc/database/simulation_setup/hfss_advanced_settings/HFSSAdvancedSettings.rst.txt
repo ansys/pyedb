@@ -1,0 +1,676 @@
+
+
+
+
+
+
+:class:`HFSSAdvancedSettings`
+=============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_advanced_settings.HFSSAdvancedSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_simulation_settings.HFSSAdvancedSettings)
+
+
+.. py:currentmodule:: HFSSAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~defeature_abs_length`
+            - Absolute length used as tolerance when defeaturing polygons.
+          * - :py:attr:`~defeature_absolute_length`
+            - Absolute length used as tolerance when defeaturing polygons.
+          * - :py:attr:`~defeature_ratio`
+            - Extent ratio used as tolerance when defeaturing polygons.
+          * - :py:attr:`~healing_option`
+            - Enable/disable healing of mis-aligned points and edges.
+          * - :py:attr:`~ic_mode_auto_resolution`
+            - Flag indicating if model resolution is automatically calculated for IC designs..
+          * - :py:attr:`~mesh_for_via_plating`
+            - Flag indicating if meshing for via plating is enabled.
+          * - :py:attr:`~model_type`
+            - HFSS model type.
+          * - :py:attr:`~via_density`
+            - Density of vias.
+          * - :py:attr:`~num_via_density`
+            - Spacing between vias.
+          * - :py:attr:`~via_num_sides`
+            - Number of sides a via is considered to have.
+          * - :py:attr:`~num_via_sides`
+            - Number of sides a via is considered to have.
+          * - :py:attr:`~remove_floating_geometry`
+            - Flag indicating if a geometry not connected to any other geometry is removed.
+          * - :py:attr:`~small_void_area`
+            - Voids with an area smaller than this value are ignored during simulation.
+          * - :py:attr:`~union_polygons`
+            - Flag indicating if polygons are unioned.
+          * - :py:attr:`~use_defeature`
+            - Flag indicating if defeaturing is used.
+          * - :py:attr:`~use_defeature_abs_length`
+            - Flag indicating if absolute length defeaturing is used.
+          * - :py:attr:`~use_defeature_absolute_length`
+            - Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
+          * - :py:attr:`~via_material`
+            - Default via material.
+          * - :py:attr:`~via_style`
+            - Via style.
+          * - :py:attr:`~via_model_type`
+            - Via model type.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_advanced_settings import HFSSAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: defeature_abs_length
+   :type: float
+
+
+   
+   Absolute length used as tolerance when defeaturing polygons.
+
+   .. deprecated:: 0.77.3
+       Use :attr:`defeature_absolute_length` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defeature_absolute_length
+   :type: str
+
+
+   
+   Absolute length used as tolerance when defeaturing polygons.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defeature_ratio
+   :type: float
+
+
+   
+   Extent ratio used as tolerance when defeaturing polygons.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Ratio value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: healing_option
+   :type: int
+
+
+   
+   Enable/disable healing of mis-aligned points and edges.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Healing option value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ic_mode_auto_resolution
+   :type: bool
+
+
+   
+   Flag indicating if model resolution is automatically calculated for IC designs..
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if IC mode auto resolution is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_for_via_plating
+   :type: bool
+
+
+   
+   Flag indicating if meshing for via plating is enabled.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if meshing for via plating is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+   :type: str
+
+
+   
+   HFSS model type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Model type name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_density
+   :type: float
+
+
+   
+   Density of vias.
+
+   .. deprecated:: 0.77.3
+       Use :attr:`num_via_density` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_density
+   :type: float
+
+
+   
+   Spacing between vias.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Spacing value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_num_sides
+   :type: int
+
+
+   
+   Number of sides a via is considered to have.
+
+   .. deprecated:: 0.77.3
+       Use :attr:`num_via_sides` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: num_via_sides
+   :type: int
+
+
+   
+   Number of sides a via is considered to have.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of via sides value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: remove_floating_geometry
+   :type: bool
+
+
+   
+   Flag indicating if a geometry not connected to any other geometry is removed.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if floating geometry is removed, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: small_void_area
+   :type: float
+
+
+   
+   Voids with an area smaller than this value are ignored during simulation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Small void area value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: union_polygons
+   :type: bool
+
+
+   
+   Flag indicating if polygons are unioned.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if polygons are unioned, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature
+   :type: bool
+
+
+   
+   Flag indicating if defeaturing is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if defeaturing is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature_abs_length
+   :type: bool
+
+
+   
+   Flag indicating if absolute length defeaturing is used.
+
+   .. deprecated:: 0.77.3
+       Use :attr:`use_defeature_absolute_length` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_defeature_absolute_length
+   :type: bool
+
+
+   
+   Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if absolute length defeaturing is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_material
+   :type: str
+
+
+   
+   Default via material.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Via material name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_style
+   :type: str
+
+
+   
+   Via style.
+
+   .. deprecated:: 0.77.3
+       Use :attr:`via_model_type` instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: via_model_type
+   :type: str
+
+
+   
+   Via model type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Via model type name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

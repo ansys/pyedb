@@ -1,0 +1,6 @@
+set\_multipole\_debye\_model
+============================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.set_multipole_debye_model

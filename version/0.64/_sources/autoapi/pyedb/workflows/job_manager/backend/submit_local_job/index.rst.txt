@@ -1,0 +1,140 @@
+
+
+
+
+
+
+The ``submit_local_job.py`` module
+==================================
+
+.. py:module:: pyedb.workflows.job_manager.backend.submit_local_job
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: submit_local_job
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~submit_job`
+            - Send the job-configuration to the REST endpoint.
+
+
+          * - :py:obj:`~parse_cli`
+            - 
+
+
+          * - :py:obj:`~main`
+            - 
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Submit an HFSS job to the local job-manager service.
+Job Submission is done via REST API asynchronously.
+The service must be running locally (default: localhost:8080) prior to executing this script.
+To start the service, run this command in another terminal:
+    python -m pyedb.workflows.job_manager.backend.job_manager_handler
+
+Usage examples
+--------------
+# Get help
+python submit_job.py --help
+
+# Submit with explicit values
+python submit_local_job.py     --host 127.0.0.1     --port 8080     --project-path "D:\Temp\test_jobs\test1.aedb"     --num-cores 8
+
+# Use defaults (localhost:8080, 8 cores)
+python submit_local_job.py --project-path "D:\Temp\test_jobs\test1.aedb"
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: submit_job(*, host: str, port: int, project_path: str, num_cores: int) -> None
+   :async:
+
+
+   
+   Send the job-configuration to the REST endpoint.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: parse_cli() -> argparse.Namespace
+
+.. py:function:: main() -> None
+
+.. py:data:: logger
+
+
+

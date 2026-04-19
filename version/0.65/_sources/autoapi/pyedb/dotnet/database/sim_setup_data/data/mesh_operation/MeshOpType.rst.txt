@@ -1,0 +1,100 @@
+
+
+
+
+
+
+:class:`MeshOpType`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.mesh_operation.MeshOpType
+
+   Bases: :py:obj:`enum.Enum`
+
+
+   
+   Generic enumeration.
+
+   Derive from this class to define new enumerations.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MeshOpType
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~kMeshSetupBase`
+            - 
+          * - :py:attr:`~kMeshSetupLength`
+            - 
+          * - :py:attr:`~kMeshSetupSkinDepth`
+            - 
+          * - :py:attr:`~kNumMeshOpTypes`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.mesh_operation import MeshOpType
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: kMeshSetupBase
+   :value: 'base'
+
+
+.. py:attribute:: kMeshSetupLength
+   :value: 'length'
+
+
+.. py:attribute:: kMeshSetupSkinDepth
+   :value: 'skin_depth'
+
+
+.. py:attribute:: kNumMeshOpTypes
+   :value: 'num_mesh_op_types'
+
+
+
+
+
+

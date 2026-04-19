@@ -1,0 +1,96 @@
+
+
+
+
+
+
+:class:`CfgTrace`
+=================
+
+
+.. py:class:: pyedb.configuration.cfg_modeler.CfgTrace
+
+
+.. py:currentmodule:: CfgTrace
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~layer`
+            - 
+          * - :py:attr:`~path`
+            - 
+          * - :py:attr:`~width`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+          * - :py:attr:`~start_cap_style`
+            - 
+          * - :py:attr:`~end_cap_style`
+            - 
+          * - :py:attr:`~corner_style`
+            - 
+          * - :py:attr:`~incremental_path`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_modeler import CfgTrace
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: layer
+   :type:  str
+
+.. py:attribute:: path
+   :type:  List[List[Union[float, str]]]
+
+.. py:attribute:: width
+   :type:  str
+
+.. py:attribute:: net_name
+   :type:  str
+
+.. py:attribute:: start_cap_style
+   :type:  str
+
+.. py:attribute:: end_cap_style
+   :type:  str
+
+.. py:attribute:: corner_style
+   :type:  str
+
+.. py:attribute:: incremental_path
+   :type:  List[List[Union[float, str]]]
+
+
+
+
+

@@ -1,0 +1,6 @@
+die\_type
+=========
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.component
+
+.. autoproperty:: ICDieProperty.die_type

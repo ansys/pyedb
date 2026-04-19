@@ -1,0 +1,202 @@
+
+
+
+
+
+
+:class:`CfgPadstackDefinition`
+==============================
+
+
+.. py:class:: pyedb.configuration.cfg_padstacks.CfgPadstackDefinition(pedb, pedb_object, **kwargs)
+
+   Bases: :py:obj:`pyedb.configuration.cfg_common.CfgBase`
+
+
+   
+   Padstack definition data class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPadstackDefinition
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_solder_ball_definition`
+            - 
+          * - :py:attr:`~set_hole_parameters_to_edb`
+            - 
+          * - :py:attr:`~set_solder_parameters_to_edb`
+            - 
+          * - :py:attr:`~get_solder_parameters_from_edb`
+            - 
+          * - :py:attr:`~get_pad_parameters_from_edb`
+            - Pad parameters.
+          * - :py:attr:`~set_pad_parameters_to_edb`
+            - 
+          * - :py:attr:`~get_hole_parameters_from_edb`
+            - 
+          * - :py:attr:`~set_parameters_to_edb`
+            - 
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~PAD_SHAPE_PARAMETERS`
+            - 
+          * - :py:attr:`~pyedb_obj`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~hole_plating_thickness`
+            - 
+          * - :py:attr:`~material`
+            - 
+          * - :py:attr:`~hole_range`
+            - 
+          * - :py:attr:`~pad_parameters`
+            - 
+          * - :py:attr:`~hole_parameters`
+            - 
+          * - :py:attr:`~solder_ball_parameters`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: PAD_SHAPE_PARAMETERS
+
+.. py:attribute:: pyedb_obj
+
+.. py:attribute:: name
+
+.. py:attribute:: hole_plating_thickness
+
+.. py:attribute:: material
+
+.. py:attribute:: hole_range
+
+.. py:attribute:: pad_parameters
+
+.. py:attribute:: hole_parameters
+
+.. py:attribute:: solder_ball_parameters
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_solder_ball_definition()
+
+.. py:method:: set_hole_parameters_to_edb(params)
+
+.. py:method:: set_solder_parameters_to_edb(parameters)
+
+.. py:method:: get_solder_parameters_from_edb()
+
+.. py:method:: get_pad_parameters_from_edb()
+
+   
+   Pad parameters.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           params = {
+           'regular_pad': [
+               {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
+               'rotation': '0', 'diameter': '0.5mm'}
+           ],
+           'anti_pad': [
+               {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+               'diameter': '1mm'}
+           ],
+           'thermal_pad': [
+               {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+               'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
+           ],
+           'hole': [
+               {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
+                'diameter': '0.1499997mm'},
+           ]
+
+       }
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_pad_parameters_to_edb(param)
+
+.. py:method:: get_hole_parameters_from_edb()
+
+.. py:method:: set_parameters_to_edb()
+
+.. py:method:: retrieve_parameters_from_edb()
+
+
+
+

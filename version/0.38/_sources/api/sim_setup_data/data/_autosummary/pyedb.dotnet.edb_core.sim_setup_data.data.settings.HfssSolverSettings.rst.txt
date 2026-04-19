@@ -1,0 +1,26 @@
+﻿HfssSolverSettings
+==================
+
+.. currentmodule:: pyedb.dotnet.edb_core.sim_setup_data.data.settings
+
+.. autoclass:: HfssSolverSettings
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HfssSolverSettings.enhanced_low_freq_accuracy
+      HfssSolverSettings.order_basis
+      HfssSolverSettings.relative_residual
+      HfssSolverSettings.solver_type
+      HfssSolverSettings.use_shell_elements
+   
+   

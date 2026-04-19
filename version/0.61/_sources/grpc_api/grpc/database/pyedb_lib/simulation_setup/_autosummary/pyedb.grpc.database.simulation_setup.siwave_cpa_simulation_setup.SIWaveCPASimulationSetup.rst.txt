@@ -1,0 +1,15 @@
+﻿SIWaveCPASimulationSetup
+========================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup
+
+.. autoclass:: SIWaveCPASimulationSetup
+
+   
+
+   
+   
+
+   
+   
+   

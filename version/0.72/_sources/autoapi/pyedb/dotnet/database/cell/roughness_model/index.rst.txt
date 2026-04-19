@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``roughness_model.py`` module
+=================================
+
+.. py:module:: pyedb.dotnet.database.cell.roughness_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: roughness_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.roughness_model.GroisseRoughnessModel`
+            - !!! abstract "Usage Documentation"
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.roughness_model.HurrayRoughnessModel`
+            - !!! abstract "Usage Documentation"
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> GroisseRoughnessModel</autoapi/pyedb/dotnet/database/cell/roughness_model/GroisseRoughnessModel>
+    <span class="nf nf-cod-symbol_class"></span> HurrayRoughnessModel</autoapi/pyedb/dotnet/database/cell/roughness_model/HurrayRoughnessModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

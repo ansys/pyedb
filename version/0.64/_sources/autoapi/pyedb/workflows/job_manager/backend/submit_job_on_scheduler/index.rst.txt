@@ -1,0 +1,196 @@
+
+
+
+
+
+
+The ``submit_job_on_scheduler.py`` module
+=========================================
+
+.. py:module:: pyedb.workflows.job_manager.backend.submit_job_on_scheduler
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: submit_job_on_scheduler
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~submit_slurm_job`
+            - Send the SLURM job-configuration to the REST endpoint.
+
+
+          * - :py:obj:`~parse_cli`
+            - 
+
+
+          * - :py:obj:`~main`
+            - 
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~logger`
+            - 
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~DEFAULT_HOST`
+            - 
+
+
+          * - :py:obj:`~DEFAULT_PORT`
+            - 
+
+
+          * - :py:obj:`~DEFAULT_PARTITION`
+            - 
+
+
+          * - :py:obj:`~DEFAULT_NODES`
+            - 
+
+
+          * - :py:obj:`~DEFAULT_CORES_PER_NODE`
+            - 
+
+
+          * - :py:obj:`~DEFAULT_RUN_LIMIT`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Submit an HFSS job to the *scheduler* back-end service.
+
+The service must be running (default: localhost:8080) before this script is executed.
+To start it:
+
+    python -m pyedb.workflows.job_manager.backend.job_manager_handler
+
+Usage
+-----
+# Get help
+python submit_job_on_scheduler.py --help
+
+# Explicit values
+python submit_job_on_scheduler.py     --host 127.0.0.1     --port 8080     --project-path "/tmp/jobs/job1.aedb"     --partition default     --nodes 1     --cores-per-node 8
+
+# Use defaults (localhost:8080, 1 node, 1 core, partition default)
+python submit_job_on_scheduler.py     --project-path "/tmp/jobs/job1.aedb"
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: submit_slurm_job(*, host: str, port: int, project_path: str, partition: str, nodes: int, cores_per_node: int, run_limit: str) -> None
+   :async:
+
+
+   
+   Send the SLURM job-configuration to the REST endpoint.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: parse_cli() -> argparse.Namespace
+
+.. py:function:: main() -> None
+
+.. py:data:: DEFAULT_HOST
+   :value: 'localhost'
+
+
+.. py:data:: DEFAULT_PORT
+   :value: 8080
+
+
+.. py:data:: DEFAULT_PARTITION
+   :value: 'default'
+
+
+.. py:data:: DEFAULT_NODES
+   :value: 1
+
+
+.. py:data:: DEFAULT_CORES_PER_NODE
+   :value: 1
+
+
+.. py:data:: DEFAULT_RUN_LIMIT
+   :value: 'unlimited'
+
+
+.. py:data:: logger
+
+
+

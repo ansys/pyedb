@@ -1,0 +1,6 @@
+intersection\_type
+==================
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. automethod:: Primitive.intersection_type

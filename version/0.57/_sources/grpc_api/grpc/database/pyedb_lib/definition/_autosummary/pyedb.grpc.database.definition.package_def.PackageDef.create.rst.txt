@@ -1,0 +1,6 @@
+create
+======
+
+.. currentmodule:: pyedb.grpc.database.definition.package_def
+
+.. automethod:: PackageDef.create

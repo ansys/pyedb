@@ -1,0 +1,95 @@
+
+
+
+
+
+
+:class:`Settings`
+=================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.siwave_simulation_setup.Settings(parent: SIwaveSimulationSetup)
+
+   Bases: :py:obj:`DeprecatedSettings`
+
+
+   
+   Class to reflect the same structure as gRPC.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Settings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced`
+            - 
+          * - :py:attr:`~dc`
+            - 
+          * - :py:attr:`~dc_ir`
+            - 
+          * - :py:attr:`~dc_advanced`
+            - 
+          * - :py:attr:`~general`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.siwave_simulation_setup import Settings
+
+Property detail
+---------------
+
+.. py:property:: advanced
+
+.. py:property:: dc
+
+.. py:property:: dc_ir
+
+.. py:property:: dc_advanced
+
+.. py:property:: general
+
+
+
+
+
+

@@ -1,0 +1,438 @@
+
+
+
+
+
+
+The ``pyedb.generic.data_handlers`` library
+===========================================
+
+.. py:module:: pyedb.generic.data_handlers
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: data_handlers
+.. tab-set::
+
+
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~format_decimals`
+            - :Parameters:
+
+
+          * - :py:obj:`~random_string`
+            - Generate a random string
+
+
+          * - :py:obj:`~unique_string_list`
+            - Return a unique list of strings from an element list.
+
+
+          * - :py:obj:`~string_list`
+            - :Parameters:
+
+
+          * - :py:obj:`~ensure_list`
+            - :Parameters:
+
+
+          * - :py:obj:`~from_rkm`
+            - Convert an RKM code string to a string with a decimal point.
+
+
+          * - :py:obj:`~str_to_bool`
+            - Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
+
+
+          * - :py:obj:`~float_units`
+            - Retrieve units for a value.
+
+
+          * - :py:obj:`~json_to_dict`
+            - Load Json File to a dictionary.
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~unit_val`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: format_decimals(el)
+
+   
+
+
+
+   :Parameters:
+
+       **el**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: random_string(length=6, only_digits=False, char_set=None)
+
+   
+   Generate a random string
+
+
+   :Parameters:
+
+       **length**
+           length of the random string (Default value = 6)
+
+       **only_digits** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           ``True`` if only digits are to be included.
+
+       **char_set** : :class:`python:str`, :obj:`optional`
+           Custom character set to pick the characters from.  By default chooses from
+           ASCII and digit characters or just digits if ``only_digits`` is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`type`
+           random string
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: unique_string_list(element_list, only_string=True)
+
+   
+   Return a unique list of strings from an element list.
+
+
+   :Parameters:
+
+       **element_list**
+           ..
+
+       **only_string**
+           (Default value = True)
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: string_list(element_list)
+
+   
+
+
+
+   :Parameters:
+
+       **element_list**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: ensure_list(element_list)
+
+   
+
+
+
+   :Parameters:
+
+       **element_list**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: from_rkm(code)
+
+   
+   Convert an RKM code string to a string with a decimal point.
+
+
+   :Parameters:
+
+       **code** : :class:`python:str`
+           RKM code string.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           String with a decimal point and an R value.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from_rkm("R47")
+   '0.47'
+
+   >>> from_rkm("4R7")
+   '4.7'
+
+   >>> from_rkm("470R")
+   '470'
+
+   >>> from_rkm("4K7")
+   '4.7k'
+
+   >>> from_rkm("47K")
+   '47k'
+
+   >>> from_rkm("47K3")
+   '47.3k'
+
+   >>> from_rkm("470K")
+   '470k'
+
+   >>> from_rkm("4M7")
+   '4.7M'
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: str_to_bool(s)
+
+   
+   Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
+
+   If the passed arguments are not relevant in the context of conversion, the argument
+   itself is returned. This method can be called using the ``map()`` function to
+   ensure conversion of Boolean strings in a list.
+
+   :Parameters:
+
+       **s: str**
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>` or :class:`python:str`
+           The method is not case-sensitive.
+           - ``True`` is returned  if the input is ``"true"``, ``"1"``,
+             `"yes"``, or ``"y"``,
+           - ``False`` is returned if the input is ``"false"``, ``"no"``,
+             ``"n``,  or ``"0"``.
+           - Otherwise, the input value is passed through the method unchanged.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: float_units(val_str, units='')
+
+   
+   Retrieve units for a value.
+
+
+   :Parameters:
+
+       **val_str** : :class:`python:str`
+           Name of the float value.
+
+       **units** : :class:`python:str`, :obj:`optional`
+           The default is ``""``.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:function:: json_to_dict(fn)
+
+   
+   Load Json File to a dictionary.
+
+
+   :Parameters:
+
+       **fn** : :class:`python:str`
+           json file full path.
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:data:: unit_val
+
+
+

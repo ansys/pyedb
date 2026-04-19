@@ -1,0 +1,31 @@
+﻿HatchGround
+===========
+
+.. currentmodule:: pyedb.libraries.rf_libraries.base_functions
+
+.. autoclass:: HatchGround
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      HatchGround.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      HatchGround.copper_fill_ratio
+   
+   

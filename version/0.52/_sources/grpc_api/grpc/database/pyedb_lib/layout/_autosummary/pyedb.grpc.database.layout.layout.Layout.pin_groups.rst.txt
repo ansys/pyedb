@@ -1,0 +1,6 @@
+pin\_groups
+===========
+
+.. currentmodule:: pyedb.grpc.database.layout.layout
+
+.. autoproperty:: Layout.pin_groups

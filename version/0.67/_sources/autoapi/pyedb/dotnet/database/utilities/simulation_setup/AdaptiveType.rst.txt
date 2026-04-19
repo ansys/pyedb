@@ -1,0 +1,28 @@
+
+
+
+
+
+
+:class:`AdaptiveType`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.simulation_setup.AdaptiveType
+
+   Bases: :py:obj:`object`
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.simulation_setup import AdaptiveType
+
+
+
+
+

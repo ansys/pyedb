@@ -1,0 +1,6 @@
+model\_fields\_set
+==================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoproperty:: MaterialProperties.model_fields_set

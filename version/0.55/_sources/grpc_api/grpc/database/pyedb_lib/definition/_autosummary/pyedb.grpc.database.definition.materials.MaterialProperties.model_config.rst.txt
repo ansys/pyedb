@@ -1,0 +1,6 @@
+model\_config
+=============
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. autoattribute:: MaterialProperties.model_config

@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``structure_3d.py`` module
+==============================
+
+.. py:module:: pyedb.dotnet.database.cell.hierarchy.structure_3d
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: structure_3d
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.cell.hierarchy.structure_3d.Structure3D`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Structure3D</autoapi/pyedb/dotnet/database/cell/hierarchy/structure_3d/Structure3D>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

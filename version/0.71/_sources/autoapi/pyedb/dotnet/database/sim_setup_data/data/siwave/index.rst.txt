@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``siwave.py`` module
+========================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data.data.siwave
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data.siwave.SIwaveSParameterSettings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SIwaveSParameterSettings</autoapi/pyedb/dotnet/database/sim_setup_data/data/siwave/SIwaveSParameterSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,457 @@
+
+
+
+
+
+
+:class:`LayerCollection`
+========================
+
+
+.. py:class:: pyedb.dotnet.database.stackup.LayerCollection(pedb, edb_object=None)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: LayerCollection
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~update_layout`
+            - Set layer collection into edb.
+          * - :py:attr:`~refresh_layer_collection`
+            - Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup.
+          * - :py:attr:`~add_layer_top`
+            - Add a layer on top of the stackup.
+          * - :py:attr:`~add_layer_bottom`
+            - Add a layer on bottom of the stackup.
+          * - :py:attr:`~add_layer_below`
+            - Add a layer below a layer.
+          * - :py:attr:`~add_layer_above`
+            - Add a layer above a layer.
+          * - :py:attr:`~add_document_layer`
+            - Add a document layer.
+          * - :py:attr:`~set_layer_clone`
+            - 
+          * - :py:attr:`~find_layer_by_name`
+            - Finds a layer with the given name.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~stackup_layers`
+            - Retrieve the dictionary of signal and dielectric layers.
+          * - :py:attr:`~non_stackup_layers`
+            - Retrieve the dictionary of signal layers.
+          * - :py:attr:`~all_layers`
+            - 
+          * - :py:attr:`~layers_by_id`
+            - Retrieve the list of layers with their ids.
+          * - :py:attr:`~layers`
+            - Retrieve the dictionary of layers.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.stackup import LayerCollection
+
+Property detail
+---------------
+
+.. py:property:: stackup_layers
+
+   
+   Retrieve the dictionary of signal and dielectric layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: non_stackup_layers
+
+   
+   Retrieve the dictionary of signal layers.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: all_layers
+
+.. py:property:: layers_by_id
+
+   
+   Retrieve the list of layers with their ids.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers
+
+   
+   Retrieve the dictionary of layers.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Dict`\[:class:`python:str`, :class:`pyedb.dotnet.database.edb_data.layer_data.LayerEdbClass`]
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: update_layout()
+
+   
+   Set layer collection into edb.
+
+
+   :Parameters:
+
+       **stackup**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: refresh_layer_collection()
+
+   
+   Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_top(name, layer_type='signal', **kwargs)
+
+   
+   Add a layer on top of the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **layer_type: str, optional**
+           Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+
+       **kwargs**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_bottom(name, layer_type='signal', **kwargs)
+
+   
+   Add a layer on bottom of the stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **layer_type: str, optional**
+           Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+
+       **kwargs**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_below(name, base_layer_name, layer_type='signal', **kwargs)
+
+   
+   Add a layer below a layer.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **base_layer_name: str**
+           Name of the base layer.
+
+       **layer_type: str, optional**
+           Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+
+       **kwargs**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer_above(name, base_layer_name, layer_type='signal', **kwargs)
+
+   
+   Add a layer above a layer.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **base_layer_name: str**
+           Name of the base layer.
+
+       **layer_type: str, optional**
+           Type of the layer. The default to ``"signal"``. Options are ``"signal"``, ``"dielectric"``
+
+       **kwargs**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_document_layer(name, layer_type='user', **kwargs)
+
+   
+   Add a document layer.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **layer_type: str, optional**
+           Type of the layer. The default is ``"user"``. Options are ``"user"``, ``"outline"``
+
+       **kwargs**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_layer_clone(layer_clone)
+
+.. py:method:: find_layer_by_name(name: str)
+
+   
+   Finds a layer with the given name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

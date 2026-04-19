@@ -1,0 +1,355 @@
+
+
+
+
+
+
+:class:`XmlParser`
+==================
+
+
+.. py:class:: pyedb.xml_parser.xml_parser.XmlParser(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Main parser for EDB XML configuration files.
+
+   This class provides methods to load, parse, and export XML configuration files
+   used in EDB designs. It supports stackup definitions, import options, and net
+   configurations.
+
+   :Parameters:
+
+       **stackup** : :obj:`XmlStackup`, :obj:`optional`
+           Stackup configuration object. The default is ``None``.
+
+       **import_options** : :obj:`XmlImportOptions`, :obj:`optional`
+           Import options configuration. The default is ``None``.
+
+       **nets** : :class:`python:dict`, :obj:`optional`
+           Dictionary of net configurations. The default is ``None``.
+
+       **schema_version** : :class:`python:str`, :obj:`optional`
+           Version of the XML schema. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_parser import XmlParser
+   >>> parser = XmlParser.load_xml_file("config.xml")
+   >>> parser.to_xml_file("output.xml")
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: XmlParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~load_xml_file`
+            - Load and parse an XML configuration file.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_stackup`
+            - Add a stackup configuration to the parser.
+          * - :py:attr:`~to_xml`
+            - Convert the parser configuration to XML string.
+          * - :py:attr:`~to_xml_file`
+            - Write the parser configuration to an XML file.
+          * - :py:attr:`~to_dict`
+            - Convert the parser configuration to a dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~stackup`
+            - 
+          * - :py:attr:`~import_options`
+            - 
+          * - :py:attr:`~nets`
+            - 
+          * - :py:attr:`~schema_version`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_parser import XmlParser
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: stackup
+   :type:  Optional[pyedb.xml_parser.xml_stackup.XmlStackup]
+   :value: None
+
+
+.. py:attribute:: import_options
+   :type:  Optional[XmlImportOptions]
+   :value: None
+
+
+.. py:attribute:: nets
+   :type:  Optional[dict]
+   :value: None
+
+
+.. py:attribute:: schema_version
+   :type:  Optional[str]
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_stackup() -> pyedb.xml_parser.xml_stackup.XmlStackup
+
+   
+   Add a stackup configuration to the parser.
+
+
+
+
+
+   :Returns:
+
+       :obj:`XmlStackup`
+           The newly created stackup object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_parser import XmlParser
+   >>> parser = XmlParser()
+   >>> stackup = parser.add_stackup()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: load_xml_file(path: str | pathlib.Path) -> XmlParser
+   :classmethod:
+
+
+   
+   Load and parse an XML configuration file.
+
+
+   :Parameters:
+
+       **path** : :class:`python:str` or :obj:`pathlib.Path`
+           Path to the XML file to load.
+
+
+
+   :Returns:
+
+       :obj:`XmlParser`
+           The parsed XML configuration as an XmlParser instance.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_parser import XmlParser
+   >>> parser = XmlParser.load_xml_file("config.xml")
+   >>> print(parser.stackup)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_xml(root_name: str = 'c:Control', pretty: bool = True) -> str
+
+   
+   Convert the parser configuration to XML string.
+
+
+   :Parameters:
+
+       **root_name** : :class:`python:str`, :obj:`optional`
+           Name of the root XML tag. The default is ``"c:Control"``.
+
+       **pretty** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to format the XML output with indentation. The default is ``True``.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           XML string representation of the configuration.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_parser import XmlParser
+   >>> parser = XmlParser()
+   >>> xml_string = parser.to_xml()
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_xml_file(file_path: str | pathlib.Path) -> str
+
+   
+   Write the parser configuration to an XML file.
+
+
+   :Parameters:
+
+       **file_path** : :class:`python:str` or :obj:`pathlib.Path`
+           Path to the output XML file.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Path to the written XML file.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_parser import XmlParser
+   >>> parser = XmlParser()
+   >>> output_path = parser.to_xml_file("output.xml")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Convert the parser configuration to a dictionary.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary representation of the configuration containing stackup information.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_parser import XmlParser
+   >>> parser = XmlParser()
+   >>> config_dict = parser.to_dict()
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

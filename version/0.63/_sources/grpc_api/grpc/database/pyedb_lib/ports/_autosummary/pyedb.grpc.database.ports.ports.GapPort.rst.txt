@@ -1,0 +1,74 @@
+﻿GapPort
+=======
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoclass:: GapPort
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      GapPort.cast
+      
+      
+      GapPort.couple_ports
+      
+      
+      GapPort.create
+      
+      
+      GapPort.create_3d_comp
+      
+      
+      GapPort.create_hfss
+      
+      
+      GapPort.create_stride
+      
+      
+      GapPort.delete
+      
+      
+      GapPort.find
+      
+      
+      GapPort.find_by_id
+      
+      
+      GapPort.get_product_property
+      
+      
+      GapPort.get_product_property_ids
+      
+      
+      GapPort.product_solver_names
+      
+      
+      GapPort.product_solver_option
+      
+      
+      GapPort.set_product_property
+      
+      
+      GapPort.set_product_solver_option
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      GapPort.layout_obj_type
+      GapPort.type
+   
+   

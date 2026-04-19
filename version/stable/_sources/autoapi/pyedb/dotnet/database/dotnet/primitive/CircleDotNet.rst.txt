@@ -1,0 +1,292 @@
+
+
+
+
+
+
+:class:`CircleDotNet`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.primitive.CircleDotNet(api, prim_obj=None)
+
+   Bases: :py:obj:`PrimitiveDotNet`
+
+
+   
+   Class representing a circle object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CircleDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a circle.
+          * - :py:attr:`~get_parameters`
+            - Get parameters of a circle.
+          * - :py:attr:`~set_parameters`
+            - Set parameters of a circle.
+          * - :py:attr:`~get_polygon_data`
+            - :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Polygon data object of the Circle object.
+          * - :py:attr:`~can_be_zone_primitive`
+            - :obj:`bool`: If a circle can be a zone.
+          * - :py:attr:`~expand`
+            - Expand the polygon shape by an absolute value in all direction.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.primitive import CircleDotNet
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(layout, layer, net, center_x, center_y, radius)
+
+   
+   Create a circle.
+
+
+   :Parameters:
+
+       **layout: :class:`Layout <ansys.edb.layout.Layout>`**
+           Layout this circle will be in.
+
+       **layer: str or :class:`Layer <ansys.edb.layer.Layer>`**
+           Layer this circle will be on.
+
+       **net: str or :class:`Net <ansys.edb.net.Net>` or None**
+           Net this circle will have.
+
+       **center_x: :class:`Value <ansys.edb.utility.Value>`**
+           X value of center point.
+
+       **center_y: :class:`Value <ansys.edb.utility.Value>`**
+           Y value of center point.
+
+       **radius: :class:`Value <ansys.edb.utility.Value>`**
+           Radius value of the circle.
+
+
+
+   :Returns:
+
+       :class:`pyedb.dotnet.database.dotnet.primitive.CircleDotNet`
+           Circle object created.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_parameters()
+
+   
+   Get parameters of a circle.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:tuple`\[
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`,
+           :class:`Value <ansys.edb.utility.Value>`
+
+       ]
+           Returns a tuple of the following format:
+           
+           **(center_x, center_y, radius)**
+           
+           **center_x** : X value of center point.
+           
+           **center_y** : Y value of center point.
+           
+           **radius** : Radius value of the circle.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_parameters(center_x, center_y, radius)
+
+   
+   Set parameters of a circle.
+
+
+   :Parameters:
+
+       **center_x: :class:`Value <ansys.edb.utility.Value>`**
+           X value of center point.
+
+       **center_y: :class:`Value <ansys.edb.utility.Value>`**
+           Y value of center point.
+
+       **radius: :class:`Value <ansys.edb.utility.Value>`**
+           Radius value of the circle.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygon_data()
+
+   
+   :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Polygon data object of the Circle object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: can_be_zone_primitive()
+
+   
+   :obj:`bool`: If a circle can be a zone.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: expand(offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001)
+
+   
+   Expand the polygon shape by an absolute value in all direction.
+   Offset can be negative for negative expansion.
+
+
+   :Parameters:
+
+       **offset** : :class:`python:float`, :obj:`optional`
+           Offset value in meters.
+
+       **tolerance** : :class:`python:float`, :obj:`optional`
+           Tolerance in meters. Ignored for Circle and Path.
+
+       **round_corners** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to round corners or not.
+           If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
+            Ignored for Circle and Path.
+
+       **maximum_corner_extension** : :class:`python:float`, :obj:`optional`
+           The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+            Ignored for Circle and Path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

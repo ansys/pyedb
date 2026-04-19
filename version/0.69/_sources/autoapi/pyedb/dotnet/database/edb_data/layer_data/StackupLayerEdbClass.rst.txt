@@ -1,0 +1,634 @@
+
+
+
+
+
+
+:class:`StackupLayerEdbClass`
+=============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.layer_data.StackupLayerEdbClass(pedb, edb_object=None, name='', layer_type='signal', **kwargs)
+
+   Bases: :py:obj:`LayerEdbClass`
+
+
+   
+   Manages Edb Layers. Replaces EDBLayer.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: StackupLayerEdbClass
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_roughness_model`
+            - Get roughness model of the layer.
+          * - :py:attr:`~assign_roughness_model`
+            - Assign roughness model on this layer.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~lower_elevation`
+            - Lower elevation.
+          * - :py:attr:`~upper_elevation`
+            - Upper elevation.
+          * - :py:attr:`~is_negative`
+            - Determine whether this layer is a negative layer.
+          * - :py:attr:`~material`
+            - Get/Set the material loss_tangent.
+          * - :py:attr:`~conductivity`
+            - Get the material conductivity.
+          * - :py:attr:`~permittivity`
+            - Get the material permittivity.
+          * - :py:attr:`~loss_tangent`
+            - Get the material loss_tangent.
+          * - :py:attr:`~dielectric_fill`
+            - Retrieve material name of the layer dielectric fill.
+          * - :py:attr:`~thickness`
+            - Retrieve thickness of the layer.
+          * - :py:attr:`~etch_factor`
+            - Retrieve etch factor of this layer.
+          * - :py:attr:`~roughness_enabled`
+            - Determine whether roughness is enabled on this layer.
+          * - :py:attr:`~top_hallhuray_nodule_radius`
+            - Retrieve huray model nodule radius on top of the conductor.
+          * - :py:attr:`~top_hallhuray_surface_ratio`
+            - Retrieve huray model surface ratio on top of the conductor.
+          * - :py:attr:`~bottom_hallhuray_nodule_radius`
+            - Retrieve huray model nodule radius on bottom of the conductor.
+          * - :py:attr:`~bottom_hallhuray_surface_ratio`
+            - Retrieve huray model surface ratio on bottom of the conductor.
+          * - :py:attr:`~side_hallhuray_nodule_radius`
+            - Retrieve huray model nodule radius on sides of the conductor.
+          * - :py:attr:`~side_hallhuray_surface_ratio`
+            - Retrieve huray model surface ratio on sides of the conductor.
+          * - :py:attr:`~properties`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.layer_data import StackupLayerEdbClass
+
+Property detail
+---------------
+
+.. py:property:: lower_elevation
+
+   
+   Lower elevation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Lower elevation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: upper_elevation
+
+   
+   Upper elevation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Upper elevation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: is_negative
+
+   
+   Determine whether this layer is a negative layer.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if this layer is a negative layer, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: material
+
+   
+   Get/Set the material loss_tangent.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conductivity
+
+   
+   Get the material conductivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity
+
+   
+   Get the material permittivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: loss_tangent
+
+   
+   Get the material loss_tangent.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_fill
+
+   
+   Retrieve material name of the layer dielectric fill.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thickness
+
+   
+   Retrieve thickness of the layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: etch_factor
+
+   
+   Retrieve etch factor of this layer.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: roughness_enabled
+
+   
+   Determine whether roughness is enabled on this layer.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_hallhuray_nodule_radius
+
+   
+   Retrieve huray model nodule radius on top of the conductor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: top_hallhuray_surface_ratio
+
+   
+   Retrieve huray model surface ratio on top of the conductor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bottom_hallhuray_nodule_radius
+
+   
+   Retrieve huray model nodule radius on bottom of the conductor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bottom_hallhuray_surface_ratio
+
+   
+   Retrieve huray model surface ratio on bottom of the conductor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: side_hallhuray_nodule_radius
+
+   
+   Retrieve huray model nodule radius on sides of the conductor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: side_hallhuray_surface_ratio
+
+   
+   Retrieve huray model surface ratio on sides of the conductor.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: properties
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_roughness_model(surface='top')
+
+   
+   Get roughness model of the layer.
+
+
+   :Parameters:
+
+       **surface** : :class:`python:str`, :obj:`optional`
+           Where to fetch roughness model. The default is ``"top"``. Options are ``"top"``, ``"bottom"``, ``"side"``.
+
+
+
+   :Returns:
+
+       ``"Ansys.Ansoft.Edb.Cell.RoughnessModel"``
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: assign_roughness_model(model_type='huray', huray_radius='0.5um', huray_surface_ratio='2.9', groisse_roughness='1um', apply_on_surface='all')
+
+   
+   Assign roughness model on this layer.
+
+
+   :Parameters:
+
+       **model_type** : :class:`python:str`, :obj:`optional`
+           Type of roughness model. The default is ``"huray"``. Options are ``"huray"``, ``"groisse"``.
+
+       **huray_radius** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Radius of huray model. The default is ``"0.5um"``.
+
+       **huray_surface_ratio** : :class:`python:str`, :class:`python:float`, optional.
+           Surface ratio of huray model. The default is ``"2.9"``.
+
+       **groisse_roughness** : :class:`python:str`, :class:`python:float`, :obj:`optional`
+           Roughness of groisse model. The default is ``"1um"``.
+
+       **apply_on_surface** : :class:`python:str`, optional.
+           Where to assign roughness model. The default is ``"all"``. Options are ``"top"``, ``"bottom"``,
+            ``"side"``.
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

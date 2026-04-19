@@ -1,0 +1,6 @@
+get\_padstack\_instances\_id\_intersecting\_polygon
+===================================================
+
+.. currentmodule:: pyedb.grpc.database.padstacks
+
+.. automethod:: Padstacks.get_padstack_instances_id_intersecting_polygon

@@ -1,0 +1,89 @@
+
+
+
+
+
+
+:class:`RaptorXSimulationSettings`
+==================================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data.RaptorXSimulationSettings(parent)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: RaptorXSimulationSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~general_settings`
+            - 
+          * - :py:attr:`~general`
+            - 
+          * - :py:attr:`~advanced_settings`
+            - 
+          * - :py:attr:`~advanced`
+            - 
+          * - :py:attr:`~enabled`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~logger`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.raptor_x_simulation_setup_data import RaptorXSimulationSettings
+
+Property detail
+---------------
+
+.. py:property:: general_settings
+
+.. py:property:: general
+
+.. py:property:: advanced_settings
+
+.. py:property:: advanced
+
+.. py:property:: enabled
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: logger
+
+
+
+
+

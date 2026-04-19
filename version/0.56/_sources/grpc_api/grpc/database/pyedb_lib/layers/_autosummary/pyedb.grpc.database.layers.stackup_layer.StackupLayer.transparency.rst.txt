@@ -1,0 +1,6 @@
+transparency
+============
+
+.. currentmodule:: pyedb.grpc.database.layers.stackup_layer
+
+.. autoproperty:: StackupLayer.transparency

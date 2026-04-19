@@ -1,0 +1,114 @@
+
+
+
+
+
+
+:class:`HFSSPISimulationSetup`
+==============================
+
+
+.. py:class:: pyedb.dotnet.database.utilities.hfss_simulation_setup.HFSSPISimulationSetup(pedb, edb_object=None, name: str = None)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.simulation_setup.SimulationSetup`
+
+
+   
+   Manages EDB methods for HFSSPI simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: HFSSPISimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a new HFSSPI simulation setup.
+
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.utilities.hfss_simulation_setup import HFSSPISimulationSetup
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb, name) -> HFSSPISimulationSetup
+   :classmethod:
+
+
+   
+   Create a new HFSSPI simulation setup.
+
+
+   :Parameters:
+
+       **edb** : :obj:`Edb`
+           An EDB instance.
+
+       **name** : :class:`python:str`
+           Name of the simulation setup.
+
+
+
+   :Returns:
+
+       :obj:`HFSSPISimulationSetup`
+           The created HFSSPI simulation setup object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

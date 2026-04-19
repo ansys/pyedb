@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`AXIS`
+=============
+
+
+.. py:class:: pyedb.generic.constants.AXIS
+
+   Bases: :py:obj:`object`
+
+
+   
+   CoordinateSystemAxis Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import AXIS
+
+
+
+
+

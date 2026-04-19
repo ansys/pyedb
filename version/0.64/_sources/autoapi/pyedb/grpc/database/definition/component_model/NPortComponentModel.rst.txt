@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`NPortComponentModel`
+============================
+
+
+.. py:class:: pyedb.grpc.database.definition.component_model.NPortComponentModel
+
+   Bases: :py:obj:`ansys.edb.core.definition.component_model.ComponentModel`
+
+
+   
+   Class managing :class:`NPortComponentModel <ansys.edb.core.definition.component_model.ComponentModel>`
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.component_model import NPortComponentModel
+
+
+
+
+

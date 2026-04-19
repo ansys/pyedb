@@ -1,0 +1,24 @@
+﻿MetalLayer
+==========
+
+.. currentmodule:: pyedb.libraries.common
+
+.. autoclass:: MetalLayer
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      MetalLayer.material
+      MetalLayer.name
+      MetalLayer.thickness
+   
+   

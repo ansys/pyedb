@@ -1,0 +1,6 @@
+hfss\_setups
+============
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. autoproperty:: Edb.hfss_setups

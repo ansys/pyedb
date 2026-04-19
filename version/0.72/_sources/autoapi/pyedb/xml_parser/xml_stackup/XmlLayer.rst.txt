@@ -1,0 +1,242 @@
+
+
+
+
+
+
+:class:`XmlLayer`
+=================
+
+
+.. py:class:: pyedb.xml_parser.xml_stackup.XmlLayer(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Represents a layer in the XML stackup.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the layer.
+
+       **color** : :class:`python:str`, :obj:`optional`
+           Color code for layer visualization. The default is ``None``.
+
+       **gdsii_via** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the layer is a GDSII via layer. The default is ``None``.
+
+       **material** : :class:`python:str`, :obj:`optional`
+           Name of the layer material. The default is ``None``.
+
+       **fill_material** : :class:`python:str`, :obj:`optional`
+           Name of the fill material for the layer. The default is ``None``.
+
+       **negative** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether the layer uses negative artwork. The default is ``None``.
+
+       **thickness** : :class:`python:float` or :class:`python:str`, :obj:`optional`
+           Layer thickness value with or without units. The default is ``None``.
+
+       **type** : :class:`python:str`, :obj:`optional`
+           Layer type (signal, dielectric, conductor, etc.). The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlLayer
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_huray_surface_roughness`
+            - 
+          * - :py:attr:`~set_groisse_surface_roughness`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~color`
+            - 
+          * - :py:attr:`~gdsii_via`
+            - 
+          * - :py:attr:`~material`
+            - 
+          * - :py:attr:`~fill_material`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~negative`
+            - 
+          * - :py:attr:`~thickness`
+            - 
+          * - :py:attr:`~type`
+            - 
+          * - :py:attr:`~huray_surface_roughness`
+            - 
+          * - :py:attr:`~huray_bottom_surface_roughness`
+            - 
+          * - :py:attr:`~huray_side_surface_roughness`
+            - 
+          * - :py:attr:`~groiss_surface_roughness`
+            - 
+          * - :py:attr:`~groiss_bottom_surface_roughness`
+            - 
+          * - :py:attr:`~groiss_side_surface_roughness`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_stackup import XmlLayer
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: color
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: gdsii_via
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: material
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: fill_material
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: name
+   :type:  str
+   :value: None
+
+
+.. py:attribute:: negative
+   :type:  bool | None
+   :value: None
+
+
+.. py:attribute:: thickness
+   :type:  float | str | None
+   :value: None
+
+
+.. py:attribute:: type
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: huray_surface_roughness
+   :type:  XmlHuraySurfaceRoughness | None
+   :value: None
+
+
+.. py:attribute:: huray_bottom_surface_roughness
+   :type:  XmlHuraySurfaceRoughness | None
+   :value: None
+
+
+.. py:attribute:: huray_side_surface_roughness
+   :type:  XmlHuraySurfaceRoughness | None
+   :value: None
+
+
+.. py:attribute:: groiss_surface_roughness
+   :type:  XmlGroissSurfaceRoughness | None
+   :value: None
+
+
+.. py:attribute:: groiss_bottom_surface_roughness
+   :type:  XmlGroissSurfaceRoughness | None
+   :value: None
+
+
+.. py:attribute:: groiss_side_surface_roughness
+   :type:  XmlGroissSurfaceRoughness | None
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_huray_surface_roughness(nodule_radius: int | float | int, surface_ratio=int | float | str, surface: SurfaceOption = 'all') -> XmlHuraySurfaceRoughness
+
+.. py:method:: set_groisse_surface_roughness(roughness: int | float | str, surface: SurfaceOption = 'all') -> XmlGroissSurfaceRoughness
+
+
+
+

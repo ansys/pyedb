@@ -1,0 +1,140 @@
+
+
+
+
+
+
+:class:`ControlFileComponents`
+==============================
+
+
+.. py:class:: pyedb.grpc.database.utility.xml_control_file.ControlFileComponents
+
+   
+   Class for component management.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileComponents
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_component`
+            - Create a new component.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~units`
+            - 
+          * - :py:attr:`~components`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.xml_control_file import ControlFileComponents
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: units
+   :value: 'um'
+
+
+.. py:attribute:: components
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_component(ref_des, partname, component_type, die_type='None', solderball_shape='None')
+
+   
+   Create a new component.
+
+
+   :Parameters:
+
+       **ref_des** : :class:`python:str`
+           Reference Designator name.
+
+       **partname** : :class:`python:str`
+           Part name.
+
+       **component_type** : :class:`python:str`
+           Component Type. Can be `"IC"`, `"IO"` or `"Other"`.
+
+       **die_type** : :class:`python:str`, :obj:`optional`
+           Die Type. Can be `"None"`, `"Flip chip"` or `"Wire bond"`.
+
+       **solderball_shape** : :class:`python:str`, :obj:`optional`
+           Solderball Type. Can be `"None"`, `"Cylinder"` or `"Spheroid"`.
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
