@@ -139,7 +139,6 @@ def test_public_edb_stub_overloads_resolve_to_backend_classes(
         "grpc",
         "control_file",
         "layer_filter",
-        "in_memory",
     ]
 
     for overload_node, (expected_annotation, expected_default, expected_return) in zip(overloads, expected_signatures):
@@ -156,11 +155,6 @@ def test_public_edb_stub_overloads_resolve_to_backend_classes(
         assert ast.unparse(grpc_arg.annotation) == expected_annotation
         assert ast.unparse(grpc_default) == expected_default
         assert ast.unparse(overload_node.returns) == expected_return
-
-        in_memory_arg = overload_node.args.args[13]
-        in_memory_default = overload_node.args.defaults[13]
-        assert ast.unparse(in_memory_arg.annotation) == "bool"
-        assert ast.unparse(in_memory_default) == "True"
 
 
 @pytest.mark.parametrize(

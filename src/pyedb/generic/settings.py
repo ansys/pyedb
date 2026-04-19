@@ -76,7 +76,6 @@ class Settings(object):
         self.log_file = None
         self._aedt_version = None
         self.__is_grpc = False
-        self.__is_in_memory = False
         self.__get_version_information()
         self.__init_logger()
 
@@ -93,21 +92,6 @@ class Settings(object):
     @is_grpc.setter
     def is_grpc(self, value):
         self.__is_grpc = value
-
-    @property
-    def is_in_memory(self):
-        """Whether Edb is launched using memory or not. sed only with gRPC. When `True` by pass connection socket.
-        Designed to be used when client and RPC server are both running locally. Performances are expected to be better.
-
-        Returns
-        -------
-        bool
-        """
-        return self.__is_in_memory
-
-    @is_in_memory.setter
-    def is_in_memory(self, value):
-        self.__is_in_memory = value
 
     @property
     def edb_environment_variables(self):

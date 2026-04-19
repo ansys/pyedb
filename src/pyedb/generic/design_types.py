@@ -51,7 +51,6 @@ def Edb(
     grpc: Literal[True] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> "EdbGrpc": ...
 
 
@@ -70,7 +69,6 @@ def Edb(
     grpc: Literal[False] = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> "EdbDotnet": ...
 
 
@@ -89,7 +87,6 @@ def Edb(
     grpc: bool = ...,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> "EdbGrpc | EdbDotnet": ...
 
 
@@ -108,7 +105,6 @@ def Edb(
     grpc: None = None,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> "EdbGrpc | EdbDotnet": ...
 
 
@@ -135,7 +131,6 @@ def Edb(
     grpc: bool | None = None,
     control_file: str | None = None,
     layer_filter: str | None = None,
-    in_memory: bool = True,
 ) -> EdbGrpc | EdbDotnet | None:
     """Provides the EDB application interface.
 
@@ -179,13 +174,6 @@ def Edb(
         Path to the XML file. The default is ``None``, in which case an attempt is made to find
         the XML file in the same directory as the board file. To succeed, the XML file and board file
         must have the same name. Only the extension differs.
-    in_memory : bool, optional
-        When the selected backend is gRPC, this flag enables the in-memory transport to bypass the network socket.
-        Enabling this option is intended to increase performance when processes are running locally on the same
-        machine. This feature status is Beta and the default value is `True`. If the required native library is
-        not available, PyEDB automatically falls back to the standard RPC session.
-
-
     Returns
     -------
     :class:`Edb <pyedb.dotnet.edb.Edb>` or :class:`Edb <pyedb.grpc.edb.Edb>`
@@ -368,7 +356,6 @@ def Edb(
 
     grpc = grpc if grpc is not None else _use_grpc_by_default(settings.specified_version)
     settings.is_grpc = grpc
-    settings.is_in_memory = in_memory if grpc else False
 
     if grpc:
         if 2025.2 <= float(settings.specified_version) <= 2027.1:
@@ -386,7 +373,6 @@ def Edb(
                 map_file=map_file,
                 technology_file=technology_file,
                 control_file=control_file,
-                in_memory=in_memory,
             )
 
         elif float(settings.specified_version) < 2025.2:
