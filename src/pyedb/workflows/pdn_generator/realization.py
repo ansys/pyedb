@@ -111,6 +111,7 @@ def _ensure_smd_pad_definition(edb: Any, package_name: str, pad_length_m: float,
         anti_pad_y_size=pad_width_m * 1.25,
         start_layer=top_layer,
         stop_layer=top_layer,
+        add_default_layer=True,
     )
     if not created:
         raise RuntimeError(f"Failed to create SMD padstack {definition_name}.")
@@ -138,13 +139,19 @@ def _place_component(edb: Any, device: TwoPinDevicePlan, plan: PDNGenerationPlan
         pad_width_m=package.pad_width_m,
         top_layer=plan.layers.top_layer,
     )
+    # Span the instance through the full stackup (top → bottom).  The EDB gRPC server
+    # rejects CorePadstackInstance.create() when top_layer == bottom_layer, which would
+    # happen if we let place() auto-resolve layers from the single-layer SMD definition.
+    # Real SMD components in EDB always span the full board thickness even though the
+    # physical pad only exists on the component layer.
     power_pin = edb.padstacks.place(
         position=list(device.power_pin),
         definition_name=pin_definition,
         net_name=device.power_net,
         via_name=f"{device.refdes}_P",
         rotation=device.rotation_deg,
-        is_pin=True,
+        from_layer=plan.layers.top_layer,
+        to_layer=plan.layers.bottom_layer,
     )
     ground_pin = edb.padstacks.place(
         position=list(device.ground_pin),
@@ -152,8 +159,16 @@ def _place_component(edb: Any, device: TwoPinDevicePlan, plan: PDNGenerationPlan
         net_name=device.ground_net,
         via_name=f"{device.refdes}_N",
         rotation=device.rotation_deg,
-        is_pin=True,
+        from_layer=plan.layers.top_layer,
+        to_layer=plan.layers.bottom_layer,
     )
+
+    if power_pin.core.is_null or ground_pin.core.is_null:
+        raise RuntimeError(
+            f"Failed to place SMD pads for {device.refdes}: EDB server returned a null padstack instance. "
+            f"Check that '{pin_definition}' is a valid padstack definition and that layers "
+            f"'{plan.layers.top_layer}' and '{plan.layers.bottom_layer}' exist in the stackup."
+        )
 
     power_kwargs = {
         "pins": [power_pin, ground_pin],
@@ -175,15 +190,19 @@ def _place_vias(edb: Any, device: TwoPinDevicePlan, plan: PDNGenerationPlan, pwr
         definition_name=pwr_def,
         net_name=device.power_net,
         via_name=f"{device.refdes}_P_VIA",
+        from_layer=plan.layers.top_layer,
+        to_layer=plan.layers.bottom_layer,
     )
     ground_via = edb.padstacks.place(
         position=list(device.ground_via),
         definition_name=gnd_def,
         net_name=device.ground_net,
         via_name=f"{device.refdes}_N_VIA",
+        from_layer=plan.layers.top_layer,
+        to_layer=plan.layers.bottom_layer,
     )
-    if not power_via or not ground_via:
-        raise RuntimeError(f"Failed to place vias for {device.refdes}.")
+    if power_via.core.is_null or ground_via.core.is_null:
+        raise RuntimeError(f"Failed to place vias for {device.refdes}: EDB server returned a null padstack instance.")
 
 
 def realize_pdn_plan(edb: Any, plan: PDNGenerationPlan) -> Any:
@@ -215,7 +234,7 @@ def generate_pdn_dataset_case(
     seed: int | None = None,
     *,
     version: str | None = None,
-    grpc: bool | None = None,
+    grpc: bool | None = True,
     save: bool = True,
     close_edb: bool = True,
 ) -> PDNGenerationPlan:

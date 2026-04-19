@@ -136,4 +136,4 @@ Typical labels include:
 - Target-impedance-driven refinement adjusts the decap mix per rail rather than using a fixed global decap recipe.
 - Shared-source topologies cluster multiple rails around a common source entry while preserving separate rail branches and labels.
 - If a case cannot be placed because the board is too small or the capacitor count is too high, the planner raises a clear error instead of silently generating unrealistic geometry.
-- `realization.py` uses `from pyedb import Edb` as required by the local API contract.
+- `realization.py` uses `from pyedb import Edb` with `grpc=True` (the default for this workflow) as required by the local API contract.
