@@ -32,15 +32,16 @@ The new architecture, based on a standalone gRPC service (``ansys-edb-core``), p
 
 Accessing the Archived Code
 ---------------------------
-The code for the deprecated ``dotnet`` module has been moved to a separate, archived branch in the GitHub repository
+The code for the deprecated ``dotnet`` module has been moved to an archived location in the GitHub repository
 to avoid confusion and keep the main branch clean.
 
-**You can access the final version of the `dotnet` code here:**
+The legacy DotNet API reference is no longer published with the online documentation.
+If you need to maintain an older script, consult the archived repository history and use the migration guidance below
+to port your workflow to gRPC.
 
-.. toctree::
-   :maxdepth: 1
-
-   dotnet_api/index
+Some legacy ``doc/source/grpc_migration/dotnet_api`` files are intentionally kept
+in the repository as internal archival placeholders, but they are excluded from
+the published documentation build.
 
 .. warning::
 
