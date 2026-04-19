@@ -539,7 +539,9 @@ class Primitive(Connectable):
 
         Read-Only.
         """
-        return [self._pedb.layout.find_object_by_id(void.GetId()) for void in self._edb_object.Voids]
+        from pyedb.dotnet.database.cell.layout import primitive_cast
+
+        return [primitive_cast(self._pedb, void) for void in self._edb_object.Voids if void]
 
     @property
     def shortest_arc(self):

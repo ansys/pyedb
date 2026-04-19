@@ -196,6 +196,15 @@ class PrimitivesQuery:
     def _primitive_lookup_by_id(self, primitives: list[Primitive] | None = None) -> dict[int, Primitive]:
         return {primitive.id: primitive for primitive in (primitives if primitives is not None else self.primitives)}
 
+    def _iter_primitives_with_voids(self, primitives: list[Primitive] | None = None):
+        for primitive in primitives if primitives is not None else self.primitives:
+            yield primitive
+            for void in primitive.core.voids:
+                wrapped_void = self._wrap_primitive(void)
+                if wrapped_void is None:
+                    continue
+                yield from self._iter_primitives_with_voids([wrapped_void])
+
     def _find_primitive_or_void_by_id(self, value: int, primitives: list[Primitive] | None = None) -> Primitive | None:
         for primitive in primitives if primitives is not None else self.primitives:
             if primitive.id == value:
@@ -247,7 +256,7 @@ class PrimitivesQuery:
 
         return [
             primitive
-            for primitive in self.primitives
+            for primitive in self._iter_primitives_with_voids()
             if (layer_name_set is None or primitive.layer_name in layer_name_set)
             and (name_set is None or primitive.aedt_name in name_set)
             and (net_name_set is None or primitive.net_name in net_name_set)
@@ -258,7 +267,7 @@ class PrimitivesQuery:
     @property
     def primitives_by_aedt_name(self) -> dict[str, Primitive]:
         """Primitives."""
-        return {i.aedt_name: i for i in self.primitives}
+        return {i.aedt_name: i for i in self._iter_primitives_with_voids()}
 
     @property
     def primitives(self) -> list[Primitive]:
@@ -381,7 +390,11 @@ class PrimitivesQuery:
         dict
             Returns dict[str, list] with all specified layer names as keys organized by layer.
         """
-        return self._group_primitives_by("layer_name", initial_keys=list(self._pedb.stackup.layers.keys()))
+        return self._group_primitives_by(
+            "layer_name",
+            list(self._iter_primitives_with_voids()),
+            initial_keys=list(self._pedb.stackup.layers.keys()),
+        )
 
     @property
     def polygons_by_layer(self) -> dict[str, list[Primitive]]:
@@ -407,7 +420,11 @@ class PrimitivesQuery:
         dict
             Returns dict[str, list] with all specified net names as keys organized by net.
         """
-        return self._group_primitives_by("net_name", initial_keys=list(self._pedb.nets.nets.keys()))
+        return self._group_primitives_by(
+            "net_name",
+            list(self._iter_primitives_with_voids()),
+            initial_keys=list(self._pedb.nets.nets.keys()),
+        )
 
     @property
     def rectangles(self) -> list[Rectangle]:
@@ -464,7 +481,7 @@ class PrimitivesQuery:
         return points
 
     @deprecated("Use `filter_primitives` instead.")
-    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[Primitive]:
         """Get primitives by conditions.
 
         Parameters
@@ -475,8 +492,8 @@ class PrimitivesQuery:
             Set filter on layer_name. Default is ``None``.
         prim_type :  str, optional
             Set filter on primitive type. Default is ``None``.
-        is_void : bool
-            Set filter on is_void. Default is '``False'``
+        is_void : bool, optional
+            Set filter on is_void. When ``None``, both standard primitives and voids are returned.
         Returns
         -------
         List of filtered primitives
@@ -515,16 +532,31 @@ class Layout(PrimitivesQuery):
             Dictionary of terminals.
         """
         temp = []
-        for i in self._pedb.active_cell.layout.terminals:
-            if i.type.name.lower() == "pin_group":
+        try:
+            raw_terminals = self._pedb.active_cell.layout.terminals
+        except Exception as exc:
+            self._pedb.logger.warning("Failed to enumerate raw layout terminals: %s", exc)
+            return temp
+
+        for i in raw_terminals:
+            if i is None:
+                continue
+            try:
+                type_name_obj = i.type.name
+            except Exception as exc:
+                self._pedb.logger.warning("Skipping invalid terminal object during enumeration: %s", exc)
+                continue
+
+            type_name = type_name_obj.lower()
+            if type_name == "pin_group":
                 temp.append(PinGroupTerminal(self._pedb, i))
-            elif i.type.name.lower() == "padstack_inst":
+            elif type_name == "padstack_inst":
                 temp.append(PadstackInstanceTerminal(self._pedb, i))
-            elif i.type.name.lower() == "edge":
+            elif type_name == "edge":
                 temp.append(EdgeTerminal(self._pedb, i))
-            elif i.type.name.lower() == "bundle":
+            elif type_name == "bundle":
                 temp.append(BundleTerminal(self._pedb, i))
-            elif i.type.name.lower() == "point":
+            elif type_name == "point":
                 temp.append(PointTerminal(self._pedb, i))
         return temp
 

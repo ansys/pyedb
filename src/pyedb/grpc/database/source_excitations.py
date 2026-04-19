@@ -21,7 +21,6 @@
 # SOFTWARE.
 
 from typing import Any, Dict, List, Optional, Set, Tuple, Union
-import warnings
 
 from ansys.edb.core.database import ProductIdType as CoreProductIdType
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
@@ -64,6 +63,48 @@ class SourceExcitationInternal:
             elif isinstance(net, str) and net != "":
                 nets.add(net)
         return nets
+
+    @staticmethod
+    def _is_negative_net(net_name: str) -> bool:
+        """
+        Identify if a net belongs to a negative terminal based on naming conventions.
+
+        Parameters
+        ----------
+        net_name : str
+            The name of the net to check.
+
+        Returns
+        -------
+        bool
+            True if the net name matches a negative net pattern, False otherwise.
+
+        Notes
+        -----
+        Common negative net suffixes checked:
+        - _n, _neg, _negative (lowercase)
+        - _N, _NEG, _NEGATIVE (uppercase)
+        - :n, :neg, :negative (with colon)
+
+        """
+        if not net_name or not isinstance(net_name, str):
+            return False
+
+        net_lower = net_name.lower()
+        negative_patterns = [
+            "_n",
+            "_neg",
+            "_negative",
+            ":n",
+            ":neg",
+            ":negative",
+        ]
+
+        for pattern in negative_patterns:
+            if net_lower.endswith(pattern):
+                return True
+
+        return False
 
     def _get_unique_terminal_name(self, base_name: str) -> str:
         existing_names = list(self._pedb.terminals.keys())
@@ -218,12 +259,18 @@ class SourceExcitationInternal:
             terminal_name = generate_unique_name("Terminal_")
         if isinstance(point_on_edge, tuple):
             point_on_edge = CorePointData(point_on_edge)
-        prim = [i for i in self._pedb.layout.primitives if i.edb_uid == prim_id]
-        if not prim:
-            self._pedb.logger.error(f"No primitive found for ID {prim_id}")
+        elif isinstance(point_on_edge, list):
+            point_on_edge = [CorePointData(point) for point in point_on_edge]
+        primitive_lookup_id = prim_id.edb_uid if isinstance(prim_id, Primitive) else prim_id
+        try:
+            prim = self._pedb.layout.find_object_by_id(primitive_lookup_id)
+        except RuntimeError:
+            self._pedb.logger.error(f"No primitive found for ID {primitive_lookup_id}")
             return False
-        prim = prim[0]
-        pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
+        if isinstance(point_on_edge, list):
+            pos_edge = [CorePrimitiveEdge.create(prim.core, pt) for pt in point_on_edge]
+        else:
+            pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
         return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edge=pos_edge, net=prim.net, is_ref=is_ref)
 
 
@@ -1947,6 +1994,173 @@ class SourceExcitation(SourceExcitationInternal):
         boundle_terminal = BundleTerminal.create(self._pedb, port_name, edb_list)
         return boundle_terminal
 
+    def create_horizontal_wave_port(
+        self,
+        void: int | Primitive,
+        padstack_instances: list[PadstackInstance] = None,
+        pec_launch_width: str = "0.04mm",
+        layer_alignment: str = "Lower",
+    ) -> bool | BundleTerminal:
+        """
+        Create a horizontal wave port around one or more vias inside a void.
+
+        A horizontal wave port is a higher-fidelity alternative to coaxial lumped
+        ports for vertical interconnect excitation. Unlike a gap or lumped port,
+        which assumes a uniform current distribution, a wave port solves the field
+        distribution at the launch and therefore captures a more realistic
+        characteristic impedance. This usually improves the evaluation of fringing
+        fields and can noticeably affect results for differential pairs and other
+        high-speed channel structures.
+
+        Parameters
+        ----------
+        void : int | Primitive
+            Void primitive, or void primitive ID, used to define the horizontal
+            wave-port reference contour.
+        padstack_instances : list[PadstackInstance], optional
+            Padstack instances to connect to the horizontal wave port. When not
+            provided, padstack instances are automatically detected from the vias
+            intersecting the void polygon.
+        pec_launch_width : str, optional
+            PEC launch width assigned to the HFSS solver option. The default is
+            ``"0.04mm"``.
+        layer_alignment : str, optional
+            HFSS layer alignment for the wave port. Typical values are
+            ``"Lower"`` and ``"Upper"``. The default is ``"Lower"``.
+
+        Returns
+        -------
+        bool | BundleTerminal
+            Bundle terminal representing the created horizontal wave port. If no
+            padstack instance is found inside the target void, ``False`` is
+            returned.
+
+        Notes
+        -----
+        Horizontal wave ports can be used in place of coaxial lumped ports when a
+        more physical launch model is required. Because the wave port computes the
+        electromagnetic field distribution, it produces a more realistic impedance
+        than gap-port formulations that assume uniform current. This also improves
+        fringing-field estimation and can have a significant impact on extracted
+        results for differential links and other high-speed interconnect channels.
+
+        """
+        from ansys.edb.core.definition.padstack_def import PadstackDef as CorePadstackDef
+        from ansys.edb.core.terminal.bundle_terminal import BundleTerminal as CoreBundleTerminal
+        from ansys.edb.core.terminal.edge_terminal import EdgeTerminal as CoreEdgeTerminal
+
+        port_number = len(self._pedb.ports) + 1
+        terminals = []
+        if isinstance(void, int):
+            void = self._pedb.layout.get_object_by_id(void)
+            if not void:
+                raise Exception(f"No void found for given ID {void}")
+        if not padstack_instances:
+            # finding padstack instances included inside the void
+            instance_ids = self._pedb.padstacks.get_padstack_instances_id_intersecting_polygon(
+                points=void.polygon_data.without_arcs().points
+            )
+            padstack_instances = [self._pedb.padstacks.instances[inst_id] for inst_id in instance_ids]
+            if not padstack_instances:
+                self._pedb.logger.error(
+                    f"No padstack instance find inside void primitive {void}, no horizontal wave port created."
+                )
+                return False
+            self._pedb.logger.info(
+                f"Creating horizontal wave port {void}, {len(padstack_instances)} padstack instances found "
+                "inside the void."
+            )
+            self._pedb.logger.info(f"{len(padstack_instances)} padstack instances found inside the void.")
+
+        # void terminal
+        segments = void.core.polygon_data.arc_data
+        edges = [CorePrimitiveEdge.create(void.core, seg.midpoint) for seg in segments]
+        edge_term = CoreEdgeTerminal.create(
+            layout=void.core.layout, edges=edges, net=void.core.net, name=f"Ref_{void.id}", is_ref=False
+        )
+        edge_term = EdgeTerminal(self._pedb, edge_term)
+
+        symbol_def = CorePadstackDef.find_by_name(self._pedb.db, "Symbol")
+        for via in padstack_instances:
+            port_net = Net.create(layout=self._pedb.layout, name=f"Port{port_number}:{via.net.name}")
+            symbol = PadstackInstance.create(
+                layout=self._pedb.layout,
+                net=port_net,
+                name=f"Port{port_number}_neg_psi",
+                padstack_definition=symbol_def.name,
+                position_x=via.position[0],
+                position_y=via.position[1],
+                rotation=via.rotation,
+                top_layer=via.start_layer,
+                bottom_layer=via.stop_layer,
+            )
+            symbol.is_layout_pin = True
+            symbol.aedt_name = f"Port{port_number}:{via.net.name}"
+            via_meshing_prop = symbol._padstack_instance_meshing_properties
+            via_meshing_prop.sid = 3
+            via_meshing_prop.material = "copper"
+            via_meshing_prop.meshing_setting = "Mesh"
+            symbol._padstack_instance_meshing_properties = via_meshing_prop
+
+            term = PadstackInstanceTerminal.create(
+                layout=self._pedb.layout,
+                name=symbol.aedt_name,
+                padstack_instance=symbol,
+                layer=symbol.start_layer,
+                net=port_net,
+            )
+            terminals.append(term)
+
+        horizontal_wave_port_property = edge_term._horizontal_wave_port_properties
+        horizontal_wave_port_property.arms = 2
+        horizontal_wave_port_property.port_names = tuple(inst.aedt_name for inst in padstack_instances)
+        horizontal_wave_port_property.horizontal_wave_primary = True
+        horizontal_wave_port_property.is_gap_source = True
+        horizontal_wave_port_property.hfss_last_type = 8
+        horizontal_wave_port_property.port_type = "Pad Port"
+        edge_term._horizontal_wave_port_properties = horizontal_wave_port_property
+
+        for term in terminals:
+            horizontal_wave_port_property = term._horizontal_wave_port_properties
+            horizontal_wave_port_property.port_type = "Pad Port"
+            horizontal_wave_port_property.arms = 2
+            horizontal_wave_port_property.hfss_last_type = 8
+            horizontal_wave_port_property.port_names = term.padstack_instance.aedt_name
+            term._horizontal_wave_port_properties = horizontal_wave_port_property
+
+        terminals.append(edge_term)
+        for term in terminals:
+            # HFSS properties
+            hfss_prop = term._hfss_properties
+            hfss_prop.hfss_type = "Wave(coax)"
+            hfss_prop.orientation = "Horizontal"
+            hfss_prop.layer_alignment = layer_alignment
+            hfss_prop.horizontal_extent_factor = 5
+            hfss_prop.vertical_extent_factor = 3
+            hfss_prop.radial_extent_factor = 0
+            hfss_prop.pec_launch_width = pec_launch_width
+            hfss_prop.reference_name = ""
+            term._hfss_properties = hfss_prop
+            # planar EM properties (required to build valid ports)
+            planar_em_prop = term._planar_em_properties
+            planar_em_prop.ignore_reference = False
+            planar_em_prop.port_solver = True
+            planar_em_prop.port_type = "Pad Port Gap Source"
+            term._planar_em_properties = planar_em_prop
+            # Siwave properties
+            siwave_prop = term._siwave_properties
+            siwave_prop.reference_net = ""
+            term._siwave_properties = siwave_prop
+            # Terminal post-processing
+            pp = term.core.port_post_processing_prop
+            pp.voltage_magnitude = self._pedb.value(1.0)
+            pp.do_deembed = True
+            pp.do_renormalize = True
+            term.core.port_post_processing_prop = pp
+
+        bundle_terminal = CoreBundleTerminal.create(terminals=[term.core for term in terminals])
+        return BundleTerminal(self._pedb, bundle_terminal)
+
     def create_wave_port(
         self,
         prim_id: Union[int, Primitive],
@@ -2596,11 +2810,18 @@ class SourceExcitation(SourceExcitationInternal):
             EdgeTerminal as GrpcEdgeTerminal,
         )
 
-        point_on_edge = CorePointData([self._pedb.value(i) for i in location])
-        primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
-        pos_edge = CorePrimitiveEdge.create(primitive.core, point_on_edge)
+        points_on_edge = []
+        for point in location:
+            point_on_edge = CorePointData(list(point))
+            points_on_edge.append(point_on_edge)
+        primitive = self._pedb.layout.find_primitive(name=primitive_name)
+        if primitive:
+            primitive = primitive[0]
+        else:
+            raise Exception("Primitive not found")
+        edges = [CorePrimitiveEdge.create(primitive.core, point) for point in points_on_edge]
         edge_term = GrpcEdgeTerminal.create(
-            layout=primitive.core.layout, edges=[pos_edge], net=primitive.core.net, name=name, is_ref=False
+            layout=primitive.core.layout, edges=edges, net=primitive.core.net, name=name, is_ref=False
         )
 
         edge_term.impedance = self._pedb._value_setter(impedance)

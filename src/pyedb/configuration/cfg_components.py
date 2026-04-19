@@ -24,7 +24,15 @@ from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrie
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
 
 from pyedb.configuration.cfg_common import CfgBase
-from pyedb.dotnet.database.general import snake_to_pascal
+
+
+def _get_snake_to_pascal():
+    """Lazy import of snake_to_pascal to avoid loading .NET when using gRPC."""
+    # Import from dotnet module - only called in non-gRPC mode
+    from pyedb.dotnet.database.general import snake_to_pascal
+
+    return snake_to_pascal
+
 
 _solder_shape_mapping = {
     "cylinder": CoreSolderballShape.SOLDERBALL_CYLINDER,
@@ -48,29 +56,45 @@ class CfgComponent(CfgBase):
     def retrieve_model_properties_from_edb(self):
         c_p = self.pyedb_obj
 
-        if "NetlistModel" in c_p.model_type:
+        model_type = c_p.model_type
+
+        if "NetlistModel" in model_type:
             self.netlist_model["netlist"] = c_p.netlist_model
-        elif "PinPairModel" in c_p.model_type or "RLC" in c_p.model_type:
+        elif "PinPairModel" in model_type or "RLC" in model_type:
             temp = {}
 
             pin_pairs = c_p.pin_pairs[::]
             if not pin_pairs:
                 return
-            temp["first_pin"] = pin_pairs[0].first_pin
-            temp["second_pin"] = pin_pairs[0].second_pin
+            pp0 = pin_pairs[0]
+            temp["first_pin"] = pp0.first_pin
+            temp["second_pin"] = pp0.second_pin
 
-            temp["is_parallel"] = c_p.is_parallel_rlc
-            temp["resistance"] = str(c_p.res_value)
-            temp["resistance_enabled"] = c_p.rlc_enable[0]
-            temp["inductance"] = str(c_p.ind_value)
-            temp["inductance_enabled"] = c_p.rlc_enable[1]
-            temp["capacitance"] = str(c_p.cap_value)
-            temp["capacitance_enabled"] = c_p.rlc_enable[2]
+            # Read all RLC values directly from the already-fetched pin_pair
+            # to avoid repeated GetComponentProperty() calls (EDB 2026.1 heap
+            # corruption risk when iterating many components after model writes).
+            try:
+                rlc = pp0._pin_pair_rlc
+                temp["is_parallel"] = rlc.IsParallel
+                temp["resistance"] = str(rlc.R.ToDouble())
+                temp["resistance_enabled"] = rlc.REnabled
+                temp["inductance"] = str(rlc.L.ToDouble())
+                temp["inductance_enabled"] = rlc.LEnabled
+                temp["capacitance"] = str(rlc.C.ToDouble())
+                temp["capacitance_enabled"] = rlc.CEnabled
+            except Exception:
+                temp["is_parallel"] = False
+                temp["resistance"] = str(c_p.res_value)
+                temp["resistance_enabled"] = (c_p.rlc_enable or [False, False, False])[0]
+                temp["inductance"] = str(c_p.ind_value)
+                temp["inductance_enabled"] = (c_p.rlc_enable or [False, False, False])[1]
+                temp["capacitance"] = str(c_p.cap_value)
+                temp["capacitance_enabled"] = (c_p.rlc_enable or [False, False, False])[2]
             self.pin_pair_model.append(temp)
-        elif "SParameterModel" in c_p.model_type:
+        elif "SParameterModel" in model_type:
             self.s_parameter_model["reference_net"] = c_p.model.reference_net
             self.s_parameter_model["model_name"] = c_p.model.component_model_name
-        elif "SPICEModel" in c_p.model_type:
+        elif "SPICEModel" in model_type:
             self.spice_model["model_name"] = c_p.model.model_name
             self.spice_model["model_path"] = c_p.model.spice_file_path
             self.spice_model["sub_circuit"] = c_p.model.sub_circuit
@@ -90,6 +114,7 @@ class CfgComponent(CfgBase):
         if self._pedb.grpc:
             ic_die_prop.die_type = _die_type_mapping[die_type]
         else:
+            snake_to_pascal = _get_snake_to_pascal()
             ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
         if not die_type == "no_die":
             orientation = self.ic_die_properties.get("orientation")
@@ -97,6 +122,7 @@ class CfgComponent(CfgBase):
                 if self._pedb.grpc:
                     ic_die_prop.die_orientation = _die_orientation_mapping[orientation]
                 else:
+                    snake_to_pascal = _get_snake_to_pascal()
                     ic_die_prop.SetOrientation(
                         getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
                     )
@@ -113,14 +139,13 @@ class CfgComponent(CfgBase):
             self.pyedb_obj.ic_die_properties = ic_die_prop
 
     def _set_port_properties_to_edb(self):
-        if hasattr(self.pyedb_obj.component_property, "core"):
-            cp = self.pyedb_obj.component_property.core
-        else:
-            # grpc is returning pyedb-core object directly as it is internal.
-            cp = self.pyedb_obj.component_property
         if self._pedb.grpc:
+            cp = self.pyedb_obj.component_property
             port_prop = cp.port_property
         else:
+            # Use a mutable clone so SetPortProperty does not raise
+            # ReadOnlyModificationAttemptException on the live object.
+            cp = self.pyedb_obj._get_component_property_clone()
             port_prop = cp.GetPortProperty().Clone()
         height = self.port_properties.get("reference_height")
         if height:
@@ -142,7 +167,7 @@ class CfgComponent(CfgBase):
         else:
             port_prop.SetReferenceSize(self._pedb.edb_value(reference_size_x), self._pedb.edb_value(reference_size_y))
             cp.SetPortProperty(port_prop)
-        self.pyedb_obj.component_property = cp
+            self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _set_model_properties_to_edb(self):
         if hasattr(self.pyedb_obj.component_property, "core"):
@@ -181,20 +206,20 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
-        if hasattr(self.pyedb_obj.component_property, "core"):
-            cp = self.pyedb_obj.component_property.core
-        else:
-            # grpc is returning pyedb-core object directly as it is internal.
-            cp = self.pyedb_obj.component_property
         if self._pedb.grpc:
+            cp = self.pyedb_obj.component_property
             solder_ball_prop = cp.solder_ball_property
             shape = self.solder_ball_properties.get("shape")
             if shape:
                 solder_ball_prop.shape = _solder_shape_mapping.get(shape, CoreSolderballShape.NO_SOLDERBALL)
         else:
+            # Use a mutable clone so SetSolderBallProperty does not raise
+            # ReadOnlyModificationAttemptException on the live object.
+            cp = self.pyedb_obj._get_component_property_clone()
             solder_ball_prop = cp.GetSolderBallProperty().Clone()
             shape = self.solder_ball_properties.get("shape")
             if shape:
+                snake_to_pascal = _get_snake_to_pascal()
                 solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
             else:
                 return
@@ -222,7 +247,7 @@ class CfgComponent(CfgBase):
             solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
             solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
             cp.SetSolderBallProperty(solder_ball_prop)
-        self.pyedb_obj.component_property = cp
+            self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()

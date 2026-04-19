@@ -37,7 +37,7 @@ from pyedb.component_libraries.ansys_components import (
     Series,
 )
 from pyedb.dotnet.clr_module import String
-from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
+from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent, _clear_dotnet_owner
 from pyedb.dotnet.database.cell.hierarchy.structure_3d import Structure3D
 from pyedb.dotnet.database.definition.component_def import EDBComponentDef
 from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
@@ -611,6 +611,7 @@ class Components(object):
             if not (isinstance(cmp, self._pedb.core.Cell.Hierarchy.Component)):
                 cmp = self.get_component_by_name(cmp)
             cmp_prop = cmp.GetComponentProperty().Clone()
+            _clear_dotnet_owner(cmp_prop)
             return cmp_prop.GetSolderBallProperty().GetHeight()
         return False
 
@@ -1617,6 +1618,7 @@ class Components(object):
             raise ValueError(f"Component {componentname} not found in the layout.")
         edbComponent = edbComponent._edb_object
         edbRlcComponentProperty = edbComponent.GetComponentProperty().Clone()
+        _clear_dotnet_owner(edbRlcComponentProperty)
 
         componentPins = self.get_pin_from_component(componentname)
         componentNets = self.get_nets_from_pin_list(componentPins)
@@ -1831,6 +1833,7 @@ class Components(object):
         if edb_cmp is not None:
             edb_cmp = edb_cmp._edb_object
             rlc_property = edb_cmp.GetComponentProperty().Clone()
+            _clear_dotnet_owner(rlc_property)
             pin_pair_model = rlc_property.GetModel().Clone()
             pprlc = pin_pair_model.GetPinPairRlc(list(pin_pair_model.PinPairs)[0])
             pprlc.CEnabled = False
@@ -1927,6 +1930,7 @@ class Components(object):
             sball_shape = self._edb.Definition.SolderballShape.Spheroid
 
         cmp_property = edb_cmp.GetComponentProperty().Clone()
+        _clear_dotnet_owner(cmp_property)
         if cmp_type == self._edb.Definition.ComponentType.IC:
             ic_die_prop = cmp_property.GetDieProperty().Clone()
             ic_die_prop.SetType(self._edb.Definition.DieType.FlipChip)

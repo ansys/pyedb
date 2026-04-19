@@ -1700,7 +1700,7 @@ class Padstacks(object):
         self,
         points: List[Tuple[float, float]],
         nets: Optional[Union[str, List[str]]] = None,
-        padstack_instances_index: Optional[Dict[int, Tuple[float, float]]] = None,
+        padstack_instances_index: Optional[Union[Dict[int, Tuple[float, float]], "rtree.index.Index"]] = None,
     ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
 
@@ -1721,16 +1721,46 @@ class Padstacks(object):
         """
         if not points:
             raise Exception("No points defining polygon was provided")
-        if not padstack_instances_index:
-            padstack_instances_index = {}
-            for inst in self.instances:
-                padstack_instances_index[inst.id] = inst.position
-        _x = [pt[0] for pt in points]
-        _y = [pt[1] for pt in points]
-        points = [_x, _y]
-        return [
-            ind for ind, pt in padstack_instances_index.items() if GeometryOperators.is_point_in_polygon(pt, points)
-        ]
+
+        polygon_x = [float(pt[0]) for pt in points]
+        polygon_y = [float(pt[1]) for pt in points]
+        polygon = [polygon_x, polygon_y]
+        min_x, max_x = min(polygon_x), max(polygon_x)
+        min_y, max_y = min(polygon_y), max(polygon_y)
+
+        net_filter = [nets] if isinstance(nets, str) else nets
+
+        if padstack_instances_index and hasattr(padstack_instances_index, "intersection"):
+            candidate_ids = self.get_padstack_instances_intersecting_bounding_box(
+                [min_x, min_y, max_x, max_y],
+                nets=nets,
+                padstack_instances_index=padstack_instances_index,
+            )
+            candidate_positions = ((inst_id, self.instances[inst_id].position) for inst_id in candidate_ids)
+        else:
+            if not padstack_instances_index:
+                instances = self.instances.values()
+                if net_filter:
+                    instances = [inst for inst in instances if inst.net_name in net_filter]
+                candidate_positions = ((inst.id, inst.position) for inst in instances)
+            else:
+                candidate_positions = padstack_instances_index.items()
+
+        inside_ids = []
+        for inst_id, position in candidate_positions:
+            try:
+                x = float(position[0])
+                y = float(position[1])
+            except (TypeError, ValueError, IndexError):
+                continue
+
+            if not (math.isfinite(x) and math.isfinite(y)):
+                continue
+            if x < min_x or x > max_x or y < min_y or y > max_y:
+                continue
+            if GeometryOperators.is_point_in_polygon([x, y], polygon):
+                inside_ids.append(inst_id)
+        return inside_ids
 
     def get_padstack_instances_intersecting_bounding_box(
         self,
