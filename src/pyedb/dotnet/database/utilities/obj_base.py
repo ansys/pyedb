@@ -31,6 +31,45 @@ if TYPE_CHECKING:
 
 class SystemObject(object):
     def __init__(self, pedb: "Edb", core):
+        """
+        Initialize a SystemObject with reference to the EDB instance and core object.
+
+        This is the base class for all EDB wrapper objects that encapsulate .NET Core objects.
+        It provides access to the parent EDB database instance and the underlying .NET object.
+
+        Parameters
+        ----------
+        pedb : Edb
+            Reference to the parent Edb instance. This provides access to the top-level database
+            operations, utilities, and other EDB components. Cannot be None.
+        core : object
+            The underlying .NET Core object that this wrapper encapsulates. This is typically
+            an object from the ANSYS EDB .NET API (e.g., EDBLayer, EDBPrimitive, etc.).
+            Cannot be None.
+
+        Raises
+        ------
+        TypeError
+            If pedb is not an Edb instance or core is None.
+
+        Notes
+        -----
+        The core object is stored as a private attribute with name mangling (`__core`) to prevent
+        accidental modification by subclasses. Access the core object via the `core` property.
+
+        The pedb instance is stored as a protected attribute (`_pedb`) to allow subclasses to
+        access the database reference for performing database operations.
+
+        Examples
+        --------
+        This class is typically not instantiated directly by users, but subclasses like
+        `ObjBase` are used throughout the pyEDB library:
+
+        >>> from pyedb import Edb
+        >>> edb = Edb(db_path, edbversion="2024.2")  # doctest: +SKIP
+        >>> # SystemObject is instantiated internally by wrapper classes
+        >>> layer = edb.layout.layers[0]  # Returns a layer object whose parent class is SystemObject
+        """
         self._pedb = pedb
         self.__core = core
 
