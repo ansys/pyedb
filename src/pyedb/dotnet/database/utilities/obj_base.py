@@ -30,17 +30,17 @@ if TYPE_CHECKING:
 
 
 class SystemObject(object):
-    def __init__(self, pedb: "Edb", edb_object):
+    def __init__(self, pedb: "Edb", core):
         self._pedb = pedb
-        self.__core = edb_object
+        self.__core = core
 
     @property
     def core(self):
-        return self._edb_object
+        return self.__core
 
     @core.setter
     def core(self, value):
-        self._edb_object = value
+        self.__core = value
 
     @property
     def _edb_object(self):
@@ -55,24 +55,24 @@ class SystemObject(object):
 class BBox:
     """Bounding box."""
 
-    def __init__(self, pedb, edb_object=None, point_1=None, point_2=None):
+    def __init__(self, pedb, core=None, point_1=None, point_2=None):
         self._pedb = pedb
-        if edb_object:
-            self._edb_object = edb_object
+        if core:
+            self.core = core
         else:
             point_1 = PointData.create_from_xy(self._pedb, x=point_1[0], y=point_1[1])
             point_2 = PointData.create_from_xy(self._pedb, x=point_2[0], y=point_2[1])
-            self._edb_object = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
+            self.core = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
                 point_1.core, point_2.core
             )
 
     @property
     def point_1(self):
-        return [self._edb_object.Item1.X.ToDouble(), self._edb_object.Item1.Y.ToDouble()]
+        return [self.core.Item1.X.ToDouble(), self.core.Item1.Y.ToDouble()]
 
     @property
     def point_2(self):
-        return [self._edb_object.Item2.X.ToDouble(), self._edb_object.Item2.Y.ToDouble()]
+        return [self.core.Item2.X.ToDouble(), self.core.Item2.Y.ToDouble()]
 
     @property
     def corner_points(self):

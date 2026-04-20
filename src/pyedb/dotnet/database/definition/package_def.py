@@ -79,7 +79,7 @@ class PackageDef(ObjBase):
             )
         polygon_data = PolygonData(self._pedb, create_from_bounding_box=True, points=bbox)
 
-        edb_object.SetExteriorBoundary(polygon_data._edb_object)
+        edb_object.SetExteriorBoundary(polygon_data.core)
         return edb_object
 
     def delete(self):
@@ -93,7 +93,7 @@ class PackageDef(ObjBase):
 
     @exterior_boundary.setter
     def exterior_boundary(self, value):
-        self._edb_object.SetExteriorBoundary(value._edb_object)
+        self._edb_object.SetExteriorBoundary(value.core)
 
     @property
     def maximum_power(self):

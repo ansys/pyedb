@@ -873,7 +873,7 @@ class Modeler:
             layer = list(layer)[0]
 
             new_polygon_data = self._pedb.core.Geometry.PolygonData.Unite(
-                convert_py_list_to_net_list([i.polygon_data._edb_object for i in polygons])
+                convert_py_list_to_net_list([i.polygon_data.core for i in polygons])
             )
             voids = []
             for i in polygons:
@@ -936,8 +936,8 @@ class Modeler:
             ``True`` when successful, ``False`` when failed.
         """
         poly_data = poly.polygon_data
-        new_poly = poly_data._edb_object.Defeature(tolerance)
-        poly._edb_object.SetPolygonData(new_poly)
+        new_poly = poly_data.core.Defeature(tolerance)
+        poly.core.SetPolygonData(new_poly)
         return True
 
     def get_layout_statistics(self, evaluate_area=False, net_list=False) -> EDBStatistics:

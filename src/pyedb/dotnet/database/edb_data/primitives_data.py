@@ -80,7 +80,7 @@ class EdbPolygon(Primitive):
             ``True`` when successful, ``False`` when failed.
         """
         return self._pedb.modeler.create_polygon(
-            points=self.polygon_data._edb_object,
+            points=self.polygon_data.core,
             layer_name=self.layer_name,
             net_name=self.net_name,
             voids=self.voids,
@@ -94,7 +94,7 @@ class EdbPolygon(Primitive):
         -------
         bool
         """
-        return self.polygon_data._edb_object.HasSelfIntersections()
+        return self.polygon_data.core.HasSelfIntersections()
 
     def fix_self_intersections(self):
         """Remove self intersections if they exists.
@@ -106,8 +106,8 @@ class EdbPolygon(Primitive):
         """
         new_polys = []
         if self.has_self_intersections:
-            new_polygons = list(self.polygon_data._edb_object.RemoveSelfIntersections())
-            self._edb_object.SetPolygonData(new_polygons[0])
+            new_polygons = list(self.polygon_data.core.RemoveSelfIntersections())
+            self.core.SetPolygonData(new_polygons[0])
             for p in new_polygons[1:]:
                 cloned_poly = self._app.core.Cell.primitive.polygon.create(
                     self._app.active_layout, self.layer_name, self.net, p
@@ -131,12 +131,12 @@ class EdbPolygon(Primitive):
         for layer in layers:
             if layer in self._pedb.stackup.layers:
                 duplicate_polygon = self._pedb.modeler.create_polygon(
-                    self.polygon_data._edb_object, layer, net_name=self.net.name
+                    self.polygon_data.core, layer, net_name=self.net.name
                 )
                 if duplicate_polygon:
                     for void in self.voids:
                         duplicate_void = self._pedb.modeler.create_polygon(
-                            void.polygon_data._edb_object,
+                            void.polygon_data.core,
                             layer,
                             net_name=self.net.name,
                         )
@@ -156,23 +156,16 @@ class EdbPolygon(Primitive):
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
-        >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
-        >>> for polygon in top_layer_polygon:
-        >>>     polygon.move(vector=["2mm", "100um"])
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
             _vector = self._edb.Geometry.PointData(
                 self._edb.Utility.Value(vector[0]), self._edb.Utility.Value(vector[1])
             )
             polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(
-                self.polygon_data._edb_object.GetArcData(), True
+                self.polygon_data.core.GetArcData(), True
             )
             polygon_data.Move(_vector)
-            return self._edb_object.SetPolygonData(polygon_data)
+            return self.core.SetPolygonData(polygon_data)
         return False
 
     def rotate(self, angle, center=None):
@@ -189,29 +182,22 @@ class EdbPolygon(Primitive):
         -------
         bool
            ``True`` when successful, ``False`` when failed.
-
-        Examples
-        --------
-        >>> edbapp = ansys.aedt.core.Edb("myproject.aedb")
-        >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
-        >>> for polygon in top_layer_polygon:
-        >>>     polygon.rotate(angle=45)
         """
         if angle:
             polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(
-                self.polygon_data._edb_object.GetArcData(), True
+                self.polygon_data.core.GetArcData(), True
             )
             if not center:
                 center = polygon_data.GetBoundingCircleCenter()
                 if center:
                     polygon_data.Rotate(angle * math.pi / 180, center)
-                    return self._edb_object.SetPolygonData(polygon_data)
+                    return self.core.SetPolygonData(polygon_data)
             elif isinstance(center, list) and len(center) == 2:
                 center = self._edb.Geometry.PointData(
                     self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
                 )
                 polygon_data.Rotate(angle * math.pi / 180, center)
-                return self._edb_object.SetPolygonData(polygon_data)
+                return self.core.SetPolygonData(polygon_data)
         return False
 
     def move_layer(self, layer):
@@ -229,7 +215,7 @@ class EdbPolygon(Primitive):
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
             polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(
-                self.polygon_data._edb_object.GetArcData(), True
+                self.polygon_data.core.GetArcData(), True
             )
             moved_polygon = self._pedb.modeler.create_polygon(
                 points=polygon_data, net_name=self.net_name, layer_name=layer
@@ -261,7 +247,7 @@ class EdbPolygon(Primitive):
             point_data = self._app.pedb_class.database.geometry.point_data.PointData.create_from_xy(
                 self._app, self._app.edb_value(point_data[0]), self._app.edb_value(point_data[1])
             )
-        int_val = int(self.polygon_data._edb_object.PointInPolygon(point_data.core))
+        int_val = int(self.polygon_data.core.PointInPolygon(point_data.core))
 
         # Intersection type:
         # 0 = objects do not intersect
@@ -309,11 +295,11 @@ class EdbPolygon(Primitive):
     @property
     def polygon_data(self):
         """:class:`pyedb.dotnet.database.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
-        return PolygonData(self._pedb, self._edb_object.GetPolygonData())
+        return PolygonData(self._pedb, self.core.GetPolygonData())
 
     @polygon_data.setter
     def polygon_data(self, poly):
-        self._edb_object.SetPolygonData(poly._edb_object)
+        self.core.SetPolygonData(poly.core)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
         """Expand the polygon shape by an absolute value in all direction.
@@ -353,14 +339,6 @@ class EDBArcs(object):
     """Manages EDB Arc Data functionalities.
     It Inherits EDB primitives arcs properties.
 
-    Examples
-    --------
-    >>> from pyedb import Edb
-    >>> edb = Edb(myedb, edbversion="2021.2")
-    >>> prim_arcs = edb.modeler.primitives[0].arcs
-    >>> prim_arcs.center  # arc center
-    >>> prim_arcs.points  # arc point list
-    >>> prim_arcs.mid_point  # arc mid point
     """
 
     def __init__(self, app, arc):
@@ -375,14 +353,6 @@ class EDBArcs(object):
         -------
         list
             List containing the X and Y coordinates of the starting point.
-
-
-        Examples
-        --------
-        >>> appedb = Edb(fpath, edbversion="2024.2")
-        >>> start_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].start
-        >>> print(start_coordinate)
-        [x_value, y_value]
         """
         point = self.arc_object.Start
         return [point.X.ToDouble(), point.Y.ToDouble()]
@@ -395,11 +365,6 @@ class EDBArcs(object):
         -------
         list
             List containing the X and Y coordinates of the ending point.
-
-        Examples
-        --------
-        >>> appedb = Edb(fpath, edbversion="2024.2")
-        >>> end_coordinate = appedb.nets["V1P0_S0"].primitives[0].arcs[0].end
         """
         point = self.arc_object.End
         return [point.X.ToDouble(), point.Y.ToDouble()]
@@ -413,11 +378,6 @@ class EDBArcs(object):
         float
             Height of the arc.
 
-
-        Examples
-        --------
-        >>> appedb = Edb(fpath, edbversion="2024.2")
-        >>> arc_height = appedb.nets["V1P0_S0"].primitives[0].arcs[0].height
         """
         return self.arc_object.Height
 
