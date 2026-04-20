@@ -38,19 +38,19 @@ class PolygonData:
     def __init__(
         self,
         pedb: "Edb",
-        edb_object: Any | None = None,
+        core: Any | None = None,
         create_from_points: Any | None = None,
         create_from_bounding_box: Any | None = None,
         **kwargs,
     ) -> None:
         self._pedb = pedb
 
-        if edb_object is not None:
-            self._edb_object = edb_object
+        if core is not None:
+            self.core = core
         elif create_from_points:
-            self._edb_object = self.create_from_points(**kwargs)
+            self.core = self.create_from_points(**kwargs)
         elif create_from_bounding_box:
-            self._edb_object = self.create_from_bounding_box(**kwargs)
+            self.core = self.create_from_bounding_box(**kwargs)
         else:
             self._pedb.logger.error(
                 "PolygonData: No valid EDB object or creation method provided. "
@@ -80,14 +80,14 @@ class PolygonData:
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
         """
-        return BBox(self._pedb, self._edb_object.GetBBox()).corner_points
+        return BBox(self._pedb, self.core.GetBBox()).corner_points
 
     @property
     def arcs(self) -> list["EDBArcs"]:
         """Get the Primitive Arc Data."""
         from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
 
-        arcs = [EDBArcs(self._pedb, i) for i in self._edb_object.GetArcData()]
+        arcs = [EDBArcs(self._pedb, i) for i in self.core.GetArcData()]
         return arcs
 
     @property
@@ -100,13 +100,13 @@ class PolygonData:
         """
         return [
             (self._pedb.edb_value(i.X).ToDouble(), self._pedb.edb_value(i.Y).ToDouble())
-            for i in list(self._edb_object.Points)
+            for i in list(self.core.Points)
         ]
 
     @property
     def points_without_arcs(self) -> list[tuple[float, float]]:
         """Get all points in polygon without arcs."""
-        points = list(self._edb_object.GetPolygonWithoutArcs().Points)
+        points = list(self.core.GetPolygonWithoutArcs().Points)
         return [(pt.X.ToDouble(), pt.Y.ToDouble()) for pt in points]
 
     def create_from_points(self, points: list[tuple[float, float]], closed: bool = True) -> Any:
@@ -119,12 +119,12 @@ class PolygonData:
     @property
     def area(self) -> float:
         """Get the area of the polygon."""
-        return self._edb_object.Area()
+        return self.core.Area()
 
     def create_from_bounding_box(self, points: list[Any]) -> Any:
         """Create a polygon from a bounding box defined by two corner points."""
         bbox = BBox(self._pedb, point_1=points[0], point_2=points[1])
-        return self._pedb.core.Geometry.PolygonData.CreateFromBBox(bbox._edb_object)
+        return self._pedb.core.Geometry.PolygonData.CreateFromBBox(bbox.core)
 
     def expand(
         self,
@@ -132,7 +132,7 @@ class PolygonData:
         tolerance: float = 1e-12,
         round_corners: bool = True,
         maximum_corner_extension: float = 0.001,
-    ) -> bool:
+    ) -> "PolygonData":
         """Expand the polygon shape by an absolute value in all direction.
 
         Offset can be negative for negative expansion.
@@ -149,9 +149,9 @@ class PolygonData:
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
         """
-        new_poly = self._edb_object.Expand(offset, tolerance, round_corners, maximum_corner_extension)
-        self._edb_object = new_poly[0]
-        return True
+        new_poly = self.core.Expand(offset, tolerance, round_corners, maximum_corner_extension)
+        self.core = new_poly[0]
+        return self
 
     def create_from_arcs(self, arcs: list[Any], flag: bool) -> "PolygonData":
         """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
@@ -164,7 +164,7 @@ class PolygonData:
         """
         if isinstance(arcs, list):
             arcs = convert_py_list_to_net_list(arcs)
-        poly = self._edb_object.CreateFromArcs(arcs, flag)
+        poly = self.core.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
 
     # TODO: Shouldn't that method only work with x and y as input instead of
@@ -174,7 +174,7 @@ class PolygonData:
         if isinstance(x, list) and len(x) == 2:
             y = x[1]
             x = x[0]
-        return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
+        return self.core.PointInPolygon(self._pedb.point_data(x, y))
 
     # TODO: Same argument as above
     @deprecated("Use is_inside method instead.", category=None)
@@ -189,9 +189,9 @@ class PolygonData:
 
     def get_point(self, index: int) -> PointData:
         """Gets the point at the index as a PointData object."""
-        edb_object = self._edb_object.GetPoint(index)
+        edb_object = self.core.GetPoint(index)
         return self._pedb.pedb_class.database.geometry.point_data.PointData(self._pedb, edb_object)
 
     def set_point(self, index: int, point_data: PointData) -> None:
         """Sets the point at the index from a PointData object."""
-        self._edb_object.SetPoint(index, point_data)
+        self.core.SetPoint(index, point_data)

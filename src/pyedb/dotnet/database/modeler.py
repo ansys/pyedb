@@ -375,16 +375,16 @@ class Modeler:
             elif isinstance(void, Modeler.Shape):
                 voidPolygonData = self.shape_to_polygon_data(void)
             else:
-                voidPolygonData = void.polygon_data._edb_object
+                voidPolygonData = void.polygon_data.core
 
             if voidPolygonData is False or voidPolygonData is None or voidPolygonData.IsNull():
                 self._logger.error("Failed to create void polygon data")
                 return False
             if isinstance(polygonData, PolygonData):
-                polygonData = polygonData._edb_object
+                polygonData = polygonData.core
             polygonData.AddHole(voidPolygonData)
         if isinstance(polygonData, PolygonData):
-            polygonData = polygonData._edb_object
+            polygonData = polygonData.core
         polygon = self._pedb._edb.Cell.Primitive.Polygon.Create(
             self._active_layout, layer_name, net._edb_object, polygonData
         )
@@ -1621,9 +1621,7 @@ class Modeler:
                 reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[0].name
             else:
                 reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[-1].name
-        if solder_mask_layer_name is self._pedb.stackup.layers:
-            layer = self._pedb.stackup.layers[solder_mask_layer_name]
-        else:
+        if not solder_mask_layer_name is self._pedb.stackup.layers:
             if open_top:
                 method = "add_on_top"
             else:
@@ -1648,10 +1646,10 @@ class Modeler:
                               if component.placement_layer == reference_signal_layer]
             for component in components:
                 comp_box = component.bounding_box
-                x1 = comp_box[0] - components_opening_offset
-                y1 = comp_box[1] + components_opening_offset
-                x2 = comp_box[2] - components_opening_offset
-                y2 = comp_box[3] + components_opening_offset
+                x1 = comp_box[0] - self._pedb.value(components_opening_offset)
+                y1 = comp_box[1] + self._pedb.value(components_opening_offset)
+                x2 = comp_box[2] - self._pedb.value(components_opening_offset)
+                y2 = comp_box[3] + self._pedb.value(components_opening_offset)
                 self.create_rectangle(layer_name=solder_mask_layer_name,
                                       lower_left_point=(x1, y1),
                                       upper_right_point=(x2, y2))
@@ -1662,7 +1660,7 @@ class Modeler:
                 for void in polygon.voids:
                     polygon_data = void.polygon_data
                     if voids_opening_offset:
-                        polygon_data = polygon_data.scale(voids_opening_offset)
+                        polygon_data = polygon_data.expand(self._pedb.value(voids_opening_offset))
                     self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         if open_traces:
             traces = self._pedb.layout.find_primitive(prim_type="path", layer_name=reference_signal_layer,
@@ -1670,6 +1668,6 @@ class Modeler:
             for trace in traces:
                 polygon_data = trace.polygon_data
                 if traces_offset:
-                    polygon_data = polygon_data.scale(traces_offset)
+                    polygon_data = polygon_data.expand(self._pedb.value(traces_offset))
                 self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         return True
