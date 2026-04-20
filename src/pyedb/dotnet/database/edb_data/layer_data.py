@@ -28,7 +28,8 @@ from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel, Hu
 
 
 def _clear_is_owner(obj):
-    """Use reflection to set the protected IsOwner property to False on a .NET Layer object.
+    """
+    Use reflection to set the protected IsOwner property to False on a .NET Layer object.
 
     This prevents the buggy ``EDBLayer_Cleanup`` destructor from being called when the
     Python-side wrapper is garbage-collected, which would otherwise cause an
@@ -43,7 +44,6 @@ def _clear_is_owner(obj):
         # Silently ignore reflection errors; the object may not have the IsOwner property
         # or the property may not be settable on this platform/version.
         print(f"{e.name}: {e}")
-        pass  # noqa: B110
 
 
 def layer_cast(pedb, edb_object):
