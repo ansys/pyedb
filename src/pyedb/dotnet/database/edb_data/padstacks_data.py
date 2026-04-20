@@ -914,7 +914,7 @@ class EDBPadstack(object):
                     )
                 if len(self.pad_by_layer[self.via_stop_layer].parameters) == 0:
                     self._ppadstack._pedb.modeler.create_polygon(
-                        self.pad_by_layer[self.via_stop_layer].polygon_data._edb_object,
+                        self.pad_by_layer[self.via_stop_layer].polygon_data.core,
                         layer_name=self.via_stop_layer,
                         net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
