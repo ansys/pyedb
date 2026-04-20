@@ -235,8 +235,9 @@ class PolygonData:
 
         """
 
-        new_poly = self.core.expand(offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension,
-                                    tol=tolerance)
+        new_poly = self.core.expand(
+            offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension, tol=tolerance
+        )
         if not new_poly[0].points:
             return False
         core = new_poly[0]

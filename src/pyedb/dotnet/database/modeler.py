@@ -1480,20 +1480,22 @@ class Modeler:
         _voids = [] if voids is None else voids
         return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)
 
-    def open_solder_mask(self,
-                         open_components:bool=True,
-                         component_filter:list[str] | None = None,
-                         components_opening_offset:float|str=0.0,
-                         open_voids:bool=True,
-                         voids_opening_offset:float|str=0.0,
-                         open_traces:bool=True,
-                         traces_offset:float|str=0.0,
-                         open_traces_net_filter:list[str] | None = None,
-                         solder_mask_layer_name:str="Solder",
-                         solder_mask_thickness:float|str="30um",
-                         solder_mask_material:str="",
-                         reference_signal_layer:str="",
-                         open_top:bool=True) -> bool:
+    def open_solder_mask(
+        self,
+        open_components: bool = True,
+        component_filter: list[str] | None = None,
+        components_opening_offset: float | str = 0.0,
+        open_voids: bool = True,
+        voids_opening_offset: float | str = 0.0,
+        open_traces: bool = True,
+        traces_offset: float | str = 0.0,
+        open_traces_net_filter: list[str] | None = None,
+        solder_mask_layer_name: str = "Solder",
+        solder_mask_thickness: float | str = "30um",
+        solder_mask_material: str = "",
+        reference_signal_layer: str = "",
+        open_top: bool = True,
+    ) -> bool:
         """
         Create solder mask openings for components, voids, and traces.
 
@@ -1622,38 +1624,45 @@ class Modeler:
                 reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[0].name
             else:
                 reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[-1].name
-        if not solder_mask_layer_name is self._pedb.stackup.layers:
+        if solder_mask_layer_name is not self._pedb.stackup.layers:
             if open_top:
                 method = "add_on_top"
             else:
                 method = "add_below"
-            self._pedb.stackup.add_layer(layer_name=solder_mask_layer_name,
-                                                 layer_type="signal",
-                                                 material=solder_mask_material,
-                                                 base_layer=reference_signal_layer,
-                                                 thickness=solder_mask_thickness,
-                                                 method=method,
-                                                 is_negative=True,
-                                                 filling_material="AIR"
-                                                 )
+            self._pedb.stackup.add_layer(
+                layer_name=solder_mask_layer_name,
+                layer_type="signal",
+                material=solder_mask_material,
+                base_layer=reference_signal_layer,
+                thickness=solder_mask_thickness,
+                method=method,
+                is_negative=True,
+                filling_material="AIR",
+            )
         if open_components:
             if component_filter:
-                components = [component for ref_des, component in self._pedb.components.instances.items()
-                              if ref_des in component_filter]
+                components = [
+                    component
+                    for ref_des, component in self._pedb.components.instances.items()
+                    if ref_des in component_filter
+                ]
                 if not components:
                     raise ValueError(f"No components found for {component_filter}.")
             else:
-                components = [component for component in list(self._pedb.components.instances.values())
-                              if component.placement_layer == reference_signal_layer]
+                components = [
+                    component
+                    for component in list(self._pedb.components.instances.values())
+                    if component.placement_layer == reference_signal_layer
+                ]
             for component in components:
                 comp_box = component.bounding_box
                 x1 = comp_box[0] - self._pedb.value(components_opening_offset)
                 y1 = comp_box[1] + self._pedb.value(components_opening_offset)
                 x2 = comp_box[2] - self._pedb.value(components_opening_offset)
                 y2 = comp_box[3] + self._pedb.value(components_opening_offset)
-                self.create_rectangle(layer_name=solder_mask_layer_name,
-                                      lower_left_point=(x1, y1),
-                                      upper_right_point=(x2, y2))
+                self.create_rectangle(
+                    layer_name=solder_mask_layer_name, lower_left_point=(x1, y1), upper_right_point=(x2, y2)
+                )
         if open_voids:
             for polygon in self._pedb.layout.find_primitive(prim_type="polygon", layer_name=reference_signal_layer):
                 if not polygon.has_voids:
@@ -1664,8 +1673,9 @@ class Modeler:
                         polygon_data = polygon_data.expand(self._pedb.value(voids_opening_offset))
                     self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         if open_traces:
-            traces = self._pedb.layout.find_primitive(prim_type="path", layer_name=reference_signal_layer,
-                                                      net_name=open_traces_net_filter)
+            traces = self._pedb.layout.find_primitive(
+                prim_type="path", layer_name=reference_signal_layer, net_name=open_traces_net_filter
+            )
             for trace in traces:
                 polygon_data = trace.polygon_data
                 if traces_offset:
