@@ -441,7 +441,7 @@ class PrimitivesQuery:
         except AttributeError:
             return None
 
-        return self._polygon_bbox_to_list(polygon_data.core.GetBBox())
+        return self._polygon_bbox_to_list(polygon_data.GetBBox())
 
     def get_polygon_points(self, polygon) -> list[list[float]]:
         """Retrieve polygon points.
@@ -475,7 +475,7 @@ class PrimitivesQuery:
         prev_point = None
         while True:
             try:
-                point = polygon_data.core.GetPoint(index)
+                point = polygon_data.GetPoint(index)
             except Exception:
                 break
 
