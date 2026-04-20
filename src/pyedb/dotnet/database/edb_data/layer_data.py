@@ -39,8 +39,10 @@ def _clear_is_owner(obj):
         prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
         if prop is not None:
             prop.SetValue(obj, False, None)
-    except Exception:
-        pass
+    except (AttributeError, TypeError) as e:
+        # Silently ignore reflection errors; the object may not have the IsOwner property
+        # or the property may not be settable on this platform/version.
+        pass  # noqa: B110
 
 
 def layer_cast(pedb, edb_object):
