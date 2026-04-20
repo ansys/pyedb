@@ -105,8 +105,7 @@ class PolygonData:
         list[tuple[float, float]]
         """
         return [
-            (self._pedb.edb_value(i.X).ToDouble(), self._pedb.edb_value(i.Y).ToDouble())
-            for i in list(self.core.Points)
+            (self._pedb.edb_value(i.X).ToDouble(), self._pedb.edb_value(i.Y).ToDouble()) for i in list(self.core.Points)
         ]
 
     @property

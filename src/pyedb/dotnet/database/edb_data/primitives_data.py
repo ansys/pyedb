@@ -161,9 +161,7 @@ class EdbPolygon(Primitive):
             _vector = self._edb.Geometry.PointData(
                 self._edb.Utility.Value(vector[0]), self._edb.Utility.Value(vector[1])
             )
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(
-                self.polygon_data.core.GetArcData(), True
-            )
+            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.core.GetArcData(), True)
             polygon_data.Move(_vector)
             return self.core.SetPolygonData(polygon_data)
         return False
@@ -184,9 +182,7 @@ class EdbPolygon(Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if angle:
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(
-                self.polygon_data.core.GetArcData(), True
-            )
+            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.core.GetArcData(), True)
             if not center:
                 center = polygon_data.GetBoundingCircleCenter()
                 if center:
@@ -214,9 +210,7 @@ class EdbPolygon(Primitive):
            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
-            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(
-                self.polygon_data.core.GetArcData(), True
-            )
+            polygon_data = self._edb.Geometry.PolygonData.CreateFromArcs(self.polygon_data.core.GetArcData(), True)
             moved_polygon = self._pedb.modeler.create_polygon(
                 points=polygon_data, net_name=self.net_name, layer_name=layer
             )

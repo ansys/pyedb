@@ -375,8 +375,9 @@ class PrimitivesQuery:
         -------
         list
         """
-        return self.filter_primitives(layer_name=layer_name, name=name, net_name=net_name,
-                                      prim_type=prim_type, is_void=is_void)
+        return self.filter_primitives(
+            layer_name=layer_name, name=name, net_name=net_name, prim_type=prim_type, is_void=is_void
+        )
 
     @property
     def primitives_by_layer(self) -> dict:
