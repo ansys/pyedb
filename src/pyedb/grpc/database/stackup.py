@@ -942,7 +942,7 @@ class Stackup:
             new_layer.core.set_material(material)
             if layer_type != "dielectric":
                 new_layer.core.set_fill_material(filling_material)
-            new_layer.negative = is_negative
+            new_layer.is_negative = is_negative
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
                 new_layer.lower_elevation = self._pedb._value_setter(elevation)

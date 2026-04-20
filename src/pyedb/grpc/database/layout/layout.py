@@ -44,6 +44,32 @@ if TYPE_CHECKING:
 from typing import List, Union
 
 from ansys.edb.core.geometry.point_data import PointData as CorePointData
+from ansys.edb.core.primitive.primitive import Primitive as _CorePrimitive
+
+# ---------------------------------------------------------------------------
+# Resilience patch for gRPC SDK PrimitiveType enum version mismatches.
+#
+# The EDB gRPC server may return primitive type values (e.g. 10) that are not
+# present in the installed client SDK's PrimitiveType enum.  When that happens,
+# ``Primitive.cast()`` raises ``ValueError`` which propagates out of
+# ``Layout.primitives`` and crashes any caller.
+#
+# This patch wraps ``Primitive.cast`` so that any ``ValueError`` (unknown type)
+# causes the primitive to be silently skipped (cast returns ``None``), which is
+# already handled by the ``if wrapped_primitive is not None`` guard in our
+# ``primitives`` property.
+# ---------------------------------------------------------------------------
+_original_primitive_cast = _CorePrimitive.cast
+
+
+def _safe_primitive_cast(self):
+    try:
+        return _original_primitive_cast(self)
+    except ValueError:
+        return None
+
+
+_CorePrimitive.cast = _safe_primitive_cast
 
 from pyedb.grpc.database.hierarchy.pingroup import PinGroup
 from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
@@ -245,9 +271,18 @@ class PrimitivesQuery:
         net_name_set = self._as_filter_set(net_name)
         prim_type_set = self._as_filter_set(prim_type)
 
+        # Optimization: if a specific layer is requested, use primitives_by_layer
+        # to avoid fetching all primitives (which can hit corrupt types on gRPC server)
+        if layer_name_set is not None:
+            primitives_list = []
+            for layer in layer_name_set:
+                primitives_list.extend(self.primitives_by_layer.get(layer, []))
+        else:
+            primitives_list = self.primitives
+
         return [
             primitive
-            for primitive in self.primitives
+            for primitive in primitives_list
             if (layer_name_set is None or primitive.layer_name in layer_name_set)
             and (name_set is None or primitive.aedt_name in name_set)
             and (net_name_set is None or primitive.net_name in net_name_set)
@@ -351,26 +386,38 @@ class PrimitivesQuery:
         ]
 
     def find_primitive(
-        self, layer_name: str | list = None, name: str | list = None, net_name: str | list = None
+        self,
+        layer_name: str | list = None,
+        name: str | list = None,
+        net_name: str | list = None,
+        prim_type: str | list = None,
+        is_void: bool | None = None,
     ) -> list[Primitive]:
-        """Find a primitive objects by layer name.
+        """Find primitive objects by one or more attributes.
 
         Parameters
         ----------
         layer_name : str, list, optional
-            Name of the layer.
+            Name of the layer or list of layer names.
         name : str, list, optional
-            Name of the primitive
+            Name of the primitive or list of names.
         net_name : str, list, optional
-            Name of the primitive
-        point : tuple[float, float], optional
-            Coordinate point (x, y) to find primitives at a specific location. If provided, only primitives that contain
-            this point will be returned.
+            Net name or list of net names.
+        prim_type : str, list, optional
+            Primitive type filter, e.g. ``"polygon"`` or ``"path"``.
+            Both lowercase (``"polygon"``) and EDB-style (``"Polygon"``) values are accepted.
+        is_void : bool, optional
+            When ``True``, return only void primitives. When ``False``, return only non-void
+            primitives. When ``None`` (default), void state is not used as a filter.
+
         Returns
         -------
-        list
+        list[Primitive]
+            Filtered list of primitives.
         """
-        return self.filter_primitives(layer_name=layer_name, name=name, net_name=net_name)
+        return self.filter_primitives(
+            layer_name=layer_name, name=name, net_name=net_name, prim_type=prim_type, is_void=is_void
+        )
 
     @property
     def primitives_by_layer(self) -> dict[str, list[Primitive]]:

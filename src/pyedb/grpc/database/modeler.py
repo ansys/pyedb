@@ -1673,3 +1673,199 @@ class Modeler(object):
             poly_data = PolygonData.create(self._pedb, point_data, closed=True)
         _voids = [] if voids is None else voids
         return self.create_polygon(poly_data, layer_name=layer_name, voids=_voids, net_name=net_name)
+
+    def open_solder_mask(self,
+                         open_components:bool=True,
+                         component_filter:list[str] | None = None,
+                         components_opening_offset:float|str=0.0,
+                         open_voids:bool=True,
+                         voids_opening_offset:float|str=0.0,
+                         open_traces:bool=True,
+                         traces_offset:float|str=0.0,
+                         open_traces_net_filter:list[str] | None = None,
+                         solder_mask_layer_name:str="Solder",
+                         solder_mask_thickness:float|str="30um",
+                         solder_mask_material:str="",
+                         reference_signal_layer:str="",
+                         open_top:bool=True) -> bool:
+        """
+        Create solder mask openings for components, voids, and traces.
+
+        This method creates a solder mask dielectric layer with openings (negative geometries) for:
+
+        - Component pads and bodies
+        - Polygon voids (cutouts) in power/ground planes
+        - PCB traces (transmission lines)
+
+        The solder mask is created as a negative layer (inverted copper representation) in EDB,
+        and openings are implemented as rectangular or polygonal shapes placed on this layer.
+        A default solder mask material (εᵣ = 4) is created automatically if no material is specified.
+
+        Parameters
+        ----------
+        open_components : bool, optional
+            Enable creation of solder mask openings for component pads and bodies.
+            If ``True`` and ``component_filter`` is ``None``, openings are created for all
+            components on the reference signal layer. The default is ``True``.
+        component_filter : list[str], optional
+            Reference designators (RefDes) of specific components to open (e.g., ``["C1", "R2"]``).
+            If specified, only these components receive solder mask openings.
+            If ``None``, all components on the reference layer are opened. The default is ``None``.
+        components_opening_offset : float or str, optional
+            Offset distance (in layout units or string with units) to expand component
+            opening rectangles beyond the component bounding box. Use positive values to
+            expand the opening, negative values to shrink it. The default is ``0.0``.
+            Example: ``"0.1mm"`` or ``0.0001`` (in default unit).
+        open_voids : bool, optional
+            Enable creation of solder mask openings for polygon voids (cutouts in planes).
+            When enabled, iterates all polygons on the reference layer and extracts nested
+            voids to create corresponding mask openings. The default is ``True``.
+        voids_opening_offset : float or str, optional
+            Scaling factor for void opening polygons. Positive values expand the void,
+            negative values shrink it (relative scaling, not absolute offset). The default is ``0.0``.
+        open_traces : bool, optional
+            Enable creation of solder mask openings for traces (paths) on the reference layer.
+            When enabled, all path primitives are converted to polygonal mask openings. The default is ``True``.
+        traces_offset : float or str, optional
+            Scaling factor for trace opening polygons. The default is ``0.0``.
+        open_traces_net_filter : list[str], optional
+            Net name filter to select only specific traces for mask openings (e.g., ``["GND", "SIG1"]``).
+            If ``None``, all traces on the reference layer are opened. The default is ``None``.
+        solder_mask_layer_name : str, optional
+            Name of the solder mask layer to create or reuse. If a layer with this name
+            already exists in the stackup, it is reused; otherwise, a new layer is created.
+            The default is ``"Solder"``.
+        solder_mask_thickness : float or str, optional
+            Thickness of the solder mask layer (in layout units or string with units).
+            The default is ``"30um"``.
+        solder_mask_material : str, optional
+            Name of the dielectric material for the solder mask layer. If the material
+            does not exist in the database, a default solder mask material with εᵣ = 4
+            is created and a warning is logged. The default is ``""`` (empty string triggers
+            default creation).
+        reference_signal_layer : str, optional
+            Name of the signal layer to reference for component placement and primitive
+            filtering. If not specified, the topmost signal layer is used when ``open_top=True``,
+            or the bottommost signal layer when ``open_top=False``. The default is ``""``.
+        open_top : bool, optional
+            If ``True``, the solder mask layer is placed on top of the board and references
+            the topmost signal layer. If ``False``, the mask is placed on the bottom and
+            references the bottommost signal layer. The default is ``True``.
+
+        Returns
+        -------
+        bool
+            ``True`` if the solder mask layer and all openings were created successfully.
+            Raises ``ValueError`` if ``component_filter`` specifies RefDes values that do
+            not exist in the design.
+
+        Raises
+        ------
+        ValueError
+            If any reference designator in ``component_filter`` is not found in the design.
+
+        Notes
+        -----
+        - Solder mask layers are created as negative layers in EDB (inverted copper model).
+        - All opening geometries inherit the solder mask layer name and are assigned
+          to the default net (empty net name ``""``).
+        - Component openings are rectangular bounding-box-based; for non-rectangular pads,
+          consider using padstack opening geometries instead.
+        - Void and trace openings are polygon-based and inherit the exact geometry of the
+          original plane cutout or trace path.
+        - Offset/scaling parameters use EDB unit system (typically millimeters).
+
+        Examples
+        --------
+        Create a standard solder mask with all openings on the top side:
+
+        >>> edb = Edb("design.aedb")
+        >>> edb.modeler.open_solder_mask()
+
+        Create openings only for specific components with a 0.1 mm margin:
+
+        >>> edb.modeler.open_solder_mask(
+        ...     component_filter=["U1", "U2"],
+        ...     components_opening_offset="0.1mm",
+        ...     open_voids=False,
+        ...     open_traces=False,
+        ... )
+
+        Create a bottom-side solder mask with custom material and thickness:
+
+        >>> edb.modeler.open_solder_mask(
+        ...     solder_mask_layer_name="BottomSolder",
+        ...     solder_mask_material="CustomMask",
+        ...     solder_mask_thickness="50um",
+        ...     open_top=False,
+        ... )
+
+        See Also
+        --------
+        :meth:`stackup.add_layer` : Add a dielectric layer to the stackup
+        :meth:`create_rectangle` : Create a rectangular primitive
+        :meth:`create_polygon` : Create a polygonal primitive
+        """
+        if not solder_mask_material in self._pedb.materials:
+            solder_mask_material = "SolderMask"
+            self._pedb.materials.add_dielectric(permittivity=4, name=solder_mask_material)
+            self._pedb.logger.warning(f"No Material name provided or found for {solder_mask_material}.")
+            self._pedb.logger.warning(f"Creating default solder mask material {solder_mask_material} with epsr=4.")
+        if not reference_signal_layer:
+            if open_top:
+                reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[0].name
+            else:
+                reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[-1].name
+        if solder_mask_layer_name in self._pedb.stackup.layers:
+            layer = self._pedb.stackup.layers[solder_mask_layer_name]
+        else:
+            if open_top:
+                method = "add_on_top"
+            else:
+                method = "add_below"
+            self._pedb.stackup.add_layer(layer_name=solder_mask_layer_name,
+                                                 layer_type="signal",
+                                                 material=solder_mask_material,
+                                                 base_layer=reference_signal_layer,
+                                                 thickness=solder_mask_thickness,
+                                                 method=method,
+                                                 is_negative=True,
+                                                 filling_material="AIR"
+                                                 )
+
+        if open_components:
+            if component_filter:
+                components = [component for ref_des, component in self._pedb.components.instances.items()
+                              if ref_des in component_filter]
+                if not components:
+                    raise ValueError(f"No components found for {component_filter}.")
+            else:
+                components = [component for component in list(self._pedb.components.instances.values())
+                              if component.placement_layer == reference_signal_layer]
+            for component in components:
+                comp_box = component.bounding_box
+                x1 = comp_box[0] - self._pedb.value(components_opening_offset)
+                y1 = comp_box[1] + self._pedb.value(components_opening_offset)
+                x2 = comp_box[2] - self._pedb.value(components_opening_offset)
+                y2 = comp_box[3] + self._pedb.value(components_opening_offset)
+                self.create_rectangle(layer_name=solder_mask_layer_name,
+                                      lower_left_point=(x1, y1),
+                                      upper_right_point=(x2, y2))
+        if open_voids:
+            for primitive in self._pedb.layout.find_primitive(prim_type="polygon", layer_name=reference_signal_layer):
+                if not primitive.has_voids:
+                    continue
+                for void in primitive.voids:
+                    polygon_data = void.polygon_data
+                    if voids_opening_offset:
+                        polygon_data = polygon_data.scale(voids_opening_offset)
+                    self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
+        if open_traces:
+            traces = self._pedb.layout.find_primitive(prim_type="path", layer_name=reference_signal_layer,
+                                                      net_name=open_traces_net_filter)
+            for trace in traces:
+                polygon_data = trace.polygon_data
+                if traces_offset:
+                    polygon_data = polygon_data.scale(traces_offset)
+                self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
+        return True

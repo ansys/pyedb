@@ -1493,7 +1493,8 @@ class Modeler:
                          solder_mask_material:str="",
                          reference_signal_layer:str="",
                          open_top:bool=True) -> bool:
-        """Create solder mask openings for components, voids, and traces.
+        """
+        Create solder mask openings for components, voids, and traces.
 
         This method creates a solder mask dielectric layer with openings (negative geometries) for:
 
@@ -1627,15 +1628,15 @@ class Modeler:
                 method = "add_on_top"
             else:
                 method = "add_below"
-            layer = self._pedb.stackup.add_layer(layer_name=solder_mask_layer_name,
+            self._pedb.stackup.add_layer(layer_name=solder_mask_layer_name,
                                                  layer_type="signal",
                                                  material=solder_mask_material,
                                                  base_layer=reference_signal_layer,
                                                  thickness=solder_mask_thickness,
-                                                 method=method)
-        layer.is_negative = True
-        layer.thickness = solder_mask_thickness
-
+                                                 method=method,
+                                                 is_negative=True,
+                                                 filling_material="AIR"
+                                                 )
         if open_components:
             if component_filter:
                 components = [component for ref_des, component in self._pedb.components.instances.items()
