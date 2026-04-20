@@ -404,7 +404,7 @@ class PrimitivesQuery:
     ) -> list[Primitive]:
         """
         Find primitive objects by one or more attributes.
-    
+
         Parameters
         ----------
         layer_name : str, list, optional
