@@ -4081,10 +4081,10 @@ class Edb:
         for poly in polys:
             for void in poly.voids:
                 void_bbox = (
-                    void.polygon_data._edb_object.GetBBox().Item1.X.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item1.Y.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item2.X.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 instances_dict = self.padstacks.instances

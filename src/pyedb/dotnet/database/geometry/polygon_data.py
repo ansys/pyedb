@@ -30,6 +30,7 @@ from pyedb.misc.decorators import deprecated
 if TYPE_CHECKING:  # pragma: no cover
     from pyedb.dotnet.database.edb_data.primitives_data import EDBArcs
     from pyedb.dotnet.edb import Edb
+from pyedb.misc.decorators import deprecated_property
 
 
 class PolygonData:
@@ -68,6 +69,11 @@ class PolygonData:
                 list_of_point_data.append(PointData.create(pedb, x=pt[0], y=pt[1]).core)
         core = pedb.core.Geometry.PolygonData(convert_py_list_to_net_list(list_of_point_data), closed)
         return cls(pedb, core)
+
+    @property
+    @deprecated_property("Use `core` property instead.", category=None)
+    def _edb_object(self):
+        return self.core
 
     @property
     def bounding_box(self) -> list[float]:
@@ -150,8 +156,8 @@ class PolygonData:
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
         """
         new_poly = self.core.Expand(offset, tolerance, round_corners, maximum_corner_extension)
-        self.core = new_poly[0]
-        return self
+        core = new_poly[0]
+        return PolygonData(self._pedb, core)
 
     def create_from_arcs(self, arcs: list[Any], flag: bool) -> "PolygonData":
         """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.

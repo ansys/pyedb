@@ -239,8 +239,8 @@ class PolygonData:
                                     tol=tolerance)
         if not new_poly[0].points:
             return False
-        self.core = new_poly[0]
-        return self
+        core = new_poly[0]
+        return PolygonData(self._pedb, core)
 
     def unite(self, polygons):
         """Create union of polygons.
@@ -260,8 +260,8 @@ class PolygonData:
         new_poly = self.core.unite(list_of_polygon_data)
         if not new_poly[0].points:
             return False
-        self.core = new_poly[0]
-        return self
+        core = new_poly[0]
+        return PolygonData(self._pedb, core)
 
     def area(self):
         """Get area of polygon.
