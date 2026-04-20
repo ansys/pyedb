@@ -1,0 +1,14 @@
+
+out_dir: xml_only_demo
+boards: 2
+seed: 20260419
+archetype_distribution:
+  fpga_ddr: 0.5
+  storage_controller: 0.25
+  mcu_pmic: 0.15
+  mixed_signal: 0.10
+variant_distribution:
+  canonical: 0.25
+  balanced: 0.50
+  challenging: 0.20
+  edge_case_variant: 0.05

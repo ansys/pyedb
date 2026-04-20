@@ -1,0 +1,14 @@
+[
+  {
+    "board_name": "fpga_ddr_0001",
+    "archetype": "fpga_ddr",
+    "variant": "challenging",
+    "xml": "xml\\fpga_ddr_0001.xml"
+  },
+  {
+    "board_name": "fpga_ddr_0002",
+    "archetype": "fpga_ddr",
+    "variant": "canonical",
+    "xml": "xml\\fpga_ddr_0002.xml"
+  }
+]
