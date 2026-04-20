@@ -402,8 +402,9 @@ class PrimitivesQuery:
         prim_type: str | list = None,
         is_void: bool | None = None,
     ) -> list[Primitive]:
-        """Find primitive objects by one or more attributes.
-
+        """
+        Find primitive objects by one or more attributes.
+    
         Parameters
         ----------
         layer_name : str, list, optional

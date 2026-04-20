@@ -42,6 +42,7 @@ def _clear_is_owner(obj):
     except (AttributeError, TypeError) as e:
         # Silently ignore reflection errors; the object may not have the IsOwner property
         # or the property may not be settable on this platform/version.
+        print(f"{e.name}: {e}")
         pass  # noqa: B110
 
 
