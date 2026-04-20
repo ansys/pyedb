@@ -1076,7 +1076,7 @@ class Edb:
         return None
 
     @property
-    def materials(self) -> Materials | None:
+    def materials(self) -> Materials:
         """Material Database.
 
         Returns
@@ -1227,7 +1227,7 @@ class Edb:
             return
 
     @property
-    def modeler(self) -> Modeler | None:
+    def modeler(self) -> Modeler:
         """Core primitives modeler.
 
         Returns

@@ -22,7 +22,25 @@
 
 from __future__ import absolute_import
 
+from System.Reflection import BindingFlags  # type: ignore
+
 from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel, HurrayRoughnessModel
+
+
+def _clear_is_owner(obj):
+    """Use reflection to set the protected IsOwner property to False on a .NET Layer object.
+
+    This prevents the buggy ``EDBLayer_Cleanup`` destructor from being called when the
+    Python-side wrapper is garbage-collected, which would otherwise cause an
+    ``AccessViolationException`` (corrupted memory crash).
+    Must be called immediately after cloning or creating any Layer/LayerClone object.
+    """
+    try:
+        prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
+        if prop is not None:
+            prop.SetValue(obj, False, None)
+    except Exception:
+        pass
 
 
 def layer_cast(pedb, edb_object):
@@ -43,6 +61,7 @@ class LayerEdbClass(object):
 
         if edb_object:
             self._edb_object = edb_object.Clone()
+            _clear_is_owner(self._edb_object)
         else:
             self._create(layer_type)
             self.update(**kwargs)
@@ -55,6 +74,7 @@ class LayerEdbClass(object):
             self._name,
             layer_type,
         )
+        _clear_is_owner(self._edb_object)
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
@@ -299,6 +319,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             self._pedb.edb_value(0),
             "copper",
         )
+        _clear_is_owner(self._edb_object)
 
     @property
     def lower_elevation(self):
