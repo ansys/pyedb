@@ -213,7 +213,7 @@ class PolygonData:
         """
         return self.core.has_self_intersections(tolerance)
 
-    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> bool:
+    def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> PolygonData:
         """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
@@ -234,11 +234,13 @@ class PolygonData:
         bool
 
         """
-        new_poly = self.core.expand(offset, tolerance, round_corners, maximum_corner_extension)
+
+        new_poly = self.core.expand(offset=offset, round_corner=round_corners, max_corner_ext=maximum_corner_extension,
+                                    tol=tolerance)
         if not new_poly[0].points:
             return False
         self.core = new_poly[0]
-        return True
+        return self
 
     def unite(self, polygons):
         """Create union of polygons.
@@ -259,7 +261,7 @@ class PolygonData:
         if not new_poly[0].points:
             return False
         self.core = new_poly[0]
-        return new_poly
+        return self
 
     def area(self):
         """Get area of polygon.

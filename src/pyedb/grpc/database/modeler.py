@@ -1816,9 +1816,7 @@ class Modeler(object):
                 reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[0].name
             else:
                 reference_signal_layer = list(self._pedb.stackup.signal_layers.values())[-1].name
-        if solder_mask_layer_name in self._pedb.stackup.layers:
-            layer = self._pedb.stackup.layers[solder_mask_layer_name]
-        else:
+        if not solder_mask_layer_name in self._pedb.stackup.layers:
             if open_top:
                 method = "add_on_top"
             else:
@@ -1832,7 +1830,6 @@ class Modeler(object):
                                                  is_negative=True,
                                                  filling_material="AIR"
                                                  )
-
         if open_components:
             if component_filter:
                 components = [component for ref_des, component in self._pedb.components.instances.items()
@@ -1858,7 +1855,7 @@ class Modeler(object):
                 for void in primitive.voids:
                     polygon_data = void.polygon_data
                     if voids_opening_offset:
-                        polygon_data = polygon_data.scale(voids_opening_offset)
+                        polygon_data = polygon_data.expand(self._pedb.value(voids_opening_offset))
                     self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         if open_traces:
             traces = self._pedb.layout.find_primitive(prim_type="path", layer_name=reference_signal_layer,
@@ -1866,6 +1863,6 @@ class Modeler(object):
             for trace in traces:
                 polygon_data = trace.polygon_data
                 if traces_offset:
-                    polygon_data = polygon_data.scale(traces_offset)
+                    polygon_data = polygon_data.expand(self._pedb.value(traces_offset))
                 self.create_polygon(polygon_data, layer_name=solder_mask_layer_name, net_name="")
         return True
