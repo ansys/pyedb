@@ -88,13 +88,16 @@ class TestClass(BaseTestClass):
         assert isinstance(poly0.arcs[0].points, list)
         assert isinstance(poly0.intersection_type(poly0), int)
         assert poly0.is_intersecting(poly0)
-        poly_3022 = edbapp.modeler.get_primitive(3022)
-        assert edbapp.modeler.get_primitive(3023)
+        poly_3022 = edbapp.layout.find_object_by_id(3022)
+        assert edbapp.layout.find_object_by_id(3023)
         assert poly_3022.aedt_name == "poly_3022"
         poly_3022.aedt_name = "poly3022"
         assert poly_3022.aedt_name == "poly3022"
         poly_with_voids = [poly for poly in edbapp.modeler.polygons if poly.has_voids]
         assert poly_with_voids
+        first_void = poly_with_voids[0].voids[0]
+        assert edbapp.layout.find_object_by_id(first_void.id).id == first_void.id
+        assert edbapp.modeler[first_void.id].id == first_void.id
         for k in poly_with_voids[0].voids:
             assert k.id
             assert k.expand(0.0005)

@@ -140,7 +140,23 @@ class PrimitivesQuery:
         return list(self._pedb.layout_instance.FindLayoutObjInstance(point_data, None, nets).Items)
 
     def _primitive_lookup_by_id(self, primitives: list[Primitive] | None = None) -> dict[int, Primitive]:
-        return {primitive.id: primitive for primitive in (primitives if primitives is not None else self.primitives)}
+        return {primitive.id: primitive for primitive in self._iter_primitives_with_voids(primitives)}
+
+    def _iter_primitives_with_voids(self, primitives: list[Primitive] | None = None):
+        for primitive in primitives if primitives is not None else self.primitives:
+            yield primitive
+            yield from self._iter_primitives_with_voids(primitive.voids)
+
+    def _find_primitive_or_void_by_id(self, value: int, primitives: list[Primitive] | None = None) -> Primitive | None:
+        for primitive in primitives if primitives is not None else self.primitives:
+            if primitive.id == value:
+                return primitive
+
+            void_match = self._find_primitive_or_void_by_id(value, primitive.voids)
+            if void_match is not None:
+                return void_match
+
+        return None
 
     @staticmethod
     def _layout_obj_matches_layers(layout_obj_instance, layer_names: set[str] | None) -> bool:
@@ -210,7 +226,7 @@ class PrimitivesQuery:
 
         return [
             primitive
-            for primitive in self.primitives
+            for primitive in self._iter_primitives_with_voids()
             if (layer_name_set is None or primitive.layer_name in layer_name_set)
             and (name_set is None or primitive.aedt_name in name_set)
             and (net_name_set is None or primitive.net_name in net_name_set)
@@ -221,7 +237,7 @@ class PrimitivesQuery:
     @property
     def primitives_by_aedt_name(self) -> dict:
         """Primitives."""
-        return {i.aedt_name: i for i in self.primitives}
+        return {i.aedt_name: i for i in self._iter_primitives_with_voids()}
 
     @property
     def primitives(self) -> list[Primitive]:
@@ -264,6 +280,10 @@ class PrimitivesQuery:
         value : int
             ID of the object.
         """
+        object_by_id = self._find_primitive_or_void_by_id(value)
+        if object_by_id is not None:
+            return object_by_id
+
         obj = self._pedb._edb.Cell.Connectable.FindById(self._edb_object, value)
         if obj is None:
             raise RuntimeError(f"Object Id {value} not found")
@@ -367,7 +387,11 @@ class PrimitivesQuery:
         dict
             Returns dict[str, list] with all specified layer names as keys organized by layer.
         """
-        return self._group_primitives_by("layer_name", initial_keys=list(self._pedb.stackup.layers.keys()))
+        return self._group_primitives_by(
+            "layer_name",
+            list(self._iter_primitives_with_voids()),
+            initial_keys=list(self._pedb.stackup.layers.keys()),
+        )
 
     @property
     def polygons_by_layer(self) -> dict:
@@ -393,7 +417,11 @@ class PrimitivesQuery:
         dict
             Returns dict[str, list] with all specified net names as keys organized by net.
         """
-        return self._group_primitives_by("net_name", initial_keys=list(self._pedb.nets.nets.keys()))
+        return self._group_primitives_by(
+            "net_name",
+            list(self._iter_primitives_with_voids()),
+            initial_keys=list(self._pedb.nets.nets.keys()),
+        )
 
     @property
     def rectangles(self) -> list[EdbRectangle]:
@@ -488,7 +516,7 @@ class PrimitivesQuery:
         return points
 
     @deprecated("Use `filter_primitives` instead.")
-    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=False) -> list[Primitive]:
+    def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[Primitive]:
         """Get primitives by conditions.
 
         Parameters
@@ -499,8 +527,8 @@ class PrimitivesQuery:
             Set filter on layer_name. Default is ``None``.
         prim_type :  str, optional
             Set filter on primitive type. Default is ``None``.
-        is_void : bool
-            Set filter on is_void. Default is '``False'``
+        is_void : bool, optional
+            Set filter on is_void. When ``None``, both standard primitives and voids are returned.
         Returns
         -------
         List of filtered primitives

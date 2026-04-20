@@ -20,9 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch
+
 import pytest
 
+pytest.importorskip("pyedb.dotnet.database.stackup", reason="Requires .NET runtime")
 from pyedb.dotnet.database.stackup import Stackup
 
 pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]

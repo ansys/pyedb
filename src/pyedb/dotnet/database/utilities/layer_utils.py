@@ -20,24 +20,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-import os
-from unittest.mock import Mock
-
-import pytest
-
-pytest.importorskip("pyedb.dotnet.database.siwave", reason="Requires .NET runtime")
-from pyedb.dotnet.database.siwave import EdbSiwave
-
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
+from System.Reflection import BindingFlags  # type: ignore
 
 
-class TestClass:
-    @pytest.fixture(autouse=True)
-    def init(self, tmpdir):
-        self.edb = Mock()
-        self.edb.edbpath = os.path.join(tmpdir, "fake_edb.aedb")
-        self.siwave = EdbSiwave(self.edb)
+def clear_is_owner(obj):
+    """Use reflection to set the protected IsOwner property to False,
+    preventing the buggy EDBLayer_Cleanup from being called in the destructor.
 
-    def test_siwave_add_syz_analsyis(self):
-        """Add a sywave AC analysis."""
-        assert self.siwave.add_siwave_syz_analysis()
+    This must be called on every Layer object obtained from the EDB API
+    (via Clone(), LayerCollection construction, or any other means) to prevent
+    the native EDBLayer_Cleanup destructor from running on Python-owned wrappers
+    and causing memory access violations during garbage collection.
+    """
+    prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
+    prop.SetValue(obj, False, None)
