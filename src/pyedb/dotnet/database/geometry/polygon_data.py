@@ -175,7 +175,7 @@ class PolygonData:
 
     # TODO: Same argument as above
     @deprecated("Use is_inside method instead.", category=None)
-    def point_in_polygon(self, x: str | float , y: str | float | None = None) -> bool:
+    def point_in_polygon(self, x: str | float, y: str | float | None = None) -> bool:
         """Determines whether a point is inside the polygon.
 
         ..deprecated:: 0.48.0
