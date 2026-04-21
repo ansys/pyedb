@@ -243,7 +243,7 @@ class PolygonData:
         core = new_poly[0]
         return PolygonData(self._pedb, core)
 
-    def unite(self, polygons):
+    def unite(self, polygons) -> list[PolygonData]:
         """Create union of polygons.
 
         Parameters
@@ -253,16 +253,17 @@ class PolygonData:
 
         Returns
         -------
-        bool
+        list[PolygonData]
+            List of PolygonData object resulting from unit operation.
+
         """
         list_of_polygon_data = []
         for poly in polygons:
             list_of_polygon_data.append(poly.core)
         new_poly = self.core.unite(list_of_polygon_data)
         if not new_poly[0].points:
-            return False
-        core = new_poly[0]
-        return PolygonData(self._pedb, core)
+            return []
+        return [PolygonData(self._pedb, core_polygon_data) for core_polygon_data in new_poly]
 
     def area(self):
         """Get area of polygon.

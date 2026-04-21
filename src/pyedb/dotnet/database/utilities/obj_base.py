@@ -95,6 +95,33 @@ class BBox:
     """Bounding box."""
 
     def __init__(self, pedb, core=None, point_1=None, point_2=None):
+        """
+        Initialize a bounding box with two corner points.
+
+        A bounding box is defined by two corner points representing the minimum and maximum
+        extents of a rectangular region. The bounding box can be initialized either by providing
+        a pre-constructed .NET Core Tuple object or by specifying two corner points as coordinate pairs.
+
+        Parameters
+        ----------
+        pedb : Edb
+            Reference to the parent Edb instance. This is used to access database resources
+            for creating PointData objects when constructing the bounding box from coordinates.
+        core : tuple, optional
+            A pre-constructed .NET Core Tuple object containing two PointData objects.
+            If provided, this is used directly and `point_1` and `point_2` are ignored.
+            Default is None.
+        point_1 : array_like, optional
+            The first corner point of the bounding box as a coordinate pair [x, y].
+            Used when `core` is None. This represents one corner (typically minimum coordinates).
+            Default is None.
+        point_2 : array_like, optional
+            The second corner point of the bounding box as a coordinate pair [x, y].
+            Used when `core` is None. This represents the opposite corner (typically maximum coordinates).
+            Default is None.
+
+        """
+
         self._pedb = pedb
         if core:
             self.core = core
