@@ -384,7 +384,7 @@ class TestClass(BaseTestClass):
                             padstack_instance._pedb,
                             create_from_points=True,
                             points=result,
-                        )._edb_object
+                        ).core
                         _assert_inside(rect_pd, pad_pd)
                         # count the number of successful confirmations since some are skipped
                         confirmed_pads += 1

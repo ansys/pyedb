@@ -349,7 +349,12 @@ class PrimitivesQuery:
         ]
 
     def find_primitive(
-        self, layer_name: str | list = None, name: str | list = None, net_name: str | list = None
+        self,
+        layer_name: str | list = None,
+        name: str | list = None,
+        net_name: str | list = None,
+        prim_type: str | list = None,
+        is_void: bool | None = None,
     ) -> list[Primitive]:
         """Find a primitive objects by layer name.
 
@@ -360,15 +365,19 @@ class PrimitivesQuery:
         name : str, list, optional
             Name of the primitive
         net_name : str, list, optional
-            Name of the primitive
-        point : tuple[float, float], optional
-            Coordinate point (x, y) to find primitives at a specific location. If provided, only primitives that contain
-            this point will be returned.
+            Name of the net
+        prim_type : str, list, optional
+            Primitive type, e.g. ``"polygon"``, ``"path"``.
+        is_void : bool, optional
+            When ``True``, return only void primitives. When ``False``, return only non-void primitives.
+            When ``None`` (default), void state is not used as a filter.
         Returns
         -------
         list
         """
-        return self.filter_primitives(layer_name=layer_name, name=name, net_name=net_name)
+        return self.filter_primitives(
+            layer_name=layer_name, name=name, net_name=net_name, prim_type=prim_type, is_void=is_void
+        )
 
     @property
     def primitives_by_layer(self) -> dict:

@@ -30,17 +30,56 @@ if TYPE_CHECKING:
 
 
 class SystemObject(object):
-    def __init__(self, pedb: "Edb", edb_object):
+    def __init__(self, pedb: "Edb", core):
+        """
+        Initialize a SystemObject with reference to the EDB instance and core object.
+
+        This is the base class for all EDB wrapper objects that encapsulate .NET Core objects.
+        It provides access to the parent EDB database instance and the underlying .NET object.
+
+        Parameters
+        ----------
+        pedb : Edb
+            Reference to the parent Edb instance. This provides access to the top-level database
+            operations, utilities, and other EDB components. Cannot be None.
+        core : object
+            The underlying .NET Core object that this wrapper encapsulates. This is typically
+            an object from the ANSYS EDB .NET API (e.g., EDBLayer, EDBPrimitive, etc.).
+            Cannot be None.
+
+        Raises
+        ------
+        TypeError
+            If pedb is not an Edb instance or core is None.
+
+        Notes
+        -----
+        The core object is stored as a private attribute with name mangling (`__core`) to prevent
+        accidental modification by subclasses. Access the core object via the `core` property.
+
+        The pedb instance is stored as a protected attribute (`_pedb`) to allow subclasses to
+        access the database reference for performing database operations.
+
+        Examples
+        --------
+        This class is typically not instantiated directly by users, but subclasses like
+        `ObjBase` are used throughout the pyEDB library:
+
+        >>> from pyedb import Edb
+        >>> edb = Edb(db_path, edbversion="2024.2")  # doctest: +SKIP
+        >>> # SystemObject is instantiated internally by wrapper classes
+        >>> layer = edb.layout.layers[0]  # Returns a layer object whose parent class is SystemObject
+        """
         self._pedb = pedb
-        self.__core = edb_object
+        self.__core = core
 
     @property
     def core(self):
-        return self._edb_object
+        return self.__core
 
     @core.setter
     def core(self, value):
-        self._edb_object = value
+        self.__core = value
 
     @property
     def _edb_object(self):
@@ -55,24 +94,51 @@ class SystemObject(object):
 class BBox:
     """Bounding box."""
 
-    def __init__(self, pedb, edb_object=None, point_1=None, point_2=None):
+    def __init__(self, pedb, core=None, point_1=None, point_2=None):
+        """
+        Initialize a bounding box with two corner points.
+
+        A bounding box is defined by two corner points representing the minimum and maximum
+        extents of a rectangular region. The bounding box can be initialized either by providing
+        a pre-constructed .NET Core Tuple object or by specifying two corner points as coordinate pairs.
+
+        Parameters
+        ----------
+        pedb : Edb
+            Reference to the parent Edb instance. This is used to access database resources
+            for creating PointData objects when constructing the bounding box from coordinates.
+        core : tuple, optional
+            A pre-constructed .NET Core Tuple object containing two PointData objects.
+            If provided, this is used directly and `point_1` and `point_2` are ignored.
+            Default is None.
+        point_1 : array_like, optional
+            The first corner point of the bounding box as a coordinate pair [x, y].
+            Used when `core` is None. This represents one corner (typically minimum coordinates).
+            Default is None.
+        point_2 : array_like, optional
+            The second corner point of the bounding box as a coordinate pair [x, y].
+            Used when `core` is None. This represents the opposite corner (typically maximum coordinates).
+            Default is None.
+
+        """
+
         self._pedb = pedb
-        if edb_object:
-            self._edb_object = edb_object
+        if core:
+            self.core = core
         else:
             point_1 = PointData.create_from_xy(self._pedb, x=point_1[0], y=point_1[1])
             point_2 = PointData.create_from_xy(self._pedb, x=point_2[0], y=point_2[1])
-            self._edb_object = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
+            self.core = Tuple[self._pedb.core.Geometry.PointData, self._pedb.core.Geometry.PointData](
                 point_1.core, point_2.core
             )
 
     @property
     def point_1(self):
-        return [self._edb_object.Item1.X.ToDouble(), self._edb_object.Item1.Y.ToDouble()]
+        return [self.core.Item1.X.ToDouble(), self.core.Item1.Y.ToDouble()]
 
     @property
     def point_2(self):
-        return [self._edb_object.Item2.X.ToDouble(), self._edb_object.Item2.Y.ToDouble()]
+        return [self.core.Item2.X.ToDouble(), self.core.Item2.Y.ToDouble()]
 
     @property
     def corner_points(self):

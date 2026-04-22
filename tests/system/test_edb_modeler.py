@@ -732,3 +732,20 @@ class TestClass(BaseTestClass):
             (0.00075, 0.002),
         ]
         edbapp.close(terminate_rpc_session=False)
+
+    def test_mask_opening(self):
+        edbapp = self.edb_examples.get_si_verse_sfp()
+        edbapp.materials.add_dielectric_material(name="SolderMask", permittivity=4.5, dielectric_loss_tangent=0.02)
+        edbapp.modeler.open_solder_mask(
+            solder_mask_layer_name="SM",
+            solder_mask_material="SolderMask",
+            solder_mask_thickness="50um",
+            reference_signal_layer="Top_1",
+            component_filter=["U1", "C164", "C283", "B1"],
+            voids_opening_offset="0.2mm",
+            components_opening_offset="0.2mm",
+            traces_offset="0.1mm",
+            open_traces_net_filter=["SFPA_VCCR", "SFPA_VCCT"],
+        )
+        assert len(edbapp.layout.find_primitive(layer_name="SM")) == 4
+        edbapp.close(terminate_rpc_session=False)
