@@ -26,6 +26,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
+from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
 
 class NetClass:
@@ -43,6 +44,74 @@ class NetClass:
     def __init__(self, pedb, core):
         self.core = core
         self._pedb = pedb
+
+    @classmethod
+    def create(cls, edb, name) -> 'NetClass':
+        """Create a new net class."""
+        core = CoreNetClass.create(edb.layout.core, name)
+        return cls(edb, core)
+
+    def delete(self):
+        """Delete the net class."""
+        self.core.delete()
+
+    @property
+    def description(self) -> str:
+        """Description of the net class.
+
+        Returns
+        -------
+        str
+            Description of the net class.
+
+        """
+        return self.core.description
+
+    @description.setter
+    def description(self, value: str):
+        """Set net class description."""
+        self.core.description = value
+
+    @property
+    def id(self) -> int:
+        """The net class ID.
+
+        Returns
+        -------
+        int
+            ID of the net class.
+
+        """
+        return self.core.id
+
+    @property
+    def is_null(self) -> bool:
+        """Check if the net class is a null net class.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net class is a null net class, ``False`` otherwise.
+
+        """
+        return self.core.is_null
+
+    @property
+    def is_power_ground(self):
+        """Check if the net class is a power/ground net class.
+
+        Returns
+        -------
+        bool
+            ``True`` if the net class is a power/ground net class, ``False`` otherwise.
+        """
+        return self.core.is_power_ground
+
+    @is_power_ground.setter
+    def is_power_ground(self, value: bool):
+        """Set if the net class is a power/ground net class."""
+        self.core.is_power_ground = value
+
 
     @property
     def name(self):
@@ -68,7 +137,7 @@ class NetClass:
 
     @property
     def nets(self):
-        """Net list.
+        """Net list. Attribute is read-only.
 
         Returns
         -------
@@ -78,6 +147,7 @@ class NetClass:
         from pyedb.grpc.database.net.net import Net
 
         return [Net(self._pedb, i) for i in self.core.nets]
+
 
     def add_net(self, net):
         """Add a net to the net class.
@@ -91,20 +161,9 @@ class NetClass:
         if isinstance(net, str):
             net = Net.find_by_name(self._pedb.active_layout, name=net)
         if isinstance(net, Net) and not net.is_null:
-            self.core.add_net(net)
+            self.core.add_net(net.core)
             return True
         return False
-
-    @property
-    def is_null(self):
-        """Check if the net class is a null net class.
-
-        Returns
-        -------
-        bool
-            ``True`` if the net class is a null net class, ``False`` otherwise.
-        """
-        return self.core.is_null
 
     def contains_net(self, net) -> bool:
         """

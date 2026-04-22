@@ -479,6 +479,32 @@ class StackupLayerEdbClass(LayerEdbClass):
         self._etch_factor = value
 
     @property
+    def etch_net_class(self) -> str:
+        """Retrieve net class name where etching is enabled.
+
+        Returns
+        -------
+        str
+            Net class on which etching is applied. Supported values `no_power_ground`, `all_nets`.
+        """
+        etch_layer = self._edb_object.GetEtchNetClass()
+        if int(etch_layer) == 0:
+            return "no_power_ground"
+        else:
+            return "all_nets"
+
+
+    @etch_net_class.setter
+    def etch_net_class(self, etch_net_class: str):
+        """Set etching nets by net names."""
+        layer_clone = self._edb_layer
+        if etch_net_class.lower() == "no_power_ground":
+            layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
+        else:
+            layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
+        self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
+
+    @property
     def roughness_enabled(self):
         """Determine whether roughness is enabled on this layer.
 
