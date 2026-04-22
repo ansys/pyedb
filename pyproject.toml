@@ -33,7 +33,7 @@ dependencies = [
     "numpy>=1.20.0,<3",
     "pydantic>=2.6.4,<2.14",
     "toml==0.10.2",
-    "ansys-edb-core==0.2.6",
+    "ansys-edb-core@git+https://github.com/ansys/pyedb-core.git@main",
     "psutil",
     "defusedxml>=0.7,<8.0",
     "xmltodict"
