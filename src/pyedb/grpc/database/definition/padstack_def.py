@@ -1117,7 +1117,7 @@ class PadstackDef:
         elif len(result) == 4:
             # polygon shape
             hole_shape, offset_x, offset_y, rotation = result
-            params=None
+            params = None
         if not isinstance(hole_shape, CorePolygonData):
             hole_shape = str(hole_shape.name)
 
