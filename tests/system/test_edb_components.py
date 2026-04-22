@@ -293,6 +293,7 @@ class TestClass(BaseTestClass):
         assert len(component.pins) == 2
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(use_grpc, reason="DotNet module not available in gRPC mode without .NET installation")
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
         from pyedb.dotnet.database.components import resistor_value_parser
