@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from System import String
-
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
@@ -45,7 +43,7 @@ class Primitive(Connectable):
     def __init__(self, pedb, edb_object):
         super().__init__(pedb, edb_object)
         self._app = self._pedb
-        self.primitive_object = self._edb_object
+        self.primitive_object = self.core
 
         bondwire_type = self._pedb._edb.Cell.Primitive.BondwireType
         self._bondwire_type = {
@@ -83,7 +81,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self._edb_object.GetPrimitiveType().ToString()
+            return self.core.GetPrimitiveType().ToString()
         except AttributeError:  # pragma: no cover
             return ""
 
@@ -97,12 +95,12 @@ class Primitive(Connectable):
         -------
         str
         """
-        return self._edb_object.GetPrimitiveType().ToString().lower()
+        return self.core.GetPrimitiveType().ToString().lower()
 
     @property
     def layer(self):
         """Get the primitive edb layer object."""
-        obj = self._edb_object.GetLayer()
+        obj = self.core.GetLayer()
         if obj.IsNull():
             return None
         else:
@@ -117,7 +115,7 @@ class Primitive(Connectable):
         str
         """
         try:
-            return self._edb_object.GetLayer().GetName()
+            return self.core.GetLayer().GetName()
         except (KeyError, AttributeError):  # pragma: no cover
             return None
 
@@ -146,7 +144,7 @@ class Primitive(Connectable):
         -------
         bool
         """
-        return self._edb_object.IsVoid()
+        return self.core.IsVoid()
 
     def area(self, include_voids=True):
         """Return the total area.
@@ -161,11 +159,11 @@ class Primitive(Connectable):
         -------
         float
         """
-        if "GetPolygonData" not in dir(self._edb_object):
+        if "GetPolygonData" not in dir(self.core):
             return 0
-        area = self._edb_object.GetPolygonData().Area()
+        area = self.core.GetPolygonData().Area()
         if include_voids:
-            for el in self._edb_object.Voids:
+            for el in self.core.Voids:
                 area -= el.GetPolygonData().Area()
         return area
 
@@ -178,11 +176,11 @@ class Primitive(Connectable):
         bool
             True if it is negative, False otherwise.
         """
-        return self._edb_object.GetIsNegative()
+        return self.core.GetIsNegative()
 
     @is_negative.setter
     def is_negative(self, value):
-        self._edb_object.SetIsNegative(value)
+        self.core.SetIsNegative(value)
 
     def _get_points_for_plot(self, my_net_points, num):
         """
@@ -242,7 +240,7 @@ class Primitive(Connectable):
             [lower_left x, lower_left y, upper right x, upper right y]
 
         """
-        bbox = self.polygon_data._edb_object.GetBBox()
+        bbox = self.polygon_data.core.GetBBox()
         return [
             round(bbox.Item1.X.ToDouble(), 9),
             round(bbox.Item1.Y.ToDouble(), 9),
@@ -260,9 +258,9 @@ class Primitive(Connectable):
 
         """
         if self.type == "Path":
-            polygon_data = self._edb_object.GetPolygonData()
+            polygon_data = self.core.GetPolygonData()
             polygon = self._app.modeler.create_polygon(polygon_data, self.layer_name, [], self.net_name)
-            self._edb_object.Delete()
+            self.core.Delete()
             return polygon
         else:
             return False
@@ -289,7 +287,7 @@ class Primitive(Connectable):
             poly = primitive.polygon_data
         except AttributeError:
             pass
-        return int(self.polygon_data._edb_object.GetIntersectionType(poly._edb_object))
+        return int(self.polygon_data.core.GetIntersectionType(poly.core))
 
     def is_intersecting(self, primitive):
         """Check if actual primitive and another primitive or polygon data intesects.
@@ -318,7 +316,7 @@ class Primitive(Connectable):
         if isinstance(point, (list, tuple)):
             point = self._app.core.geometry.point_data(self._app.edb_value(point[0]), self._app.edb_value(point[1]))
 
-        p0 = self.polygon_data._edb_object.GetClosestPoint(point)
+        p0 = self.polygon_data.core.GetClosestPoint(point)
         return [p0.X.ToDouble(), p0.Y.ToDouble()]
 
     @property
@@ -357,14 +355,14 @@ class Primitive(Connectable):
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.primitive_object.GetPolygonData())
                 for void in prim.voids:
-                    voids_of_prims.append(void.polygon_data._edb_object)
+                    voids_of_prims.append(void.polygon_data.core)
             else:
                 try:
                     primi_polys.append(prim.GetPolygonData())
                 except:
                     primi_polys.append(prim)
         for v in self.voids[:]:
-            primi_polys.append(v.polygon_data._edb_object)
+            primi_polys.append(v.polygon_data.core)
         primi_polys = poly.Unite(convert_py_list_to_net_list(primi_polys))
         p_to_sub = poly.Unite(convert_py_list_to_net_list([poly] + voids_of_prims))
         list_poly = poly.Subtract(p_to_sub, primi_polys)
@@ -398,7 +396,7 @@ class Primitive(Connectable):
         -------
         List of :class:`dotnet.database.edb_data.EDBPrimitives`
         """
-        poly = self._edb_object.GetPolygonData()
+        poly = self.core.GetPolygonData()
         if not isinstance(primitives, list):
             primitives = [primitives]
         primi_polys = []
@@ -406,7 +404,7 @@ class Primitive(Connectable):
             if isinstance(prim, Primitive):
                 primi_polys.append(prim.primitive_object.GetPolygonData())
             else:
-                primi_polys.append(prim._edb_object.GetPolygonData())
+                primi_polys.append(prim.core.GetPolygonData())
                 # primi_polys.append(prim)
         list_poly = poly.Intersect(convert_py_list_to_net_list([poly]), convert_py_list_to_net_list(primi_polys))
         new_polys = []
@@ -419,7 +417,7 @@ class Primitive(Connectable):
                 void_to_subtract = []
                 if voids:
                     for void in voids:
-                        void_pdata = void._edb_object.GetPolygonData()
+                        void_pdata = void.core.GetPolygonData()
                         int_data2 = p.GetIntersectionType(void_pdata)
                         if int_data2 > 2 or int_data2 == 1:
                             void_to_subtract.append(void_pdata)
@@ -469,7 +467,7 @@ class Primitive(Connectable):
         -------
         List of :class:`dotnet.database.edb_data.EDBPrimitives`
         """
-        poly = self._edb_object.GetPolygonData()
+        poly = self.core.GetPolygonData()
         if not isinstance(primitives, list):
             primitives = [primitives]
         primi_polys = []
@@ -541,7 +539,7 @@ class Primitive(Connectable):
         """
         from pyedb.dotnet.database.cell.layout import primitive_cast
 
-        return [primitive_cast(self._pedb, void) for void in self._edb_object.Voids if void]
+        return [primitive_cast(self._pedb, void) for void in self.core.Voids]
 
     @property
     def shortest_arc(self):
@@ -563,9 +561,11 @@ class Primitive(Connectable):
         str
             Name.
         """
+        from System import String
+
         val = String("")
 
-        _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
+        _, name = self.core.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)
         name = str(name).strip("'")
         if name == "":
             if str(self.primitive_type).lower() == "path":
@@ -579,17 +579,17 @@ class Primitive(Connectable):
             else:
                 ptype = str(self.primitive_type).lower()
             name = "{}__{}".format(ptype, self.id)
-            self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, name)
+            self.core.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, name)
         return name
 
     @aedt_name.setter
     def aedt_name(self, value):
-        self._edb_object.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, value)
+        self.core.SetProductProperty(self._pedb._edb.ProductId.Designer, 1, value)
 
     @property
     def polygon_data(self):
         """:class:`pyedb.dotnet.database.dotnet.database.PolygonDataDotNet`: Outer contour of the Polygon object."""
-        return PolygonData(self._pedb, self._edb_object.GetPolygonData())
+        return PolygonData(self._pedb, self.core.GetPolygonData())
 
     def add_void(self, point_list):
         """Add a void to current primitive.
@@ -612,12 +612,12 @@ class Primitive(Connectable):
                 return False
             point_list = self._pedb.modeler.create_polygon(
                 _poly, layer_name=self.layer_name, net_name=self.net.name
-            )._edb_object
+            ).core
         elif "_edb_object" in dir(point_list):
             point_list = point_list._edb_object
         elif "primitive_obj" in dir(point_list):
             point_list = point_list.primitive_obj
-        return self._edb_object.AddVoid(point_list)
+        return self.core.AddVoid(point_list)
 
     @property
     def api_class(self):
@@ -633,7 +633,7 @@ class Primitive(Connectable):
         solve_inside : bool
             Whether to do solve inside.
         """
-        self._edb_object.SetHfssProp(material, solve_inside)
+        self.core.SetHfssProp(material, solve_inside)
 
     @property
     def has_voids(self):
@@ -641,7 +641,7 @@ class Primitive(Connectable):
 
         Read-Only.
         """
-        return self._edb_object.HasVoids()
+        return self.core.HasVoids()
 
     @property
     def owner(self):
@@ -649,7 +649,7 @@ class Primitive(Connectable):
 
         Read-Only.
         """
-        pid = self._edb_object.GetOwner().GetId()
+        pid = self.core.GetOwner().GetId()
         return self._pedb.layout.self.find_object_by_id(pid)
 
     @property
@@ -658,7 +658,7 @@ class Primitive(Connectable):
 
         Read-Only.
         """
-        return self._edb_object.IsParameterized()
+        return self.core.IsParameterized()
 
     def get_hfss_prop(self):
         """
@@ -673,12 +673,12 @@ class Primitive(Connectable):
         """
         material = ""
         solve_inside = True
-        self._edb_object.GetHfssProp(material, solve_inside)
+        self.core.GetHfssProp(material, solve_inside)
         return material, solve_inside
 
     def remove_hfss_prop(self):
         """Remove HFSS properties."""
-        self._edb_object.RemoveHfssProp()
+        self.core.RemoveHfssProp()
 
     @property
     def is_zone_primitive(self):
@@ -686,7 +686,7 @@ class Primitive(Connectable):
 
         Read-Only.
         """
-        return self._edb_object.IsZonePrimitive()
+        return self.core.IsZonePrimitive()
 
     @property
     def can_be_zone_primitive(self):
@@ -705,7 +705,7 @@ class Primitive(Connectable):
             Id of zone primitive will use.
 
         """
-        self._edb_object.MakeZonePrimitive(zone_id)
+        self.core.MakeZonePrimitive(zone_id)
 
     def points(self, arc_segments=6):
         """Return the list of points with arcs converted to segments.
@@ -720,7 +720,7 @@ class Primitive(Connectable):
         tuple
             The tuple contains 2 lists made of X and Y points coordinates.
         """
-        my_net_points = list(self._edb_object.GetPolygonData().Points)
+        my_net_points = list(self.core.GetPolygonData().Points)
         xt, yt = self._get_points_for_plot(my_net_points, arc_segments)
         if not xt:
             return []
@@ -736,7 +736,7 @@ class Primitive(Connectable):
             Edb Points.
         """
         points = []
-        my_net_points = list(self._edb_object.GetPolygonData().Points)
+        my_net_points = list(self.core.GetPolygonData().Points)
         for point in my_net_points:
             points.append(point)
         return points
@@ -758,11 +758,11 @@ class Primitive(Connectable):
         """
         if not isinstance(factor, str):
             factor = float(factor)
-            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data._edb_object.GetArcData(), True)
+            polygon_data = self.polygon_data.create_from_arcs(self.polygon_data.core.GetArcData(), True)
             if not center:
-                center = self.polygon_data._edb_object.GetBoundingCircleCenter()
+                center = self.polygon_data.core.GetBoundingCircleCenter()
                 if center:
-                    polygon_data._edb_object.Scale(factor, center)
+                    polygon_data.core.Scale(factor, center)
                     self.polygon_data = polygon_data
                     return True
                 else:
@@ -771,7 +771,7 @@ class Primitive(Connectable):
                 center = self._edb.Geometry.PointData(
                     self._edb.Utility.Value(center[0]), self._edb.Utility.Value(center[1])
                 )
-                polygon_data._edb_object.Scale(factor, center)
+                polygon_data.core.Scale(factor, center)
                 self.polygon_data = polygon_data
                 return True
         return False

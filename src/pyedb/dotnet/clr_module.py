@@ -81,16 +81,24 @@ if is_linux:  # pragma: no cover
         try:
             from clr_loader import find_runtimes
 
-            candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
-            candidates.sort(key=lambda spec: spec.version, reverse=True)
-            if not candidates:
+            # Check if the dotnet_root exists and contains the shared subdirectory
+            shared_dir = dotnet_root / "shared"
+            if not shared_dir.exists():
                 warnings.warn(
-                    "Configuration file could not be found from DOTNET_ROOT. "
-                    "Please ensure that .NET SDK is correctly installed or "
-                    "that DOTNET_ROOT is correctly set."
+                    "DOTNET_ROOT is set but does not contain a valid .NET installation. "
+                    "PyEDB will work only in gRPC (client) mode."
                 )
             else:
-                runtime_spec = candidates[0]
+                candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
+                candidates.sort(key=lambda spec: spec.version, reverse=True)
+                if not candidates:
+                    warnings.warn(
+                        "Configuration file could not be found from DOTNET_ROOT. "
+                        "Please ensure that .NET SDK is correctly installed or "
+                        "that DOTNET_ROOT is correctly set."
+                    )
+                else:
+                    runtime_spec = candidates[0]
         except Exception:
             warnings.warn("Could not find .NET runtimes. PyEDB will work only in gRPC (client) mode.")
     # Use specific .NET core runtime

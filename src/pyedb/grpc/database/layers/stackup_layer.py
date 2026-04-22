@@ -25,7 +25,11 @@ from __future__ import absolute_import, annotations
 from typing import TYPE_CHECKING, Union
 
 from ansys.edb.core.layer.layer import LayerType as CoreLayerType
-from ansys.edb.core.layer.stackup_layer import RoughnessRegion as CoreRoughnessRegion, StackupLayer as CoreStackupLayer
+from ansys.edb.core.layer.stackup_layer import (
+    EtchNetClass as CoreEtchNetClass,
+    RoughnessRegion as CoreRoughnessRegion,
+    StackupLayer as CoreStackupLayer,
+)
 from ansys.edb.core.utility.value import Value as CoreValue
 
 if TYPE_CHECKING:
@@ -42,6 +46,11 @@ _mapping_rougness_location = {
     "top": CoreRoughnessRegion.TOP,
     "bottom": CoreRoughnessRegion.BOTTOM,
     "side": CoreRoughnessRegion.SIDE,
+}
+
+_mapping_etch_net_class = {
+    "all_nets": CoreEtchNetClass.ETCH_ALL_NETS,
+    "no_power_ground": CoreEtchNetClass.NO_ETCH_POWER_GROUND,
 }
 
 
@@ -408,6 +417,27 @@ class StackupLayer:
                 self.core.etch_factor = self._pedb._value_setter(value)
         except RuntimeError:
             pass
+
+    @property
+    def etch_net_class(self) -> str:
+        """
+        Retrieve net class name where etching is enabled.
+
+        Returns
+        -------
+        str
+            Net class on which etching is applied. Supported values `no_power_ground`, `all_nets`.
+        """
+        reverse_mapping = {v: k for k, v in _mapping_etch_net_class.items()}
+        return reverse_mapping.get(self.core.etch_net_class, "all_nets")
+
+    @etch_net_class.setter
+    def etch_net_class(self, etch_net_class: str):
+        if isinstance(etch_net_class, str):
+            core_value = _mapping_etch_net_class.get(etch_net_class, _mapping_etch_net_class.get("all_nets"))
+            self.core.etch_net_class = core_value
+        else:
+            self.core.etch_net_class = etch_net_class
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:

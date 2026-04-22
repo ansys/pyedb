@@ -45,7 +45,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-from pyedb.misc.decorators import deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name, deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -782,6 +782,7 @@ class Stackup(LayerCollection):
 
     # TODO: Update optional argument material into material_name and fillMaterial into fill_material_name
 
+    @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
         self,
         layer_name,
@@ -789,7 +790,7 @@ class Stackup(LayerCollection):
         method="add_on_top",
         layer_type="signal",
         material="copper",
-        fillMaterial="FR4_epoxy",
+        filling_material="FR4_epoxy",
         thickness="35um",
         etch_factor=None,
         is_negative=False,
@@ -813,7 +814,7 @@ class Stackup(LayerCollection):
              ``"solder_mask"``, ``"solder_paste"``, ``"glue"``, ``"wirebond"``, ``"hfss_region"``, ``"user"``.
         material : str, optional
             Material of the layer.
-        fillMaterial : str, optional
+        filling_material : str, optional
             Fill material of the layer.
         thickness : str, float, optional
             Thickness of the layer.
@@ -835,8 +836,8 @@ class Stackup(LayerCollection):
             return False
         if not material:
             material = "copper" if layer_type == "signal" else "FR4_epoxy"
-        if not fillMaterial:
-            fillMaterial = "FR4_epoxy"
+        if not filling_material:
+            filling_material = "FR4_epoxy"
 
         materials = self._pedb.materials
         if material not in materials:
@@ -847,19 +848,19 @@ class Stackup(LayerCollection):
             else:
                 logger.warning(f"Material {material} not found. Check the library and retry.")
 
-        if layer_type != "dielectric" and fillMaterial not in materials:
-            material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
+        if layer_type != "dielectric" and filling_material not in materials:
+            material_properties = self._pedb.materials.read_syslib_material(filling_material)
             if material_properties:
-                logger.info(f"Material {fillMaterial} found in syslib. Adding it to aedb project.")
-                materials.add_material(fillMaterial, **material_properties)
+                logger.info(f"Material {filling_material} found in syslib. Adding it to aedb project.")
+                materials.add_material(filling_material, **material_properties)
             else:
-                logger.warning(f"Material {fillMaterial} not found. Check the library and retry.")
+                logger.warning(f"Material {filling_material} not found. Check the library and retry.")
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
             new_layer.SetMaterial(material)
             if layer_type != "dielectric":
-                new_layer.SetFillMaterial(fillMaterial)
+                new_layer.SetFillMaterial(filling_material)
             new_layer.SetNegative(is_negative)
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:

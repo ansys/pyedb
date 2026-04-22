@@ -22,8 +22,6 @@
 
 from enum import Enum
 
-from System import Tuple
-
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
@@ -142,6 +140,8 @@ class MeshOperation(object):
 
     @nets_layers_list.setter
     def nets_layers_list(self, values):
+        from System import Tuple
+
         temp = []
         for net, layers in values.items():
             for layer in layers:

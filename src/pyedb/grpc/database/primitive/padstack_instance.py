@@ -836,8 +836,11 @@ class PadstackInstance(conn_obj.ConnObj):
         if self.component:
             point = CorePointData(position[:2])
             out2 = self.component.core.transform.transform_point(point)
-            _position_and_rotation = [out2.x.value, out2.y.value]
-            _position_and_rotation.append(Value(position[-1]).value)
+            if isinstance(out2, tuple):
+                _position_and_rotation = [out2[0].value, out2[1].value]
+            else:
+                _position_and_rotation = [out2.x.value, out2.y.value]
+                _position_and_rotation.append(Value(position[-1]).value)
         else:
             _position_and_rotation = [Value(pt).value for pt in position]
         return _position_and_rotation

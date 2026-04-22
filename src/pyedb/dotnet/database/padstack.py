@@ -1030,7 +1030,7 @@ class EdbPadstacks(object):
                 else:
                     return False
             elif isinstance(polygon_hole, PolygonData):
-                hole_param = polygon_hole._edb_object
+                hole_param = polygon_hole.core
             else:
                 return False
             padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
@@ -1109,7 +1109,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.Definition.PadType.RegularPad,
-                    pad_array._edb_object,
+                    pad_array.core,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,
@@ -1117,7 +1117,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.Definition.PadType.AntiPad,
-                    antipad_array._edb_object,
+                    antipad_array.core,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,

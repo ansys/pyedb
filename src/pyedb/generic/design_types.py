@@ -368,7 +368,6 @@ def Edb(
 
     grpc = grpc if grpc is not None else _use_grpc_by_default(settings.specified_version)
     settings.is_grpc = grpc
-    settings.is_in_memory = in_memory if grpc else False
 
     if grpc:
         if 2025.2 <= float(settings.specified_version) <= 2027.1:
@@ -386,7 +385,6 @@ def Edb(
                 map_file=map_file,
                 technology_file=technology_file,
                 control_file=control_file,
-                in_memory=in_memory,
             )
 
         elif float(settings.specified_version) < 2025.2:

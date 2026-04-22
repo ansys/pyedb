@@ -358,7 +358,7 @@ class _DotNetAdapter(_BaseAdapter):
 
         vector = PointData.create_from_xy(self.edb, x=dx, y=dy)
         moved_pd = prim.polygon_data
-        moved_pd._edb_object.Move(vector.core)
+        moved_pd.core.Move(vector.core)
         return self.edb.modeler.create_polygon(
             moved_pd,
             layer_name=prim.layer.name,

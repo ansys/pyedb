@@ -1,7 +1,6 @@
 # Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
-#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
@@ -20,39 +19,18 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+# Stub file for pyedb.misc.decorators.
+# Maps pyedb custom deprecation decorators to typing_extensions equivalents so
+# that static analysis tools (mypy, pyright, IDEs) treat them identically to the
+# standard @typing_extensions.deprecated decorator.
 
-class EdbDesignOptions:
-    def __init__(self, active_cell):
-        self._active_cell = active_cell
+from typing import Any, Callable, TypeVar
 
-    @property
-    def suppress_pads(self):
-        """Whether to suppress non-functional pads.
+_T = TypeVar("_T")
+_F = TypeVar("_F", bound=Callable[..., Any])
 
-        Returns
-        -------
-        bool
-            ``True`` if suppress non-functional pads is on, ``False`` otherwise.
-
-        """
-        return self._active_cell.suppress_pads
-
-    @suppress_pads.setter
-    def suppress_pads(self, value):
-        self._active_cell.suppress_pads = value
-
-    @property
-    def anti_pads_always_on(self):
-        """Whether to always turn on antipad.
-
-        Returns
-        -------
-        bool
-            ``True`` if antipad is always on, ``False`` otherwise.
-
-        """
-        return self._active_cell.anti_pads_always_on
-
-    @anti_pads_always_on.setter
-    def anti_pads_always_on(self, value):
-        self._active_cell.anti_pads_always_on = value
+def deprecated(reason: str = ..., *, category: Any = ...) -> Callable[[_F], _F]: ...
+def deprecated_property(message: str, *, category: Any = ...) -> Callable[[_F], _F]: ...
+def deprecated_class(reason: str = ..., *, category: Any = ...) -> Callable[[type[_T]], type[_T]]: ...
+def deprecate_argument_name(argument_map: dict[str, str]) -> Callable[[_F], _F]: ...
+def execution_timer(custom_text: str) -> Callable[[_F], _F]: ...
