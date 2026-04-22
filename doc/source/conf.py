@@ -355,6 +355,7 @@ nbsphinx_custom_formats = {
 
 exclude_patterns = [
     "conf.py",
+    "grpc_migration/dotnet_api/**",
 ]
 
 # Suppress annoying matplotlib bug
@@ -408,6 +409,12 @@ html_theme_options = {
         "project": project,
         "output": "autoapi",
         "directory": "src/pyedb",
+        "ignore": [
+            "**/grpc/edb_init.py",
+            "**/grpc/rpc_session.py",
+            "**/dotnet/**",
+            "**/siwave.py",
+        ],
         "add_toctree_entry": False,
         "package_depth": 4,
     },
