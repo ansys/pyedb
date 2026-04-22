@@ -57,7 +57,8 @@ class NetClass:
 
     @property
     def description(self) -> str:
-        """Description of the net class.
+        """
+        Description of the net class.
 
         Returns
         -------
@@ -74,7 +75,8 @@ class NetClass:
 
     @property
     def id(self) -> int:
-        """The net class ID.
+        """
+        The net class ID.
 
         Returns
         -------
@@ -86,7 +88,8 @@ class NetClass:
 
     @property
     def is_null(self) -> bool:
-        """Check if the net class is a null net class.
+        """
+        Check if the net class is a null net class.
 
         Returns
         -------
@@ -98,12 +101,14 @@ class NetClass:
 
     @property
     def is_power_ground(self):
-        """Check if the net class is a power/ground net class.
+        """
+        Check if the net class is a power/ground net class.
 
         Returns
         -------
         bool
             ``True`` if the net class is a power/ground net class, ``False`` otherwise.
+
         """
         return self.core.is_power_ground
 
@@ -114,18 +119,21 @@ class NetClass:
 
     @property
     def name(self):
-        """Net class name.
+        """
+        Net class name.
 
         Returns
         -------
         str
             Name of the net class.
+
         """
         return self.core.name
 
     @name.setter
     def name(self, value: str):
-        """Set net class name.
+        """
+        Set net class name.
 
         Parameters
         ----------
@@ -136,23 +144,27 @@ class NetClass:
 
     @property
     def nets(self):
-        """Net list. Attribute is read-only.
+        """
+        Net list. Attribute is read-only.
 
         Returns
         -------
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`].
             List of Net object.
+
         """
         from pyedb.grpc.database.net.net import Net
 
         return [Net(self._pedb, i) for i in self.core.nets]
 
     def add_net(self, net):
-        """Add a net to the net class.
+        """
+        Add a net to the net class.
 
         Returns
         -------
         bool
+
         """
         from pyedb.grpc.database.net.net import Net
 
@@ -184,7 +196,8 @@ class NetClass:
         return self.core.contains_net(net)
 
     def remove_net(self, net):
-        """Remove net.
+        """
+        Remove net.
 
         Returns
         -------

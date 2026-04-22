@@ -32,8 +32,6 @@ from ansys.edb.core.layer.stackup_layer import (
 )
 from ansys.edb.core.utility.value import Value as CoreValue
 
-from pyedb.grpc.database.net.net_class import NetClass
-
 if TYPE_CHECKING:
     from pyedb.grpc.database.layout.layout import Layout
 from pyedb.grpc.database.utility.value import Value
@@ -422,7 +420,8 @@ class StackupLayer:
 
     @property
     def etch_net_class(self) -> str:
-        """Retrieve net class name where etching is enabled.
+        """
+        Retrieve net class name where etching is enabled.
 
         Returns
         -------
