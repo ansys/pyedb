@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from System import String
-
 from pyedb.dotnet.database.cell.connectable import Connectable
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
 from pyedb.dotnet.database.geometry.polygon_data import PolygonData
@@ -563,6 +561,8 @@ class Primitive(Connectable):
         str
             Name.
         """
+        from System import String
+
         val = String("")
 
         _, name = self._edb_object.GetProductProperty(self._pedb._edb.ProductId.Designer, 1, val)

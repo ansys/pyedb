@@ -20,8 +20,6 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from System.Reflection import BindingFlags  # type: ignore
-
 
 def clear_is_owner(obj):
     """Use reflection to set the protected IsOwner property to False,
@@ -32,5 +30,7 @@ def clear_is_owner(obj):
     the native EDBLayer_Cleanup destructor from running on Python-owned wrappers
     and causing memory access violations during garbage collection.
     """
+    from System.Reflection import BindingFlags
+
     prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
     prop.SetValue(obj, False, None)
