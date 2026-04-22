@@ -63,13 +63,15 @@ class RpcSession:
 
     @staticmethod
     def release():
-        """Decrement the open-database reference counter and shut down the server when it reaches zero.
+        """
+        Decrement the open-database reference counter and shut down the server when it reaches zero.
 
         Returns
         -------
         bool
             ``True`` if the RPC session was terminated (last database closed),
             ``False`` if other databases are still open and the session was kept alive.
+
         """
         if RpcSession._open_db_count > 0:
             RpcSession._open_db_count -= 1
