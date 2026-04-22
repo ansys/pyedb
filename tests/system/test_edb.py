@@ -1388,7 +1388,7 @@ class TestClass(BaseTestClass):
         assert list(edb1.components.instances.values())[0].name == "U0"
         assert len(list(edb2.components.instances.values())) == 509
         assert list(edb2.components.instances.values())[0].name == "C380"
-        edb1.close() # testing server RPC should not be closed
+        edb1.close()  # testing server RPC should not be closed
         assert edb1.active_cell is None
         assert len(list(edb2.components.instances.values())) == 509
         assert list(edb2.components.instances.values())[0].name == "C380"
