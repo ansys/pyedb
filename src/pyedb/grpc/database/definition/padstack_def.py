@@ -1112,13 +1112,22 @@ class PadstackDef:
         result = pdef_data.get_hole_parameters()
         if len(result) == 0:
             return {}
-        hole_shape, params, offset_x, offset_y, rotation = result
-        hole_shape = str(hole_shape.name)
+        if len(result) == 5:
+            hole_shape, params, offset_x, offset_y, rotation = result
+        elif len(result) == 4:
+            # polygon shape
+            hole_shape, offset_x, offset_y, rotation = result
+            params=None
+        if not isinstance(hole_shape, CorePolygonData):
+            hole_shape = str(hole_shape.name)
 
         hole_params = {}
         hole_params["shape"] = hole_shape
-        for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape.lower()]):
-            hole_params[i] = str(params[idx])
+        if not isinstance(hole_shape, CorePolygonData):
+            for idx, i in enumerate(self.PAD_SHAPE_PARAMETERS[hole_shape.lower()]):
+                hole_params[i] = str(params[idx])
+        else:
+            hole_params["shape"] = [(pt.x.value, pt.y.value) for pt in hole_shape.without_arcs().points]
         hole_params["offset_x"] = str(offset_x)
         hole_params["offset_y"] = str(offset_y)
         hole_params["rotation"] = str(rotation)
