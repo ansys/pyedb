@@ -41,7 +41,7 @@ from pyedb.grpc.rpc_session import RpcSession
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, version, in_memory=False, is_linux=False):
+    def __init__(self, version, is_linux=False):
         """
         Initialize the gRPC EDB database helper.
 
@@ -49,8 +49,6 @@ class EdbInit(object):
         ----------
         version : str
             AEDT/EDB version to initialize, for example ``"2026.1"``.
-        in_memory : bool, optional
-            Whether to request the local in-memory gRPC transport. The default is ``False``.
         is_linux : bool, optional
             Whether to initialize environment paths using the Linux-specific startup flow.
             The default is ``False``.
@@ -79,13 +77,12 @@ class EdbInit(object):
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oa_directory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], self.base_path])
         # register server kill
         atexit.register(self._signal_handler)
         # register signal handlers
         signal.signal(signal.SIGTERM, self._signal_handler)
         signal.signal(signal.SIGINT, self._signal_handler)
-        RpcSession.in_memory = in_memory
 
     @staticmethod
     def _signal_handler(signum=None, frame=None):
@@ -96,13 +93,7 @@ class EdbInit(object):
         """Active database object."""
         return self._db
 
-    def _sync_transport_mode(self):
-        """Synchronize the effective transport mode after session startup or fallback."""
-        settings.is_in_memory = RpcSession.in_memory
-        if hasattr(self, "in_memory"):
-            self.in_memory = RpcSession.in_memory
-
-    def _create(self, db_path, port=0, restart_rpc_server=False, in_memory=False):
+    def _create(self, db_path, port=0, restart_rpc_server=False):
         """Create a Database at the specified file location.
 
         Parameters
@@ -110,31 +101,30 @@ class EdbInit(object):
         db_path : str
             Path to top-level database folder
 
-        port : int
-            grpc port number.
+        port : int, optional
+            gRPC port number. The default is ``0`` (auto-select).
 
-        restart_rpc_server : optional, bool
-            Force restarting RPC server when `True`.Default value is `False`
+        restart_rpc_server : bool, optional
+            Force restarting RPC server when ``True``. The default is ``False``.
 
         Returns
         -------
         Database
         """
-        RpcSession.in_memory = in_memory
         RpcSession.start(
             edb_version=self.version,
             port=port,
             restart_server=restart_rpc_server,
         )
-        self._sync_transport_mode()
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
-
         self._db = database.Database.create(db_path)
+        if self._db:
+            RpcSession.acquire()
         return self._db
 
-    def _open(self, db_path, read_only, port=0, restart_rpc_server=False, in_memory=False):
+    def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
         """Open an existing Database at the specified file location.
 
         Parameters
@@ -143,27 +133,27 @@ class EdbInit(object):
             Path to top-level Database folder.
         read_only : bool
             Obtain read-only access.
-        port : optional, int.
-            Specify the port number. If not provided a randon free one is selected. Default value is `0`.
-        restart_rpc_server : optional, bool
-            Force restarting RPC server when `True`. Default value is `False`.
+        port : int, optional
+            Port number. If not provided a random free one is selected. The default is ``0``.
+        restart_rpc_server : bool, optional
+            Force restarting RPC server when ``True``. The default is ``False``.
 
         Returns
         -------
         Database or None
             The opened Database object, or None if not found.
         """
-        RpcSession.in_memory = in_memory
         RpcSession.start(
             edb_version=self.version,
             port=port,
             restart_server=restart_rpc_server,
         )
-        self._sync_transport_mode()
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
         self._db = database.Database.open(db_path, read_only)
+        if self._db:
+            RpcSession.acquire()
         return self._db
 
     def delete(self, db_path):
@@ -203,24 +193,27 @@ class EdbInit(object):
         else:
             return False
 
-    def close(self, terminate_rpc_session=True):
+    def close(self, terminate_rpc_session=False):
         """Close the database.
 
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-            Terminate RPC session when closing the database. The default value is `True`.
+            Force termination of the RPC session regardless of how many other databases are still
+            open. The default is ``False``, meaning the RPC server is only shut down automatically
+            when the **last** open database is closed (reference-counted).
 
-        . note::
-            Unsaved changes will be lost. If multiple databases are open and RPC session is terminated, the connection
-            with all databases will be lost. You might be careful and set to `False` until the last open database
-            remains.
+        Notes
+        -----
+        Unsaved changes will be lost. When ``terminate_rpc_session=True`` and multiple databases
+        are open, all connections will be lost immediately.
         """
         self._db.close()
         self._db = None
         if terminate_rpc_session:
             RpcSession.close()
-            self._sync_transport_mode()
+        else:
+            RpcSession.release()
         self._clean_variables()
         return True
 

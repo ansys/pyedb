@@ -27,6 +27,7 @@ import pytest
 
 from pyedb.generic import design_types
 from pyedb.generic.settings import settings
+from tests.conftest import config
 
 
 @pytest.fixture
@@ -84,6 +85,7 @@ def fake_backends(monkeypatch):
     monkeypatch.setitem(sys.modules, "pyedb.dotnet.edb", dotnet_module)
 
 
+@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
 def test_edb_defaults_to_grpc_for_2026_1_and_later(restore_settings_state, fake_backends):
     with pytest.warns(UserWarning):
         backend, kwargs = design_types.Edb(version="2026.1")
@@ -92,7 +94,6 @@ def test_edb_defaults_to_grpc_for_2026_1_and_later(restore_settings_state, fake_
     assert kwargs["version"] == "2026.1"
     assert settings.specified_version == "2026.1"
     assert settings.is_grpc is True
-    assert settings.is_in_memory is True
 
 
 def test_edb_defaults_to_dotnet_before_2026_1(restore_settings_state, fake_backends):

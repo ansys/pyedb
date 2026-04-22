@@ -1380,6 +1380,21 @@ class TestClass(BaseTestClass):
         assert len(edbapp.ports) == 6
         edbapp.close(terminate_rpc_session=False)
 
+    def test_load_multiple_edb(self):
+        edb1 = self.edb_examples.get_si_board()
+        assert len(list(edb1.components.instances.values())) == 4
+        assert list(edb1.components.instances.values())[0].name == "U0"
+        edb2 = self.edb_examples.get_si_verse()
+        assert list(edb1.components.instances.values())[0].name == "U0"
+        assert len(list(edb2.components.instances.values())) == 509
+        assert list(edb2.components.instances.values())[0].name == "C380"
+        edb1.close()  # testing server RPC should not be closed
+        assert edb1.active_cell is None
+        assert len(list(edb2.components.instances.values())) == 509
+        assert list(edb2.components.instances.values())[0].name == "C380"
+        edb2.close(terminate_rpc_session=False)
+        assert edb2.active_cell is None
+
     def test_etching_on_nets(self):
         edbapp = self.edb_examples.get_si_verse()
         for layer in list(edbapp.stackup.signal_layers.values()):
