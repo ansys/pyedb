@@ -22,12 +22,13 @@
 
 from types import SimpleNamespace
 
+import pytest
+
 from pyedb.generic.settings import settings
 from pyedb.grpc import edb_init as edb_init_module, rpc_session as rpc_session_module
 from pyedb.grpc.edb_init import EdbInit
 from pyedb.grpc.rpc_session import RpcSession
 from tests.conftest import config
-import pytest
 
 
 def _reset_rpc_session_state():
@@ -38,6 +39,7 @@ def _reset_rpc_session_state():
     RpcSession.server_pid = 0
     RpcSession.in_memory = False
     settings.is_in_memory = False
+
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
 def test_rpc_session_falls_back_to_standard_rpc_when_in_memory_library_is_missing(monkeypatch):
@@ -60,6 +62,7 @@ def test_rpc_session_falls_back_to_standard_rpc_when_in_memory_library_is_missin
     assert RpcSession.rpc_session is not None
     assert RpcSession.pid == 4321
     assert RpcSession.server_pid == 4321
+
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
 def test_edb_init_create_always_starts_rpc_session(monkeypatch):

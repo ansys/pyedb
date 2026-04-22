@@ -22,11 +22,12 @@
 
 import sys
 from types import ModuleType
-from tests.conftest import config
+
 import pytest
 
 from pyedb.generic import design_types
 from pyedb.generic.settings import settings
+from tests.conftest import config
 
 
 @pytest.fixture
