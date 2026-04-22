@@ -85,7 +85,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
     from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-import warnings
 from zipfile import ZipFile as Zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
