@@ -487,7 +487,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         -------
         str
             Net class on which etching is applied. Supported values `no_power_ground`, `all_nets`.
-            
+
         """
         etch_layer = self._edb_object.GetEtchNetClass()
         if int(etch_layer) == 0:
