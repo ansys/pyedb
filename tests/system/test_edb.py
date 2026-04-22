@@ -1394,3 +1394,12 @@ class TestClass(BaseTestClass):
         assert list(edb2.components.instances.values())[0].name == "C380"
         edb2.close(terminate_rpc_session=False)
         assert edb2.active_cell is None
+
+    def test_etching_on_nets(self):
+        edbapp = self.edb_examples.get_si_verse()
+        for layer in list(edbapp.stackup.signal_layers.values()):
+            layer.etch_factor = 0.1
+            layer.etch_net_class = "no_power_ground"
+            assert layer.etch_net_class == "no_power_ground"
+
+        edbapp.close(terminate_rpc_session=False)
