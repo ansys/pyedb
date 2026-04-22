@@ -54,6 +54,6 @@ and analyze PCB designs by communicating with the `PyEDB-Core <https://github.co
 
     getting_started/index
     user_guide/index
-    grpc_migration/dotnet_api/index
+    grpc_api/index
     examples/index
     changelog

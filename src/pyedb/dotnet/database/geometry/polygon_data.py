@@ -172,25 +172,22 @@ class PolygonData:
         poly = self.core.CreateFromArcs(arcs, flag)
         return PolygonData(self._pedb, poly)
 
-    # TODO: Shouldn't that method only work with x and y as input instead of
-    # accepting that x can be a "point" (list of two values)?
-    def is_inside(self, x: str | float | list[Any], y: str | float | None = None) -> bool:
+    def is_inside(self, point: tuple[float, float]) -> bool:
         """Determines whether a point is inside the polygon."""
-        if isinstance(x, list) and len(x) == 2:
-            y = x[1]
-            x = x[0]
-        return self.core.PointInPolygon(self._pedb.point_data(x, y))
+        y = point[1]
+        x = point[0]
+        return self._edb_object.PointInPolygon(self._pedb.point_data(x, y))
 
     # TODO: Same argument as above
     @deprecated("Use is_inside method instead.", category=None)
-    def point_in_polygon(self, x: str | float | list[Any], y: str | float | None = None) -> bool:
+    def point_in_polygon(self, x: str | float, y: str | float | None = None) -> bool:
         """Determines whether a point is inside the polygon.
 
         ..deprecated:: 0.48.0
            Use: func:`is_inside` instead.
         """
         warnings.warn("Use method is_inside instead", DeprecationWarning)
-        return self.is_inside(x, y)
+        return self.is_inside((self._pedb.value(x), self._pedb.value(y)))
 
     def get_point(self, index: int) -> PointData:
         """Gets the point at the index as a PointData object."""
