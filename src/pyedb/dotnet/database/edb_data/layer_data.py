@@ -493,7 +493,6 @@ class StackupLayerEdbClass(LayerEdbClass):
         else:
             return "all_nets"
 
-
     @etch_net_class.setter
     def etch_net_class(self, etch_net_class: str):
         """Set etching nets by net names."""

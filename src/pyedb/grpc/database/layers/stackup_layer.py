@@ -25,10 +25,14 @@ from __future__ import absolute_import, annotations
 from typing import TYPE_CHECKING, Union
 
 from ansys.edb.core.layer.layer import LayerType as CoreLayerType
-from ansys.edb.core.layer.stackup_layer import RoughnessRegion as CoreRoughnessRegion, StackupLayer as CoreStackupLayer
+from ansys.edb.core.layer.stackup_layer import (
+    EtchNetClass as CoreEtchNetClass,
+    RoughnessRegion as CoreRoughnessRegion,
+    StackupLayer as CoreStackupLayer,
+)
 from ansys.edb.core.utility.value import Value as CoreValue
+
 from pyedb.grpc.database.net.net_class import NetClass
-from ansys.edb.core.layer.stackup_layer import EtchNetClass as CoreEtchNetClass
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.layout.layout import Layout
@@ -47,8 +51,8 @@ _mapping_rougness_location = {
 }
 
 _mapping_etch_net_class = {
-    "all_nets" : CoreEtchNetClass.ETCH_ALL_NETS,
-    "no_power_ground" : CoreEtchNetClass.NO_ETCH_POWER_GROUND,
+    "all_nets": CoreEtchNetClass.ETCH_ALL_NETS,
+    "no_power_ground": CoreEtchNetClass.NO_ETCH_POWER_GROUND,
 }
 
 
@@ -435,7 +439,6 @@ class StackupLayer:
             self.core.etch_net_class = core_value
         else:
             self.core.etch_net_class = etch_net_class
-
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:

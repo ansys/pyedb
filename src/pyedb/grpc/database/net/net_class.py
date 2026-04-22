@@ -46,7 +46,7 @@ class NetClass:
         self._pedb = pedb
 
     @classmethod
-    def create(cls, edb, name) -> 'NetClass':
+    def create(cls, edb, name) -> "NetClass":
         """Create a new net class."""
         core = CoreNetClass.create(edb.layout.core, name)
         return cls(edb, core)
@@ -112,7 +112,6 @@ class NetClass:
         """Set if the net class is a power/ground net class."""
         self.core.is_power_ground = value
 
-
     @property
     def name(self):
         """Net class name.
@@ -147,7 +146,6 @@ class NetClass:
         from pyedb.grpc.database.net.net import Net
 
         return [Net(self._pedb, i) for i in self.core.nets]
-
 
     def add_net(self, net):
         """Add a net to the net class.
