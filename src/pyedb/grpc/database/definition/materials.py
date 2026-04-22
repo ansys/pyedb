@@ -147,7 +147,21 @@ class Material:
         list[str]
             List of all material properties available.
         """
-        return [prop.name.lower() for prop in self.core.all_properties]
+        try:
+            properties = []
+            for prop in self.core.all_properties:
+                try:
+                    # Convert property ID to MaterialProperty enum to get the name
+                    material_prop = CoreMaterialProperty(prop)
+                    properties.append(material_prop.name.lower())
+                except (ValueError, TypeError):
+                    # Skip properties with invalid IDs that don't exist in MaterialProperty enum
+                    continue
+            return properties
+        except Exception as e:
+            # Handle any gRPC or other errors when accessing all_properties
+            self.__edb.logger.warning(f"Could not retrieve material properties: {e}")
+            return []
 
     @property
     def dc_model(self) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:

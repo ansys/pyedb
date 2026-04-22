@@ -1151,23 +1151,29 @@ class Components(object):
         """
         deleted_comps = []
         for comp, val in self.instances.items():
-            if hasattr(val, "pins") and val.pins:
-                if getattr(val, "num_pins", getattr(val, "numpins", None)) == 1 and val.component_type in [
-                    "resistor",
-                    "capacitor",
-                    "inductor",
-                ]:
-                    if deactivate_only:
-                        val.is_enabled = False
-                        # model_type may be read-only on some objects; attempt to set and ignore failures
-                        try:
-                            setattr(val, "model_type", "rlc")
-                        except (AttributeError, TypeError) as e:
-                            # expected failures when attribute is not writable; log at debug level
-                            self._logger.debug(f"Could not set model_type on component {comp}: {e}")
-                    else:
-                        val.delete()
-                        deleted_comps.append(comp)
+            try:
+                pins = val.pins if hasattr(val, "pins") else None
+                if pins:
+                    if getattr(val, "num_pins", getattr(val, "numpins", None)) == 1 and val.component_type in [
+                        "resistor",
+                        "capacitor",
+                        "inductor",
+                    ]:
+                        if deactivate_only:
+                            val.is_enabled = False
+                            # model_type may be read-only on some objects; attempt to set and ignore failures
+                            try:
+                                setattr(val, "model_type", "rlc")
+                            except (AttributeError, TypeError) as e:
+                                # expected failures when attribute is not writable; log at debug level
+                                self._logger.debug(f"Could not set model_type on component {comp}: {e}")
+                        else:
+                            val.delete()
+                            deleted_comps.append(comp)
+            except Exception as e:
+                # Handle cases where the Group object is null or other gRPC errors
+                self._logger.debug(f"Could not process component {comp}: {e}")
+                continue
         if not deactivate_only:
             self.refresh_components()
         self._pedb.logger.info("Deleted {} components".format(len(deleted_comps)))
