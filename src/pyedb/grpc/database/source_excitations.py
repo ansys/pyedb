@@ -260,7 +260,7 @@ class SourceExcitationInternal:
         if isinstance(point_on_edge, tuple):
             point_on_edge = CorePointData(point_on_edge)
         elif isinstance(point_on_edge, list):
-            point_on_edge = [CorePointData(point) for point in point_on_edge]
+            point_on_edge = [CorePointData(self._pedb.value(point)) for point in point_on_edge]
         primitive_lookup_id = prim_id.edb_uid if isinstance(prim_id, Primitive) else prim_id
         try:
             prim = self._pedb.layout.find_object_by_id(primitive_lookup_id)
@@ -271,7 +271,7 @@ class SourceExcitationInternal:
             pos_edge = [CorePrimitiveEdge.create(prim.core, pt) for pt in point_on_edge]
         else:
             pos_edge = [CorePrimitiveEdge.create(prim.core, point_on_edge)]
-        return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edge=pos_edge, net=prim.net, is_ref=is_ref)
+        return EdgeTerminal.create(layout=prim.layout, name=terminal_name, edges=pos_edge, net=prim.net, is_ref=is_ref)
 
 
 class SourceExcitation(SourceExcitationInternal):
@@ -2810,9 +2810,12 @@ class SourceExcitation(SourceExcitationInternal):
             EdgeTerminal as GrpcEdgeTerminal,
         )
 
+        # Ensure location is a nested list of points
+        if location and not isinstance(location[0], (list, tuple)):
+            location = [location]
         points_on_edge = []
         for point in location:
-            point_on_edge = CorePointData(list(point))
+            point_on_edge = CorePointData([self._pedb.value(pt) for pt in point])
             points_on_edge.append(point_on_edge)
         primitive = self._pedb.layout.find_primitive(name=primitive_name)
         if primitive:
@@ -3496,7 +3499,7 @@ class SourceExcitation(SourceExcitationInternal):
         primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
         point_on_edge = CorePointData([x, y])
         pos_edge = [CorePrimitiveEdge.create(primitive.core, point_on_edge)]
-        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edge=pos_edge, net=primitive.net)
+        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edges=pos_edge, net=primitive.net)
 
         if terminal.is_null:
             raise RuntimeError(
