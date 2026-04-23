@@ -2810,9 +2810,12 @@ class SourceExcitation(SourceExcitationInternal):
             EdgeTerminal as GrpcEdgeTerminal,
         )
 
+        # Ensure location is a nested list of points
+        if location and not isinstance(location[0], (list, tuple)):
+            location = [location]
         points_on_edge = []
         for point in location:
-            point_on_edge = CorePointData(list(point))
+            point_on_edge = CorePointData(point)
             points_on_edge.append(point_on_edge)
         primitive = self._pedb.layout.find_primitive(name=primitive_name)
         if primitive:
