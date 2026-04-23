@@ -1173,7 +1173,7 @@ class Padstacks(object):
                 offset_y=value0,
                 rotation=value0,
                 type_geom=CorePadGeometryType.PADGEOMTYPE_POLYGON,
-                fp=polygon_hole.core,
+                poly=polygon_hole.core,
             )
             padstack_data.plating_percentage = 20.0
         else:
@@ -1236,7 +1236,7 @@ class Padstacks(object):
                         offset_x=pad_offset_x,
                         offset_y=pad_offset_y,
                         rotation=pad_rotation,
-                        fp=pad_polygon.core,
+                        poly=pad_polygon.core,
                     )
                 else:
                     self._pedb.logger.error(
@@ -1249,7 +1249,7 @@ class Padstacks(object):
                         offset_x=pad_offset_x,
                         offset_y=pad_offset_y,
                         rotation=pad_rotation,
-                        fp=antipad_polygon.core,
+                        poly=antipad_polygon.core,
                     )
                 else:
                     self._pedb.logger.error(

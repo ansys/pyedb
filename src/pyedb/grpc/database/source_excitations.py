@@ -2815,7 +2815,7 @@ class SourceExcitation(SourceExcitationInternal):
             location = [location]
         points_on_edge = []
         for point in location:
-            point_on_edge = CorePointData(point)
+            point_on_edge = CorePointData([self._pedb.value(pt) for pt in point])
             points_on_edge.append(point_on_edge)
         primitive = self._pedb.layout.find_primitive(name=primitive_name)
         if primitive:
