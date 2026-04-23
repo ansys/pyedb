@@ -596,7 +596,7 @@ class Modeler(object):
                 void_polygon_data = void
             elif isinstance(void, PolygonData):
                 void_polygon_data = void.core
-            elif isinstance(void, Polygon | Rectangle | Circle):
+            elif isinstance(void, Polygon | Rectangle | Circle | Primitive):
                 void_polygon_data = void.polygon_data.core
             else:
                 raise TypeError("Unsupported void format.")
