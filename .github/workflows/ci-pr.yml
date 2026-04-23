@@ -130,7 +130,7 @@ jobs:
       - name: Install Python library and tests dependencies
         run: |
           source .venv/bin/activate
-          python -m pip install .[all,tests]
+          python -m pip install .[all,tests,dotnet]
 
       - name: Run unit tests
         run: |
@@ -255,7 +255,7 @@ jobs:
       - name: Install Python library and tests dependencies
         run: |
           . .venv\Scripts\Activate.ps1
-          python -m pip install .[all,tests]
+          python -m pip install .[all,tests,dotnet]
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -399,7 +399,7 @@ jobs:
       - name: Install Python library and tests dependencies
         run: |
           . .venv/bin/activate
-          python -m pip install .[all,tests]
+          python -m pip install .[all,tests,dotnet]
 
       - name: Executing system tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0

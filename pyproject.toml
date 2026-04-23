@@ -25,11 +25,6 @@ classifiers = [
 ]
 
 dependencies = [
-    # .NET interface dependencies
-    "cffi>=1.16.0,<2.1; platform_system=='Linux'",
-    "pywin32>=308;platform_system=='Windows'",
-    "ansys-pythonnet>=3.1.0rc6",
-    # Core dependencies
     "numpy>=1.20.0,<3",
     "pydantic>=2.6.4,<2.14",
     "toml==0.10.2",
@@ -40,6 +35,10 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dotnet = [
+    "pywin32>=304;platform_system=='Windows'",
+    "ansys-pythonnet>=3.1.0rc6",
+]
 geometry = [
     "shapely",
     "ezdxf>=1.4.2",
