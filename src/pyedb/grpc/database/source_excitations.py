@@ -3499,7 +3499,7 @@ class SourceExcitation(SourceExcitationInternal):
         primitive = self._pedb.layout.find_primitive(name=primitive_name)[0]
         point_on_edge = CorePointData([x, y])
         pos_edge = [CorePrimitiveEdge.create(primitive.core, point_on_edge)]
-        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edge=pos_edge, net=primitive.net)
+        terminal = EdgeTerminal.create(layout=primitive.layout, name=name, edges=pos_edge, net=primitive.net)
 
         if terminal.is_null:
             raise RuntimeError(
