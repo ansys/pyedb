@@ -596,10 +596,10 @@ class Modeler(object):
                 void_polygon_data = void
             elif isinstance(void, PolygonData):
                 void_polygon_data = void.core
-            elif isinstance(void, Polygon):
+            elif isinstance(void, Polygon | Rectangle | Circle):
                 void_polygon_data = void.polygon_data.core
             else:
-                raise TypeError("Void shape must be a list of points, PolygonData, or Polygon.")
+                raise TypeError("Unsupported void format.")
             if not void_polygon_data.points:
                 raise RuntimeError("Failed to create void polygon data")
             polygon_data.holes.append(void_polygon_data)
