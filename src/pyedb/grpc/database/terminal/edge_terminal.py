@@ -37,7 +37,7 @@ class EdgeTerminal(Terminal):
         self._hfss_type = "Gap"
 
     @classmethod
-    def create(cls, layout, name, edge, net, is_ref=False):
+    def create(cls, layout, name, edges, net, is_ref=False):
         """Create an edge terminal.
 
         Parameters
@@ -46,7 +46,7 @@ class EdgeTerminal(Terminal):
             Layout object.
         name : str
             Terminal name.
-        edge : :class:`.Edge`
+        edges : :class:`.Edge` or List[:class:`.Edge`]
             Edge object.
         net : :class:`.Net` or str, optional
             Net object or net name. If None, the terminal will not be assigned to any net.
@@ -63,7 +63,7 @@ class EdgeTerminal(Terminal):
         grpc_edge_terminal = CoreEdgeTerminal.create(
             layout.core,
             name,
-            edge,
+            edges,
             net.core,
             is_ref,
         )

@@ -79,9 +79,24 @@ def test_edb_deprecated_properties_have_static_metadata(backend, edb_class):
         )
 
 
-def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
-    stub_path = Path(__file__).resolve().parents[2] / "src" / "pyedb" / "__init__.pyi"
+@pytest.mark.parametrize(
+    ("relative_stub_path", "expected_grpc_import", "expected_dotnet_import"),
+    [
+        (Path("src") / "pyedb" / "__init__.pyi", "pyedb.grpc.edb.Edb", "pyedb.dotnet.edb.Edb"),
+        (
+            Path("src") / "pyedb" / "generic" / "design_types.pyi",
+            "pyedb.grpc.edb.Edb",
+            "pyedb.dotnet.edb.Edb",
+        ),
+    ],
+)
+def test_public_edb_stub_overloads_resolve_to_backend_classes(
+    relative_stub_path, expected_grpc_import, expected_dotnet_import
+):
+    stub_path = Path(__file__).resolve().parents[2] / relative_stub_path
     stub_tree = ast.parse(stub_path.read_text(encoding="utf-8"))
+    package_root = list(relative_stub_path.with_suffix("").parts)
+    package_root = package_root[package_root.index("pyedb") : -1]
 
     imported_aliases = {}
     overloads = []
@@ -89,21 +104,25 @@ def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
     for node in stub_tree.body:
         if isinstance(node, ast.ImportFrom):
             module_name = node.module or ""
-            if node.level == 1:
-                module_name = f"pyedb.{module_name}"
+            if node.level:
+                package_parts = package_root[:]
+                if node.level > 1:
+                    package_parts = package_parts[: -(node.level - 1)]
+                module_name = ".".join(package_parts + ([module_name] if module_name else []))
             for alias in node.names:
                 imported_aliases[alias.asname or alias.name] = f"{module_name}.{alias.name}"
         elif isinstance(node, ast.FunctionDef) and node.name == "Edb":
             overloads.append(node)
 
-    assert imported_aliases.get("_GrpcEdb") == "pyedb.grpc.edb.Edb"
-    assert imported_aliases.get("_DotnetEdb") == "pyedb.dotnet.edb.Edb"
-    assert len(overloads) == 3
+    assert imported_aliases.get("_GrpcEdb") == expected_grpc_import
+    assert imported_aliases.get("_DotnetEdb") == expected_dotnet_import
+    assert len(overloads) == 4
 
     expected_signatures = [
-        ("Literal[True]", "True", "_GrpcEdb"),
-        ("Literal[False]", "False", "_DotnetEdb"),
-        ("bool", "False", "_GrpcEdb | _DotnetEdb"),
+        ("Literal[True]", "...", "_GrpcEdb"),
+        ("Literal[False]", "...", "_DotnetEdb"),
+        ("bool", "...", "_GrpcEdb | _DotnetEdb"),
+        ("None", "None", "_GrpcEdb | _DotnetEdb"),
     ]
 
     expected_parameter_names = [
@@ -120,6 +139,7 @@ def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
         "grpc",
         "control_file",
         "layer_filter",
+        "in_memory",
     ]
 
     for overload_node, (expected_annotation, expected_default, expected_return) in zip(overloads, expected_signatures):
@@ -136,6 +156,11 @@ def test_top_level_edb_stub_overloads_resolve_to_backend_classes():
         assert ast.unparse(grpc_arg.annotation) == expected_annotation
         assert ast.unparse(grpc_default) == expected_default
         assert ast.unparse(overload_node.returns) == expected_return
+
+        in_memory_arg = overload_node.args.args[13]
+        in_memory_default = overload_node.args.defaults[13]
+        assert ast.unparse(in_memory_arg.annotation) == "bool"
+        assert ast.unparse(in_memory_default) == "True"
 
 
 @pytest.mark.parametrize(

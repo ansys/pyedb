@@ -21,7 +21,7 @@ You can always check the status and version of the connection from your Python s
 
    from pyedb import pyedb
 
-   edb = Edb(edbpath="/tmp/my_project.aedb", version="2025.2", grpc=True)
+   edb = Edb(edbpath="/tmp/my_project.aedb", version="2026.1", grpc=True)
 
 If connection was successful, you should something similar to this in the console:
 

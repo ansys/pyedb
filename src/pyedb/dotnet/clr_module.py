@@ -56,8 +56,6 @@ sys.path.append(str(pyedb_path / "dlls" / "PDFReport"))
 
 
 if is_linux:  # pragma: no cover
-    from pythonnet import load
-
     dotnet_root = None
     runtime_config = None
     runtime_spec = None
@@ -65,34 +63,49 @@ if is_linux:  # pragma: no cover
     if os.environ.get("DOTNET_ROOT") is None:
         try:
             from clr_loader import get_coreclr
+            from pythonnet import load
 
             runtime = get_coreclr()
             load(runtime)
             os.environ["DOTNET_ROOT"] = runtime.dotnet_root.as_posix()
             is_clr = True
         except Exception:
-            raise RuntimeError(
-                ".NET is not found. For more information, see"
+            warnings.warn(
+                ".NET is not found. PyEDB will work only in gRPC (client) mode. For more information, see "
                 "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
             )
     # Use specified .NET root folder
     else:
         dotnet_root = Path(os.environ["DOTNET_ROOT"])
 
-        from clr_loader import find_runtimes
+        try:
+            from clr_loader import find_runtimes
 
-        candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
-        candidates.sort(key=lambda spec: spec.version, reverse=True)
-        if not candidates:
-            raise RuntimeError(
-                "Configuration file could not be found from DOTNET_ROOT. "
-                "Please ensure that .NET SDK is correctly installed or "
-                "that DOTNET_ROOT is correctly set."
-            )
-        runtime_spec = candidates[0]
+            # Check if the dotnet_root exists and contains the shared subdirectory
+            shared_dir = dotnet_root / "shared"
+            if not shared_dir.exists():
+                warnings.warn(
+                    "DOTNET_ROOT is set but does not contain a valid .NET installation. "
+                    "PyEDB will work only in gRPC (client) mode."
+                )
+            else:
+                candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
+                candidates.sort(key=lambda spec: spec.version, reverse=True)
+                if not candidates:
+                    warnings.warn(
+                        "Configuration file could not be found from DOTNET_ROOT. "
+                        "Please ensure that .NET SDK is correctly installed or "
+                        "that DOTNET_ROOT is correctly set."
+                    )
+                else:
+                    runtime_spec = candidates[0]
+        except Exception:
+            warnings.warn("Could not find .NET runtimes. PyEDB will work only in gRPC (client) mode.")
     # Use specific .NET core runtime
     if dotnet_root is not None and (runtime_config is not None or runtime_spec is not None):
         try:
+            from pythonnet import load
+
             load(
                 "coreclr",
                 runtime_config=str(runtime_config) if runtime_config else None,
@@ -125,7 +138,7 @@ try:  # work around a number formatting bug in the EDB API for non-English local
 
     edb_initialized = True
 
-except ImportError:  # pragma: no cover
+except (ImportError, RuntimeError):  # pragma: no cover
     if is_windows:
         warnings.warn(
             "The clr is missing. Install PythonNET or use an IronPython version if you want to use the EDB module."

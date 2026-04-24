@@ -26,9 +26,14 @@ import os
 import shutil
 import time
 
-from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType, PolygonData as GrpcPolygonData
+from ansys.edb.core.geometry.polygon_data import ExtentType as GrpcExtentType, PolygonData as CorePolygonData
 
-from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
+def _get_convert_py_list_to_net_list():
+    """Lazy import to avoid loading .NET when using gRPC."""
+    from pyedb.dotnet.database.general import convert_py_list_to_net_list
+
+    return convert_py_list_to_net_list
 
 
 class Cutout:
@@ -224,7 +229,7 @@ class GrpcCutout:
     def _create_convex_hull(
         self,
         tolerance: float = 1e-12,
-    ) -> GrpcPolygonData:
+    ) -> CorePolygonData:
         """Create a convex hull extent polygon from signal nets.
 
         Parameters
@@ -247,7 +252,7 @@ class GrpcCutout:
                 pos_4 = [pos_1[0], pos_3[1]]
                 pos_2 = [pos_3[0], pos_1[1]]
                 pts = [pos_1, pos_2, pos_3, pos_4, pos_1]
-                rectangle_data = GrpcPolygonData(points=pts)
+                rectangle_data = CorePolygonData(points=pts)
                 _polys.append(rectangle_data)
         for prim in self._edb.layout.primitives:
             if prim is not None and prim.net_name in self.signals:
@@ -257,7 +262,7 @@ class GrpcCutout:
             if objs_data:
                 _polys.extend(objs_data)
 
-        _poly = GrpcPolygonData.convex_hull(_polys)
+        _poly = CorePolygonData.convex_hull(_polys)
         extent = _poly.expand(
             offset=self.expansion_size,
             round_corner=self.use_round_corner,
@@ -269,7 +274,7 @@ class GrpcCutout:
     def _create_conformal(
         self,
         tolerance: float = 1e-12,
-    ) -> GrpcPolygonData:
+    ) -> CorePolygonData:
         """Create a conformal extent polygon that tightly follows geometry.
 
         Parameters
@@ -355,7 +360,7 @@ class GrpcCutout:
                             )
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = GrpcPolygonData.unite(unite_polys)
+            _poly_unite = CorePolygonData.unite(unite_polys)
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]
@@ -369,7 +374,7 @@ class GrpcCutout:
             areas = [i.area() for i in _poly_unite]
             return _poly_unite[areas.index(max(areas))]
 
-    def _smart_cut(self) -> list[GrpcPolygonData]:
+    def _smart_cut(self) -> list[CorePolygonData]:
         """Generate additional polygons around reference terminals for smart cutout.
 
         Returns
@@ -391,7 +396,7 @@ class GrpcCutout:
                 [self._edb.value(point[0] + self.expansion_size), self._edb.value(point[1] - self.expansion_size)],
                 [self._edb.value(point[0] + self.expansion_size), self._edb.value(point[1] + self.expansion_size)],
             ]
-            _polys.append(GrpcPolygonData(points=points))
+            _polys.append(CorePolygonData(points=points))
         return _polys
 
     def pins_to_preserve(self) -> tuple:
@@ -426,7 +431,7 @@ class GrpcCutout:
                         _pins_to_preserve.append(pin)
         return _pins_to_preserve, _nets_to_preserve
 
-    def _compute_pyaedt_extent(self) -> GrpcPolygonData:
+    def _compute_pyaedt_extent(self) -> CorePolygonData:
         """Compute extent polygon using PyAEDT implementation.
 
         Returns
@@ -455,10 +460,10 @@ class GrpcCutout:
                 1e-12,
             )
             _poly_list = [_poly]
-            _poly = GrpcPolygonData.convex_hull(_poly_list)
+            _poly = CorePolygonData.convex_hull(_poly_list)
         return _poly
 
-    def _compute_legacy_extent(self) -> GrpcPolygonData:
+    def _compute_legacy_extent(self) -> CorePolygonData:
         """Compute extent polygon using legacy EDB API.
 
         Returns
@@ -482,7 +487,7 @@ class GrpcCutout:
         )
         return _poly
 
-    def _extent(self) -> GrpcPolygonData:
+    def _extent(self) -> CorePolygonData:
         """Compute extent polygon using native EDB API.
 
         Returns
@@ -501,7 +506,7 @@ class GrpcCutout:
                 ]
                 for i in point_list
             ]
-            _poly = GrpcPolygonData(points=point_list)
+            _poly = CorePolygonData(points=point_list)
         else:
             if self.use_pyaedt_extent_computing:
                 _poly = self._compute_pyaedt_extent()
@@ -707,8 +712,8 @@ class GrpcCutout:
 
         # paths
         for path in reference_paths:
-            pdata = path.polygon_data
-            if extent_poly.intersection_type(pdata) == 0:
+            pdata = path.polygon_data.core
+            if extent_poly.intersection_type(pdata).value == 0:
                 prims_to_clip.append(path)
                 continue
             if not path.core.set_clip_info(extent_poly, True):
@@ -717,7 +722,7 @@ class GrpcCutout:
 
         # reference primitives
         for prim in reference_prims:
-            pdata = prim.polygon_data
+            pdata = prim.polygon_data.core
             int_type = extent_poly.intersection_type(pdata).value
             if int_type in (0, 4):  # completely outside
                 prims_to_clip.append(prim)
@@ -728,7 +733,7 @@ class GrpcCutout:
                 for p in clipped_list:
                     if not p.points:
                         continue
-                    voids_data = [v.polygon_data for v in prim.voids]
+                    voids_data = [v.polygon_data.core for v in prim.voids]
                     if voids_data:
                         for poly_void in p.subtract(p, voids_data):
                             if poly_void.points:
@@ -737,8 +742,6 @@ class GrpcCutout:
                         poly_to_create.append([p, prim.layer.name, prim.net_name, []])
                 prims_to_clip.append(prim)
 
-        # components
-        components_to_delete = [comp for comp in all_components if comp.numpins == 0]
         self.logger.info(f"[COMPUTE] Decision lists ready in {time.time() - _t:.3f} s")
         # ------------------------------------------------------------------
         # 3.  WRITE – single serial pass, no interleaved reads
@@ -771,6 +774,7 @@ class GrpcCutout:
 
         # components
         _t1 = time.time()
+        components_to_delete = [comp for comp in all_components if comp.numpins == 0]
         for comp in components_to_delete:
             comp.delete()
         if self.remove_single_pin_components:
@@ -855,7 +859,7 @@ class GrpcCutout:
                     break
                 self._edb.close()
                 self._edb.edbpath = legacy_path
-                self._edb.open_edb()
+                self._edb.open()
                 i += 1
                 expansion = expansion_size * i
             if working_cutout:
@@ -1034,7 +1038,7 @@ class DotNetCutout:
     def _create_convex_hull(
         self,
         tolerance=1e-12,
-    ) -> GrpcPolygonData:
+    ) -> CorePolygonData:
         """Create a convex hull extent polygon from signal nets.
 
         Parameters
@@ -1066,6 +1070,7 @@ class DotNetCutout:
             objs_data = self._smart_cut()
             if objs_data:
                 _polys.extend(objs_data)
+        convert_py_list_to_net_list = _get_convert_py_list_to_net_list()
         _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(convert_py_list_to_net_list(_polys))
         _poly = _poly.Expand(self.expansion_size, tolerance, self.use_round_corner, self.expansion_size)
         _poly_list = convert_py_list_to_net_list(list(_poly)[0])
@@ -1075,7 +1080,7 @@ class DotNetCutout:
     def _create_conformal(
         self,
         tolerance=1e-12,
-    ) -> GrpcPolygonData:
+    ) -> CorePolygonData:
         """Create a conformal extent polygon that tightly follows geometry.
 
         Parameters
@@ -1140,6 +1145,7 @@ class DotNetCutout:
                                     if void_polydata.Area() >= 0.05 * area:
                                         voids_poly.append(void_polydata)
                                 if voids_poly:
+                                    convert_py_list_to_net_list = _get_convert_py_list_to_net_list()
                                     obj_data = obj_data[0].Subtract(
                                         convert_py_list_to_net_list(list(obj_data)),
                                         convert_py_list_to_net_list(voids_poly),
@@ -1151,7 +1157,7 @@ class DotNetCutout:
                             )
                         finally:
                             unite_polys.extend(list(obj_data))
-            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(convert_py_list_to_net_list(unite_polys))
+            _poly_unite = self._edb.core.Geometry.PolygonData.Unite(_get_convert_py_list_to_net_list()(unite_polys))
             if len(_poly_unite) == 1:
                 self.logger.info("Correctly computed Extension at first iteration.")
                 return _poly_unite[0]
@@ -1233,7 +1239,7 @@ class DotNetCutout:
                         _pins_to_preserve.append(pin)
         return _pins_to_preserve, _nets_to_preserve
 
-    def _compute_pyaedt_extent(self) -> GrpcPolygonData:
+    def _compute_pyaedt_extent(self) -> CorePolygonData:
         """Compute extent polygon using PyAEDT implementation.
 
         Returns
@@ -1261,11 +1267,11 @@ class DotNetCutout:
             _poly = self._create_convex_hull(
                 1e-12,
             )
-            _poly_list = convert_py_list_to_net_list([_poly])
+            _poly_list = _get_convert_py_list_to_net_list()([_poly])
             _poly = self._edb.core.Geometry.PolygonData.GetConvexHullOfPolygons(_poly_list)
         return _poly
 
-    def _compute_legacy_extent(self) -> GrpcPolygonData:
+    def _compute_legacy_extent(self) -> CorePolygonData:
         """Compute extent polygon using legacy EDB API.
 
         Returns
@@ -1289,7 +1295,7 @@ class DotNetCutout:
         )
         return _poly
 
-    def _extent(self) -> GrpcPolygonData:
+    def _extent(self) -> CorePolygonData:
         """Compute extent polygon using native EDB API.
 
         Returns
@@ -1365,6 +1371,7 @@ class DotNetCutout:
         ref_nets = [net for net in self._edb.layout.nets if net.name in self.references]
 
         # validate references in layout
+        convert_py_list_to_net_list = _get_convert_py_list_to_net_list()
         _netsClip = convert_py_list_to_net_list(
             [net.api_object for net in self._edb.layout.nets if net.name in self.references]
         )
@@ -1381,7 +1388,7 @@ class DotNetCutout:
         if self.output_file:
             db2 = self._edb.core.Database.Create(self.output_file)
             _success = db2.Save()
-            _dbCells = convert_py_list_to_net_list(_dbCells)
+            _dbCells = _get_convert_py_list_to_net_list()(_dbCells)
             db2.CopyCells(_dbCells)  # Copies cutout cell/design to db2 project
             if len(list(db2.CircuitCells)) > 0:
                 for net in list(list(db2.CircuitCells)[0].GetLayout().Nets):
@@ -1513,7 +1520,7 @@ class DotNetCutout:
         self.logger.info_timer("Extent Creation")
         self.logger.reset_timer()
 
-        _poly_list = convert_py_list_to_net_list([_poly])
+        _poly_list = _get_convert_py_list_to_net_list()([_poly])
         prims_to_delete = []
         poly_to_create = []
         pins_to_delete = []
@@ -1521,15 +1528,17 @@ class DotNetCutout:
         def intersect(poly1, poly2):
             if not isinstance(poly2, list):
                 poly2 = [poly2]
+            _cvt = _get_convert_py_list_to_net_list()
             return list(
                 poly1.Intersect(
-                    convert_py_list_to_net_list(poly1),
-                    convert_py_list_to_net_list(poly2),
+                    _cvt(poly1),
+                    _cvt(poly2),
                 )
             )
 
         def subtract(poly, voids):
-            return poly.Subtract(convert_py_list_to_net_list(poly), convert_py_list_to_net_list(voids))
+            _cvt = _get_convert_py_list_to_net_list()
+            return poly.Subtract(_cvt(poly), _cvt(voids))
 
         def clip_path(path):
             pdata = path.polygon_data._edb_object

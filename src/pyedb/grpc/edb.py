@@ -85,7 +85,6 @@ if TYPE_CHECKING:
     from pyedb.grpc.database.layout.voltage_regulator import VoltageRegulator
     from pyedb.grpc.database.simulation_setup.siwave_dcir_simulation_setup import SIWaveDCIRSimulationSetup
     from pyedb.grpc.database.utility.layout_statistics import LayoutStatistics
-import warnings
 from zipfile import ZipFile as Zpf
 
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
@@ -228,7 +227,7 @@ class Edb(EdbInit):
     ):
         edbversion = get_string_version(version)
         self._clean_variables()
-        EdbInit.__init__(self, edbversion=version)
+        EdbInit.__init__(self, version=version)
         self.standalone = True
         self.oproject = oproject
         self._main = sys.modules["__main__"]
@@ -687,7 +686,7 @@ class Edb(EdbInit):
         ]
         return {ter.name: ter for ter in terms}
 
-    def open(self, restart_rpc_server=False) -> bool:
+    def open(self, restart_rpc_server: bool = False) -> bool:
         """Open EDB database.
 
         Returns
@@ -704,11 +703,7 @@ class Edb(EdbInit):
         n_try = 10
         while not self.db and n_try:
             try:
-                self._open(
-                    self.edbpath,
-                    self.isreadonly,
-                    restart_rpc_server=restart_rpc_server,
-                )
+                self._open(self.edbpath, self.isreadonly, restart_rpc_server=restart_rpc_server)
                 n_try -= 1
             except Exception as e:
                 self.logger.error(e.args[0])
@@ -3079,7 +3074,11 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
-        cloned_edb = Edb(edbpath=output_edb, edbversion=self.version, restart_rpc_server=True)
+        cloned_edb = Edb(
+            edbpath=output_edb,
+            edbversion=self.version,
+            restart_rpc_server=True,
+        )
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
@@ -3332,9 +3331,12 @@ class Edb(EdbInit):
     def copy_cell_from_edb(self, edb_path: Union[Path, str]):
         """Copy Cells from another Edb Database into this Database."""
         edb2 = Edb(edbpath=edb_path, edbversion=self.version)
-        cells = self.copy_cells([edb2.active_cell])
-        cell = cells[0]
-        cell.is_blackbox = True
+        try:
+            cells = self.copy_cells([edb2.active_cell])
+            cell = cells[0]
+            cell.is_blackbox = True
+        finally:
+            edb2.close(terminate_rpc_session=False)
 
     def _init_objects(self):
         """Initialize commonly used cached objects for the gRPC EDB implementation.

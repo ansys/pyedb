@@ -26,6 +26,7 @@ import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+import ansys.edb.core
 import pytest
 
 from pyedb.edb_logger import EdbLogger
@@ -48,7 +49,8 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_layout_bounding_box(self):
         """Evaluate layout bounding box"""
@@ -289,7 +291,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_edge_port_on_polygon(self):
         """Create lumped and vertical port."""
@@ -371,7 +374,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_statistics(self):
         """Get statistics."""
@@ -436,7 +440,8 @@ class TestClass(BaseTestClass):
         edb.close()
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_0(self):
         """Create various ports."""
@@ -553,7 +558,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_create_various_ports_1(self):
         """Create various ports."""
@@ -1309,7 +1315,8 @@ class TestClass(BaseTestClass):
         edbapp.close()
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_edb_settings(self):
         edbapp = self.edb_examples.get_si_verse()
@@ -1357,3 +1364,42 @@ class TestClass(BaseTestClass):
         setup = edbapp.setups["setup_1"]
         assert not setup.settings.use_loop_res_for_per_pin  # fail on .net
         edbapp.close()
+
+    @pytest.mark.skipif(
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
+    )
+    def test_horizontal_wave_ports(self):
+        local_path = Path(__file__).parent.parent
+        example_folder = os.path.join(local_path, "example_models", "TEDB")
+        source_path_edb = os.path.join(example_folder, "example_arbitrary_wave_ports.aedb")
+        edbapp = self.edb_examples.load_edb(source_path_edb)
+        voids = edbapp.layout.primitives[0].voids
+        for void in voids:
+            edbapp.excitation_manager.create_horizontal_wave_port(void)
+        assert len(edbapp.ports) == 6
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_load_multiple_edb(self):
+        edb1 = self.edb_examples.get_si_board()
+        assert len(list(edb1.components.instances.values())) == 4
+        assert list(edb1.components.instances.values())[0].name == "U0"
+        edb2 = self.edb_examples.get_si_verse()
+        assert list(edb1.components.instances.values())[0].name == "U0"
+        assert len(list(edb2.components.instances.values())) == 509
+        assert list(edb2.components.instances.values())[0].name == "C380"
+        edb1.close()  # testing server RPC should not be closed
+        assert edb1.active_cell is None
+        assert len(list(edb2.components.instances.values())) == 509
+        assert list(edb2.components.instances.values())[0].name == "C380"
+        edb2.close(terminate_rpc_session=False)
+        assert edb2.active_cell is None
+
+    def test_etching_on_nets(self):
+        edbapp = self.edb_examples.get_si_verse()
+        for layer in list(edbapp.stackup.signal_layers.values()):
+            layer.etch_factor = 0.1
+            layer.etch_net_class = "no_power_ground"
+            assert layer.etch_net_class == "no_power_ground"
+
+        edbapp.close(terminate_rpc_session=False)

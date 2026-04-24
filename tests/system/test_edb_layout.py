@@ -21,9 +21,11 @@
 # SOFTWARE.
 
 
+import warnings
+
 import pytest
 
-from tests.conftest import config, use_grpc
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -31,10 +33,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_find(self):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.layout.find_primitive(layer_name="Inner5(PWR2)", name="poly_4128", net_name=["2V5"])
@@ -58,6 +56,44 @@ class TestClass(BaseTestClass):
         assert prim.polygon_data.is_inside(["111.4mm", 44.7e-3])
         edbapp.close(terminate_rpc_session=False)
 
+    def test_filter_primitives_includes_voids(self):
+        edbapp = self.edb_examples.get_si_verse()
+        void = next(void for poly in edbapp.layout.polygons if poly.has_voids for void in poly.voids)
+        net_void = next(
+            void for poly in edbapp.layout.polygons if poly.has_voids for void in poly.voids if void.net_name
+        )
+        kwargs = {"name": void.aedt_name, "layer_name": void.layer_name}
+        if void.net_name:
+            kwargs["net_name"] = void.net_name
+
+        filtered = edbapp.layout.filter_primitives(**kwargs)
+
+        assert any(primitive.id == void.id and primitive.is_void for primitive in filtered)
+        assert edbapp.layout.primitives_by_aedt_name[void.aedt_name].id == void.id
+        assert edbapp.layout.primitives_by_aedt_name[void.aedt_name].is_void
+        assert any(primitive.id == void.id for primitive in edbapp.layout.primitives_by_layer[void.layer_name])
+        assert any(primitive.id == net_void.id for primitive in edbapp.layout.primitives_by_net[net_void.net_name])
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", DeprecationWarning)
+            warnings.simplefilter("ignore", FutureWarning)
+            assert any(
+                primitive.id == net_void.id and primitive.is_void
+                for primitive in edbapp.layout.get_primitives(
+                    layer_name=net_void.layer_name,
+                    net_name=net_void.net_name,
+                    prim_type=net_void.primitive_type,
+                )
+            )
+            assert any(
+                primitive.id == net_void.id and primitive.is_void
+                for primitive in edbapp.modeler.get_primitives(
+                    layer_name=net_void.layer_name,
+                    net_name=net_void.net_name,
+                    prim_type=net_void.primitive_type,
+                )
+            )
+        edbapp.close(terminate_rpc_session=False)
+
     def test_primitive_path(self):
         edbapp = self.edb_examples.get_si_verse()
         if not edbapp.grpc:
@@ -76,7 +112,7 @@ class TestClass(BaseTestClass):
         assert len(edbapp.layout.bondwires) == 0
         polygon_by_layers = edbapp.layout.polygons_by_layer
         assert len(polygon_by_layers) == 19
-        assert len(edbapp.layout.primitives_by_layer["1_Top"]) == 1232
+        assert len(edbapp.layout.primitives_by_layer["1_Top"]) == 1289  # -> voids were added
         assert len(edbapp.layout.polygons_by_layer) == 19
         primitives_top_layer = polygon_by_layers["1_Top"]
         assert len(primitives_top_layer) == 134
@@ -89,14 +125,16 @@ class TestClass(BaseTestClass):
             len(edbapp.layout.get_primitive_by_layer_and_point(point=[10e-3, 10e-3], layer="Inner1(GND1)", nets="GND"))
             == 1
         )
-        assert len(edbapp.layout.find_primitive(layer_name="1_Top", net_name="GND")) == 383
-        assert len(edbapp.layout.primitives_by_net["GND"]) == 446
+        assert (
+            len(edbapp.layout.find_primitive(layer_name="1_Top", net_name="GND")) == 439
+        )  # -> from 383 to 439 (voids)
+        assert len(edbapp.layout.primitives_by_net["GND"]) == 2179  # from 446 to 2179 -> void were added
         assert len(edbapp.layout.rectangles) == 1
         assert len(edbapp.layout.circles) == 1
         assert len(edbapp.layout.paths) == 1839
-        assert len(edbapp.layout.get_polygons_by_layer(layer="1_Top", nets="GND")) == 24
+        assert len(edbapp.layout.get_polygons_by_layer(layer="1_Top", nets="GND")) == 80  # from 24 to 80 with voids
         polygon_to_test = edbapp.layout.polygons_by_layer["1_Top"][0]
         assert edbapp.layout.get_polygon_bounding_box(polygon_to_test)
         assert edbapp.layout.get_polygon_points(polygon_to_test)
-        assert len(edbapp.layout.get_primitives(layer_name="1_Top", net_name="GND", prim_type="polygon")) == 24
+        assert len(edbapp.layout.get_primitives(layer_name="1_Top", net_name="GND", prim_type="polygon")) == 80  # voids
         edbapp.close(terminate_rpc_session=False)

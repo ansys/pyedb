@@ -2,34 +2,34 @@
 API reference
 =============
 
-This section describes EDB functions, classes, and methods
-for EDB gRPC applications and modules. Use the search feature or click links
-to view API documentation.
+This section documents the public PyEDB gRPC API for EDB applications and modules.
+Use the search feature or the links below to browse the available package,
+subpackage, class, and method references.
 
-The PyEDB API includes classes for apps and modules. You must initialize the
-``Edb`` class to get access to all modules and methods. All other classes and
-methods are inherited into the ``Edb`` class.
+The ``Edb`` class is the main entry point for the gRPC workflow. Once an
+``Edb`` instance is initialized, the related database helpers, applications,
+and methods become available from that object.
 
-If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
+If EDB is launched within the ``HfssdLayout`` class, EDB is available in read-only mode.
 
-.. note:: PyEDB is now supporting gRPC
-   **Starting ANSYS release 2025.2 PyEDB is compatible with gRPC.**
-   The two main advantages are:
+.. note:: PyEDB supports gRPC.
+
+   Starting with ANSYS release 2025.2, PyEDB is beta-compatible with gRPC.
+   The main advantages are:
+
    - Better compatibility with Linux
-   - PyEDB becomes ready to remote - client services
+   - Better performance starting with ANSYS release 2026.1
 
-   If you want to know more about `gRPC <https://grpc.io>`_.
+   PyEDB gRPC provides backward compatibility with previous versions.
 
-   PyEDB gRPC is providing backward compatibility with previous versions.
+   The default value of the ``grpc`` flag is ``False``, which means that PyEDB
+   uses the DotNet implementation unless gRPC is explicitly enabled. PyEDB gRPC
+   is the long-term supported implementation, and new features are developed for
+   it first. Users are therefore encouraged to migrate to gRPC when possible.
 
-   The default grpc flag value is `False` so by default uses PyEDB DotNet.
-   PyEDB gRPC becomes the long term supported version and new features are only implemented
-   into this one. Therefore users are highly encouraged migrating to gRPC when possible to get the
-   best user experience.
+   For backend compatibility and migration guidance, see :doc:`../getting_started/backend_compatibility_migration`.
 
-   If you want to access the legacy DotNet API please refer to the :ref:`archive section <archive>`.
-
-To enable PyEDB gRPC you have two options.
+To enable PyEDB gRPC, use one of these options:
 
 *   Explicit import
 *   Using grpc flag
@@ -42,13 +42,18 @@ To enable PyEDB gRPC you have two options.
    # Using grpc flag
    from pyedb import Edb
 
-   edb = Edb(edbpath=r"my_edb_path", edbversion="2025.2", grpc=False)
+   edb = Edb(edbpath=r"my_edb_path", edbversion="2026.1", grpc=True)
 
 
 API documentation
 -----------------
 
-.. toctree::
-   :maxdepth: 1
+The public gRPC reference is organized around the top-level package, the
+``database`` subpackage, and the ``edb`` module.
 
-   ../autoapi/pyedb/grpc/index
+.. toctree::
+   :maxdepth: 5
+
+   grpc package <../autoapi/pyedb/grpc/index>
+   database <../autoapi/pyedb/grpc/database/index>
+   edb <../autoapi/pyedb/grpc/edb/index>
