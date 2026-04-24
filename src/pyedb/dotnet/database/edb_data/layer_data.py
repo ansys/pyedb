@@ -22,7 +22,28 @@
 
 from __future__ import absolute_import
 
+from System.Reflection import BindingFlags  # type: ignore
+
 from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel, HurrayRoughnessModel
+
+
+def _clear_is_owner(obj):
+    """
+    Use reflection to set the protected IsOwner property to False on a .NET Layer object.
+
+    This prevents the buggy ``EDBLayer_Cleanup`` destructor from being called when the
+    Python-side wrapper is garbage-collected, which would otherwise cause an
+    ``AccessViolationException`` (corrupted memory crash).
+    Must be called immediately after cloning or creating any Layer/LayerClone object.
+    """
+    try:
+        prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
+        if prop is not None:
+            prop.SetValue(obj, False, None)
+    except (AttributeError, TypeError) as e:
+        # Silently ignore reflection errors; the object may not have the IsOwner property
+        # or the property may not be settable on this platform/version.
+        print(f"{e.name}: {e}")
 
 
 def layer_cast(pedb, edb_object):
@@ -43,6 +64,7 @@ class LayerEdbClass(object):
 
         if edb_object:
             self._edb_object = edb_object.Clone()
+            _clear_is_owner(self._edb_object)
         else:
             self._create(layer_type)
             self.update(**kwargs)
@@ -55,6 +77,7 @@ class LayerEdbClass(object):
             self._name,
             layer_type,
         )
+        _clear_is_owner(self._edb_object)
 
     def update(self, **kwargs):
         for k, v in kwargs.items():
@@ -299,6 +322,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             self._pedb.edb_value(0),
             "copper",
         )
+        _clear_is_owner(self._edb_object)
 
     @property
     def lower_elevation(self):
@@ -471,6 +495,33 @@ class StackupLayerEdbClass(LayerEdbClass):
             layer_clone.SetEtchFactor(self._pedb.stackup._edb_value(value))
         self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
         self._etch_factor = value
+
+    @property
+    def etch_net_class(self) -> str:
+        """
+        Retrieve net class name where etching is enabled.
+
+        Returns
+        -------
+        str
+            Net class on which etching is applied. Supported values `no_power_ground`, `all_nets`.
+
+        """
+        etch_layer = self._edb_object.GetEtchNetClass()
+        if int(etch_layer) == 0:
+            return "no_power_ground"
+        else:
+            return "all_nets"
+
+    @etch_net_class.setter
+    def etch_net_class(self, etch_net_class: str):
+        """Set etching nets by net names."""
+        layer_clone = self._edb_layer
+        if etch_net_class.lower() == "no_power_ground":
+            layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
+        else:
+            layer_clone.SetEtchNetClass(self._pedb._edb.Cell.EtchNetClass.NoEtchPowerGroundNets)
+        self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     @property
     def roughness_enabled(self):

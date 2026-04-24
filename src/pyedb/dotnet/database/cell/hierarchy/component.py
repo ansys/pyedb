@@ -72,6 +72,25 @@ class ICDieProperties:
         self._edb_object.SetHeight(self._pedb.edb_value(value))
 
 
+def _clear_dotnet_owner(obj):
+    """Set the protected ``IsOwner`` flag to ``False`` on a cloned .NET object.
+
+    EDB 2026.1 has a bug where cloned objects call a buggy C++ destructor when
+    the Python GC collects them.  Clearing ``IsOwner`` via reflection prevents
+    the destructor from running ``EDB_Cleanup``, which would corrupt the heap.
+    Silently no-ops on DLL versions that do not expose ``IsOwner``.
+    """
+    try:
+        from System.Reflection import BindingFlags  # type: ignore
+
+        _bf = BindingFlags.NonPublic | BindingFlags.Instance
+        _prop = obj.GetType().GetProperty("IsOwner", _bf)
+        if _prop is not None:
+            _prop.SetValue(obj, False, None)
+    except Exception:  # nosec B110
+        pass
+
+
 class PortProperty:
     def __init__(self, edbobj):
         self.core = edbobj
@@ -95,7 +114,9 @@ class ComponentProperties:
 
     @property
     def port_property(self):
-        return PortProperty(self.core.GetPortProperty().Clone())
+        cloned = self.core.GetPortProperty().Clone()
+        _clear_dotnet_owner(cloned)
+        return PortProperty(cloned)
 
 
 class EDBComponent(Group):
@@ -148,33 +169,134 @@ class EDBComponent(Group):
 
     @property
     def component_property(self):
-        """``ComponentProperty`` object."""
-        return ComponentProperties(self.edbcomponent.GetComponentProperty().Clone())
+        """``ComponentProperty`` object.
+
+        Returns the live ``ComponentProperty`` **without cloning** for safe
+        read access.  EDB 2026.1 has a bug where calling ``.Clone()`` on a
+        ``ComponentProperty`` and then letting the clone be garbage-collected
+        corrupts the heap (same ``IsOwner`` destructor bug as Layer objects).
+
+        Callers that need to **mutate** a property must call
+        ``_get_component_property_clone()`` which explicitly pins the clone
+        and clears ``IsOwner`` before use.
+        """
+        return ComponentProperties(self.edbcomponent.GetComponentProperty())
+
+    def _get_component_property_clone(self):
+        """Return a safe, mutable clone of the ``ComponentProperty``.
+
+        Applies ``_clear_dotnet_owner`` so the clone's buggy EDB 2026.1
+        destructor is suppressed.  Always store the result in a **named local
+        variable** (never in a chained expression) so it remains alive until
+        ``SetComponentProperty`` has been called.
+        """
+        cloned = self.edbcomponent.GetComponentProperty().Clone()
+        _clear_dotnet_owner(cloned)
+        return cloned
 
     @component_property.setter
     def component_property(self, value):
         if value:
             self.edbcomponent.SetComponentProperty(value)
 
+    @staticmethod
+    def _is_dotnet_null(obj):
+        """Return True when *obj* is a .NET null or a Python None.
+
+        PythonNET may represent a .NET ``null`` reference as a non-``None``
+        Python object, so a plain ``is None`` check is insufficient.  Most EDB
+        model objects expose ``IsNull()``, which is the authoritative way to
+        test for null in the EDB DLL.
+
+        .. warning::
+           Do NOT call this on a potentially-dangling C++ pointer — the
+           ``IsNull()`` call itself will crash.  Only use after confirming
+           the raw object is at least a valid .NET reference.
+        """
+        if obj is None:
+            return True
+        try:
+            return bool(obj.IsNull())
+        except Exception:
+            return True  # treat any error as null/invalid
+
+    @staticmethod
+    def _safe_get_model(comp_prop):
+        """Safely retrieve the component model from a live ComponentProperty.
+
+        EDB 2026.1 has cases where ``GetModel()`` returns a dangling C++
+        pointer after S-parameter assignment.  Wrapping in a try/except with
+        a minimal ``GetModelType()`` probe is the only safe strategy.
+
+        Returns ``(raw_model, model_type_str)`` where ``model_type_str`` is
+        ``"NoModel"`` when the model is absent or corrupt.
+        """
+        try:
+            raw_model = comp_prop.GetModel()
+            if raw_model is None:
+                return None, "NoModel"
+            # Probe the type using GetModelType() – this call will raise if
+            # the internal pointer is dangling, letting us catch it cleanly.
+            type_str = raw_model.GetModelType().ToString().split(".")[-1]
+            return raw_model, type_str
+        except Exception:
+            return None, "NoModel"
+
     @property
     def _edb_model(self):  # pragma: no cover
-        return self.component_property.core.GetModel().Clone()
+        """Return the raw (non-cloned) EDB component model, or ``None``.
+
+        EDB 2026.1: cloning a model and then calling ``_clear_dotnet_owner``
+        on the clone corrupts its internal ``PinPairs`` collection.  Return
+        the live model reference instead; callers that need mutation must
+        clone themselves without touching ``IsOwner``.
+        """
+        raw_model, type_str = self._safe_get_model(self.component_property.core)
+        return raw_model  # live reference, no Clone
+
+    @property
+    def model_type(self):
+        """Retrieve assigned model type.
+
+        Returns
+        -------
+        str
+            ``"RLC"`` for pin-pair (RLC) models, ``"SPICEModel"``,
+            ``"SParameterModel"``, ``"NetlistModel"``, or ``"NoModel"`` when
+            the component has no model assigned.
+        """
+        _, type_str = self._safe_get_model(self.component_property.core)
+        if type_str == "PinPairModel":
+            return "RLC"
+        return type_str
 
     @property
     def pin_pairs(self):
         """Pin pair model if assigned."""
         if self.model_type == "RLC":
-            return self.model.pin_pairs
+            mdl = self.model
+            if mdl is not None:
+                return mdl.pin_pairs
         return []
 
     @property
     def model(self):
-        """Component model."""
-        edb_object = self.component_property.core.GetModel().Clone()
-        model_type = edb_object.GetModelType().ToString()
+        """Component model.
+
+        Returns
+        -------
+        :class:`PinPairModel`, :class:`SPICEModel`, :class:`SParameterModel`, or ``None``
+        """
+        raw_model, model_type = self._safe_get_model(self.component_property.core)
+        if raw_model is None:
+            return None
+        # Clone only for SPICEModel / SParameterModel where we need an
+        # independent copy.  For PinPairModel we pass the live reference
+        # so that PinPair helpers can call GetPinPairRlc on it safely.
         if model_type == "PinPairModel":
-            return PinPairModel(self, edb_object)
-        elif model_type == "SPICEModel":
+            return PinPairModel(self, raw_model)
+        edb_object = raw_model.Clone()
+        if model_type == "SPICEModel":
             return SPICEModel(self._pedb, edb_object)
         elif model_type == "SParameterModel":
             return SParameterModel(self._pedb, edb_object)
@@ -184,7 +306,7 @@ class EDBComponent(Group):
         if not isinstance(value, PinPairModel):
             self._pedb.logger.error("Invalid input. Set model failed.")
 
-        comp_prop = self.component_property.core
+        comp_prop = self._get_component_property_clone()
         comp_prop.SetModel(value._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -200,7 +322,7 @@ class EDBComponent(Group):
     @package_def.setter
     def package_def(self, value):
         package_def = self._pedb.definitions.package[value]
-        comp_prop = self.component_property.core
+        comp_prop = self._get_component_property_clone()
         comp_prop.SetPackageDef(package_def._edb_object)
         self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -217,9 +339,9 @@ class EDBComponent(Group):
 
     @ic_die_properties.setter
     def ic_die_properties(self, value):
-        component_property = self.component_property.core
+        component_property = self._get_component_property_clone()
         component_property.SetDieProperty(value)
-        self.component_property = component_property
+        self.edbcomponent.SetComponentProperty(component_property)
         self._ic_die_properties = None
 
     def create_package_def(self, name="", component_part_name=None):
@@ -253,22 +375,6 @@ class EDBComponent(Group):
             return False
 
     @property
-    @deprecated_property("use enabled property instead")
-    def is_enabled(self):
-        """Get or Set the component to active mode.
-
-        Returns
-        -------
-        bool
-            ``True`` if component is active, ``False`` if is disabled..
-        """
-        return self.enabled
-
-    @is_enabled.setter
-    def is_enabled(self, value):
-        self.enabled = value
-
-    @property
     def enabled(self):
         """Get or Set the component to active mode."""
         if self.type.lower() in ["resistor", "capacitor", "inductor"]:
@@ -278,7 +384,9 @@ class EDBComponent(Group):
 
     @enabled.setter
     def enabled(self, value):
-        cmp_prop = self.component_property.core.Clone()
+        if self.type.lower() not in ["resistor", "capacitor", "inductor"]:
+            return
+        cmp_prop = self._get_component_property_clone()
         cmp_prop.SetEnabled(value)
         self.edbcomponent.SetComponentProperty(cmp_prop)
 
@@ -317,7 +425,7 @@ class EDBComponent(Group):
     def solder_ball_height(self, value):
         if "GetSolderBallProperty" in dir(self.component_property.core):
             sball_height = round(self._pedb.edb_value(value).ToDouble(), 9)
-            cmp_property = self.component_property.core
+            cmp_property = self._get_component_property_clone()
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetHeight(self._get_edb_value(sball_height))
             cmp_property.SetSolderBallProperty(solder_ball_prop)
@@ -357,7 +465,7 @@ class EDBComponent(Group):
         if shape is None:
             shape = self._edb.Definition.SolderballShape.NoSolderball
         if shape:
-            cmp_property = self.component_property.core
+            cmp_property = self._get_component_property_clone()
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetShape(shape)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
@@ -389,11 +497,11 @@ class EDBComponent(Group):
             diameter = self._get_edb_value(value)
             mid_diameter = self._get_edb_value(value)
         if diameter and mid_diameter:
-            cmp_property = self.component_property.core
+            cmp_property = self._get_component_property_clone()
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetDiameter(diameter, mid_diameter)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
-            self.component_property = cmp_property
+            self.edbcomponent.SetComponentProperty(cmp_property)
 
     @property
     def uses_solderball(self) -> bool:
@@ -416,11 +524,11 @@ class EDBComponent(Group):
     @solder_ball_material.setter
     def solder_ball_material(self, value):
         if value in self._pedb.materials:
-            cmp_property = self.component_property.core.Clone()
+            cmp_property = self._get_component_property_clone()
             solder_ball_prop = cmp_property.GetSolderBallProperty().Clone()
             solder_ball_prop.SetMaterialName(value)
             cmp_property.SetSolderBallProperty(solder_ball_prop)
-            self.component_property = cmp_property
+            self.edbcomponent.SetComponentProperty(cmp_property)
         else:
             self._pedb.logger.error(f"Material {value} not found. Create this material first.")
 
@@ -445,35 +553,19 @@ class EDBComponent(Group):
         return self.edbcomponent.IsNull()
 
     @property
+    @deprecated_property("use enabled property instead")
     def is_enabled(self):
         """Flag indicating if the current object is enabled.
 
-        Returns
-        -------
-        bool
-            ``True`` if current object is enabled, ``False`` otherwise.
+        .. deprecated::
+           Use :attr:`enabled` instead.
         """
-        if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            return self.component_property.core.IsEnabled()
-        else:  # pragma: no cover
-            return True
+        return self.enabled
 
     @is_enabled.setter
-    def is_enabled(self, enabled):
+    def is_enabled(self, value):
         """Enables the current object."""
-        if self.type in ["Resistor", "Capacitor", "Inductor"]:
-            component_property = self.component_property.core
-            component_property.SetEnabled(enabled)
-            self.edbcomponent.SetComponentProperty(component_property)
-
-    @property
-    def model_type(self):
-        """Retrieve assigned model type."""
-        _model_type = self._edb_model.ToString().split(".")[-1]
-        if _model_type == "PinPairModel":
-            return "RLC"
-        else:
-            return _model_type
+        self.enabled = value
 
     @property
     def rlc_values(self):
@@ -508,10 +600,10 @@ class EDBComponent(Group):
             Value. ``None`` if not an RLC Type.
         """
         if self.model_type == "RLC":
-            if not self.pin_pairs:
+            _pin_pairs = self.pin_pairs
+            if not _pin_pairs:
                 return
-            else:
-                pin_pair = self.pin_pairs[0]
+            pin_pair = _pin_pairs[0]
             if len([i for i in pin_pair.rlc_enable if i]) == 1:
                 return [pin_pair.rlc_values[idx] for idx, val in enumerate(pin_pair.rlc_enable) if val][0]
             else:
@@ -548,8 +640,9 @@ class EDBComponent(Group):
         str
             Resistance value or ``None`` if not an RLC type.
         """
-        if self.pin_pairs:
-            return self.pin_pairs[0].resistance
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            return _pin_pairs[0].resistance
         return None
 
     @res_value.setter
@@ -562,24 +655,28 @@ class EDBComponent(Group):
 
     @property
     def rlc_enable(self):
-        if self.pin_pairs:
-            return self.pin_pairs[0].rlc_enable
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            return _pin_pairs[0].rlc_enable
 
     @rlc_enable.setter
     def rlc_enable(self, value):
-        if self.pin_pairs:
-            self.pin_pairs[0].rlc_enable = value
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            _pin_pairs[0].rlc_enable = value
 
     @property
     def first_pin(self):
-        if self.pin_pairs:
-            return self.pin_pairs[0].first_pin
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            return _pin_pairs[0].first_pin
         return None
 
     @property
     def second_pin(self):
-        if self.pin_pairs:
-            return self.pin_pairs[0].second_pin
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            return _pin_pairs[0].second_pin
         return None
 
     @property
@@ -591,8 +688,9 @@ class EDBComponent(Group):
         str
             Capacitance Value. ``None`` if not an RLC Type.
         """
-        if self.pin_pairs:
-            return self.pin_pairs[0].capacitance
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            return _pin_pairs[0].capacitance
         return None
 
     @cap_value.setter
@@ -612,8 +710,9 @@ class EDBComponent(Group):
         str
             Inductance Value. ``None`` if not an RLC Type.
         """
-        if self.pin_pairs:
-            return self.pin_pairs[0].inductance
+        _pin_pairs = self.pin_pairs
+        if _pin_pairs:
+            return _pin_pairs[0].inductance
         return None
 
     @ind_value.setter
@@ -635,10 +734,13 @@ class EDBComponent(Group):
         """
         cmp_type = int(self.edbcomponent.GetComponentType())
         if 0 < cmp_type < 4:
-            model = self.component_property.core.GetModel().Clone()
-            pinpairs = model.PinPairs
+            raw_model, type_str = self._safe_get_model(self.component_property.core)
+            if raw_model is None or type_str != "PinPairModel":
+                return None
+            # Use the live model reference directly — no Clone needed for reads
+            pinpairs = raw_model.PinPairs
             for pinpair in pinpairs:
-                pair = model.GetPinPairRlc(pinpair)
+                pair = raw_model.GetPinPairRlc(pinpair)
                 return pair.IsParallel
         return None
 
@@ -658,7 +760,7 @@ class EDBComponent(Group):
                     pin_pair_rlc.IsParallel = value
                     pin_pair_model = self._edb_model
                     pin_pair_model.SetPinPairRlc(pin_pair, pin_pair_rlc)
-                    comp_prop = self.component_property.core
+                    comp_prop = self._get_component_property_clone()
                     comp_prop.SetModel(pin_pair_model)
                     self.edbcomponent.SetComponentProperty(comp_prop)
 
@@ -912,7 +1014,7 @@ class EDBComponent(Group):
         return self._pedb.edb_value(value)
 
     def _set_model(self, model):  # pragma: no cover
-        comp_prop = self.component_property.core
+        comp_prop = self._get_component_property_clone()
         comp_prop.SetModel(model)
         if not self.edbcomponent.SetComponentProperty(comp_prop):
             logging.error("Fail to assign model on {}.".format(self.refdes))

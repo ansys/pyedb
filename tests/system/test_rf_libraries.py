@@ -24,6 +24,7 @@
 
 import os
 
+import ansys.edb.core
 import pytest
 
 from pyedb.libraries.common import MicroStripTechnologyStackup
@@ -42,7 +43,7 @@ from pyedb.libraries.rf_libraries.planar_antennas import (
     RectangularPatch,
     TriangularPatch,
 )
-from tests.conftest import config
+from tests.conftest import config, use_grpc
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.system, pytest.mark.grpc]
@@ -51,6 +52,10 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 @pytest.mark.usefixtures("close_rpc_session")
+@pytest.mark.skipif(
+    ansys.edb.core.__version__ == "0.2.6",
+    reason="Test skipped for ansys-edb-core version 0.2.6",
+)
 class TestClass(BaseTestClass):
     def test_stackup(self):
         edb = self.edb_examples.create_empty_edb()
@@ -87,7 +92,7 @@ class TestClass(BaseTestClass):
         assert edb.variables["w"].value == 1e-05
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pydb-core issue #691 status")
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_diff_tline(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -140,7 +145,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "P1"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pydb-core issue #691 status")
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_radial_stud(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -151,7 +156,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "RF"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pydb-core issue #691 status")
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_rat_race(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -206,7 +211,7 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].net.name == "IN"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=config["use_grpc"], reason="Check pydb-core issue #691 status")
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_ustrip(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -218,7 +223,8 @@ class TestClass(BaseTestClass):
         assert ustrip.impedance == 37.52
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
@@ -238,7 +244,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_circular_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
@@ -252,7 +259,8 @@ class TestClass(BaseTestClass):
         edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
+        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
+        reason="Test skipped for ansys-edb-core version 0.2.6",
     )
     def test_triangular_antenna(self):
         edb = self.edb_examples.create_empty_edb()

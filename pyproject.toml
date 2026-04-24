@@ -9,34 +9,34 @@ dynamic = ["version"]
 description = "Higher-Level Pythonic Ansys Electronics Data Base"
 readme = "README.md"
 requires-python = ">=3.10,<4"
-license = {file = "LICENSE"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [{name = "ANSYS, Inc.", email = "pyansys.core@ansys.com"}]
 maintainers = [{name = "PyEDB developers", email = "simon.vandenbrouck@ansys.com"}]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Information Analysis",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
 dependencies = [
     # .NET interface dependencies
     "cffi>=1.16.0,<2.1; platform_system=='Linux'",
-    "pywin32>=308;platform_system=='Windows'",
+    "pywin32>=304;platform_system=='Windows'",
     "ansys-pythonnet>=3.1.0rc6",
     # Core dependencies
     "numpy>=1.20.0,<3",
-    "pydantic>=2.6.4,<2.13",
+    "pydantic>=2.6.4,<2.14",
     "toml==0.10.2",
-    "ansys-edb-core>=0.2.0,<0.2.7",
+    "ansys-edb-core==0.3.1",
     "psutil",
     "defusedxml>=0.7,<8.0",
-    "xmltodict",
+    "xmltodict"
 ]
 
 [project.optional-dependencies]
@@ -44,14 +44,14 @@ geometry = [
     "shapely",
     "ezdxf>=1.4.2",
     "Rtree>=1.2.0",
-    "scipy>=1.13,<2.0",
+    "scipy>=1.13,<2.0"
 ]
 graphics = [
-    "matplotlib>=3.5.0,<3.11",
+    "matplotlib>=3.5.0,<3.11"
 ]
 analysis = [
     "pandas>=1.1.0,<2.4",
-    "scikit-rf",
+    "scikit-rf"
 ]
 all = [
     "ezdxf>=1.4.2",
@@ -60,13 +60,13 @@ all = [
     "pandas>=1.1.0,<2.4",
     "scikit-rf",
     "Rtree>=1.2.0",
-    "shapely",
+    "shapely"
 ]
 tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.2",
-    "pytest-xdist>=3.5.0,<3.7",
+    "pytest-xdist>=3.5.0,<3.7"
 ]
 
 doc = [
@@ -89,7 +89,7 @@ doc = [
     "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
     "sphinx-gallery>=0.14.0,<0.21",
-    "sphinx_design>=0.4.0,<0.7",
+    "sphinx_design>=0.4.0,<0.7"
 ]
 
 
@@ -104,6 +104,7 @@ Discussions = "https://github.com/ansys/pyedb/discussions"
 Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.ruff]
+ignore = ["D203", "D213"]
 line-length = 120
 fix = true
 
@@ -248,7 +249,7 @@ show_missing = true
 minversion = "7.1"
 xfail_strict = false
 filterwarnings = [
-    "ignore::DeprecationWarning",
+    "ignore::DeprecationWarning"
 ]
 markers = [
     "legacy: mark test as related to the legacy API.",
@@ -257,7 +258,7 @@ markers = [
     "integration: mark test as an integration test.",
     "system: mark test as a system test.",
     "slow: mark test as slow.",
-    "no_licence: mark test that do not need a licence.",
+    "no_licence: mark test that do not need a licence."
 ]
 testpaths = "tests"
 #addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
@@ -280,7 +281,7 @@ checks = [
     "SS05",  # Summary must start with infinitive verb, not third person
     # Parameters
     "PR10",  # Parameter "{param_name}" requires a space before the colon
-    # separating the parameter name and type",
+    # separating the parameter name and type"
 ]
 
 [tool.towncrier]

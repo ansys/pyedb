@@ -33,7 +33,7 @@ import time
 import ansys.edb.core.database as database
 
 from pyedb import __version__
-from pyedb.generic.general_methods import env_path, env_value, is_linux
+from pyedb.generic.general_methods import env_path, env_value
 from pyedb.generic.settings import settings
 from pyedb.grpc.rpc_session import RpcSession
 
@@ -41,10 +41,22 @@ from pyedb.grpc.rpc_session import RpcSession
 class EdbInit(object):
     """Edb Dot Net Class."""
 
-    def __init__(self, edbversion):
+    def __init__(self, version, is_linux=False):
+        """
+        Initialize the gRPC EDB database helper.
+
+        Parameters
+        ----------
+        version : str
+            AEDT/EDB version to initialize, for example ``"2026.1"``.
+        is_linux : bool, optional
+            Whether to initialize environment paths using the Linux-specific startup flow.
+            The default is ``False``.
+
+        """
         self.logger = settings.logger
         self._db = None
-        self.version = edbversion
+        self.version = version
         self.logger.info("Logger is initialized in EDB.")
         self.logger.info("legacy v%s", __version__)
         self.logger.info("Python version %s", sys.version)
@@ -65,7 +77,7 @@ class EdbInit(object):
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = self.base_path
         oa_directory = os.path.join(self.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], self.base_path)
+        os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], self.base_path])
         # register server kill
         atexit.register(self._signal_handler)
         # register signal handlers
@@ -89,26 +101,27 @@ class EdbInit(object):
         db_path : str
             Path to top-level database folder
 
-        port : int
-            grpc port number.
+        port : int, optional
+            gRPC port number. The default is ``0`` (auto-select).
 
-        restart_rpc_server : optional, bool
-            Force restarting RPC server when `True`.Default value is `False`
+        restart_rpc_server : bool, optional
+            Force restarting RPC server when ``True``. The default is ``False``.
 
         Returns
         -------
         Database
         """
-        if not RpcSession.pid:
-            RpcSession.start(
-                edb_version=self.version,
-                port=port,
-                restart_server=restart_rpc_server,
-            )
-            if not RpcSession.pid:
-                self.logger.error("Failed to start RPC server.")
-                return False
+        RpcSession.start(
+            edb_version=self.version,
+            port=port,
+            restart_server=restart_rpc_server,
+        )
+        if not RpcSession.rpc_session:
+            self.logger.error("Failed to start RPC server.")
+            return False
         self._db = database.Database.create(db_path)
+        if self._db:
+            RpcSession.acquire()
         return self._db
 
     def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
@@ -120,28 +133,28 @@ class EdbInit(object):
             Path to top-level Database folder.
         read_only : bool
             Obtain read-only access.
-        port : optional, int.
-            Specify the port number. If not provided a randon free one is selected. Default value is `0`.
-        restart_rpc_server : optional, bool
-            Force restarting RPC server when `True`. Default value is `False`.
+        port : int, optional
+            Port number. If not provided a random free one is selected. The default is ``0``.
+        restart_rpc_server : bool, optional
+            Force restarting RPC server when ``True``. The default is ``False``.
 
         Returns
         -------
         Database or None
             The opened Database object, or None if not found.
         """
-        if restart_rpc_server:
-            RpcSession.pid = 0
-        if not RpcSession.pid:
-            RpcSession.start(
-                edb_version=self.version,
-                port=port,
-                restart_server=restart_rpc_server,
-            )
-            if not RpcSession.pid:
-                self.logger.error("Failed to start RPC server.")
-                return False
+        RpcSession.start(
+            edb_version=self.version,
+            port=port,
+            restart_server=restart_rpc_server,
+        )
+        if not RpcSession.rpc_session:
+            self.logger.error("Failed to start RPC server.")
+            return False
         self._db = database.Database.open(db_path, read_only)
+        if self._db:
+            RpcSession.acquire()
+        return self._db
 
     def delete(self, db_path):
         """Delete a database at the specified file location.
@@ -159,8 +172,6 @@ class EdbInit(object):
         return True
 
     def _wait_for_file_release(self, timeout=30, file_to_release=None) -> bool:
-        # if not file_to_release:
-        #     file_to_release = os.path.join(self.edbpath)
         tstart = time.time()
         while True:
             if self._is_file_existing_and_released(file_to_release):
@@ -182,24 +193,27 @@ class EdbInit(object):
         else:
             return False
 
-    def close(self, terminate_rpc_session=True):
+    def close(self, terminate_rpc_session=False):
         """Close the database.
 
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-            Terminate RPC session when closing the database. The default value is `True`.
+            Force termination of the RPC session regardless of how many other databases are still
+            open. The default is ``False``, meaning the RPC server is only shut down automatically
+            when the **last** open database is closed (reference-counted).
 
-        . note::
-            Unsaved changes will be lost. If multiple databases are open and RPC session is terminated, the connection
-            with all databases will be lost. You might be careful and set to `False` until the last open database
-            remains.
+        Notes
+        -----
+        Unsaved changes will be lost. When ``terminate_rpc_session=True`` and multiple databases
+        are open, all connections will be lost immediately.
         """
         self._db.close()
         self._db = None
         if terminate_rpc_session:
-            RpcSession.rpc_session.disconnect()
-            RpcSession.pid = 0
+            RpcSession.close()
+        else:
+            RpcSession.release()
         self._clean_variables()
         return True
 

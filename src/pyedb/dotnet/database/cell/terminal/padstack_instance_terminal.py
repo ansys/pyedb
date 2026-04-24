@@ -49,50 +49,49 @@ class PadstackInstanceTerminal(Terminal):
         """Location of the padstack instance."""
         return self.position
 
-    def create(self, padstack_instance, name=None, layer=None, is_ref=False):
+    @classmethod
+    def create(cls, edb, padstack_instance, name=None, layer=None, is_ref=False):
         """Create an edge terminal.
 
         Parameters
         ----------
-        prim_id : int
-            Primitive ID.
-        point_on_edge : list
-            Coordinate of the point to define the edge terminal.
-            The point must be on the target edge but not on the two
-            ends of the edge.
-        terminal_name : str, optional
+        edb : pyedb.dotnet.DotNet.DotNet
+        name : str, optional
             Name of the terminal. The default is ``None``, in which case the
-            default name is assigned.
+        padstack_instance : PadstackInstance object
+        layer : str, optional
+            Layer name for the terminal. The default is ``None``, in which case the
+            start layer of the padstack instance will be used.
         is_ref : bool, optional
-            Whether it is a reference terminal. The default is ``False``.
+            Whether the terminal is a reference terminal. The default is ``False``.
 
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
         """
         if not name:
-            pin_name = padstack_instance._edb_object.GetName()
-            refdes = padstack_instance.component.refdes
+            pin_name = padstack_instance.name
+            refdes = padstack_instance.component_name
             name = "{}_{}".format(refdes, pin_name)
             name = generate_unique_name(name)
 
         if not layer:
             layer = padstack_instance.start_layer
 
-        layer_obj = self._pedb.stackup.signal_layers[layer]
+        layer_obj = edb.stackup.signal_layers[layer]
 
-        terminal = self._edb.Cell.Terminal.PadstackInstanceTerminal.Create(
-            self._pedb.active_layout,
+        terminal = edb._edb.Cell.Terminal.PadstackInstanceTerminal.Create(
+            edb.active_layout,
             padstack_instance.net.net_object,
             name,
-            padstack_instance._edb_object,
-            layer_obj._edb_layer,
+            padstack_instance.core,
+            layer_obj.core,
             isRef=is_ref,
         )
-        terminal = PadstackInstanceTerminal(self._pedb, terminal)
+        terminal = PadstackInstanceTerminal(edb, terminal)
         if terminal.is_null:
             msg = f"Failed to create terminal. "
-            if name in self._pedb.terminals:
+            if name in edb.terminals:
                 msg += f"Terminal {name} already exists."
             raise Exception(msg)
         else:

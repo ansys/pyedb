@@ -1,42 +1,23 @@
-=============
-API reference
-=============
+:orphan:
 
-This section describes EDB functions, classes, and methods
-for EDB apps and modules. Use the search feature or click links
-to view API documentation.
+=====================================
+Archived DotNet API notes (internal)
+=====================================
 
-The PyEDB API includes classes for apps and modules. You must initialize the
-``Edb`` class to get access to all modules and methods. All other classes and
-methods are inherited into the ``Edb`` class.
+.. warning::
 
-If EDB is launched within the ``HfssdLayout`` class, EDB is accessible in read-only mode.
+   This page is kept in the repository for archival and migration-history
+   purposes only. It is not part of the published online documentation.
 
+The legacy ``pyedb.dotnet`` API reference is no longer built or exposed
+online. Keep this file only as an internal placeholder for historical context
+while the migration to gRPC documentation is completed.
 
-.. image:: ../../resources/edb_intro.png
-  :width: 800
-  :alt: EDB apps
-  :target: https://www.ansys.com/applications/pcbs-ics-ic-packages
+For supported documentation, use the public gRPC API reference and the backend
+compatibility and migration pages.
 
+See :ref:`archive` for the published archival notice.
 
-**Example**
-
-.. code:: python
-
-    from pyedb import Edb
-
-    edb = Edb("my_project.aedb", version="2025.2")
-    edb.core_components.components["R1"].r_value = 40
-    edb.close_edb()
-
-
-API documentation
------------------
-
-.. toctree::
-   :maxdepth: 1
-
-   PyEDB API <../../autoapi/pyedb/dotnet/index>
-   dotnet/SiWave
+Related internal archival file: ``dotnet/SiWave.rst``.
 
 

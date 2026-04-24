@@ -293,6 +293,7 @@ class TestClass(BaseTestClass):
         assert len(component.pins) == 2
         edb.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(use_grpc, reason="DotNet module not available in gRPC mode without .NET installation")
     def test_convert_resistor_value(self):
         """Convert a resistor value."""
         from pyedb.dotnet.database.components import resistor_value_parser
@@ -437,10 +438,7 @@ class TestClass(BaseTestClass):
         assert len(rlc_list) == 10
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
+    @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1")
     def test_components_get_component_placement_vector(self):
         """Get the placement vector between 2 components."""
         target_path4 = self.edb_examples.copy_test_files_into_local_folder("TEDB/Package.aedb")[0]

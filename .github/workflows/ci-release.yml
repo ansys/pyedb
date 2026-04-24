@@ -27,7 +27,7 @@ jobs:
       contents: write # Needed to create PR for changelog
       pull-requests: write # Needed to create PR for changelog
     steps:
-      - uses: ansys/actions/doc-deploy-changelog@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+      - uses: ansys/actions/doc-deploy-changelog@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           token: ${{ secrets.PYANSYS_CI_BOT_TOKEN }}
           bot-user: ${{ secrets.PYANSYS_CI_BOT_USERNAME }}
@@ -40,7 +40,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-vulnerabilities@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+      - uses: ansys/actions/check-vulnerabilities@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
           python-package-name: ${{ env.PACKAGE_NAME }}
@@ -53,7 +53,7 @@ jobs:
     permissions:
       contents: read
     steps:
-      - uses: ansys/actions/check-actions-security@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+      - uses: ansys/actions/check-actions-security@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           generate-summary: true
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -66,7 +66,7 @@ jobs:
       contents: read
     steps:
       - name: Check documentation style
-        uses: ansys/actions/doc-style@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-style@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -85,7 +85,7 @@ jobs:
     steps:
       - name: Build wheelhouse and perform smoke test
         id: build-wheelhouse
-        uses: ansys/actions/build-wheelhouse@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/build-wheelhouse@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           operating-system: ${{ matrix.os }}
@@ -108,6 +108,8 @@ jobs:
     permissions:
       contents: read
     env:
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
+      ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
       - name: Checkout repository
@@ -147,7 +149,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: .cov\unit-html
           name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
@@ -167,6 +169,8 @@ jobs:
     permissions:
       contents: read
     env:
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
+      ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
       - name: Checkout repository
@@ -206,7 +210,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: .cov\unit-html
           name: html-unit-coverage-${{ github.job }}-${{ github.run_attempt }}
@@ -262,7 +266,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 80
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -vvv --cov
@@ -275,7 +279,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: .cov\system-html
           name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
@@ -331,7 +335,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 80
           command: |
             . .venv\Scripts\Activate.ps1
             pytest tests/system -vvv --cov
@@ -344,7 +348,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: .cov\system-html
           name: html-system-coverage-${{ github.job }}-${{ github.run_attempt }}
@@ -368,7 +372,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '0'
     steps:
@@ -406,7 +410,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 80
           command: |
             . .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -419,7 +423,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: .cov/system-html
           name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
@@ -443,7 +447,7 @@ jobs:
     permissions:
       contents: read
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
       USE_GRPC: '1'
     steps:
@@ -481,7 +485,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 80
           command: |
             . .venv/bin/activate
             pytest tests/system -vvv --cov
@@ -494,7 +498,7 @@ jobs:
 
       - name: Upload Coverage Results
         if: always()
-        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           path: .cov/system-html
           name: html-system-linux-coverage-${{ github.job }}-${{ github.run_attempt }}
@@ -552,7 +556,7 @@ jobs:
         run: |
           . .venv\Scripts\Activate.ps1
           cd external/pyaedt
-          pip install --no-cache-dir --group tests .
+          pip install --no-cache-dir --group tests .[all]
 
       - name: Install PyEDB
         run: |
@@ -567,21 +571,25 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 120
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
+            pytest -v external/pyaedt/tests/system/general/test_hfss.py
+            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
+          PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 120
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
@@ -590,10 +598,11 @@ jobs:
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
+          PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 120
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
@@ -615,7 +624,7 @@ jobs:
     needs: [smoke-tests]
     runs-on: [ Linux, self-hosted, pyedb ]
     env:
-      ANSYSEM_ROOT252: '/usr/ansys_inc/v252/AnsysEM'
+      ANSYSEM_ROOT261: '/usr/ansys_inc/v261/AnsysEM'
       ANS_NODEPCHECK: '1'
     steps:
       - name: Install Git and checkout project
@@ -655,15 +664,15 @@ jobs:
 
       - name: Install PyAEDT main branch version with its test dependencies
         env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           . .venv/bin/activate
           cd external/pyaedt
-          pip install --no-cache-dir --group tests .
+          pip install --no-cache-dir --group tests .[all]
 
       - name: Install PyEDB
         env:
-          ANSYSEM: ${{ env.ANSYSEM_ROOT252 }}
+          ANSYSEM: ${{ env.ANSYSEM_ROOT261 }}
         run: |
           python -m pip install .[all]
 
@@ -671,24 +680,29 @@ jobs:
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
+          PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 50
+          timeout_minutes: 120
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
+            pytest -v external/pyaedt/tests/system/general/test_hfss.py
+            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
+          PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 50
+          timeout_minutes: 120
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
@@ -697,10 +711,11 @@ jobs:
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
         env:
           PYTHONMALLOC: malloc
+          PYAEDT_LOCAL_SETTINGS_PATH: 'external/pyaedt/tests/pyaedt_settings.yaml'
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 50
+          timeout_minutes: 120
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
@@ -718,7 +733,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build documentation
-        uses: ansys/actions/doc-build@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-build@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           dependencies: "graphviz texlive-latex-extra latexmk texlive-xetex texlive-fonts-extra"
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -740,7 +755,7 @@ jobs:
       id-token: write # Required for OIDC token generation (for provenance signing)
     steps:
       - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/build-library@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           python-version: ${{ env.MAIN_PYTHON_VERSION }}
@@ -772,7 +787,7 @@ jobs:
           skip-existing: false
 
       - name: Release to GitHub
-        uses: ansys/actions/release-github@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/release-github@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           library-name: ${{ env.PACKAGE_NAME }}
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -786,7 +801,7 @@ jobs:
       contents: write # Needed to update files on the gh-pages branch
     steps:
       - name: Deploy the stable documentation
-        uses: ansys/actions/doc-deploy-stable@1f4f0896a8e49d3aec2f02ced215b04a32c85f28 # v10.2.7
+        uses: ansys/actions/doc-deploy-stable@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
         with:
           cname: ${{ env.DOCUMENTATION_CNAME }}
           token: ${{ secrets.GITHUB_TOKEN }}

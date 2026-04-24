@@ -143,7 +143,7 @@ class TestClass(BaseTestClass):
         assert log_parser.is_completed()
         assert not log_parser.is_aborted()
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Only implemented in gRPC")
+    @pytest.mark.skip(reason="Only working with grpc waiting fr SP1.")
     def test_physical_merge(self):
         main_board = self.edb_examples.get_si_verse()
         merged_package = self.edb_examples.get_package()

@@ -1076,7 +1076,7 @@ class Edb:
         return None
 
     @property
-    def materials(self) -> Materials | None:
+    def materials(self) -> Materials:
         """Material Database.
 
         Returns
@@ -1227,7 +1227,7 @@ class Edb:
             return
 
     @property
-    def modeler(self) -> Modeler | None:
+    def modeler(self) -> Modeler:
         """Core primitives modeler.
 
         Returns
@@ -4081,10 +4081,10 @@ class Edb:
         for poly in polys:
             for void in poly.voids:
                 void_bbox = (
-                    void.polygon_data._edb_object.GetBBox().Item1.X.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item1.Y.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item2.X.ToDouble(),
-                    void.polygon_data._edb_object.GetBBox().Item2.Y.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item1.X.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item1.Y.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item2.X.ToDouble(),
+                    void.polygon_data.core.GetBBox().Item2.Y.ToDouble(),
                 )
                 included_instances = list(padstack_instances_index.intersection(void_bbox))
                 instances_dict = self.padstacks.instances
@@ -4123,11 +4123,11 @@ class Edb:
         )
         for void_info in void_padstacks:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].polygon_data._edb_object, layer_name="ref", net_name="GND"
+                points=void_info[0].polygon_data.core, layer_name="ref", net_name="GND"
             )
             port_poly.scale(1.1)
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.polygon_data._edb_object, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data.core, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 

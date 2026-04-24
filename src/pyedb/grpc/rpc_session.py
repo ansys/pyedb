@@ -48,6 +48,38 @@ class RpcSession:
     rpc_session = None
     base_path = None
     port = 10000
+    server_pid = 0
+    _open_db_count = 0  # number of EDB databases currently open against this server
+
+    @staticmethod
+    def acquire():
+        """Increment the open-database reference counter.
+
+        Must be called each time a database is successfully created or opened so that
+        the RPC server is not shut down while other databases are still in use.
+        """
+        RpcSession._open_db_count += 1
+        settings.logger.info(f"RPC session acquired (open databases: {RpcSession._open_db_count})")
+
+    @staticmethod
+    def release():
+        """
+        Decrement the open-database reference counter and shut down the server when it reaches zero.
+
+        Returns
+        -------
+        bool
+            ``True`` if the RPC session was terminated (last database closed),
+            ``False`` if other databases are still open and the session was kept alive.
+
+        """
+        if RpcSession._open_db_count > 0:
+            RpcSession._open_db_count -= 1
+        settings.logger.info(f"RPC session released (open databases: {RpcSession._open_db_count})")
+        if RpcSession._open_db_count == 0:
+            RpcSession.close()
+            return True
+        return False
 
     @staticmethod
     def start(edb_version, port=0, restart_server=False):
@@ -102,12 +134,12 @@ class RpcSession:
         os.environ["ECAD_TRANSLATORS_INSTALL_DIR"] = RpcSession.base_path
         oa_directory = os.path.join(RpcSession.base_path, "common", "oa")
         os.environ["ANSYS_OADIR"] = oa_directory
-        os.environ["PATH"] = "{};{}".format(os.environ["PATH"], RpcSession.base_path)
+        os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], RpcSession.base_path])
 
-        if RpcSession.pid:
+        if RpcSession.rpc_session:
             if restart_server:
-                settings.logger.logger.info("Restarting RPC server")
-                RpcSession.kill()
+                settings.logger.info("Restarting RPC server.")
+                RpcSession.close()
                 RpcSession.__start_rpc_server()
             else:
                 settings.logger.info(f"Server already running on port {RpcSession.port}")
@@ -178,7 +210,10 @@ class RpcSession:
             end_managing()
             RpcSession.rpc_session.disconnect()
             time.sleep(latency_delay)
-            RpcSession.__get_process_id()
+            RpcSession.rpc_session = None
+        RpcSession.pid = 0
+        RpcSession.server_pid = 0
+        RpcSession._open_db_count = 0
 
     @staticmethod
     def __get_random_free_port():

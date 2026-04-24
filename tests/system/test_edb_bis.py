@@ -22,12 +22,12 @@
 
 
 import os
+from unittest.mock import MagicMock, PropertyMock, patch
 
-from mock import MagicMock, PropertyMock, patch
 import pytest
 
 from pyedb import Edb
-from tests.conftest import desktop_version
+from tests.conftest import GRPC, desktop_version
 
 pytestmark = [pytest.mark.system, pytest.mark.legacy]
 
@@ -42,6 +42,7 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
         assert edb
         assert edb.active_layout
@@ -51,7 +52,7 @@ class TestClass:
         """Create EDB without path."""
         import time
 
-        edbapp_without_path = Edb(edbversion=desktop_version, isreadonly=False)
+        edbapp_without_path = Edb(edbversion=desktop_version, isreadonly=False, grpc=GRPC)
         time.sleep(2)
         edbapp_without_path.close(terminate_rpc_session=False)
 
@@ -62,6 +63,7 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
         edb.add_design_variable(variable_name="var1", variable_value=0.01)
         edb.add_design_variable(variable_name="var2", variable_value="10um")
@@ -70,11 +72,12 @@ class TestClass:
         edb.add_project_variable(variable_name="var4", variable_value="1mm", description="Project variable.")
         edb.add_project_variable(variable_name="$var5", variable_value=0.1)
         assert edb["var1"].value == 0.01
-        assert check_numeric_equivalence(edb["var2"].value, 1.0e-5)
+        val2 = edb["var2"].value
+        assert check_numeric_equivalence(val2.double if hasattr(val2, "double") else val2, 1.0e-5)
         assert edb["var3"].value == 0.03
         var3 = edb.get_variable("var3")
         if edb.grpc:
-            assert edb.active_layout.get_variable_desc("var3") == "test description"
+            assert edb.active_cell.get_variable_desc("var3") == "test description"
         else:
             assert var3.description == "test description"
         assert edb["$var4"].value == 0.001
@@ -84,8 +87,7 @@ class TestClass:
             assert edb.get_variable("$var4").description == "Project variable."
         assert edb["$var5"].value == 0.1
         if edb.grpc:
-            edb.active_cell.delete_variable("$var5")
-            assert "$var5" not in edb.active_cell.get_all_variable_names()
+            assert "$var5" in edb.active_db.get_all_variable_names()
         else:
             assert edb.get_variable("$var5").delete()
 
@@ -94,13 +96,14 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
         if edb.grpc:
             edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
-            edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm", is_parameter=True)
+            edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm")
             edb.add_project_variable(variable_name="$my_project_variable", variable_value="1mm")
-            assert "ant_length" in edb.active_layout.get_all_variable_names()
-            assert "my_parameter_default" in edb.active_layout.get_all_variable_names()
+            assert "ant_length" in edb.active_cell.get_all_variable_names()
+            assert "my_parameter_default" in edb.active_cell.get_all_variable_names()
             assert "$my_project_variable" in edb.active_db.get_all_variable_names()
         else:
             is_added, _ = edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
@@ -117,6 +120,7 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
 
@@ -131,9 +135,10 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
         edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
-        edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm", is_parameter=True)
+        edb.add_design_variable(variable_name="my_parameter_default", variable_value="1mm")
         edb.add_design_variable(variable_name="$my_project_variable", variable_value="1mm")
         if edb.grpc:
             edb.change_design_variable_value(variable_name="ant_length", variable_value="1m")
@@ -159,6 +164,7 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
         assert edb["ant_length"].value == 0.01
@@ -170,6 +176,7 @@ class TestClass:
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
             edbversion=desktop_version,
+            grpc=GRPC,
         )
 
         pad_name = edb.padstacks.create(

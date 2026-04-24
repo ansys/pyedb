@@ -98,7 +98,7 @@ def create_array_from_unit_cell(
     else:
         adapter = _DotNetAdapter(edb)
         warnings.warn(".NET back-end is deprecated and will be removed in future releases.", UserWarning)
-        warnings.warn("Consider moving to PyEDB gRPC (ANSYS 2025R2) for better performances", UserWarning)
+        warnings.warn("Consider moving to PyEDB gRPC (ANSYS 2025R2 and later) for better performances", UserWarning)
     return __create_array_from_unit_cell_impl(edb, adapter, x_number, y_number, offset_x, offset_y)
 
 
@@ -358,7 +358,7 @@ class _DotNetAdapter(_BaseAdapter):
 
         vector = PointData.create_from_xy(self.edb, x=dx, y=dy)
         moved_pd = prim.polygon_data
-        moved_pd._edb_object.Move(vector.core)
+        moved_pd.core.Move(vector.core)
         return self.edb.modeler.create_polygon(
             moved_pd,
             layer_name=prim.layer.name,

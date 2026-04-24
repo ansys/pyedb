@@ -34,7 +34,6 @@ import math
 from pathlib import Path
 import warnings
 
-from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
 
 from pyedb.dotnet.database.edb_data.layer_data import (
@@ -43,9 +42,10 @@ from pyedb.dotnet.database.edb_data.layer_data import (
     layer_cast,
 )
 from pyedb.dotnet.database.general import convert_py_list_to_net_list
+from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.misc.aedtlib_personalib_install import write_pretty_xml
-from pyedb.misc.decorators import deprecated_property
+from pyedb.misc.decorators import deprecate_argument_name, deprecated_property
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +56,12 @@ class LayerCollection(object):
 
         if edb_object:
             self._edb_object = self._pedb.core.Cell.LayerCollection(edb_object)
+            # Bug fix: when wrapping an existing LayerCollection, all layer objects
+            # have IsOwner=True which causes EDBLayer_Cleanup to be called in the
+            # destructor and triggers memory access violations during GC.
+            # Clear ownership on every layer immediately after construction.
+            for layer in self._edb_object.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
+                clear_is_owner(layer)
         else:
             self._edb_object = self._pedb.core.Cell.LayerCollection()
 
@@ -83,6 +89,9 @@ class LayerCollection(object):
     def refresh_layer_collection(self):
         """Refresh layer collection from Edb. This method is run on demand after all edit operations on stackup."""
         self._edb_object = self._pedb.core.Cell.LayerCollection(self._pedb.layout.layer_collection)
+        # Clear ownership on all layers to prevent EDBLayer_Cleanup destructor access violations
+        for layer in self._edb_object.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
+            clear_is_owner(layer)
         self._lc = self._edb_object
 
     def _add_layer(self, add_method, base_layer_name="", **kwargs):
@@ -122,6 +131,11 @@ class LayerCollection(object):
             obj = obj if method_top_bottom(obj._edb_object) else False
         elif method_above_below:
             obj = obj if method_above_below(obj._edb_object, base_layer_name) else False
+
+        # Bug Release 2016.1 fix: Call clear_is_owner AFTER layer is successfully added to collection
+        if obj:
+            clear_is_owner(obj._edb_object)
+
         self.update_layout()
         return obj
 
@@ -225,6 +239,7 @@ class LayerCollection(object):
         return self._add_layer(add_method="add_layer_bottom", **kwargs)
 
     def set_layer_clone(self, layer_clone):
+        # Fixing Ansys release 26.1 bug
         lc = self._pedb.core.Cell.LayerCollection()  # empty layer collection
         lc.SetMode(self._edb_object.GetMode())
         if self.mode.lower() == "laminate":
@@ -238,6 +253,8 @@ class LayerCollection(object):
             if i.id == layer_clone.id:  # replace layer
                 add_method(layer_clone._edb_object)
                 obj = layer_clone
+                # Clear is_owner AFTER layer is added to new LayerCollection
+                clear_is_owner(layer_clone._edb_object)
             else:  # keep existing layer
                 add_method(i._edb_object)
         # Add non stackup layers
@@ -245,6 +262,8 @@ class LayerCollection(object):
             if i.id == layer_clone.id:
                 lc.AddLayerBottom(layer_clone._edb_object)
                 obj = layer_clone
+                # Clear is_owner AFTER layer is added to new LayerCollection
+                clear_is_owner(layer_clone._edb_object)
             else:
                 lc.AddLayerBottom(i._edb_object)
 
@@ -302,7 +321,7 @@ class LayerCollection(object):
         if obj.IsNull():
             raise ValueError("Layer with name '{}' was not found.".format(name))
         else:
-            return layer_cast(self._pedb, obj.Clone())
+            return layer_cast(self._pedb, obj)  # layer_cast/LayerEdbClass already clones internally
 
 
 class Stackup(LayerCollection):
@@ -593,7 +612,10 @@ class Stackup(LayerCollection):
     @property
     def _edb_layer_list(self):
         layer_list = list(self._layer_collection.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet))
-        return [i.Clone() for i in layer_list]
+        clones = [i.Clone() for i in layer_list]
+        for c in clones:
+            clear_is_owner(c)
+        return clones
 
     @property
     def signal_layers(self):
@@ -651,9 +673,13 @@ class Stackup(LayerCollection):
             layers = [
                 i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet)))
             ]
+            for layer in layers:
+                clear_is_owner(layer)
             non_stackup = [
                 i.Clone() for i in list(list(lc_readonly.Layers(self._pedb.core.Cell.LayerTypeSet.NonStackupLayerSet)))
             ]
+            for layer in non_stackup:
+                clear_is_owner(layer)
             _lc = self._pedb.core.Cell.LayerCollection()
             mode = lc_readonly.GetMode()
             _lc.SetMode(lc_readonly.GetMode())
@@ -701,6 +727,7 @@ class Stackup(LayerCollection):
             self._edb_value(0),
             "",
         )
+        clear_is_owner(result)
         self.refresh_layer_collection()
         return result
 
@@ -739,6 +766,7 @@ class Stackup(LayerCollection):
             _layer_type = self._pedb.core.Cell.LayerType.UndefinedLayerType
 
         result = self._pedb.core.Cell.layer(layer_name, _layer_type)
+        clear_is_owner(result)
         self.refresh_layer_collection()
         return result
 
@@ -754,6 +782,7 @@ class Stackup(LayerCollection):
 
     # TODO: Update optional argument material into material_name and fillMaterial into fill_material_name
 
+    @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(
         self,
         layer_name,
@@ -761,7 +790,7 @@ class Stackup(LayerCollection):
         method="add_on_top",
         layer_type="signal",
         material="copper",
-        fillMaterial="FR4_epoxy",
+        filling_material="FR4_epoxy",
         thickness="35um",
         etch_factor=None,
         is_negative=False,
@@ -785,7 +814,7 @@ class Stackup(LayerCollection):
              ``"solder_mask"``, ``"solder_paste"``, ``"glue"``, ``"wirebond"``, ``"hfss_region"``, ``"user"``.
         material : str, optional
             Material of the layer.
-        fillMaterial : str, optional
+        filling_material : str, optional
             Fill material of the layer.
         thickness : str, float, optional
             Thickness of the layer.
@@ -807,8 +836,8 @@ class Stackup(LayerCollection):
             return False
         if not material:
             material = "copper" if layer_type == "signal" else "FR4_epoxy"
-        if not fillMaterial:
-            fillMaterial = "FR4_epoxy"
+        if not filling_material:
+            filling_material = "FR4_epoxy"
 
         materials = self._pedb.materials
         if material not in materials:
@@ -819,19 +848,19 @@ class Stackup(LayerCollection):
             else:
                 logger.warning(f"Material {material} not found. Check the library and retry.")
 
-        if layer_type != "dielectric" and fillMaterial not in materials:
-            material_properties = self._pedb.materials.read_syslib_material(fillMaterial)
+        if layer_type != "dielectric" and filling_material not in materials:
+            material_properties = self._pedb.materials.read_syslib_material(filling_material)
             if material_properties:
-                logger.info(f"Material {fillMaterial} found in syslib. Adding it to aedb project.")
-                materials.add_material(fillMaterial, **material_properties)
+                logger.info(f"Material {filling_material} found in syslib. Adding it to aedb project.")
+                materials.add_material(filling_material, **material_properties)
             else:
-                logger.warning(f"Material {fillMaterial} not found. Check the library and retry.")
+                logger.warning(f"Material {filling_material} not found. Check the library and retry.")
 
         if layer_type in ["signal", "dielectric"]:
             new_layer = self._create_stackup_layer(layer_name, thickness, layer_type)
             new_layer.SetMaterial(material)
             if layer_type != "dielectric":
-                new_layer.SetFillMaterial(fillMaterial)
+                new_layer.SetFillMaterial(filling_material)
             new_layer.SetNegative(is_negative)
             l1 = len(self.layers)
             if method == "add_at_elevation" and elevation:
@@ -1076,13 +1105,16 @@ class Stackup(LayerCollection):
             max_elevation = 0.0
             for layer in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet):
                 if "RadBox" not in layer.GetName():  # Ignore RadBox
-                    lower_elevation = layer.Clone().GetLowerElevation() * 1.0e6
-                    upper_elevation = layer.Clone().GetUpperElevation() * 1.0e6
+                    _tmp_clone = layer.Clone()
+                    clear_is_owner(_tmp_clone)
+                    lower_elevation = _tmp_clone.GetLowerElevation() * 1.0e6
+                    upper_elevation = _tmp_clone.GetUpperElevation() * 1.0e6
                     max_elevation = max([max_elevation, lower_elevation, upper_elevation])
 
             non_stackup_layers = []
             for layer in lc.Layers(self._pedb.core.Cell.LayerTypeSet.AllLayerSet):
                 cloned_layer = layer.Clone()
+                clear_is_owner(cloned_layer)
                 if not cloned_layer.IsStackupLayer():
                     non_stackup_layers.append(cloned_layer)
                     continue
@@ -1100,11 +1132,15 @@ class Stackup(LayerCollection):
                         cloned_layer.SetTopBottomAssociation(self._pedb.core.Cell.TopBottomAssociation.TopAssociated)
                     new_lc.AddStackupLayerAtElevation(cloned_layer)
 
-            vialayers = [
-                lay for lay in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet) if lay.Clone().IsViaLayer()
-            ]
+            vialayers = []
+            for lay in lc.Layers(self._pedb.core.Cell.LayerTypeSet.StackupLayerSet):
+                _tmp = lay.Clone()
+                clear_is_owner(_tmp)
+                if _tmp.IsViaLayer():
+                    vialayers.append(lay)
             for layer in vialayers:
                 cloned_via_layer = layer.Clone()
+                clear_is_owner(cloned_via_layer)
                 upper_ref_name = cloned_via_layer.GetRefLayerName(True)
                 lower_ref_name = cloned_via_layer.GetRefLayerName(False)
                 upper_ref = [
@@ -1138,6 +1174,7 @@ class Stackup(LayerCollection):
                 cmp = pyaedt_cmp.edbcomponent
                 cmp_type = cmp.GetComponentType()
                 cmp_prop = cmp.GetComponentProperty().Clone()
+                clear_is_owner(cmp_prop)
                 try:
                     if (
                         cmp_prop.GetSolderBallProperty().GetPlacement()
@@ -1207,7 +1244,7 @@ class Stackup(LayerCollection):
     def _remove_solder_pec(self, layer_name):
         for _, val in self._pedb.components.instances.items():
             if val.solder_ball_height and val.placement_layer == layer_name:
-                comp_prop = val.component_property.core
+                comp_prop = val._get_component_property_clone()
                 port_property = comp_prop.GetPortProperty().Clone()
                 port_property.SetReferenceSizeAuto(False)
                 port_property.SetReferenceSize(self._edb_value(0.0), self._edb_value(0.0))

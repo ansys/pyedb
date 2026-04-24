@@ -27,6 +27,7 @@ from typing import TYPE_CHECKING, Any
 import warnings
 
 from pyedb.dotnet.database.edb_data.ports import CoaxPort, WavePort
+from pyedb.dotnet.database.utilities.layer_utils import clear_is_owner
 
 if TYPE_CHECKING:
     from pyedb.dotnet.database.cell.terminal.padstack_instance_terminal import PadstackInstanceTerminal
@@ -899,7 +900,7 @@ class EDBPadstack(object):
                 started = False
                 if len(self.pad_by_layer[self.via_start_layer].parameters) == 0:
                     self._ppadstack._pedb.modeler.create_polygon(
-                        self.pad_by_layer[self.via_start_layer].polygon_data._edb_object,
+                        self.pad_by_layer[self.via_start_layer].polygon_data.core,
                         layer_name=self.via_start_layer,
                         net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
@@ -914,7 +915,7 @@ class EDBPadstack(object):
                     )
                 if len(self.pad_by_layer[self.via_stop_layer].parameters) == 0:
                     self._ppadstack._pedb.modeler.create_polygon(
-                        self.pad_by_layer[self.via_stop_layer].polygon_data._edb_object,
+                        self.pad_by_layer[self.via_stop_layer].polygon_data.core,
                         layer_name=self.via_stop_layer,
                         net_name=via._edb_padstackinstance.GetNet().GetName(),
                     )
@@ -1477,7 +1478,10 @@ class EDBPadstackInstance(Connectable):
 
     @property
     def solderball_layer(self) -> str:
-        return self.core.GetSolderBallLayer().GetName()
+        layer = self.core.GetSolderBallLayer()
+        if layer is None or layer.IsNull():
+            return None
+        return layer.GetName()
 
     @solderball_layer.setter
     def solderball_layer(self, solderball_layer):
@@ -1569,8 +1573,8 @@ class EDBPadstackInstance(Connectable):
             PadstackInstanceTerminal,
         )
 
-        term = PadstackInstanceTerminal(self._pedb, self._edb_object.GetPadstackInstanceTerminal())
-        return term.create(self, name)
+        term = PadstackInstanceTerminal.create(self._pedb, self, name=name)
+        return term
 
     def create_coax_port(self, name=None, radial_extent_factor=0) -> CoaxPort:
         """Create a coax port."""
@@ -1767,6 +1771,7 @@ class EDBPadstackInstance(Connectable):
             Tuple of the layer name, drill diameter, and offset if it exists.
         """
         layer = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
+        clear_is_owner(layer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
         (
@@ -1833,6 +1838,7 @@ class EDBPadstackInstance(Connectable):
             Tuple of the layer name, drill diameter, and drill offset if it exists.
         """
         layer = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
+        clear_is_owner(layer)
         val = self._pedb.edb_value(0)
         offset = self._pedb.edb_value(0.0)
         (
@@ -1856,6 +1862,7 @@ class EDBPadstackInstance(Connectable):
         value_0 = self._pedb.edb_value(0)
         value_00 = self._pedb.edb_value(0.0)
         value_signal = self._pedb.core.Cell.Layer("", self._pedb.core.Cell.LayerType.SignalLayer)
+        clear_is_owner(value_signal)
         flag, drill_to_layer, offset, diameter = self._edb_object.GetBackDrillParametersLayerValue(
             value_signal,
             value_0,
@@ -1953,7 +1960,7 @@ class EDBPadstackInstance(Connectable):
         str
             Name of the starting layer.
         """
-        _, start_layer, stop_layer = self._edb_object.GetLayerRange()
+        _, start_layer, stop_layer = self._edb_padstackinstance.GetLayerRange()
 
         if start_layer:
             return start_layer.GetName()
@@ -2044,10 +2051,16 @@ class EDBPadstackInstance(Connectable):
         """
         self._position = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        if not out[0]:
+            return self._position
         if self._edb_padstackinstance.GetComponent():
-            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            self._position = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6)]
-        elif out[0]:
+            transform = self._edb_padstackinstance.GetComponent().GetTransform()
+            if transform is not None:
+                out2 = transform.TransformPoint(out[1])
+                self._position = [round(out2.X.ToDouble(), 6), round(out2.Y.ToDouble(), 6)]
+            else:
+                self._position = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6)]
+        else:
             self._position = [round(out[1].X.ToDouble(), 6), round(out[1].Y.ToDouble(), 6)]
         return self._position
 
@@ -2075,20 +2088,29 @@ class EDBPadstackInstance(Connectable):
         """
         _position_and_rotation = []
         out = self._edb_padstackinstance.GetPositionAndRotationValue()
+        if not out[0]:
+            return _position_and_rotation
         if self._edb_padstackinstance.GetComponent():
-            out2 = self._edb_padstackinstance.GetComponent().GetTransform().TransformPoint(out[1])
-            _position_and_rotation = [
-                round(out2.X.ToDouble(), 6),
-                round(out2.Y.ToDouble(), 6),
-                round(out[2].ToDouble(), 6),
-            ]
-        elif out[0]:
+            transform = self._edb_padstackinstance.GetComponent().GetTransform()
+            if transform is not None:
+                out2 = transform.TransformPoint(out[1])
+                _position_and_rotation = [
+                    round(out2.X.ToDouble(), 6),
+                    round(out2.Y.ToDouble(), 6),
+                    round(out[2].ToDouble(), 6),
+                ]
+            else:
+                _position_and_rotation = [
+                    round(out[1].X.ToDouble(), 6),
+                    round(out[1].Y.ToDouble(), 6),
+                    round(out[2].ToDouble(), 6),
+                ]
+        else:
             _position_and_rotation = [
                 round(out[1].X.ToDouble(), 6),
                 round(out[1].Y.ToDouble(), 6),
                 round(out[2].ToDouble(), 6),
             ]
-        _position_and_rotation.append(round(out[2].ToDouble(), 6))
 
         return _position_and_rotation
 
@@ -2273,7 +2295,7 @@ class EDBPadstackInstance(Connectable):
         str
             Name of the placement layer.
         """
-        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetName()
+        return self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetName()
 
     @property
     def lower_elevation(self) -> float | None:
@@ -2285,7 +2307,7 @@ class EDBPadstackInstance(Connectable):
             Lower elavation of the placement layer.
         """
         try:
-            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetLowerElevation(), 6)
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetLowerElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 
@@ -2299,7 +2321,7 @@ class EDBPadstackInstance(Connectable):
            Upper elevation of the placement layer.
         """
         try:
-            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().Clone().GetUpperElevation(), 6)
+            return round(self._edb_padstackinstance.GetGroup().GetPlacementLayer().GetUpperElevation(), 6)
         except AttributeError:  # pragma: no cover
             return None
 

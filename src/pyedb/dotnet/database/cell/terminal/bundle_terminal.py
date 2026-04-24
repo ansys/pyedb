@@ -49,7 +49,66 @@ class BundleTerminal(Terminal):
         return self._edb_object.Ungroup()
 
     @classmethod
-    def create(cls, pedb, name, terminals):
+    def create(cls, pedb, name="", terminals=None) -> "BundleTerminal":
+        """
+        Create a new bundle terminal from a collection of individual terminals.
+
+        A bundle terminal groups multiple terminals (edge terminals, padstack instance
+        terminals, or other terminal types) into a single logical entity. This is useful
+        for creating multi-pin ports, differential pairs, or complex port definitions
+        where multiple physical terminals must be managed together.
+
+        Parameters
+        ----------
+        pedb : pyedb.edb.Edb
+            EDB object from the ``Edblib`` library, used to access terminal collection
+            and convert Python objects to .NET equivalents.
+        name : str, optional
+            Name to assign to the new bundle terminal. The default is an empty string.
+            Individual terminals within the bundle will be renamed to ``{name}:T1``,
+            ``{name}:T2``, etc.
+        terminals : list, optional
+            List of terminals to group into the bundle. Each element can be:
+
+            - A string representing a terminal name (will be looked up in ``pedb.terminals``)
+            - A terminal object with a ``.name`` attribute (the object itself or its name
+              will be resolved from ``pedb.terminals``)
+            - An EDB terminal object (used directly without lookup)
+
+            If ``None``, an empty bundle is created. The default is ``None``.
+
+        Returns
+        -------
+        BundleTerminal
+            The newly created bundle terminal instance.
+
+        Raises
+        ------
+        ValueError
+            If the EDB bundle terminal creation returns a null object, indicating
+            a failure to create the bundle with the provided terminals.
+        KeyError
+            If a terminal name string is provided but cannot be found in
+            ``pedb.terminals``.
+
+        Notes
+        -----
+        The method automatically renames each terminal in the bundle by appending
+        a sequence index (`:T1`, `:T2`, etc.) to the base bundle name. This ensures
+        unique identification of each terminal within the bundle. If no name is
+        provided, terminals are still renamed but without a meaningful prefix.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("myproject.aedb")
+        >>> term1 = edb.terminals["Port1"]
+        >>> term2 = edb.terminals["Port2"]
+        >>> bundle = BundleTerminal.create(edb, name="DifferentialPair", terminals=[term1, term2])
+        >>> if bundle:
+        ...     print(f"Bundle created with {len(edb.terminals['DifferentialPair'].terminals)} terminals")
+
+        """
         if isinstance(terminals[0], str):
             terminal_list = [pedb.terminals[i]._edb_object for i in terminals]
         else:
@@ -63,7 +122,8 @@ class BundleTerminal(Terminal):
         if _edb_boundle_terminal.IsNull():  # pragma no cover
             raise ValueError(f"Failed to create bundle terminal: {name}.")
         _edb_boundle_terminal.SetName(name)
-        pos, neg = list(_edb_boundle_terminal.GetTerminals())
-        pos.SetName(name + ":T1")
-        neg.SetName(name + ":T2")
-        return pedb.terminals[name]
+        term_ind = 0
+        for term in list(_edb_boundle_terminal.GetTerminals()):
+            term_ind += 1
+            term.SetName(name + f":T{term_ind}")
+        return cls(pedb, _edb_boundle_terminal)

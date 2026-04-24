@@ -1030,7 +1030,7 @@ class EdbPadstacks(object):
                 else:
                     return False
             elif isinstance(polygon_hole, PolygonData):
-                hole_param = polygon_hole._edb_object
+                hole_param = polygon_hole.core
             else:
                 return False
             padstackData.SetPolygonalHoleParameters(hole_param, value0, value0, value0)
@@ -1109,7 +1109,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.Definition.PadType.RegularPad,
-                    pad_array._edb_object,
+                    pad_array.core,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,
@@ -1117,7 +1117,7 @@ class EdbPadstacks(object):
                 padstackData.SetPolygonalPadParameters(
                     layer,
                     self._edb.Definition.PadType.AntiPad,
-                    antipad_array._edb_object,
+                    antipad_array.core,
                     pad_offset_x,
                     pad_offset_y,
                     pad_rotation,
@@ -1604,8 +1604,8 @@ class EdbPadstacks(object):
             raise Exception("No points defining polygon was provided")
         if not padstack_instances_index:
             padstack_instances_index = {}
-            for inst in self.instances:
-                padstack_instances_index[inst.id] = inst.position
+            for inst_id, inst in self.instances.items():
+                padstack_instances_index[inst_id] = inst.position
         _x = [pt[0] for pt in points]
         _y = [pt[1] for pt in points]
         points = [_x, _y]
