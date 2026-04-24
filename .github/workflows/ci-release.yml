@@ -571,12 +571,15 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 60
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
+            pytest -v external/pyaedt/tests/system/general/test_hfss.py
+            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
@@ -678,12 +681,15 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 50
+          timeout_minutes: 60
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
+            pytest -v external/pyaedt/tests/system/layout/test_3dlayout_modeler.py
             pytest -v external/pyaedt/tests/system/general/test_configuration_files.py
             pytest -v external/pyaedt/tests/system/general/test_circuit.py
+            pytest -v external/pyaedt/tests/system/general/test_hfss.py
+            pytest -v external/pyaedt/tests/system/general/test_primitives_3d.py
 
       - name: Run PyAEDT solvers tests
         uses: nick-fields/retry@ad984534de44a9489a53aefd81eb77f87c70dc60 # v4.0.0
