@@ -22,8 +22,6 @@
 import math
 from typing import TYPE_CHECKING, Union
 
-from pyedb.misc.decorators import deprecated
-
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
