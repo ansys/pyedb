@@ -418,7 +418,7 @@ class Path(Primitive):
         List[List[float, float]].
 
         """
-        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
+        return self.center_line
 
     @property
     def corner_style(self) -> str:
