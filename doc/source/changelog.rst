@@ -9,6 +9,92 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.73.0 <https://github.com/ansys/pyedb/releases/tag/v0.73.0>`_ - April 24, 2026
+================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Solder mask auto opening
+          - `#2060 <https://github.com/ansys/pyedb/pull/2060>`_
+
+        * - Etch net class feature added
+          - `#2069 <https://github.com/ansys/pyedb/pull/2069>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Bump actions/upload-artifact from 7.0.0 to 7.0.1
+          - `#2061 <https://github.com/ansys/pyedb/pull/2061>`_
+
+        * - Update pydantic requirement from <2.13,>=2.6.4 to >=2.6.4,<2.14
+          - `#2062 <https://github.com/ansys/pyedb/pull/2062>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Documentation improvement
+          - `#2058 <https://github.com/ansys/pyedb/pull/2058>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Pyedb grpc extensions fix
+          - `#2064 <https://github.com/ansys/pyedb/pull/2064>`_
+
+        * - Multiple edb load fix
+          - `#2066 <https://github.com/ansys/pyedb/pull/2066>`_
+
+        * - Refactor dotnet imports to avoid crash at Edb init
+          - `#2070 <https://github.com/ansys/pyedb/pull/2070>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.72.0
+          - `#2050 <https://github.com/ansys/pyedb/pull/2050>`_
+
+        * - Test dotnet fix
+          - `#2051 <https://github.com/ansys/pyedb/pull/2051>`_
+
+        * - Update license metadata in pyproject.toml
+          - `#2052 <https://github.com/ansys/pyedb/pull/2052>`_
+
+        * - Pre-commit automatic update
+          - `#2063 <https://github.com/ansys/pyedb/pull/2063>`_
+
+        * - Bump ansys-edb-core into v0.3.1
+          - `#2074 <https://github.com/ansys/pyedb/pull/2074>`_
+
+        * - Pyaedt alignment
+          - `#2076 <https://github.com/ansys/pyedb/pull/2076>`_
+
+        * - Update pyaedt testing on release
+          - `#2079 <https://github.com/ansys/pyedb/pull/2079>`_
+
+
 `0.72.0 <https://github.com/ansys/pyedb/releases/tag/v0.72.0>`_ - April 17, 2026
 ================================================================================
 
