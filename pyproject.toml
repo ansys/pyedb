@@ -18,16 +18,16 @@ classifiers = [
     "Intended Audience :: Science/Research",
     "Topic :: Scientific/Engineering :: Information Analysis",
     "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11"
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13"
 ]
 
 dependencies = [
     # .NET interface dependencies
     "cffi>=1.16.0,<2.1; platform_system=='Linux'",
-    "pywin32>=308;platform_system=='Windows'",
+    "pywin32>=304;platform_system=='Windows'",
     "ansys-pythonnet>=3.1.0rc6",
     # Core dependencies
     "numpy>=1.20.0,<3",
