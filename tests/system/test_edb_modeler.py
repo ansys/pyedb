@@ -737,7 +737,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    # @pytest.mark.skipif(config.get("use_grpc"), reason="bug #2005")
     @pytest.mark.skipif(config.get("use_grpc"), reason="Waiting SP1")
     def test_create_rf_trace_taper(self):
         edbapp = self.edb_examples.create_empty_edb()
