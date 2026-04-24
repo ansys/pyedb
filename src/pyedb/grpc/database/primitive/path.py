@@ -280,7 +280,7 @@ class Path(Primitive):
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """
-        center_line = self.center_line
+        center_line = self.get_center_line()
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
         return self._pedb.excitation_manager.create_edge_port_vertical(
             self.edb_uid,
@@ -399,7 +399,6 @@ class Path(Primitive):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
-    @deprecated("Use path.center_line method instead.")
     def center_line(self) -> list[list[float]]:
         """Path center line
 
@@ -408,7 +407,7 @@ class Path(Primitive):
         List[float]
 
         """
-        return self.get_center_line
+        return self.get_center_line()
 
     @property
     def get_center_line(self) -> list[list[float]]:
