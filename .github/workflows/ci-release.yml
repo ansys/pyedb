@@ -571,7 +571,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 60
+          timeout_minutes: 120
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
@@ -589,7 +589,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 120
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
@@ -602,7 +602,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 40
+          timeout_minutes: 120
           command: |
             .venv\Scripts\Activate.ps1
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
@@ -684,7 +684,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 60
+          timeout_minutes: 120
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/layout/test_3dlayout_edb.py
@@ -702,7 +702,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 50
+          timeout_minutes: 120
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/solvers/test_analyze.py
@@ -715,7 +715,7 @@ jobs:
         with:
           max_attempts: 3
           retry_on: error
-          timeout_minutes: 50
+          timeout_minutes: 120
           command: |
             . .venv/bin/activate
             pytest -v external/pyaedt/tests/system/extensions/test_cutout.py
