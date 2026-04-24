@@ -808,20 +808,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @rotation.setter
     def rotation(self, value):
-        pos = []
-        if isinstance(value, (float, int, str)):
-            pos.append(self._pedb._value_setter(value, self._pedb.active_cell))
-        else:
-            pos.append(value)
-        pos = self.position
-        point_data = CorePointData(pos[0], pos[1])
-        self.core.set_position_and_rotation(
-            x=point_data.x,
-            y=point_data.y,
-            rotation=self._pedb._value_setter(
-                self.rotation,
-            ),
-        )
+        self.core.set_position_and_rotation(x=self.position[0], y=self.position[1], rotation=self._pedb.value(value))
 
     @property
     def position_and_rotation(self) -> list[float]:
@@ -989,7 +976,7 @@ class PadstackInstance(conn_obj.ConnObj):
         return 0.0
 
     @backdrill_offset.setter
-    def backdrill_offset(self, value):
+    def backdrill_offset(self, value) -> bool | None:
         if self.backdrill_bottom:
             parameters = self.get_back_drill_by_layer(True)
             self.set_back_drill_by_layer(

@@ -57,6 +57,8 @@ class Rectangle(Primitive):
         str.
             ``"center_width_height"`` or ``"lower_left_upper_right"``.
         """
+        if not hasattr(self.core, "representation_type"):
+            self.core.representation_type = self._mapping_representation_type["lower_left_upper_right"]
         return self.core.representation_type.name.lower()
 
     @representation_type.setter
@@ -388,5 +390,6 @@ class Rectangle(Primitive):
                         )
                         duplicate_rectangle.add_void(duplicate_void)
             else:
+                self.logger.error("Invalid layer input")
                 return False
         return True

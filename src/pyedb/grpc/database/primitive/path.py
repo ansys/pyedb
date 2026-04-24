@@ -22,6 +22,8 @@
 import math
 from typing import TYPE_CHECKING, Union
 
+from pyedb.misc.decorators import deprecated
+
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
 
@@ -278,7 +280,7 @@ class Path(Primitive):
         >>> sig.create_edge_port("pcb_port", "end", "Wave", None, 8, 8)
 
         """
-        center_line = self.get_center_line()
+        center_line = self.center_line
         pos = center_line[-1] if position.lower() == "end" else center_line[0]
         return self._pedb.excitation_manager.create_edge_port_vertical(
             self.edb_uid,
@@ -405,8 +407,9 @@ class Path(Primitive):
         List[float]
 
         """
-        return self.get_center_line()
+        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
 
+    @deprecated("Use path.center_line method instead.")
     def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.
 
@@ -437,7 +440,7 @@ class Path(Primitive):
                 "mitter": CorePathCornerType.MITER,
                 "sharp": CorePathCornerType.SHARP,
             }
-            self.corner_style = mapping[corner_type]
+            self.core.corner_style = mapping[corner_type]
 
     @property
     def end_cap1(self) -> str:
