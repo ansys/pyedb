@@ -594,8 +594,12 @@ class Modeler(object):
                 void_polygon_data = CorePolygonData(points=void)
             elif isinstance(void, CorePolygonData):
                 void_polygon_data = void
-            else:
+            elif isinstance(void, PolygonData):
+                void_polygon_data = void.core
+            elif isinstance(void, Polygon | Rectangle | Circle | Primitive):
                 void_polygon_data = void.polygon_data.core
+            else:
+                raise TypeError("Unsupported void format.")
             if not void_polygon_data.points:
                 raise RuntimeError("Failed to create void polygon data")
             polygon_data.holes.append(void_polygon_data)
