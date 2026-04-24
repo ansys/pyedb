@@ -407,7 +407,6 @@ class Path(Primitive):
         """
         return self.get_center_line()
 
-    @property
     def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.
 
