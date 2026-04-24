@@ -399,6 +399,7 @@ class Path(Primitive):
             self._pedb.padstacks.place([x, y], padstack_name, net_name=net_name)
 
     @property
+    @deprecated("Use path.center_line method instead.")
     def center_line(self) -> list[list[float]]:
         """Path center line
 
@@ -407,9 +408,9 @@ class Path(Primitive):
         List[float]
 
         """
-        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
+        return self.get_center_line
 
-    @deprecated("Use path.center_line method instead.")
+    @property
     def get_center_line(self) -> list[list[float]]:
         """Retrieve center line points list.
 
@@ -418,7 +419,7 @@ class Path(Primitive):
         List[List[float, float]].
 
         """
-        return self.center_line
+        return [[Value(pt.x), Value(pt.y)] for pt in self.core.center_line.points]
 
     @property
     def corner_style(self) -> str:

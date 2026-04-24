@@ -258,8 +258,8 @@ class TestClass(BaseTestClass):
             assert trace.end_cap1 == "flat"
             assert trace.end_cap2 == "flat"
 
-        assert isinstance(trace.center_line(), list)
-        assert isinstance(trace.center_line(), list)
+        assert isinstance(trace.get_center_line(), list)
+        assert isinstance(trace.get_center_line(), list)
         # TODO
         # edbapp["delta_x"] = "1mm"
         # assert trace.add_point("delta_x", "1mm", True)
