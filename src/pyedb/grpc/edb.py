@@ -1659,6 +1659,7 @@ class Edb(EdbInit):
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
+        compute_extent_only: bool = False
     ) -> list:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -1739,7 +1740,12 @@ class Edb(EdbInit):
             Whether to compute and include voids in pyaedt extent before the cutout. Cutout time can be affected.
             It works only with Conforming cutout.
             Default is ``False`` to generate extent without voids.
-
+        compute_extent_only : bool, optional
+            Whether to compute the extent only and return the list of points without applying the cutout on the layout.
+            Default is ``False``. If `smart_cutout` flag is enabled the extent returned will be the same as when set tp
+            `False`. Smart cutout feature is destructive with clipping multiple times until criterias are met. Therefore
+            it can be used to compute the extent and check if it is suitable for the cutout before applying it on the
+            layout.
 
         Returns
         -------
@@ -1795,6 +1801,7 @@ class Edb(EdbInit):
         cutout.simple_pad_check = simple_pad_check
         cutout.keep_lines_as_path = keep_lines_as_path
         cutout.include_voids_in_extents = include_voids_in_extents
+        cutout.compute_extent_only = compute_extent_only
         return cutout.run()
 
     @staticmethod
