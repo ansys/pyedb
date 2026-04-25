@@ -1659,7 +1659,7 @@ class Edb(EdbInit):
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
-        compute_extent_only: bool = False
+        compute_extent_only: bool = False,
     ) -> list:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.

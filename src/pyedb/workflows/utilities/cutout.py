@@ -168,7 +168,7 @@ class GrpcCutout:
         self.simple_pad_check: bool = True
         self.keep_lines_as_path: bool = False
         self.include_voids_in_extents: bool = False
-        self.compute_extent_only:bool = False
+        self.compute_extent_only: bool = False
 
     @property
     def logger(self):
@@ -981,7 +981,7 @@ class DotNetCutout:
         self.simple_pad_check: bool = True
         self.keep_lines_as_path: bool = False
         self.include_voids_in_extents: bool = False
-        self.compute_extent_only:bool = False
+        self.compute_extent_only: bool = False
 
     @property
     def logger(self):
