@@ -231,7 +231,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        str : name of the net.
+        str
+            Name of the net.
         """
         if self.core.is_null:
             return ""
@@ -297,7 +298,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : amplitude value.
+        float
+            Amplitude value.
         """
         return Value(self.core.source_amplitude)
 
@@ -311,7 +313,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : phase value.
+        float
+            Phase value.
         """
         return Value(self.core.source_phase)
 
@@ -358,7 +361,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : impedance value.
+        float
+            Impedance value.
 
         """
         return Value(self.core.impedance)
@@ -403,7 +407,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        str : net name.
+        str
+            Net name.
 
         """
         if self.reference_object:
@@ -569,7 +574,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : source magnitude.
+        float
+            Source magnitude.
         """
         return Value(self.core.source_amplitude)
 
@@ -583,7 +589,8 @@ class Terminal(ConnObj):
 
         Returns
         -------
-        float : source phase.
+        float
+            Source phase.
 
         """
         return Value(self.core.source_phase)
