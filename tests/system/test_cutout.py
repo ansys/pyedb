@@ -67,6 +67,24 @@ class TestClass(BaseTestClass):
         spice_path = os.path.join(local_path, "example_models", test_subfolder, "GRM32_DC0V_25degC.mod")
         assert edbapp.components.instances["R8"].assign_spice_model(spice_path)
         assert edbapp.nets.nets
+        extent = edbapp.cutout(
+            signal_nets=["1V0"],
+            reference_nets=[
+                "GND",
+                "LVDS_CH08_N",
+                "LVDS_CH08_P",
+                "LVDS_CH10_N",
+                "LVDS_CH10_P",
+                "LVDS_CH04_P",
+                "LVDS_CH04_N",
+            ],
+            extent_type="Bounding",
+            extent_defeature=0.001,
+            preserve_components_with_model=True,
+            keep_lines_as_path=True,
+            compute_extent_only=True
+        )
+        assert len(extent) == 4
         assert edbapp.cutout(
             signal_nets=["1V0"],
             reference_nets=[
@@ -84,9 +102,6 @@ class TestClass(BaseTestClass):
             keep_lines_as_path=True,
         )
         assert "A0_N" not in edbapp.nets.nets
-        # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", order_by_area=True), list)
-        # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", keep_only_main_net=True), list)
-        # assert isinstance(edbapp.layout_validation.disjoint_nets("GND", clean_disjoints_less_than=0.005), list)
         assert edbapp.layout_validation.fix_self_intersections("PGND")
         assert edbapp.layout_validation.fix_self_intersections()
         edbapp.close(terminate_rpc_session=False)
@@ -107,6 +122,16 @@ class TestClass(BaseTestClass):
         points.append([cutout_line_x, cutout_line_y])
         points.append([bounding[0][0], cutout_line_y])
         points.append([bounding[0][0], bounding[0][1]])
+
+        extent = edbapp.cutout(
+            signal_nets=["1V0"],
+            reference_nets=["GND"],
+            extent_type="ConvexHull",
+            custom_extent=points,
+            simple_pad_check=False,
+            compute_extent_only=True
+        )
+        assert len(extent) == 5
 
         assert edbapp.cutout(
             signal_nets=["1V0"],
@@ -129,6 +154,15 @@ class TestClass(BaseTestClass):
         edbapp.excitation_manager.create_port_on_component("U2", ["5V"], reference_net="GND")
         edbapp.excitation_manager.create_voltage_source_on_net("U4", "5V", "U4", "GND")
         legacy_name = edbapp.edbpath
+        extent = edbapp.cutout(
+            signal_nets=["5V"],
+            reference_nets=["GND"],
+            extent_type="ConvexHull",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+            compute_extent_only=True,
+        )
+        assert len(extent) == 12
         assert edbapp.cutout(
             signal_nets=["5V"],
             reference_nets=["GND"],
@@ -148,6 +182,20 @@ class TestClass(BaseTestClass):
             [i for i in list(edbapp.components.instances["U1"].pins.values()) if i.net_name == "GND"]
         )
 
+        extent = edbapp.cutout(
+            signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N"],
+            reference_nets=["GND"],
+            extent_type="convex_hull",
+            use_pyaedt_extent_computing=True,
+            include_pingroups=True,
+            check_terminals=True,
+            expansion_factor="1mm",
+            compute_extent_only=True,
+        )
+        if edbapp.grpc:
+            assert len(extent) == 34 # grpc returns slightly different extent point.
+        else:
+            assert len(extent) == 36
         assert edbapp.cutout(
             signal_nets=["DDR4_DQS0_P", "DDR4_DQS0_N"],
             reference_nets=["GND"],
@@ -156,6 +204,7 @@ class TestClass(BaseTestClass):
             include_pingroups=True,
             check_terminals=True,
             expansion_factor="1mm",
+
         )
         edbapp.close(terminate_rpc_session=False)
 
@@ -163,6 +212,17 @@ class TestClass(BaseTestClass):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/MicrostripSpliGnd.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
 
+        extent = edbapp.cutout(
+            signal_nets=["trace_n"],
+            reference_nets=["ground"],
+            extent_type="Conformal",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+            expansion_factor=2,
+            include_voids_in_extents=True,
+            compute_extent_only=True,
+        )
+        assert len(extent) == 8
         assert edbapp.cutout(
             signal_nets=["trace_n"],
             reference_nets=["ground"],
@@ -178,6 +238,16 @@ class TestClass(BaseTestClass):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/Multizone_GroundVoids.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
 
+        extent = edbapp.cutout(
+            signal_nets=["DIFF_N", "DIFF_P"],
+            reference_nets=["GND"],
+            extent_type="bounding_box",
+            use_pyaedt_extent_computing=True,
+            check_terminals=True,
+            expansion_factor=3,
+            compute_extent_only=True,
+        )
+        assert len(extent) == 4
         assert edbapp.cutout(
             signal_nets=["DIFF_N", "DIFF_P"],
             reference_nets=["GND"],

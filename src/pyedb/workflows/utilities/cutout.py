@@ -820,7 +820,7 @@ class GrpcCutout:
         >>> polygon = cutout.run()
         """
         if self.compute_extent_only:
-            return self._extent().points
+            return [(pt.x.value, pt.y.value) for pt in self._extent().points]
         if not self.use_pyaedt_cutout:
             return self._create_cutout_legacy()
         else:
@@ -1673,7 +1673,7 @@ class DotNetCutout:
         >>> polygon = cutout.run()
         """
         if self.compute_extent_only:
-            return self._extent().points
+            return [(pt.X.ToDouble(), pt.Y.ToDouble()) for pt in list(self._extent().Points)]
         if not self.use_pyaedt_cutout:
             return self._create_cutout_legacy()
         else:

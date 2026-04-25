@@ -1915,6 +1915,7 @@ class Edb:
         simple_pad_check=True,
         keep_lines_as_path=False,
         include_voids_in_extents=False,
+        compute_extent_only=False,
     ) -> list[list[float | complex | Any]] | list | list[list] | None:
         """Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
@@ -2051,6 +2052,7 @@ class Edb:
         cutout.simple_pad_check = simple_pad_check
         cutout.keep_lines_as_path = keep_lines_as_path
         cutout.include_voids_in_extents = include_voids_in_extents
+        cutout.compute_extent_only = compute_extent_only
         return cutout.run()
 
     def _create_cutout_legacy(
