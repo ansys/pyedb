@@ -983,46 +983,46 @@ class PadstackDef:
             .. code-block:: python
 
                 {
-                    'regular_pad': [
+                    "regular_pad": [
                         {
-                            'layer_name': '1_Top',
-                            'shape': 'circle',
-                            'offset_x': '0.1mm',
-                            'offset_y': '0',
-                            'rotation': '0',
-                            'diameter': '0.5mm',
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0.1mm",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "0.5mm",
                         }
                     ],
-                    'anti_pad': [
+                    "anti_pad": [
                         {
-                            'layer_name': '1_Top',
-                            'shape': 'circle',
-                            'offset_x': '0',
-                            'offset_y': '0',
-                            'rotation': '0',
-                            'diameter': '1mm',
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "1mm",
                         }
                     ],
-                    'thermal_pad': [
+                    "thermal_pad": [
                         {
-                            'layer_name': '1_Top',
-                            'shape': 'round90',
-                            'offset_x': '0',
-                            'offset_y': '0',
-                            'rotation': '0',
-                            'inner': '1mm',
-                            'channel_width': '0.2mm',
-                            'isolation_gap': '0.3mm',
+                            "layer_name": "1_Top",
+                            "shape": "round90",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "inner": "1mm",
+                            "channel_width": "0.2mm",
+                            "isolation_gap": "0.3mm",
                         }
                     ],
-                    'hole': [
+                    "hole": [
                         {
-                            'layer_name': '1_Top',
-                            'shape': 'circle',
-                            'offset_x': '0',
-                            'offset_y': '0',
-                            'rotation': '0',
-                            'diameter': '0.1499997mm',
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "0.1499997mm",
                         }
                     ],
                 }
