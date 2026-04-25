@@ -82,7 +82,7 @@ class TestClass(BaseTestClass):
             extent_defeature=0.001,
             preserve_components_with_model=True,
             keep_lines_as_path=True,
-            compute_extent_only=True
+            compute_extent_only=True,
         )
         assert len(extent) == 4
         assert edbapp.cutout(
@@ -129,7 +129,7 @@ class TestClass(BaseTestClass):
             extent_type="ConvexHull",
             custom_extent=points,
             simple_pad_check=False,
-            compute_extent_only=True
+            compute_extent_only=True,
         )
         assert len(extent) == 5
 
@@ -193,7 +193,7 @@ class TestClass(BaseTestClass):
             compute_extent_only=True,
         )
         if edbapp.grpc:
-            assert len(extent) == 34 # grpc returns slightly different extent point.
+            assert len(extent) == 34  # grpc returns slightly different extent point.
         else:
             assert len(extent) == 36
         assert edbapp.cutout(
@@ -204,7 +204,6 @@ class TestClass(BaseTestClass):
             include_pingroups=True,
             check_terminals=True,
             expansion_factor="1mm",
-
         )
         edbapp.close(terminate_rpc_session=False)
 
