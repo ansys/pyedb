@@ -1622,17 +1622,46 @@ class Modeler(object):
         voids: list | None = None,
         net_name: str = "",
     ) -> Polygon:
-        """Create RF trace taper.
-        (y)
-         ↑
-         |              <─      End Width      ─>
-         |              ─────── End Point ───────
-         |             /           |             \
-         |            /            |              \
-         |           /             |               \
-         |          ────────── Start Point ─────────
-         |          <─         Start Width        ─>
-         +──────────────────────────────────────→ (x)
+        """Create an RF trace taper polygon between two points.
+
+        The taper is a trapezoidal polygon with ``start_width`` at ``start_point``
+        and ``end_width`` at ``end_point``, rotated to match the direction between
+        the two points.
+
+        .. code-block:: text
+
+                (y)
+                 ↑
+                 |              <─      End Width      ─>
+                 |              ─────── End Point ───────
+                 |             /           |             \
+                 |            /            |              \
+                 |           /             |               \
+                 |          ────────── Start Point ─────────
+                 |          <─         Start Width        ─>
+                 +──────────────────────────────────────→ (x)
+
+        Parameters
+        ----------
+        start_point : tuple[str or float, str or float]
+            Start point coordinates as ``(x, y)``.
+        end_point : tuple[str or float, str or float]
+            End point coordinates as ``(x, y)``.
+        start_width : str or float
+            Width of the taper at the start point.
+        end_width : str or float
+            Width of the taper at the end point.
+        layer_name : str, optional
+            Name of the layer on which to create the taper. The default is ``""``.
+        voids : list, optional
+            List of void polygons to subtract from the taper. The default is ``None``.
+        net_name : str, optional
+            Net name to assign to the taper polygon. The default is ``""``.
+
+        Returns
+        -------
+        :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+            Created taper polygon object.
         """
 
         p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
