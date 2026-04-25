@@ -104,7 +104,6 @@ Discussions = "https://github.com/ansys/pyedb/discussions"
 Releases = "https://github.com/ansys/pyedb/releases"
 
 [tool.ruff]
-ignore = ["D203", "D213"]
 line-length = 120
 fix = true
 
@@ -125,6 +124,7 @@ select = [
     "W",   # pycodestyle, see https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
 ]
 ignore = [
+    "D203", "D213",
     # "D" - pydocstyle, see https://docs.astral.sh/ruff/rules/#pydocstyle-d
     "D100", # undocumented-public-module
     "D101", # undocumented-public-class

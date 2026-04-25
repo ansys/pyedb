@@ -641,9 +641,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        refdes : str or :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
+        refdes : str or Component
             Component reference designator or Component object.
-        pins : int or str or :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or list
+        pins : int, str, PadstackInstance, or list
             Pin specifier(s) or instance(s) where the port terminal is to be created.
             A single pin name or a list of several can be provided. If several pins are
             provided, a pin group is created. Pin specifiers can be the global EDB object
@@ -651,7 +651,7 @@ class SourceExcitation(SourceExcitationInternal):
             For example, for pin ``Pin1`` on component ``U1``: ``"U1-Pin1"``, ``"Pin1"``
             with ``refdes="U1"``, the pin's global EDB object ID, or the corresponding
             ``PadstackInstance`` object.
-        reference_pins : int or str or :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or list, optional
+        reference_pins : int, str, PadstackInstance, or list, optional
             Reference pin specifier(s) or instance(s) for the port reference terminal.
             Allowed values are the same as for ``pins``.
         impedance : str or float, optional
@@ -669,7 +669,7 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal>` or bool
+        PadstackInstanceTerminal or bool
             Created terminal object, or ``False`` if creation failed.
 
         Examples
@@ -1592,9 +1592,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        positive_pins : :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+        positive_pins : PadstackInstance or list of PadstackInstance
             Positive pins used.
-        negatives_pins : :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+        negatives_pins : PadstackInstance or list of PadstackInstance
             Negative pins used.
         impedance : float, int or str
             Terminal impedance. Default value is `50` Ohms.
