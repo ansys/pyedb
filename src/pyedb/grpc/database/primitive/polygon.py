@@ -374,12 +374,14 @@ class Polygon(Primitive):
             return False
 
     def add_void(self, polygon):
-        """Add a void to the polygon.
+        """
+        Add a void to the polygon.
 
         Parameters
         ----------
         polygon : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>` or list
             Polygon object or list of points defining the void shape.
+
         """
         if isinstance(polygon, list):
             polygon = self._pedb.modeler.create_polygon(
