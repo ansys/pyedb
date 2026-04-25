@@ -1743,7 +1743,7 @@ class Edb(EdbInit):
         compute_extent_only : bool, optional
             Whether to compute the extent only and return the list of points without applying the cutout on the layout.
             Default is ``False``. If `smart_cutout` flag is enabled the extent returned will be the same as when set tp
-            `False`. Smart cutout feature is destructive with clipping multiple times until criterias are met. Therefore
+            `False`. Smart cutout feature is destructive with clipping multiple times until criteria is met. Therefore
             it can be used to compute the extent and check if it is suitable for the cutout before applying it on the
             layout.
 
