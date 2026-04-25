@@ -742,7 +742,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def position(self) -> list[float]:
-        """Padstack instance position.  
+        """Padstack instance position.
 
         Returns
         -------
