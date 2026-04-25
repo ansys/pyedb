@@ -39,7 +39,7 @@ from pyedb.misc.utilities import compute_arc_points
 
 
 class Nets(CommonNets):
-    """Manages EDB methods for nets management accessible from `Edb.nets` property.
+    """Manages EDB methods for nets management accessible from ``Edb.nets`` property.
 
         Examples
         --------
@@ -227,10 +227,10 @@ class Nets(CommonNets):
 
         Returns
         -------
-        dict[str, pyedb.grpc.database.net.net.Net]
+        dict[str, :class:`Net <pyedb.grpc.database.net.net.Net>`]
             Dictionary of net names to Net objects.
 
-         Examples
+        Examples
         --------
         >>> from pyedb import Edb
         >>> edb = Edb("my_design.edb")
@@ -445,8 +445,8 @@ class Nets(CommonNets):
 
         Returns
         -------
-        tuple
-            X and Y coordinates of the points.
+        tuple[list[float], list[float]]
+            Tuple of ``(x, y)`` coordinate lists.
         """
         # fmt: off
         x = []
@@ -602,13 +602,16 @@ class Nets(CommonNets):
         ----------
         power_net_name : str
             Name of the power net.
-        ground_nets : list
+        ground_nets : list[str]
             List of ground net names.
 
         Returns
         -------
-        tuple
-            (component_list, component_list_columns, net_group)
+        tuple[list[list[str]], list[str], list[str]]
+            Tuple of ``(component_list, component_list_columns, net_group)`` where
+            ``component_list`` is a list of ``[refdes, pin_name, net_name, comp_type, partname, pin_list]``
+            rows, ``component_list_columns`` is the list of column names, and
+            ``net_group`` is the list of net names in the power tree.
 
         Examples
         --------
@@ -866,20 +869,18 @@ class Nets(CommonNets):
         Parameters
         ----------
         net_list : list[str], optional
-            List of nets to check. Checks all nets if None.
+            List of nets to check. Checks all nets if ``None``.
         keep_only_main_net : bool, optional
-            Keep only the main net segment if True.
+            Keep only the main net segment if ``True``.
         clean_disjoints_less_than : float, optional
-            Clean disjoint nets smaller than this area (in m²).
+            Clean disjoint nets smaller than this area in m².
         order_by_area : bool, optional
             Order naming by area instead of object count.
 
         Returns
         -------
-        list
-            New ne
-
-            New nets created.
+        list[str]
+            New nets created during the fix operation.
 
         Examples
         --------
@@ -936,24 +937,28 @@ class NetClasses:
         self.core = [net.core for net in pedb.active_layout.net_classes]
 
     def __getitem__(self, name: str) -> NetClass:
-        """Get a net by name.
+        """Get a net class by name.
 
         Parameters
         ----------
         name : str
-            Name of the net to retrieve.
+            Name of the net class to retrieve.
 
+        Returns
+        -------
+        :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`
+            Net class object.
         """
         return self.items[name]
 
     @property
     def items(self) -> Dict[str, NetClass]:
-        """Extended nets.
+        """All net classes in the layout.
 
         Returns
         -------
-        Dict[str, :class:`pyedb.grpc.database.nets.nets_class.NetClass`]
-            Dictionary of extended nets.
+        dict[str, :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>`]
+            Dictionary of net class names to NetClass objects.
         """
         return {i.core.name: i for i in self._pedb.layout.net_classes}
 
@@ -975,12 +980,13 @@ class NetClasses:
         ----------
         name : str
             Name of the net class.
-        net : str, list
-           Name of the nets to be added into this net class.
+        net : str or list[str]
+            Net name or list of net names to add to this net class.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData` `False` if net name already exists.
+        :class:`NetClass <pyedb.grpc.database.net.net_class.NetClass>` or bool
+            Net class object if successful, ``False`` if the name already exists.
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
