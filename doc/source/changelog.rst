@@ -9,6 +9,61 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.74.0 <https://github.com/ansys/pyedb/releases/tag/v0.74.0>`_ - April 27, 2026
+================================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Issue 2073 cutout export only extent
+          - `#2088 <https://github.com/ansys/pyedb/pull/2088>`_
+
+
+  .. tab-item:: Documentation
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Documentation improvement
+          - `#2085 <https://github.com/ansys/pyedb/pull/2085>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Coverage rects
+          - `#2083 <https://github.com/ansys/pyedb/pull/2083>`_
+
+        * - Example fix
+          - `#2090 <https://github.com/ansys/pyedb/pull/2090>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update CHANGELOG for v0.73.0
+          - `#2082 <https://github.com/ansys/pyedb/pull/2082>`_
+
+        * - Bump dev 0.74.dev0 version
+          - `#2086 <https://github.com/ansys/pyedb/pull/2086>`_
+
+        * - Update code owners to help with maintenance
+          - `#2089 <https://github.com/ansys/pyedb/pull/2089>`_
+
+
 `0.73.0 <https://github.com/ansys/pyedb/releases/tag/v0.73.0>`_ - April 24, 2026
 ================================================================================
 
