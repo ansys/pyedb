@@ -730,19 +730,19 @@ class Padstacks(object):
 
         else:
             psdef = padstack_instance.padstack_def
-        newdefdata = CorePadstackDefData.create(psdef.data)
-        newdefdata.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
+        newdef_data = psdef.data
+        newdef_data.solder_ball_shape = CoreSolderballShape.SOLDERBALL_CYLINDER
         solder_ball_diameter = self._pedb._value_setter(solder_ball_diameter)
-        newdefdata.solder_ball_param = solder_ball_diameter, solder_ball_diameter
+        newdef_data.solder_ball_param = solder_ball_diameter, solder_ball_diameter
         sball_placement = (
             CoreSolderballPlacement.ABOVE_PADSTACK if top_placed else CoreSolderballPlacement.BELOW_PADSTACK
         )
-        newdefdata.solder_ball_placement = sball_placement
+        newdef_data.solder_ball_placement = sball_placement
         if material:
             if material not in self._pedb.materials:
                 self._pedb.materials.add_conductor_material(name=material, conductivity=1e7)
-            newdefdata.solder_ball_material = material
-        psdef.data = newdefdata
+            newdef_data.solder_ball_material = material
+        psdef.data = newdef_data
         sball_layer = [lay.core for lay in list(self._layers.values()) if lay.name == solder_ball_layer][0]
         if sball_layer is not None:
             padstack_instance.solder_ball_layer = sball_layer
@@ -779,9 +779,7 @@ class Padstacks(object):
             Terminal name.
 
         """
-        self._pedb.excitation_manager.create_coax_port(
-            self, padstackinstance, use_dot_separator=use_dot_separator, name=name
-        )
+        self._pedb.excitation_manager.create_coax_port(padstackinstance, use_dot_separator=use_dot_separator, name=name)
 
     def get_pin_from_component_and_net(
         self, refdes: Optional[str] = None, netname: Optional[str] = None

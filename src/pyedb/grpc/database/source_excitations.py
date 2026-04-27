@@ -1156,7 +1156,10 @@ class SourceExcitation(SourceExcitationInternal):
         """
         if isinstance(padstackinstance, int):
             padstackinstance = self._pedb.padstacks.instances[padstackinstance]
-        cmp_name = padstackinstance.component.name
+        if padstackinstance.component:
+            cmp_name = padstackinstance.component.name
+        else:
+            cmp_name = ""
         if cmp_name == "":
             cmp_name = "no_comp"
         net_name = padstackinstance.net.name
