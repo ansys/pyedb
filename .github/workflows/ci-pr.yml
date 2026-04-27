@@ -67,13 +67,6 @@ jobs:
       - name: Upload packages
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.3
         with:
-          name: ansys-edb-core-package
+          name: pyedb-package
           path: dist/
           retention-days: 7
-
-      - name: Build library source and wheel artifacts
-        uses: ansys/actions/build-library@7d55ff0b9f67c77dae50a286d711ee1ae27b0a25 # v10.2.12
-        with:
-          library-name: ${{ env.PACKAGE_NAME }}
-          python-version: ${{ env.MAIN_PYTHON_VERSION }}
-          attest-provenance: true
