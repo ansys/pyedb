@@ -684,7 +684,12 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="increase test coverage for primitives in grpc")
     def test_primitives_for_grpc(self):
-        edbapp = self.edb_examples.get_si_board()
+        edbapp = self.edb_examples.get_si_verse()
+
+        # PadstackInstance
+        padstack_instance = edbapp.padstacks.instances[4294967296]
+        padstack_instance.rotation = 90
+        assert padstack_instance.rotation == 90
 
         # Paths
         path = edbapp.modeler.paths[0]
@@ -692,21 +697,45 @@ class TestClass(BaseTestClass):
         assert path.width.real == 1.5
         assert path.length
         assert path.center_line
-        assert path.get_center_line() == path.center_line
-        # TODO create_path is not covered using core in modeler
-        # TODO why have both get_center_line() and path.center_line?
         path.corner_style = "round"
-        # assert path.corner_style == "round"
-        # TODO corner setter does not work, and move does not work
+        assert path.corner_style == "round"
+        path.end_cap1 = "flat"
         assert path.end_cap1 == "flat"
         path.end_cap2 = "round"
         assert path.end_cap2 == "round"
 
         # Circle
-        cir = edbapp.modeler.create_circle(layer_name="s1", x=0, y=0, radius=0.1, net_name="GND")
-        assert cir
+        cir = edbapp.modeler.create_circle(layer_name="1_Top", x=0, y=0, radius=0.1, net_name="GND")
         cir.set_parameters(0.1, 0.1, 0.3)
         assert cir.get_parameters()[2].real == 0.3
+
+        # Rectangle
+        rect = edbapp.layout.rectangles[0]
+        assert rect.representation_type
+        rect.representation_type = "center_width_height"
+        assert rect.representation_type == "center_width_height"
+        assert rect.get_parameters()
+        rect.corner_radius = 1.0
+        assert rect.corner_radius == 1.0
+        rect.rotation = 90
+        assert rect.rotation == 90
+        assert rect.width
+        rect.width = 0.2
+        rect.height = 0.1
+        assert rect.height == 0.1
+        assert rect.duplicate_across_layers("16_Bottom")
+        edbapp.modeler.create_rectangle(
+            "16_Bottom", "GND", representation_type="center_width_height", width=0.1, height=0.1, center_point=[0, 0]
+        )
+
+        # Texts
+        edbapp.modeler.create_text(layer_name="1_Top", x=0.0, y=0.0, text="test")
+        prim = [prim for prim in edbapp.layout.primitives if prim.primitive_type == "text"]
+        assert prim
+        assert not prim[0].is_null
+        assert prim[0].aedt_name == "text_5958"
+
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(config.get("use_grpc"), reason="Waiting SP1")
     def test_create_rf_trace_taper(self):

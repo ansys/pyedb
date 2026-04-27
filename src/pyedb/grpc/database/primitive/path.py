@@ -437,7 +437,7 @@ class Path(Primitive):
                 "mitter": CorePathCornerType.MITER,
                 "sharp": CorePathCornerType.SHARP,
             }
-            self.corner_style = mapping[corner_type]
+            self.core.corner_style = mapping[corner_type]
 
     @property
     def end_cap1(self) -> str:
