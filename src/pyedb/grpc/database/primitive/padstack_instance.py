@@ -331,6 +331,7 @@ class PadstackInstance(conn_obj.ConnObj):
     @property
     def side_number(self):
         """Return the number of sides meshed of the padstack instance.
+
         Returns
         -------
         int
@@ -343,18 +344,6 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @side_number.setter
     def side_number(self, value):
-        """Set the number of sides meshed of the padstack instance.
-
-        Parameters
-        ----------
-        value : int
-            Number of sides to mesh the padstack instance.
-
-        Returns
-        -------
-        bool
-            True if successful, False otherwise.
-        """
         if isinstance(value, int) and 3 <= value <= 64:
             prop_string = f"$begin ''\n\tsid={value}\n\tmat='copper'\n\tvs='Wirebond'\n$end ''\n"
             self.core.set_product_property(CoreProductIdType.HFSS_3D_LAYOUT, 21, prop_string)
@@ -369,8 +358,8 @@ class PadstackInstance(conn_obj.ConnObj):
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from top.
 
-        .deprecated:: 0.55.0
-        Use :method:`set_back_drill_by_depth` instead.
+        .. deprecated:: 0.55.0
+           Use :meth:`set_back_drill_by_layer` or :meth:`set_back_drill_by_depth` instead.
 
         Parameters
         ----------
@@ -378,24 +367,19 @@ class PadstackInstance(conn_obj.ConnObj):
             Name of the drill to layer.
         drill_diameter : float, str
             Diameter of backdrill size.
-        offset : str, optional.
-            offset with respect to the layer to drill to.
-
-        Returns
-        -------
-        bool
-            True if success, False otherwise.
+        offset : str, optional
+            Offset with respect to the layer to drill to.
         """
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
-                return self.set_back_drill_by_layer(
+                self.set_back_drill_by_layer(
                     drill_to_layer=drill_depth,
                     offset=self._pedb._value_setter(offset),
                     diameter=self._pedb._value_setter(drill_diameter),
                     from_bottom=False,
                 )
             else:
-                return self.set_back_drill_by_depth(
+                self.set_back_drill_by_depth(
                     self._pedb._value_setter(drill_depth), self._pedb._value_setter(drill_diameter), from_bottom=False
                 )
 
@@ -403,8 +387,8 @@ class PadstackInstance(conn_obj.ConnObj):
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
         """Set backdrill from bottom.
 
-        .deprecated: 0.55.0
-        Use: method:`set_back_drill_by_depth` instead.
+        .. deprecated:: 0.55.0
+           Use :meth:`set_back_drill_by_layer` or :meth:`set_back_drill_by_depth` instead.
 
         Parameters
         ----------
@@ -412,24 +396,19 @@ class PadstackInstance(conn_obj.ConnObj):
             Name of the drill to layer.
         drill_diameter : float, str
             Diameter of backdrill size.
-        offset : str, optional.
-            offset with respect to the layer to drill to.
-
-        Returns
-        -------
-        bool
-            True if success, False otherwise.
+        offset : str, optional
+            Offset with respect to the layer to drill to.
         """
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
-                return self.set_back_drill_by_layer(
+                self.set_back_drill_by_layer(
                     drill_to_layer=self._pedb.stackup.layers[drill_depth],
                     offset=self._pedb._value_setter(offset),
                     diameter=self._pedb._value_setter(drill_diameter),
                     from_bottom=True,
                 )
             else:
-                return self.set_back_drill_by_depth(
+                self.set_back_drill_by_depth(
                     self._pedb._value_setter(drill_depth), self._pedb._value_setter(drill_diameter), from_bottom=True
                 )
 
@@ -767,7 +746,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         Returns
         -------
-        list[float, float]
+        list[float]
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
         position = self.core.get_position_and_rotation()

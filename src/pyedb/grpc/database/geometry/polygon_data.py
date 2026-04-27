@@ -279,13 +279,14 @@ class PolygonData:
 
         Returns
         -------
-        :class: `PolygonIntersectionType <ansys.edb.core.geometry.polygon_data.PolygonIntersectionType>`
-        Returned value can be one of the following:
-            - 0 : No Intersection
-            - 1 : Current Polygon Inside Other
-            - 2: Other polygon Inside Current
-            - 3: Common intersection
-            - 4: undifined intersection
+        int
+            Integer value representing the intersection type. Possible values are:
+
+            - ``0`` : No intersection.
+            - ``1`` : Current polygon is inside the other.
+            - ``2`` : Other polygon is inside the current.
+            - ``3`` : Common intersection.
+            - ``4`` : Undefined intersection.
         """
         if isinstance(polygon_data, PolygonData):
             polygon_data = polygon_data.core

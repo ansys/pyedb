@@ -21,7 +21,7 @@
 # SOFTWARE.
 
 """
-This module contains the `EdbPadstacks` class.
+This module contains the `Padstacks` class.
 """
 
 from collections import defaultdict
@@ -868,13 +868,11 @@ class Padstacks(object):
 
         Returns
         -------
-        tuple
-            (geometry_type, parameters, offset_x, offset_y, rotation) where:
-            - geometry_type : str
-            - parameters : list[float] or list[list[float]]
-            - offset_x : float
-            - offset_y : float
-            - rotation : float
+        tuple[str, list[float] or list[list[float]], float, float, float]
+            Tuple of ``(geometry_type, parameters, offset_x, offset_y, rotation)``
+            where ``geometry_type`` is the pad shape name, ``parameters`` are the
+            shape dimensions, and ``offset_x``, ``offset_y``, ``rotation`` are the
+            pad placement offsets and rotation angle.
 
         Examples
         --------
@@ -1038,10 +1036,23 @@ class Padstacks(object):
         return via_list
 
     def layers_between(self, layers, start_layer=None, stop_layer=None):
-        """
-        Return the sub-list of *layers* that lies between *start_layer*
-        (inclusive) and *stop_layer* (inclusive).  Works no matter which
-        of the two is nearer the top of the stack.
+        """Return the sub-list of layers that lies between ``start_layer`` and ``stop_layer`` (both inclusive).
+
+        Works regardless of which of the two layers is nearer to the top of the stack.
+
+        Parameters
+        ----------
+        layers : list[str]
+            Ordered list of all layer names.
+        start_layer : str, optional
+            Starting layer name. If ``None``, defaults to the first layer.
+        stop_layer : str, optional
+            Stopping layer name. If ``None``, defaults to the last layer.
+
+        Returns
+        -------
+        list[str]
+            Sub-list of layer names between ``start_layer`` and ``stop_layer``, inclusive.
         """
         if not layers:
             return []
@@ -1767,18 +1778,21 @@ class Padstacks(object):
         padstack_instances_index: Optional["rtree.index.Index"] = None,
     ) -> List[int]:
         """Returns the list of padstack instances ID intersecting a given bounding box and nets.
+
         Parameters
         ----------
-        bounding_box : tuple or list.
-            bounding box, [x1, y1, x2, y2]
+        bounding_box : tuple or list
+            Bounding box as ``[x1, y1, x2, y2]``.
         nets : str or list, optional
-            net name of list of nets name applying filtering on pad-stack instances selection. If ``None`` is provided
-            all instances are included in the index. Default value is ``None``.
-        padstack_instances_index : optional, Rtree object.
-            Can be provided optionally to prevent computing padstack instances Rtree index again.
+            Net name or list of net names to filter padstack instances. If ``None``, all
+            instances are included. The default is ``None``.
+        padstack_instances_index : optional
+            Rtree index object. Can be provided to avoid recomputing the index.
+
         Returns
         -------
-        List of padstack instances ID intersecting the bounding box.
+        list[int]
+            List of padstack instance IDs intersecting the bounding box.
         """
         if not bounding_box:
             raise Exception("No bounding box was provided")
@@ -1818,18 +1832,20 @@ class Padstacks(object):
         minimum_via_number : int, optional
             The minimum number of points that a line must contain. Default is ``6``.
 
-        selected_angles : list[int, float]
-            Specify angle in degrees to detected, for instance [0, 180] is only detecting horizontal and vertical lines.
-            Other values can be assigned like 45 degrees. When `None` is provided all lines are detected. Default value
-            is `None`.
+        selected_angles : list[int or float], optional
+            Angles in degrees to detect. For example, ``[0, 180]`` detects only
+            horizontal and vertical lines. When ``None``, all angles are detected.
+            The default is ``None``.
 
-        padstack_instances_id : List[int]
-            List of pad-stack instances ID's to include. If `None`, the algorithm will scan all pad-stack
-            instances belonging to the specified net. Default value is `None`.
+        padstack_instances_id : list[int], optional
+            List of padstack instance IDs to include. If ``None``, the algorithm
+            scans all padstack instances belonging to the specified net.
+            The default is ``None``.
 
         Returns
         -------
-        List[int], list of created pad-stack instances id.
+        list[str]
+            List of created padstack instance IDs.
 
         """
         _def = list(set([inst.padstack_def for inst in list(self.instances.values()) if inst.net_name == net_name]))
@@ -1899,18 +1915,19 @@ class Padstacks(object):
 
         Parameters
         ----------
-        contour_boxes : List[List[List[float, float]]]
-            Nested list of polygon with points [x,y].
-        net_filter : optional
-            List[str: net_name] apply a net filter, nets included in the filter are excluded from the via merge.
-        start_layer : optional, str
-            Pad-stack instance start layer, if `None` the top layer is selected.
-        stop_layer : optional, str
-            Pad-stack instance stop layer, if `None` the bottom layer is selected.
+        contour_boxes : list[list[list[float]]]
+            Nested list of polygons, each defined by a list of ``[x, y]`` points.
+        net_filter : str or list[str], optional
+            Net name or list of net names to exclude from the via merge.
+        start_layer : str, optional
+            Padstack instance start layer. If ``None``, the top layer is used.
+        stop_layer : str, optional
+            Padstack instance stop layer. If ``None``, the bottom layer is used.
 
-        Return
-        ------
-        List[str], list of created pad-stack instances ID.
+        Returns
+        -------
+        list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+            List of created padstack instances.
 
         """
         try:
@@ -2091,31 +2108,28 @@ class Padstacks(object):
     def reduce_via_by_density(
         self, padstacks: List[int], cell_size_x: float = 1e-3, cell_size_y: float = 1e-3, delete: bool = False
     ) -> tuple[List[int], List[List[List[float]]]]:
-        """
-        Reduce the number of vias by density. Keep only one via which is closest to the center of the cell. The cells
+        """Reduce the number of vias by density.
+
+        Keeps only one via closest to the center of each grid cell. The cells
         are automatically populated based on the input vias.
 
         Parameters
         ----------
-        padstacks: List[int]
-            List of padstack ids to be reduced.
-
-        cell_size_x : float
-            Width of each grid cell (default is 1e-3).
-
-        cell_size_y : float
-            Height of each grid cell (default is 1e-3).
-
-        delete: bool
-            If True, delete vias that are not kept (default is False).
+        padstacks : list[int]
+            List of padstack IDs to be reduced.
+        cell_size_x : float, optional
+            Width of each grid cell in meters. The default is ``1e-3``.
+        cell_size_y : float, optional
+            Height of each grid cell in meters. The default is ``1e-3``.
+        delete : bool, optional
+            If ``True``, delete vias that are not kept. The default is ``False``.
 
         Returns
         -------
-        List[int]
-            IDs of vias kept after reduction.
-
-        List[List[float]]
-            coordinates for grid lines (for plotting).
+        tuple[list[int], list[list[list[float]]]]
+            Tuple of ``(kept_ids, grid)`` where ``kept_ids`` is the list of via IDs
+            kept after reduction, and ``grid`` is the list of grid cell coordinate
+            boundaries for plotting.
 
         """
         to_keep = set()

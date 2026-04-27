@@ -198,10 +198,10 @@ class Polygon(Primitive):
     def duplicate_across_layers(self, layers) -> bool:
         """Duplicate across layer a primitive object.
 
-        Parameters:
-
-        layers: list
-            list of str, with layer names
+        Parameters
+        ----------
+        layers : list[str]
+            List of layer names.
 
         Returns
         -------
@@ -231,12 +231,13 @@ class Polygon(Primitive):
 
         Parameters
         ----------
-        vector : List of float or str [x,y].
+        vector : list[float or str]
+            Translation vector as ``[x, y]``.
 
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
 
         Examples
         --------
@@ -259,13 +260,13 @@ class Polygon(Primitive):
         ----------
         factor : float
             Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
+        center : list[float or str], optional
+            Center point as ``[x, y]``. If ``None``, scaling is done from the polygon center.
 
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
         """
         if not isinstance(factor, str):
             factor = float(factor)
@@ -288,14 +289,14 @@ class Polygon(Primitive):
         Parameters
         ----------
         angle : float
-            Value of the rotation angle in degree.
-        center : List of float or str [x,y], optional
-            If None rotation is done from polygon center.
+            Value of the rotation angle in degrees.
+        center : list[float or str], optional
+            Center point as ``[x, y]``. If ``None``, rotation is done from the polygon center.
 
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
 
         Examples
         --------
@@ -327,7 +328,7 @@ class Polygon(Primitive):
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
             self.layer = layer
@@ -373,6 +374,15 @@ class Polygon(Primitive):
             return False
 
     def add_void(self, polygon):
+        """
+        Add a void to the polygon.
+
+        Parameters
+        ----------
+        polygon : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>` or list
+            Polygon object or list of points defining the void shape.
+
+        """
         if isinstance(polygon, list):
             polygon = self._pedb.modeler.create_polygon(
                 points=polygon, layer_name=self.layer.name, net_name=self.net_name

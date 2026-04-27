@@ -54,6 +54,5 @@ The public gRPC reference is organized around the top-level package, the
 .. toctree::
    :maxdepth: 5
 
-   grpc package <../autoapi/pyedb/grpc/index>
    database <../autoapi/pyedb/grpc/database/index>
    edb <../autoapi/pyedb/grpc/edb/index>

@@ -601,8 +601,9 @@ class SourceExcitation(SourceExcitationInternal):
             Name of the created port. The default is None, a random name is generated.
         Returns
         -------
-        list: [:class:`GapPort <pyedb.grpc.database.ports.ports.GapPort`>,
-            :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`].
+        :class:`GapPort <pyedb.grpc.database.ports.ports.GapPort>` or
+        :class:`WavePort <pyedb.grpc.database.ports.ports.WavePort>`
+            Created port object.
 
         Examples
         --------
@@ -640,42 +641,44 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        refdes : Component reference designator
-            str or Component object.
-        pins : pin specifier(s) or instance(s) where the port terminal is to be created. Single pin name or a list of
-        several can be provided. If several pins are provided a pin group will be created. Pin specifiers can be the
-        global EDB object ID or padstack instance name or pin name on component with refdes ``refdes``. Pin instances
-        can be provided as ``EDBPadstackInstance`` objects.
-        For instance for the pin called ``Pin1`` located on component with refdes ``U1``: ``U1-Pin1``, ``Pin1`` with
-        ``refdes=U1``, the pin's global EDB object ID, or the ``EDBPadstackInstance`` corresponding to the pin can be
-        provided.
-            Union[int, str, PadstackInstance], List[Union[int, str, PadstackInstance]]
-        reference_pins : reference pin specifier(s) or instance(s) for the port reference terminal. Allowed values are
-        the same as for the ``pins`` parameter.
-            Union[int, str, PadstackInstance], List[Union[int, str, PadstackInstance]]
-        impedance : Port impedance
-            str, float
+        refdes : str or Component
+            Component reference designator or Component object.
+        pins : int, str, PadstackInstance, or list
+            Pin specifier(s) or instance(s) where the port terminal is to be created.
+            A single pin name or a list of several can be provided. If several pins are
+            provided, a pin group is created. Pin specifiers can be the global EDB object
+            ID, padstack instance name, or pin name on the component with ``refdes``.
+            For example, for pin ``Pin1`` on component ``U1``: ``"U1-Pin1"``, ``"Pin1"``
+            with ``refdes="U1"``, the pin's global EDB object ID, or the corresponding
+            ``PadstackInstance`` object.
+        reference_pins : int, str, PadstackInstance, or list, optional
+            Reference pin specifier(s) or instance(s) for the port reference terminal.
+            Allowed values are the same as for ``pins``.
+        impedance : str or float, optional
+            Port impedance. The default is ``"50ohm"``.
         port_name : str, optional
             Port name. The default is ``None``, in which case a name is automatically assigned.
         pec_boundary : bool, optional
-        Whether to define the PEC boundary, The default is ``False``. If set to ``True``,
-        a perfect short is created between the pin and impedance is ignored. This
-        parameter is only supported on a port created between two pins, such as
-        when there is no pin group.
-        pingroup_on_single_pin : bool
-            If ``True`` force using pingroup definition on single pin to have the port created at the pad center. If
-            ``False`` the port is created at the pad edge. Default value is ``False``.
+            Whether to define the PEC boundary. The default is ``False``. If ``True``,
+            a perfect short is created between the pins and impedance is ignored. Only
+            supported on a port created between two pins (no pin group).
+        pingroup_on_single_pin : bool, optional
+            If ``True``, force pin group definition on a single pin so the port is created
+            at the pad center. If ``False``, the port is created at the pad edge.
+            The default is ``False``.
 
         Returns
         -------
-        EDB terminal created, or False if failed to create.
+        PadstackInstanceTerminal or bool
+            Created terminal object, or ``False`` if creation failed.
 
-        Example:
+        Examples
+        --------
         >>> from pyedb import Edb
         >>> edb = Edb(path_to_edb_file)
         >>> pin = "AJ6"
         >>> ref_pins = ["AM7", "AM4"]
-        Or to take all reference pins
+        >>> # Or take all reference pins on GND net
         >>> ref_pins = [pin for pin in list(edb.components["U2A5"].pins.values()) if pin.net_name == "GND"]
         >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
         >>> edb.save()
@@ -1592,10 +1595,10 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        positive_pins : positive pins used.
-            :class: `PadstackInstance` or List[:class: ´PadstackInstance´]
-        negatives_pins : negative pins used.
-            :class: `PadstackInstance` or List[:class: ´PadstackInstance´]
+        positive_pins : PadstackInstance or list of PadstackInstance
+            Positive pins used.
+        negatives_pins : PadstackInstance or list of PadstackInstance
+            Negative pins used.
         impedance : float, int or str
             Terminal impedance. Default value is `50` Ohms.
         source_type : str
@@ -1960,8 +1963,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        tuple
-            The tuple contains: (port_name, pyedb.dotnet.database.edb_data.sources.ExcitationDifferential).
+        tuple[str, object]
+            Tuple of ``(port_name, differential_port)`` where ``port_name`` is the
+            name of the created port and ``differential_port`` is the port object.
 
         Examples
         --------
@@ -2197,8 +2201,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        tuple
-            The tuple contains: (Port name, pyedb.dotnet.database.edb_data.sources.Excitation).
+        tuple[str, object]
+            Tuple of ``(port_name, port)`` where ``port_name`` is the name of the
+            created wave port and ``port`` is the port object.
 
         Examples
         --------
@@ -2504,9 +2509,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        [[str]]
-            Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
-            and terminal name.
+        list[list[str]]
+            Nested list where each entry is ``[net_name, x, y, terminal_name]``
+            for each port placed at the polygon border.
 
         Examples
         --------
@@ -2614,8 +2619,9 @@ class SourceExcitation(SourceExcitationInternal):
 
         Returns
         -------
-        tuple
-            The tuple contains: (port_name, pyedb.egacy.database.edb_data.sources.ExcitationDifferential).
+        tuple[str, object]
+            Tuple of ``(port_name, bundle_port)`` where ``port_name`` is the name
+            of the created bundle wave port and ``bundle_port`` is the port object.
 
         Examples
         --------
@@ -2859,32 +2865,25 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        polygon : The EDB polygon object used to assign the port.
-            Edb.Cell.Primitive.Polygon object.
-
-        reference_polygon : The EDB polygon object used to define the port reference.
-            Edb.Cell.Primitive.Polygon object.
-
-        terminal_point : The coordinate of the point to define the edge terminal of the port. This point must be
-        located on the edge of the polygon where the port has to be placed. For instance taking the middle point
-        of an edge is a good practice but any point of the edge should be valid. Taking a corner might cause unwanted
-        port location.
-            list[float, float] with values provided in meter.
-
-        reference_point : same as terminal_point but used for defining the reference location on the edge.
-            list[float, float] with values provided in meter.
-
-        reference_layer : Name used to define port reference for vertical ports.
-            str the layer name.
-
-        port_name : Name of the port.
-            str.
-
-        port_impedance : port impedance value. Default value is 50 Ohms.
-            float, impedance value.
-
-        force_circuit_port ; used to force circuit port creation instead of lumped. Works for vertical and coplanar
-        ports.
+        polygon : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+            EDB polygon object used to assign the port.
+        reference_polygon : :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
+            EDB polygon object used to define the port reference.
+        terminal_point : list[float]
+            Coordinate ``[x, y]`` in meters of the point on the polygon edge where
+            the port is placed. Taking the midpoint of an edge is recommended.
+        reference_point : list[float], optional
+            Same as ``terminal_point`` but for defining the reference location on the
+            reference polygon edge. Values in meters.
+        reference_layer : str, optional
+            Layer name used to define the port reference for vertical ports.
+        port_name : str, optional
+            Name of the port.
+        port_impedance : float, optional
+            Port impedance in ohms. The default is ``50``.
+        force_circuit_port : bool, optional
+            When ``True``, force circuit port creation instead of lumped.
+            Applies to both vertical and coplanar ports.
 
         Examples
         --------
@@ -3425,20 +3424,25 @@ class SourceExcitation(SourceExcitationInternal):
 
         Parameters
         ----------
-        name : str,
+        name : str
             Name of the probe.
         positive_net_name : str
             Name of the positive net.
-        positive_location : list
-            Location of the positive terminal.
-        positive_layer : str,
+        positive_location : list[float]
+            Location ``[x, y]`` of the positive terminal.
+        positive_layer : str
             Layer of the positive terminal.
-        negative_net_name : str,
+        negative_net_name : str
             Name of the negative net.
-        negative_location : list
-            Location of the negative terminal.
+        negative_location : list[float]
+            Location ``[x, y]`` of the negative terminal.
         negative_layer : str
             Layer of the negative terminal.
+
+        Returns
+        -------
+        :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
+            Created voltage probe terminal object.
 
         Examples
         --------

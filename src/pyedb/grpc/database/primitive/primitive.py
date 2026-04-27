@@ -81,11 +81,11 @@ class Primitive:
     def type(self) -> str:
         """Type of the primitive.
 
-        Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
-
         Returns
         -------
         str
+            Primitive type. Options are ``"circle"``, ``"rectangle"``, ``"polygon"``,
+            ``"path"``, or ``"bondwire"``.
         """
         return self.core.primitive_type.name.lower()
 
@@ -345,7 +345,7 @@ class Primitive:
 
         Returns
         -------
-        List[float, float]
+        List[float]
             [x, y]
 
         """
@@ -370,7 +370,7 @@ class Primitive:
 
         Returns
         -------
-        List[float, float, float, float]
+        List[float]
             [lower_left x, lower_left y, upper right x, upper right y]
 
         """
@@ -435,12 +435,13 @@ class Primitive:
 
         Parameters
         ----------
-        point : list of float or PointData
+        point : list[float] or :class:`PointData <ansys.edb.core.geometry.point_data.PointData>`
+            Point coordinates as ``[x, y]`` or a ``PointData`` object.
 
         Returns
         -------
-        List[float, float]
-            [x, y].
+        list[float]
+            Closest point coordinates as ``[x, y]``.
 
         """
         if isinstance(point, (list, tuple)):
@@ -484,14 +485,14 @@ class Primitive:
         Parameters
         ----------
         angle : float
-            Value of the rotation angle in degree.
-        center : List of float or str [x,y], optional
-            If None rotation is done from polygon center.
+            Value of the rotation angle in degrees.
+        center : list[float or str], optional
+            Center point as ``[x, y]``. If ``None``, rotation is done from the polygon center.
 
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
         """
         if angle and hasattr(self, "polygon_data"):
             if center is None:
@@ -505,12 +506,13 @@ class Primitive:
 
         Parameters
         ----------
-        vector : List of float or str [x,y].
+        vector : list[float or str]
+            Translation vector as ``[x, y]``.
 
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
 
         Examples
         --------
@@ -533,13 +535,13 @@ class Primitive:
         ----------
         factor : float
             Scaling factor.
-        center : List of float or str [x,y], optional
-            If None scaling is done from polygon center.
+        center : list[float or str], optional
+            Center point as ``[x, y]``. If ``None``, scaling is done from the polygon center.
 
         Returns
         -------
         bool
-           ``True`` when successful, ``False`` when failed.
+            ``True`` when successful, ``False`` when failed.
         """
         if not isinstance(factor, str) and hasattr(self, "polygon_data"):
             factor = float(factor)
@@ -732,12 +734,13 @@ class Primitive:
 
         Parameters
         ----------
-        point : List[float] or List[:class:`PointData <ansys.edb.core.geometry.point_data.PointData>`]
+        point : list[float] or :class:`PointData <ansys.edb.core.geometry.point_data.PointData>`
+            Point coordinates as ``[x, y]`` or a ``PointData`` object.
 
         Returns
         -------
-        LIst[float, float]
-            [x, y].
+        list[float]
+            Closest arc midpoint coordinates as ``[x, y]``.
         """
 
         if isinstance(point, CorePointData):
@@ -773,13 +776,13 @@ class Primitive:
 
         Parameters
         ----------
-        point_list : list or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>` \
-            or point list in the format of `[[x1,y1], [x2,y2],..,[xn,yn]]`.
+        point_list : list[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`] or list[list[float]]
+            Primitive object or list of points in the format ``[[x1, y1], [x2, y2], ..., [xn, yn]]``.
 
         Returns
         -------
         bool
-            ``True`` if successful, either  ``False``.
+            ``True`` if successful, ``False`` otherwise.
         """
         if isinstance(point_list, list):
             plane = self._pedb.modeler.Shape("polygon", points=point_list)
@@ -797,13 +800,13 @@ class Primitive:
 
         Parameters
         ----------
-        arc_segments : int
-            Number of facets to convert an arc. Default is `6`.
+        arc_segments : int, optional
+            Number of facets to convert an arc. The default is ``6``.
 
         Returns
         -------
-        tuple(float, float)
-            (X, Y).
+        tuple[list[float], list[float]] or None
+            Tuple of ``(x, y)`` coordinate lists, or ``None`` if no points are found.
         """
         xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
         if not xt:

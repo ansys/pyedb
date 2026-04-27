@@ -471,7 +471,7 @@ class Components(object):
         Returns
         -------
         dict[str, :class:`pyedb.grpc.database.hierarchy.structure_3d.Structure3D`]
-        Dictionary of structures 3D components keyed by name.
+            Dictionary of 3D structure components keyed by name.
         """
         structures_3d = [obj.core for obj in self._pedb.active_layout.groups if isinstance(obj.core, CoreStructure3D)]
         self._structures_3d = {structure.name: Structure3D(self._pedb, structure) for structure in structures_3d}
@@ -654,8 +654,11 @@ class Components(object):
 
         Returns
         -------
-        tuple
-            (success, vector, rotation, solder_ball_height)
+        tuple[bool, list[float], float, float]
+            Tuple of ``(success, vector, rotation, solder_ball_height)`` where ``success``
+            is ``True`` when the placement vector was computed successfully, ``vector`` is
+            the ``[x, y]`` translation, ``rotation`` is the rotation angle in radians, and
+            ``solder_ball_height`` is the height in meters.
 
         Examples
         --------
