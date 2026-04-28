@@ -21,103 +21,123 @@
 
 """Components builder API.
 
-Data model: :class:`~pyedb.configuration.cfg_components.CfgComponent`.
-The ``cfg_components`` root module carries EDB-level imports (grpc/dotnet) so
-we intentionally do **not** import it here.  Instead we build plain dicts that
-match the schema expected by ``CfgComponent``.
+``CfgComponent`` (root module) requires live EDB/gRPC imports so we define
+pure-data pydantic models here and build ``ComponentConfig`` on top of them.
 """
 
 from __future__ import annotations
 
-from typing import List, Literal, Optional, Union
+from typing import Any, Dict, List, Literal, Optional, Union
+
+from pydantic import BaseModel, Field
+
+from pyedb.configuration.cfg_common import CfgBaseModel
 
 
-class PinPairModel:
-    """Single pin-pair RLC model entry.
+# ── sub-structure pydantic models ─────────────────────────────────────────────
 
-    Produces a dict consumed by ``CfgComponent.pin_pair_model``.
 
-    Parameters
-    ----------
-    first_pin, second_pin : str
-    resistance, inductance, capacitance : str or float, optional
-    is_parallel : bool
-    resistance_enabled, inductance_enabled, capacitance_enabled : bool
-    """
+class PinPairModel(CfgBaseModel):
+    """Single pin-pair RLC entry."""
 
-    def __init__(
-        self,
-        first_pin: str,
-        second_pin: str,
-        resistance: Optional[Union[str, float]] = None,
-        inductance: Optional[Union[str, float]] = None,
-        capacitance: Optional[Union[str, float]] = None,
-        is_parallel: bool = False,
-        resistance_enabled: bool = False,
-        inductance_enabled: bool = False,
-        capacitance_enabled: bool = False,
-    ):
-        self.first_pin = first_pin
-        self.second_pin = second_pin
-        self.resistance = resistance
-        self.inductance = inductance
-        self.capacitance = capacitance
-        self.is_parallel = is_parallel
-        self.resistance_enabled = resistance_enabled
-        self.inductance_enabled = inductance_enabled
-        self.capacitance_enabled = capacitance_enabled
+    first_pin: str
+    second_pin: str
+    resistance: Optional[Union[str, float]] = None
+    inductance: Optional[Union[str, float]] = None
+    capacitance: Optional[Union[str, float]] = None
+    is_parallel: bool = False
+    resistance_enabled: bool = False
+    inductance_enabled: bool = False
+    capacitance_enabled: bool = False
+
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+    def __init__(self, first_pin: str, second_pin: str, **kwargs):
+        super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
 
     def to_dict(self) -> dict:
-        return {
-            "first_pin": self.first_pin,
-            "second_pin": self.second_pin,
-            "resistance": self.resistance,
-            "inductance": self.inductance,
-            "capacitance": self.capacitance,
-            "is_parallel": self.is_parallel,
-            "resistance_enabled": self.resistance_enabled,
-            "inductance_enabled": self.inductance_enabled,
-            "capacitance_enabled": self.capacitance_enabled,
-        }
+        return self.model_dump()
 
 
-class ComponentConfig:
+class _SParameterModelData(CfgBaseModel):
+    model_name: str
+    model_path: str
+    reference_net: str
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+class _SpiceModelData(CfgBaseModel):
+    model_name: str
+    model_path: str
+    sub_circuit: str = ""
+    terminal_pairs: List[Any] = Field(default_factory=list)
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+class _NetlistModelData(CfgBaseModel):
+    netlist: str
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+class _IcDieProperties(CfgBaseModel):
+    type: Literal["flip_chip", "wire_bond", "no_die"] = "no_die"
+    orientation: Optional[Literal["chip_up", "chip_down"]] = None
+    height: Optional[str] = None
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+class _SolderBallProperties(CfgBaseModel):
+    shape: Literal["cylinder", "spheroid", "no_solder_ball"] = "cylinder"
+    diameter: str = "150um"
+    height: str = "100um"
+    material: str = "solder"
+    mid_diameter: Optional[str] = None
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+class _PortProperties(CfgBaseModel):
+    reference_height: str = "0"
+    reference_size_auto: bool = True
+    reference_size_x: str = "0"
+    reference_size_y: str = "0"
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+# ── root pydantic data model ──────────────────────────────────────────────────
+
+
+class _CfgComponentData(BaseModel):
+    """Pure-data pydantic model for a component configuration entry."""
+
+    reference_designator: str
+    part_type: Optional[str] = None
+    enabled: Optional[bool] = None
+    definition: Optional[str] = None
+    placement_layer: Optional[str] = None
+
+    pin_pair_model: List[Dict] = Field(default_factory=list)
+    s_parameter_model: Optional[_SParameterModelData] = None
+    spice_model: Optional[_SpiceModelData] = None
+    netlist_model: Optional[_NetlistModelData] = None
+    ic_die_properties: Optional[_IcDieProperties] = None
+    solder_ball_properties: Optional[_SolderBallProperties] = None
+    port_properties: Optional[_PortProperties] = None
+
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+
+# ── builder ───────────────────────────────────────────────────────────────────
+
+
+class ComponentConfig(_CfgComponentData):
     """Fluent builder for a single component entry.
 
-    Produces a dict consumed by
-    :class:`~pyedb.configuration.cfg_components.CfgComponent`.
-
-    Parameters
-    ----------
-    reference_designator : str
-    part_type : str, optional
-        ``"resistor"``, ``"capacitor"``, ``"inductor"``, ``"ic"``, ``"io"``, ``"other"``.
-    enabled : bool, optional
-    definition : str, optional
-    placement_layer : str, optional
+    Inherits all fields from ``_CfgComponentData``.  Adds convenience setter
+    methods on top — no field redefinition needed.
     """
 
-    def __init__(
-        self,
-        reference_designator: str,
-        part_type: Optional[str] = None,
-        enabled: Optional[bool] = None,
-        definition: Optional[str] = None,
-        placement_layer: Optional[str] = None,
-    ):
-        self.reference_designator = reference_designator
-        self.part_type = part_type
-        self.enabled = enabled
-        self.definition = definition
-        self.placement_layer = placement_layer
-
-        self.pin_pair_model: List[dict] = []
-        self.s_parameter_model: dict = {}
-        self.spice_model: dict = {}
-        self.netlist_model: dict = {}
-        self.port_properties: dict = {}
-        self.solder_ball_properties: dict = {}
-        self.ic_die_properties: dict = {}
+    def __init__(self, reference_designator: str, **kwargs):
+        super().__init__(reference_designator=reference_designator, **kwargs)
 
     # ── model helpers ─────────────────────────────────────────────────────
 
@@ -149,31 +169,18 @@ class ComponentConfig:
         )
 
     def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
-        """Assign an S-parameter model."""
-        self.s_parameter_model = {
-            "model_name": model_name,
-            "model_path": model_path,
-            "reference_net": reference_net,
-        }
+        self.s_parameter_model = _SParameterModelData(
+            model_name=model_name, model_path=model_path, reference_net=reference_net
+        )
 
-    def set_spice_model(
-        self,
-        model_name: str,
-        model_path: str,
-        sub_circuit: str = "",
-        terminal_pairs: Optional[List] = None,
-    ):
-        """Assign a SPICE model."""
-        self.spice_model = {
-            "model_name": model_name,
-            "model_path": model_path,
-            "sub_circuit": sub_circuit,
-            "terminal_pairs": terminal_pairs or [],
-        }
+    def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
+        self.spice_model = _SpiceModelData(
+            model_name=model_name, model_path=model_path,
+            sub_circuit=sub_circuit, terminal_pairs=terminal_pairs or []
+        )
 
     def set_netlist_model(self, netlist: str):
-        """Assign a netlist model."""
-        self.netlist_model = {"netlist": netlist}
+        self.netlist_model = _NetlistModelData(netlist=netlist)
 
     def set_ic_die_properties(
         self,
@@ -181,13 +188,12 @@ class ComponentConfig:
         orientation: Literal["chip_up", "chip_down"] = "chip_up",
         height: Optional[str] = None,
     ):
-        """Set IC die properties."""
         data: dict = {"type": die_type}
         if die_type != "no_die":
             data["orientation"] = orientation
             if die_type == "wire_bond" and height:
                 data["height"] = height
-        self.ic_die_properties = data
+        self.ic_die_properties = _IcDieProperties(**data)
 
     def set_solder_ball_properties(
         self,
@@ -197,11 +203,10 @@ class ComponentConfig:
         material: str = "solder",
         mid_diameter: Optional[str] = None,
     ):
-        """Set solder-ball properties."""
         data: dict = {"shape": shape, "diameter": diameter, "height": height, "material": material}
         if shape == "spheroid":
             data["mid_diameter"] = mid_diameter or diameter
-        self.solder_ball_properties = data
+        self.solder_ball_properties = _SolderBallProperties(**data)
 
     def set_port_properties(
         self,
@@ -210,13 +215,12 @@ class ComponentConfig:
         reference_size_x: str = "0",
         reference_size_y: str = "0",
     ):
-        """Set port properties for IC / IO components."""
-        self.port_properties = {
-            "reference_height": reference_height,
-            "reference_size_auto": reference_size_auto,
-            "reference_size_x": reference_size_x,
-            "reference_size_y": reference_size_y,
-        }
+        self.port_properties = _PortProperties(
+            reference_height=reference_height,
+            reference_size_auto=reference_size_auto,
+            reference_size_x=reference_size_x,
+            reference_size_y=reference_size_y,
+        )
 
     def to_dict(self) -> dict:
         data: dict = {"reference_designator": self.reference_designator}
@@ -226,18 +230,16 @@ class ComponentConfig:
                 data[key] = val
         if self.pin_pair_model:
             data["pin_pair_model"] = self.pin_pair_model
-        if self.s_parameter_model:
-            data["s_parameter_model"] = self.s_parameter_model
-        if self.spice_model:
-            data["spice_model"] = self.spice_model
-        if self.netlist_model:
-            data["netlist_model"] = self.netlist_model
-        if self.port_properties:
-            data["port_properties"] = self.port_properties
-        if self.solder_ball_properties:
-            data["solder_ball_properties"] = self.solder_ball_properties
-        if self.ic_die_properties:
-            data["ic_die_properties"] = self.ic_die_properties
+        for key, attr in (
+            ("s_parameter_model", self.s_parameter_model),
+            ("spice_model", self.spice_model),
+            ("netlist_model", self.netlist_model),
+            ("ic_die_properties", self.ic_die_properties),
+            ("solder_ball_properties", self.solder_ball_properties),
+            ("port_properties", self.port_properties),
+        ):
+            if attr is not None:
+                data[key] = attr.model_dump(exclude_none=True)
         return data
 
 
@@ -255,13 +257,6 @@ class ComponentsConfig:
         definition: Optional[str] = None,
         placement_layer: Optional[str] = None,
     ) -> ComponentConfig:
-        """Add a component entry.
-
-        Returns
-        -------
-        ComponentConfig
-            The created entry for further configuration.
-        """
         comp = ComponentConfig(
             reference_designator=reference_designator,
             part_type=part_type,
