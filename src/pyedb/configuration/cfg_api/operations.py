@@ -27,7 +27,7 @@ cutouts and automatic HFSS region generation.
 
 from __future__ import annotations
 
-from typing import Optional, Union
+from typing import Union
 
 from pyedb.configuration.cfg_operations import CfgAutoIdentifyNets, CfgCutout, CfgOperations
 
