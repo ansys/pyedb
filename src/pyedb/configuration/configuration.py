@@ -93,13 +93,40 @@ class Configuration:
         func()
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
+    def create_config_builder(self):
+        """Create and return an empty :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`.
+
+        Use the returned builder to populate configuration sections
+        programmatically, then pass it directly to :meth:`run`.
+
+        Returns
+        -------
+        EdbConfigBuilder
+            A new, empty configuration builder instance.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> cfg.general.anti_pads_always_on = False
+        >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+        >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
+        >>> edb.configuration.run(cfg)
+        """
+        from pyedb.configuration.cfg_api import EdbConfigBuilder  # local import avoids circular refs
+        return EdbConfigBuilder()
+
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.
 
         Parameters
         ----------
-        config_file : str, dict
-            Full path to configure file in JSON or TOML format. Dictionary is also supported.
+        config_file : str, dict, or EdbConfigBuilder
+            Full path to configure file in JSON or TOML format, a plain Python
+            dictionary, or an :class:`pyedb.configuration.cfg_api.EdbConfigBuilder`
+            instance.  When an ``EdbConfigBuilder`` is supplied its
+            :meth:`~pyedb.configuration.cfg_api.EdbConfigBuilder.to_dict` method is
+            called automatically so the builder can be passed without any extra
+            serialization step.
         append : bool, optional
             Whether if the new file will append to existing properties or the properties will be cleared before import.
             Default is ``True`` to keep stored properties
@@ -112,9 +139,23 @@ class Configuration:
 
         Returns
         -------
-        dict
-            Config dictionary.
+        CfgData
+            Populated configuration data object.
+
+        Examples
+        --------
+        Pass an :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` directly:
+
+        >>> from pyedb.configuration.cfg_api import EdbConfigBuilder
+        >>> cfg = EdbConfigBuilder()
+        >>> cfg.general.anti_pads_always_on = False
+        >>> edb.configuration.load(cfg, apply_file=True)
         """
+        # Accept EdbConfigBuilder directly – convert to dict transparently.
+        from pyedb.configuration.cfg_api import EdbConfigBuilder as _Builder  # local import avoids circular refs
+        if isinstance(config_file, _Builder):
+            config_file = config_file.to_dict()
+
         if isinstance(config_file, dict):
             data = deepcopy(config_file)
         else:
@@ -155,8 +196,36 @@ class Configuration:
                 self._pedb.open_edb()
         return self.cfg_data
 
-    def run(self, **kwargs):
-        """Apply configuration settings to the current design"""
+    def run(self, config=None, **kwargs):
+        """Apply configuration settings to the current design.
+
+        Parameters
+        ----------
+        config : EdbConfigBuilder, dict, or str, optional
+            When supplied the configuration is loaded before applying.
+            Accepts the same types as :meth:`load`: an
+            :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` instance,
+            a plain Python dictionary, or a path to a JSON / TOML file.
+            When *None* (default) the previously loaded :attr:`cfg_data` is used.
+
+        Examples
+        --------
+        Pass a builder directly — no ``load`` call needed:
+
+        >>> from pyedb.configuration.cfg_api import EdbConfigBuilder
+        >>> cfg = EdbConfigBuilder()
+        >>> cfg.general.anti_pads_always_on = False
+        >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+        >>> edb.configuration.run(cfg)
+
+        Use the existing workflow unchanged:
+
+        >>> edb.configuration.load("my_config.json")
+        >>> edb.configuration.run()
+        """
+        if config is not None:
+            self.load(config)
+
         if kwargs.get("fix_padstack_def"):
             warnings.warn("fix_padstack_def is deprecated.", DeprecationWarning)
 

@@ -3,9 +3,8 @@ Configuration file architecture
 
 PyEDB configuration files let you describe design setup, modeling content,
 excitations, and post-processing options in a single JSON or TOML document.
-The same structure is consumed by
-``pyedb.configuration.configuration.Configuration.load()`` and can also be
-produced programmatically through :doc:`cfg_api_guide`.
+The same data model can be consumed from a file **or** built entirely in Python
+through the programmatic API described in :doc:`cfg_api_guide`.
 
 This page explains how the configuration file is organized, what each top-level
 section is used for, and which fields are supported by each section.
@@ -13,29 +12,53 @@ section is used for, and which fields are supported by each section.
 .. note::
 
    While this guide uses JSON fragments for readability, the same hierarchy can
-   also be written as TOML. The section names and nested field names are the
-   same.
+   also be written as TOML.  The section names and nested field names are
+   identical in both formats.
+
+Two ways to configure a design
+-------------------------------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 20 40 40
+
+   * - Approach
+     - When to use
+     - How to apply
+   * - **File-based** (this page)
+     - Reproducible, version-controlled, human-readable artifacts.
+     - ``edb.configuration.run("my_config.json")``
+   * - **Programmatic API** (:doc:`cfg_api_guide`)
+     - Scripted workflows, templates, conditional logic.
+     - ``cfg = edb.configuration.create_config_builder()`` → ``edb.configuration.run(cfg)``
+
+.. tip::
+
+   ``edb.configuration.run()`` accepts a file path, a plain dictionary, **or**
+   an :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` instance — you can
+   mix and match approaches in the same script.
 
 How a configuration file is consumed
-------------------------------------
+--------------------------------------
 
-At runtime, PyEDB parses the file into a dictionary, maps each top-level key to
-an internal configuration model, and then applies those models to the active
-EDB design.
+At runtime, PyEDB parses the file (or builder) into a dictionary, maps each
+top-level key to an internal section model, and then applies those models to
+the active EDB design.
 
 .. graphviz::
 
    digraph configuration_architecture {
        rankdir=LR;
        node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
+       edge [color="#4F81BD"];
 
-       file [label="JSON / TOML file"];
-       load [label="Configuration.load(...)"];
+       file    [label="JSON / TOML file\nor EdbConfigBuilder"];
+       load    [label="Configuration.load(...)"];
        cfgdata [label="CfgData\n(section manager)"];
-       apply [label="Configuration.run()\napply methods"];
-       design [label="Active EDB design"];
+       run     [label="Configuration.run(cfg)\napply methods"];
+       design  [label="Active EDB design"];
 
-       file -> load -> cfgdata -> apply -> design;
+       file -> load -> cfgdata -> run -> design;
    }
 
 Top-level architecture
