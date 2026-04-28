@@ -20,11 +20,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Unit tests for pyedb.configuration.cfg_api – no EDB / .NET required."""
-
+import copy
 import json
-import os
 import tempfile
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -77,7 +76,7 @@ from pyedb.configuration.cfg_api import (
     VariablesConfig,
 )
 
-pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
+pytestmark = [pytest.mark.unit, pytest.mark.no_licence, pytest.mark.legacy]
 
 
 # ---------------------------------------------------------------------------
@@ -2046,182 +2045,139 @@ class TestEdbConfigBuilderFull:
 
 
 # ---------------------------------------------------------------------------
-# Configuration.load / run / create_config_builder integration
-# These tests validate the new EdbConfigBuilder ↔ Configuration bridge
-# introduced in configuration.py without requiring a live EDB session.
-# A lightweight stub replaces the real Configuration class so the tests
-# run in the unit-test suite (no .NET / grpc required).
+# Configuration.load / run / create_config_builder bridge tests
 # ---------------------------------------------------------------------------
 
-class _StubCfgData:
-    """Minimal CfgData stand-in returned by the stub loader."""
-    def __init__(self, data: dict):
-        self.data = data
 
+@pytest.fixture
+def mock_configuration():
+    """Return a MagicMock that replicates the Configuration.load / run /
+    create_config_builder surface added in configuration.py."""
+    cfg_data = MagicMock()
+    cfg_data.data = {}
 
-class _StubConfiguration:
-    """Lightweight stub that replicates only the load/run/create_config_builder
-    surface added or changed in the real Configuration class."""
+    mock = MagicMock()
+    mock.data = {}
+    mock.cfg_data = cfg_data
+    mock._run_called = False
+    mock._last_loaded_data = None
 
-    def __init__(self):
-        self.data = {}
-        self.cfg_data = _StubCfgData({})
-        self._run_called = False
-        self._last_loaded_data = None
-
-    # mirrors the real load() – EdbConfigBuilder branch only
-    def load(self, config_file, append=True, apply_file=False, **kwargs):
-        from pyedb.configuration.cfg_api import EdbConfigBuilder as _Builder
-        if isinstance(config_file, _Builder):
-            config_file = config_file.to_dict()
-        if isinstance(config_file, dict):
-            import copy
-            data = copy.deepcopy(config_file)
-        else:
-            raise TypeError(f"Unsupported type: {type(config_file)}")
-        self._last_loaded_data = data
-        self.cfg_data = _StubCfgData(data)
+    def _load(config_file, append=True, apply_file=False, **kwargs):
+        payload = config_file.to_dict() if isinstance(config_file, EdbConfigBuilder) else copy.deepcopy(config_file)
+        mock._last_loaded_data = payload
+        mock.cfg_data.data = payload
         if apply_file:
-            self._do_run()
-        return self.cfg_data
+            mock._run_called = True
+        return mock.cfg_data
 
-    def _do_run(self):
-        self._run_called = True
-
-    def run(self, config=None, **kwargs):
+    def _run(config=None, **kwargs):
         if config is not None:
-            self.load(config)
-        self._do_run()
+            _load(config)
+        mock._run_called = True
         return True
 
-    def create_config_builder(self):
-        from pyedb.configuration.cfg_api import EdbConfigBuilder
+    def _create_config_builder():
         return EdbConfigBuilder()
+
+    mock.load.side_effect = _load
+    mock.run.side_effect = _run
+    mock.create_config_builder.side_effect = _create_config_builder
+    return mock
 
 
 class TestConfigurationBridgeMethods:
     """Tests for the EdbConfigBuilder ↔ Configuration bridge."""
 
-    # ------------------------------------------------------------------
-    # load() accepts EdbConfigBuilder directly
-    # ------------------------------------------------------------------
-
-    def test_load_accepts_builder(self):
+    def test_load_accepts_builder(self, mock_configuration):
         cfg = EdbConfigBuilder()
         cfg.general.anti_pads_always_on = False
         cfg.nets.add_signal_nets(["SIG"])
 
-        stub = _StubConfiguration()
-        result = stub.load(cfg)
+        mock_configuration.load(cfg)
 
-        assert isinstance(result, _StubCfgData)
-        assert stub._last_loaded_data["general"]["anti_pads_always_on"] is False
-        assert stub._last_loaded_data["nets"]["signal_nets"] == ["SIG"]
+        assert mock_configuration._last_loaded_data["general"]["anti_pads_always_on"] is False
+        assert mock_configuration._last_loaded_data["nets"]["signal_nets"] == ["SIG"]
 
-    def test_load_accepts_plain_dict(self):
-        stub = _StubConfiguration()
-        stub.load({"nets": {"signal_nets": ["CLK"]}})
-        assert stub._last_loaded_data["nets"]["signal_nets"] == ["CLK"]
+    def test_load_accepts_plain_dict(self, mock_configuration):
+        mock_configuration.load({"nets": {"signal_nets": ["CLK"]}})
+        assert mock_configuration._last_loaded_data["nets"]["signal_nets"] == ["CLK"]
 
-    def test_load_builder_produces_same_payload_as_to_dict(self):
+    def test_load_builder_produces_same_payload_as_to_dict(self, mock_configuration):
         cfg = EdbConfigBuilder()
         cfg.general.s_parameter_library = "/models/snp"
         cfg.nets.add_power_ground_nets(["VDD", "GND"])
 
-        stub = _StubConfiguration()
-        stub.load(cfg)
+        mock_configuration.load(cfg)
 
-        assert stub._last_loaded_data == cfg.to_dict()
+        assert mock_configuration._last_loaded_data == cfg.to_dict()
 
-    def test_load_apply_file_calls_run(self):
+    def test_load_apply_file_calls_run(self, mock_configuration):
         cfg = EdbConfigBuilder()
         cfg.general.suppress_pads = True
 
-        stub = _StubConfiguration()
-        stub.load(cfg, apply_file=True)
+        mock_configuration.load(cfg, apply_file=True)
 
-        assert stub._run_called is True
+        assert mock_configuration._run_called is True
 
-    # ------------------------------------------------------------------
-    # run(config=...) loads then applies
-    # ------------------------------------------------------------------
-
-    def test_run_with_builder_loads_and_runs(self):
+    def test_run_with_builder_loads_and_runs(self, mock_configuration):
         cfg = EdbConfigBuilder()
         cfg.nets.add_signal_nets(["DDR_DQ0"])
 
-        stub = _StubConfiguration()
-        result = stub.run(cfg)
+        result = mock_configuration.run(cfg)
 
         assert result is True
-        assert stub._run_called is True
-        assert stub._last_loaded_data["nets"]["signal_nets"] == ["DDR_DQ0"]
+        assert mock_configuration._run_called is True
+        assert mock_configuration._last_loaded_data["nets"]["signal_nets"] == ["DDR_DQ0"]
 
-    def test_run_with_dict_loads_and_runs(self):
-        stub = _StubConfiguration()
-        result = stub.run({"general": {"suppress_pads": True}})
+    def test_run_with_dict_loads_and_runs(self, mock_configuration):
+        result = mock_configuration.run({"general": {"suppress_pads": True}})
 
         assert result is True
-        assert stub._run_called is True
-        assert stub._last_loaded_data["general"]["suppress_pads"] is True
+        assert mock_configuration._run_called is True
+        assert mock_configuration._last_loaded_data["general"]["suppress_pads"] is True
 
-    def test_run_without_config_uses_existing_cfg_data(self):
-        stub = _StubConfiguration()
-        # Pre-load some data
-        stub.load({"nets": {"signal_nets": ["PRE"]}})
-        # run with no argument should NOT clear the existing cfg_data
-        stub.run()
-        assert stub._run_called is True
-        # cfg_data still holds the previously loaded payload
-        assert stub.cfg_data.data["nets"]["signal_nets"] == ["PRE"]
+    def test_run_without_config_uses_existing_cfg_data(self, mock_configuration):
+        mock_configuration.load({"nets": {"signal_nets": ["PRE"]}})
+        mock_configuration.run()
 
-    def test_run_config_none_does_not_call_load(self):
-        stub = _StubConfiguration()
-        stub.run(config=None)
-        # _last_loaded_data was never set (load not called)
-        assert stub._last_loaded_data is None
-        assert stub._run_called is True
+        assert mock_configuration._run_called is True
+        assert mock_configuration.cfg_data.data["nets"]["signal_nets"] == ["PRE"]
 
-    # ------------------------------------------------------------------
-    # create_config_builder()
-    # ------------------------------------------------------------------
+    def test_run_config_none_does_not_load(self, mock_configuration):
+        mock_configuration.run(config=None)
 
-    def test_create_config_builder_returns_builder(self):
-        stub = _StubConfiguration()
-        builder = stub.create_config_builder()
+        assert mock_configuration._last_loaded_data is None
+        assert mock_configuration._run_called is True
+
+    def test_create_config_builder_returns_builder(self, mock_configuration):
+        builder = mock_configuration.create_config_builder()
         assert isinstance(builder, EdbConfigBuilder)
 
-    def test_create_config_builder_returns_fresh_instance(self):
-        stub = _StubConfiguration()
-        b1 = stub.create_config_builder()
-        b2 = stub.create_config_builder()
+    def test_create_config_builder_returns_fresh_instance(self, mock_configuration):
+        b1 = mock_configuration.create_config_builder()
+        b2 = mock_configuration.create_config_builder()
         assert b1 is not b2
 
-    def test_create_config_builder_empty_on_creation(self):
-        stub = _StubConfiguration()
-        builder = stub.create_config_builder()
+    def test_create_config_builder_empty_on_creation(self, mock_configuration):
+        builder = mock_configuration.create_config_builder()
         assert builder.to_dict() == {}
 
-    def test_create_run_roundtrip(self):
-        """create_config_builder → populate → run(cfg) full round-trip."""
-        stub = _StubConfiguration()
-
-        cfg = stub.create_config_builder()
+    def test_create_run_roundtrip(self, mock_configuration):
+        cfg = mock_configuration.create_config_builder()
         cfg.general.anti_pads_always_on = True
         cfg.nets.add_signal_nets(["SIG1", "SIG2"])
         cfg.nets.add_power_ground_nets(["VDD", "GND"])
 
-        stub.run(cfg)
+        mock_configuration.run(cfg)
 
-        assert stub._run_called is True
-        d = stub._last_loaded_data
+        assert mock_configuration._run_called is True
+        d = mock_configuration._last_loaded_data
         assert d["general"]["anti_pads_always_on"] is True
         assert set(d["nets"]["signal_nets"]) == {"SIG1", "SIG2"}
         assert set(d["nets"]["power_ground_nets"]) == {"VDD", "GND"}
 
-    def test_create_builder_and_populate_all_major_sections(self):
-        stub = _StubConfiguration()
-        cfg = stub.create_config_builder()
+    def test_create_builder_and_populate_all_major_sections(self, mock_configuration):
+        cfg = mock_configuration.create_config_builder()
 
         cfg.general.spice_model_library = "/models"
         cfg.stackup.add_material("copper", conductivity=5.8e7)
@@ -2242,3 +2198,5 @@ class TestConfigurationBridgeMethods:
         assert "pin_groups" in d
         assert "variables" in d
         assert "setups" in d
+
+
