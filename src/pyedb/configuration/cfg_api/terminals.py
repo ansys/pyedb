@@ -31,9 +31,7 @@ from typing import List, Optional, Union
 
 
 class PadstackInstanceTerminal:
-    """Represent a terminal attached to a padstack instance.
-
-    """
+    """Represent a terminal attached to a padstack instance."""
 
     def __init__(
         self,
