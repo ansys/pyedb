@@ -151,3 +151,7 @@ API
 interdigital
 ore
 .NET
+boolean
+Huray
+Groisse
+Serializer

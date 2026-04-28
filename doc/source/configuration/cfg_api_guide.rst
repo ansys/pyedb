@@ -3,9 +3,9 @@ Configuration API guide and complete example
 
 The :mod:`pyedb.configuration.cfg_api` package provides a Python-first way to
 build the same configuration payload described in :doc:`file_architecture`.
-Instead of manually authoring JSON you populate an
-:class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`, then pass it directly
-to :meth:`~pyedb.configuration.configuration.Configuration.run` — no
+Instead of manually authoring JSON, you populate an
+``EdbConfigBuilder`` and then pass it directly
+to ``Configuration.run`` with no
 serialization step required.
 
 .. tip::
@@ -90,7 +90,7 @@ Core objects
      - Role
    * - ``edb.configuration.create_config_builder()``
      - Factory method
-     - Returns a fresh :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`
+     - Returns a fresh ``EdbConfigBuilder``
        tied to the current session namespace.
    * - :class:`pyedb.configuration.cfg_api.EdbConfigBuilder`
      - Root builder
@@ -192,7 +192,7 @@ Section mapping
 
    * - Builder attribute
      - Builder class
-     - Serializer
+     - Method
      - Output section key
    * - ``cfg.general``
      - ``GeneralConfig``
@@ -271,7 +271,7 @@ TerminalInfo helpers
 --------------------
 
 For ``ports``, ``sources``, and ``probes``, use
-:class:`~pyedb.configuration.cfg_api.TerminalInfo` factory methods instead of
+``TerminalInfo`` factory methods instead of
 writing raw terminal dictionaries by hand.
 
 .. list-table::
@@ -380,7 +380,7 @@ applies the configuration with a single ``run()`` call.
    cfg.pin_groups.add("pg_GND", "U1", pins=["A1", "A2", "B1"])
 
    # ----------------------------------------------------------------
-   # Explicit low-level terminals (optional — most users use ports/sources)
+   # Explicit low-level terminals (optional; most users use ports/sources)
    # ----------------------------------------------------------------
    cfg.terminals.add_pin_group_terminal("t_vdd", "pg_VDD", 50, "port")
    cfg.terminals.add_pin_group_terminal(
@@ -551,7 +551,7 @@ Round-trip helpers
 ------------------
 
 The root builder supports round-tripping from existing dictionaries, JSON, or
-TOML files — useful for loading a template, tweaking specific values, and
+TOML files. This is useful for loading a template, tweaking specific values, and
 re-exporting.
 
 .. code-block:: python
@@ -572,19 +572,19 @@ Practical recommendations
 -------------------------
 
 * **Use** ``edb.configuration.create_config_builder()`` when working inside an
-  active EDB session — it avoids the extra import and keeps calling conventions
+  active EDB session. It avoids the extra import and keeps calling conventions
   consistent.
 * **Call** ``edb.configuration.run(cfg)`` to load and apply in a single
-  statement.  Pass ``None`` (the default) to re-apply previously loaded data.
-* **Prefer** :class:`~pyedb.configuration.cfg_api.TerminalInfo` factory methods
+  statement. Pass ``None`` (the default) to re-apply previously loaded data.
+* **Prefer** ``TerminalInfo`` factory methods
   over hand-written terminal dictionaries.
 * **Build only the sections you need**: empty sections are omitted by
-  :meth:`~pyedb.configuration.cfg_api.EdbConfigBuilder.to_dict` so the
+  ``EdbConfigBuilder.to_dict()`` so the
   serialized payload stays minimal.
 * **Persist to JSON / TOML** when you want a reviewed, version-controlled
   artifact that can be applied without a Python script.
 * **Store reusable snippets** as plain Python functions that accept and return
-  an :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` — composing
+  an ``EdbConfigBuilder``. Composing
   builders is straightforward.
 
 Related reference
@@ -592,4 +592,3 @@ Related reference
 
 For the file-oriented view of the same data model, including field-by-field
 section descriptions, see :doc:`file_architecture`.
-
