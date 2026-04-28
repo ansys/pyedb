@@ -32,7 +32,6 @@ from typing import List, Optional, Union
 
 
 class PadstackInstanceTerminal:
-
     """Represent a terminal attached to a padstack instance."""
 
     def __init__(
@@ -128,7 +127,6 @@ class PadstackInstanceTerminal:
 
 
 class PinGroupTerminal:
-
     """Represent a terminal attached to a pin group."""
 
     def __init__(
@@ -203,7 +201,6 @@ class PinGroupTerminal:
 
 
 class PointTerminal:
-
     """Represent a point terminal defined by coordinates."""
 
     def __init__(
@@ -293,7 +290,6 @@ class PointTerminal:
 
 
 class EdgeTerminal:
-
     """Represent an edge terminal for wave or gap boundaries."""
 
     def __init__(
@@ -401,7 +397,6 @@ class EdgeTerminal:
 
 
 class BundleTerminal:
-
     """Represent a terminal bundle such as a differential pair."""
 
     def __init__(self, name: str, terminals: List[str]):
@@ -434,7 +429,6 @@ class BundleTerminal:
 
 
 class TerminalInfo:
-
     """Create terminal-specifier dictionaries for higher-level builders."""
 
     @staticmethod
@@ -475,7 +469,6 @@ class TerminalInfo:
 
 
 class TerminalsConfig:
-
     """Fluent builder for the ``terminals`` configuration list."""
 
     def __init__(self):

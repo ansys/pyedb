@@ -32,7 +32,6 @@ from typing import List, Optional, Union
 
 
 class PortConfig:
-
     """
     Circuit / coax port definition.
 
@@ -113,7 +112,6 @@ class PortConfig:
 
 
 class EdgePortConfig:
-
     """
     Edge (wave/gap) port definition.
 
@@ -193,7 +191,6 @@ class EdgePortConfig:
 
 
 class DiffWavePortConfig:
-
     """
     Differential wave port.
 
@@ -267,7 +264,6 @@ class DiffWavePortConfig:
 
 
 class PortsConfig:
-
     """Collect port definitions for serialization."""
 
     def __init__(self):

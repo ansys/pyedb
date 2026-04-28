@@ -35,7 +35,6 @@ from pyedb.configuration.cfg_boundaries import CfgBoundaries
 
 
 class BoundariesConfig(CfgBoundaries):
-
     """
     Fluent builder for the ``boundaries`` configuration section.
 

@@ -34,7 +34,6 @@ from typing import List
 
 
 class NetsConfig:
-
     """
     Fluent builder for the ``nets`` configuration section.
 

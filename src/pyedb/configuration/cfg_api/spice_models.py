@@ -32,7 +32,6 @@ from typing import List, Optional
 
 
 class SpiceModelConfig:
-
     """Represent one SPICE model assignment."""
 
     def __init__(
@@ -98,7 +97,6 @@ class SpiceModelConfig:
 
 
 class SpiceModelsConfig:
-
     """Fluent builder for the ``spice_models`` configuration list."""
 
     def __init__(self):

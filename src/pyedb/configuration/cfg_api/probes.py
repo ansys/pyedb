@@ -32,7 +32,6 @@ from typing import List, Optional
 
 
 class ProbeConfig:
-
     """Represent a single voltage probe entry."""
 
     def __init__(
@@ -86,7 +85,6 @@ class ProbeConfig:
 
 
 class ProbesConfig:
-
     """Collect voltage probe definitions for serialization."""
 
     def __init__(self):

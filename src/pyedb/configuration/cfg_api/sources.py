@@ -27,7 +27,6 @@ from typing import List, Optional, Union
 
 
 class SourceConfig:
-
     """
     Current or voltage source definition.
 
@@ -116,7 +115,6 @@ class SourceConfig:
 
 
 class SourcesConfig:
-
     """Collect source definitions for serialization."""
 
     def __init__(self):

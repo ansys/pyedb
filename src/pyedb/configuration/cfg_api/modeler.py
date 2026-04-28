@@ -36,7 +36,6 @@ if TYPE_CHECKING:
 
 
 class ModelerConfig:
-
     """Collect geometry and modeler operations for serialization."""
 
     def __init__(self):

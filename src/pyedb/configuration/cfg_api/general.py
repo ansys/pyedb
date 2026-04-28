@@ -33,7 +33,6 @@ from typing import Optional
 
 
 class GeneralConfig:
-
     """
     Fluent builder for the ``general`` configuration section.
 

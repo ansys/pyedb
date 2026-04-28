@@ -27,7 +27,6 @@ from typing import List, Optional, Union
 
 
 class HeatSinkConfig:
-
     """Store heat-sink properties for a package definition."""
 
     def __init__(
@@ -75,7 +74,6 @@ class HeatSinkConfig:
 
 
 class PackageDefinitionConfig:
-
     """Represent one thermal package definition entry."""
 
     def __init__(
@@ -193,7 +191,6 @@ class PackageDefinitionConfig:
 
 
 class PackageDefinitionsConfig:
-
     """Fluent builder for the ``package_definitions`` configuration list."""
 
     def __init__(self):

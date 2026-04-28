@@ -65,7 +65,6 @@ from pyedb.configuration.cfg_api.variables import VariablesConfig
 
 
 class EdbConfigBuilder:
-
     """
     Top-level programmatic builder for a pyedb configuration.
 
