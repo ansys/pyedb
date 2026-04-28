@@ -45,7 +45,7 @@ from pyedb.configuration.cfg_api.pin_groups import PinGroupsConfig
 from pyedb.configuration.cfg_api.ports import PortsConfig
 from pyedb.configuration.cfg_api.probes import ProbesConfig
 from pyedb.configuration.cfg_api.s_parameters import SParameterModelsConfig
-from pyedb.configuration.cfg_api.setups import SetupsConfig
+from pyedb.configuration.cfg_api.setups import FrequencySweepConfig, HfssSetupConfig, SIwaveACSetupConfig, SIwaveDCSetupConfig, SetupsConfig
 from pyedb.configuration.cfg_api.sources import SourcesConfig
 from pyedb.configuration.cfg_api.spice_models import SpiceModelsConfig
 from pyedb.configuration.cfg_api.stackup import StackupConfig
@@ -385,27 +385,35 @@ class EdbConfigBuilder:
                 adapt = stp.get("adapt_type", "single")
                 h.adapt_type = adapt
                 if stp.get("single_frequency_adaptive_solution"):
-                    h._single_freq = stp["single_frequency_adaptive_solution"]
+                    sf = stp["single_frequency_adaptive_solution"]
+                    h.single_frequency_adaptive_solution = HfssSetupConfig.CfgSingleFrequencyAdaptiveSolution(**sf)
                 if stp.get("broadband_adaptive_solution"):
-                    h._broadband = stp["broadband_adaptive_solution"]
+                    bb = stp["broadband_adaptive_solution"]
+                    h.broadband_adaptive_solution = HfssSetupConfig.CfgBroadbandAdaptiveSolution(**bb)
                 if stp.get("multi_frequency_adaptive_solution"):
-                    h._multi_freqs = stp["multi_frequency_adaptive_solution"].get("adapt_frequencies", [])
+                    mf = stp["multi_frequency_adaptive_solution"].get("adapt_frequencies", [])
+                    h.multi_frequency_adaptive_solution.adapt_frequencies = [
+                        HfssSetupConfig.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(**f) if isinstance(f, dict) else f
+                        for f in mf
+                    ]
                 if stp.get("auto_mesh_operation"):
-                    h._auto_mesh = stp["auto_mesh_operation"]
+                    h.auto_mesh_operation = HfssSetupConfig.CfgAutoMeshOperation(**stp["auto_mesh_operation"])
                 for mo in stp.get("mesh_operations", []):
-                    h._mesh_ops.append(mo)
+                    h.mesh_operations.append(HfssSetupConfig.CfgLengthMeshOperation(**mo) if isinstance(mo, dict) else mo)
                 for sw in stp.get("freq_sweep", []):
                     sweep = h.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
                     sweep.enforce_causality = sw.get("enforce_causality", False)
                     sweep.enforce_passivity = sw.get("enforce_passivity", True)
                     sweep.use_q3d_for_dc = sw.get("use_q3d_for_dc", False)
                     sweep.compute_dc_point = sw.get("compute_dc_point", False)
-                    sweep.frequencies = sw.get("frequencies", [])
+                    from pyedb.configuration.cfg_setup import CfgFrequencies
+                    sweep.frequencies = [CfgFrequencies(**f) if isinstance(f, dict) else f for f in sw.get("frequencies", [])]
             elif stp_type in ("siwave_ac", "siwave_syz"):
                 s = builder.setups.add_siwave_ac_setup(stp["name"], si_slider_position=stp.get("si_slider_position", 1), pi_slider_position=stp.get("pi_slider_position", 1))
                 for sw in stp.get("freq_sweep", []):
                     sweep = s.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
-                    sweep.frequencies = sw.get("frequencies", [])
+                    from pyedb.configuration.cfg_setup import CfgFrequencies
+                    sweep.frequencies = [CfgFrequencies(**f) if isinstance(f, dict) else f for f in sw.get("frequencies", [])]
             elif stp_type == "siwave_dc":
                 builder.setups.add_siwave_dc_setup(stp["name"], dc_slider_position=stp.get("dc_slider_position", 1), export_dc_thermal_data=stp.get("dc_ir_settings", {}).get("export_dc_thermal_data", False))
 

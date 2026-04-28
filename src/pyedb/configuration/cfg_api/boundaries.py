@@ -23,41 +23,21 @@
 
 from __future__ import annotations
 
-from typing import Optional, Union
+from typing import Optional
+
+from pyedb.configuration.cfg_boundaries import CfgBoundaries
 
 
-class BoundariesConfig:
+class BoundariesConfig(CfgBoundaries):
     """Fluent builder for the ``boundaries`` configuration section.
 
-    All attributes default to ``None`` so that ``to_dict()`` only emits
-    keys that have been explicitly set.
+    Inherits all fields from :class:`~pyedb.configuration.cfg_boundaries.CfgBoundaries`.
+    All fields default to ``None`` so ``to_dict()`` only emits explicitly-set keys.
     """
 
-    class _PaddingData:
-        def __init__(self, size, is_multiple=False):
-            self.size = size
-            self.is_multiple = is_multiple
+    model_config = {"populate_by_name": True, "extra": "allow"}
 
-        def to_dict(self):
-            return {"size": self.size, "is_multiple": self.is_multiple}
-
-    def __init__(self):
-        self.use_open_region: Optional[bool] = None
-        self.open_region_type: Optional[str] = None
-        self.operating_freq = None
-        self.radiation_level: Optional[float] = None
-        self.is_pml_visible: Optional[bool] = None
-        self.air_box_horizontal_extent = None
-        self.air_box_positive_vertical_extent = None
-        self.air_box_negative_vertical_extent = None
-        self.sync_air_box_vertical_extent: Optional[bool] = None
-        self.truncate_air_box_at_ground: Optional[bool] = None
-        self.extent_type: Optional[str] = None
-        self.base_polygon: Optional[str] = None
-        self.dielectric_extent_type: Optional[str] = None
-        self.dielectric_extent_size = None
-        self.dielectric_base_polygon: Optional[str] = None
-        self.honor_user_dielectric: Optional[bool] = None
+    # ── convenience setters ───────────────────────────────────────────────
 
     def set_radiation_boundary(self, use_open_region: bool = True):
         self.use_open_region = use_open_region
@@ -81,9 +61,10 @@ class BoundariesConfig:
         sync: bool = False,
         truncate_at_ground: bool = False,
     ):
-        self.air_box_horizontal_extent = self._PaddingData(horizontal_size, horizontal_is_multiple)
-        self.air_box_positive_vertical_extent = self._PaddingData(positive_vertical_size, positive_vertical_is_multiple)
-        self.air_box_negative_vertical_extent = self._PaddingData(negative_vertical_size, negative_vertical_is_multiple)
+        PD = CfgBoundaries.PaddingData
+        self.air_box_horizontal_extent = PD(size=horizontal_size, is_multiple=horizontal_is_multiple)
+        self.air_box_positive_vertical_extent = PD(size=positive_vertical_size, is_multiple=positive_vertical_is_multiple)
+        self.air_box_negative_vertical_extent = PD(size=negative_vertical_size, is_multiple=negative_vertical_is_multiple)
         self.sync_air_box_vertical_extent = sync
         self.truncate_air_box_at_ground = truncate_at_ground
 
@@ -95,25 +76,16 @@ class BoundariesConfig:
 
     def set_dielectric_extent(self, extent_type: str = "BoundingBox", expansion_size=0, is_multiple: bool = False, base_polygon: Optional[str] = None, honor_user_dielectric: bool = False):
         self.dielectric_extent_type = extent_type
-        self.dielectric_extent_size = self._PaddingData(expansion_size, is_multiple)
+        self.dielectric_extent_size = CfgBoundaries.PaddingData(size=expansion_size, is_multiple=is_multiple)
         if base_polygon:
             self.dielectric_base_polygon = base_polygon
-        self.honor_user_dielectric = honor_user_dielectric if honor_user_dielectric else None
+        if honor_user_dielectric:
+            self.honor_user_dielectric = honor_user_dielectric
 
     def to_dict(self) -> dict:
-        data = {}
-        for key in (
-            "use_open_region", "open_region_type", "operating_freq", "radiation_level",
-            "is_pml_visible", "sync_air_box_vertical_extent", "truncate_air_box_at_ground",
-            "extent_type", "base_polygon", "dielectric_extent_type", "dielectric_base_polygon",
-            "honor_user_dielectric",
-        ):
-            val = getattr(self, key)
-            if val is not None:
-                data[key] = val
-        for key in ("air_box_horizontal_extent", "air_box_positive_vertical_extent",
-                    "air_box_negative_vertical_extent", "dielectric_extent_size"):
-            val = getattr(self, key)
-            if val is not None:
-                data[key] = val.to_dict()
-        return data
+        """Serialise only explicitly-set (non-None / non-default-False) fields."""
+        raw = self.model_dump(exclude_none=True)
+        # honor_user_dielectric defaults to False in the root model — omit unless True
+        if not self.honor_user_dielectric:
+            raw.pop("honor_user_dielectric", None)
+        return raw

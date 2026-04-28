@@ -23,163 +23,145 @@
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
+from typing import List, Union
+
+from pyedb.configuration.cfg_setup import (
+    CfgFrequencies,
+    CfgHFSSSetup,
+    CfgSIwaveACSetup,
+    CfgSIwaveDCSetup,
+)
 
 
-class FrequencySweepConfig:
-    """Builder for a single frequency sweep."""
+class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
+    """Fluent builder for a frequency sweep.
 
-    def __init__(
-        self,
-        name: str,
-        sweep_type: str = "interpolation",
-        enforce_causality: bool = False,
-        enforce_passivity: bool = True,
-        adv_dc_extrapolation: bool = False,
-        use_q3d_for_dc: bool = False,
-        compute_dc_point: bool = False,
-    ):
-        self.name = name
-        self.type = sweep_type
-        self.enforce_causality = enforce_causality
-        self.enforce_passivity = enforce_passivity
-        self.adv_dc_extrapolation = adv_dc_extrapolation
-        self.use_q3d_for_dc = use_q3d_for_dc
-        self.compute_dc_point = compute_dc_point
-        self.frequencies: List[dict] = []
+    Inherits all fields from
+    :class:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup.CfgFrequencySweep`.
+    """
+
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+    def __init__(self, name: str, sweep_type: str = "interpolation", **kwargs):
+        super().__init__(name=name, type=sweep_type, **kwargs)
 
     def add_linear_count_frequencies(self, start, stop, count):
-        self.frequencies.append({"distribution": "linear_count", "start": start, "stop": stop, "increment": count})
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count"))
 
     def add_log_count_frequencies(self, start, stop, count):
-        self.frequencies.append({"distribution": "log_count", "start": start, "stop": stop, "increment": count})
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="log_count"))
 
     def add_linear_scale_frequencies(self, start, stop, step):
-        self.frequencies.append({"distribution": "linear_scale", "start": start, "stop": stop, "increment": step})
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="linear_scale"))
 
     def add_log_scale_frequencies(self, start, stop, step):
-        self.frequencies.append({"distribution": "log_scale", "start": start, "stop": stop, "increment": step})
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="log_scale"))
 
     def add_single_frequency(self, freq):
-        self.frequencies.append({"distribution": "single", "start": freq, "stop": freq, "increment": 1})
+        self.frequencies.append(CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single"))
 
     def to_dict(self) -> dict:
-        d = {
-            "name": self.name,
-            "type": self.type,
-            "enforce_causality": self.enforce_causality,
-            "enforce_passivity": self.enforce_passivity,
-            "adv_dc_extrapolation": self.adv_dc_extrapolation,
-            "use_q3d_for_dc": self.use_q3d_for_dc,
-            "compute_dc_point": self.compute_dc_point,
-            "frequencies": self.frequencies,
-        }
-        return d
+        return self.model_dump(exclude_none=True)
 
 
-class HfssSetupConfig:
-    """Builder for an HFSS simulation setup."""
+class HfssSetupConfig(CfgHFSSSetup):
+    """Fluent builder for an HFSS setup.
+
+    Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgHFSSSetup`.
+    """
+
+    model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, name: str, **kwargs):
-        self.name = name
-        self.type = "hfss"
-        self.adapt_type = "single"
-        self._single_freq = {"adaptive_frequency": "5GHz", "max_passes": 20, "max_delta": "0.02"}
-        self._broadband = {"low_frequency": "1GHz", "high_frequency": "10GHz", "max_passes": 20, "max_delta": "0.02"}
-        self._multi_freqs: List[dict] = []
-        self._auto_mesh = {"enabled": False, "trace_ratio_seeding": 3, "signal_via_side_number": 12}
-        self._mesh_ops: List[dict] = []
-        self._sweeps: List[FrequencySweepConfig] = []
-        # apply any extra kwargs as attributes
-        for k, v in kwargs.items():
-            setattr(self, k, v)
+        super().__init__(name=name, **kwargs)
+        # reset multi_freq adapt_frequencies to empty — defaults in the root model are 2 preset entries
+        self.multi_frequency_adaptive_solution.adapt_frequencies = []
 
     def set_single_frequency_adaptive(self, freq, max_passes: int = 20, max_delta=0.02):
         self.adapt_type = "single"
-        self._single_freq = {"adaptive_frequency": freq, "max_passes": max_passes, "max_delta": max_delta}
+        self.single_frequency_adaptive_solution = CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution(
+            adaptive_frequency=freq, max_passes=max_passes, max_delta=max_delta
+        )
 
     def set_broadband_adaptive(self, low_freq, high_freq, max_passes: int = 20, max_delta=0.02):
         self.adapt_type = "broadband"
-        self._broadband = {"low_frequency": low_freq, "high_frequency": high_freq, "max_passes": max_passes, "max_delta": max_delta}
+        self.broadband_adaptive_solution = CfgHFSSSetup.CfgBroadbandAdaptiveSolution(
+            low_frequency=low_freq, high_frequency=high_freq, max_passes=max_passes, max_delta=max_delta
+        )
 
     def add_multi_frequency_adaptive(self, freq, max_passes: int = 20, max_delta=0.02):
         self.adapt_type = "multi_frequencies"
-        self._multi_freqs.append({"adaptive_frequency": freq, "max_passes": max_passes, "max_delta": max_delta})
+        self.multi_frequency_adaptive_solution.adapt_frequencies.append(
+            CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
+                adaptive_frequency=freq, max_passes=max_passes, max_delta=max_delta
+            )
+        )
 
     def set_auto_mesh_operation(self, enabled: bool = True, trace_ratio_seeding: float = 3, signal_via_side_number: int = 12):
-        self._auto_mesh = {"enabled": enabled, "trace_ratio_seeding": trace_ratio_seeding, "signal_via_side_number": signal_via_side_number}
+        self.auto_mesh_operation = CfgHFSSSetup.CfgAutoMeshOperation(
+            enabled=enabled, trace_ratio_seeding=trace_ratio_seeding, signal_via_side_number=signal_via_side_number
+        )
 
     def add_length_mesh_operation(self, name: str, nets_layers_list: dict, max_length=None, max_elements=None, restrict_length: bool = True, refine_inside: bool = False):
-        mo = {"name": name, "mesh_operation_type": "length", "nets_layers_list": nets_layers_list, "restrict_length": restrict_length, "refine_inside": refine_inside}
+        mo = CfgHFSSSetup.CfgLengthMeshOperation(
+            name=name,
+            nets_layers_list=nets_layers_list,
+            restrict_length=restrict_length,
+            refine_inside=refine_inside,
+        )
         if max_length is not None:
-            mo["max_length"] = max_length
+            mo.max_length = max_length
         if max_elements is not None:
-            mo["max_elements"] = max_elements
-        self._mesh_ops.append(mo)
+            mo.max_elements = max_elements
+        self.mesh_operations.append(mo)
 
     def add_frequency_sweep(self, name: str, sweep_type: str = "interpolation", **kwargs) -> FrequencySweepConfig:
-        sw = FrequencySweepConfig(name, sweep_type=sweep_type, **kwargs)
-        self._sweeps.append(sw)
+        sw = FrequencySweepConfig(name=name, sweep_type=sweep_type, **kwargs)
+        self.freq_sweep.append(sw)
         return sw
 
     def to_dict(self) -> dict:
-        d: dict = {"name": self.name, "type": self.type, "adapt_type": self.adapt_type}
-        d["single_frequency_adaptive_solution"] = self._single_freq
-        d["broadband_adaptive_solution"] = self._broadband
-        d["multi_frequency_adaptive_solution"] = {"adapt_frequencies": self._multi_freqs}
-        d["auto_mesh_operation"] = self._auto_mesh
-        if self._mesh_ops:
-            d["mesh_operations"] = self._mesh_ops
-        if self._sweeps:
-            d["freq_sweep"] = [sw.to_dict() for sw in self._sweeps]
+        d = self.model_dump(exclude_none=True)
+        # omit mesh_operations key when empty
+        if not self.mesh_operations:
+            d.pop("mesh_operations", None)
         return d
 
 
-class SIwaveACSetupConfig:
-    """Builder for a SIwave AC simulation setup."""
+class SIwaveACSetupConfig(CfgSIwaveACSetup):
+    """Fluent builder for a SIwave AC setup.
 
-    def __init__(self, name: str, si_slider_position: int = 1, pi_slider_position: int = 1, use_si_settings: bool = True, **kwargs):
-        self.name = name
-        self.type = "siwave_ac"
-        self.si_slider_position = si_slider_position
-        self.pi_slider_position = pi_slider_position
-        self.use_si_settings = use_si_settings
-        self._sweeps: List[FrequencySweepConfig] = []
+    Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup`.
+    """
+
+    model_config = {"populate_by_name": True, "extra": "allow"}
+
+    def __init__(self, name: str, **kwargs):
+        super().__init__(name=name, **kwargs)
 
     def add_frequency_sweep(self, name: str, sweep_type: str = "interpolation", **kwargs) -> FrequencySweepConfig:
-        sw = FrequencySweepConfig(name, sweep_type=sweep_type, **kwargs)
-        self._sweeps.append(sw)
+        sw = FrequencySweepConfig(name=name, sweep_type=sweep_type, **kwargs)
+        self.freq_sweep.append(sw)
         return sw
 
     def to_dict(self) -> dict:
-        d: dict = {
-            "name": self.name,
-            "type": self.type,
-            "si_slider_position": self.si_slider_position,
-            "pi_slider_position": self.pi_slider_position,
-            "use_si_settings": self.use_si_settings,
-        }
-        if self._sweeps:
-            d["freq_sweep"] = [sw.to_dict() for sw in self._sweeps]
-        return d
+        return self.model_dump(exclude_none=True)
 
 
-class SIwaveDCSetupConfig:
-    """Builder for a SIwave DC simulation setup."""
+class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
+    """Fluent builder for a SIwave DC setup.
+
+    Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgSIwaveDCSetup`.
+    """
+
+    model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, name: str, dc_slider_position: Union[int, str] = 1, export_dc_thermal_data: bool = False, **kwargs):
-        self.name = name
-        self.type = "siwave_dc"
-        self.dc_slider_position = dc_slider_position
-        self.export_dc_thermal_data = export_dc_thermal_data
+        dc_ir = CfgSIwaveDCSetup.CfgDCIRSettings(export_dc_thermal_data=export_dc_thermal_data)
+        super().__init__(name=name, dc_slider_position=dc_slider_position, dc_ir_settings=dc_ir, **kwargs)
 
     def to_dict(self) -> dict:
-        return {
-            "name": self.name,
-            "type": self.type,
-            "dc_slider_position": self.dc_slider_position,
-            "dc_ir_settings": {"export_dc_thermal_data": self.export_dc_thermal_data},
-        }
+        return self.model_dump(exclude_none=True)
 
 
 class SetupsConfig:
@@ -189,17 +171,17 @@ class SetupsConfig:
         self._setups: List = []
 
     def add_hfss_setup(self, name: str, **kwargs) -> HfssSetupConfig:
-        setup = HfssSetupConfig(name, **kwargs)
+        setup = HfssSetupConfig(name=name, **kwargs)
         self._setups.append(setup)
         return setup
 
     def add_siwave_ac_setup(self, name: str, **kwargs) -> SIwaveACSetupConfig:
-        setup = SIwaveACSetupConfig(name, **kwargs)
+        setup = SIwaveACSetupConfig(name=name, **kwargs)
         self._setups.append(setup)
         return setup
 
     def add_siwave_dc_setup(self, name: str, **kwargs) -> SIwaveDCSetupConfig:
-        setup = SIwaveDCSetupConfig(name, **kwargs)
+        setup = SIwaveDCSetupConfig(name=name, **kwargs)
         self._setups.append(setup)
         return setup
 
