@@ -31,7 +31,9 @@ from typing import List, Optional
 
 
 class SpiceModelConfig:
-    """Represent one SPICE model assignment."""
+    """Represent one SPICE model assignment.
+
+    """
 
     def __init__(
         self,
@@ -43,6 +45,19 @@ class SpiceModelConfig:
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
     ):
+        """Initialize a SPICE model assignment.
+
+        Parameters
+        ----------
+        name : str
+        component_definition : str
+        file_path : str
+        sub_circuit_name : str, optional
+        apply_to_all : bool
+        components : list of str, optional
+        terminal_pairs : list, optional
+
+        """
         self.name = name
         self.component_definition = component_definition
         self.file_path = file_path
@@ -112,6 +127,7 @@ class SpiceModelsConfig:
         -------
         SpiceModelConfig
             Newly created model assignment.
+
         """
         m = SpiceModelConfig(
             name=name,
@@ -132,5 +148,6 @@ class SpiceModelsConfig:
         -------
         list[dict]
             Model definitions in insertion order.
+
         """
         return [m.to_dict() for m in self._models]

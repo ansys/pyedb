@@ -47,6 +47,7 @@ class GeneralConfig:
         Design-level anti-pads always-on flag.
     suppress_pads : bool or None
         Design-level suppress-pads flag.
+
     """
 
     def __init__(self):
@@ -63,6 +64,7 @@ class GeneralConfig:
         dict
             Dictionary containing only explicitly configured values for the
             ``general`` section.
+
         """
         data = {}
         if self.spice_model_library:

@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Union
 
 
 class SourceConfig:
@@ -88,7 +88,9 @@ class SourceConfig:
 
 
 class SourcesConfig:
-    """Collect source definitions for serialization."""
+    """Collect source definitions for serialization.
+
+    """
 
     def __init__(self):
         self._sources: List[SourceConfig] = []

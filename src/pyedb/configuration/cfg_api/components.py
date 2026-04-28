@@ -53,6 +53,16 @@ class PinPairModel(CfgBaseModel):
     model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, first_pin: str, second_pin: str, **kwargs):
+        """Initialize a pin-pair RLC model.
+
+        Parameters
+        ----------
+        first_pin : str
+        second_pin : str
+        **kwargs
+            Configuration fields.
+
+        """
         super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
 
     def to_dict(self) -> dict:
@@ -114,7 +124,9 @@ class _PortProperties(CfgBaseModel):
 
 
 class _CfgComponentData(BaseModel):
-    """Pure-data pydantic model for a component configuration entry."""
+    """Pure-data pydantic model for a component configuration entry.
+
+    """
 
     reference_designator: str
     part_type: Optional[str] = None
@@ -141,9 +153,19 @@ class ComponentConfig(_CfgComponentData):
 
     Inherits all fields from ``_CfgComponentData``.  Adds convenience setter
     methods on top — no field redefinition needed.
+
     """
 
     def __init__(self, reference_designator: str, **kwargs):
+        """Initialize a component configuration.
+
+        Parameters
+        ----------
+        reference_designator : str
+        **kwargs
+            Configuration fields.
+
+        """
         super().__init__(reference_designator=reference_designator, **kwargs)
 
     # ── model helpers ─────────────────────────────────────────────────────

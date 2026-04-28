@@ -24,6 +24,7 @@
 This module provides a simple fluent API for classifying nets into signal and
 power-ground groups before serializing them into the structure expected by
 :class:`pyedb.configuration.cfg_nets.CfgNets`.
+
 """
 
 from __future__ import annotations
@@ -41,9 +42,11 @@ class NetsConfig:
     --------
     >>> cfg.nets.add_signal_nets(["SIG1", "SIG2"])
     >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
+
     """
 
     def __init__(self):
+        """Initialize the nets configuration."""
         self._signal_nets: List[str] = []
         self._power_ground_nets: List[str] = []
 
@@ -64,6 +67,7 @@ class NetsConfig:
         ----------
         nets : list of str
             Net names to classify as power or ground nets.
+
         """
         self._power_ground_nets.extend(nets)
 

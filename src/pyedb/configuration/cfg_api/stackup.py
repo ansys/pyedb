@@ -27,8 +27,6 @@ for materials, layers, roughness, and etching definitions.
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
-
 from pyedb.configuration.cfg_stackup import (
     CfgGroisseRoughnessModel,
     CfgHurayRoughnessModel,
@@ -89,10 +87,19 @@ class LayerConfig:
 
         Parameters
         ----------
-        nodule_radius : str or float  e.g. ``"0.1um"``
+        nodule_radius : str or float
+            Nodule radius, e.g. ``"0.1um"``.
         surface_ratio : str or float
-        enabled : bool
-        top, bottom, side : bool  which surfaces to apply to
+            Surface ratio.
+        enabled : bool, default: True
+            Whether the roughness model is enabled.
+        top : bool, default: True
+            Apply the model to the top surface.
+        bottom : bool, default: True
+            Apply the model to the bottom surface.
+        side : bool, default: True
+            Apply the model to side walls.
+
         """
         huray = CfgHurayRoughnessModel(nodule_radius=nodule_radius, surface_ratio=surface_ratio)
         self._model.roughness = CfgRoughnessModel(

@@ -38,6 +38,7 @@ class ModelerConfig:
     """Collect geometry and modeler operations for serialization."""
 
     def __init__(self):
+        """Initialize the modeler configuration."""
         self._traces: List[dict] = []
         self._planes: List[dict] = []
         self._padstack_definitions: List[dict] = []

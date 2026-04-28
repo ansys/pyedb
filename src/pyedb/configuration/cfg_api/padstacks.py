@@ -27,10 +27,9 @@ classes for definitions, placed instances, and optional backdrill settings.
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
+from typing import List, Optional
 
 from pyedb.configuration.cfg_padstacks import (
-    CfgBackdrillParameters,
     CfgPadstackDefinition,
     CfgPadstackInstance,
 )
@@ -46,9 +45,19 @@ class PadstackDefinitionConfig:
     name : str
     **kwargs
         Any field accepted by ``CfgPadstackDefinition``.
+
     """
 
     def __init__(self, name: str, **kwargs):
+        """Initialize a padstack definition.
+
+        Parameters
+        ----------
+        name : str
+        **kwargs
+            Configuration fields.
+
+        """
         self._model = CfgPadstackDefinition(name=name, **kwargs)
 
     def to_dict(self) -> dict:
@@ -72,9 +81,18 @@ class PadstackInstanceConfig:
     **kwargs
         Any field accepted by ``CfgPadstackInstance``
         (name, net_name, layer_range, …).
+
     """
 
     def __init__(self, **kwargs):
+        """Initialize a padstack instance configuration.
+
+        Parameters
+        ----------
+        **kwargs
+            Configuration fields.
+
+        """
         self._model = CfgPadstackInstance(**kwargs)
 
     def set_backdrill(
@@ -92,6 +110,7 @@ class PadstackInstanceConfig:
         diameter : str
         stub_length : str, optional
         drill_from_bottom : bool
+
         """
         self._model.backdrill_parameters.add_backdrill_to_layer(
             drill_to_layer=drill_to_layer,
@@ -148,6 +167,7 @@ class PadstacksConfig:
         dict
             Dictionary containing ``definitions`` and/or ``instances`` when
             present.
+
         """
         data: dict = {}
         if self._definitions:

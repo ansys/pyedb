@@ -41,9 +41,11 @@ class VariablesConfig:
     Examples
     --------
     >>> cfg.variables.add("trace_width", "100um", "Trace width for SI analysis")
+
     """
 
     def __init__(self):
+        """Initialize the variables configuration."""
         self._model = CfgVariables()
 
     def add(self, name: str, value: Union[str, int, float], description: str = ""):
@@ -57,6 +59,7 @@ class VariablesConfig:
             Variable value or expression.
         description : str, optional
             Optional free-form description stored with the variable.
+
         """
         self._model.add_variable(name=name, value=value, description=description)
 
@@ -67,5 +70,6 @@ class VariablesConfig:
         -------
         list[dict]
             Variables in the order they were added.
+
         """
-        return [v.model_dump() for v in self._model.variables]
+        return [v.model_dump(exclude_none=True) for v in self._model.variables]

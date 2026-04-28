@@ -224,6 +224,7 @@ class Configuration:
 
         >>> edb.configuration.load("my_config.json")
         >>> edb.configuration.run()
+
         """
         if config is not None:
             self.load(config)

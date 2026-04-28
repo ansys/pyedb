@@ -31,7 +31,9 @@ from typing import List, Optional, Union
 
 
 class PadstackInstanceTerminal:
-    """Represent a terminal attached to a padstack instance."""
+    """Represent a terminal attached to a padstack instance.
+
+    """
 
     def __init__(
         self,
@@ -48,6 +50,24 @@ class PadstackInstanceTerminal:
         layer: Optional[str] = None,
         padstack_instance_id: Optional[int] = None,
     ):
+        """Initialize a padstack instance terminal.
+
+        Parameters
+        ----------
+        name : str
+        padstack_instance : str
+        impedance : float or str
+        boundary_type : str
+        hfss_type : str, optional
+        is_circuit_port : bool
+        reference_terminal : str, optional
+        amplitude : float or str
+        phase : float or str
+        terminal_to_ground : str
+        layer : str, optional
+        padstack_instance_id : int, optional
+
+        """
         self.terminal_type = "padstack_instance"
         self.name = name
         self.padstack_instance = padstack_instance

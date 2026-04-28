@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import Dict, List, Literal, Optional, Union
 
 try:
     import toml
@@ -53,7 +53,6 @@ from pyedb.configuration.cfg_api.ports import PortsConfig
 from pyedb.configuration.cfg_api.probes import ProbesConfig
 from pyedb.configuration.cfg_api.s_parameters import SParameterModelsConfig
 from pyedb.configuration.cfg_api.setups import (
-    FrequencySweepConfig,
     HfssSetupConfig,
     SetupsConfig,
     SIwaveACSetupConfig,
@@ -62,7 +61,7 @@ from pyedb.configuration.cfg_api.setups import (
 from pyedb.configuration.cfg_api.sources import SourcesConfig
 from pyedb.configuration.cfg_api.spice_models import SpiceModelsConfig
 from pyedb.configuration.cfg_api.stackup import StackupConfig
-from pyedb.configuration.cfg_api.terminals import TerminalInfo, TerminalsConfig
+from pyedb.configuration.cfg_api.terminals import TerminalsConfig
 from pyedb.configuration.cfg_api.variables import VariablesConfig
 
 

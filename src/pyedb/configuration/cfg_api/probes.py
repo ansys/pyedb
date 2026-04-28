@@ -27,11 +27,13 @@ The classes in this module create serializable probe definitions for the
 
 from __future__ import annotations
 
-from typing import Any, Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 
 
 class ProbeConfig:
-    """Represent a single voltage probe entry."""
+    """Represent a single voltage probe entry.
+
+    """
 
     def __init__(
         self,
@@ -40,6 +42,16 @@ class ProbeConfig:
         negative_terminal: dict,
         reference_designator: Optional[str] = None,
     ):
+        """Initialize a probe configuration.
+
+        Parameters
+        ----------
+        name : str
+        positive_terminal : dict
+        negative_terminal : dict
+        reference_designator : str, optional
+
+        """
         self.name = name
         self.type = "probe"
         self.positive_terminal = positive_terminal
@@ -54,6 +66,7 @@ class ProbeConfig:
         dict
             Dictionary ready for inclusion in the ``probes`` configuration
             list.
+
         """
         data = {
             "name": self.name,

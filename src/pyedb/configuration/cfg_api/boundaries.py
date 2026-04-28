@@ -51,6 +51,7 @@ class BoundariesConfig(CfgBoundaries):
         ----------
         use_open_region : bool, default: True
             Whether to enable the open-region boundary.
+
         """
         self.use_open_region = use_open_region
         self.open_region_type = "radiation"
@@ -104,6 +105,7 @@ class BoundariesConfig(CfgBoundaries):
             Whether to synchronize positive and negative vertical extents.
         truncate_at_ground : bool, default: False
             Whether to truncate the air box at the ground reference.
+
         """
         PD = CfgBoundaries.PaddingData
         self.air_box_horizontal_extent = PD(size=horizontal_size, is_multiple=horizontal_is_multiple)

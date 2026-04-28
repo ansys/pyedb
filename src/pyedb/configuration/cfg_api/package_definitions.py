@@ -37,6 +37,17 @@ class HeatSinkConfig:
         fin_spacing: Optional[Union[str, float]] = None,
         fin_thickness: Optional[Union[str, float]] = None,
     ):
+        """Initialize heat-sink configuration.
+
+        Parameters
+        ----------
+        fin_base_height : str or float, optional
+        fin_height : str or float, optional
+        fin_orientation : str, optional
+        fin_spacing : str or float, optional
+        fin_thickness : str or float, optional
+
+        """
         self.fin_base_height = fin_base_height
         self.fin_height = fin_height
         self.fin_orientation = fin_orientation
@@ -55,7 +66,9 @@ class HeatSinkConfig:
 
 
 class PackageDefinitionConfig:
-    """Represent one thermal package definition entry."""
+    """Represent one thermal package definition entry.
+
+    """
 
     def __init__(
         self,

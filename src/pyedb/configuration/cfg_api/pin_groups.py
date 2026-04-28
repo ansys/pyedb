@@ -51,6 +51,18 @@ class PinGroupConfig:
         pins: Optional[List[str]] = None,
         net: Optional[Union[str, List[str]]] = None,
     ):
+        """Initialize a pin group configuration.
+
+        Parameters
+        ----------
+        name : str
+        reference_designator : str
+        pins : list of str, optional
+            Explicit pin names.
+        net : str or list of str, optional
+            Net name(s) – all component pins on those nets are included.
+
+        """
         self.name = name
         self.reference_designator = reference_designator
         self.pins = pins
@@ -74,9 +86,12 @@ class PinGroupConfig:
 
 
 class PinGroupsConfig:
-    """Fluent builder for the ``pin_groups`` configuration list."""
+    """Fluent builder for the ``pin_groups`` configuration list.
+
+    """
 
     def __init__(self):
+        """Initialize the pin groups configuration."""
         self._pin_groups: List[PinGroupConfig] = []
 
     def add(
@@ -98,6 +113,7 @@ class PinGroupsConfig:
         Returns
         -------
         PinGroupConfig
+
         """
         pg = PinGroupConfig(name=name, reference_designator=reference_designator, pins=pins, net=net)
         self._pin_groups.append(pg)
@@ -110,5 +126,6 @@ class PinGroupsConfig:
         -------
         list[dict]
             Pin-group definitions in insertion order.
+
         """
         return [pg.to_dict() for pg in self._pin_groups]

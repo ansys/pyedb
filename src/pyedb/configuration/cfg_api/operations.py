@@ -71,6 +71,7 @@ class CutoutConfig(CfgCutout):
             Capacitance threshold used by auto-identification.
         **kwargs
             Additional fields accepted by :class:`CfgCutout`.
+
         """
         super().__init__(
             signal_list=signal_nets,
@@ -99,6 +100,7 @@ class OperationsConfig(CfgOperations):
     """Fluent builder for the ``operations`` configuration section.
 
     Inherits from :class:`~pyedb.configuration.cfg_operations.CfgOperations`.
+
     """
 
     model_config = {"populate_by_name": True, "extra": "allow"}
@@ -124,6 +126,7 @@ class OperationsConfig(CfgOperations):
         -------
         CutoutConfig
             Stored cutout configuration.
+
         """
         self.cutout = CutoutConfig(signal_nets=signal_nets, reference_nets=reference_nets, **kwargs)
         return self.cutout
@@ -135,6 +138,7 @@ class OperationsConfig(CfgOperations):
         -------
         dict
             Dictionary containing only enabled operations.
+
         """
         data: dict = {}
         if self.cutout is not None:

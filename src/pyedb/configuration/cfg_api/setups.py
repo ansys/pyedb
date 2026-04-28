@@ -204,6 +204,7 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
         -------
         FrequencySweepConfig
             Newly created sweep configuration.
+
         """
         sw = FrequencySweepConfig(name=name, sweep_type=sweep_type, **kwargs)
         self.freq_sweep.append(sw)

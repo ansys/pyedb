@@ -120,6 +120,7 @@ class SParametersConfig:
         -------
         SParameterModelConfig
             Newly created assignment.
+
         """
         m = SParameterModelConfig(
             name=name,
