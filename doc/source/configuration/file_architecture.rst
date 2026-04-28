@@ -35,8 +35,8 @@ Two ways to configure a design
 .. tip::
 
    ``edb.configuration.run()`` accepts a file path, a plain dictionary, **or**
-   an ``EdbConfigBuilder`` instance. You can
-   mix and match approaches in the same script.
+   an ``EdbConfigBuilder`` instance, so you can mix and match approaches in the
+   same script.
 
 How a configuration file is consumed
 --------------------------------------
