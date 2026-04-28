@@ -38,7 +38,6 @@ from pyedb.configuration.cfg_setup import (
 
 
 class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
-
     """Fluent builder for a frequency sweep.
 
     Inherits all fields from
@@ -95,7 +94,6 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
 
 
 class HfssSetupConfig(CfgHFSSSetup):
-
     """Fluent builder for an HFSS setup.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgHFSSSetup`.
@@ -208,7 +206,6 @@ class HfssSetupConfig(CfgHFSSSetup):
 
 
 class SIwaveACSetupConfig(CfgSIwaveACSetup):
-
     """Fluent builder for a SIwave AC setup.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup`.
@@ -260,7 +257,6 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
 
 
 class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
-
     """Fluent builder for a SIwave DC setup.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgSIwaveDCSetup`.
@@ -305,7 +301,6 @@ class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
 
 
 class SetupsConfig:
-
     """Fluent builder for the ``setups`` configuration list."""
 
     def __init__(self):

@@ -32,7 +32,6 @@ from typing import List, Optional, Union
 
 
 class PinGroupConfig:
-
     """Fluent builder for a single pin group.
 
     Parameters
@@ -91,7 +90,6 @@ class PinGroupConfig:
 
 
 class PinGroupsConfig:
-
     """Fluent builder for the ``pin_groups`` configuration list."""
 
     def __init__(self):

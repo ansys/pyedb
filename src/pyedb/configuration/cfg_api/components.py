@@ -38,7 +38,6 @@ from pyedb.configuration.cfg_common import CfgBaseModel
 
 
 class PinPairModel(CfgBaseModel):
-
     """Represent one pin-pair RLC model entry."""
 
     first_pin: str
@@ -128,7 +127,6 @@ class _PortProperties(CfgBaseModel):
 
 
 class _CfgComponentData(BaseModel):
-
     """Pure-data pydantic model for a component configuration entry."""
 
     reference_designator: str
@@ -152,7 +150,6 @@ class _CfgComponentData(BaseModel):
 
 
 class ComponentConfig(_CfgComponentData):
-
     """Fluent builder for a single component entry.
 
     Inherits all fields from ``_CfgComponentData``.  Adds convenience setter
@@ -384,7 +381,6 @@ class ComponentConfig(_CfgComponentData):
 
 
 class ComponentsConfig:
-
     """Fluent builder for the ``components`` configuration list."""
 
     def __init__(self):

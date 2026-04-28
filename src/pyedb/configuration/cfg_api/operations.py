@@ -27,12 +27,10 @@ cutouts and automatic HFSS region generation.
 
 from __future__ import annotations
 
-
 from pyedb.configuration.cfg_operations import CfgAutoIdentifyNets, CfgCutout, CfgOperations
 
 
 class CutoutConfig(CfgCutout):
-
     """Fluent builder for a cutout operation.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_operations.CfgCutout`.
@@ -98,7 +96,6 @@ class CutoutConfig(CfgCutout):
 
 
 class OperationsConfig(CfgOperations):
-
     """Fluent builder for the ``operations`` configuration section.
 
     Inherits from :class:`~pyedb.configuration.cfg_operations.CfgOperations`.

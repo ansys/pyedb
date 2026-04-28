@@ -32,7 +32,6 @@ from typing import Optional
 
 
 class GeneralConfig:
-
     """Fluent builder for the ``general`` configuration section.
 
     Wraps the attribute names expected by

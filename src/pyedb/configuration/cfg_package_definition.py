@@ -25,7 +25,6 @@ from pyedb.generic.settings import settings
 
 
 class CfgPackage(CfgBase):
-
     """Configuration package class."""
 
     # Attributes cannot be set to package definition class or don't exist in package definition class.
@@ -54,7 +53,6 @@ class CfgPackage(CfgBase):
 
 
 class CfgHeatSink(CfgBase):
-
     """Configuration heat sink class."""
 
     def __init__(self, **kwargs):

@@ -566,7 +566,6 @@ class CfgCircuitElement(CfgBase):
 
 
 class CfgPort(CfgCircuitElement):
-
     """Manage port."""
 
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
