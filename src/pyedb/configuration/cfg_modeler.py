@@ -70,6 +70,7 @@ class PrimitivesToDeleteDict(TypedDict, total=False):
 
 @dataclass
 class CfgModeler:
+
     """Manage configuration general settings."""
 
     traces: List[CfgTrace] = field(default_factory=list)

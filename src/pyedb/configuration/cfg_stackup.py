@@ -37,6 +37,7 @@ class CfgMaterialPropertyThermalModifier(BaseModel):
 
 
 class MaterialProperties(BaseModel):
+
     """Store material properties."""
 
     conductivity: Optional[Union[str, float]] = None

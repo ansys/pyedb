@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build the ``padstacks`` configuration section.
+"""Build the ``padstacks`` configuration section.
 
 This module wraps the padstack-related configuration models with small builder
 classes for definitions, placed instances, and optional backdrill settings.
@@ -38,8 +37,7 @@ from pyedb.configuration.cfg_padstacks import (
 
 class PadstackDefinitionConfig:
 
-    """
-    Fluent builder for a padstack definition.
+    """Fluent builder for a padstack definition.
 
     Wraps :class:`~pyedb.configuration.cfg_padstacks.CfgPadstackDefinition`.
 
@@ -52,8 +50,7 @@ class PadstackDefinitionConfig:
     """
 
     def __init__(self, name: str, **kwargs):
-        """
-        Initialize a padstack definition.
+        """Initialize a padstack definition.
 
         Parameters
         ----------
@@ -66,8 +63,7 @@ class PadstackDefinitionConfig:
         self._model = CfgPadstackDefinition(name=name, **kwargs)
 
     def to_dict(self) -> dict:
-        """
-        Serialize the padstack definition.
+        """Serialize the padstack definition.
 
         Returns
         -------
@@ -80,8 +76,7 @@ class PadstackDefinitionConfig:
 
 class PadstackInstanceConfig:
 
-    """
-    Fluent builder for a padstack instance.
+    """Fluent builder for a padstack instance.
 
     Wraps :class:`~pyedb.configuration.cfg_padstacks.CfgPadstackInstance`.
 
@@ -94,8 +89,7 @@ class PadstackInstanceConfig:
     """
 
     def __init__(self, **kwargs):
-        """
-        Initialize a padstack instance configuration.
+        """Initialize a padstack instance configuration.
 
         Parameters
         ----------
@@ -112,8 +106,7 @@ class PadstackInstanceConfig:
         stub_length: Optional[str] = None,
         drill_from_bottom: bool = True,
     ):
-        """
-        Configure backdrill parameters.
+        """Configure backdrill parameters.
 
         Parameters
         ----------
@@ -135,8 +128,7 @@ class PadstackInstanceConfig:
         )
 
     def to_dict(self) -> dict:
-        """
-        Serialize the padstack instance.
+        """Serialize the padstack instance.
 
         Returns
         -------
@@ -157,8 +149,7 @@ class PadstacksConfig:
         self._instances: List[PadstackInstanceConfig] = []
 
     def add_definition(self, name: str, **kwargs) -> PadstackDefinitionConfig:
-        """
-        Add a padstack definition.
+        """Add a padstack definition.
 
         Returns
         -------
@@ -170,8 +161,7 @@ class PadstacksConfig:
         return pdef
 
     def add_instance(self, **kwargs) -> PadstackInstanceConfig:
-        """
-        Add a padstack instance.
+        """Add a padstack instance.
 
         Returns
         -------
@@ -183,8 +173,7 @@ class PadstacksConfig:
         return inst
 
     def to_dict(self) -> dict:
-        """
-        Serialize all configured padstack definitions and instances.
+        """Serialize all configured padstack definitions and instances.
 
         Returns
         -------

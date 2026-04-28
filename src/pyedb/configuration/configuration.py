@@ -77,6 +77,7 @@ def set_padstack_instance(inst, inst_obj):
 
 
 class Configuration:
+
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
     def __init__(self, pedb: Edb):
@@ -111,6 +112,7 @@ class Configuration:
         >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
         >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
         >>> edb.configuration.run(cfg)
+
         """
         from pyedb.configuration.cfg_api import EdbConfigBuilder  # local import avoids circular refs
 
@@ -151,6 +153,7 @@ class Configuration:
         >>> cfg = EdbConfigBuilder()
         >>> cfg.general.anti_pads_always_on = False
         >>> edb.configuration.load(cfg, apply_file=True)
+
         """
         # Accept EdbConfigBuilder directly – convert to dict transparently.
         from pyedb.configuration.cfg_api import EdbConfigBuilder as _Builder  # local import avoids circular refs
@@ -1139,6 +1142,7 @@ class Configuration:
         Returns
         -------
         bool
+
         """
         data = self.get_data_from_db(
             stackup=stackup,

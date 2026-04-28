@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build low-level terminal configuration entries.
+"""Build low-level terminal configuration entries.
 
 This module provides explicit terminal builders plus factory helpers for the
 terminal-specifier dictionaries accepted by ports, sources, and probes.
@@ -50,8 +49,7 @@ class PadstackInstanceTerminal:
         layer: Optional[str] = None,
         padstack_instance_id: Optional[int] = None,
     ):
-        """
-        Initialize a padstack instance terminal.
+        """Initialize a padstack instance terminal.
 
         Parameters
         ----------
@@ -96,8 +94,7 @@ class PadstackInstanceTerminal:
         self.padstack_instance_id = padstack_instance_id
 
     def to_dict(self) -> dict:
-        """
-        Serialize the padstack-instance terminal.
+        """Serialize the padstack-instance terminal.
 
         Returns
         -------
@@ -142,8 +139,7 @@ class PinGroupTerminal:
         phase: Union[float, str] = 0,
         terminal_to_ground: str = "kNoGround",
     ):
-        """
-        Initialize a pin-group terminal.
+        """Initialize a pin-group terminal.
 
         Parameters
         ----------
@@ -177,8 +173,7 @@ class PinGroupTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
-        """
-        Serialize the pin-group terminal.
+        """Serialize the pin-group terminal.
 
         Returns
         -------
@@ -220,8 +215,7 @@ class PointTerminal:
         phase: Union[float, str] = 0,
         terminal_to_ground: str = "kNoGround",
     ):
-        """
-        Initialize a point terminal.
+        """Initialize a point terminal.
 
         Parameters
         ----------
@@ -264,8 +258,7 @@ class PointTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
-        """
-        Serialize the point terminal.
+        """Serialize the point terminal.
 
         Returns
         -------
@@ -314,8 +307,7 @@ class EdgeTerminal:
         phase: Union[float, str] = 0,
         terminal_to_ground: str = "kNoGround",
     ):
-        """
-        Initialize an edge terminal.
+        """Initialize an edge terminal.
 
         Parameters
         ----------
@@ -369,8 +361,7 @@ class EdgeTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
-        """
-        Serialize the edge terminal.
+        """Serialize the edge terminal.
 
         Returns
         -------
@@ -405,8 +396,7 @@ class BundleTerminal:
     """Represent a terminal bundle such as a differential pair."""
 
     def __init__(self, name: str, terminals: List[str]):
-        """
-        Initialize a bundle terminal.
+        """Initialize a bundle terminal.
 
         Parameters
         ----------
@@ -421,8 +411,7 @@ class BundleTerminal:
         self.terminals = terminals
 
     def to_dict(self) -> dict:
-        """
-        Serialize the bundle terminal.
+        """Serialize the bundle terminal.
 
         Returns
         -------
@@ -577,8 +566,7 @@ class TerminalsConfig:
         return t
 
     def to_list(self) -> List[dict]:
-        """
-        Serialize all configured terminals.
+        """Serialize all configured terminals.
 
         Returns
         -------

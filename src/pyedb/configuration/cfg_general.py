@@ -22,6 +22,7 @@
 
 
 class CfgGeneral:
+
     """Manage configuration general settings."""
 
     def set_parameters_to_edb(self):
