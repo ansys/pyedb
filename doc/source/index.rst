@@ -47,6 +47,12 @@ and analyze PCB designs by communicating with the `PyEDB-Core <https://github.co
 
         Learn how to contribute to the PyEDB codebase or documentation.
 
+    .. grid-item-card:: Configuration guides :fa:`sliders`
+        :link: configuration/index
+        :link-type: doc
+
+        Learn the configuration-file architecture and the programmatic builder API.
+
 
 .. toctree::
     :hidden:
@@ -54,6 +60,7 @@ and analyze PCB designs by communicating with the `PyEDB-Core <https://github.co
 
     getting_started/index
     user_guide/index
+    configuration/index
     grpc_api/index
     examples/index
     changelog
