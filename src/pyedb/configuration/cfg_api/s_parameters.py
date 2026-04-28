@@ -19,85 +19,57 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""S-parameter models builder API.
-
-Data model: :class:`CfgSParameterModels` (pydantic root defined here).
-The runtime class :class:`~pyedb.configuration.cfg_s_parameter_models.CfgSParameters`
-requires a live EDB connection; this API layer owns the pure-data pydantic models
-and serialises to plain dicts that the runtime class can consume.
-"""
+"""S-parameter models builder API."""
 
 from __future__ import annotations
 
 from typing import Dict, List, Optional
 
-from pydantic import BaseModel, Field
 
-from pyedb.configuration.cfg_common import CfgBaseModel
+class SParameterModelConfig:
+    """Single S-parameter model entry."""
 
-
-class CfgSParameterModelData(CfgBaseModel):
-    """Pydantic data model for a single S-parameter model entry."""
-
-    name: str
-    component_definition: str
-    file_path: str
-    reference_net: str = ""
-    apply_to_all: bool = False
-    components: List[str] = Field(default_factory=list)
-    reference_net_per_component: Dict[str, str] = Field(default_factory=dict)
-    pin_order: Optional[List] = None
-
-    model_config = {"populate_by_name": True, "extra": "ignore"}
-
-
-class CfgSParameterModels(BaseModel):
-    """Root pydantic model for the ``s_parameters`` configuration list."""
-
-    s_parameter_models: List[CfgSParameterModelData] = Field(default_factory=list)
-
-    def add(
+    def __init__(
         self,
         name: str,
         component_definition: str,
         file_path: str,
         reference_net: str = "",
-        apply_to_all: bool = False,
+        apply_to_all: bool = True,
         components: Optional[List[str]] = None,
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
-    ) -> CfgSParameterModelData:
-        entry = CfgSParameterModelData(
-            name=name,
-            component_definition=component_definition,
-            file_path=file_path,
-            reference_net=reference_net,
-            apply_to_all=apply_to_all,
-            components=components or [],
-            reference_net_per_component=reference_net_per_component or {},
-            pin_order=pin_order,
-        )
-        self.s_parameter_models.append(entry)
-        return entry
+    ):
+        self.name = name
+        self.component_definition = component_definition
+        self.file_path = file_path
+        self.reference_net = reference_net
+        self.apply_to_all = apply_to_all
+        self.components = components or []
+        self.reference_net_per_component = reference_net_per_component or {}
+        self.pin_order = pin_order
+
+    def to_dict(self) -> dict:
+        data = {
+            "name": self.name,
+            "component_definition": self.component_definition,
+            "file_path": self.file_path,
+            "reference_net": self.reference_net,
+            "apply_to_all": self.apply_to_all,
+            "components": self.components,
+        }
+        if self.reference_net_per_component:
+            data["reference_net_per_component"] = self.reference_net_per_component
+        if self.pin_order is not None:
+            data["pin_order"] = self.pin_order
+        return data
 
 
 class SParametersConfig:
-    """Fluent builder for the ``s_parameters`` configuration list.
-
-    Wraps :class:`CfgSParameterModels`.
-
-    Examples
-    --------
-    >>> cfg.s_parameters.add(
-    ...     name="U1_model",
-    ...     component_definition="COMP_DEF",
-    ...     file_path="models/u1.s4p",
-    ...     reference_net="GND",
-    ... )
-    """
+    """Fluent builder for the ``s_parameters`` configuration list."""
 
     def __init__(self):
-        self._model = CfgSParameterModels()
+        self._models: List[SParameterModelConfig] = []
 
     def add(
         self,
@@ -105,18 +77,12 @@ class SParametersConfig:
         component_definition: str,
         file_path: str,
         reference_net: str = "",
-        apply_to_all: bool = False,
+        apply_to_all: bool = True,
         components: Optional[List[str]] = None,
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
-    ) -> CfgSParameterModelData:
-        """Add an S-parameter model entry.
-
-        Returns
-        -------
-        CfgSParameterModelData
-        """
-        return self._model.add(
+    ) -> SParameterModelConfig:
+        m = SParameterModelConfig(
             name=name,
             component_definition=component_definition,
             file_path=file_path,
@@ -126,13 +92,11 @@ class SParametersConfig:
             reference_net_per_component=reference_net_per_component,
             pin_order=pin_order,
         )
+        self._models.append(m)
+        return m
 
     def to_list(self) -> List[dict]:
-        """Serialise to a list of dicts consumable by
-        :class:`~pyedb.configuration.cfg_s_parameter_models.CfgSParameters`."""
-        return [m.model_dump(exclude_none=True) for m in self._model.s_parameter_models]
+        return [m.to_dict() for m in self._models]
 
 
-#: Backward-compatible alias
 SParameterModelsConfig = SParametersConfig
-SParameterModelConfig = CfgSParameterModelData

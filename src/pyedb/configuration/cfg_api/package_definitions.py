@@ -19,69 +19,72 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Package definitions builder API.
-
-Data models: :class:`CfgHeatSinkData`, :class:`CfgPackageData`,
-:class:`CfgPackageDefinitionsModel` (pydantic roots defined here).
-The runtime class :class:`~pyedb.configuration.cfg_package_definition.CfgPackageDefinitions`
-requires a live EDB connection; this API layer owns the pure-data pydantic
-models and serialises to plain dicts that the runtime class can consume.
-"""
+"""Package definitions builder API."""
 
 from __future__ import annotations
 
 from typing import List, Optional, Union
 
-from pydantic import BaseModel, Field
 
-from pyedb.configuration.cfg_common import CfgBaseModel
+class HeatSinkConfig:
+    """Heat-sink properties."""
 
-
-class CfgHeatSinkData(CfgBaseModel):
-    """Pydantic data model for heat-sink properties.
-
-    Mirrors :class:`~pyedb.configuration.cfg_package_definition.CfgHeatSink`.
-    """
-
-    fin_base_height: Optional[Union[str, float]] = None
-    fin_height: Optional[Union[str, float]] = None
-    fin_orientation: Optional[str] = None
-    fin_spacing: Optional[Union[str, float]] = None
-    fin_thickness: Optional[Union[str, float]] = None
-
-    model_config = {"populate_by_name": True, "extra": "ignore"}
-
-
-class CfgPackageData(CfgBaseModel):
-    """Pydantic data model for a single package definition entry.
-
-    Mirrors :class:`~pyedb.configuration.cfg_package_definition.CfgPackage`.
-    """
-
-    name: str
-    component_definition: str
-    apply_to_all: Optional[bool] = None
-    components: List[str] = Field(default_factory=list)
-    maximum_power: Optional[float] = None
-    thermal_conductivity: Optional[float] = None
-    theta_jb: Optional[float] = None
-    theta_jc: Optional[float] = None
-    height: Optional[Union[str, float]] = None
-    extent_bounding_box: Optional[object] = None
-    heatsink: Optional[CfgHeatSinkData] = None
-
-    model_config = {"populate_by_name": True, "extra": "ignore"}
-
-    def set_heatsink(
+    def __init__(
         self,
         fin_base_height: Optional[Union[str, float]] = None,
         fin_height: Optional[Union[str, float]] = None,
         fin_orientation: Optional[str] = None,
         fin_spacing: Optional[Union[str, float]] = None,
         fin_thickness: Optional[Union[str, float]] = None,
-    ) -> CfgHeatSinkData:
-        """Configure heat-sink properties and return the model."""
-        self.heatsink = CfgHeatSinkData(
+    ):
+        self.fin_base_height = fin_base_height
+        self.fin_height = fin_height
+        self.fin_orientation = fin_orientation
+        self.fin_spacing = fin_spacing
+        self.fin_thickness = fin_thickness
+
+    def to_dict(self) -> dict:
+        return {k: v for k, v in self.__dict__.items() if v is not None}
+
+
+class PackageDefinitionConfig:
+    """Single package definition entry."""
+
+    def __init__(
+        self,
+        name: str,
+        component_definition: str,
+        apply_to_all: Optional[bool] = None,
+        components: Optional[List[str]] = None,
+        maximum_power=None,
+        thermal_conductivity=None,
+        theta_jb=None,
+        theta_jc=None,
+        height=None,
+        extent_bounding_box=None,
+        heatsink: Optional[HeatSinkConfig] = None,
+    ):
+        self.name = name
+        self.component_definition = component_definition
+        self.apply_to_all = apply_to_all
+        self.components = components or []
+        self.maximum_power = maximum_power
+        self.thermal_conductivity = thermal_conductivity
+        self.theta_jb = theta_jb
+        self.theta_jc = theta_jc
+        self.height = height
+        self.extent_bounding_box = extent_bounding_box
+        self.heatsink: Optional[HeatSinkConfig] = heatsink
+
+    def set_heatsink(
+        self,
+        fin_base_height=None,
+        fin_height=None,
+        fin_orientation=None,
+        fin_spacing=None,
+        fin_thickness=None,
+    ) -> HeatSinkConfig:
+        self.heatsink = HeatSinkConfig(
             fin_base_height=fin_base_height,
             fin_height=fin_height,
             fin_orientation=fin_orientation,
@@ -90,44 +93,27 @@ class CfgPackageData(CfgBaseModel):
         )
         return self.heatsink
 
-
-class CfgPackageDefinitionsModel(BaseModel):
-    """Root pydantic model for the ``package_definitions`` configuration list."""
-
-    packages: List[CfgPackageData] = Field(default_factory=list)
-
-    def add(
-        self,
-        name: str,
-        component_definition: str,
-        apply_to_all: Optional[bool] = None,
-        components: Optional[List[str]] = None,
-        **kwargs,
-    ) -> CfgPackageData:
-        pkg = CfgPackageData(
-            name=name,
-            component_definition=component_definition,
-            apply_to_all=apply_to_all,
-            components=components or [],
-            **kwargs,
-        )
-        self.packages.append(pkg)
-        return pkg
+    def to_dict(self) -> dict:
+        data: dict = {"name": self.name, "component_definition": self.component_definition}
+        for k in ("apply_to_all", "maximum_power", "thermal_conductivity", "theta_jb",
+                  "theta_jc", "height", "extent_bounding_box"):
+            val = getattr(self, k)
+            if val is not None:
+                data[k] = val
+        if self.components:
+            data["components"] = self.components
+        if self.heatsink is not None:
+            hs = self.heatsink.to_dict()
+            if hs:
+                data["heatsink"] = hs
+        return data
 
 
 class PackageDefinitionsConfig:
-    """Fluent builder for the ``package_definitions`` configuration list.
-
-    Wraps :class:`CfgPackageDefinitionsModel`.
-
-    Examples
-    --------
-    >>> pkg = cfg.package_definitions.add("PKG1", "COMP_DEF", apply_to_all=True)
-    >>> pkg.set_heatsink(fin_height="2mm", fin_spacing="0.5mm")
-    """
+    """Fluent builder for the ``package_definitions`` configuration list."""
 
     def __init__(self):
-        self._model = CfgPackageDefinitionsModel()
+        self._packages: List[PackageDefinitionConfig] = []
 
     def add(
         self,
@@ -136,28 +122,16 @@ class PackageDefinitionsConfig:
         apply_to_all: Optional[bool] = None,
         components: Optional[List[str]] = None,
         **kwargs,
-    ) -> CfgPackageData:
-        """Add a package definition.
-
-        Returns
-        -------
-        CfgPackageData
-        """
-        return self._model.add(
+    ) -> PackageDefinitionConfig:
+        pkg = PackageDefinitionConfig(
             name=name,
             component_definition=component_definition,
             apply_to_all=apply_to_all,
             components=components,
             **kwargs,
         )
+        self._packages.append(pkg)
+        return pkg
 
     def to_list(self) -> List[dict]:
-        """Serialise to a list of dicts consumable by
-        :class:`~pyedb.configuration.cfg_package_definition.CfgPackageDefinitions`."""
-        return [p.model_dump(exclude_none=True) for p in self._model.packages]
-
-
-#: Backward-compatible aliases
-HeatSinkConfig = CfgHeatSinkData
-PackageDefinitionConfig = CfgPackageData
-
+        return [p.to_dict() for p in self._packages]

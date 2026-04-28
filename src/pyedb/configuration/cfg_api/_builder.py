@@ -379,17 +379,45 @@ class EdbConfigBuilder:
 
         # setups
         for stp in data.get("setups", []):
-            builder.setups._setups.append(_DictProxy(stp))
+            stp_type = stp.get("type", "hfss")
+            if stp_type == "hfss":
+                h = builder.setups.add_hfss_setup(stp["name"])
+                adapt = stp.get("adapt_type", "single")
+                h.adapt_type = adapt
+                if stp.get("single_frequency_adaptive_solution"):
+                    h._single_freq = stp["single_frequency_adaptive_solution"]
+                if stp.get("broadband_adaptive_solution"):
+                    h._broadband = stp["broadband_adaptive_solution"]
+                if stp.get("multi_frequency_adaptive_solution"):
+                    h._multi_freqs = stp["multi_frequency_adaptive_solution"].get("adapt_frequencies", [])
+                if stp.get("auto_mesh_operation"):
+                    h._auto_mesh = stp["auto_mesh_operation"]
+                for mo in stp.get("mesh_operations", []):
+                    h._mesh_ops.append(mo)
+                for sw in stp.get("freq_sweep", []):
+                    sweep = h.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
+                    sweep.enforce_causality = sw.get("enforce_causality", False)
+                    sweep.enforce_passivity = sw.get("enforce_passivity", True)
+                    sweep.use_q3d_for_dc = sw.get("use_q3d_for_dc", False)
+                    sweep.compute_dc_point = sw.get("compute_dc_point", False)
+                    sweep.frequencies = sw.get("frequencies", [])
+            elif stp_type in ("siwave_ac", "siwave_syz"):
+                s = builder.setups.add_siwave_ac_setup(stp["name"], si_slider_position=stp.get("si_slider_position", 1), pi_slider_position=stp.get("pi_slider_position", 1))
+                for sw in stp.get("freq_sweep", []):
+                    sweep = s.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
+                    sweep.frequencies = sw.get("frequencies", [])
+            elif stp_type == "siwave_dc":
+                builder.setups.add_siwave_dc_setup(stp["name"], dc_slider_position=stp.get("dc_slider_position", 1), export_dc_thermal_data=stp.get("dc_ir_settings", {}).get("export_dc_thermal_data", False))
 
         # boundaries
         for k, v in data.get("boundaries", {}).items():
-            if hasattr(builder.boundaries, k):
-                setattr(builder.boundaries, k, v)
+            setattr(builder.boundaries, k, v)
 
         # operations
         ops = data.get("operations", {})
         if "cutout" in ops:
-            builder.operations._cutout = _DictProxy(ops["cutout"])
+            c = ops["cutout"]
+            builder.operations._cutout = _DictProxy(c)
         if ops.get("generate_auto_hfss_regions"):
             builder.operations.generate_auto_hfss_regions = True
 
@@ -407,7 +435,7 @@ class EdbConfigBuilder:
 
         # variables
         for v in data.get("variables", []):
-            builder.variables._variables.append(v)
+            builder.variables.add(v["name"], v["value"], v.get("description", ""))
 
         # modeler (pass-through – complex enough that direct proxy is fine)
         modeler_data = data.get("modeler", {})

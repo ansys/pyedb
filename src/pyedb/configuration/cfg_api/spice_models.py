@@ -19,43 +19,17 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""SPICE models builder API.
-
-Data model: :class:`CfgSpiceModels` (pydantic root defined here).
-The runtime class :class:`~pyedb.configuration.cfg_spice_models.CfgSpiceModel`
-requires a live EDB connection; this API layer owns the pure-data pydantic
-models and serialises to plain dicts that the runtime class can consume.
-"""
+"""SPICE models builder API."""
 
 from __future__ import annotations
 
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
 
-from pyedb.configuration.cfg_common import CfgBaseModel
+class SpiceModelConfig:
+    """Single SPICE model entry."""
 
-
-class CfgSpiceModelData(CfgBaseModel):
-    """Pydantic data model for a single SPICE model entry."""
-
-    name: str
-    component_definition: str
-    file_path: str
-    sub_circuit_name: str = ""
-    apply_to_all: bool = True
-    components: List[str] = Field(default_factory=list)
-    terminal_pairs: Optional[List] = None
-
-    model_config = {"populate_by_name": True, "extra": "ignore"}
-
-
-class CfgSpiceModels(BaseModel):
-    """Root pydantic model for the ``spice_models`` configuration list."""
-
-    spice_models: List[CfgSpiceModelData] = Field(default_factory=list)
-
-    def add(
+    def __init__(
         self,
         name: str,
         component_definition: str,
@@ -64,37 +38,34 @@ class CfgSpiceModels(BaseModel):
         apply_to_all: bool = True,
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
-    ) -> CfgSpiceModelData:
-        entry = CfgSpiceModelData(
-            name=name,
-            component_definition=component_definition,
-            file_path=file_path,
-            sub_circuit_name=sub_circuit_name,
-            apply_to_all=apply_to_all,
-            components=components or [],
-            terminal_pairs=terminal_pairs,
-        )
-        self.spice_models.append(entry)
-        return entry
+    ):
+        self.name = name
+        self.component_definition = component_definition
+        self.file_path = file_path
+        self.sub_circuit_name = sub_circuit_name
+        self.apply_to_all = apply_to_all
+        self.components = components or []
+        self.terminal_pairs = terminal_pairs
+
+    def to_dict(self) -> dict:
+        data = {
+            "name": self.name,
+            "component_definition": self.component_definition,
+            "file_path": self.file_path,
+            "sub_circuit_name": self.sub_circuit_name,
+            "apply_to_all": self.apply_to_all,
+            "components": self.components,
+        }
+        if self.terminal_pairs is not None:
+            data["terminal_pairs"] = self.terminal_pairs
+        return data
 
 
 class SpiceModelsConfig:
-    """Fluent builder for the ``spice_models`` configuration list.
-
-    Wraps :class:`CfgSpiceModels`.
-
-    Examples
-    --------
-    >>> cfg.spice_models.add(
-    ...     name="R_model",
-    ...     component_definition="RES_DEF",
-    ...     file_path="models/res.lib",
-    ...     sub_circuit_name="RES",
-    ... )
-    """
+    """Fluent builder for the ``spice_models`` configuration list."""
 
     def __init__(self):
-        self._model = CfgSpiceModels()
+        self._models: List[SpiceModelConfig] = []
 
     def add(
         self,
@@ -105,14 +76,8 @@ class SpiceModelsConfig:
         apply_to_all: bool = True,
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
-    ) -> CfgSpiceModelData:
-        """Add a SPICE model entry.
-
-        Returns
-        -------
-        CfgSpiceModelData
-        """
-        return self._model.add(
+    ) -> SpiceModelConfig:
+        m = SpiceModelConfig(
             name=name,
             component_definition=component_definition,
             file_path=file_path,
@@ -121,12 +86,8 @@ class SpiceModelsConfig:
             components=components,
             terminal_pairs=terminal_pairs,
         )
+        self._models.append(m)
+        return m
 
     def to_list(self) -> List[dict]:
-        """Serialise to a list of dicts consumable by
-        :class:`~pyedb.configuration.cfg_spice_models.CfgSpiceModel`."""
-        return [m.model_dump(exclude_none=True) for m in self._model.spice_models]
-
-
-#: Backward-compatible alias
-SpiceModelConfig = CfgSpiceModelData
+        return [m.to_dict() for m in self._models]

@@ -45,7 +45,6 @@ from pyedb.configuration.cfg_api.ports import DiffWavePortConfig, EdgePortConfig
 from pyedb.configuration.cfg_api.sources import SourceConfig, SourcesConfig  # noqa: F401
 from pyedb.configuration.cfg_api.probes import ProbeConfig, ProbesConfig  # noqa: F401
 from pyedb.configuration.cfg_api.setups import (  # noqa: F401
-    FrequenciesConfig,
     FrequencySweepConfig,
     HfssSetupConfig,
     SIwaveACSetupConfig,
@@ -71,7 +70,6 @@ __all__ = [
     "EdbConfigBuilder",
     "EdgePortConfig",
     "EdgeTerminal",
-    "FrequenciesConfig",
     "FrequencySweepConfig",
     "GeneralConfig",
     "HeatSinkConfig",
