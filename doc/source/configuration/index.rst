@@ -34,4 +34,5 @@ Use this section to choose the view that best matches how you work:
 
     file_architecture
     cfg_api_guide
+    ../autoapi/pyedb/configuration/cfg_api/index
 

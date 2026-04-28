@@ -28,7 +28,7 @@ workflows.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any, Dict, List, Literal, Optional, Union
+from typing import TYPE_CHECKING, Dict, List, Literal, Optional, Union
 
 if TYPE_CHECKING:
     from pyedb.configuration.cfg_api.components import ComponentConfig

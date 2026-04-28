@@ -23,7 +23,7 @@
 
 from __future__ import annotations
 
-from typing import Dict, List, Literal, Optional, Union
+from typing import List, Literal, Optional, Union
 
 
 class SourceConfig:
