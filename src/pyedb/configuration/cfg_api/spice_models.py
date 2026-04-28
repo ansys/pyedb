@@ -31,9 +31,7 @@ from typing import List, Optional
 
 
 class SpiceModelConfig:
-    """Represent one SPICE model assignment.
-
-    """
+    """Represent one SPICE model assignment."""
 
     def __init__(
         self,

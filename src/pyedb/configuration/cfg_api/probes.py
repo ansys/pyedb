@@ -31,9 +31,7 @@ from typing import List, Literal, Optional, Union
 
 
 class ProbeConfig:
-    """Represent a single voltage probe entry.
-
-    """
+    """Represent a single voltage probe entry."""
 
     def __init__(
         self,

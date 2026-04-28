@@ -66,9 +66,7 @@ class HeatSinkConfig:
 
 
 class PackageDefinitionConfig:
-    """Represent one thermal package definition entry.
-
-    """
+    """Represent one thermal package definition entry."""
 
     def __init__(
         self,

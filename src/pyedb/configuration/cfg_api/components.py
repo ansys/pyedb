@@ -124,9 +124,7 @@ class _PortProperties(CfgBaseModel):
 
 
 class _CfgComponentData(BaseModel):
-    """Pure-data pydantic model for a component configuration entry.
-
-    """
+    """Pure-data pydantic model for a component configuration entry."""
 
     reference_designator: str
     part_type: Optional[str] = None

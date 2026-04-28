@@ -88,9 +88,7 @@ class SourceConfig:
 
 
 class SourcesConfig:
-    """Collect source definitions for serialization.
-
-    """
+    """Collect source definitions for serialization."""
 
     def __init__(self):
         self._sources: List[SourceConfig] = []

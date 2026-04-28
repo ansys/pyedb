@@ -86,9 +86,7 @@ class PinGroupConfig:
 
 
 class PinGroupsConfig:
-    """Fluent builder for the ``pin_groups`` configuration list.
-
-    """
+    """Fluent builder for the ``pin_groups`` configuration list."""
 
     def __init__(self):
         """Initialize the pin groups configuration."""
