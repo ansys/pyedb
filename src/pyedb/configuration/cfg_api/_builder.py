@@ -55,7 +55,6 @@ from pyedb.configuration.cfg_api.s_parameters import SParameterModelsConfig
 from pyedb.configuration.cfg_api.setups import (
     HfssSetupConfig,
     SetupsConfig,
-    SIwaveDCSetupConfig,
 )
 from pyedb.configuration.cfg_api.sources import SourcesConfig
 from pyedb.configuration.cfg_api.spice_models import SpiceModelsConfig
