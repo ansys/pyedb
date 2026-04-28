@@ -27,7 +27,7 @@ The classes in this module create serializable probe definitions for the
 
 from __future__ import annotations
 
-from typing import List, Optional, Union
+from typing import List, Optional
 
 
 class ProbeConfig:
