@@ -64,8 +64,7 @@ class SIWaveSParameterSettings:
 
     @property
     def dc_behavior(self) -> str:
-        """
-        Get or set the DC behavior for S-Parameter simulation.
+        """Get or set the DC behavior for S-Parameter simulation.
 
         Returns
         -------
@@ -84,8 +83,7 @@ class SIWaveSParameterSettings:
 
     @property
     def extrapolation(self) -> str:
-        """
-        Get or set the S-Parameter extrapolation method.
+        """Get or set the S-Parameter extrapolation method.
 
         Returns
         -------
@@ -107,8 +105,7 @@ class SIWaveSParameterSettings:
 
     @property
     def interpolation(self) -> str:
-        """
-        Get or set the S-Parameter interpolation method.
+        """Get or set the S-Parameter interpolation method.
 
         Returns
         -------
@@ -130,8 +127,7 @@ class SIWaveSParameterSettings:
 
     @property
     def use_state_space(self) -> bool:
-        """
-        Get or set whether to use state space representation.
+        """Get or set whether to use state space representation.
 
         Returns
         -------

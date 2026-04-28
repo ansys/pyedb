@@ -38,8 +38,7 @@ class EdgeTerminal(Terminal):
 
     @classmethod
     def create(cls, layout, name, edges, net, is_ref=False):
-        """
-        Create an edge terminal.
+        """Create an edge terminal.
 
         Parameters
         ----------
@@ -73,8 +72,7 @@ class EdgeTerminal(Terminal):
 
     @property
     def component(self):
-        """
-        Component.
+        """Component.
 
         Returns
         -------
@@ -88,8 +86,7 @@ class EdgeTerminal(Terminal):
 
     @property
     def is_circuit_port(self) -> bool:
-        """
-        Is circuit port.
+        """Is circuit port.
 
         Returns
         -------
@@ -119,8 +116,7 @@ class EdgeTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """
-        Added for dotnet compatibility
+        """Added for dotnet compatibility
 
         Returns
         -------
@@ -134,8 +130,7 @@ class EdgeTerminal(Terminal):
         self.core.set_product_solver_option(product_id, solver_name, option)
 
     def couple_ports(self, port) -> BundleTerminal:
-        """
-        Create a bundle wave port.
+        """Create a bundle wave port.
 
         Parameters
         ----------

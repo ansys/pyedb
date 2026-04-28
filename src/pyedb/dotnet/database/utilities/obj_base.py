@@ -31,8 +31,7 @@ if TYPE_CHECKING:
 
 class SystemObject(object):
     def __init__(self, pedb: "Edb", core):
-        """
-        Initialize a SystemObject with reference to the EDB instance and core object.
+        """Initialize a SystemObject with reference to the EDB instance and core object.
 
         This is the base class for all EDB wrapper objects that encapsulate .NET Core objects.
         It provides access to the parent EDB database instance and the underlying .NET object.
@@ -96,8 +95,7 @@ class BBox:
     """Bounding box."""
 
     def __init__(self, pedb, core=None, point_1=None, point_2=None):
-        """
-        Initialize a bounding box with two corner points.
+        """Initialize a bounding box with two corner points.
 
         A bounding box is defined by two corner points representing the minimum and maximum
         extents of a rectangular region. The bounding box can be initialized either by providing

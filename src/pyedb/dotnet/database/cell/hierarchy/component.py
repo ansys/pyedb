@@ -73,8 +73,7 @@ class ICDieProperties:
 
 
 def _clear_dotnet_owner(obj):
-    """
-    Set the protected ``IsOwner`` flag to ``False`` on a cloned .NET object.
+    """Set the protected ``IsOwner`` flag to ``False`` on a cloned .NET object.
 
     EDB 2026.1 has a bug where cloned objects call a buggy C++ destructor when
     the Python GC collects them.  Clearing ``IsOwner`` via reflection prevents
@@ -121,8 +120,7 @@ class ComponentProperties:
 
 
 class EDBComponent(Group):
-    """
-    Manages EDB functionalities for components.
+    """Manages EDB functionalities for components.
 
     Parameters
     ----------
@@ -171,8 +169,7 @@ class EDBComponent(Group):
 
     @property
     def component_property(self):
-        """
-        ``ComponentProperty`` object.
+        """``ComponentProperty`` object.
 
         Returns the live ``ComponentProperty`` **without cloning** for safe
         read access.  EDB 2026.1 has a bug where calling ``.Clone()`` on a
@@ -186,8 +183,7 @@ class EDBComponent(Group):
         return ComponentProperties(self.edbcomponent.GetComponentProperty())
 
     def _get_component_property_clone(self):
-        """
-        Return a safe, mutable clone of the ``ComponentProperty``.
+        """Return a safe, mutable clone of the ``ComponentProperty``.
 
         Applies ``_clear_dotnet_owner`` so the clone's buggy EDB 2026.1
         destructor is suppressed.  Always store the result in a **named local
@@ -205,8 +201,7 @@ class EDBComponent(Group):
 
     @staticmethod
     def _is_dotnet_null(obj):
-        """
-        Return True when *obj* is a .NET null or a Python None.
+        """Return True when *obj* is a .NET null or a Python None.
 
         PythonNET may represent a .NET ``null`` reference as a non-``None``
         Python object, so a plain ``is None`` check is insufficient.  Most EDB
@@ -227,8 +222,7 @@ class EDBComponent(Group):
 
     @staticmethod
     def _safe_get_model(comp_prop):
-        """
-        Safely retrieve the component model from a live ComponentProperty.
+        """Safely retrieve the component model from a live ComponentProperty.
 
         EDB 2026.1 has cases where ``GetModel()`` returns a dangling C++
         pointer after S-parameter assignment.  Wrapping in a try/except with
@@ -250,8 +244,7 @@ class EDBComponent(Group):
 
     @property
     def _edb_model(self):  # pragma: no cover
-        """
-        Return the raw (non-cloned) EDB component model, or ``None``.
+        """Return the raw (non-cloned) EDB component model, or ``None``.
 
         EDB 2026.1: cloning a model and then calling ``_clear_dotnet_owner``
         on the clone corrupts its internal ``PinPairs`` collection.  Return
@@ -263,8 +256,7 @@ class EDBComponent(Group):
 
     @property
     def model_type(self):
-        """
-        Retrieve assigned model type.
+        """Retrieve assigned model type.
 
         Returns
         -------
@@ -290,8 +282,7 @@ class EDBComponent(Group):
 
     @property
     def model(self):
-        """
-        Component model.
+        """Component model.
 
         Returns
         -------
@@ -356,8 +347,7 @@ class EDBComponent(Group):
         self._ic_die_properties = None
 
     def create_package_def(self, name="", component_part_name=None):
-        """
-        Create a package definition and assign it to the component.
+        """Create a package definition and assign it to the component.
 
         Parameters
         ----------
@@ -547,8 +537,7 @@ class EDBComponent(Group):
 
     @property
     def refdes(self):
-        """
-        Reference Designator Name.
+        """Reference Designator Name.
 
         Returns
         -------
@@ -570,8 +559,7 @@ class EDBComponent(Group):
     @property
     @deprecated_property("use enabled property instead")
     def is_enabled(self):
-        """
-        Flag indicating if the current object is enabled.
+        """Flag indicating if the current object is enabled.
 
         .. deprecated::
            Use :attr:`enabled` instead.
@@ -608,8 +596,7 @@ class EDBComponent(Group):
 
     @property
     def value(self):
-        """
-        Retrieve discrete component value.
+        """Retrieve discrete component value.
 
         Returns
         -------
@@ -651,8 +638,7 @@ class EDBComponent(Group):
 
     @property
     def res_value(self):
-        """
-        Resistance value.
+        """Resistance value.
 
         Returns
         -------
@@ -701,8 +687,7 @@ class EDBComponent(Group):
 
     @property
     def cap_value(self):
-        """
-        Capacitance Value.
+        """Capacitance Value.
 
         Returns
         -------
@@ -725,8 +710,7 @@ class EDBComponent(Group):
 
     @property
     def ind_value(self):
-        """
-        Inductance Value.
+        """Inductance Value.
 
         Returns
         -------
@@ -749,8 +733,7 @@ class EDBComponent(Group):
 
     @property
     def is_parallel_rlc(self):
-        """
-        Define if model is Parallel or Series.
+        """Define if model is Parallel or Series.
 
         Returns
         -------
@@ -792,8 +775,7 @@ class EDBComponent(Group):
 
     @property
     def center(self):
-        """
-        Compute the component center.
+        """Compute the component center.
 
         Returns
         -------
@@ -805,8 +787,7 @@ class EDBComponent(Group):
 
     @property
     def bounding_box(self):
-        """
-        Component's bounding box.
+        """Component's bounding box.
 
         Returns
         -------
@@ -828,8 +809,7 @@ class EDBComponent(Group):
 
     @property
     def rotation(self):
-        """
-        Compute the component rotation in radian.
+        """Compute the component rotation in radian.
 
         Returns
         -------
@@ -840,8 +820,7 @@ class EDBComponent(Group):
 
     @property
     def pinlist(self):
-        """
-        Pins of the component.
+        """Pins of the component.
 
         Returns
         -------
@@ -860,8 +839,7 @@ class EDBComponent(Group):
 
     @property
     def nets(self):
-        """
-        Nets of Component.
+        """Nets of Component.
 
         Returns
         -------
@@ -876,8 +854,7 @@ class EDBComponent(Group):
 
     @property
     def pins(self):
-        """
-        EDBPadstackInstance of Component.
+        """EDBPadstackInstance of Component.
 
         Returns
         -------
@@ -892,8 +869,7 @@ class EDBComponent(Group):
 
     @property
     def type(self):
-        """
-        Component type.
+        """Component type.
 
         Returns
         -------
@@ -917,8 +893,7 @@ class EDBComponent(Group):
 
     @type.setter
     def type(self, new_type):
-        """
-        Set component type
+        """Set component type
 
         Parameters
         ----------
@@ -946,8 +921,7 @@ class EDBComponent(Group):
 
     @property
     def numpins(self):
-        """
-        Number of Pins of Component.
+        """Number of Pins of Component.
 
         Returns
         -------
@@ -959,8 +933,7 @@ class EDBComponent(Group):
 
     @property
     def partname(self):  # pragma: no cover
-        """
-        Component part name.
+        """Component part name.
 
         Returns
         -------
@@ -977,8 +950,7 @@ class EDBComponent(Group):
 
     @property
     def part_name(self):
-        """
-        Component part name.
+        """Component part name.
 
         Returns
         -------
@@ -995,8 +967,7 @@ class EDBComponent(Group):
 
     @property
     def placement_layer(self):
-        """
-        Placement layer.
+        """Placement layer.
 
         Returns
         -------
@@ -1008,8 +979,7 @@ class EDBComponent(Group):
 
     @property
     def is_top_mounted(self):
-        """
-        Check if a component is mounted on top or bottom of the layout.
+        """Check if a component is mounted on top or bottom of the layout.
 
         Returns
         -------
@@ -1024,8 +994,7 @@ class EDBComponent(Group):
 
     @property
     def lower_elevation(self):
-        """
-        Lower elevation of the placement layer.
+        """Lower elevation of the placement layer.
 
         Returns
         -------
@@ -1037,8 +1006,7 @@ class EDBComponent(Group):
 
     @property
     def upper_elevation(self):
-        """
-        Upper elevation of the placement layer.
+        """Upper elevation of the placement layer.
 
         Returns
         -------
@@ -1050,8 +1018,7 @@ class EDBComponent(Group):
 
     @property
     def top_bottom_association(self):
-        """
-        Top/bottom association of the placement layer.
+        """Top/bottom association of the placement layer.
 
         Returns
         -------
@@ -1085,8 +1052,7 @@ class EDBComponent(Group):
         sub_circuit_name: Optional[str] = None,
         terminal_pairs: Optional[list] = None,
     ):
-        """
-        Assign Spice model to this component.
+        """Assign Spice model to this component.
 
         Parameters
         ----------
@@ -1139,8 +1105,7 @@ class EDBComponent(Group):
         self,
         netlist,
     ):
-        """
-        Assign Netlist to this component.
+        """Assign Netlist to this component.
 
         Parameters
         ----------
@@ -1158,8 +1123,7 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
-        """
-        Assign S-parameter to this component.
+        """Assign S-parameter to this component.
 
         Parameters
         ----------
@@ -1190,8 +1154,7 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None):
-        """
-        Use S-parameter model on the component.
+        """Use S-parameter model on the component.
 
         Parameters
         ----------
@@ -1220,8 +1183,7 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
-        """
-        Assign RLC to this component.
+        """Assign RLC to this component.
 
         Parameters
         ----------
@@ -1256,8 +1218,7 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):
-        """
-        Create a Clearance on Soldermask layer by drawing a rectangle.
+        """Create a Clearance on Soldermask layer by drawing a rectangle.
 
         Parameters
         ----------

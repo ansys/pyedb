@@ -38,8 +38,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def dc_min_plane_area_to_mesh(self) -> str:
-        """
-        Minimum plane area to mesh.
+        """Minimum plane area to mesh.
 
         Returns
         -------
@@ -55,8 +54,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def dc_min_void_area_to_mesh(self) -> str:
-        """
-        Minimum void area to mesh.
+        """Minimum void area to mesh.
 
         Returns
         -------
@@ -72,8 +70,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def energy_error(self) -> float:
-        """
-        Energy error.
+        """Energy error.
 
         Returns
         -------
@@ -89,8 +86,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def max_init_mesh_edge_length(self) -> str:
-        """
-        Maximum initial mesh edge length.
+        """Maximum initial mesh edge length.
 
         Returns
         -------
@@ -106,8 +102,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def max_num_passes(self) -> int:
-        """
-        Maximum number of passes.
+        """Maximum number of passes.
 
         Returns
         -------
@@ -123,8 +118,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def max_passes(self) -> int:
-        """
-        Maximum number of passes for broadband adaptive solution.
+        """Maximum number of passes for broadband adaptive solution.
 
         Returns
         -------
@@ -140,8 +134,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def mesh_bws(self) -> bool:
-        """
-        Mesh BWS.
+        """Mesh BWS.
 
         Returns
         -------
@@ -157,8 +150,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def mesh_vias(self) -> bool:
-        """
-        Mesh vias.
+        """Mesh vias.
 
         Returns
         -------
@@ -174,8 +166,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def min_num_passes(self) -> int:
-        """
-        Minimum number of passes.
+        """Minimum number of passes.
 
         Returns
         -------
@@ -191,8 +182,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def num_bw_sides(self) -> int:
-        """
-        Number of BWS sides.
+        """Number of BWS sides.
 
         Returns
         -------
@@ -208,8 +198,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def num_via_sides(self) -> int:
-        """
-        Number of via sides.
+        """Number of via sides.
 
         Returns
         -------
@@ -225,8 +214,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def percent_local_refinement(self) -> float:
-        """
-        Percentage of local refinement.
+        """Percentage of local refinement.
 
         Returns
         -------
@@ -242,8 +230,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def perform_adaptive_refinement(self) -> bool:
-        """
-        Perform adaptive refinement.
+        """Perform adaptive refinement.
 
         Returns
         -------
@@ -259,8 +246,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def refine_bws(self) -> bool:
-        """
-        Refine BWS.
+        """Refine BWS.
 
         Returns
         -------
@@ -276,8 +262,7 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def refine_vias(self) -> bool:
-        """
-        Refine vias.
+        """Refine vias.
 
         Returns
         -------

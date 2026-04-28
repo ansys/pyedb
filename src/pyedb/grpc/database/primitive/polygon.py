@@ -47,8 +47,7 @@ class Polygon(Primitive):
 
     @property
     def layer(self) -> Layer:
-        """
-        Layer of the polygon.
+        """Layer of the polygon.
 
         Returns
         -------
@@ -62,8 +61,7 @@ class Polygon(Primitive):
 
     @layer.setter
     def layer(self, value: Union[str, Layer]):
-        """
-        Set layer of the polygon.
+        """Set layer of the polygon.
 
         Parameters
         ----------
@@ -83,8 +81,7 @@ class Polygon(Primitive):
 
     @property
     def type(self) -> str:
-        """
-        Primitive type.
+        """Primitive type.
 
         Return
         ------
@@ -96,8 +93,7 @@ class Polygon(Primitive):
 
     @property
     def has_self_intersections(self) -> bool:
-        """
-        Check if Polygon has self intersections.
+        """Check if Polygon has self intersections.
 
         Returns
         -------
@@ -108,8 +104,7 @@ class Polygon(Primitive):
 
     @classmethod
     def create(cls, layout: Layout, layer: Union[str, Layer], net: Union[str, "Net"] = None, polygon_data=None):
-        """
-        Create a polygon in the specified layout, layer, and net using the provided polygon data.
+        """Create a polygon in the specified layout, layer, and net using the provided polygon data.
 
         Parameters
         ----------
@@ -163,8 +158,7 @@ class Polygon(Primitive):
         return cls(layout._pedb, core)
 
     def fix_self_intersections(self) -> list[Polygon]:
-        """
-        Remove self intersections if they exist.
+        """Remove self intersections if they exist.
 
         Returns
         -------
@@ -184,8 +178,7 @@ class Polygon(Primitive):
         return new_polys
 
     def clone(self):
-        """
-        Duplicate polygon.
+        """Duplicate polygon.
 
         Returns
         -------
@@ -203,8 +196,7 @@ class Polygon(Primitive):
         return cloned_polygon
 
     def duplicate_across_layers(self, layers) -> bool:
-        """
-        Duplicate across layer a primitive object.
+        """Duplicate across layer a primitive object.
 
         Parameters
         ----------
@@ -236,8 +228,7 @@ class Polygon(Primitive):
         return True
 
     def move(self, vector) -> bool:
-        """
-        Move polygon along a vector.
+        """Move polygon along a vector.
 
         Parameters
         ----------
@@ -265,8 +256,7 @@ class Polygon(Primitive):
         return False
 
     def scale(self, factor, center=None) -> bool:
-        """
-        Scales the polygon relative to a center point by a factor.
+        """Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------
@@ -297,8 +287,7 @@ class Polygon(Primitive):
         return False
 
     def rotate(self, angle, center=None) -> bool:
-        """
-        Rotate polygon around a center point by an angle.
+        """Rotate polygon around a center point by an angle.
 
         Parameters
         ----------
@@ -333,8 +322,7 @@ class Polygon(Primitive):
         return False
 
     def move_layer(self, layer) -> bool:
-        """
-        Move polygon to given layer.
+        """Move polygon to given layer.
 
         Parameters
         ----------
@@ -358,8 +346,7 @@ class Polygon(Primitive):
         point_data,
         include_partial=True,
     ) -> bool:
-        """
-        Check if padstack Instance is in given polygon data.
+        """Check if padstack Instance is in given polygon data.
 
         Parameters
         ----------
@@ -393,8 +380,7 @@ class Polygon(Primitive):
             return False
 
     def add_void(self, polygon):
-        """
-        Add a void to the polygon.
+        """Add a void to the polygon.
 
         Parameters
         ----------

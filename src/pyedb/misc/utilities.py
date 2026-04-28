@@ -28,8 +28,7 @@ import math
 def compute_arc_points(
     p1: list[float], p2: list[float], h: float, n: int = 6, tol: float = 1e-12
 ) -> tuple[list[float], list[float]]:
-    """
-    Get the points of the arc.
+    """Get the points of the arc.
 
     Parameters
     ----------

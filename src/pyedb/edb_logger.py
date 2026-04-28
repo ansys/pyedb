@@ -35,8 +35,7 @@ class Msg:
 
 
 class AppFilter(logging.Filter):
-    """
-    Specifies the destination of the logger.
+    """Specifies the destination of the logger.
 
     AEDT exposes three different loggers, which are the global, project, and design loggers.
 
@@ -55,8 +54,7 @@ class AppFilter(logging.Filter):
         self._extra = extra
 
     def filter(self, record):
-        """
-        Modify the record sent to the logger.
+        """Modify the record sent to the logger.
 
         Parameters
         ----------
@@ -75,8 +73,7 @@ class AppFilter(logging.Filter):
 
 
 class EdbLogger(object):
-    """
-    Specifies the logger to use for EDB logger.
+    """Specifies the logger to use for EDB logger.
 
     This class allows you to add a handler to write messages to a file and to indicate
     whether to write messages to the standard output (stdout).
@@ -192,8 +189,7 @@ class EdbLogger(object):
             return None  # pragma: no cover
 
     def reset_timer(self, time_val=None):
-        """
-        "Reset actual timer to  actual time or specified time.
+        """"Reset actual timer to  actual time or specified time.
 
         Parameters
         ----------
@@ -211,8 +207,7 @@ class EdbLogger(object):
         return self._timer
 
     def add_error_message(self, message_text):
-        """
-        Add a type 2 "Error" message to the message manager tree.
+        """Add a type 2 "Error" message to the message manager tree.
 
         Also add an error message to the logger if the handler is present.
 
@@ -225,8 +220,7 @@ class EdbLogger(object):
         self.add_message(2, message_text)
 
     def add_warning_message(self, message_text):
-        """
-        Add a type 1 "Warning" message to the message manager tree.
+        """Add a type 1 "Warning" message to the message manager tree.
 
         Also add a warning message to the logger if the handler is present.
 
@@ -245,8 +239,7 @@ class EdbLogger(object):
         self.add_message(1, message_text)
 
     def add_info_message(self, message_text):
-        """
-        Add a type 0 "Info" message to the active design level of the message manager tree.
+        """Add a type 0 "Info" message to the active design level of the message manager tree.
 
         Also add an info message to the logger if the handler is present.
 
@@ -265,8 +258,7 @@ class EdbLogger(object):
         self.add_message(0, message_text)
 
     def add_debug_message(self, message_text):
-        """
-        Parameterized message to the message manager.
+        """Parameterized message to the message manager.
 
         Parameters
         ----------
@@ -278,8 +270,7 @@ class EdbLogger(object):
         return self.add_message(3, message_text)
 
     def add_message(self, message_type, message_text):
-        """
-        Add a message to the message manager.
+        """Add a message to the message manager.
 
         Parameters
         ----------
@@ -357,8 +348,7 @@ class EdbLogger(object):
         return self._log_on_handler(0, msg, *args, **kwargs)
 
     def info_timer(self, msg, start_time=None, *args, **kwargs):
-        """
-        Write an info message to the global logger with elapsed time.
+        """Write an info message to the global logger with elapsed time.
         Message will have an appendix of type Elapsed time: time."""
         if not self.settings.enable_logger:
             return

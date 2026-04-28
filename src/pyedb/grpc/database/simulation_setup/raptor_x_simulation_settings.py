@@ -45,8 +45,7 @@ class RaptorXSimulationSettings:
     @property
     @deprecated_property("use advanced property instead")
     def advanced_settings(self) -> RaptorXAdvancedSettings:
-        """
-        Advanced settings class.
+        """Advanced settings class.
 
         .. deprecated:: 0.70.0
                 Use :attr:`advanced` instead.
@@ -61,8 +60,7 @@ class RaptorXSimulationSettings:
 
     @property
     def advanced(self) -> RaptorXAdvancedSettings:
-        """
-        Advanced class.
+        """Advanced class.
 
         Returns
         -------
@@ -74,8 +72,7 @@ class RaptorXSimulationSettings:
 
     @property
     def general_settings(self) -> RaptorXGeneralSettings:
-        """
-        General settings class.
+        """General settings class.
 
         Returns
         -------
@@ -87,8 +84,7 @@ class RaptorXSimulationSettings:
 
     @property
     def general(self) -> RaptorXGeneralSettings:
-        """
-        General settings class.
+        """General settings class.
 
         Returns
         -------
@@ -100,8 +96,7 @@ class RaptorXSimulationSettings:
 
     @property
     def enabled(self) -> bool:
-        """
-        Enabled flag.
+        """Enabled flag.
 
         Returns
         -------

@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build ``components`` configuration entries.
+"""Build ``components`` configuration entries.
 
 ``CfgComponent`` relies on runtime EDB or gRPC objects, so this module defines
 pure-data models and lightweight builders that can be used offline and then
@@ -54,8 +53,7 @@ class PinPairModel(CfgBaseModel):
     model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, first_pin: str, second_pin: str, **kwargs):
-        """
-        Initialize a pin-pair RLC model.
+        """Initialize a pin-pair RLC model.
 
         Parameters
         ----------
@@ -70,8 +68,7 @@ class PinPairModel(CfgBaseModel):
         super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
 
     def to_dict(self) -> dict:
-        """
-        Serialize the pin-pair model.
+        """Serialize the pin-pair model.
 
         Returns
         -------
@@ -153,8 +150,7 @@ class _CfgComponentData(BaseModel):
 
 
 class ComponentConfig(_CfgComponentData):
-    """
-    Fluent builder for a single component entry.
+    """Fluent builder for a single component entry.
 
     Inherits all fields from ``_CfgComponentData``.  Adds convenience setter
     methods on top — no field redefinition needed.
@@ -162,8 +158,7 @@ class ComponentConfig(_CfgComponentData):
     """
 
     def __init__(self, reference_designator: str, **kwargs):
-        """
-        Initialize a component configuration.
+        """Initialize a component configuration.
 
         Parameters
         ----------
@@ -189,8 +184,7 @@ class ComponentConfig(_CfgComponentData):
         inductance_enabled: bool = False,
         capacitance_enabled: bool = False,
     ):
-        """
-        Append a pin-pair RLC model entry.
+        """Append a pin-pair RLC model entry.
 
         Parameters
         ----------
@@ -229,8 +223,7 @@ class ComponentConfig(_CfgComponentData):
         )
 
     def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
-        """
-        Assign an S-parameter model to the component.
+        """Assign an S-parameter model to the component.
 
         Parameters
         ----------
@@ -247,8 +240,7 @@ class ComponentConfig(_CfgComponentData):
         )
 
     def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
-        """
-        Assign a SPICE model to the component.
+        """Assign a SPICE model to the component.
 
         Parameters
         ----------
@@ -267,8 +259,7 @@ class ComponentConfig(_CfgComponentData):
         )
 
     def set_netlist_model(self, netlist: str):
-        """
-        Assign a raw netlist model to the component.
+        """Assign a raw netlist model to the component.
 
         Parameters
         ----------
@@ -284,8 +275,7 @@ class ComponentConfig(_CfgComponentData):
         orientation: Literal["chip_up", "chip_down"] = "chip_up",
         height: Optional[str] = None,
     ):
-        """
-        Configure IC die properties.
+        """Configure IC die properties.
 
         Parameters
         ----------
@@ -312,8 +302,7 @@ class ComponentConfig(_CfgComponentData):
         material: str = "solder",
         mid_diameter: Optional[str] = None,
     ):
-        """
-        Configure solder-ball properties.
+        """Configure solder-ball properties.
 
         Parameters
         ----------
@@ -341,8 +330,7 @@ class ComponentConfig(_CfgComponentData):
         reference_size_x: str = "0",
         reference_size_y: str = "0",
     ):
-        """
-        Configure port reference geometry properties.
+        """Configure port reference geometry properties.
 
         Parameters
         ----------
@@ -364,8 +352,7 @@ class ComponentConfig(_CfgComponentData):
         )
 
     def to_dict(self) -> dict:
-        """
-        Serialize the component configuration.
+        """Serialize the component configuration.
 
         Returns
         -------
@@ -408,8 +395,7 @@ class ComponentsConfig:
         definition: Optional[str] = None,
         placement_layer: Optional[str] = None,
     ) -> ComponentConfig:
-        """
-        Add a component configuration entry.
+        """Add a component configuration entry.
 
         Parameters
         ----------
@@ -441,8 +427,7 @@ class ComponentsConfig:
         return comp
 
     def to_list(self) -> List[dict]:
-        """
-        Serialize all configured components.
+        """Serialize all configured components.
 
         Returns
         -------

@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-HFSS automatic configuration workflow for SI/PI analysis.
+"""HFSS automatic configuration workflow for SI/PI analysis.
 
 This module provides tools to automatically configure HFSS simulations from EDB designs,
 including net grouping, batch processing, cutout generation, port creation, and
@@ -115,8 +114,7 @@ combined_ref = re.compile("|".join("(?:%s)" % p for p in ref_patterns), re.I)
 
 @dataclass
 class SolderBallsInfo:
-    """
-    Solder ball configuration for component modeling.
+    """Solder ball configuration for component modeling.
 
     This dataclass stores geometric parameters for solder ball definitions
     used in HFSS port creation and component modeling.
@@ -154,8 +152,7 @@ class SolderBallsInfo:
 
 @dataclass
 class SimulationSetup:
-    """
-    HFSS simulation setup parameters.
+    """HFSS simulation setup parameters.
 
     This dataclass defines the simulation configuration including meshing
     frequency, convergence criteria, and frequency sweep settings.
@@ -192,8 +189,7 @@ class SimulationSetup:
 
 @dataclass
 class BatchGroup:
-    """
-    Group of nets to be processed together in a batch simulation.
+    """Group of nets to be processed together in a batch simulation.
 
     This dataclass represents a collection of signal nets that will be
     simulated together with optional custom simulation settings.
@@ -228,8 +224,7 @@ class BatchGroup:
 
 
 class HFSSAutoConfiguration:
-    """
-    Automatic HFSS simulation configuration from EDB designs.
+    """Automatic HFSS simulation configuration from EDB designs.
 
     This class automates the process of configuring HFSS simulations including
     net grouping, cutout creation, port generation, and simulation setup.
@@ -303,8 +298,7 @@ class HFSSAutoConfiguration:
     """
 
     def __init__(self, edb=None):
-        """
-        Initialize the HFSS automatic configuration.
+        """Initialize the HFSS automatic configuration.
 
         Parameters
         ----------
@@ -338,8 +332,7 @@ class HFSSAutoConfiguration:
         self,
         pattern: str | list[str] | None = None,
     ) -> None:
-        """
-        Automatically create and populate batch groups from signal nets.
+        """Automatically create and populate batch groups from signal nets.
 
         This method discovers signal nets, identifies reference nets, and groups
         nets by prefix patterns. It is a convenience wrapper around
@@ -410,8 +403,7 @@ class HFSSAutoConfiguration:
         *,
         simulation_setup: SimulationSetup | None = None,
     ) -> BatchGroup:
-        """
-        Append a new BatchGroup to the configuration.
+        """Append a new BatchGroup to the configuration.
 
         Parameters
         ----------
@@ -464,8 +456,7 @@ class HFSSAutoConfiguration:
         mid_diameter: str | float | None = None,
         height: str | float | None = None,
     ) -> SolderBallsInfo:
-        """
-        Append a new solder ball definition to the configuration.
+        """Append a new solder ball definition to the configuration.
 
         Parameters
         ----------
@@ -527,8 +518,7 @@ class HFSSAutoConfiguration:
         frequency_step: str | float | None = "0.05GHz",
         replace: bool = True,
     ) -> SimulationSetup:
-        """
-        Create a SimulationSetup instance and attach it to the configuration.
+        """Create a SimulationSetup instance and attach it to the configuration.
 
         Parameters
         ----------
@@ -629,8 +619,7 @@ class HFSSAutoConfiguration:
         self,
         prefix_patterns: list[str] | None = None,
     ) -> dict[str, list[list[str]]]:
-        """
-        Group signal nets into disjoint batches while preserving differential pairs.
+        """Group signal nets into disjoint batches while preserving differential pairs.
 
         This method organizes signal nets into batches based on prefix patterns,
         ensuring differential pairs (e.g., ``_P``/``_N``, ``_M``/``_L``) stay together.
@@ -741,8 +730,7 @@ class HFSSAutoConfiguration:
         return grouped
 
     def create_projects(self):
-        """
-        Generate HFSS projects from configured batch groups.
+        """Generate HFSS projects from configured batch groups.
 
         This method executes the complete workflow for each batch group including:
 
@@ -936,8 +924,7 @@ def create_hfss_auto_configuration(
     port_type: str | None = None,
     create_pin_group: bool | None = None,
 ) -> HFSSAutoConfiguration:
-    """
-    Factory function to create an HFSSAutoConfiguration instance with optional overrides.
+    """Factory function to create an HFSSAutoConfiguration instance with optional overrides.
 
     This function creates a configuration object with all specified parameters,
     providing a convenient alternative to manual attribute assignment.

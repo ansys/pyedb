@@ -37,8 +37,7 @@ if TYPE_CHECKING:
 
 
 class ComponentDef:
-    """
-    Manages EDB functionalities for component definitions.
+    """Manages EDB functionalities for component definitions.
 
     Parameters
     ----------
@@ -55,8 +54,7 @@ class ComponentDef:
 
     @property
     def part_name(self) -> str:
-        """
-        Component definition name.
+        """Component definition name.
 
         Returns
         -------
@@ -72,8 +70,7 @@ class ComponentDef:
 
     @property
     def type(self) -> str:
-        """
-        Component definition type.
+        """Component definition type.
 
         Returns
         -------
@@ -111,8 +108,7 @@ class ComponentDef:
 
     @property
     def components(self) -> dict[str, Component]:
-        """
-        Component instances belonging to the definition.
+        """Component instances belonging to the definition.
 
         Returns
         -------
@@ -128,8 +124,7 @@ class ComponentDef:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the component definition is null.
+        """Check if the component definition is null.
 
         Returns
         -------
@@ -141,8 +136,7 @@ class ComponentDef:
 
     @property
     def component_pins(self) -> list[ComponentPin]:
-        """
-        Component pins.
+        """Component pins.
 
         Returns
         -------
@@ -153,8 +147,7 @@ class ComponentDef:
 
     @classmethod
     def find(cls, edb, name) -> "ComponentDef | None":
-        """
-        Find component definition by name.
+        """Find component definition by name.
 
         Parameters
         ----------
@@ -175,8 +168,7 @@ class ComponentDef:
 
     @classmethod
     def create(cls, edb, name, fp=None) -> "ComponentDef":
-        """
-        Create a new component definition.
+        """Create a new component definition.
 
         Parameters
         ----------
@@ -196,8 +188,7 @@ class ComponentDef:
         return ComponentDef(edb, component_def)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
-        """
-        Assign RLC to all components under this part name.
+        """Assign RLC to all components under this part name.
 
         Parameters
         ----------
@@ -221,8 +212,7 @@ class ComponentDef:
         return True
 
     def assign_s_param_model(self, file_path, model_name=None, reference_net=None) -> bool:
-        """
-        Assign S-parameter to all components under this part name.
+        """Assign S-parameter to all components under this part name.
 
         Parameters
         ----------
@@ -244,8 +234,7 @@ class ComponentDef:
         return True
 
     def assign_spice_model(self, file_path, model_name=None) -> bool:
-        """
-        Assign Spice model to all components under this part name.
+        """Assign Spice model to all components under this part name.
 
         Parameters
         ----------
@@ -265,8 +254,7 @@ class ComponentDef:
 
     @property
     def reference_file(self) -> list[str]:
-        """
-        Model reference file.
+        """Model reference file.
 
         Returns
         -------
@@ -278,8 +266,7 @@ class ComponentDef:
 
     @property
     def component_models(self) -> dict[str, ComponentModel]:
-        """
-        Component models.
+        """Component models.
 
         Returns
         -------
@@ -292,8 +279,7 @@ class ComponentDef:
 
     @property
     def name(self) -> str:
-        """
-        Component definition name.
+        """Component definition name.
 
         Returns
         -------
@@ -308,8 +294,7 @@ class ComponentDef:
         self.core.name = value
 
     def add_n_port_model(self, fpath, name=None) -> CoreNPortComponentModel:
-        """
-        Add N-port model.
+        """Add N-port model.
 
         Returns
         -------

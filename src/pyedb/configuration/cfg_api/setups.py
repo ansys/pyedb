@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build simulation setup configuration entries.
+"""Build simulation setup configuration entries.
 
 This module wraps HFSS, SIwave AC, and SIwave DC setup models with fluent
 helpers for common adaptive and sweep configurations.
@@ -39,8 +38,7 @@ from pyedb.configuration.cfg_setup import (
 
 
 class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
-    """
-    Fluent builder for a frequency sweep.
+    """Fluent builder for a frequency sweep.
 
     Inherits all fields from
     :class:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup.CfgFrequencySweep`.
@@ -49,8 +47,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
     model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, name: str, sweep_type: str = "interpolation", **kwargs):
-        """
-        Initialize a frequency sweep configuration.
+        """Initialize a frequency sweep configuration.
 
         Parameters
         ----------
@@ -85,8 +82,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         self.frequencies.append(CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single"))
 
     def to_dict(self) -> dict:
-        """
-        Serialize the frequency sweep.
+        """Serialize the frequency sweep.
 
         Returns
         -------
@@ -98,8 +94,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
 
 
 class HfssSetupConfig(CfgHFSSSetup):
-    """
-    Fluent builder for an HFSS setup.
+    """Fluent builder for an HFSS setup.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgHFSSSetup`.
     """
@@ -107,8 +102,7 @@ class HfssSetupConfig(CfgHFSSSetup):
     model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, name: str, **kwargs):
-        """
-        Initialize an HFSS setup configuration.
+        """Initialize an HFSS setup configuration.
 
         Parameters
         ----------
@@ -183,8 +177,7 @@ class HfssSetupConfig(CfgHFSSSetup):
         sweep_type: str = "interpolation",
         **kwargs,
     ) -> FrequencySweepConfig:
-        """
-        Add a frequency sweep to the HFSS setup.
+        """Add a frequency sweep to the HFSS setup.
 
         Returns
         -------
@@ -197,8 +190,7 @@ class HfssSetupConfig(CfgHFSSSetup):
         return sw
 
     def to_dict(self) -> dict:
-        """
-        Serialize the HFSS setup.
+        """Serialize the HFSS setup.
 
         Returns
         -------
@@ -214,8 +206,7 @@ class HfssSetupConfig(CfgHFSSSetup):
 
 
 class SIwaveACSetupConfig(CfgSIwaveACSetup):
-    """
-    Fluent builder for a SIwave AC setup.
+    """Fluent builder for a SIwave AC setup.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgSIwaveACSetup`.
     """
@@ -223,8 +214,7 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
     model_config = {"populate_by_name": True, "extra": "allow"}
 
     def __init__(self, name: str, **kwargs):
-        """
-        Initialize a SIwave AC setup configuration.
+        """Initialize a SIwave AC setup configuration.
 
         Parameters
         ----------
@@ -242,8 +232,7 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
         sweep_type: str = "interpolation",
         **kwargs,
     ) -> FrequencySweepConfig:
-        """
-        Add a frequency sweep to the SIwave AC setup.
+        """Add a frequency sweep to the SIwave AC setup.
 
         Returns
         -------
@@ -256,8 +245,7 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
         return sw
 
     def to_dict(self) -> dict:
-        """
-        Serialize the SIwave AC setup.
+        """Serialize the SIwave AC setup.
 
         Returns
         -------
@@ -269,8 +257,7 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
 
 
 class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
-    """
-    Fluent builder for a SIwave DC setup.
+    """Fluent builder for a SIwave DC setup.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_setup.CfgSIwaveDCSetup`.
     """
@@ -284,8 +271,7 @@ class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
         export_dc_thermal_data: bool = False,
         **kwargs,
     ):
-        """
-        Initialize a SIwave DC setup configuration.
+        """Initialize a SIwave DC setup configuration.
 
         Parameters
         ----------
@@ -303,8 +289,7 @@ class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
         super().__init__(name=name, dc_slider_position=dc_slider_position, dc_ir_settings=dc_ir, **kwargs)
 
     def to_dict(self) -> dict:
-        """
-        Serialize the SIwave DC setup.
+        """Serialize the SIwave DC setup.
 
         Returns
         -------
@@ -323,8 +308,7 @@ class SetupsConfig:
         self._setups: List = []
 
     def add_hfss_setup(self, name: str, **kwargs) -> HfssSetupConfig:
-        """
-        Add an HFSS setup.
+        """Add an HFSS setup.
 
         Returns
         -------
@@ -337,8 +321,7 @@ class SetupsConfig:
         return setup
 
     def add_siwave_ac_setup(self, name: str, **kwargs) -> SIwaveACSetupConfig:
-        """
-        Add a SIwave AC setup.
+        """Add a SIwave AC setup.
 
         Returns
         -------
@@ -351,8 +334,7 @@ class SetupsConfig:
         return setup
 
     def add_siwave_dc_setup(self, name: str, **kwargs) -> SIwaveDCSetupConfig:
-        """
-        Add a SIwave DC setup.
+        """Add a SIwave DC setup.
 
         Returns
         -------
@@ -365,8 +347,7 @@ class SetupsConfig:
         return setup
 
     def to_list(self) -> List[dict]:
-        """
-        Serialize all configured setups.
+        """Serialize all configured setups.
 
         Returns
         -------

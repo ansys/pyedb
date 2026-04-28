@@ -60,8 +60,7 @@ layer_type_mapping = {
 
 
 class Primitive:
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -81,8 +80,7 @@ class Primitive:
 
     @property
     def type(self) -> str:
-        """
-        Type of the primitive.
+        """Type of the primitive.
 
         Returns
         -------
@@ -95,8 +93,7 @@ class Primitive:
 
     @property
     def layout(self):
-        """
-        Layout object.
+        """Layout object.
 
         Returns
         -------
@@ -107,8 +104,7 @@ class Primitive:
 
     @property
     def polygon_data(self):
-        """
-        Polygon data.
+        """Polygon data.
 
         Returns
         -------
@@ -120,8 +116,7 @@ class Primitive:
 
     @polygon_data.setter
     def polygon_data(self, value):
-        """
-        Set polygon data.
+        """Set polygon data.
 
         Parameters
         ----------
@@ -137,8 +132,7 @@ class Primitive:
 
     @property
     def object_instance(self):
-        """
-        Layout object instance.
+        """Layout object instance.
 
         Returns
         -------
@@ -151,8 +145,7 @@ class Primitive:
 
     @property
     def net_name(self) -> str | None:
-        """
-        Net name.
+        """Net name.
 
         Returns
         -------
@@ -171,8 +164,7 @@ class Primitive:
 
     @property
     def layer_name(self) -> str:
-        """
-        Layer name.
+        """Layer name.
 
         Returns
         -------
@@ -189,8 +181,7 @@ class Primitive:
 
     @property
     def voids(self) -> list[Any]:
-        """
-        Primitive voids.
+        """Primitive voids.
 
         Returns
         -------
@@ -201,8 +192,7 @@ class Primitive:
 
     @property
     def has_voids(self) -> bool:
-        """
-        Check if primitive has voids.
+        """Check if primitive has voids.
 
         Returns
         -------
@@ -213,8 +203,7 @@ class Primitive:
 
     @property
     def is_negative(self) -> bool:
-        """
-        Check if primitive is negative.
+        """Check if primitive is negative.
 
         Returns
         -------
@@ -225,8 +214,7 @@ class Primitive:
 
     @is_negative.setter
     def is_negative(self, value: bool):
-        """
-        Set primitive as negative.
+        """Set primitive as negative.
 
         Parameters
         ----------
@@ -238,8 +226,7 @@ class Primitive:
 
     @property
     def is_parameterized(self) -> bool:
-        """
-        Check if any primitive is parameterized.
+        """Check if any primitive is parameterized.
 
         Returns
         -------
@@ -251,8 +238,7 @@ class Primitive:
 
     @property
     def is_zone_primitive(self) -> bool:
-        """
-        Check if primitive is a zone primitive.
+        """Check if primitive is a zone primitive.
 
         Returns
         -------
@@ -264,8 +250,7 @@ class Primitive:
 
     @property
     def can_be_zone_primitive(self) -> bool:
-        """
-        Check if primitive can be a zone primitive.
+        """Check if primitive can be a zone primitive.
 
         Returns
         -------
@@ -277,8 +262,7 @@ class Primitive:
 
     @property
     def aedt_name(self) -> str:
-        """
-        Name to be visualized in AEDT.
+        """Name to be visualized in AEDT.
 
         Returns
         -------
@@ -311,8 +295,7 @@ class Primitive:
         self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
     def get_connected_objects(self) -> list[Any]:
-        """
-        Get connected objects.
+        """Get connected objects.
 
         Returns
         -------
@@ -322,8 +305,7 @@ class Primitive:
         return self._pedb.get_connected_objects(self.object_instance)
 
     def area(self, include_voids=True) -> float:
-        """
-        Return the total area.
+        """Return the total area.
 
         Parameters
         ----------
@@ -344,8 +326,7 @@ class Primitive:
         return area
 
     def _get_points_for_plot(self, my_net_points, num) -> tuple[list[float], list[float]]:
-        """
-        Get the points to be plotted.
+        """Get the points to be plotted.
         """
         # fmt: off
         x = []
@@ -369,8 +350,7 @@ class Primitive:
 
     @property
     def center(self) -> tuple[float, float]:
-        """
-        Return the primitive bounding box center coordinate.
+        """Return the primitive bounding box center coordinate.
 
         Returns
         -------
@@ -382,8 +362,7 @@ class Primitive:
         return center.x, center.y
 
     def get_connected_object_id_set(self) -> list[int]:
-        """
-        Produce a list of all geometries physically connected to a given layout object.
+        """Produce a list of all geometries physically connected to a given layout object.
 
         Returns
         -------
@@ -397,8 +376,7 @@ class Primitive:
 
     @property
     def bbox(self) -> list[float]:
-        """
-        Return the primitive bounding box points. Lower left corner, upper right corner.
+        """Return the primitive bounding box points. Lower left corner, upper right corner.
 
         Returns
         -------
@@ -410,8 +388,7 @@ class Primitive:
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     def convert_to_polygon(self) -> Polygon | bool:
-        """
-        Convert path to polygon.
+        """Convert path to polygon.
 
         Returns
         -------
@@ -428,8 +405,7 @@ class Primitive:
             return False
 
     def intersection_type(self, primitive) -> int:
-        """
-        Get intersection type between actual primitive and another primitive or polygon data.
+        """Get intersection type between actual primitive and another primitive or polygon data.
 
         Parameters
         ----------
@@ -453,8 +429,7 @@ class Primitive:
             return 4
 
     def is_intersecting(self, primitive) -> bool:
-        """
-        Check if actual primitive and another primitive or polygon data intesects.
+        """Check if actual primitive and another primitive or polygon data intesects.
 
         Parameters
         ----------
@@ -468,8 +443,7 @@ class Primitive:
         return True if self.intersection_type(primitive) >= 1 else False
 
     def get_closest_point(self, point) -> list[float]:
-        """
-        Get the closest point of the primitive to the input data.
+        """Get the closest point of the primitive to the input data.
 
         Parameters
         ----------
@@ -490,8 +464,7 @@ class Primitive:
 
     @property
     def arcs(self):
-        """
-        Get the Primitive Arc Data.
+        """Get the Primitive Arc Data.
 
         Returns
         -------
@@ -504,8 +477,7 @@ class Primitive:
 
     @property
     def longest_arc(self) -> float:
-        """
-        Longest arc.
+        """Longest arc.
 
         Returns
         -------
@@ -522,8 +494,7 @@ class Primitive:
         return arc
 
     def rotate(self, angle, center=None) -> bool:
-        """
-        Rotate polygon around a center point by an angle.
+        """Rotate polygon around a center point by an angle.
 
         Parameters
         ----------
@@ -546,8 +517,7 @@ class Primitive:
         return False
 
     def move(self, vector) -> bool:
-        """
-        Move polygon along a vector.
+        """Move polygon along a vector.
 
         Parameters
         ----------
@@ -575,8 +545,7 @@ class Primitive:
         return False
 
     def scale(self, factor, center=None) -> bool:
-        """
-        Scales the polygon relative to a center point by a factor.
+        """Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------
@@ -604,8 +573,7 @@ class Primitive:
         return False
 
     def subtract(self, primitives) -> list[Any]:
-        """
-        Subtract active primitive with one or more primitives.
+        """Subtract active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -655,8 +623,7 @@ class Primitive:
         return new_polys
 
     def intersect(self, primitives) -> list[Any]:
-        """
-        Intersect active primitive with one or more primitives.
+        """Intersect active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -727,8 +694,7 @@ class Primitive:
         return new_polys
 
     def unite(self, primitives) -> list[Any]:
-        """
-        Unite active primitive with one or more primitives.
+        """Unite active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -781,8 +747,7 @@ class Primitive:
         return new_polys
 
     def get_closest_arc_midpoint(self, point) -> list[float]:
-        """
-        Get the closest arc midpoint of the primitive to the input data.
+        """Get the closest arc midpoint of the primitive to the input data.
 
         Parameters
         ----------
@@ -809,8 +774,7 @@ class Primitive:
 
     @property
     def shortest_arc(self) -> float:
-        """
-        Longest arc.
+        """Longest arc.
 
         Returns
         -------
@@ -827,8 +791,7 @@ class Primitive:
         return arc
 
     def add_void(self, point_list) -> bool:
-        """
-        Add a void to current primitive.
+        """Add a void to current primitive.
 
         Parameters
         ----------
@@ -853,8 +816,7 @@ class Primitive:
         return self.add_void(void_poly)
 
     def points(self, arc_segments=6) -> tuple[list[float], list[float]] | None:
-        """
-        Return the list of points with arcs converted to segments.
+        """Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
@@ -874,8 +836,7 @@ class Primitive:
         return x, y
 
     def points_raw(self):
-        """
-        Return a list of Edb points.
+        """Return a list of Edb points.
 
         Returns
         -------
@@ -887,8 +848,7 @@ class Primitive:
 
     @property
     def id(self) -> int:
-        """
-        Primitive ID. This is the same as edb_uid, long Int.
+        """Primitive ID. This is the same as edb_uid, long Int.
 
         Returns
         -------
@@ -900,8 +860,7 @@ class Primitive:
 
     @property
     def edb_uid(self) -> int:
-        """
-        Primitive EDB UID. This is the same as id, long Int.
+        """Primitive EDB UID. This is the same as id, long Int.
 
         Returns
         -------
@@ -913,8 +872,7 @@ class Primitive:
 
     @property
     def primitive_type(self) -> str:
-        """
-        Primitive type.
+        """Primitive type.
 
         Returns
         -------
@@ -946,8 +904,7 @@ class Primitive:
 
     @property
     def is_void(self):
-        """
-        Check if the primitive is a void.
+        """Check if the primitive is a void.
 
         Returns
         -------
@@ -959,8 +916,7 @@ class Primitive:
 
     @property
     def is_null(self):
-        """
-        Check if the primitive is null.
+        """Check if the primitive is null.
 
         Returns
         -------
@@ -972,8 +928,7 @@ class Primitive:
 
     @property
     def layer(self):
-        """
-        Get the layer object of the primitive.
+        """Get the layer object of the primitive.
 
         Returns
         -------
@@ -984,8 +939,7 @@ class Primitive:
         return self.core.layer
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[Any]:
-        """
-        Expand the polygon shape by an absolute value in all direction.
+        """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -1010,8 +964,7 @@ class Primitive:
         )
 
     def plot(self, plot_net=False, show=True, save_plot=None):
-        """
-        Plot the current polygon on matplotlib.
+        """Plot the current polygon on matplotlib.
 
         Parameters
         ----------

@@ -32,8 +32,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def load_regulator_current(self) -> float:
-        """
-        Get load regulator current value.
+        """Get load regulator current value.
 
         Returns
         -------
@@ -45,8 +44,7 @@ class VoltageRegulator(Connectable):
 
     @load_regulator_current.setter
     def load_regulator_current(self, value: float):
-        """
-        Set load regulator current value.
+        """Set load regulator current value.
 
         Parameters
         ----------
@@ -59,8 +57,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def load_regulation_percent(self) -> float:
-        """
-        Get load regulation percent value.
+        """Get load regulation percent value.
 
         Returns
         -------
@@ -72,8 +69,7 @@ class VoltageRegulator(Connectable):
 
     @load_regulation_percent.setter
     def load_regulation_percent(self, value: float):
-        """
-        Set load regulation percent value.
+        """Set load regulation percent value.
 
         Parameters
         ----------
@@ -86,8 +82,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def negative_remote_sense_pin(self) -> EDBPadstackInstance:
-        """
-        Get negative remote sense pin.
+        """Get negative remote sense pin.
 
         Returns
         -------
@@ -100,8 +95,7 @@ class VoltageRegulator(Connectable):
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value: EDBPadstackInstance):
-        """
-        Set negative remote sense pin.
+        """Set negative remote sense pin.
 
         Parameters
         ----------
@@ -120,8 +114,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def positive_remote_sense_pin(self) -> EDBPadstackInstance:
-        """
-        Get positive remote sense pin.
+        """Get positive remote sense pin.
 
         Returns
         -------
@@ -134,8 +127,7 @@ class VoltageRegulator(Connectable):
 
     @positive_remote_sense_pin.setter
     def positive_remote_sense_pin(self, value: int | EDBPadstackInstance):
-        """
-        Set positive remote sense pin.
+        """Set positive remote sense pin.
 
         Parameters
         ----------
@@ -158,8 +150,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def voltage(self) -> float:
-        """
-        Get voltage value.
+        """Get voltage value.
 
         Returns
         -------
@@ -171,8 +162,7 @@ class VoltageRegulator(Connectable):
 
     @voltage.setter
     def voltage(self, value: float):
-        """
-        Set voltage value.
+        """Set voltage value.
 
         Parameters
         ----------
@@ -184,8 +174,7 @@ class VoltageRegulator(Connectable):
 
     @property
     def is_active(self) -> bool:
-        """
-        Check if voltage regulator is active.
+        """Check if voltage regulator is active.
 
         Returns
         -------
@@ -197,8 +186,7 @@ class VoltageRegulator(Connectable):
 
     @is_active.setter
     def is_active(self, value: bool):
-        """
-        Set voltage regulator active state.
+        """Set voltage regulator active state.
 
         Parameters
         ----------

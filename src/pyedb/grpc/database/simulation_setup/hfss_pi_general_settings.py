@@ -41,8 +41,7 @@ class HFSSPIGeneralSettings:
 
     @property
     def mesh_region_name(self) -> str:
-        """
-        Mesh region name.
+        """Mesh region name.
 
         Returns
         -------
@@ -58,8 +57,7 @@ class HFSSPIGeneralSettings:
 
     @property
     def model_type(self) -> str:
-        """
-        Model type.
+        """Model type.
 
         Returns
         -------
@@ -77,8 +75,7 @@ class HFSSPIGeneralSettings:
 
     @property
     def use_auto_mesh_region(self) -> bool:
-        """
-        Flag indicating if auto mesh regions are used.
+        """Flag indicating if auto mesh regions are used.
 
         Returns
         -------
@@ -94,8 +91,7 @@ class HFSSPIGeneralSettings:
 
     @property
     def use_mesh_region(self) -> bool:
-        """
-        Flag indicating if mesh region is used.
+        """Flag indicating if mesh region is used.
 
         Returns
         -------

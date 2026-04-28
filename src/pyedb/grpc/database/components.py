@@ -62,8 +62,7 @@ if TYPE_CHECKING:
 
 
 def resistor_value_parser(r_value) -> float:
-    """
-    Convert a resistor value to float.
+    """Convert a resistor value to float.
 
     Parameters
     ----------
@@ -99,8 +98,7 @@ _mapping_component_type = {
 
 
 class Components(object):
-    """
-    Manages EDB components and related methods accessible from `Edb.components`.
+    """Manages EDB components and related methods accessible from `Edb.components`.
 
     Parameters
     ----------
@@ -116,8 +114,7 @@ class Components(object):
     """
 
     def __getitem__(self, name: str) -> Optional[Union[Component, ComponentDef]]:
-        """
-        Get a component or component definition by name.
+        """Get a component or component definition by name.
 
         Parameters
         ----------
@@ -156,8 +153,7 @@ class Components(object):
 
     @property
     def _logger(self) -> Any:
-        """
-        Logger instance for the component manager.
+        """Logger instance for the component manager.
 
         Returns
         -------
@@ -169,8 +165,7 @@ class Components(object):
 
     @property
     def _active_layout(self):
-        """
-        Active layout of the EDB database.
+        """Active layout of the EDB database.
 
         Returns
         -------
@@ -182,8 +177,7 @@ class Components(object):
 
     @property
     def _layout(self):
-        """
-        Layout of the EDB database.
+        """Layout of the EDB database.
 
         Returns
         -------
@@ -195,8 +189,7 @@ class Components(object):
 
     @property
     def _cell(self):
-        """
-        Cell of the EDB database.
+        """Cell of the EDB database.
 
         Returns
         -------
@@ -208,8 +201,7 @@ class Components(object):
 
     @property
     def _db(self):
-        """
-        Active database.
+        """Active database.
 
         Returns
         -------
@@ -221,8 +213,7 @@ class Components(object):
 
     @property
     def instances(self) -> Dict[str, Component]:
-        """
-        Dictionary of all component instances in the layout.
+        """Dictionary of all component instances in the layout.
 
         Returns
         -------
@@ -238,8 +229,7 @@ class Components(object):
 
     @property
     def definitions(self) -> Dict[str, ComponentDef]:
-        """
-        Dictionary of all component definitions.
+        """Dictionary of all component definitions.
 
         Returns
         -------
@@ -255,8 +245,7 @@ class Components(object):
 
     @property
     def nport_comp_definition(self) -> Dict[str, ComponentDef]:
-        """
-        Dictionary of N-port component definitions.
+        """Dictionary of N-port component definitions.
 
         Returns
         -------
@@ -267,8 +256,7 @@ class Components(object):
         return {name: l for name, l in self.definitions.items() if l.reference_file}
 
     def import_definition(self, file_path) -> bool:
-        """
-        Import component definitions from a JSON file.
+        """Import component definitions from a JSON file.
 
         Parameters
         ----------
@@ -312,8 +300,7 @@ class Components(object):
         return True
 
     def export_definition(self, file_path) -> bool:
-        """
-        Export component definitions to a JSON file.
+        """Export component definitions to a JSON file.
 
         Parameters
         ----------
@@ -369,8 +356,7 @@ class Components(object):
         return True
 
     def refresh_components(self) -> bool:
-        """
-        Refresh the component dictionary.
+        """Refresh the component dictionary.
 
         Returns
         -------
@@ -419,8 +405,7 @@ class Components(object):
 
     @property
     def resistors(self) -> Dict[str, Component]:
-        """
-        Dictionary of resistor components.
+        """Dictionary of resistor components.
 
         Returns
         -------
@@ -436,8 +421,7 @@ class Components(object):
 
     @property
     def capacitors(self) -> Dict[str, Component]:
-        """
-        Dictionary of capacitor components.
+        """Dictionary of capacitor components.
 
         Returns
         -------
@@ -453,8 +437,7 @@ class Components(object):
 
     @property
     def inductors(self) -> Dict[str, Component]:
-        """
-        Dictionary of inductor components.
+        """Dictionary of inductor components.
 
         Returns
         -------
@@ -470,8 +453,7 @@ class Components(object):
 
     @property
     def ICs(self) -> Dict[str, Component]:
-        """
-        Dictionary of integrated circuit components.
+        """Dictionary of integrated circuit components.
 
         Returns
         -------
@@ -487,8 +469,7 @@ class Components(object):
 
     @property
     def IOs(self) -> Dict[str, Component]:
-        """
-        Dictionary of I/O components.
+        """Dictionary of I/O components.
 
         Returns
         -------
@@ -504,8 +485,7 @@ class Components(object):
 
     @property
     def structures_3d(self) -> Dict[str, Structure3D]:
-        """
-        Dictionary of structures 3D components.
+        """Dictionary of structures 3D components.
 
         Returns
         -------
@@ -519,8 +499,7 @@ class Components(object):
 
     @property
     def Others(self) -> Dict[str, Component]:
-        """
-        Dictionary of other components.
+        """Dictionary of other components.
 
         Returns
         -------
@@ -536,8 +515,7 @@ class Components(object):
 
     @property
     def components_by_partname(self) -> Dict[str, List[Component]]:
-        """
-        Dictionary of components grouped by part name.
+        """Dictionary of components grouped by part name.
 
         Returns
         -------
@@ -558,8 +536,7 @@ class Components(object):
         return self._comps_by_part
 
     def get_component_by_name(self, name) -> Component:
-        """
-        Retrieve a component by name.
+        """Retrieve a component by name.
 
         Parameters
         ----------
@@ -585,8 +562,7 @@ class Components(object):
         net_name: Optional[Union[str, List[str]]] = None,
         pin_name: Optional[str] = None,
     ) -> List[Any]:
-        """
-        Get pins from a component with optional filtering.
+        """Get pins from a component with optional filtering.
 
         Parameters
         ----------
@@ -621,8 +597,7 @@ class Components(object):
         return pins
 
     def get_components_from_nets(self, netlist=None) -> list[str]:
-        """
-        Get components connected to specified nets.
+        """Get components connected to specified nets.
 
         Parameters
         ----------
@@ -651,8 +626,7 @@ class Components(object):
 
     @staticmethod
     def _get_edb_pin_from_pin_name(cmp: Component, pin: str) -> Any:
-        """
-        Get EDB pin from pin name.
+        """Get EDB pin from pin name.
 
         Parameters
         ----------
@@ -685,8 +659,7 @@ class Components(object):
         hosting_component_pin2: str,
         flipped: bool = False,
     ) -> Tuple[bool, List[float], float, float]:
-        """
-        Get placement vector between two components.
+        """Get placement vector between two components.
 
         Parameters
         ----------
@@ -770,8 +743,7 @@ class Components(object):
         return False, [0, 0], 0, 0
 
     def get_solder_ball_height(self, cmp: Union[str, Component]) -> float:
-        """
-        Get solder ball height of a component.
+        """Get solder ball height of a component.
 
         Parameters
         ----------
@@ -793,8 +765,7 @@ class Components(object):
         return cmp.solder_ball_height
 
     def get_vendor_libraries(self) -> ComponentLib:
-        """
-        Get vendor component libraries.
+        """Get vendor component libraries.
 
         Returns
         -------
@@ -838,8 +809,7 @@ class Components(object):
         return comp_lib
 
     def _get_closest_pin_from(self, pin, ref_pinlist):
-        """
-        Get closest pin from a list of pins.
+        """Get closest pin from a list of pins.
 
         Parameters
         ----------
@@ -865,8 +835,7 @@ class Components(object):
         return closest_pin
 
     def _is_top_component(self, cmp) -> bool:
-        """
-        Check if component is on top layer.
+        """Check if component is on top layer.
 
         Parameters
         ----------
@@ -886,8 +855,7 @@ class Components(object):
             return False
 
     def _get_component_definition(self, name, pins) -> Union[ComponentDef, None]:
-        """
-        Get or create component definition.
+        """Get or create component definition.
 
         Parameters
         ----------
@@ -935,8 +903,7 @@ class Components(object):
         l_value: Optional[float] = None,
         is_parallel: bool = False,
     ) -> Union[Component, bool]:
-        """
-        Create a new component.
+        """Create a new component.
 
         Parameters
         ----------
@@ -1075,8 +1042,7 @@ class Components(object):
         modelpath: Optional[str] = None,
         modelname: Optional[str] = None,
     ) -> bool:
-        """
-        Set component model.
+        """Set component model.
 
         Parameters
         ----------
@@ -1153,8 +1119,7 @@ class Components(object):
         return True
 
     def create_pingroup_from_pins(self, pins: List[Any], group_name: Optional[str] = None) -> Union[PinGroup, bool]:
-        """
-        Create pin group from pins.
+        """Create pin group from pins.
 
         Parameters
         ----------
@@ -1206,8 +1171,7 @@ class Components(object):
             return pin_group
 
     def delete_single_pin_rlc(self, deactivate_only: bool = False) -> List[str]:
-        """
-        Delete or deactivate single-pin RLC components.
+        """Delete or deactivate single-pin RLC components.
 
         Parameters
         ----------
@@ -1255,8 +1219,7 @@ class Components(object):
         return deleted_comps
 
     def delete(self, component_name: str) -> bool:
-        """
-        Delete a component.
+        """Delete a component.
 
         Parameters
         ----------
@@ -1283,8 +1246,7 @@ class Components(object):
         return False
 
     def disable_rlc_component(self, component_name: str) -> bool:
-        """
-        Disable RLC component.
+        """Disable RLC component.
 
         Parameters
         ----------
@@ -1330,8 +1292,7 @@ class Components(object):
         reference_height: float = 0,
         material_name: str = None,
     ) -> bool:
-        """
-        Set solder ball properties for a component.
+        """Set solder ball properties for a component.
 
         Parameters
         ----------
@@ -1439,8 +1400,7 @@ class Components(object):
         cap_value: Optional[float] = None,
         isparallel: bool = False,
     ) -> bool:
-        """
-        Set RLC values for a component.
+        """Set RLC values for a component.
 
         Parameters
         ----------
@@ -1514,8 +1474,7 @@ class Components(object):
         comptype: str = "Prod name",
         refdes: str = "Pos / Place",
     ) -> bool:
-        """
-        Update RLC values from BOM file.
+        """Update RLC values from BOM file.
 
         Parameters
         ----------
@@ -1594,8 +1553,7 @@ class Components(object):
         comp_type_col: int = 2,
         value_col: int = 3,
     ) -> bool:
-        """
-        Import BOM file.
+        """Import BOM file.
 
         Parameters
         ----------
@@ -1678,8 +1636,7 @@ class Components(object):
         return True
 
     def export_bom(self, bom_file: str, delimiter: str = ",") -> bool:
-        """
-        Export BOM file.
+        """Export BOM file.
 
         Parameters
         ----------
@@ -1719,8 +1676,7 @@ class Components(object):
         return True
 
     def find_by_reference_designator(self, reference_designator: str) -> Component:
-        """
-        Find component by reference designator.
+        """Find component by reference designator.
 
         Parameters
         ----------
@@ -1740,8 +1696,7 @@ class Components(object):
         return self.instances[reference_designator]
 
     def get_aedt_pin_name(self, pin: Any) -> str:
-        """
-        Get AEDT pin name.
+        """Get AEDT pin name.
 
         Parameters
         ----------
@@ -1763,8 +1718,7 @@ class Components(object):
     def get_pins(
         self, reference_designator: str, net_name: Optional[str] = None, pin_name: Optional[str] = None
     ) -> Dict[str, Any]:
-        """
-        Get pins of a component.
+        """Get pins of a component.
 
         Parameters
         ----------
@@ -1797,8 +1751,7 @@ class Components(object):
         return pins
 
     def get_pin_position(self, pin: Any) -> List[float]:
-        """
-        Get pin position.
+        """Get pin position.
 
         Parameters
         ----------
@@ -1829,8 +1782,7 @@ class Components(object):
             return [Value(transformed_pt_pos[0]), Value(transformed_pt_pos[1])]
 
     def get_pins_name_from_net(self, net_name: str, pin_list: Optional[List[Any]] = None) -> List[str]:
-        """
-        Get pin names from net.
+        """Get pin names from net.
 
         Parameters
         ----------
@@ -1862,8 +1814,7 @@ class Components(object):
         return pin_names
 
     def get_nets_from_pin_list(self, pins: List[Any]) -> List[str]:
-        """
-        Get nets from pin list.
+        """Get nets from pin list.
 
         Parameters
         ----------
@@ -1883,8 +1834,7 @@ class Components(object):
         return list(set([pin.net.name for pin in pins]))
 
     def get_component_net_connection_info(self, refdes: str) -> Dict[str, List[str]]:
-        """
-        Get net connection info for a component.
+        """Get net connection info for a component.
 
         Parameters
         ----------
@@ -1913,8 +1863,7 @@ class Components(object):
         return data
 
     def get_rats(self) -> List[Dict[str, List[str]]]:
-        """
-        Get RATS (Reference Designator, Pin, Net) information.
+        """Get RATS (Reference Designator, Pin, Net) information.
 
         Returns
         -------
@@ -1933,8 +1882,7 @@ class Components(object):
         return df_list
 
     def get_through_resistor_list(self, threshold: float = 1) -> List[str]:
-        """
-        Get through resistors below threshold.
+        """Get through resistors below threshold.
 
         Parameters
         ----------
@@ -1967,8 +1915,7 @@ class Components(object):
     def short_component_pins(
         self, component_name: str, pins_to_short: Optional[List[str]] = None, width: float = 1e-3
     ) -> bool:
-        """
-        Short component pins with traces.
+        """Short component pins with traces.
 
         Parameters
         ----------
@@ -2109,8 +2056,7 @@ class Components(object):
     def create_pin_group(
         self, reference_designator: str, pin_numbers: Union[str, List[str]], group_name: Optional[str] = None
     ) -> Union[Tuple[str, PinGroup], bool]:
-        """
-        Create pin group on a component.
+        """Create pin group on a component.
 
         Parameters
         ----------
@@ -2158,8 +2104,7 @@ class Components(object):
     def create_pin_group_on_net(
         self, reference_designator: str, net_name: str, group_name: Optional[str] = None
     ) -> Union[PinGroup, Tuple[str, PinGroup], bool]:
-        """
-        Create pin group by net name.
+        """Create pin group by net name.
 
         Parameters
         ----------
@@ -2188,8 +2133,7 @@ class Components(object):
     def deactivate_rlc_component(
         self, component: Optional[str] = None, create_circuit_port: bool = False, pec_boundary: bool = False
     ) -> bool:
-        """
-        Deactivate RLC component with a possibility to convert it to a circuit port.
+        """Deactivate RLC component with a possibility to convert it to a circuit port.
 
         Parameters
         ----------
@@ -2239,8 +2183,7 @@ class Components(object):
     def add_port_on_rlc_component(
         self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
     ) -> bool:
-        """
-        Deactivate RLC component and replace it with a circuit port.
+        """Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only two-pin components.
 
         Parameters
@@ -2275,8 +2218,7 @@ class Components(object):
         )
 
     def replace_rlc_by_gap_boundaries(self, component: Optional[Union[str, Component]] = None) -> bool:
-        """
-        Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
+        """Replace RLC component by RLC gap boundaries. These boundary types are compatible with 3D modeler export.
         Only 2 pins RLC components are supported in this command.
 
         Parameters
@@ -2314,8 +2256,7 @@ class Components(object):
 
     @deprecated("use excitation_manager.add_rlc_boundary instead")
     def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
-        """
-        Add RLC gap boundary on component and replace it with a circuit port.
+        """Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
 
         . deprecated:: pyedb 0.28.0

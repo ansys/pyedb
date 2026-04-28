@@ -49,8 +49,7 @@ class PinGroupTerminal(Terminal):
 
     @property
     def net(self) -> Net:
-        """
-        Terminal net.
+        """Terminal net.
 
         Returns
         -------
@@ -68,8 +67,7 @@ class PinGroupTerminal(Terminal):
 
     @property
     def pin_group(self) -> PinGroup:
-        """
-        Pingroup.
+        """Pingroup.
 
         Returns
         -------
@@ -83,8 +81,7 @@ class PinGroupTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """
-        Check if the terminal is a reference terminal.
+        """Check if the terminal is a reference terminal.
 
         Returns
         -------
@@ -96,8 +93,7 @@ class PinGroupTerminal(Terminal):
 
     @classmethod
     def create(cls, layout, name, pin_group, net=None, is_ref=False) -> PinGroupTerminal:
-        """
-        Create a pin group terminal.
+        """Create a pin group terminal.
         Parameters
         ----------
         layout : :class:`.Layout`

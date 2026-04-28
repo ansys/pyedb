@@ -45,8 +45,7 @@ class Variable:
 
     @property
     def value(self):
-        """
-        Get the value of this variable.
+        """Get the value of this variable.
 
         Returns
         -------
@@ -74,8 +73,7 @@ class Variable:
         return self._pedb.is_parameter(self.name)
 
     def delete(self):
-        """
-        Delete this variable.
+        """Delete this variable.
 
         Returns
         -------

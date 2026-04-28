@@ -64,8 +64,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def solver_slider_type(self):
-        """
-        Solver slider type.
+        """Solver slider type.
         Options are:
         1 - ``Fast``.
         2 - ``Medium``.
@@ -108,8 +107,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def hfss_solver_settings(self):
-        """
-        Manages EDB methods for HFSS solver settings.
+        """Manages EDB methods for HFSS solver settings.
 
         Returns
         -------
@@ -120,8 +118,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def adaptive_settings(self):
-        """
-        Adaptive Settings Class.
+        """Adaptive Settings Class.
 
         Returns
         -------
@@ -132,8 +129,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def defeature_settings(self):
-        """
-        Defeature settings Class.
+        """Defeature settings Class.
 
         Returns
         -------
@@ -144,8 +140,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def via_settings(self):
-        """
-        Via settings Class.
+        """Via settings Class.
 
         Returns
         -------
@@ -156,8 +151,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def advanced_mesh_settings(self):
-        """
-        Advanced mesh settings Class.
+        """Advanced mesh settings Class.
 
         Returns
         -------
@@ -168,8 +162,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def curve_approx_settings(self):
-        """
-        Curve approximation settings Class.
+        """Curve approximation settings Class.
 
         Returns
         -------
@@ -180,8 +173,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def dcr_settings(self):
-        """
-        Dcr settings Class.
+        """Dcr settings Class.
 
         Returns
         -------
@@ -192,8 +184,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def hfss_port_settings(self):
-        """
-        HFSS port settings Class.
+        """HFSS port settings Class.
 
         Returns
         -------
@@ -204,8 +195,7 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def mesh_operations(self):
-        """
-        Mesh operations settings Class.
+        """Mesh operations settings Class.
 
         Returns
         -------
@@ -235,8 +225,7 @@ class HfssSimulationSetup(SimulationSetup):
         refine_inside=False,
         mesh_region=None,
     ):
-        """
-        Add a mesh operation to the setup.
+        """Add a mesh operation to the setup.
 
         Parameters
         ----------
@@ -289,8 +278,7 @@ class HfssSimulationSetup(SimulationSetup):
         refine_inside=False,
         mesh_region=None,
     ):
-        """
-        Add a mesh operation to the setup.
+        """Add a mesh operation to the setup.
 
         Parameters
         ----------
@@ -335,8 +323,7 @@ class HfssSimulationSetup(SimulationSetup):
         return mesh_operation
 
     def set_solution_single_frequency(self, frequency="5Ghz", max_num_passes=10, max_delta_s=0.02):
-        """
-        Set single-frequency solution.
+        """Set single-frequency solution.
 
         Parameters
         ----------
@@ -357,8 +344,7 @@ class HfssSimulationSetup(SimulationSetup):
         return self.adaptive_settings.add_adaptive_frequency_data(frequency, max_num_passes, max_delta_s)
 
     def set_solution_multi_frequencies(self, frequencies=("5Ghz", "10Ghz"), max_num_passes=10, max_delta_s="0.02"):
-        """
-        Set multi-frequency solution.
+        """Set multi-frequency solution.
 
         Parameters
         ----------
@@ -383,8 +369,7 @@ class HfssSimulationSetup(SimulationSetup):
     def set_solution_broadband(
         self, low_frequency="5Ghz", high_frequency="10Ghz", max_num_passes=10, max_delta_s="0.02"
     ):
-        """
-        Set broadband solution.
+        """Set broadband solution.
 
         Parameters
         ----------
@@ -415,8 +400,7 @@ class HfssSimulationSetup(SimulationSetup):
         trace_ratio_seeding: float = 3,
         signal_via_side_number: int | None = None,
     ) -> bool:
-        """
-        Automatically create and apply a length-based mesh operation for all nets in the design.
+        """Automatically create and apply a length-based mesh operation for all nets in the design.
 
         The method inspects every signal net, determines the smallest trace width, and
         seeds a :class:`LengthMeshOperation` whose maximum element length is
@@ -504,8 +488,7 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb, name) -> "HFSSPISimulationSetup":
-        """
-        Create a new HFSSPI simulation setup.
+        """Create a new HFSSPI simulation setup.
 
         Parameters
         ----------

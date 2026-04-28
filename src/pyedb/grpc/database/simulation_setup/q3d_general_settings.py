@@ -35,8 +35,7 @@ class Q3DGeneralSettings:
 
     @property
     def do_ac(self) -> bool:
-        """
-        Whether to perform AC analysis.
+        """Whether to perform AC analysis.
 
         Returns
         -------
@@ -52,8 +51,7 @@ class Q3DGeneralSettings:
 
     @property
     def do_cg(self) -> bool:
-        """
-        Whether to perform CG analysis.
+        """Whether to perform CG analysis.
 
         Returns
         -------
@@ -69,8 +67,7 @@ class Q3DGeneralSettings:
 
     @property
     def do_dc(self) -> bool:
-        """
-        Whether to perform DC analysis.
+        """Whether to perform DC analysis.
 
         Returns
         -------
@@ -86,8 +83,7 @@ class Q3DGeneralSettings:
 
     @property
     def do_dc_res_only(self) -> bool:
-        """
-        Whether to perform DC resistance only analysis.
+        """Whether to perform DC resistance only analysis.
 
         Returns
         -------
@@ -103,8 +99,7 @@ class Q3DGeneralSettings:
 
     @property
     def save_fields(self) -> bool:
-        """
-        Whether to save fields.
+        """Whether to save fields.
 
         Returns
         -------
@@ -120,8 +115,7 @@ class Q3DGeneralSettings:
 
     @property
     def solution_frequency(self) -> float:
-        """
-        Solution frequency in Hz.
+        """Solution frequency in Hz.
 
         Returns
         -------

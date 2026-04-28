@@ -84,8 +84,7 @@ class PointData:
 
     @property
     def is_arc(self) -> bool:
-        """
-        Flag indicating if the point represents an arc.
+        """Flag indicating if the point represents an arc.
 
         This property is read-only.
         """

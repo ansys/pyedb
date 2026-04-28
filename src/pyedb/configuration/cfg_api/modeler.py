@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build the ``modeler`` configuration section.
+"""Build the ``modeler`` configuration section.
 
 The builders in this module define primitive geometry, padstack content,
 component instances, and cleanup requests for geometry-driven configuration
@@ -59,8 +58,7 @@ class ModelerConfig:
         end_cap_style: str = "round",
         corner_style: str = "sharp",
     ) -> dict:
-        """
-        Add a trace primitive.
+        """Add a trace primitive.
 
         Returns
         -------
@@ -93,8 +91,7 @@ class ModelerConfig:
         rotation: Union[float, str] = 0,
         voids: Optional[List] = None,
     ) -> dict:
-        """
-        Add a rectangular plane primitive.
+        """Add a rectangular plane primitive.
 
         Returns
         -------
@@ -125,8 +122,7 @@ class ModelerConfig:
         position: Optional[List[float]] = None,
         voids: Optional[List] = None,
     ) -> dict:
-        """
-        Add a circular plane primitive.
+        """Add a circular plane primitive.
 
         Returns
         -------
@@ -154,8 +150,7 @@ class ModelerConfig:
         points: Optional[List[List[float]]] = None,
         voids: Optional[List] = None,
     ) -> dict:
-        """
-        Add a polygon plane primitive.
+        """Add a polygon plane primitive.
 
         Returns
         -------
@@ -175,8 +170,7 @@ class ModelerConfig:
         return p
 
     def add_padstack_definition(self, name: str, **kwargs):
-        """
-        Add a modeler padstack definition.
+        """Add a modeler padstack definition.
 
         Parameters
         ----------
@@ -191,8 +185,7 @@ class ModelerConfig:
         self._padstack_definitions.append(data)
 
     def add_padstack_instance(self, **kwargs):
-        """
-        Add a modeler padstack instance.
+        """Add a modeler padstack instance.
 
         Parameters
         ----------
@@ -210,8 +203,7 @@ class ModelerConfig:
         definition: Optional[str] = None,
         placement_layer: Optional[str] = None,
     ) -> "ComponentConfig":
-        """
-        Add a component instance to the modeler section.
+        """Add a component instance to the modeler section.
 
         Returns
         -------
@@ -244,8 +236,7 @@ class ModelerConfig:
         self._primitives_to_delete["net_name"].extend(net_names)
 
     def to_dict(self) -> dict:
-        """
-        Serialize the modeler configuration.
+        """Serialize the modeler configuration.
 
         Returns
         -------

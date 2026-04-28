@@ -42,8 +42,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @classmethod
     def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None) -> "PadstackInstanceTerminal":
-        """
-        Create a padstack instance terminal.
+        """Create a padstack instance terminal.
         Parameters
         ----------
         layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
@@ -76,8 +75,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """
-        Check if the terminal is a reference terminal.
+        """Check if the terminal is a reference terminal.
 
         Returns
         -------
@@ -89,8 +87,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def id(self) -> int:
-        """
-        Terminal ID.
+        """Terminal ID.
 
         Returns
         -------
@@ -102,8 +99,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def edb_uid(self) -> int:
-        """
-        Terminal EDB UID.
+        """Terminal EDB UID.
 
         Returns
         -------
@@ -115,8 +111,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def net(self) -> Net:
-        """
-        Net.
+        """Net.
 
         Returns
         -------
@@ -130,8 +125,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def position(self) -> tuple[float, float]:
-        """
-        Terminal position.
+        """Terminal position.
 
         Returns
         -------
@@ -155,8 +149,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def location(self) -> tuple[float, float]:
-        """
-        Terminal position.
+        """Terminal position.
 
         Returns
         -------

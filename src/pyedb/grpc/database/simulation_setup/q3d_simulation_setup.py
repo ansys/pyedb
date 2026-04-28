@@ -33,8 +33,7 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class Q3DSimulationSetup(SimulationSetup):
-    """
-    Q3D simulation setup management.
+    """Q3D simulation setup management.
 
     Parameters
     ----------
@@ -50,8 +49,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "Edb", name: str = "Q3D_setup") -> "Q3DSimulationSetup":
-        """
-        Create a Q3D simulation setup.
+        """Create a Q3D simulation setup.
 
         Parameters
         ----------
@@ -72,8 +70,7 @@ class Q3DSimulationSetup(SimulationSetup):
 
     @property
     def settings(self) -> Q3DSimulationSettings:
-        """
-        Q3D simulation settings.
+        """Q3D simulation settings.
 
         Returns
         -------

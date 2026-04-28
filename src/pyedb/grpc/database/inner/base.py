@@ -37,8 +37,7 @@ class ObjBase:
 
     @property
     def is_null(self):
-        """
-        Check if the terminal is a null terminal.
+        """Check if the terminal is a null terminal.
 
         Returns
         -------

@@ -50,8 +50,7 @@ class PinPairModel(Model):
         return [PinPair(self.component, i) for i in self._edb_object.PinPairs]
 
     def delete_pin_pair_rlc(self, pin_pair):
-        """
-        Delete a pin pair definition.
+        """Delete a pin pair definition.
 
         Parameters
         ----------
@@ -65,8 +64,7 @@ class PinPairModel(Model):
         return self._edb_object.DeletePinPairRlc(pin_pair)
 
     def _set_pin_pair_rlc(self, pin_pair, pin_par_rlc):
-        """
-        Set resistance, inductance, capacitance to a pin pair definition.
+        """Set resistance, inductance, capacitance to a pin pair definition.
 
         Parameters
         ----------
@@ -92,8 +90,7 @@ class PinPairModel(Model):
         second_pin: str | None = None,
         is_parallel: bool = False,
     ):
-        """
-        Add a pin pair definition.
+        """Add a pin pair definition.
 
         Parameters
         ----------

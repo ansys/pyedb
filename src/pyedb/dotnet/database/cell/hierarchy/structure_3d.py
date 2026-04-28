@@ -28,8 +28,7 @@ class Structure3D:
 
     @classmethod
     def create(cls, edb, name: str) -> "Structure3D":
-        """
-        Create a new structure 3D object
+        """Create a new structure 3D object
 
         Returns
         -------
@@ -46,8 +45,7 @@ class Structure3D:
 
     @property
     def id(self) -> int:
-        """
-        The id of the structure 3D object
+        """The id of the structure 3D object
 
         Returns
         -------
@@ -59,8 +57,7 @@ class Structure3D:
 
     @property
     def location(self) -> tuple[float, float]:
-        """
-        The location of the structure 3D object.
+        """The location of the structure 3D object.
 
         Returns
         -------
@@ -78,8 +75,7 @@ class Structure3D:
 
     @property
     def name(self) -> str:
-        """
-        The name of the structure 3D object.
+        """The name of the structure 3D object.
 
         Returns
         -------
@@ -95,8 +91,7 @@ class Structure3D:
 
     @property
     def material(self) -> str:
-        """
-        The material name of the structure 3D object.
+        """The material name of the structure 3D object.
 
         Returns
         -------
@@ -112,8 +107,7 @@ class Structure3D:
 
     @property
     def net(self) -> str:
-        """
-        The net of the structure 3D object.
+        """The net of the structure 3D object.
 
         Returns
         -------

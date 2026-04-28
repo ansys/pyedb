@@ -74,8 +74,7 @@ class AdaptiveType(object):
 
 
 class SimulationSetup(SystemObject):
-    """
-    Provide base simulation setup.
+    """Provide base simulation setup.
 
     Parameters
     ----------
@@ -303,8 +302,7 @@ class SimulationSetup(SystemObject):
         discrete=False,
         **kwargs,
     ):
-        """
-        Add frequency sweep.
+        """Add frequency sweep.
 
         Parameters
         ----------
@@ -369,8 +367,7 @@ class SimulationSetup(SystemObject):
         self._pedb.layout.cell.DeleteSimulationSetup(self.name)
 
     def _add_frequency_sweep(self, sweep_data):
-        """
-        Add a frequency sweep.
+        """Add a frequency sweep.
 
         Parameters
         ----------
@@ -381,8 +378,7 @@ class SimulationSetup(SystemObject):
         return self.sim_setup_info.add_sweep_data(sweep_data)
 
     def delete_frequency_sweep(self, sweep_data):
-        """
-        Delete a frequency sweep.
+        """Delete a frequency sweep.
 
         Parameters
         ----------
@@ -403,8 +399,7 @@ class SimulationSetup(SystemObject):
             return False if name in self.sweeps else True
 
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
-        """
-        Add frequency sweep.
+        """Add frequency sweep.
 
         Parameters
         ----------
@@ -434,8 +429,7 @@ class SimulationSetup(SystemObject):
 
     @property
     def settings(self):
-        """
-        Get the settings interface for SIwave DC simulation.
+        """Get the settings interface for SIwave DC simulation.
 
         Returns
         -------

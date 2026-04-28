@@ -24,8 +24,7 @@ from pyedb.generic.general_methods import ET
 
 
 class XmlGeneric:
-    """
-    Generic XML handler for EMC configuration.
+    """Generic XML handler for EMC configuration.
 
     This class provides a generic interface for creating, reading, and writing
     XML configurations. It supports nested elements and automatic attribute mapping.
@@ -56,8 +55,7 @@ class XmlGeneric:
     CLS_MAPPING: dict = {}
 
     def __init__(self, element) -> None:
-        """
-        Initialize XML generic handler.
+        """Initialize XML generic handler.
 
         Parameters
         ----------
@@ -70,8 +68,7 @@ class XmlGeneric:
         self.sub_elements: list = []
 
     def add_sub_element(self, kwargs: dict, elem_type: str) -> None:
-        """
-        Add a sub-element to the XML structure.
+        """Add a sub-element to the XML structure.
 
         Parameters
         ----------
@@ -92,8 +89,7 @@ class XmlGeneric:
         self.sub_elements.append(obj.create(kwargs))
 
     def create(self, kwargs: dict):
-        """
-        Create XML object from keyword arguments.
+        """Create XML object from keyword arguments.
 
         Parameters
         ----------
@@ -124,8 +120,7 @@ class XmlGeneric:
         return self
 
     def write_xml(self, parent):
-        """
-        Write object to XML element tree.
+        """Write object to XML element tree.
 
         Parameters
         ----------
@@ -165,8 +160,7 @@ class XmlGeneric:
         return parent
 
     def write_dict(self, parent: dict) -> None:
-        """
-        Write object to dictionary format.
+        """Write object to dictionary format.
 
         Parameters
         ----------
@@ -203,8 +197,7 @@ class XmlGeneric:
         parent[self.__class__.__name__] = temp
 
     def read_dict(self, data: dict) -> None:
-        """
-        Read object from dictionary format.
+        """Read object from dictionary format.
 
         Parameters
         ----------

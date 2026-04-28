@@ -30,8 +30,7 @@ from pyedb.grpc.database.inner.base import ObjBase
 
 @dataclass
 class HFSSProductProperty:
-    """
-    Represents the HFSS product properties.
+    """Represents the HFSS product properties.
 
     This class encapsulates configuration settings for HFSS simulations, including
     port type, orientation, layer alignment, and extent factors for various dimensions.
@@ -67,8 +66,7 @@ class HFSSProductProperty:
     reference_name: str = ""
 
     def to_hfss_string(self) -> str:
-        """
-        Convert HFSSProductProperty instance into an HFSS configuration string.
+        """Convert HFSSProductProperty instance into an HFSS configuration string.
 
         Returns
         -------
@@ -106,8 +104,7 @@ class HFSSProductProperty:
 
 
 def parse_hfss_string(s: str | None) -> HFSSProductProperty:
-    """
-    Parse an HFSS property string into an HFSSProductProperty object.
+    """Parse an HFSS property string into an HFSSProductProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     HFSS properties and reconstructs them into a structured object.
@@ -162,8 +159,7 @@ def parse_hfss_string(s: str | None) -> HFSSProductProperty:
 
 @dataclass
 class HorizontalWavePortProperty:
-    """
-    Represents the properties of a horizontal wave port.
+    """Represents the properties of a horizontal wave port.
 
     This class encapsulates configuration settings for horizontal wave ports used in
     electromagnetic simulations. It stores port characteristics such as type, geometry
@@ -197,8 +193,7 @@ class HorizontalWavePortProperty:
     is_gap_source: bool = True
 
     def to_property_string(self) -> str:
-        """
-        Convert HorizontalWavePortProperty instance into an interpretable property string.
+        """Convert HorizontalWavePortProperty instance into an interpretable property string.
 
         Generates a formatted string representation of the horizontal wave port properties,
         including all port names (padstack instances) as a comma-separated list within the
@@ -233,8 +228,7 @@ class HorizontalWavePortProperty:
 
 
 def parse_horizontal_wave_port_string(s: str | None) -> HorizontalWavePortProperty:
-    """
-    Parse a horizontal wave port property string into a HorizontalWavePortProperty object.
+    """Parse a horizontal wave port property string into a HorizontalWavePortProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     horizontal wave port properties and reconstructs them into a structured object. It supports
@@ -293,8 +287,7 @@ def parse_horizontal_wave_port_string(s: str | None) -> HorizontalWavePortProper
 
 @dataclass
 class PadstackInstanceMeshingProperty:
-    """
-    Represents the padstack instance meshing properties.
+    """Represents the padstack instance meshing properties.
 
     This class encapsulates configuration settings for padstack instance meshing,
     including stack identifier, material type, and meshing settings.
@@ -315,8 +308,7 @@ class PadstackInstanceMeshingProperty:
     meshing_setting: str = ""
 
     def to_property_string(self) -> str:
-        """
-        Convert PadstackInstanceMeshingProperty instance into a property string.
+        """Convert PadstackInstanceMeshingProperty instance into a property string.
 
         Returns
         -------
@@ -335,8 +327,7 @@ class PadstackInstanceMeshingProperty:
 
 
 def parse_padstack_instance_meshing_string(s: str | None) -> PadstackInstanceMeshingProperty:
-    """
-    Parse a padstack instance meshing property string into a PadstackInstanceMeshingProperty object.
+    """Parse a padstack instance meshing property string into a PadstackInstanceMeshingProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     padstack instance meshing properties and reconstructs them into a structured object.
@@ -378,8 +369,7 @@ def parse_padstack_instance_meshing_string(s: str | None) -> PadstackInstanceMes
 
 @dataclass
 class ViaMeshingProperty:
-    """
-    Represents the via meshing properties.
+    """Represents the via meshing properties.
 
     This class encapsulates configuration settings for via meshing,
     including stack identifier, material type, and meshing settings.
@@ -400,8 +390,7 @@ class ViaMeshingProperty:
     meshing_setting: str = ""
 
     def to_property_string(self) -> str:
-        """
-        Convert ViaMeshingProperty instance into a property string.
+        """Convert ViaMeshingProperty instance into a property string.
 
         Returns
         -------
@@ -420,8 +409,7 @@ class ViaMeshingProperty:
 
 
 def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
-    """
-    Parse a via meshing property string into a ViaMeshingProperty object.
+    """Parse a via meshing property string into a ViaMeshingProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     via meshing properties and reconstructs them into a structured object.
@@ -463,8 +451,7 @@ def parse_via_meshing_string(s: str | None) -> ViaMeshingProperty:
 
 @dataclass
 class PlanarEMProperty:
-    """
-    Represents the PlanarEM solver properties.
+    """Represents the PlanarEM solver properties.
 
     This class encapsulates configuration settings for PlanarEM simulations, including
     port type, solver options, and reference handling.
@@ -485,8 +472,7 @@ class PlanarEMProperty:
     ignore_reference: bool = False
 
     def to_property_string(self) -> str:
-        """
-        Convert PlanarEMProperty instance into a PlanarEM configuration string.
+        """Convert PlanarEMProperty instance into a PlanarEM configuration string.
 
         Returns
         -------
@@ -501,8 +487,7 @@ class PlanarEMProperty:
 
 
 def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
-    """
-    Parse a PlanarEM property string into a PlanarEMProperty object.
+    """Parse a PlanarEM property string into a PlanarEMProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     PlanarEM properties and reconstructs them into a structured object.
@@ -544,8 +529,7 @@ def parse_planar_em_string(s: str | None) -> PlanarEMProperty:
 
 @dataclass
 class SiwaveProperty:
-    """
-    Represents the SIwave solver properties.
+    """Represents the SIwave solver properties.
 
     This class encapsulates configuration settings for SIwave simulations, including
     reference net specification.
@@ -560,8 +544,7 @@ class SiwaveProperty:
     reference_net: str = ""
 
     def to_property_string(self) -> str:
-        """
-        Convert SiwaveProperty instance into a SIwave configuration string.
+        """Convert SiwaveProperty instance into a SIwave configuration string.
 
         Returns
         -------
@@ -573,8 +556,7 @@ class SiwaveProperty:
 
 
 def parse_siwave_string(s: str | None) -> SiwaveProperty:
-    """
-    Parse a SIwave property string into a SiwaveProperty object.
+    """Parse a SIwave property string into a SiwaveProperty object.
 
     This function extracts configuration settings from a formatted string representation of
     SIwave properties and reconstructs them into a structured object.

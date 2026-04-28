@@ -33,8 +33,7 @@ from pyedb.misc.siw_feature_config.emc.tag_library import TagLibrary
 
 
 def kwargs_parser(kwargs: dict) -> dict[str, str]:
-    """
-    Parse and convert keyword arguments to string format.
+    """Parse and convert keyword arguments to string format.
 
     Parameters
     ----------
@@ -63,8 +62,7 @@ def kwargs_parser(kwargs: dict) -> dict[str, str]:
 
 
 class EMCRuleCheckerSettings:
-    """
-    Manages EMI scanner settings.
+    """Manages EMI scanner settings.
 
     Examples
     --------
@@ -104,8 +102,7 @@ class EMCRuleCheckerSettings:
         return tree
 
     def read_xml(self, fpath: str) -> None:
-        """
-        Read settings from an XML file.
+        """Read settings from an XML file.
 
         Parameters
         ----------
@@ -126,8 +123,7 @@ class EMCRuleCheckerSettings:
         self.component_tags = ComponentTags(root.find("ComponentTags"))
 
     def write_xml(self, fpath: str) -> None:
-        """
-        Write settings to a file in XML format.
+        """Write settings to a file in XML format.
 
         Parameters
         ----------
@@ -143,8 +139,7 @@ class EMCRuleCheckerSettings:
         self._element_tree.write(fpath, encoding=self.encoding, xml_declaration=True)
 
     def write_json(self, fpath: str) -> None:
-        """
-        Write settings to a file in JSON format.
+        """Write settings to a file in JSON format.
 
         Parameters
         ----------
@@ -166,8 +161,7 @@ class EMCRuleCheckerSettings:
             json.dump(data, f, indent=4)
 
     def read_json(self, fpath: str) -> None:
-        """
-        Read settings from a JSON file.
+        """Read settings from a JSON file.
 
         Parameters
         ----------
@@ -208,8 +202,7 @@ class EMCRuleCheckerSettings:
         net_type: str = "Single-Ended",
         diff_mate_name: str = "",
     ) -> None:
-        """
-        Assign tags to a net.
+        """Assign tags to a net.
 
         Parameters
         ----------
@@ -278,8 +271,7 @@ class EMCRuleCheckerSettings:
         y_loc: str | float,
         cap_type: str | None = None,
     ) -> None:
-        """
-        Assign tags to a component.
+        """Assign tags to a component.
 
         Parameters
         ----------

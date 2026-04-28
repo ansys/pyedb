@@ -36,8 +36,7 @@ if TYPE_CHECKING:
 
 
 class EDBNetsData(NetDotNet):
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
 
     Examples
@@ -60,8 +59,7 @@ class EDBNetsData(NetDotNet):
 
     @property
     def primitives(self) -> list["PrimitiveDotNet"]:
-        """
-        Return the list of primitives that belongs to the net.
+        """Return the list of primitives that belongs to the net.
 
         Returns
         -------
@@ -74,8 +72,7 @@ class EDBNetsData(NetDotNet):
 
     @property
     def padstack_instances(self) -> list[EDBPadstackInstance]:
-        """
-        Return the list of primitives that belongs to the net.
+        """Return the list of primitives that belongs to the net.
 
         Returns
         -------
@@ -87,8 +84,7 @@ class EDBNetsData(NetDotNet):
 
     @property
     def components(self) -> dict[str, "EDBComponent"]:
-        """
-        Return the list of components that touch the net.
+        """Return the list of components that touch the net.
 
         Returns
         -------
@@ -104,8 +100,7 @@ class EDBNetsData(NetDotNet):
         return comps
 
     def find_dc_short(self, fix=False) -> list[list[str]]:
-        """
-        Find DC-shorted nets.
+        """Find DC-shorted nets.
 
         Parameters
         ----------
@@ -130,8 +125,7 @@ class EDBNetsData(NetDotNet):
         size=(2000, 1000),
         show=True,
     ):
-        """
-        Plot a net to Matplotlib 2D chart.
+        """Plot a net to Matplotlib 2D chart.
 
         Parameters
         ----------
@@ -165,8 +159,7 @@ class EDBNetsData(NetDotNet):
         )
 
     def get_smallest_trace_width(self) -> float:
-        """
-        Retrieve the smallest trace width from paths.
+        """Retrieve the smallest trace width from paths.
 
         Returns
         -------
@@ -184,8 +177,7 @@ class EDBNetsData(NetDotNet):
 
     @property
     def extended_net(self) -> "EDBExtendedNetData | None":
-        """
-        Get extended net and associated components.
+        """Get extended net and associated components.
 
         Returns
         -------
@@ -208,8 +200,7 @@ class EDBNetsData(NetDotNet):
 
 
 class EDBNetClassData(NetClassDotNet):
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -234,8 +225,7 @@ class EDBNetClassData(NetClassDotNet):
 
 
 class EDBExtendedNetData(ExtendedNetDotNet):
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
 
     Examples
@@ -300,8 +290,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
 
 class EDBDifferentialPairData(DifferentialPairDotNet):
-    """
-    Manages EDB functionalities for a primitive.
+    """Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
 
     """

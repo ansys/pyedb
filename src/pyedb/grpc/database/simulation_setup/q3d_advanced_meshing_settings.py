@@ -38,8 +38,7 @@ class Q3DAdvancedMeshingSettings:
 
     @property
     def arc_step_size(self) -> float:
-        """
-        Arc step size in micrometers.
+        """Arc step size in micrometers.
 
         Returns
         -------
@@ -55,8 +54,7 @@ class Q3DAdvancedMeshingSettings:
 
     @property
     def arc_to_chord_error(self) -> float:
-        """
-        Arc to chord error in micrometers.
+        """Arc to chord error in micrometers.
 
         Returns
         -------
@@ -72,8 +70,7 @@ class Q3DAdvancedMeshingSettings:
 
     @property
     def circle_start_azimuth(self) -> float:
-        """
-        Circle start azimuth in degrees.
+        """Circle start azimuth in degrees.
 
         Returns
         -------
@@ -89,8 +86,7 @@ class Q3DAdvancedMeshingSettings:
 
     @property
     def layer_alignment(self) -> str:
-        """
-        Snapping tolerance for hierarchical layer alignment.
+        """Snapping tolerance for hierarchical layer alignment.
 
         Returns
         -------
@@ -106,8 +102,7 @@ class Q3DAdvancedMeshingSettings:
 
     @property
     def max_num_arc_points(self) -> int:
-        """
-        Maximum number of points used to approximate arcs.
+        """Maximum number of points used to approximate arcs.
 
         Returns
         -------
@@ -123,8 +118,7 @@ class Q3DAdvancedMeshingSettings:
 
     @property
     def use_arc_chord_error_approx(self) -> bool:
-        """
-        Flag indicating if arc to chord error approximation is used.
+        """Flag indicating if arc to chord error approximation is used.
 
         Returns
         -------

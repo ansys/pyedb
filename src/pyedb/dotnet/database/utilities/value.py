@@ -40,8 +40,7 @@ class Value(float):
         return float(round(self._edb_obj.ToDouble(), 9))
 
     def __str__(self):
-        """
-        Returns the string of the variable.
+        """Returns the string of the variable.
 
         Returns
         -------
@@ -79,8 +78,7 @@ class Value(float):
         return self._pedb.value(f"({str(other)})/({self._edb_obj.ToString()})")
 
     def __pow__(self, value):
-        """
-        Power of the value.
+        """Power of the value.
         Returns
         -------
         Value object
@@ -89,8 +87,7 @@ class Value(float):
         return self._pedb.value(f"({self._edb_obj.ToString()})**({str(value)})")
 
     def sqrt(self):
-        """
-        Square root of the value.
+        """Square root of the value.
         Returns
         -------
         Value object
@@ -99,8 +96,7 @@ class Value(float):
         return self._pedb.value(f"({self._edb_obj.ToString()})**0.5")
 
     def log10(self):
-        """
-        Base-10 logarithm of the value.
+        """Base-10 logarithm of the value.
         Returns
         -------
             Value object
@@ -109,8 +105,7 @@ class Value(float):
         return self._pedb.value(f"log10({self._edb_obj.ToString()})")
 
     def sin(self):
-        """
-        Sine of the value.
+        """Sine of the value.
         Returns
         -------
             Value object
@@ -119,8 +114,7 @@ class Value(float):
         return self._pedb.value(f"sin({self._edb_obj.ToString()})")
 
     def cos(self):
-        """
-        Cosine of the value.
+        """Cosine of the value.
         Returns
         -------
             Value object
@@ -129,8 +123,7 @@ class Value(float):
         return self._pedb.value(f"cos({self._edb_obj.ToString()})")
 
     def asin(self):
-        """
-        Arcsine of the value.
+        """Arcsine of the value.
         Returns
         -------
             Value object
@@ -139,8 +132,7 @@ class Value(float):
         return self._pedb.value(f"asin({self._edb_obj.ToString()})")
 
     def acos(self):
-        """
-        Arccosine of the value.
+        """Arccosine of the value.
         Returns
         -------
             Value object
@@ -149,8 +141,7 @@ class Value(float):
         return self._pedb.value(f"acos({self._edb_obj.ToString()})")
 
     def tan(self):
-        """
-        Tangent of the value.
+        """Tangent of the value.
         Returns
         -------
             Value object
@@ -159,8 +150,7 @@ class Value(float):
         return self._pedb.value(f"tan({self._edb_obj.ToString()})")
 
     def atan(self):
-        """
-        Arctangent of the value.
+        """Arctangent of the value.
         Returns
         -------
             Value object

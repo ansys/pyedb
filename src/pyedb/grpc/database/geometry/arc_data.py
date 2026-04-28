@@ -32,8 +32,7 @@ class ArcData:
 
     @property
     def height(self) -> float:
-        """
-        Arc data height.
+        """Arc data height.
 
         Returns
         -------
@@ -45,8 +44,7 @@ class ArcData:
 
     @property
     def direction(self) -> str:
-        """
-        Arc data direction.
+        """Arc data direction.
 
         Returns
         -------
@@ -58,8 +56,7 @@ class ArcData:
 
     @property
     def center(self) -> list[float]:
-        """
-        Arc data center.
+        """Arc data center.
 
         Returns
         -------
@@ -71,8 +68,7 @@ class ArcData:
 
     @property
     def start(self) -> list[float]:
-        """
-        Arc data start point.
+        """Arc data start point.
 
         Returns
         -------
@@ -84,8 +80,7 @@ class ArcData:
 
     @property
     def end(self) -> list[float]:
-        """
-        Arc data end point.
+        """Arc data end point.
 
         Returns
         -------
@@ -97,8 +92,7 @@ class ArcData:
 
     @property
     def midpoint(self) -> list[float]:
-        """
-        Arc data mid point.
+        """Arc data mid point.
 
         Returns
         -------
@@ -110,8 +104,7 @@ class ArcData:
 
     @property
     def points(self) -> list[list[float]]:
-        """
-        Arc data points.
+        """Arc data points.
 
         Returns
         -------
@@ -122,8 +115,7 @@ class ArcData:
         return [[Value(pt.x), Value(pt.y)] for pt in self.core.points]
 
     def is_segment(self) -> bool:
-        """
-        Check if arc data is a segment.
+        """Check if arc data is a segment.
 
         Returns
         -------
@@ -135,8 +127,7 @@ class ArcData:
 
     @property
     def length(self) -> list[float]:
-        """
-        Arc data length.
+        """Arc data length.
 
         Returns
         -------
@@ -147,8 +138,7 @@ class ArcData:
         return self.core.length
 
     def is_point(self):
-        """
-        Check if arc data is a point.
+        """Check if arc data is a point.
 
         Returns
         -------
@@ -159,8 +149,7 @@ class ArcData:
         return self.core.is_point()
 
     def is_ccw(self):
-        """
-        Check if arc data is counter-clockwise.
+        """Check if arc data is counter-clockwise.
 
         Returns
         -------
@@ -172,8 +161,7 @@ class ArcData:
 
     @property
     def radius(self) -> float:
-        """
-        Arc data radius.
+        """Arc data radius.
 
         Returns
         -------

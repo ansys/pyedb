@@ -43,8 +43,7 @@ class Q3DDCRLSettings:
 
     @property
     def max_passes(self) -> int:
-        """
-        Maximum number of passes.
+        """Maximum number of passes.
 
         Returns
         -------
@@ -60,8 +59,7 @@ class Q3DDCRLSettings:
 
     @property
     def max_refine_per_pass(self) -> float:
-        """
-        Maximum refinement per pass.
+        """Maximum refinement per pass.
 
         Returns
         -------
@@ -77,8 +75,7 @@ class Q3DDCRLSettings:
 
     @property
     def min_converged_passes(self) -> int:
-        """
-        Minimum number of converged passes.
+        """Minimum number of converged passes.
 
         Returns
         -------
@@ -94,8 +91,7 @@ class Q3DDCRLSettings:
 
     @property
     def min_passes(self) -> int:
-        """
-        Minimum number of passes.
+        """Minimum number of passes.
 
         Returns
         -------
@@ -111,8 +107,7 @@ class Q3DDCRLSettings:
 
     @property
     def percent_error(self) -> float:
-        """
-        Percent error.
+        """Percent error.
 
         Returns
         -------
@@ -128,8 +123,7 @@ class Q3DDCRLSettings:
 
     @property
     def solution_order(self) -> str:
-        """
-        Solution order.
+        """Solution order.
 
         Returns
         -------

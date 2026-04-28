@@ -29,8 +29,7 @@ from pyedb.generic.settings import settings
 
 
 def list_installed_ansysem() -> list[str]:
-    """
-    Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
+    """Return a list of installed AEDT versions on ``ANSYSEM_ROOT``.
 
     Returns
     -------
@@ -59,8 +58,7 @@ def list_installed_ansysem() -> list[str]:
 
 
 def installed_versions() -> dict[str, str]:
-    """
-    Get the installed AEDT versions.
+    """Get the installed AEDT versions.
 
     Returns
     -------
@@ -104,8 +102,7 @@ def installed_versions() -> dict[str, str]:
 
 
 def current_version() -> str:
-    """
-    Get the current AEDT version.
+    """Get the current AEDT version.
 
     Returns
     -------
@@ -127,8 +124,7 @@ def current_version() -> str:
 
 
 def current_student_version() -> str:
-    """
-    Get the current AEDT student version.
+    """Get the current AEDT student version.
 
     Returns
     -------

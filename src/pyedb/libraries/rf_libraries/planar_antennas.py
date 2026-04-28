@@ -29,8 +29,7 @@ from pyedb.libraries.common import Substrate
 
 
 class RectangularPatch:
-    """
-    Rectangular microstrip patch antenna (optionally inset-fed).
+    """Rectangular microstrip patch antenna (optionally inset-fed).
 
     The class automatically determines the physical dimensions for a
     desired resonance frequency, creates the patch, ground plane and
@@ -103,8 +102,7 @@ class RectangularPatch:
 
     @property
     def estimated_frequency(self) -> float:
-        """
-        Analytical resonance frequency (GHz) computed from the cavity model.
+        """Analytical resonance frequency (GHz) computed from the cavity model.
 
         Returns
         -------
@@ -142,8 +140,7 @@ class RectangularPatch:
         return round(0.5 * 299_792_458 / (self.target_frequency * math.sqrt(eps_eff)) - 2 * delta_l, 5)
 
     def create(self) -> bool:
-        """
-        Draw the patch, ground plane and feed geometry in EDB.
+        """Draw the patch, ground plane and feed geometry in EDB.
 
         Returns
         -------
@@ -208,8 +205,7 @@ class RectangularPatch:
 
 
 class CircularPatch:
-    """
-    Circular microstrip patch antenna (optionally probe-fed).
+    """Circular microstrip patch antenna (optionally probe-fed).
 
     The class automatically determines the physical dimensions for a
     desired resonance frequency, creates the patch, ground plane and
@@ -280,8 +276,7 @@ class CircularPatch:
 
     @property
     def estimated_frequency(self) -> float:
-        """
-        Improved analytical resonance frequency (Hz) of the dominant TM11 mode.
+        """Improved analytical resonance frequency (Hz) of the dominant TM11 mode.
 
         Uses Balanis’ closed-form model for single-layer circular patches.
         Accuracy ≈ ±0.5 % compared with full-wave solvers for
@@ -332,8 +327,7 @@ class CircularPatch:
         return round(a, 5)
 
     def create(self) -> bool:
-        """
-        Draw the patch, ground plane and feed geometry in EDB.
+        """Draw the patch, ground plane and feed geometry in EDB.
 
         Returns
         -------
@@ -383,8 +377,7 @@ class CircularPatch:
 
 
 class TriangularPatch:
-    """
-    Equilateral-triangle microstrip patch antenna (optionally probe-fed).
+    """Equilateral-triangle microstrip patch antenna (optionally probe-fed).
 
     The class automatically determines the physical dimensions for a
     desired resonance frequency, creates the patch, ground plane and
@@ -455,8 +448,7 @@ class TriangularPatch:
 
     @property
     def estimated_frequency(self) -> float:
-        """
-        Improved analytical resonance frequency (Hz) of the dominant TM10 mode.
+        """Improved analytical resonance frequency (Hz) of the dominant TM10 mode.
 
         Uses a closed-form model for equilateral-triangle patches.
         Accuracy ≈ ±1 % compared with full-wave solvers for
@@ -486,8 +478,7 @@ class TriangularPatch:
 
     @property
     def side(self) -> float:
-        """
-        Patch physical side length (m) for the target frequency.
+        """Patch physical side length (m) for the target frequency.
 
         Uses a **full-cavity model** with dynamic fringing and dispersion
         corrections that keeps the error < 0.25 % for
@@ -546,8 +537,7 @@ class TriangularPatch:
         return round(s, 6)
 
     def create(self) -> bool:
-        """
-        Draw the patch, ground plane and feed geometry in EDB.
+        """Draw the patch, ground plane and feed geometry in EDB.
 
         Returns
         -------

@@ -32,8 +32,7 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def arc_step_size(self) -> str:
-        """
-        Get or set the arc step size.
+        """Get or set the arc step size.
 
         Returns
         -------
@@ -49,8 +48,7 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def arc_to_chord_error(self) -> str:
-        """
-        Get or set the arc to chord error.
+        """Get or set the arc to chord error.
 
         Returns
         -------
@@ -66,8 +64,7 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def circle_start_azimuth(self) -> str:
-        """
-        Get or set the circle start azimuth.
+        """Get or set the circle start azimuth.
 
         Returns
         -------
@@ -83,8 +80,7 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def layer_snap_tol(self) -> str:
-        """
-        Get or set the layer snap tolerance.
+        """Get or set the layer snap tolerance.
 
         Returns
         -------
@@ -101,8 +97,7 @@ class HFSSAdvancedMeshingSettings:
     @property
     @deprecated_property("use max_num_arc_points property instead.")
     def max_arc_points(self) -> int:
-        """
-        Get or set the maximum number of arc points.
+        """Get or set the maximum number of arc points.
 
         .. deprecated:: 0.77.3
             Use :attr:`max_num_arc_points` instead.
@@ -115,8 +110,7 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def max_num_arc_points(self) -> int:
-        """
-        Get or set the maximum number of arc points.
+        """Get or set the maximum number of arc points.
 
         Returns
         -------
@@ -132,8 +126,7 @@ class HFSSAdvancedMeshingSettings:
 
     @property
     def use_arc_chord_error_approx(self) -> bool:
-        """
-        Get or set whether to use arc chord error approximation.
+        """Get or set whether to use arc chord error approximation.
 
         Returns
         -------

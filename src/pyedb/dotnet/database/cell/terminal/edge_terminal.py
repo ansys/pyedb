@@ -29,8 +29,7 @@ class EdgeTerminal(Terminal):
         super().__init__(pedb, edb_object)
 
     def couple_ports(self, port):
-        """
-        Create a bundle wave port.
+        """Create a bundle wave port.
 
         Parameters
         ----------

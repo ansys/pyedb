@@ -47,8 +47,7 @@ from pyedb.misc.decorators import deprecated_property
 
 
 class PadProperties:
-    """
-    Manages EDB functionalities for pad properties.
+    """Manages EDB functionalities for pad properties.
 
     Parameters
     ----------
@@ -93,8 +92,7 @@ class PadProperties:
 
     @property
     def geometry_type(self) -> float:
-        """
-        Geometry type.
+        """Geometry type.
 
         Returns
         -------
@@ -110,8 +108,7 @@ class PadProperties:
 
     @property
     def shape(self) -> str:
-        """
-        Pad shape.
+        """Pad shape.
 
         Returns
         -------
@@ -123,8 +120,7 @@ class PadProperties:
 
     @shape.setter
     def shape(self, value: str):
-        """
-        Set pad shape.
+        """Set pad shape.
 
         Parameters
         ----------
@@ -145,8 +141,7 @@ class PadProperties:
 
     @property
     def parameters_values(self) -> list[float] | None:
-        """
-        Parameters.
+        """Parameters.
 
         Returns
         -------
@@ -175,8 +170,7 @@ class PadProperties:
 
     @property
     def polygon_data(self) -> CorePolygonData:
-        """
-        Parameters.
+        """Parameters.
 
         Returns
         -------
@@ -189,8 +183,7 @@ class PadProperties:
 
     @property
     def offset_x(self) -> float:
-        """
-        Offset for the X axis.
+        """Offset for the X axis.
 
         Returns
         -------
@@ -202,8 +195,7 @@ class PadProperties:
 
     @property
     def offset_y(self) -> float:
-        """
-        Offset for the Y axis.
+        """Offset for the Y axis.
 
         Returns
         -------
@@ -224,8 +216,7 @@ class PadProperties:
 
     @property
     def rotation(self) -> float:
-        """
-        Rotation.
+        """Rotation.
 
         Returns
         -------
@@ -287,8 +278,7 @@ class PadProperties:
 
 
 class PadstackDef:
-    """
-    Manages EDB functionalities for a padstack.
+    """Manages EDB functionalities for a padstack.
 
     Parameters
     ----------
@@ -331,8 +321,7 @@ class PadstackDef:
 
     @property
     def instances(self) -> list[PadstackInstance]:
-        """
-        Definitions Instances.
+        """Definitions Instances.
 
         Returns
         -------
@@ -357,8 +346,7 @@ class PadstackDef:
 
     @property
     def data(self):
-        """
-        Padstack definition data.
+        """Padstack definition data.
 
         Returns
         -------
@@ -374,8 +362,7 @@ class PadstackDef:
 
     @property
     def layers(self) -> list[str]:
-        """
-        Layers.
+        """Layers.
 
         Returns
         -------
@@ -387,8 +374,7 @@ class PadstackDef:
 
     @property
     def start_layer(self) -> str | None:
-        """
-        Starting layer.
+        """Starting layer.
 
         Returns
         -------
@@ -403,8 +389,7 @@ class PadstackDef:
     @property
     @deprecated_property("use start_layer property instead")
     def via_start_layer(self):
-        """
-        Via starting layer.
+        """Via starting layer.
 
         .deprecated
         Use: :method:`start_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.start_layer>`
@@ -420,8 +405,7 @@ class PadstackDef:
 
     @property
     def stop_layer(self) -> str | None:
-        """
-        Stopping layer.
+        """Stopping layer.
 
         Returns
         -------
@@ -436,8 +420,7 @@ class PadstackDef:
     @property
     @deprecated_property("use stop_layer property instead")
     def via_stop_layer(self):
-        """
-        Via stop layer.
+        """Via stop layer.
 
         .deprecated
         Use :method:`stop_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.stop_layer>`
@@ -453,8 +436,7 @@ class PadstackDef:
 
     @property
     def material(self) -> str:
-        """
-        Return hole material name.
+        """Return hole material name.
 
         Returns
         -------
@@ -471,8 +453,7 @@ class PadstackDef:
 
     @property
     def hole_diameter(self) -> float | None:
-        """
-        Hole diameter.
+        """Hole diameter.
 
         Returns
         -------
@@ -510,8 +491,7 @@ class PadstackDef:
 
     @property
     def hole_type(self) -> float:
-        """
-        Holy type.
+        """Holy type.
 
         Returns
         -------
@@ -523,8 +503,7 @@ class PadstackDef:
 
     @property
     def edb_hole_type(self):
-        """
-        EDB hole type.
+        """EDB hole type.
 
         Returns
         -------
@@ -536,8 +515,7 @@ class PadstackDef:
 
     @property
     def hole_offset_x(self) -> float:
-        """
-        Hole offset for the X axis.
+        """Hole offset for the X axis.
 
         Returns
         -------
@@ -564,8 +542,7 @@ class PadstackDef:
 
     @property
     def hole_offset_y(self) -> float:
-        """
-        Hole offset for the Y axis.
+        """Hole offset for the Y axis.
 
         Returns
         -------
@@ -592,8 +569,7 @@ class PadstackDef:
 
     @property
     def hole_rotation(self) -> float:
-        """
-        Hole rotation.
+        """Hole rotation.
 
         Returns
         -------
@@ -622,8 +598,7 @@ class PadstackDef:
 
     @property
     def pad_by_layer(self) -> dict[str, PadProperties]:
-        """
-        Pad by layer.
+        """Pad by layer.
 
         Returns
         -------
@@ -641,8 +616,7 @@ class PadstackDef:
 
     @property
     def antipad_by_layer(self) -> dict[str, PadProperties]:
-        """
-        Antipad by layer.
+        """Antipad by layer.
 
         Returns
         -------
@@ -660,8 +634,7 @@ class PadstackDef:
 
     @property
     def thermalpad_by_layer(self) -> dict[str, PadProperties]:
-        """
-        Thermal by layer.
+        """Thermal by layer.
 
         Returns
         -------
@@ -679,8 +652,7 @@ class PadstackDef:
 
     @property
     def hole_plating_ratio(self) -> float:
-        """
-        Hole plating ratio.
+        """Hole plating ratio.
 
         Returns
         -------
@@ -696,8 +668,7 @@ class PadstackDef:
 
     @property
     def hole_plating_thickness(self) -> float:
-        """
-        Hole plating thickness.
+        """Hole plating thickness.
 
         Returns
         -------
@@ -715,8 +686,7 @@ class PadstackDef:
 
     @hole_plating_thickness.setter
     def hole_plating_thickness(self, value):
-        """
-        Hole plating thickness.
+        """Hole plating thickness.
 
         Returns
         -------
@@ -729,8 +699,7 @@ class PadstackDef:
 
     @property
     def hole_finished_size(self) -> float:
-        """
-        Finished hole size.
+        """Finished hole size.
 
         Returns
         -------
@@ -748,8 +717,7 @@ class PadstackDef:
 
     @property
     def hole_range(self) -> str | None:
-        """
-        Get hole range value from padstack definition.
+        """Get hole range value from padstack definition.
 
         Returns
         -------
@@ -780,8 +748,7 @@ class PadstackDef:
     def convert_to_3d_microvias(
         self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True
     ) -> bool:
-        """
-        Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
         ----------
@@ -919,8 +886,7 @@ class PadstackDef:
         return True
 
     def split_to_microvias(self) -> list[PadstackInstance] | bool:
-        """
-        Convert actual padstack definition to multiple microvias definitions.
+        """Convert actual padstack definition to multiple microvias definitions.
 
         Returns
         -------
@@ -1038,8 +1004,7 @@ class PadstackDef:
         return new_instances
 
     def get_pad_parameters(self):
-        """
-        Pad parameters.
+        """Pad parameters.
 
         Returns
         -------

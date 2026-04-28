@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build the ``operations`` configuration section.
+"""Build the ``operations`` configuration section.
 
 This module provides convenience builders for post-processing operations such as
 cutouts and automatic HFSS region generation.
@@ -32,8 +31,7 @@ from pyedb.configuration.cfg_operations import CfgAutoIdentifyNets, CfgCutout, C
 
 
 class CutoutConfig(CfgCutout):
-    """
-    Fluent builder for a cutout operation.
+    """Fluent builder for a cutout operation.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_operations.CfgCutout`.
     Accepts ``signal_nets`` / ``reference_nets`` as well as ``auto_identify_nets_enabled``
@@ -52,8 +50,7 @@ class CutoutConfig(CfgCutout):
         capacitor_above="10nF",
         **kwargs,
     ):
-        """
-        Create a cutout operation builder.
+        """Create a cutout operation builder.
 
         Parameters
         ----------
@@ -87,8 +84,7 @@ class CutoutConfig(CfgCutout):
         )
 
     def to_dict(self) -> dict:
-        """
-        Serialize the cutout operation.
+        """Serialize the cutout operation.
 
         Returns
         -------
@@ -100,8 +96,7 @@ class CutoutConfig(CfgCutout):
 
 
 class OperationsConfig(CfgOperations):
-    """
-    Fluent builder for the ``operations`` configuration section.
+    """Fluent builder for the ``operations`` configuration section.
 
     Inherits from :class:`~pyedb.configuration.cfg_operations.CfgOperations`.
 
@@ -115,8 +110,7 @@ class OperationsConfig(CfgOperations):
         reference_nets=None,
         **kwargs,
     ) -> CutoutConfig:
-        """
-        Create and store a cutout operation.
+        """Create and store a cutout operation.
 
         Parameters
         ----------
@@ -137,8 +131,7 @@ class OperationsConfig(CfgOperations):
         return self.cutout
 
     def to_dict(self) -> dict:
-        """
-        Serialize the configured operations.
+        """Serialize the configured operations.
 
         Returns
         -------

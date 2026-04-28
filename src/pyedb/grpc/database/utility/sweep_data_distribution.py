@@ -28,8 +28,7 @@ class SweepDataDistribution:
     def get_distribution(
         sweep_type="linear", start="0Ghz", stop="10GHz", step="10MHz", count=10, decade_number=6, octave_number=5
     ) -> str:
-        """
-        Return the Sweep data distribution.
+        """Return the Sweep data distribution.
 
         Parameters
         ----------

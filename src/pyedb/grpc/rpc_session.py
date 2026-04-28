@@ -53,8 +53,7 @@ class RpcSession:
 
     @staticmethod
     def acquire():
-        """
-        Increment the open-database reference counter.
+        """Increment the open-database reference counter.
 
         Must be called each time a database is successfully created or opened so that
         the RPC server is not shut down while other databases are still in use.
@@ -64,8 +63,7 @@ class RpcSession:
 
     @staticmethod
     def release():
-        """
-        Decrement the open-database reference counter and shut down the server when it reaches zero.
+        """Decrement the open-database reference counter and shut down the server when it reaches zero.
 
         Returns
         -------
@@ -84,8 +82,7 @@ class RpcSession:
 
     @staticmethod
     def start(edb_version, port=0, restart_server=False):
-        """
-        Start RPC-server, the server must be started before opening EDB.
+        """Start RPC-server, the server must be started before opening EDB.
 
         Parameters
         ----------
@@ -206,8 +203,7 @@ class RpcSession:
 
     @staticmethod
     def close():
-        """
-        Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
+        """Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:

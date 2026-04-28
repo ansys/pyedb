@@ -78,23 +78,20 @@ class ComponentProperty:
         super().__setattr__("core", core)
 
     def __getattr__(self, name):
-        """
-        Only called if normal attribute lookup fails on self.
+        """Only called if normal attribute lookup fails on self.
         Delegates to self.core.
         """
         return getattr(self.core, name)
 
     def __setattr__(self, name, value):
-        """
-        Only called if normal attribute lookup fails on self.
+        """Only called if normal attribute lookup fails on self.
         Delegates to self.core.
         """
         setattr(self.core, name, value)
 
 
 class Component:
-    """
-    Manages EDB functionalities for components.
+    """Manages EDB functionalities for components.
 
     Parameters
     ----------
@@ -126,8 +123,7 @@ class Component:
 
     @property
     def is_null(self):
-        """
-        Check if the component is null.
+        """Check if the component is null.
 
         Returns
         -------
@@ -139,8 +135,7 @@ class Component:
 
     @property
     def component_type(self) -> str:
-        """
-        Component type.
+        """Component type.
 
         Returns
         -------
@@ -159,8 +154,7 @@ class Component:
 
     @property
     def layout_instance(self):
-        """
-        Layout instance object.
+        """Layout instance object.
 
         Returns
         -------
@@ -171,8 +165,7 @@ class Component:
 
     @property
     def component_instance(self):
-        """
-        Component instance.
+        """Component instance.
 
         Returns
         -------
@@ -185,8 +178,7 @@ class Component:
 
     @property
     def is_enabled(self) -> bool:
-        """
-        Component enable.
+        """Component enable.
 
         Returns
         -------
@@ -208,8 +200,7 @@ class Component:
 
     @property
     def ic_die_properties(self) -> "ICDieProperty | None":
-        """
-        IC Die property.
+        """IC Die property.
 
         returns
         -------
@@ -223,8 +214,7 @@ class Component:
 
     @property
     def _active_layout(self):
-        """
-        Active layout.
+        """Active layout.
 
         Returns
         -------
@@ -235,8 +225,7 @@ class Component:
 
     @property
     def _edb_model(self):
-        """
-        Component model.
+        """Component model.
 
         Returns
         -------
@@ -248,8 +237,7 @@ class Component:
 
     @property  # pragma: no cover
     def _pin_pairs(self) -> PinPairModel:
-        """
-        Pins pairs.
+        """Pins pairs.
 
         Returns
         -------
@@ -261,8 +249,7 @@ class Component:
 
     @property
     def _rlc(self):
-        """
-        Rlc class.
+        """Rlc class.
 
         Returns
         -------
@@ -284,8 +271,7 @@ class Component:
 
     @property
     def component_definition(self):
-        """
-        Component definition.
+        """Component definition.
 
         Returns
         -------
@@ -308,8 +294,7 @@ class Component:
     @property
     @deprecated_property("use component_definition property instead")
     def component_def(self):
-        """
-        Component definition.
+        """Component definition.
 
         deprecated: use `component_definition` instead.
 
@@ -322,8 +307,7 @@ class Component:
 
     @property
     def component_property(self):
-        """
-        Component property.
+        """Component property.
 
         Returns
         -------
@@ -338,8 +322,7 @@ class Component:
 
     @property
     def model(self) -> SparamModel | SpiceModel | PinPairModel:
-        """
-        Component model.
+        """Component model.
 
         Returns
         -------
@@ -367,8 +350,7 @@ class Component:
 
     @property
     def package_def(self):
-        """
-        Package definition.
+        """Package definition.
 
         Returns
         -------
@@ -404,8 +386,7 @@ class Component:
 
     @property
     def is_mcad(self) -> bool:
-        """
-        MCad component.
+        """MCad component.
 
         Returns
         -------
@@ -421,8 +402,7 @@ class Component:
 
     @property
     def is_mcad_3d_comp(self) -> bool:
-        """
-        Mcad 3D component.
+        """Mcad 3D component.
 
         Returns
         -------
@@ -438,8 +418,7 @@ class Component:
 
     @property
     def is_mcad_hfss(self) -> bool:
-        """
-        MCad HFSS.
+        """MCad HFSS.
 
         Returns
         -------
@@ -455,8 +434,7 @@ class Component:
 
     @property
     def is_mcad_stride(self) -> bool:
-        """
-        MCar stride.
+        """MCar stride.
 
         Returns
         -------
@@ -471,8 +449,7 @@ class Component:
             self.core.is_mcad_stride = value
 
     def create_package_def(self, name=None, component_part_name=None) -> bool:
-        """
-        Create a package definition and assign it to the component.
+        """Create a package definition and assign it to the component.
 
         Parameters
         ----------
@@ -501,8 +478,7 @@ class Component:
 
     @property
     def enabled(self) -> bool:
-        """
-        Component active mode.
+        """Component active mode.
 
         Returns
         -------
@@ -522,8 +498,7 @@ class Component:
 
     @property
     def spice_model(self) -> SpiceModel | None:
-        """
-        Assigned Spice model.
+        """Assigned Spice model.
 
         Returns
         -------
@@ -537,8 +512,7 @@ class Component:
 
     @property
     def s_param_model(self) -> SparamModel | None:
-        """
-        Assigned S-parameter model.
+        """Assigned S-parameter model.
 
         Returns
         -------
@@ -552,8 +526,7 @@ class Component:
 
     @property
     def netlist_model(self) -> NetlistModel | None:
-        """
-        Assigned netlist model.
+        """Assigned netlist model.
 
         Returns
         -------
@@ -567,8 +540,7 @@ class Component:
 
     @property
     def solder_ball_height(self) -> float:
-        """
-        Solder ball height if available.
+        """Solder ball height if available.
 
         Returns
         -------
@@ -590,8 +562,7 @@ class Component:
 
     @property
     def solder_ball_shape(self) -> str | None:
-        """
-        Solder ball shape.
+        """Solder ball shape.
 
         Returns
         -------
@@ -635,8 +606,7 @@ class Component:
 
     @property
     def solder_ball_diameter(self) -> Union[tuple[float, float], None]:
-        """
-        Solder ball diameter.
+        """Solder ball diameter.
 
         Returns
         -------
@@ -700,8 +670,7 @@ class Component:
 
     @property
     def refdes(self) -> str:
-        """
-        Reference Designator Name.
+        """Reference Designator Name.
 
         Returns
         -------
@@ -717,8 +686,7 @@ class Component:
 
     @property
     def model_type(self) -> str:
-        """
-        Retrieve assigned model type.
+        """Retrieve assigned model type.
 
         Returns
         -------
@@ -738,8 +706,7 @@ class Component:
 
     @property
     def rlc_values(self) -> Union[List[list[float]], List[float]]:
-        """
-        Get component rlc values.
+        """Get component rlc values.
 
         Returns
         -------
@@ -787,8 +754,7 @@ class Component:
 
     @property
     def value(self) -> float:
-        """
-        Retrieve discrete component value.
+        """Retrieve discrete component value.
 
         Returns
         -------
@@ -815,8 +781,7 @@ class Component:
 
     @property
     def res_value(self) -> float:
-        """
-        Resistance value.
+        """Resistance value.
 
         Returns
         -------
@@ -848,8 +813,7 @@ class Component:
 
     @property
     def rlc_enable(self) -> list[bool]:
-        """
-        RLC enabled flag.
+        """RLC enabled flag.
 
         Returns
         -------
@@ -863,8 +827,7 @@ class Component:
 
     @property
     def res_enabled(self) -> bool:
-        """
-        Resistance enabled flag.
+        """Resistance enabled flag.
 
         Returns
         -------
@@ -886,8 +849,7 @@ class Component:
 
     @property
     def cap_enabled(self) -> bool:
-        """
-        Capacitance enabled flag.
+        """Capacitance enabled flag.
 
         Returns
         -------
@@ -909,8 +871,7 @@ class Component:
 
     @property
     def ind_enabled(self) -> bool:
-        """
-        Inductance enabled flag.
+        """Inductance enabled flag.
 
         Returns
         -------
@@ -932,8 +893,7 @@ class Component:
 
     @property
     def cap_value(self) -> float:
-        """
-        Capacitance Value.
+        """Capacitance Value.
 
         Returns
         -------
@@ -965,8 +925,7 @@ class Component:
 
     @property
     def ind_value(self):
-        """
-        Inductance Value.
+        """Inductance Value.
 
         Returns
         -------
@@ -1000,8 +959,7 @@ class Component:
 
     @property
     def is_parallel_rlc(self) -> bool:
-        """
-        Define if model is Parallel or Series.
+        """Define if model is Parallel or Series.
 
         Returns
         -------
@@ -1024,8 +982,7 @@ class Component:
 
     @property
     def center(self) -> tuple[float, float]:
-        """
-        Compute the component center.
+        """Compute the component center.
 
         Returns
         -------
@@ -1044,8 +1001,7 @@ class Component:
 
     @property
     def location(self) -> tuple[float, float]:
-        """
-        Component center.
+        """Component center.
 
         Returns
         -------
@@ -1064,8 +1020,7 @@ class Component:
 
     @property
     def bounding_box(self) -> list[float, float, float, float]:
-        """
-        Component's bounding box.
+        """Component's bounding box.
 
         Returns
         -------
@@ -1082,8 +1037,7 @@ class Component:
 
     @property
     def rotation(self) -> float:
-        """
-        Compute the component rotation in radian.
+        """Compute the component rotation in radian.
 
         Returns
         -------
@@ -1095,8 +1049,7 @@ class Component:
 
     @property
     def pinlist(self) -> list[PadstackInstance]:
-        """
-        Pins of the component.
+        """Pins of the component.
 
         Returns
         -------
@@ -1108,8 +1061,7 @@ class Component:
 
     @property
     def nets(self):
-        """
-        Nets of Component.
+        """Nets of Component.
 
         Returns
         -------
@@ -1125,8 +1077,7 @@ class Component:
 
     @property
     def pins(self) -> dict[str, PadstackInstance]:
-        """
-        Component pins.
+        """Component pins.
 
         Returns
         -------
@@ -1146,8 +1097,7 @@ class Component:
 
     @property
     def num_pins(self):
-        """
-        Number of Pins of Component.
+        """Number of Pins of Component.
 
         Returns
         -------
@@ -1163,8 +1113,7 @@ class Component:
 
     @property
     def type(self) -> str:
-        """
-        Component type.
+        """Component type.
 
         Returns
         -------
@@ -1177,8 +1126,7 @@ class Component:
 
     @type.setter
     def type(self, new_type):
-        """
-        Set component type
+        """Set component type
 
         Parameters
         ----------
@@ -1193,8 +1141,7 @@ class Component:
     @property
     @deprecated_property("use num_pins property instead")
     def numpins(self) -> int:
-        """
-        Number of Pins of Component.
+        """Number of Pins of Component.
 
         ..deprecated:: 0.51.0
            Use: func:`num_pins` instead.
@@ -1213,8 +1160,7 @@ class Component:
 
     @property
     def partname(self) -> str:
-        """
-        Component part name.
+        """Component part name.
 
         Returns
         -------
@@ -1231,8 +1177,7 @@ class Component:
 
     @property
     def name(self):
-        """
-        Component part name.
+        """Component part name.
 
         Returns
         -------
@@ -1249,8 +1194,7 @@ class Component:
 
     @property
     def ref_des(self):
-        """
-        Reference Designator Name.
+        """Reference Designator Name.
 
         Returns
         -------
@@ -1266,8 +1210,7 @@ class Component:
 
     @property
     def part_name(self) -> str:
-        """
-        Component part name.
+        """Component part name.
 
         Returns
         -------
@@ -1284,8 +1227,7 @@ class Component:
 
     @property
     def placement_layer(self) -> str:
-        """
-        Placement layern name.
+        """Placement layern name.
 
         Returns
         -------
@@ -1297,8 +1239,7 @@ class Component:
 
     @property
     def layer(self) -> StackupLayer:
-        """
-        Placement layern object.
+        """Placement layern object.
 
         Returns
         -------
@@ -1310,8 +1251,7 @@ class Component:
 
     @property
     def is_top_mounted(self) -> bool:
-        """
-        Check if a component is mounted on top or bottom of the layout.
+        """Check if a component is mounted on top or bottom of the layout.
 
         Returns
         -------
@@ -1326,8 +1266,7 @@ class Component:
 
     @property
     def lower_elevation(self) -> float:
-        """
-        Lower elevation of the placement layer.
+        """Lower elevation of the placement layer.
 
         Returns
         -------
@@ -1339,8 +1278,7 @@ class Component:
 
     @property
     def upper_elevation(self) -> float:
-        """
-        Upper elevation of the placement layer.
+        """Upper elevation of the placement layer.
 
         Returns
         -------
@@ -1352,8 +1290,7 @@ class Component:
 
     @property
     def top_bottom_association(self) -> int:
-        """
-        Top/bottom association of the placement layer.
+        """Top/bottom association of the placement layer.
 
         Returns
         -------
@@ -1370,8 +1307,7 @@ class Component:
         return self.layer.core.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
-        """
-        Set component model
+        """Set component model
 
 
         Returns
@@ -1391,8 +1327,7 @@ class Component:
         return model
 
     def delete(self):
-        """
-        Delete the component from the EDB.
+        """Delete the component from the EDB.
 
         Returns
         -------
@@ -1409,8 +1344,7 @@ class Component:
         sub_circuit_name: Optional[str] = None,
         terminal_pairs: Optional[list] = None,
     ) -> SpiceModel | bool:
-        """
-        Assign Spice model to this component.
+        """Assign Spice model to this component.
 
         Parameters
         ----------
@@ -1468,8 +1402,7 @@ class Component:
         self,
         netlist,
     ):
-        """
-        Assign Netlist to this component.
+        """Assign Netlist to this component.
 
         Parameters
         ----------
@@ -1486,8 +1419,7 @@ class Component:
         return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None) -> CoreNPortComponentModel | bool:
-        """
-        Assign S-parameter to this component.
+        """Assign S-parameter to this component.
 
         Parameters
         ----------
@@ -1526,8 +1458,7 @@ class Component:
         return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None) -> bool:
-        """
-        Use S-parameter model on the component.
+        """Use S-parameter model on the component.
 
         Parameters
         ----------
@@ -1561,8 +1492,7 @@ class Component:
         return False
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> PinPairModel | bool:
-        """
-        Assign RLC to this component.
+        """Assign RLC to this component.
 
         Parameters
         ----------
@@ -1607,8 +1537,7 @@ class Component:
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4) -> bool:
-        """
-        Create a Clearance on Soldermask layer by drawing a rectangle.
+        """Create a Clearance on Soldermask layer by drawing a rectangle.
 
         Parameters
         ----------
@@ -1658,8 +1587,7 @@ class ICDieProperty:
 
     @property
     def die_orientation(self) -> str:
-        """
-        Die orientation.
+        """Die orientation.
 
         Returns
         -------
@@ -1684,8 +1612,7 @@ class ICDieProperty:
 
     @property
     def die_type(self) -> str:
-        """
-        Die type.
+        """Die type.
 
         Returns
         -------
@@ -1712,8 +1639,7 @@ class ICDieProperty:
 
     @property
     def height(self) -> float:
-        """
-        Die height.
+        """Die height.
 
         Returns
         -------
@@ -1733,8 +1659,7 @@ class ICDieProperty:
 
     @property
     def is_null(self) -> bool:
-        """
-        Test is die is null.
+        """Test is die is null.
 
         Returns
         -------

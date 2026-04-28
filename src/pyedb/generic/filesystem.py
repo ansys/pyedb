@@ -33,8 +33,7 @@ from pyedb.misc.decorators import deprecated, deprecated_class
 
 @deprecated("Please use pathlib.Path.glob for file searching.")
 def search_files(dirname: str, pattern: str = "*") -> list[str]:
-    """
-    Search for files inside a directory given a specific pattern.
+    """Search for files inside a directory given a specific pattern.
 
     Parameters
     ----------
@@ -112,8 +111,7 @@ class Scratch:
             settings.logger.error(f"An error occurred while removing {self._scratch_path}")
 
     def copyfile(self, src_file: str, dst_filename: str | None = None) -> str:
-        """
-        Copy a file to the scratch directory.
+        """Copy a file to the scratch directory.
 
         Parameters
         ----------
@@ -147,8 +145,7 @@ class Scratch:
         return dst_file
 
     def copyfolder(self, src_folder: str, destfolder: str | None = None) -> str:
-        """
-        Copy a folder to the scratch directory.
+        """Copy a folder to the scratch directory.
 
         Parameters
         ----------
@@ -172,8 +169,7 @@ class Scratch:
 
 @deprecated("Please use pathlib.Path.glob for file searching.")
 def get_json_files(start_folder):
-    """
-    Get the absolute path to all JSON files in start_folder.
+    """Get the absolute path to all JSON files in start_folder.
 
     Parameters
     ----------

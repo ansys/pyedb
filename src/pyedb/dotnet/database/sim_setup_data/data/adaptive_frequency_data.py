@@ -29,8 +29,7 @@ class AdaptiveFrequencyData(object):
 
     @property
     def adaptive_frequency(self):
-        """
-        Adaptive frequency for the setup.
+        """Adaptive frequency for the setup.
 
         Returns
         -------
@@ -46,8 +45,7 @@ class AdaptiveFrequencyData(object):
 
     @property
     def max_delta(self):
-        """
-        Maximum change of S-parameters between two consecutive passes, which serves as
+        """Maximum change of S-parameters between two consecutive passes, which serves as
         a stopping criterion.
 
         Returns
@@ -63,8 +61,7 @@ class AdaptiveFrequencyData(object):
 
     @property
     def max_passes(self):
-        """
-        Maximum allowed number of mesh refinement cycles.
+        """Maximum allowed number of mesh refinement cycles.
 
         Returns
         -------

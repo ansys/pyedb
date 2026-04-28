@@ -24,8 +24,7 @@ from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class PortPostProcessingProp:
-    """
-    Port post-processing properties.
+    """Port post-processing properties.
 
     This class wraps the gRPC port post-processing properties, providing access to
     deembedding length, renormalization impedance, voltage magnitude and phase,
@@ -43,8 +42,7 @@ class PortPostProcessingProp:
 
     @property
     def deembed_length(self):
-        """
-        Deembedding length.
+        """Deembedding length.
 
         Returns
         -------
@@ -60,8 +58,7 @@ class PortPostProcessingProp:
 
     @property
     def renormalization_impedance(self):
-        """
-        Renormalization impedance.
+        """Renormalization impedance.
 
         Returns
         -------
@@ -77,8 +74,7 @@ class PortPostProcessingProp:
 
     @property
     def voltage_magnitude(self):
-        """
-        Voltage magnitude.
+        """Voltage magnitude.
 
         Returns
         -------
@@ -94,8 +90,7 @@ class PortPostProcessingProp:
 
     @property
     def voltage_phase(self):
-        """
-        Voltage phase.
+        """Voltage phase.
 
         Returns
         -------
@@ -111,8 +106,7 @@ class PortPostProcessingProp:
 
     @property
     def do_deembed(self):
-        """
-        Whether to perform deembedding.
+        """Whether to perform deembedding.
 
         Returns
         -------
@@ -128,8 +122,7 @@ class PortPostProcessingProp:
 
     @property
     def do_renormalize(self):
-        """
-        Whether to perform renormalization.
+        """Whether to perform renormalization.
 
         Returns
         -------

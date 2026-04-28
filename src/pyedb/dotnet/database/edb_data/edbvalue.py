@@ -29,8 +29,7 @@ class EdbValue:
 
     @property
     def value(self):
-        """
-        Variable Value Object.
+        """Variable Value Object.
 
         Returns
         -------
@@ -41,8 +40,7 @@ class EdbValue:
 
     @property
     def name(self):
-        """
-        Variable name.
+        """Variable name.
 
         Returns
         -------
@@ -53,8 +51,7 @@ class EdbValue:
 
     @property
     def tofloat(self):
-        """
-        Returns the float number of the variable.
+        """Returns the float number of the variable.
 
         Returns
         -------
@@ -65,8 +62,7 @@ class EdbValue:
 
     @property
     def tostring(self):
-        """
-        Returns the string of the variable.
+        """Returns the string of the variable.
 
         Returns
         -------

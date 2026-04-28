@@ -75,8 +75,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def auto_select_nets_for_simulation(self):
-        """
-        Auto select nets for simulation.
+        """Auto select nets for simulation.
 
         Returns
         -------
@@ -91,8 +90,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def ignore_dummy_nets_for_selected_nets(self):
-        """
-        Auto select Nets for simulation
+        """Auto select Nets for simulation
 
         Returns
         -------
@@ -107,8 +105,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def ignore_small_holes(self):
-        """
-        Ignore small holes choice.
+        """Ignore small holes choice.
 
         Returns
         -------
@@ -123,8 +120,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def ignore_small_holes_min_diameter(self):
-        """
-        Min diameter to ignore small holes.
+        """Min diameter to ignore small holes.
 
         Returns
         -------
@@ -140,8 +136,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def improved_loss_model(self):
-        """
-        Improved Loss Model on power ground nets option.
+        """Improved Loss Model on power ground nets option.
         1: Level 1
         2: Level 2
         3: Level 3
@@ -156,8 +151,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def include_enhanced_bond_wire_modeling(self):
-        """
-        Enhance Bond wire modeling.
+        """Enhance Bond wire modeling.
 
         Returns
         -------
@@ -172,8 +166,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def include_nets(self):
-        """
-        Add Additional Nets for simulation.
+        """Add Additional Nets for simulation.
 
         Returns
         -------
@@ -190,8 +183,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def min_plane_area_to_mesh(self):
-        """
-        The minimum area below which geometry is ignored.
+        """The minimum area below which geometry is ignored.
 
         Returns
         -------
@@ -206,8 +198,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def min_void_area_to_mesh(self):
-        """
-        The minimum area below which voids are ignored.
+        """The minimum area below which voids are ignored.
 
         Returns
         -------
@@ -222,8 +213,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def model_type(self):
-        """
-        Model Type setting.
+        """Model Type setting.
 
         0: RDL,
         1: Package
@@ -242,8 +232,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def perform_erc(self):
-        """
-        Perform ERC
+        """Perform ERC
 
         Returns
         -------
@@ -258,8 +247,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def pi_slider_pos(self):
-        """
-        The Simulation Preference Slider setting
+        """The Simulation Preference Slider setting
         Model type: ``0``= balanced, ``1``=Accuracy.
         Returns
         -------
@@ -274,8 +262,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def rms_surface_roughness(self):
-        """
-        RMS Surface Roughness setting
+        """RMS Surface Roughness setting
 
         Returns
         -------
@@ -290,8 +277,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def signal_nets_conductor_modeling(self) -> int:
-        """
-        Conductor Modeling.
+        """Conductor Modeling.
         0: MeshInside,
         1: ImpedanceBoundary
         """
@@ -312,8 +298,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def signal_nets_error_tolerance(self):
-        """
-        Error Tolerance
+        """Error Tolerance
 
         Returns
         -------
@@ -338,8 +323,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def signal_nets_include_improved_loss_handling(self):
-        """
-        Improved Dielectric Fill Refinement choice.
+        """Improved Dielectric Fill Refinement choice.
 
         Returns
         -------
@@ -362,8 +346,7 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def surface_roughness_model(self):
-        """
-        Chosen Model setting
+        """Chosen Model setting
         Model allowed, ``"None"``, ``"Exponential"`` or ``"Hammerstad"``.
 
         Returns

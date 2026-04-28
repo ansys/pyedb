@@ -40,8 +40,7 @@ class PinPair:
 
     @property
     def first_pin(self) -> str:
-        """
-        First pin name.
+        """First pin name.
 
         This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
@@ -56,8 +55,7 @@ class PinPair:
 
     @property
     def second_pin(self) -> str:
-        """
-        Second pin name.
+        """Second pin name.
 
         This attribute is read-only since pin pair model is defined between two pins,
         and changing pin names will change the pin pair itself.
@@ -72,8 +70,7 @@ class PinPair:
 
     @property
     def rlc_enable(self) -> tuple[bool, bool, bool]:
-        """
-        Enable model.
+        """Enable model.
 
         Returns
         -------
@@ -91,8 +88,7 @@ class PinPair:
 
     @property
     def resistance(self) -> float:
-        """
-        Resistance.
+        """Resistance.
 
         Returns
         -------
@@ -111,8 +107,7 @@ class PinPair:
 
     @property
     def inductance(self) -> float:
-        """
-        Inductance.
+        """Inductance.
 
         Returns
         -------
@@ -131,8 +126,7 @@ class PinPair:
 
     @property
     def capacitance(self) -> float:
-        """
-        Capacitance.
+        """Capacitance.
 
         Returns
         -------
@@ -151,8 +145,7 @@ class PinPair:
 
     @property
     def rlc_values(self) -> list[float]:
-        """
-        Rlc value.
+        """Rlc value.
 
         Returns
         -------
@@ -174,8 +167,7 @@ class PinPair:
 
     @property
     def is_parallel(self) -> bool:
-        """
-        Check if the pin pair model is parallel.
+        """Check if the pin pair model is parallel.
 
         Returns
         -------
@@ -212,8 +204,7 @@ class PinPairModel:
         pin2_name: str | None = None,
         is_parallel: bool = False,
     ) -> "PinPairModel":
-        """
-        Create pin pair model. Pin pair model is defined between two pins, and it can be used to define the RLC model
+        """Create pin pair model. Pin pair model is defined between two pins, and it can be used to define the RLC model
         between two pins. Adding optional RLC values will enable the RLC model for the pin pair.
 
         Parameters
@@ -265,8 +256,7 @@ class PinPairModel:
 
     @property
     def pin_pairs(self) -> list[PinPair]:
-        """
-        Get all pin pairs.
+        """Get all pin pairs.
 
         Returns
         -------
@@ -278,8 +268,7 @@ class PinPairModel:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the pin pair model is null.
+        """Check if the pin pair model is null.
 
         Returns
         -------
@@ -291,8 +280,7 @@ class PinPairModel:
 
     @property
     def rlc(self, pin_pair: tuple[str, str] = None) -> CoreRlc | None:
-        """
-        Retrieve RLC model given pin pair.
+        """Retrieve RLC model given pin pair.
 
         If pin pair is not provided, the first pin pair will be used by default.
         If there is no pin pair, ``None`` will be returned.
@@ -327,8 +315,7 @@ class PinPairModel:
         return self.core.rlc(pin_pair)
 
     def set_rlc(self, pin_pair: tuple[str, str], rlc: CoreRlc):
-        """
-        Set RLC model for the pin pair.
+        """Set RLC model for the pin pair.
 
         Parameters
         ----------
@@ -344,8 +331,7 @@ class PinPairModel:
         self._component.component_property = component_property
 
     def delete_rlc(self, pin_pair: tuple[str, str]):
-        """
-        Delete RLC model for the pin pair.
+        """Delete RLC model for the pin pair.
 
         Parameters
         ----------
@@ -368,8 +354,7 @@ class PinPairModel:
         second_pin: str | None = None,
         is_parallel: bool = False,
     ):
-        """
-        Add a pin pair definition.
+        """Add a pin pair definition.
 
         Parameters
         ----------

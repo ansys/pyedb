@@ -25,8 +25,7 @@ from __future__ import annotations
 
 
 class _DictProxy:
-    """
-    Wrap a raw dictionary with a ``to_dict`` method.
+    """Wrap a raw dictionary with a ``to_dict`` method.
 
     Some builder collections store either rich builder objects or already
     materialized dictionaries. This wrapper gives the latter the same
@@ -37,8 +36,7 @@ class _DictProxy:
         self._data = data
 
     def to_dict(self) -> dict:
-        """
-        Return the wrapped dictionary unchanged.
+        """Return the wrapped dictionary unchanged.
 
         Returns
         -------

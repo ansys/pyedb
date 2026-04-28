@@ -25,8 +25,7 @@ from pyedb.generic.general_methods import ET
 
 
 class DriverPin:
-    """
-    Driver pin class handler.
+    """Driver pin class handler.
 
     Examples
     --------
@@ -49,8 +48,7 @@ class DriverPin:
         self.driver_impedance: float | None = None
 
     def extend_xml(self, parent) -> None:
-        """
-        Write object to XML section.
+        """Write object to XML section.
 
         Parameters
         ----------
@@ -67,8 +65,7 @@ class DriverPin:
 
 
 class ReceiverPin:
-    """
-    Receiver pin class handler.
+    """Receiver pin class handler.
 
     Examples
     --------
@@ -87,8 +84,7 @@ class ReceiverPin:
         self.receiver_impedance: float | None = None
 
     def extend_xml(self, parent) -> None:
-        """
-        Write object to XML section.
+        """Write object to XML section.
 
         Parameters
         ----------

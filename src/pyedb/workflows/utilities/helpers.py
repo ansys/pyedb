@@ -27,8 +27,7 @@ from time import time
 
 
 def format_time(seconds: float) -> str:
-    """
-    Format time in seconds into a human-readable string.
+    """Format time in seconds into a human-readable string.
 
     Convert a time duration in seconds to a formatted string showing hours,
     minutes, and seconds in a compact format (e.g., "2h15m30s").
@@ -68,8 +67,7 @@ def format_time(seconds: float) -> str:
 
 
 def print_progress(current: int, total: int, start_time: float, prefix_desc: str = "Progress") -> None:
-    """
-    Print progress information to terminal with rate and ETA.
+    """Print progress information to terminal with rate and ETA.
 
     Display a dynamic progress line in the terminal showing current progress,
     percentage completion, processing rate, elapsed time, and estimated time
@@ -154,8 +152,7 @@ def print_progress(current: int, total: int, start_time: float, prefix_desc: str
 
 
 def finish_progress() -> None:
-    """
-    End a progress line cleanly by adding a newline.
+    """End a progress line cleanly by adding a newline.
 
     This function should be called after completing a progress reporting loop
     to move the cursor to a new line and prevent subsequent output from

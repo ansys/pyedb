@@ -41,8 +41,7 @@ class SpiceModel:  # pragma: no cover
 
     @property
     def name(self) -> str:
-        """
-        SPICE model name.
+        """SPICE model name.
 
         Returns
         -------
@@ -55,8 +54,7 @@ class SpiceModel:  # pragma: no cover
     @property
     @deprecated_property("use name property instead.")
     def model_name(self):
-        """
-        Model name.
+        """Model name.
 
         .. deprecated:: 0.70.0
                 Use :attr:`name` instead.
@@ -75,8 +73,7 @@ class SpiceModel:  # pragma: no cover
 
     @property
     def file_path(self):
-        """
-        SPICE file path.
+        """SPICE file path.
 
         Returns
         -------
@@ -88,8 +85,7 @@ class SpiceModel:  # pragma: no cover
 
     @file_path.setter
     def file_path(self, value):
-        """
-        Set SPICE file path.
+        """Set SPICE file path.
 
         Parameters
         ----------

@@ -29,8 +29,7 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class GapPort(EdgeTerminal):
-    """
-    Manages gap port properties.
+    """Manages gap port properties.
 
     Parameters
     ----------
@@ -53,8 +52,7 @@ class GapPort(EdgeTerminal):
 
     @property
     def renormalize(self) -> bool:
-        """
-        Whether renormalize is active.
+        """Whether renormalize is active.
 
         Returns
         -------
@@ -65,8 +63,7 @@ class GapPort(EdgeTerminal):
 
     @property
     def deembed(self) -> bool:
-        """
-        Deembed gap port.
+        """Deembed gap port.
 
         Returns
         -------
@@ -77,8 +74,7 @@ class GapPort(EdgeTerminal):
 
     @property
     def renormalize_z0(self) -> tuple[float, float]:
-        """
-        Renormalize Z0 value (real, imag).
+        """Renormalize Z0 value (real, imag).
 
         Returns
         -------
@@ -93,8 +89,7 @@ class GapPort(EdgeTerminal):
 
 
 class CircuitPort(GapPort):
-    """
-    Manages gap port properties.
+    """Manages gap port properties.
     Parameters
     ----------
     pedb : pyedb.edb.Edb
@@ -112,8 +107,7 @@ class CircuitPort(GapPort):
 
 
 class WavePort(EdgeTerminal):
-    """
-    Manages wave port properties.
+    """Manages wave port properties.
 
     Parameters
     ----------
@@ -137,8 +131,7 @@ class WavePort(EdgeTerminal):
 
     @property
     def deembed(self) -> bool:
-        """
-        Whether deembed is active.
+        """Whether deembed is active.
 
         Returns
         -------
@@ -155,8 +148,7 @@ class WavePort(EdgeTerminal):
 
     @property
     def deembed_length(self) -> float:
-        """
-        Deembed Length.
+        """Deembed Length.
 
         Returns
         -------
@@ -174,8 +166,7 @@ class WavePort(EdgeTerminal):
 
 
 class ExcitationSources(EdgeTerminal):
-    """
-    Manage sources properties.
+    """Manage sources properties.
 
     Parameters
     ----------
@@ -202,8 +193,7 @@ class ExcitationSources(EdgeTerminal):
 
 
 class BundleWavePort(BundleTerminal):
-    """
-    Manages bundle wave port properties.
+    """Manages bundle wave port properties.
 
     Parameters
     ----------
@@ -219,8 +209,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def _wave_port(self) -> WavePort:
-        """
-        "Wave port.
+        """"Wave port.
 
 
         Returns
@@ -232,8 +221,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def horizontal_extent_factor(self) -> float:
-        """
-        Horizontal extent factor.
+        """Horizontal extent factor.
 
         Returns
         -------
@@ -249,8 +237,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def vertical_extent_factor(self) -> float:
-        """
-        Vertical extent factor.
+        """Vertical extent factor.
 
         Returns
         -------
@@ -266,8 +253,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def pec_launch_width(self) -> float:
-        """
-        Launch width for the printed electronic component (PEC).
+        """Launch width for the printed electronic component (PEC).
 
         Returns
         -------
@@ -283,8 +269,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def deembed(self) -> bool:
-        """
-        Whether deembed is active.
+        """Whether deembed is active.
 
         Returns
         -------
@@ -299,8 +284,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def deembed_length(self) -> float:
-        """
-        Deembed Length.
+        """Deembed Length.
 
         Returns
         -------
@@ -316,8 +300,7 @@ class BundleWavePort(BundleTerminal):
 
 
 class CoaxPort(PadstackInstanceTerminal):
-    """
-    Manages bundle wave port properties.
+    """Manages bundle wave port properties.
 
     Parameters
     ----------
@@ -333,8 +316,7 @@ class CoaxPort(PadstackInstanceTerminal):
 
     @property
     def radial_extent_factor(self):
-        """
-        Radial extent factor.
+        """Radial extent factor.
 
         Returns
         -------

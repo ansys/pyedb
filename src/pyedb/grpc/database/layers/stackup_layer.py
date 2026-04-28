@@ -93,8 +93,7 @@ class StackupLayer:
 
     @property
     def id(self):
-        """
-        Layer ID.
+        """Layer ID.
 
         Returns
         -------
@@ -106,8 +105,7 @@ class StackupLayer:
 
     @property
     def type(self) -> str:
-        """
-        Layer type.
+        """Layer type.
 
         Returns
         -------
@@ -199,8 +197,7 @@ class StackupLayer:
 
     @property
     def lower_elevation(self) -> float:
-        """
-        Lower elevation.
+        """Lower elevation.
 
         Returns
         -------
@@ -217,8 +214,7 @@ class StackupLayer:
 
     @property
     def fill_material(self) -> Union[str, None]:
-        """
-        The layer's fill material.
+        """The layer's fill material.
 
         Returns
         -------
@@ -237,8 +233,7 @@ class StackupLayer:
 
     @property
     def upper_elevation(self) -> float:
-        """
-        Upper elevation.
+        """Upper elevation.
 
         Returns
         -------
@@ -250,8 +245,7 @@ class StackupLayer:
 
     @property
     def is_negative(self) -> bool:
-        """
-        Determine whether this layer is a negative layer.
+        """Determine whether this layer is a negative layer.
 
         Returns
         -------
@@ -263,8 +257,7 @@ class StackupLayer:
 
     @property
     def name(self) -> str:
-        """
-        Layer name.
+        """Layer name.
 
         Returns
         -------
@@ -280,8 +273,7 @@ class StackupLayer:
 
     @is_negative.setter
     def is_negative(self, value):
-        """
-        Layer negative.
+        """Layer negative.
 
         Returns
         -------
@@ -292,8 +284,7 @@ class StackupLayer:
 
     @property
     def is_stackup_layer(self) -> bool:
-        """
-        Testing if layer is stackup layer.
+        """Testing if layer is stackup layer.
 
         Returns
         -------
@@ -306,8 +297,7 @@ class StackupLayer:
 
     @property
     def material(self) -> str:
-        """
-        Material.
+        """Material.
 
         Returns
         -------
@@ -323,8 +313,7 @@ class StackupLayer:
 
     @property
     def conductivity(self) -> float:
-        """
-        Material conductivity.
+        """Material conductivity.
 
         Returns
         -------
@@ -339,8 +328,7 @@ class StackupLayer:
 
     @property
     def permittivity(self) -> float:
-        """
-        Material permittivity.
+        """Material permittivity.
 
         Returns
         -------
@@ -355,8 +343,7 @@ class StackupLayer:
 
     @property
     def loss_tangent(self) -> float:
-        """
-        Material loss_tangent.
+        """Material loss_tangent.
 
         Returns
         -------
@@ -371,8 +358,7 @@ class StackupLayer:
 
     @property
     def dielectric_fill(self) -> Union[str, None]:
-        """
-        Material name of the layer dielectric fill.
+        """Material name of the layer dielectric fill.
 
         Returns
         -------
@@ -394,8 +380,7 @@ class StackupLayer:
 
     @property
     def thickness(self) -> float:
-        """
-        Layer thickness.
+        """Layer thickness.
 
         Returns
         -------
@@ -411,8 +396,7 @@ class StackupLayer:
 
     @property
     def etch_factor_enabled(self) -> bool:
-        """
-        Layer etching factor enable flag.
+        """Layer etching factor enable flag.
 
         Returns
         -------
@@ -428,8 +412,7 @@ class StackupLayer:
 
     @property
     def etch_factor(self) -> float:
-        """
-        Layer etching factor.
+        """Layer etching factor.
 
         Returns
         -------
@@ -452,8 +435,7 @@ class StackupLayer:
 
     @property
     def etch_net_class(self) -> str:
-        """
-        Retrieve net class name where etching is enabled.
+        """Retrieve net class name where etching is enabled.
 
         Returns
         -------
@@ -474,8 +456,7 @@ class StackupLayer:
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:
-        """
-        Huray model nodule radius on layer top.
+        """Huray model nodule radius on layer top.
 
         Returns
         -------
@@ -501,8 +482,7 @@ class StackupLayer:
 
     @property
     def top_hallhuray_surface_ratio(self) -> float:
-        """
-        Huray model surface ratio on layer top.
+        """Huray model surface ratio on layer top.
 
         Returns
         -------
@@ -528,8 +508,7 @@ class StackupLayer:
 
     @property
     def bottom_hallhuray_nodule_radius(self) -> float:
-        """
-        Huray model nodule radius on layer bottom.
+        """Huray model nodule radius on layer bottom.
 
         Returns
         -------
@@ -557,8 +536,7 @@ class StackupLayer:
 
     @property
     def bottom_hallhuray_surface_ratio(self) -> float:
-        """
-        Huray model surface ratio on layer bottom.
+        """Huray model surface ratio on layer bottom.
 
         Returns
         -------
@@ -586,8 +564,7 @@ class StackupLayer:
 
     @property
     def side_hallhuray_nodule_radius(self) -> float:
-        """
-        Huray model nodule radius on layer sides.
+        """Huray model nodule radius on layer sides.
 
         Returns
         -------
@@ -613,8 +590,7 @@ class StackupLayer:
 
     @property
     def side_hallhuray_surface_ratio(self) -> float:
-        """
-        Huray model surface ratio on layer sides.
+        """Huray model surface ratio on layer sides.
 
         Returns
         -------
@@ -640,8 +616,7 @@ class StackupLayer:
 
     @property
     def top_groisse_roughness(self) -> float:
-        """
-        Groisse model on layer top.
+        """Groisse model on layer top.
 
         Returns
         -------
@@ -668,8 +643,7 @@ class StackupLayer:
 
     @property
     def bottom_groisse_roughness(self) -> float:
-        """
-        Groisse model on layer bottom.
+        """Groisse model on layer bottom.
 
         Returns
         -------
@@ -696,8 +670,7 @@ class StackupLayer:
 
     @property
     def side_groisse_roughness(self) -> float:
-        """
-        Groisse model on layer bottom.
+        """Groisse model on layer bottom.
 
         Returns
         -------
@@ -724,8 +697,7 @@ class StackupLayer:
 
     @property
     def color(self) -> tuple[int, int, int]:
-        """
-        Layer color.
+        """Layer color.
 
         Returns
         -------
@@ -741,8 +713,7 @@ class StackupLayer:
 
     @property
     def transparency(self) -> int:
-        """
-        Layer transparency.
+        """Layer transparency.
 
         Returns
         -------
@@ -758,8 +729,7 @@ class StackupLayer:
 
     @property
     def top_rouhness_model_type(self) -> str:
-        """
-        Roughness model type on layer top.
+        """Roughness model type on layer top.
 
         Returns
         -------
@@ -771,8 +741,7 @@ class StackupLayer:
 
     @property
     def bottom_rouhness_model_type(self) -> str:
-        """
-        Roughness model type on layer bottom.
+        """Roughness model type on layer bottom.
 
         Returns
         -------
@@ -784,8 +753,7 @@ class StackupLayer:
 
     @property
     def side_rouhness_model_type(self) -> str:
-        """
-        Roughness model type on layer sides.
+        """Roughness model type on layer sides.
 
         Returns
         -------
@@ -796,8 +764,7 @@ class StackupLayer:
         return self.get_roughness_model_type(location="side")
 
     def get_roughness_model_type(self, location=None) -> str:
-        """
-        Roughness model type.
+        """Roughness model type.
 
         Parameters
         ----------
@@ -823,8 +790,7 @@ class StackupLayer:
 
     @property
     def roughness_enabled(self) -> bool:
-        """
-        Roughness model enabled status.
+        """Roughness model enabled status.
 
         Returns
         -------
@@ -849,8 +815,7 @@ class StackupLayer:
         groisse_roughness="1um",
         apply_on_surface="all",
     ) -> bool:
-        """
-        Assign roughness model on this layer.
+        """Assign roughness model on this layer.
 
         Parameters
         ----------

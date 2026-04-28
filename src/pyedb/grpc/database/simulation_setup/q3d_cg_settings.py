@@ -54,8 +54,7 @@ class Q3DCGSettings:
 
     @property
     def auto_incr_sol_order(self) -> bool:
-        """
-        Get auto increment solution order setting.
+        """Get auto increment solution order setting.
 
         Returns
         -------
@@ -71,8 +70,7 @@ class Q3DCGSettings:
 
     @property
     def compression_tol(self) -> float:
-        """
-        Get compression tolerance.
+        """Get compression tolerance.
 
         Returns
         -------
@@ -88,8 +86,7 @@ class Q3DCGSettings:
 
     @property
     def max_passes(self) -> int:
-        """
-        Maximum number of passes.
+        """Maximum number of passes.
 
         Returns
         -------
@@ -105,8 +102,7 @@ class Q3DCGSettings:
 
     @property
     def max_refine_per_pass(self) -> float:
-        """
-        Maximum refinement per pass.
+        """Maximum refinement per pass.
 
         Returns
         -------
@@ -122,8 +118,7 @@ class Q3DCGSettings:
 
     @property
     def min_converged_passes(self) -> int:
-        """
-        Minimum number of converged passes.
+        """Minimum number of converged passes.
 
         Returns
         -------
@@ -139,8 +134,7 @@ class Q3DCGSettings:
 
     @property
     def min_passes(self) -> int:
-        """
-        Minimum number of passes.
+        """Minimum number of passes.
         Returns
 
         """
@@ -152,8 +146,7 @@ class Q3DCGSettings:
 
     @property
     def percent_error(self) -> float:
-        """
-        Percent error during conduction adaptive passes.
+        """Percent error during conduction adaptive passes.
 
         Returns
         -------
@@ -169,8 +162,7 @@ class Q3DCGSettings:
 
     @property
     def solution_order(self) -> str:
-        """
-        Get solution order.
+        """Get solution order.
 
         Returns
         -------
@@ -191,8 +183,7 @@ class Q3DCGSettings:
 
     @property
     def solver_type(self) -> str:
-        """
-        Get solver type.
+        """Get solver type.
 
         Returns
         -------

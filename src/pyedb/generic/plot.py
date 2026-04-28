@@ -52,8 +52,7 @@ def plot_matplotlib(
     annotations=None,
     show=True,
 ):
-    """
-    Create a matplotlib plot based on a list of data.
+    """Create a matplotlib plot based on a list of data.
 
     Parameters
     ----------

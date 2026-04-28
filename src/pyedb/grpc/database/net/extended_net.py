@@ -38,8 +38,7 @@ class ExtendedNets:
 
     @property
     def items(self) -> dict[str, ExtendedNet]:
-        """
-        Extended nets.
+        """Extended nets.
 
         Returns
         -------
@@ -53,8 +52,7 @@ class ExtendedNets:
         return nets
 
     def create(self, name, net):
-        """
-        Create a new Extended net.
+        """Create a new Extended net.
 
         Parameters
         ----------
@@ -81,8 +79,7 @@ class ExtendedNets:
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list[ExtendedNet]
-        """
-        Get extended signal net and associated components.
+        """Get extended signal net and associated components.
 
         Parameters
         ----------
@@ -115,8 +112,7 @@ class ExtendedNets:
 
     def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
-        """
-        Get all extended power nets and their associated components.
+        """Get all extended power nets and their associated components.
 
         Parameters
         ----------
@@ -157,8 +153,7 @@ class ExtendedNets:
         include_power=True,
     ):
         # type: (int | float, int | float, int |float, list, bool, bool) -> list[ExtendedNet]
-        """
-        Get extended net and associated components.
+        """Get extended net and associated components.
 
         Parameters
         ----------
@@ -294,8 +289,7 @@ class ExtendedNets:
 
 
 class ExtendedNet:
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
     """
 
@@ -305,8 +299,7 @@ class ExtendedNet:
 
     @classmethod
     def create(cls, layout, name):
-        """
-        Create a extended net.
+        """Create a extended net.
 
         Parameters
         ----------
@@ -326,8 +319,7 @@ class ExtendedNet:
 
     @property
     def name(self):
-        """
-        Extended net name.
+        """Extended net name.
 
         Returns
         -------
@@ -343,8 +335,7 @@ class ExtendedNet:
 
     @property
     def nets(self) -> dict[str, Net]:
-        """
-        Nets dictionary.
+        """Nets dictionary.
 
         Returns
         -------
@@ -358,8 +349,7 @@ class ExtendedNet:
 
     @property
     def components(self) -> dict[str, Component]:
-        """
-        Dictionary of components.
+        """Dictionary of components.
 
         Returns
         -------
@@ -374,8 +364,7 @@ class ExtendedNet:
 
     @property
     def rlc(self) -> dict[str, any]:
-        """
-        Dictionary of RLC components.
+        """Dictionary of RLC components.
 
         Returns
         -------
@@ -389,8 +378,7 @@ class ExtendedNet:
 
     @property
     def serial_rlc(self) -> dict[str, any]:
-        """
-        Dictionary of serial RLC components.
+        """Dictionary of serial RLC components.
 
         Returns
         -------
@@ -409,8 +397,7 @@ class ExtendedNet:
 
     @property
     def shunt_rlc(self) -> dict[str, any]:
-        """
-        Dictionary of shunt RLC components.
+        """Dictionary of shunt RLC components.
 
         Returns
         -------

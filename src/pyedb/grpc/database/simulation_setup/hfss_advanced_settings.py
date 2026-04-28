@@ -35,8 +35,7 @@ class HFSSAdvancedSettings:
     @property
     @deprecated_property("use defeature_absolute_length property instead.")
     def defeature_abs_length(self) -> str:
-        """
-        Absolute length used as tolerance when defeaturing polygons.
+        """Absolute length used as tolerance when defeaturing polygons.
 
         .. deprecated:: 0.77.3
             Use :attr:`defeature_absolute_length` instead.
@@ -50,8 +49,7 @@ class HFSSAdvancedSettings:
 
     @property
     def defeature_absolute_length(self) -> str:
-        """
-        Absolute length used as tolerance when defeaturing polygons.
+        """Absolute length used as tolerance when defeaturing polygons.
 
         Returns
         -------
@@ -67,8 +65,7 @@ class HFSSAdvancedSettings:
 
     @property
     def defeature_ratio(self) -> float:
-        """
-        Extent ratio used as tolerance when defeaturing polygons.
+        """Extent ratio used as tolerance when defeaturing polygons.
 
         Returns
         -------
@@ -84,8 +81,7 @@ class HFSSAdvancedSettings:
 
     @property
     def healing_option(self) -> int:
-        """
-        Enable/disable healing of mis-aligned points and edges.
+        """Enable/disable healing of mis-aligned points and edges.
 
         Returns
         -------
@@ -101,8 +97,7 @@ class HFSSAdvancedSettings:
 
     @property
     def ic_mode_auto_resolution(self) -> bool:
-        """
-        Flag indicating if model resolution is automatically calculated for IC designs..
+        """Flag indicating if model resolution is automatically calculated for IC designs..
 
         Returns
         -------
@@ -118,8 +113,7 @@ class HFSSAdvancedSettings:
 
     @property
     def mesh_for_via_plating(self) -> bool:
-        """
-        Flag indicating if meshing for via plating is enabled.
+        """Flag indicating if meshing for via plating is enabled.
 
         Returns
         -------
@@ -135,8 +129,7 @@ class HFSSAdvancedSettings:
 
     @property
     def model_type(self) -> str:
-        """
-        HFSS model type.
+        """HFSS model type.
 
         Returns
         -------
@@ -152,8 +145,7 @@ class HFSSAdvancedSettings:
     @property
     @deprecated_property("use num_via_density property instead.")
     def via_density(self) -> float:
-        """
-        Density of vias.
+        """Density of vias.
 
         .. deprecated:: 0.77.3
             Use :attr:`num_via_density` instead.
@@ -167,8 +159,7 @@ class HFSSAdvancedSettings:
 
     @property
     def num_via_density(self) -> float:
-        """
-        Spacing between vias.
+        """Spacing between vias.
 
         Returns
         -------
@@ -185,8 +176,7 @@ class HFSSAdvancedSettings:
     @property
     @deprecated_property("use num_via_sides property instead.")
     def via_num_sides(self) -> int:
-        """
-        Number of sides a via is considered to have.
+        """Number of sides a via is considered to have.
 
         .. deprecated:: 0.77.3
             Use :attr:`num_via_sides` instead.
@@ -200,8 +190,7 @@ class HFSSAdvancedSettings:
 
     @property
     def num_via_sides(self) -> int:
-        """
-        Number of sides a via is considered to have.
+        """Number of sides a via is considered to have.
 
         Returns
         -------
@@ -217,8 +206,7 @@ class HFSSAdvancedSettings:
 
     @property
     def remove_floating_geometry(self) -> bool:
-        """
-        Flag indicating if a geometry not connected to any other geometry is removed.
+        """Flag indicating if a geometry not connected to any other geometry is removed.
 
         Returns
         -------
@@ -234,8 +222,7 @@ class HFSSAdvancedSettings:
 
     @property
     def small_void_area(self) -> float:
-        """
-        Voids with an area smaller than this value are ignored during simulation.
+        """Voids with an area smaller than this value are ignored during simulation.
 
         Returns
         -------
@@ -251,8 +238,7 @@ class HFSSAdvancedSettings:
 
     @property
     def union_polygons(self) -> bool:
-        """
-        Flag indicating if polygons are unioned.
+        """Flag indicating if polygons are unioned.
 
         Returns
         -------
@@ -268,8 +254,7 @@ class HFSSAdvancedSettings:
 
     @property
     def use_defeature(self) -> bool:
-        """
-        Flag indicating if defeaturing is used.
+        """Flag indicating if defeaturing is used.
 
         Returns
         -------
@@ -286,8 +271,7 @@ class HFSSAdvancedSettings:
     @property
     @deprecated_property("use use_defeature_absolute_length property instead.")
     def use_defeature_abs_length(self) -> bool:
-        """
-        Flag indicating if absolute length defeaturing is used.
+        """Flag indicating if absolute length defeaturing is used.
 
         .. deprecated:: 0.77.3
             Use :attr:`use_defeature_absolute_length` instead.
@@ -301,8 +285,7 @@ class HFSSAdvancedSettings:
 
     @property
     def use_defeature_absolute_length(self) -> bool:
-        """
-        Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
+        """Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
 
         Returns
         -------
@@ -318,8 +301,7 @@ class HFSSAdvancedSettings:
 
     @property
     def via_material(self) -> str:
-        """
-        Default via material.
+        """Default via material.
 
         Returns
         -------
@@ -336,8 +318,7 @@ class HFSSAdvancedSettings:
     @property
     @deprecated_property("use via_model_type property instead.")
     def via_style(self) -> str:
-        """
-        Via style.
+        """Via style.
 
         .. deprecated:: 0.77.3
             Use :attr:`via_model_type` instead.
@@ -351,8 +332,7 @@ class HFSSAdvancedSettings:
 
     @property
     def via_model_type(self) -> str:
-        """
-        Via model type.
+        """Via model type.
 
         Returns
         -------

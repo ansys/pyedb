@@ -38,8 +38,7 @@ from pyedb.grpc.database.primitive.rectangle import Rectangle
 
 
 class Net:
-    """
-    Class managing :class:`Net <ansys.edb.core.net.net.Net>` objects in EDB database.
+    """Class managing :class:`Net <ansys.edb.core.net.net.Net>` objects in EDB database.
 
     Parameters
     ----------
@@ -67,8 +66,7 @@ class Net:
 
     @property
     def name(self):
-        """
-        Name of the net.
+        """Name of the net.
 
         Returns
         -------
@@ -83,8 +81,7 @@ class Net:
 
     @name.setter
     def name(self, value: str):
-        """
-        Set the name of the net.
+        """Set the name of the net.
 
         Parameters
         ----------
@@ -96,8 +93,7 @@ class Net:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the net is a null net.
+        """Check if the net is a null net.
 
         Returns
         -------
@@ -112,8 +108,7 @@ class Net:
 
     @property
     def is_power_ground(self):
-        """
-        Check if the net is a power or ground net.
+        """Check if the net is a power or ground net.
 
         Returns
         -------
@@ -125,8 +120,7 @@ class Net:
 
     @is_power_ground.setter
     def is_power_ground(self, value: bool):
-        """
-        Set the net as a power or ground net.
+        """Set the net as a power or ground net.
 
         Parameters
         ----------
@@ -138,8 +132,7 @@ class Net:
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
-        """
-        All primitives belonging to this net.
+        """All primitives belonging to this net.
 
         Returns
         -------
@@ -171,8 +164,7 @@ class Net:
 
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
-        """
-        All padstack instances belonging to this net.
+        """All padstack instances belonging to this net.
 
         Returns
         -------
@@ -186,8 +178,7 @@ class Net:
 
     @property
     def components(self) -> dict[str, Component]:
-        """
-        Components connected to this net.
+        """Components connected to this net.
 
         Returns
         -------
@@ -211,8 +202,7 @@ class Net:
 
     @classmethod
     def create(cls, layout, name: str):
-        """
-        Create a new net in the EDB database.
+        """Create a new net in the EDB database.
         Parameters
         ----------
         layout : :class:`pyedb.grpc.database.layout.layout.Layout`
@@ -229,8 +219,7 @@ class Net:
         return cls(layout._pedb, CoreNet.create(layout=layout.core, name=name))
 
     def find_dc_short(self, fix=False) -> list[list[str]]:
-        """
-        Find DC-shorted nets connected to this net.
+        """Find DC-shorted nets connected to this net.
 
         Parameters
         ----------
@@ -249,8 +238,7 @@ class Net:
     def plot(
         self, layers=None, show_legend=True, save_plot=None, outline=None, size=(2000, 1000), show=True, title=None
     ):
-        """
-        Plot the net using Matplotlib.
+        """Plot the net using Matplotlib.
 
         Parameters
         ----------
@@ -284,8 +272,7 @@ class Net:
         )
 
     def get_smallest_trace_width(self) -> float:
-        """
-        Get the minimum trace width from path primitives in this net.
+        """Get the minimum trace width from path primitives in this net.
 
         Returns
         -------
@@ -302,8 +289,7 @@ class Net:
 
     @property
     def extended_net(self):
-        """
-        Extended net associated with this net.
+        """Extended net associated with this net.
 
         Returns
         -------
@@ -328,8 +314,7 @@ class Net:
 
     @classmethod
     def find_by_name(cls, layout, name):
-        """
-        Find a net by name in a given layout.
+        """Find a net by name in a given layout.
 
         Parameters
         ----------

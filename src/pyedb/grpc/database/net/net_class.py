@@ -30,8 +30,7 @@ from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
 
 class NetClass:
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -59,8 +58,7 @@ class NetClass:
 
     @property
     def description(self) -> str:
-        """
-        Description of the net class.
+        """Description of the net class.
 
         Returns
         -------
@@ -77,8 +75,7 @@ class NetClass:
 
     @property
     def id(self) -> int:
-        """
-        The net class ID.
+        """The net class ID.
 
         Returns
         -------
@@ -90,8 +87,7 @@ class NetClass:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the net class is a null net class.
+        """Check if the net class is a null net class.
 
         Returns
         -------
@@ -103,8 +99,7 @@ class NetClass:
 
     @property
     def is_power_ground(self):
-        """
-        Check if the net class is a power/ground net class.
+        """Check if the net class is a power/ground net class.
 
         Returns
         -------
@@ -121,8 +116,7 @@ class NetClass:
 
     @property
     def name(self):
-        """
-        Net class name.
+        """Net class name.
 
         Returns
         -------
@@ -134,8 +128,7 @@ class NetClass:
 
     @name.setter
     def name(self, value: str):
-        """
-        Set net class name.
+        """Set net class name.
 
         Parameters
         ----------
@@ -147,8 +140,7 @@ class NetClass:
 
     @property
     def nets(self):
-        """
-        Net list. Attribute is read-only.
+        """Net list. Attribute is read-only.
 
         Returns
         -------
@@ -161,8 +153,7 @@ class NetClass:
         return [Net(self._pedb, i) for i in self.core.nets]
 
     def add_net(self, net):
-        """
-        Add a net to the net class.
+        """Add a net to the net class.
 
         Returns
         -------
@@ -179,8 +170,7 @@ class NetClass:
         return False
 
     def contains_net(self, net) -> bool:
-        """
-        Determine if a net exists in the net class.
+        """Determine if a net exists in the net class.
 
         Parameters
         ----------
@@ -199,8 +189,7 @@ class NetClass:
         return self.core.contains_net(net)
 
     def remove_net(self, net):
-        """
-        Remove net.
+        """Remove net.
 
         Returns
         -------

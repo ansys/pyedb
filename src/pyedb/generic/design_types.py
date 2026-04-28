@@ -137,8 +137,7 @@ def Edb(
     layer_filter: str | None = None,
     in_memory: bool = True,
 ) -> EdbGrpc | EdbDotnet | None:
-    """
-    Provides the EDB application interface.
+    """Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
 
@@ -421,8 +420,7 @@ def Edb(
 def Siwave(
     specified_version=None,
 ) -> "SiwaveApp":
-    """
-    Provides the SIwave application interface.
+    """Provides the SIwave application interface.
 
     Parameters
     ----------

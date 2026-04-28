@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Design Rule Check (DRC) engine for PyEDB.
+"""Design Rule Check (DRC) engine for PyEDB.
 
 This module provides a high-performance, multi-threaded design-rule checker
 that runs inside an open PyEDB session and validates industry-standard rules
@@ -93,8 +92,7 @@ from pyedb.generic.geometry_operators import GeometryOperators
 
 
 class MinLineWidth(BaseModel):
-    """
-    Minimum trace width constraint rule.
+    """Minimum trace width constraint rule.
 
     This rule validates that all trace widths meet or exceed a specified
     minimum value on selected layers.
@@ -119,8 +117,7 @@ class MinLineWidth(BaseModel):
 
 
 class MinClearance(BaseModel):
-    """
-    Minimum spacing constraint between nets.
+    """Minimum spacing constraint between nets.
 
     This rule validates that spacing between specified nets meets or exceeds
     a minimum clearance value. Supports wildcard matching for net names.
@@ -151,8 +148,7 @@ class MinClearance(BaseModel):
 
 
 class MinAnnularRing(BaseModel):
-    """
-    Minimum annular ring constraint for drilled holes.
+    """Minimum annular ring constraint for drilled holes.
 
     This rule validates that the copper ring around drilled holes (vias, pins)
     meets a minimum width requirement.
@@ -177,8 +173,7 @@ class MinAnnularRing(BaseModel):
 
 
 class DiffPair(BaseModel):
-    """
-    Differential pair net definition.
+    """Differential pair net definition.
 
     Defines a single differential pair consisting of positive and negative nets.
 
@@ -202,8 +197,7 @@ class DiffPair(BaseModel):
 
 
 class DiffPairLengthMatch(BaseModel):
-    """
-    Length matching constraint for differential pairs.
+    """Length matching constraint for differential pairs.
 
     This rule validates that the length difference between positive and
     negative traces in differential pairs stays within tolerance.
@@ -232,8 +226,7 @@ class DiffPairLengthMatch(BaseModel):
 
 
 class BackDrillStubLength(BaseModel):
-    """
-    Maximum back-drill stub length constraint.
+    """Maximum back-drill stub length constraint.
 
     This rule validates that remaining stub length after back-drilling
     stays below a maximum value to minimize signal reflections.
@@ -258,8 +251,7 @@ class BackDrillStubLength(BaseModel):
 
 
 class CopperBalance(BaseModel):
-    """
-    Copper density balance constraint.
+    """Copper density balance constraint.
 
     This rule validates that copper distribution across layers stays within
     acceptable balance limits to prevent warping during fabrication.
@@ -287,8 +279,7 @@ class CopperBalance(BaseModel):
 
 
 class Rules(BaseModel):
-    """
-    Centralized container for all design rule categories.
+    """Centralized container for all design rule categories.
 
     This class provides a type-safe, serializable container for design rules
     with JSON/YAML round-trip support and a fluent API for building rule decks.
@@ -342,8 +333,7 @@ class Rules(BaseModel):
     # ------------------------------------------------------------------
     @classmethod
     def from_dict(cls, data: dict[str, Any]) -> "Rules":
-        """
-        Create Rules instance from dictionary.
+        """Create Rules instance from dictionary.
 
         Parameters
         ----------
@@ -366,8 +356,7 @@ class Rules(BaseModel):
         return cls.model_validate(data)
 
     def to_dict(self) -> dict[str, Any]:
-        """
-        Convert Rules to dictionary.
+        """Convert Rules to dictionary.
 
         Returns
         -------
@@ -393,8 +382,7 @@ class Rules(BaseModel):
         value: str,
         layers: list[str] | None = None,
     ) -> "Rules":
-        """
-        Append a minimum line width rule.
+        """Append a minimum line width rule.
 
         Parameters
         ----------
@@ -431,8 +419,7 @@ class Rules(BaseModel):
         net1: str,
         net2: str,
     ) -> "Rules":
-        """
-        Append a minimum clearance rule between nets.
+        """Append a minimum clearance rule between nets.
 
         Parameters
         ----------
@@ -461,8 +448,7 @@ class Rules(BaseModel):
         return self
 
     def add_min_annular_ring(self, name: str, value: str) -> "Rules":
-        """
-        Append a minimum annular ring rule for drilled holes.
+        """Append a minimum annular ring rule for drilled holes.
 
         Parameters
         ----------
@@ -492,8 +478,7 @@ class Rules(BaseModel):
         tolerance: str,
         pairs: list[tuple[str, str]],
     ) -> "Rules":
-        """
-        Append a differential pair length matching rule.
+        """Append a differential pair length matching rule.
 
         Parameters
         ----------
@@ -521,8 +506,7 @@ class Rules(BaseModel):
         return self
 
     def add_back_drill_stub_length(self, name: str, value: str) -> "Rules":
-        """
-        Append a maximum back-drill stub length rule.
+        """Append a maximum back-drill stub length rule.
 
         Parameters
         ----------
@@ -552,8 +536,7 @@ class Rules(BaseModel):
         max_percent: int,
         layers: list[str],
     ) -> "Rules":
-        """
-        Append a copper density balance rule.
+        """Append a copper density balance rule.
 
         Parameters
         ----------
@@ -581,8 +564,7 @@ class Rules(BaseModel):
 
 
 class Drc:
-    """
-    High-performance DRC engine for PyEDB.
+    """High-performance DRC engine for PyEDB.
 
     This class provides a multi-threaded design rule checker that runs inside
     an open PyEDB session. It uses R-tree spatial indexing for efficient
@@ -625,8 +607,7 @@ class Drc:
     """
 
     def __init__(self, edb: pyedb.Edb):
-        """
-        Initialize the DRC engine with an EDB instance.
+        """Initialize the DRC engine with an EDB instance.
 
         Parameters
         ----------
@@ -640,8 +621,7 @@ class Drc:
 
     # Spatial index (R-tree)
     def _build_spatial_index(self) -> None:
-        """
-        Build R-tree spatial indices for fast geometry queries.
+        """Build R-tree spatial indices for fast geometry queries.
 
         Creates three separate indices for primitives, vias, and components
         to enable efficient proximity and intersection queries.
@@ -659,8 +639,7 @@ class Drc:
             self.idx_components.insert(i, comp.bounding_box)
 
     def check(self, rules: Rules) -> list[dict[str, Any]]:
-        """
-        Run all rules and return a list of violations.
+        """Run all rules and return a list of violations.
 
         This method dispatches each rule to its appropriate handler and
         collects all violations. Successive calls overwrite previous results.
@@ -706,8 +685,7 @@ class Drc:
     # Geometry / Manufacturing Rules
 
     def _rule_min_line_width(self, rule: MinLineWidth, max_workers: int = None):
-        """
-        Check minimum line width rule across all path primitives.
+        """Check minimum line width rule across all path primitives.
 
         This is a multi-threaded check that extracts EDB data in a single
         thread, then processes paths in parallel across available cores.
@@ -773,8 +751,7 @@ class Drc:
     def _rule_min_clearance(
         self, rule: MinClearance, max_workers: int = None, chunked_precompute: bool = False, chunk_size: int = 5000
     ):
-        """
-        Check minimum clearance between nets using spatial indexing.
+        """Check minimum clearance between nets using spatial indexing.
 
         This is a high-performance check with automatic core detection that
         precomputes spatial intersections and then validates clearances in
@@ -923,8 +900,7 @@ class Drc:
         self.violations = violations
 
     def _rule_min_annular_ring(self, rule: MinAnnularRing, max_workers: int = None):
-        """
-        Check minimum annular ring for drilled padstacks.
+        """Check minimum annular ring for drilled padstacks.
 
         This thread-safe check validates that copper rings around drilled holes
         meet minimum width requirements. Automatically skips padstacks without
@@ -1000,8 +976,7 @@ class Drc:
         self.violations = list(results_queue.queue)
 
     def _rule_copper_balance(self, rule: CopperBalance):
-        """
-        Check copper density balance across layers.
+        """Check copper density balance across layers.
 
         This rule validates that copper distribution stays within acceptable
         balance limits to prevent board warping during fabrication.
@@ -1050,8 +1025,7 @@ class Drc:
 
     # High-speed rules
     def _rule_diff_pair_length_match(self, rule: DiffPairLengthMatch):
-        """
-        Check differential pair length matching constraints.
+        """Check differential pair length matching constraints.
 
         This multi-threaded check validates that positive and negative traces
         in differential pairs have matched lengths within tolerance.
@@ -1102,8 +1076,7 @@ class Drc:
 
     # Back-drill / stub rules
     def _rule_back_drill_stub_length(self, rule: BackDrillStubLength):
-        """
-        Check maximum back-drill stub length constraints.
+        """Check maximum back-drill stub length constraints.
 
         This rule validates that remaining stub lengths after back-drilling
         stay below maximum values to minimize signal reflections in high-speed
@@ -1159,8 +1132,7 @@ class Drc:
 
     # Export utilities
     def to_ipc356a(self, file_path: str) -> None:
-        """
-        Write a complete IPC-D-356A netlist with DRC annotations.
+        """Write a complete IPC-D-356A netlist with DRC annotations.
 
         This method exports the full netlist in IPC-D-356A format with all
         detected violations appended as comment lines. The file can be imported

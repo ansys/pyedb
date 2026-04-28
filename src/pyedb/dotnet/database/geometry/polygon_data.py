@@ -77,8 +77,7 @@ class PolygonData:
 
     @property
     def bounding_box(self) -> list[float]:
-        """
-        Bounding box.
+        """Bounding box.
 
         Returns
         -------
@@ -100,8 +99,7 @@ class PolygonData:
 
     @property
     def points(self) -> list[tuple[float, float]]:
-        """
-        Get all points in polygon.
+        """Get all points in polygon.
 
         Returns
         -------
@@ -142,8 +140,7 @@ class PolygonData:
         round_corners: bool = True,
         maximum_corner_extension: float = 0.001,
     ) -> "PolygonData":
-        """
-        Expand the polygon shape by an absolute value in all direction.
+        """Expand the polygon shape by an absolute value in all direction.
 
         Offset can be negative for negative expansion.
 
@@ -165,8 +162,7 @@ class PolygonData:
         return PolygonData(self._pedb, core)
 
     def create_from_arcs(self, arcs: list[Any], flag: bool) -> "PolygonData":
-        """
-        Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+        """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
 
         Parameters
         ----------
@@ -189,8 +185,7 @@ class PolygonData:
     # TODO: Same argument as above
     @deprecated("Use is_inside method instead.", category=None)
     def point_in_polygon(self, x: str | float, y: str | float | None = None) -> bool:
-        """
-        Determines whether a point is inside the polygon.
+        """Determines whether a point is inside the polygon.
 
         ..deprecated:: 0.48.0
            Use: func:`is_inside` instead.

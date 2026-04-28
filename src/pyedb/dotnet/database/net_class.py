@@ -37,8 +37,7 @@ class EdbCommon:
 
     @property
     def _layout(self):
-        """
-        Get layout.
+        """Get layout.
 
         Returns
         -------
@@ -52,8 +51,7 @@ class EdbCommon:
         return self._pedb.logger
 
     def __getitem__(self, name):
-        """
-        Get  a net from the EDB project.
+        """Get  a net from the EDB project.
 
         Parameters
         ----------
@@ -71,8 +69,7 @@ class EdbCommon:
 
 
 class EdbNetClasses(EdbCommon, object):
-    """
-    Manages EDB methods for managing nets accessible from the ``Edb.net_classes`` property.
+    """Manages EDB methods for managing nets accessible from the ``Edb.net_classes`` property.
 
     Examples
     --------
@@ -87,8 +84,7 @@ class EdbNetClasses(EdbCommon, object):
 
     @property
     def items(self):
-        """
-        Extended nets.
+        """Extended nets.
 
         Returns
         -------
@@ -103,8 +99,7 @@ class EdbNetClasses(EdbCommon, object):
 
     def create(self, name, net):
         # type: (str, str|list)->EDBNetClassData
-        """
-        Create a new net class.
+        """Create a new net class.
 
         Parameters
         ----------
@@ -133,8 +128,7 @@ class EdbNetClasses(EdbCommon, object):
 
 
 class EdbExtendedNets(EdbCommon, object):
-    """
-    Manages EDB methods for managing nets accessible from the ``Edb.extended_nets`` property.
+    """Manages EDB methods for managing nets accessible from the ``Edb.extended_nets`` property.
 
     Examples
     --------
@@ -149,8 +143,7 @@ class EdbExtendedNets(EdbCommon, object):
 
     @property
     def items(self):
-        """
-        Extended nets.
+        """Extended nets.
 
         Returns
         -------
@@ -165,8 +158,7 @@ class EdbExtendedNets(EdbCommon, object):
 
     def create(self, name, net):
         # type: (str, str|list)->EDBExtendedNetData
-        """
-        Create a new Extended net.
+        """Create a new Extended net.
 
         Parameters
         ----------
@@ -195,8 +187,7 @@ class EdbExtendedNets(EdbCommon, object):
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
-        """
-        Get extended signal net and associated components.
+        """Get extended signal net and associated components.
 
         Parameters
         ----------
@@ -231,8 +222,7 @@ class EdbExtendedNets(EdbCommon, object):
 
     def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
-        """
-        Get all extended power nets and their associated components.
+        """Get all extended power nets and their associated components.
 
         Parameters
         ----------
@@ -272,8 +262,7 @@ class EdbExtendedNets(EdbCommon, object):
 
 
 class EdbDifferentialPairs(EdbCommon, object):
-    """
-    Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
+    """Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
 
     Examples
     --------
@@ -289,8 +278,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
     @property
     def items(self):
-        """
-        Extended nets.
+        """Extended nets.
 
         Returns
         -------
@@ -305,8 +293,7 @@ class EdbDifferentialPairs(EdbCommon, object):
 
     def create(self, name, net_p, net_n):
         # type: (str, str, str) -> EDBDifferentialPairData
-        """
-        Parameters
+        """Parameters
         ----------
         name : str
             Name of the differential pair.
@@ -330,8 +317,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         return self.items[name]
 
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N"):
-        """
-        Auto identify differential pairs by naming conversion.
+        """Auto identify differential pairs by naming conversion.
 
         Parameters
         ----------

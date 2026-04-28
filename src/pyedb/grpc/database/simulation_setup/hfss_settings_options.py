@@ -36,8 +36,7 @@ class HFSSSettingsOptions:
 
     @property
     def do_lambda_refine(self) -> bool:
-        """
-        Flag to enable/disable lambda refinement.
+        """Flag to enable/disable lambda refinement.
 
         Returns
         -------
@@ -53,8 +52,7 @@ class HFSSSettingsOptions:
 
     @property
     def enhanced_low_frequency_accuracy(self) -> bool:
-        """
-        Flag to enable/disable enhanced low frequency accuracy.
+        """Flag to enable/disable enhanced low frequency accuracy.
 
         Returns
         -------
@@ -70,8 +68,7 @@ class HFSSSettingsOptions:
 
     @property
     def lambda_target(self) -> float:
-        """
-        Lambda target value.
+        """Lambda target value.
 
         Returns
         -------
@@ -87,8 +84,7 @@ class HFSSSettingsOptions:
 
     @property
     def max_refinement_per_pass(self) -> int:
-        """
-        Maximum refinement per pass.
+        """Maximum refinement per pass.
 
         Returns
         -------
@@ -104,8 +100,7 @@ class HFSSSettingsOptions:
 
     @property
     def mesh_size_factor(self) -> float:
-        """
-        Mesh size factor.
+        """Mesh size factor.
 
         Returns
         -------
@@ -121,8 +116,7 @@ class HFSSSettingsOptions:
 
     @property
     def min_converged_passes(self) -> int:
-        """
-        Minimum converged passes.
+        """Minimum converged passes.
 
         Returns
         -------
@@ -138,8 +132,7 @@ class HFSSSettingsOptions:
 
     @property
     def min_passes(self) -> int:
-        """
-        Minimum passes.
+        """Minimum passes.
 
         Returns
         -------
@@ -155,8 +148,7 @@ class HFSSSettingsOptions:
 
     @property
     def order_basis(self) -> str:
-        """
-        Order basis name.
+        """Order basis name.
 
         Returns
         -------
@@ -179,8 +171,7 @@ class HFSSSettingsOptions:
 
     @property
     def relative_residual(self) -> float:
-        """
-        Relative residual value that the HFSS iterative solver is to use.
+        """Relative residual value that the HFSS iterative solver is to use.
 
         Returns
         -------
@@ -211,8 +202,7 @@ class HFSSSettingsOptions:
 
     @property
     def use_default_lambda_value(self) -> bool:
-        """
-        Flag to indicate whether to use the default lambda value.
+        """Flag to indicate whether to use the default lambda value.
 
         Returns
         -------
@@ -228,8 +218,7 @@ class HFSSSettingsOptions:
 
     @property
     def use_max_refinement(self) -> float:
-        """
-        Flag to indicate whether to use maximum refinement.
+        """Flag to indicate whether to use maximum refinement.
 
         Returns
         -------
@@ -245,8 +234,7 @@ class HFSSSettingsOptions:
 
     @property
     def use_shell_elements(self) -> bool:
-        """
-        Flag to indicate whether to use shell elements.
+        """Flag to indicate whether to use shell elements.
 
         Returns
         -------

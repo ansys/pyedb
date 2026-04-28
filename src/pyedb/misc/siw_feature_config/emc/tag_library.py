@@ -24,8 +24,7 @@ from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
 
 
 class TagType(XmlGeneric):
-    """
-    Manages tag type configuration.
+    """Manages tag type configuration.
 
     This class handles individual tag type definitions within the tag library.
 
@@ -43,8 +42,7 @@ class TagType(XmlGeneric):
     """
 
     def __init__(self, element) -> None:
-        """
-        Initialize tag type.
+        """Initialize tag type.
 
         Parameters
         ----------
@@ -61,8 +59,7 @@ class TagType(XmlGeneric):
 
 
 class TagConfig(XmlGeneric):
-    """
-    Manages tag configuration settings.
+    """Manages tag configuration settings.
 
     This class handles configuration parameters for tags within the tag library.
 
@@ -79,8 +76,7 @@ class TagConfig(XmlGeneric):
     """
 
     def __init__(self, element) -> None:
-        """
-        Initialize tag configuration.
+        """Initialize tag configuration.
 
         Parameters
         ----------
@@ -92,8 +88,7 @@ class TagConfig(XmlGeneric):
 
 
 class Tag(XmlGeneric):
-    """
-    Manages individual tags with their types and configurations.
+    """Manages individual tags with their types and configurations.
 
     This class represents a complete tag with its associated tag types and configurations.
 
@@ -119,8 +114,7 @@ class Tag(XmlGeneric):
     CLS_MAPPING: dict = {"TagType": TagType, "TagConfig": TagConfig}
 
     def __init__(self, element) -> None:
-        """
-        Initialize tag.
+        """Initialize tag.
 
         Parameters
         ----------
@@ -149,8 +143,7 @@ class Tag(XmlGeneric):
 
 
 class TagLibrary(XmlGeneric):
-    """
-    Manages the complete tag library collection.
+    """Manages the complete tag library collection.
 
     This class handles the top-level tag library containing all tag definitions
     with their types and configurations.
@@ -178,8 +171,7 @@ class TagLibrary(XmlGeneric):
     }
 
     def __init__(self, element) -> None:
-        """
-        Initialize tag library.
+        """Initialize tag library.
 
         Parameters
         ----------

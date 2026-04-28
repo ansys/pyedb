@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains these classes: `EdbLayout` and `Shape`.
+"""This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 import math
@@ -48,8 +47,7 @@ from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecate
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
-    """
-    Convert any reasonable point description into [[x1, y1], [x2, y2], …]
+    """Convert any reasonable point description into [[x1, y1], [x2, y2], …]
     """
     pts = list(points)
     if not pts:  # empty input
@@ -66,8 +64,7 @@ def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
 
 
 class Modeler(object):
-    """
-    Manages EDB methods for primitives management accessible from `Edb.modeler`.
+    """Manages EDB methods for primitives management accessible from `Edb.modeler`.
 
     Examples
     --------
@@ -78,8 +75,7 @@ class Modeler(object):
     """
 
     def __getitem__(self, name: Union[str, int]) -> Primitive:
-        """
-        Get a primitive by name or ID.
+        """Get a primitive by name or ID.
 
         Parameters
         ----------
@@ -124,8 +120,7 @@ class Modeler(object):
     @property
     @deprecated_property("use edb.layout.primitives property instead.", category=None)
     def primitives(self):
-        """
-        Primitives.
+        """Primitives.
 
         .. deprecated:: 0.70.0
            Use :attr:`edb.layout.primitives` instead.
@@ -142,8 +137,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.primitives_by_layer property instead.")
     def primitives_by_layer(self):
-        """
-        Primitives organized by layer names.
+        """Primitives organized by layer names.
 
         .. deprecated:: 0.70.0
         use layout.primitives_by_layer property instead.
@@ -153,8 +147,7 @@ class Modeler(object):
 
     @deprecated("use layout.find_object_by_id instead.")
     def get_primitive(self, primitive_id: int) -> list[Primitive]:
-        """
-        Retrieve primitive from give id.
+        """Retrieve primitive from give id.
 
         .. deprecated:: 0.70.0
         use layout.find_object_by_id method instead.
@@ -175,8 +168,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.polygons_by_layer property instead.")
     def polygons_by_layer(self) -> dict[str, List[Polygon]]:
-        """
-        Primitives with layer names as keys.
+        """Primitives with layer names as keys.
 
         .. deprecated:: 0.70.0
         use layout.polygons_by_layer property instead.
@@ -192,8 +184,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.rectangles property instead.")
     def rectangles(self) -> List[Union[Rectangle, Primitive]]:
-        """
-        All rectangle primitives.
+        """All rectangle primitives.
 
         Returns
         -------
@@ -206,8 +197,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.circles property instead.")
     def circles(self) -> List[Union[Circle, Primitive]]:
-        """
-        All circle primitives.
+        """All circle primitives.
 
         .. deprecated:: 0.70.0
         use layout.circles instead.
@@ -223,8 +213,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.paths property instead.")
     def paths(self) -> List[Union[Path, Primitive]]:
-        """
-        All path primitives.
+        """All path primitives.
 
         .. deprecated:: 0.70.0
         use layout.paths instead.
@@ -239,8 +228,7 @@ class Modeler(object):
 
     @property
     def texts(self) -> List[Union[Text, Primitive]]:
-        """
-        All text primitives.
+        """All text primitives.
 
         Returns
         -------
@@ -253,8 +241,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.polygons property instead.")
     def polygons(self) -> List[Union[Polygon, Primitive]]:
-        """
-        All polygon primitives.
+        """All polygon primitives.
 
         .. deprecated:: 0.70.0
         use layout.polygons instead.
@@ -270,8 +257,7 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.primitives_by_net property instead.")
     def primitives_by_net(self) -> dict[str, List[Primitive]]:
-        """
-        Primitives with net names as keys.
+        """Primitives with net names as keys.
 
         .. deprecated:: 0.70.0
         use layout.primitives_by_net instead.
@@ -286,8 +272,7 @@ class Modeler(object):
 
     @deprecated("use layout.get_polygons_by_layer method instead.")
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
-        """
-        Retrieve polygons by layer.
+        """Retrieve polygons by layer.
 
         .. deprecated:: 0.70.0
         use layout.get_polygons_by_layer method instead.
@@ -314,8 +299,7 @@ class Modeler(object):
         layer: Optional[Union[str, List[str]]] = None,
         nets: Optional[Union[str, List[str]]] = None,
     ) -> List[Primitive]:
-        """
-        Get primitive at specified point on layer.
+        """Get primitive at specified point on layer.
 
         Parameters
         ----------
@@ -341,8 +325,7 @@ class Modeler(object):
 
     @deprecated("use layout.get_polygon_bounding_box method instead.")
     def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
-        """
-        Get bounding box of polygon.
+        """Get bounding box of polygon.
 
         .. deprecated:: 0.70.0
         use layout.get_polygon_bounding_box method instead.
@@ -362,8 +345,7 @@ class Modeler(object):
 
     @deprecated("use layout.get_polygon_points method instead.")
     def get_polygon_points(self, polygon) -> List[List[float]]:
-        """
-        Get points defining a polygon.
+        """Get points defining a polygon.
 
         .. deprecated:: 0.70.0
         use layout.get_polygon_points method instead.
@@ -382,8 +364,7 @@ class Modeler(object):
         return self._pedb.layout.get_polygon_points(polygon)
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None) -> bool:
-        """
-        Parametrize polygon points based on another polygon.
+        """Parametrize polygon points based on another polygon.
 
         Parameters
         ----------
@@ -474,8 +455,7 @@ class Modeler(object):
         end_cap_style="Round",
         corner_style="Round",
     ):
-        """
-        Create a path based on a list of points.
+        """Create a path based on a list of points.
 
         Parameters
         ----------
@@ -547,8 +527,7 @@ class Modeler(object):
         end_cap_style: str = "Round",
         corner_style: str = "Round",
     ) -> Optional[Primitive]:
-        """
-        Create trace path.
+        """Create trace path.
 
         Parameters
         ----------
@@ -594,8 +573,7 @@ class Modeler(object):
         voids: Optional[List[Any]] = [],
         net_name: str = "",
     ) -> Union[Optional[Primitive], bool]:
-        """
-        Create polygon primitive.
+        """Create polygon primitive.
 
         Parameters
         ----------
@@ -659,8 +637,7 @@ class Modeler(object):
         corner_radius: str = "0mm",
         rotation: str = "0deg",
     ) -> Optional[Primitive]:
-        """
-        Create rectangle primitive.
+        """Create rectangle primitive.
 
         Parameters
         ----------
@@ -745,8 +722,7 @@ class Modeler(object):
     def create_circle(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = ""
     ) -> Optional[Primitive]:
-        """
-        Create circle primitive.
+        """Create circle primitive.
 
         Parameters
         ----------
@@ -784,8 +760,7 @@ class Modeler(object):
     def create_text(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], text: str
     ) -> Optional[Primitive]:
-        """
-        Create text primitive.
+        """Create text primitive.
 
         Parameters
         ----------
@@ -816,8 +791,7 @@ class Modeler(object):
         return False
 
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
-        """
-        Delete primitives by net name(s).
+        """Delete primitives by net name(s).
 
         Parameters
         ----------
@@ -845,8 +819,7 @@ class Modeler(object):
         prim_type: Optional[str] = None,
         is_void: Optional[bool] = None,
     ) -> List[Primitive]:
-        """
-        Get primitives with filtering.
+        """Get primitives with filtering.
 
         Parameters
         ----------
@@ -873,8 +846,7 @@ class Modeler(object):
         )
 
     def fix_circle_void_for_clipping(self) -> bool:
-        """
-        Fix circle void clipping issues.
+        """Fix circle void clipping issues.
 
         Returns
         -------
@@ -954,8 +926,7 @@ class Modeler(object):
         parameter_name: str = "trace_width",
         variable_value: Optional[Union[float, str]] = None,
     ) -> bool:
-        """
-        Parametrize trace width.
+        """Parametrize trace width.
 
         Parameters
         ----------
@@ -1003,8 +974,7 @@ class Modeler(object):
         delete_padstack_gemometries: bool = False,
         net_names_list: Optional[List[str]] = None,
     ) -> bool:
-        """
-        Unite polygons on layer.
+        """Unite polygons on layer.
 
         Parameters
         ----------
@@ -1072,8 +1042,7 @@ class Modeler(object):
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
-        """
-        Defeature polygon.
+        """Defeature polygon.
 
         Parameters
         ----------
@@ -1100,8 +1069,7 @@ class Modeler(object):
     def get_layout_statistics(
         self, evaluate_area: bool = False, net_list: Optional[List[str]] = None
     ) -> LayoutStatistics:
-        """
-        Get layout statistics.
+        """Get layout statistics.
 
         Parameters
         ----------
@@ -1169,8 +1137,7 @@ class Modeler(object):
         end_cell_instance_name: Optional[str] = None,
         bondwire_type: str = "jedec4",
     ) -> Bondwire:
-        """
-        Create bondwire.
+        """Create bondwire.
 
         Parameters
         ----------
@@ -1258,8 +1225,7 @@ class Modeler(object):
         pins_by_aedt_name: Optional[List[str]] = None,
         pins_by_name: Optional[List[str]] = None,
     ) -> bool:
-        """
-        Create pin group.
+        """Create pin group.
 
         Parameters
         ----------
@@ -1321,8 +1287,7 @@ class Modeler(object):
 
     @staticmethod
     def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
-        """
-        Add void to shape.
+        """Add void to shape.
 
         Parameters
         ----------
@@ -1363,8 +1328,7 @@ class Modeler(object):
         local_origin_x: float | str | None = 0,
         local_origin_y: float | str | None = 0,
     ) -> Any:
-        """
-        Insert a layout instance into the active layout.
+        """Insert a layout instance into the active layout.
 
         Parameters
         ----------
@@ -1431,8 +1395,7 @@ class Modeler(object):
         local_origin_y: Union[float, str] = 0.0,
         local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
-        """
-        Insert a 3D component placement into the active layout.
+        """Insert a 3D component placement into the active layout.
 
         Parameters
         ----------
@@ -1530,8 +1493,7 @@ class Modeler(object):
         local_origin_y: Union[float, str] = 0.0,
         local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
-        """
-        Insert a 3D component placement into the active layout.
+        """Insert a 3D component placement into the active layout.
 
         Parameters
         ----------
@@ -1625,8 +1587,7 @@ class Modeler(object):
         local_origin_y: float | str | None = 0,
         local_origin_z: float | str | None = 0,
     ) -> Any:
-        """
-        Insert a layout instance into the active layout.
+        """Insert a layout instance into the active layout.
 
         Parameters
         ----------
@@ -1694,8 +1655,7 @@ class Modeler(object):
         voids: list | None = None,
         net_name: str = "",
     ) -> Polygon:
-        """
-        Create an RF trace taper polygon between two points.
+        """Create an RF trace taper polygon between two points.
 
         The taper is a trapezoidal polygon with ``start_width`` at ``start_point``
         and ``end_width`` at ``end_point``, rotated to match the direction between
@@ -1786,8 +1746,7 @@ class Modeler(object):
         reference_signal_layer: str = "",
         open_top: bool = True,
     ) -> bool:
-        """
-        Create solder mask openings for components, voids, and traces.
+        """Create solder mask openings for components, voids, and traces.
 
         This method creates a solder mask dielectric layer with openings (negative geometries) for:
 

@@ -66,8 +66,7 @@ class Circle(Primitive):
         return new_circle
 
     def get_parameters(self) -> tuple[float, float, float]:
-        """
-        Returns parameters.
+        """Returns parameters.
 
         Returns
         -------
@@ -93,8 +92,7 @@ class Circle(Primitive):
         return Value(params[0]), Value(params[1]), Value(params[2])
 
     def set_parameters(self, center_x, center_y, radius):
-        """
-        Set parameters.
+        """Set parameters.
 
         Parameters
         ----------

@@ -33,8 +33,7 @@ from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
 class ChannelSetup:
-    """
-    Represents the setup configuration for a channel in SIwave CPA simulations.
+    """Represents the setup configuration for a channel in SIwave CPA simulations.
 
     Attributes:
         die_name (str): The name of the die associated with the channel setup.
@@ -45,8 +44,7 @@ class ChannelSetup:
     """
 
     def __init__(self, pedb, cfg_channel_setup=None):
-        """
-        Initializes the ChannelSetup instance.
+        """Initializes the ChannelSetup instance.
 
         Args:
             pedb: The database object representing the active cell.
@@ -58,16 +56,14 @@ class ChannelSetup:
             self._apply_cfg_object(cfg_channel_setup)
 
     def __init_values(self):
-        """
-        Initializes default values for the channel setup attributes.
+        """Initializes default values for the channel setup attributes.
         """
         self.die_name = ""
         self.pin_grouping_mode = "perpin"
         self.channel_component_exposure = {}
 
     def _apply_cfg_object(self, channel_setup):
-        """
-        Applies the configuration object to set up the channel.
+        """Applies the configuration object to set up the channel.
 
         Args:
             channel_setup: The configuration object containing channel setup data.
@@ -79,8 +75,7 @@ class ChannelSetup:
 
     @property
     def die_name(self):
-        """
-        Gets the die name from the database.
+        """Gets the die name from the database.
 
         Returns:
             str: The die name.
@@ -92,8 +87,7 @@ class ChannelSetup:
 
     @die_name.setter
     def die_name(self, value):
-        """
-        Sets the die name in the database.
+        """Sets the die name in the database.
 
         Args:
             value (str): The die name to set.
@@ -104,8 +98,7 @@ class ChannelSetup:
 
     @property
     def pin_grouping_mode(self):
-        """
-        Gets the pin grouping mode from the database.
+        """Gets the pin grouping mode from the database.
 
         Returns:
             str: The pin grouping mode ("perpin", "ploc", or "usediepingroups").
@@ -119,8 +112,7 @@ class ChannelSetup:
 
     @pin_grouping_mode.setter
     def pin_grouping_mode(self, value):
-        """
-        Sets the pin grouping mode in the database.
+        """Sets the pin grouping mode in the database.
 
         Args:
             value (str or int): The pin grouping mode ("perpin", "ploc", or "usediepingroups") or its
@@ -143,8 +135,7 @@ class ChannelSetup:
 
     @property
     def channel_component_exposure(self):
-        """
-        Gets the channel component exposure configuration from the database.
+        """Gets the channel component exposure configuration from the database.
 
         Returns:
             dict: A dictionary mapping component names to their exposure status (True/False).
@@ -161,8 +152,7 @@ class ChannelSetup:
 
     @channel_component_exposure.setter
     def channel_component_exposure(self, value):
-        """
-        Sets the channel component exposure configuration in the database.
+        """Sets the channel component exposure configuration in the database.
 
         Args:
             value (dict): A dictionary mapping component names to their exposure status (True/False).
@@ -184,8 +174,7 @@ class ChannelSetup:
 
     @property
     def vrm(self):
-        """
-        Gets the VRM (Voltage Regulator Module) setup from the database.
+        """Gets the VRM (Voltage Regulator Module) setup from the database.
 
         Returns:
             list: A list of Vrm objects representing the VRM setup.
@@ -214,8 +203,7 @@ class ChannelSetup:
 
     @vrm.setter
     def vrm(self, value):
-        """
-        Sets the VRM (Voltage Regulator Module) setup in the database.
+        """Sets the VRM (Voltage Regulator Module) setup in the database.
 
         Args:
             value (list): A list of Vrm objects representing the VRM setup.
@@ -246,8 +234,7 @@ class ChannelSetup:
 
 
 class SolverOptions:
-    """
-    Represents solver options configuration for SIwave CPA simulations.
+    """Represents solver options configuration for SIwave CPA simulations.
 
     Attributes:
         extraction_mode (str): Extraction mode ('si' or 'pi')
@@ -271,8 +258,7 @@ class SolverOptions:
     """
 
     def __init__(self, pedb, cfg_solver_options=None):
-        """
-        Initialize solver options.
+        """Initialize solver options.
 
         Args:
             pedb: Database object containing the active cell
@@ -304,8 +290,7 @@ class SolverOptions:
         self.return_path_net_for_loop_parameters = True
 
     def _apply_cfg_object(self, solver_options):
-        """
-        Applies the configuration object to set up solver options.
+        """Applies the configuration object to set up solver options.
 
         Args:
             solver_options: The configuration object containing solver options data.
@@ -350,8 +335,7 @@ class SolverOptions:
 
     @property
     def extraction_mode(self):
-        """
-        Gets the extraction mode from the database.
+        """Gets the extraction mode from the database.
 
         Returns:
             str: The extraction mode. Returns "si" if the mode is set to "1", otherwise "pi".
@@ -377,8 +361,7 @@ class SolverOptions:
 
     @property
     def custom_refinement(self):
-        """
-        Gets the custom refinement setting from the database.
+        """Gets the custom refinement setting from the database.
 
         Returns:
             bool: True if custom refinement is enabled, False otherwise.
@@ -404,8 +387,7 @@ class SolverOptions:
 
     @property
     def extraction_frequency(self):
-        """
-        Gets the extraction frequency from the database.
+        """Gets the extraction frequency from the database.
 
         Returns:
             str: The extraction frequency value as a string.
@@ -424,8 +406,7 @@ class SolverOptions:
 
     @property
     def compute_capacitance(self):
-        """
-        Gets the compute capacitance setting from the database.
+        """Gets the compute capacitance setting from the database.
 
         Returns:
             bool: True if capacitance computation is enabled, False otherwise.
@@ -451,8 +432,7 @@ class SolverOptions:
 
     @property
     def compute_dc_parameters(self):
-        """
-        Gets the compute DC parameters setting from the database.
+        """Gets the compute DC parameters setting from the database.
 
         Returns:
             bool: True if DC parameters computation is enabled, False otherwise.
@@ -478,8 +458,7 @@ class SolverOptions:
 
     @property
     def compute_dc_rl(self):
-        """
-        Gets the compute DC RL parameters setting from the database.
+        """Gets the compute DC RL parameters setting from the database.
 
         Returns:
             bool: True if DC RL parameters computation is enabled, False otherwise.
@@ -505,8 +484,7 @@ class SolverOptions:
 
     @property
     def compute_dc_cg(self):
-        """
-        Gets the compute DC CG parameters setting from the database.
+        """Gets the compute DC CG parameters setting from the database.
 
         Returns:
             bool: True if DC CG parameters computation is enabled, False otherwise.
@@ -532,8 +510,7 @@ class SolverOptions:
 
     @property
     def compute_ac_rl(self):
-        """
-        Gets the compute AC RL parameters setting from the database.
+        """Gets the compute AC RL parameters setting from the database.
 
         Returns:
             bool: True if AC RL parameters computation is enabled, False otherwise.
@@ -559,8 +536,7 @@ class SolverOptions:
 
     @property
     def ground_power_nets_for_si(self):
-        """
-        Gets the ground power nets for SI analysis setting from the database.
+        """Gets the ground power nets for SI analysis setting from the database.
 
         Returns:
             bool: True if grounding power nets for SI analysis is enabled, False otherwise.
@@ -586,8 +562,7 @@ class SolverOptions:
 
     @property
     def small_hole_diameter(self):
-        """
-        Gets the small hole diameter setting from the database.
+        """Gets the small hole diameter setting from the database.
 
         Returns:
             float|str: The small hole diameter as a float, or 'auto' if the value is set to -1.
@@ -614,8 +589,7 @@ class SolverOptions:
 
     @property
     def model_type(self):
-        """
-        Gets the model type setting from the database.
+        """Gets the model type setting from the database.
 
         Returns:
             str: The model type. Returns "rlcg" if the model type is set to "0", otherwise "esd_r".
@@ -633,8 +607,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_max_passes(self):
-        """
-        Gets the maximum number of passes for CG adaptive refinement from the database.
+        """Gets the maximum number of passes for CG adaptive refinement from the database.
 
         Returns:
             int: The maximum number of passes for CG adaptive refinement.
@@ -654,8 +627,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_percent_error(self):
-        """
-        Gets the target error percentage for CG adaptive refinement from the database.
+        """Gets the target error percentage for CG adaptive refinement from the database.
 
         Returns:
             float: The target error percentage for CG adaptive refinement.
@@ -675,8 +647,7 @@ class SolverOptions:
 
     @property
     def cg_percent_refinement_per_pass(self):
-        """
-        Gets the percentage of CG refinement per pass from the database.
+        """Gets the percentage of CG refinement per pass from the database.
 
         Returns:
             float: The percentage of CG refinement per pass.
@@ -698,8 +669,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_rl_max_passes(self):
-        """
-        Gets the maximum number of passes for RL adaptive refinement from the database.
+        """Gets the maximum number of passes for RL adaptive refinement from the database.
 
         Returns:
             int: The maximum number of passes for RL adaptive refinement.
@@ -721,8 +691,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_rl_percent_error(self):
-        """
-        Gets the target error percentage for RL adaptive refinement from the database.
+        """Gets the target error percentage for RL adaptive refinement from the database.
 
         Returns:
             float: The target error percentage for RL adaptive refinement.
@@ -742,8 +711,7 @@ class SolverOptions:
 
     @property
     def rl_percent_refinement_per_pass(self):
-        """
-        Gets the percentage of RL refinement per pass from the database.
+        """Gets the percentage of RL refinement per pass from the database.
 
         Returns:
             float: The percentage of RL refinement per pass.
@@ -765,8 +733,7 @@ class SolverOptions:
 
     @property
     def return_path_net_for_loop_parameters(self):
-        """
-        Gets the return path net setting for loop parameters from the database.
+        """Gets the return path net setting for loop parameters from the database.
 
         Returns:
             bool: True if the return path net is enabled for loop parameters, False otherwise.
@@ -792,8 +759,7 @@ class SolverOptions:
 
 
 class SIWaveCPASimulationSetup:
-    """
-    Represents the setup configuration for SIwave CPA simulations.
+    """Represents the setup configuration for SIwave CPA simulations.
 
     Attributes:
         _pedb: The database object representing the active cell.
@@ -803,8 +769,7 @@ class SIWaveCPASimulationSetup:
     """
 
     def __init__(self, pedb, name=None, siwave_cpa_setup_class=None):
-        """
-        Initializes the SIWaveCPASimulationSetup instance.
+        """Initializes the SIWaveCPASimulationSetup instance.
 
         Args:
             pedb: The database object representing the active cell.
@@ -830,8 +795,7 @@ class SIWaveCPASimulationSetup:
             self._pedb.active_cell.set_product_property(CoreProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME, name)
 
     def __init_values(self):
-        """
-        Initializes default values for the simulation setup attributes.
+        """Initializes default values for the simulation setup attributes.
         """
         self.mode = "channel"
         self.model_type = "rlcg"
@@ -840,8 +804,7 @@ class SIWaveCPASimulationSetup:
 
     @classmethod
     def create(cls, edb: "Edb", name=None, siwave_cpa_setup_class=None) -> "SIWaveCPASimulationSetup":
-        """
-        Creates a new SIWaveCPASimulationSetup instance.
+        """Creates a new SIWaveCPASimulationSetup instance.
 
         Parameters:
         -----------
@@ -865,8 +828,7 @@ class SIWaveCPASimulationSetup:
         return cpa_setup
 
     def _apply_cfg_object(self, siwave_cpa_setup_class):
-        """
-        Applies the configuration object to set up the simulation.
+        """Applies the configuration object to set up the simulation.
 
         Args:
             siwave_cpa_setup_class (SIwaveCpaSetup): The configuration object containing simulation setup data.
@@ -883,8 +845,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def name(self) -> str:
-        """
-        Gets the name of the simulation setup.
+        """Gets the name of the simulation setup.
 
         Returns:
             str: The name of the simulation setup.
@@ -900,8 +861,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def mode(self):
-        """
-        Gets the mode of the simulation setup.
+        """Gets the mode of the simulation setup.
 
         Returns:
             str: The mode of the simulation setup ("channel" or "no_channel").
@@ -927,8 +887,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def model_type(self):
-        """
-        Gets the model type of the simulation setup.
+        """Gets the model type of the simulation setup.
 
         Returns:
             str: The model type ("rlcg" or "esd_r").
@@ -951,8 +910,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def use_q3d_solver(self):
-        """
-        Gets the Q3D solver usage setting.
+        """Gets the Q3D solver usage setting.
 
         Returns:
             bool: True if the Q3D solver is used, False otherwise.
@@ -979,8 +937,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def net_processing_mode(self):
-        """
-        Gets the net processing mode.
+        """Gets the net processing mode.
 
         Returns:
             str: The net processing mode.
@@ -998,8 +955,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def channel_setup(self):
-        """
-        Gets the channel setup configuration.
+        """Gets the channel setup configuration.
 
         Returns:
             ChannelSetup: The channel setup configuration.
@@ -1014,8 +970,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def solver_options(self):
-        """
-        Gets the solver options configuration.
+        """Gets the solver options configuration.
 
         Returns:
             SolverOptions: The solver options configuration.
@@ -1030,8 +985,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def nets_to_process(self):
-        """
-        Gets the list of nets to process.
+        """Gets the list of nets to process.
 
         Returns:
             list: A list of nets to process.

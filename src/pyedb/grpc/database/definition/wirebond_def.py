@@ -56,8 +56,7 @@ class BondwireDef:
         self.core.delete()
 
     def get_parameters(self):
-        """
-        Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+        """Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
 
         Returns
         -------
@@ -68,8 +67,7 @@ class BondwireDef:
         return self.core.get_parameters().value
 
     def set_parameters(self, parameters):
-        """
-        Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+        """Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
 
         Parameters
         ----------
@@ -91,8 +89,7 @@ class Jedec4BondwireDef(BondwireDef):
 
     @classmethod
     def create(cls, edb, name):
-        """
-        Create a new JEDEC 4 bondwire definition.
+        """Create a new JEDEC 4 bondwire definition.
 
         Parameters
         ----------
@@ -112,8 +109,7 @@ class Jedec4BondwireDef(BondwireDef):
 
     @staticmethod
     def find_by_name(edb, name):
-        """
-        Find a JEDEC 4 bondwire definition by name.
+        """Find a JEDEC 4 bondwire definition by name.
 
         Parameters
         ----------
@@ -144,8 +140,7 @@ class Jedec5BondwireDef(BondwireDef):
 
     @classmethod
     def create(cls, edb, name):
-        """
-        Create a new JEDEC 5 bondwire definition.
+        """Create a new JEDEC 5 bondwire definition.
 
         Parameters
         ----------
@@ -165,8 +160,7 @@ class Jedec5BondwireDef(BondwireDef):
 
     @staticmethod
     def find_by_name(edb, name):
-        """
-        Find a JEDEC 5 bondwire definition by name.
+        """Find a JEDEC 5 bondwire definition by name.
 
         Parameters
         ----------
@@ -197,8 +191,7 @@ class ApdBondwireDef(BondwireDef):
 
     @classmethod
     def create(cls, edb, name):
-        """
-        Create a new Apd bondwire definition.
+        """Create a new Apd bondwire definition.
 
         Parameters
         ----------
@@ -218,8 +211,7 @@ class ApdBondwireDef(BondwireDef):
 
     @staticmethod
     def find_by_name(edb, name):
-        """
-        Find an Apd bondwire definition by name.
+        """Find an Apd bondwire definition by name.
 
         Parameters
         ----------

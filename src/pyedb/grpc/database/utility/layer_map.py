@@ -40,8 +40,7 @@ class LayerMap:
 
     @classmethod
     def create(cls, direction: str = "two_way") -> LayerMap:
-        """
-        Create a layer map.
+        """Create a layer map.
 
         Parameters
         ----------
@@ -64,8 +63,7 @@ class LayerMap:
 
     @property
     def id(self):
-        """
-        Get the layer map ID.
+        """Get the layer map ID.
 
         Returns
         -------
@@ -77,8 +75,7 @@ class LayerMap:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the layer map is null.
+        """Check if the layer map is null.
 
         Returns
         -------
@@ -93,8 +90,7 @@ class LayerMap:
         self.core.clear()
 
     def get_mapping_backward(self, layer_id: int) -> int:
-        """
-        Get the backward mapping for a given layer ID.
+        """Get the backward mapping for a given layer ID.
 
         Parameters
         ----------
@@ -110,8 +106,7 @@ class LayerMap:
         return self.core.get_mapping_backward(layer_id)
 
     def get_mapping_forward(self, layer_id: int) -> int:
-        """
-        Get the forward mapping for a given layer ID.
+        """Get the forward mapping for a given layer ID.
 
         Parameters
         ----------
@@ -127,8 +122,7 @@ class LayerMap:
         return self.core.get_mapping_forward(layer_id)
 
     def set_mapping(self, layer_id_from: int, layer_id_to: int):
-        """
-        Set the mapping from one layer ID to another.
+        """Set the mapping from one layer ID to another.
 
         Parameters
         ----------

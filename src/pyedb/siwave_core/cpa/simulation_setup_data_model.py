@@ -26,8 +26,7 @@ from pydantic import BaseModel, Field
 
 
 class SolverOptions(BaseModel):
-    """
-    Configuration options for the SI-Wave solver.
+    """Configuration options for the SI-Wave solver.
 
     Attributes:
         extraction_mode (str): Mode of extraction, defaults to "si"
@@ -70,8 +69,7 @@ class SolverOptions(BaseModel):
 
 
 class Vrm(BaseModel):
-    """
-    Voltage Regulator Module configuration.
+    """Voltage Regulator Module configuration.
 
     Attributes:
         name (str): Name of the VRM, defaults to empty string
@@ -88,8 +86,7 @@ class Vrm(BaseModel):
 
 
 class ChannelSetup(BaseModel):
-    """
-    Channel configuration setup.
+    """Channel configuration setup.
 
     Attributes:
         die_name (str): Name of the die, defaults to empty string
@@ -106,8 +103,7 @@ class ChannelSetup(BaseModel):
 
 
 class SIwaveCpaSetup(BaseModel):
-    """
-    Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
+    """Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
 
     Attributes:
         name (str): Name of the setup, defaults to empty string
@@ -134,8 +130,7 @@ class SIwaveCpaSetup(BaseModel):
 
     @classmethod
     def from_dict(cls, data: Dict) -> "SIwaveCpaSetup":
-        """
-        Convert dictionary to SIwaveCpaSetup object.
+        """Convert dictionary to SIwaveCpaSetup object.
 
         Args:
             data (Dict): Dictionary containing SIwaveCpaSetup configuration
@@ -151,8 +146,7 @@ class SIwaveCpaSetup(BaseModel):
         return cls(**data)
 
     def to_dict(self) -> Dict:
-        """
-        Convert SIwaveCpaSetup object to dictionary.
+        """Convert SIwaveCpaSetup object to dictionary.
 
         Returns:
             Dict: Dictionary representation of the SIwaveCpaSetup instance

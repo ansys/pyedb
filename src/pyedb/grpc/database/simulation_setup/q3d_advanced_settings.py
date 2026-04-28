@@ -28,8 +28,7 @@ if TYPE_CHECKING:
 
 
 class Q3DAdvancedSettings:
-    """
-    Q3D advanced simulation settings.
+    """Q3D advanced simulation settings.
 
     Parameters
     ----------
@@ -44,8 +43,7 @@ class Q3DAdvancedSettings:
 
     @property
     def defeature_absolute_length(self) -> float:
-        """
-        Absolute length used as tolerance when defeaturing polygons.
+        """Absolute length used as tolerance when defeaturing polygons.
 
         Returns
         -------
@@ -61,8 +59,7 @@ class Q3DAdvancedSettings:
 
     @property
     def defeature_ratio(self) -> float:
-        """
-        Extent ratio used as tolerance when defeaturing polygons.
+        """Extent ratio used as tolerance when defeaturing polygons.
 
         Returns
         -------
@@ -78,8 +75,7 @@ class Q3DAdvancedSettings:
 
     @property
     def healing_option(self) -> int:
-        """
-        Healing option.
+        """Healing option.
 
         Returns
         -------
@@ -95,8 +91,7 @@ class Q3DAdvancedSettings:
 
     @property
     def ic_mode_auto_resolution(self) -> bool:
-        """
-        Flag indicating if model resolution is automatically calculated for IC designs.
+        """Flag indicating if model resolution is automatically calculated for IC designs.
 
         Returns
         -------
@@ -112,8 +107,7 @@ class Q3DAdvancedSettings:
 
     @property
     def ic_mode_length(self) -> float:
-        """
-        Model resolution to use when manually setting the model resolution of IC designs.
+        """Model resolution to use when manually setting the model resolution of IC designs.
 
         Returns
         -------
@@ -129,8 +123,7 @@ class Q3DAdvancedSettings:
 
     @property
     def max_passes(self) -> int:
-        """
-        Maximum number of mesh refinement cycles to perform.
+        """Maximum number of mesh refinement cycles to perform.
 
         Returns
         -------
@@ -146,8 +139,7 @@ class Q3DAdvancedSettings:
 
     @property
     def max_refine_per_pass(self) -> float:
-        """
-        How many tetrahedra are added at each iteration of the adaptive refinement process.
+        """How many tetrahedra are added at each iteration of the adaptive refinement process.
 
         Returns
         -------
@@ -163,8 +155,7 @@ class Q3DAdvancedSettings:
 
     @property
     def mesh_for_via_plating(self) -> bool:
-        """
-        Flag indicating whether to mesh the via plating.
+        """Flag indicating whether to mesh the via plating.
 
         Returns
         -------
@@ -180,8 +171,7 @@ class Q3DAdvancedSettings:
 
     @property
     def min_converged_passes(self) -> int:
-        """
-        Minimum number of converged passes before stopping the adaptive refinement process.
+        """Minimum number of converged passes before stopping the adaptive refinement process.
 
         Returns
         -------
@@ -197,8 +187,7 @@ class Q3DAdvancedSettings:
 
     @property
     def min_passes(self) -> int:
-        """
-        Minimum number of mesh refinement cycles to perform.
+        """Minimum number of mesh refinement cycles to perform.
 
         Returns
         -------
@@ -214,8 +203,7 @@ class Q3DAdvancedSettings:
 
     @property
     def num_via_density(self) -> float:
-        """
-        Spacing between vias.
+        """Spacing between vias.
 
         Returns
         -------
@@ -231,8 +219,7 @@ class Q3DAdvancedSettings:
 
     @property
     def num_via_sides(self) -> int:
-        """
-        Number of sides to use when meshing vias.
+        """Number of sides to use when meshing vias.
 
         Returns
         -------
@@ -248,8 +235,7 @@ class Q3DAdvancedSettings:
 
     @property
     def percent_error(self) -> float:
-        """
-        Target percent error for adaptive mesh refinement.
+        """Target percent error for adaptive mesh refinement.
 
         Returns
         -------
@@ -265,8 +251,7 @@ class Q3DAdvancedSettings:
 
     @property
     def remove_floating_geometry(self) -> bool:
-        """
-        Flag indicating if a geometry not connected to any other geometry is removed.
+        """Flag indicating if a geometry not connected to any other geometry is removed.
 
         Returns
         -------
@@ -282,8 +267,7 @@ class Q3DAdvancedSettings:
 
     @property
     def small_void_area(self) -> float:
-        """
-        Voids with an area smaller than this value are ignored during simulation.
+        """Voids with an area smaller than this value are ignored during simulation.
 
         Returns
         -------
@@ -299,8 +283,7 @@ class Q3DAdvancedSettings:
 
     @property
     def union_polygons(self) -> bool:
-        """
-        Flag indicating if polygons are united before meshing.
+        """Flag indicating if polygons are united before meshing.
 
         Returns
         -------
@@ -316,8 +299,7 @@ class Q3DAdvancedSettings:
 
     @property
     def use_defeature(self) -> bool:
-        """
-        Flag indicating if defeaturing is used when meshing.
+        """Flag indicating if defeaturing is used when meshing.
 
         Returns
         -------
@@ -333,8 +315,7 @@ class Q3DAdvancedSettings:
 
     @property
     def use_defeature_absolute_length(self) -> bool:
-        """
-        Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
+        """Flag indicating if absolute length or extent ratio is used when defeaturing polygons.
 
         Returns
         -------
@@ -350,8 +331,7 @@ class Q3DAdvancedSettings:
 
     @property
     def via_material(self) -> str:
-        """
-        Material used for vias.
+        """Material used for vias.
 
         Returns
         -------

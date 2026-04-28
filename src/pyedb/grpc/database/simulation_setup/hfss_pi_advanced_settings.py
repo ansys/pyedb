@@ -41,8 +41,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def arc_to_chord_error(self) -> float:
-        """
-        Arc to chord error value.
+        """Arc to chord error value.
 
         Returns
         -------
@@ -55,8 +54,7 @@ class HFSSPIAdvancedSettings:
 
     @arc_to_chord_error.setter
     def arc_to_chord_error(self, value: float):
-        """
-        Set arc to chord error value.
+        """Set arc to chord error value.
 
         Parameters
         ----------
@@ -69,8 +67,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def auto_model_resolution(self) -> bool:
-        """
-        Flag indicating if model resolution is automatically calculated.
+        """Flag indicating if model resolution is automatically calculated.
 
         Returns
         -------
@@ -82,8 +79,7 @@ class HFSSPIAdvancedSettings:
 
     @auto_model_resolution.setter
     def auto_model_resolution(self, value: bool):
-        """
-        Set auto model resolution value.
+        """Set auto model resolution value.
 
         Parameters
         ----------
@@ -95,8 +91,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def max_num_arc_points(self) -> int:
-        """
-        Maximum number of points used to approximate arcs.
+        """Maximum number of points used to approximate arcs.
 
         Returns
         -------
@@ -109,8 +104,7 @@ class HFSSPIAdvancedSettings:
 
     @max_num_arc_points.setter
     def max_num_arc_points(self, value: int):
-        """
-        Set maximum number of arc points.
+        """Set maximum number of arc points.
 
         Parameters
         ----------
@@ -122,8 +116,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def mesh_for_via_plating(self) -> bool:
-        """
-        Flag indicating if meshing for via plating is enabled.
+        """Flag indicating if meshing for via plating is enabled.
 
         Returns
         -------
@@ -135,8 +128,7 @@ class HFSSPIAdvancedSettings:
 
     @mesh_for_via_plating.setter
     def mesh_for_via_plating(self, value: bool):
-        """
-        Set mesh for via plating value.
+        """Set mesh for via plating value.
 
         Parameters
         ----------
@@ -148,8 +140,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def model_resolution_length(self) -> float:
-        """
-        Model resolution to use when manually setting the model resolution.
+        """Model resolution to use when manually setting the model resolution.
 
         Returns
         -------
@@ -162,8 +153,7 @@ class HFSSPIAdvancedSettings:
 
     @model_resolution_length.setter
     def model_resolution_length(self, value: float):
-        """
-        Set model resolution length value.
+        """Set model resolution length value.
 
         Parameters
         ----------
@@ -175,8 +165,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def num_via_sides(self) -> int:
-        """
-        Number of sides a via is considered to have.
+        """Number of sides a via is considered to have.
 
         Returns
         -------
@@ -188,8 +177,7 @@ class HFSSPIAdvancedSettings:
 
     @num_via_sides.setter
     def num_via_sides(self, value: int):
-        """
-        Set number of via sides.
+        """Set number of via sides.
 
         Parameters
         ----------
@@ -201,8 +189,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def remove_floating_geometry(self) -> bool:
-        """
-        Flag indicating if a geometry not connected to any other geometry is removed.
+        """Flag indicating if a geometry not connected to any other geometry is removed.
 
         Returns
         -------
@@ -214,8 +201,7 @@ class HFSSPIAdvancedSettings:
 
     @remove_floating_geometry.setter
     def remove_floating_geometry(self, value: bool):
-        """
-        Set remove floating geometry value.
+        """Set remove floating geometry value.
 
         Parameters
         ----------
@@ -227,8 +213,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def small_plane_area(self) -> float:
-        """
-        Planes with an area smaller than this value are ignored during simulation.
+        """Planes with an area smaller than this value are ignored during simulation.
 
         Returns
         -------
@@ -241,8 +226,7 @@ class HFSSPIAdvancedSettings:
 
     @small_plane_area.setter
     def small_plane_area(self, value: float):
-        """
-        Set small plane area value.
+        """Set small plane area value.
 
         Parameters
         ----------
@@ -254,8 +238,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def small_void_area(self) -> float:
-        """
-        Voids with an area smaller than this value are ignored during simulation.
+        """Voids with an area smaller than this value are ignored during simulation.
 
         Returns
         -------
@@ -268,8 +251,7 @@ class HFSSPIAdvancedSettings:
 
     @small_void_area.setter
     def small_void_area(self, value: float):
-        """
-        Set small void area value.
+        """Set small void area value.
 
         Parameters
         ----------
@@ -281,8 +263,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def use_arc_chord_error_approx(self) -> bool:
-        """
-        Flag indicating if arc chord error approximation is used.
+        """Flag indicating if arc chord error approximation is used.
 
         Returns
         -------
@@ -294,8 +275,7 @@ class HFSSPIAdvancedSettings:
 
     @use_arc_chord_error_approx.setter
     def use_arc_chord_error_approx(self, value: bool):
-        """
-        Set use arc to chord error approximation value.
+        """Set use arc to chord error approximation value.
 
         Parameters
         ----------
@@ -307,8 +287,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def via_material(self) -> str:
-        """
-        Default via material.
+        """Default via material.
 
         Returns
         -------
@@ -320,8 +299,7 @@ class HFSSPIAdvancedSettings:
 
     @via_material.setter
     def via_material(self, value: str):
-        """
-        Set via material.
+        """Set via material.
 
         Parameters
         ----------
@@ -333,8 +311,7 @@ class HFSSPIAdvancedSettings:
 
     @property
     def zero_metal_layer_thickness(self) -> float:
-        """
-        Pwr/Gnd layers with a thickness smaller than this value are simplified during simulation.
+        """Pwr/Gnd layers with a thickness smaller than this value are simplified during simulation.
 
         Returns
         -------
@@ -347,8 +324,7 @@ class HFSSPIAdvancedSettings:
 
     @zero_metal_layer_thickness.setter
     def zero_metal_layer_thickness(self, value: str):
-        """
-        Set zero metal layer thickness value.
+        """Set zero metal layer thickness value.
 
         Parameters
         ----------

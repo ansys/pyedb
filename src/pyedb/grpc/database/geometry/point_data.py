@@ -51,8 +51,7 @@ class PointData:
 
     @property
     def x(self) -> Value:
-        """
-        X coordinate.
+        """X coordinate.
 
         This property is read-only.
         """
@@ -60,8 +59,7 @@ class PointData:
 
     @property
     def y(self) -> Value:
-        """
-        Y coordinate.
+        """Y coordinate.
 
         This property is read-only.
         """
@@ -74,16 +72,14 @@ class PointData:
 
     @property
     def is_arc(self) -> bool:
-        """
-        Flag indicating if the point represents an arc.
+        """Flag indicating if the point represents an arc.
 
         This property is read-only.
         """
         return self.core.is_arc
 
     def rotate(self, angle: str | float | int, center: tuple[str | float | int, str | float | int]) -> "PointData":
-        """
-        Rotate a point at a given center by a given angle.
+        """Rotate a point at a given center by a given angle.
 
         Parameters
         ----------

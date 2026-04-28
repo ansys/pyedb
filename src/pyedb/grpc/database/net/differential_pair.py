@@ -39,8 +39,7 @@ class DifferentialPairs:
 
     @property
     def items(self) -> dict[str, DifferentialPair]:
-        """
-        Extended nets.
+        """Extended nets.
 
         Returns
         -------
@@ -55,8 +54,7 @@ class DifferentialPairs:
 
     def create(self, name, net_p, net_n):
         # type: (str, str, str) -> DifferentialPair
-        """
-        Parameters
+        """Parameters
         ----------
         name : str
             Name of the differential pair.
@@ -77,8 +75,7 @@ class DifferentialPairs:
         return self.items[name]
 
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N") -> list[str]:
-        """
-        Auto identify differential pairs by naming conversion.
+        """Auto identify differential pairs by naming conversion.
 
         Parameters
         ----------
@@ -127,8 +124,7 @@ class DifferentialPairs:
 
 
 class DifferentialPair(CoreDifferentialPair):
-    """
-    Manages EDB functionalities for a primitive.
+    """Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
     """
 

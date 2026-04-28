@@ -51,8 +51,7 @@ class Variable:
 
     @property
     def value_string(self):
-        """
-        Get/Set the value of this variable.
+        """Get/Set the value of this variable.
 
         Returns
         -------
@@ -66,8 +65,7 @@ class Variable:
 
     @property
     def value_object(self):
-        """
-        Get/Set the value of this variable.
+        """Get/Set the value of this variable.
 
         Returns
         -------
@@ -78,8 +76,7 @@ class Variable:
 
     @property
     def value(self):
-        """
-        Get the value of this variable.
+        """Get the value of this variable.
 
         Returns
         -------
@@ -107,8 +104,7 @@ class Variable:
         return self._var_server.IsVariableParameter(self.name)
 
     def delete(self):
-        """
-        Delete this variable.
+        """Delete this variable.
 
         Returns
         -------

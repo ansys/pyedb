@@ -71,8 +71,7 @@ class CommonNets:
         title: str = None,
         **kwargs,
     ) -> tuple["Figure", "Axes"] | None:
-        """
-        Plot a Net to Matplotlib 2D Chart.
+        """Plot a Net to Matplotlib 2D Chart.
 
         Parameters
         ----------

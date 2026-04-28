@@ -39,8 +39,7 @@ from pyedb.grpc.database.utility.rlc import Rlc
 
 
 class BundleTerminal(Terminal):
-    """
-    Manages bundle terminal properties.
+    """Manages bundle terminal properties.
 
     Parameters
     ----------
@@ -58,8 +57,7 @@ class BundleTerminal(Terminal):
 
     @classmethod
     def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort, str]]) -> BundleTerminal:
-        """
-        Create a bundle terminal.
+        """Create a bundle terminal.
 
         Parameters
         ----------
@@ -102,8 +100,7 @@ class BundleTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """
-        Check if the bundle terminal is a reference terminal.
+        """Check if the bundle terminal is a reference terminal.
 
         Returns
         -------
@@ -113,8 +110,7 @@ class BundleTerminal(Terminal):
         return self.core.is_reference_terminal
 
     def decouple(self) -> bool:
-        """
-        Ungroup a bundle of terminals.
+        """Ungroup a bundle of terminals.
 
         Returns
         -------
@@ -125,8 +121,7 @@ class BundleTerminal(Terminal):
 
     @property
     def component(self) -> Component:
-        """
-        Component.
+        """Component.
 
         Returns
         -------
@@ -138,8 +133,7 @@ class BundleTerminal(Terminal):
 
     @property
     def net(self) -> Net:
-        """
-        Returns Net object.
+        """Returns Net object.
 
         Returns
         -------
@@ -151,8 +145,7 @@ class BundleTerminal(Terminal):
 
     @property
     def hfss_pi_type(self) -> str:
-        """
-        Returns HFSS PI type.
+        """Returns HFSS PI type.
 
         Returns
         -------
@@ -176,8 +169,7 @@ class BundleTerminal(Terminal):
 
     @property
     def rlc_boundary_parameters(self) -> Rlc:
-        """
-        Returns Rlc parameters
+        """Returns Rlc parameters
 
         Returns
         -------
@@ -188,8 +180,7 @@ class BundleTerminal(Terminal):
 
     @property
     def term_to_ground(self) -> str:
-        """
-        Returns terminal to ground.
+        """Returns terminal to ground.
 
         Returns
         -------

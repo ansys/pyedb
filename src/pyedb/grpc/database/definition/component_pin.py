@@ -31,8 +31,7 @@ class ComponentPin:
 
     @classmethod
     def create(cls, component_def, name) -> CoreComponentPin:
-        """
-        Create a component pin.
+        """Create a component pin.
 
         Parameters
         ----------

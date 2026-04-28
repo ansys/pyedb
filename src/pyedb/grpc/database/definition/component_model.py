@@ -36,8 +36,7 @@ class ComponentModel:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the component model is null.
+        """Check if the component model is null.
 
         Returns
         -------
@@ -49,8 +48,7 @@ class ComponentModel:
 
     @property
     def name(self) -> str:
-        """
-        Get the name of the component model.
+        """Get the name of the component model.
 
         Returns
         -------
@@ -62,8 +60,7 @@ class ComponentModel:
 
     @property
     def reference_file(self) -> str:
-        """
-        Get the reference file of the component model.
+        """Get the reference file of the component model.
 
         Returns
         -------
@@ -82,8 +79,7 @@ class NPortComponentModel:
 
     @classmethod
     def create(cls, name: str) -> "NPortComponentModel":
-        """
-        Create an N-Port component model.
+        """Create an N-Port component model.
 
         Parameters
         ----------
@@ -100,8 +96,7 @@ class NPortComponentModel:
 
     @classmethod
     def find_by_id(cls, component_definition, id: int) -> Union[None, "NPortComponentModel"]:
-        """
-        Find an N-Port component model by IO count in a given component definition.
+        """Find an N-Port component model by IO count in a given component definition.
 
         Parameters
         ----------
@@ -123,8 +118,7 @@ class NPortComponentModel:
 
     @classmethod
     def find_by_name(cls, component_definition, name: str) -> Union[None, "NPortComponentModel"]:
-        """
-        Find an N-Port component model by name in a given component definition.
+        """Find an N-Port component model by name in a given component definition.
 
         Parameters
         ----------
@@ -146,8 +140,7 @@ class NPortComponentModel:
 
     @property
     def is_null(self) -> bool:
-        """
-        Check if the N-Port component model is null.
+        """Check if the N-Port component model is null.
 
         Returns
         -------
@@ -159,8 +152,7 @@ class NPortComponentModel:
 
     @property
     def name(self) -> str:
-        """
-        Get the name of the N-Port component model.
+        """Get the name of the N-Port component model.
 
         Returns
         -------
@@ -172,8 +164,7 @@ class NPortComponentModel:
 
     @property
     def reference_file(self) -> str:
-        """
-        Get the reference file of the N-Port component model.
+        """Get the reference file of the N-Port component model.
 
         Returns
         -------

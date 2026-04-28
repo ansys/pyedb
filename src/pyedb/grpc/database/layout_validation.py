@@ -38,8 +38,7 @@ class LayoutValidation:
         self._layout_instance = self._pedb.layout_instance
 
     def dc_shorts(self, net_list: Optional[Union[str, List[str]]] = None, fix: bool = False) -> List[List[str]]:
-        """
-        Find DC shorts on layout.
+        """Find DC shorts on layout.
 
         Parameters
         ----------
@@ -136,8 +135,7 @@ class LayoutValidation:
         order_by_area: bool = False,
         keep_disjoint_pins: bool = False,
     ) -> List[str]:
-        """
-        Find and fix disjoint nets from a given netlist.
+        """Find and fix disjoint nets from a given netlist.
 
         Parameters
         ----------
@@ -175,8 +173,7 @@ class LayoutValidation:
         timer_start = self._pedb.logger.reset_timer()
 
         def area_calc(elem: List[int]) -> float:
-            """
-            Calculate total area for a group of element ids.
+            """Calculate total area for a group of element ids.
 
             The layout groups are stored as lists of element ids; resolve to
             actual objects using ``obj_dict`` before computing area.
@@ -296,8 +293,7 @@ class LayoutValidation:
         return new_nets
 
     def fix_self_intersections(self, net_list: Optional[Union[str, List[str]]] = None) -> bool:
-        """
-        Find and fix self intersections from a given netlist.
+        """Find and fix self intersections from a given netlist.
 
         Parameters
         ----------
@@ -334,8 +330,7 @@ class LayoutValidation:
         return True
 
     def illegal_net_names(self, fix: bool = False) -> None:
-        """
-        Find and fix illegal net names.
+        """Find and fix illegal net names.
 
         Examples
         --------
@@ -364,8 +359,7 @@ class LayoutValidation:
         return
 
     def illegal_rlc_values(self, fix: bool = False) -> List[str]:
-        """
-        Find and fix RLC illegal values.
+        """Find and fix RLC illegal values.
 
         Examples
         --------
@@ -391,8 +385,7 @@ class LayoutValidation:
         return temp
 
     def padstacks_no_name(self, fix: bool = False) -> None:
-        """
-        Identify and fix padstacks without names.
+        """Identify and fix padstacks without names.
 
         Examples
         --------

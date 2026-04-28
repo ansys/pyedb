@@ -55,8 +55,7 @@ class RaptorXAdvancedSettings:
     @property
     @deprecated_property("use cells_per_wavelength property instead")
     def cell_per_wave_length(self):
-        """
-        Number of cells that fit under each wavelength.
+        """Number of cells that fit under each wavelength.
 
         .. deprecated:: 0.70.0
               Use :attr:`cells_per_wavelength` instead.
@@ -70,8 +69,7 @@ class RaptorXAdvancedSettings:
 
     @property
     def cells_per_wavelength(self) -> int:
-        """
-        Number of cells that fit under each wavelength.
+        """Number of cells that fit under each wavelength.
 
         Returns
         -------
@@ -100,8 +98,7 @@ class RaptorXAdvancedSettings:
     @property
     @deprecated_property("use eliminate_slit_per_holes property instead")
     def eliminate_slit_per_hole(self):
-        """
-        Threshold for strain or thermal relief slits and hole polygon areas.
+        """Threshold for strain or thermal relief slits and hole polygon areas.
 
         .. deprecated:: 0.70.0
               Use :attr:`eliminate_slit_per_holes` instead.
@@ -146,8 +143,7 @@ class RaptorXAdvancedSettings:
     @property
     @deprecated_property("use override_shrink_factor property instead")
     def override_shrink_fac(self):
-        """
-        Override shrink factor for polygon edges.
+        """Override shrink factor for polygon edges.
 
         .. deprecated:: 0.70.0
               Use :attr:`override_shrink_factor` instead.
@@ -242,8 +238,7 @@ class RaptorXAdvancedSettings:
 
     @property
     def defuse_enable_hybrid_extraction(self) -> bool:
-        """
-        Flag indicating if the modeler is to split the layout into two parts in an attempt to decrease
+        """Flag indicating if the modeler is to split the layout into two parts in an attempt to decrease
         the complexity."""
         return self.core.defuse_enable_hybrid_extraction
 
@@ -253,8 +248,7 @@ class RaptorXAdvancedSettings:
 
     @property
     def use_enable_substrate_network_extraction(self) -> bool:
-        """
-        Flag indicating if modeling of substrate coupling effects is enabled using equivalent distributed RC
+        """Flag indicating if modeling of substrate coupling effects is enabled using equivalent distributed RC
         networks."""
         return self.core.use_enable_substrate_network_extraction
 
@@ -301,8 +295,7 @@ class RaptorXAdvancedSettings:
     @property
     @deprecated_property("use use_override_shrink_factor property instead.")
     def use_override_shrink_fac(self):
-        """
-        Flag indicating if override shrink factor is used.
+        """Flag indicating if override shrink factor is used.
 
         .. deprecated:: 0.70.0
               Use :attr:`use_override_shrink_factor` instead.

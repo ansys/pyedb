@@ -36,8 +36,7 @@ class Node:
 
     @property
     def component(self) -> str:
-        """
-        Component name containing the node.
+        """Component name containing the node.
 
         Returns
         -------
@@ -54,8 +53,7 @@ class Node:
 
     @property
     def net(self):  # pragma: no cover
-        """
-        Net of the node.
+        """Net of the node.
 
         Returns
         -------
@@ -72,8 +70,7 @@ class Node:
 
     @property
     def node_type(self):  # pragma: no cover
-        """
-        Type of the node.
+        """Type of the node.
 
         Returns
         -------
@@ -90,8 +87,7 @@ class Node:
 
     @property
     def name(self):  # pragma: no cover
-        """
-        Name of the node.
+        """Name of the node.
 
         Returns
         -------
@@ -140,8 +136,7 @@ class Source(object):
 
     @property
     def name(self):  # pragma: no cover
-        """
-        Source name.
+        """Source name.
 
         Returns
         -------
@@ -158,8 +153,7 @@ class Source(object):
 
     @property
     def source_type(self):  # pragma: no cover
-        """
-        Source type.
+        """Source type.
 
         Returns
         -------
@@ -184,8 +178,7 @@ class Source(object):
 
     @property
     def positive_node(self):  # pragma: no cover
-        """
-        Positive node of the source.
+        """Positive node of the source.
 
         Returns
         -------
@@ -203,8 +196,7 @@ class Source(object):
 
     @property
     def negative_node(self):  # pragma: no cover
-        """
-        Negative node of the source.
+        """Negative node of the source.
 
         Returns
         -------
@@ -223,8 +215,7 @@ class Source(object):
 
     @property
     def amplitude(self):  # pragma: no cover
-        """
-        Amplitude value of the source.
+        """Amplitude value of the source.
 
         Returns
         -------
@@ -241,8 +232,7 @@ class Source(object):
 
     @property
     def phase(self):  # pragma: no cover
-        """
-        Phase of the source.
+        """Phase of the source.
 
         Returns
         -------
@@ -259,8 +249,7 @@ class Source(object):
 
     @property
     def impedance(self):  # pragma: no cover
-        """
-        Impedance of the source.
+        """Impedance of the source.
 
         Returns
         -------
@@ -277,8 +266,7 @@ class Source(object):
 
     @property
     def r_value(self):
-        """
-        Resistance value of the RLC source.
+        """Resistance value of the RLC source.
 
         Returns
         -------
@@ -295,8 +283,7 @@ class Source(object):
 
     @property
     def l_value(self):
-        """
-        Inductance value of the RLC source.
+        """Inductance value of the RLC source.
 
         Returns
         -------
@@ -313,8 +300,7 @@ class Source(object):
 
     @property
     def c_value(self):
-        """
-        Capacitance value of the RLC source.
+        """Capacitance value of the RLC source.
 
         Returns
         -------
@@ -331,8 +317,7 @@ class Source(object):
 
     @property
     def create_physical_resistor(self):
-        """
-        Whether to create a physical resistor.
+        """Whether to create a physical resistor.
 
         Returns
         -------
@@ -377,8 +362,7 @@ class CircuitPort(Source):
 
     @property
     def impedance(self):
-        """
-        Impedance of the circuit port.
+        """Impedance of the circuit port.
 
         Returns
         -------
@@ -394,8 +378,7 @@ class CircuitPort(Source):
 
     @property
     def get_type(self):
-        """
-        Source type.
+        """Source type.
 
         Returns
         -------
@@ -418,8 +401,7 @@ class VoltageSource(Source):
 
     @property
     def magnitude(self):
-        """
-        Magnitude of the voltage source.
+        """Magnitude of the voltage source.
 
         Returns
         -------
@@ -435,8 +417,7 @@ class VoltageSource(Source):
 
     @property
     def phase(self):
-        """
-        Phase of the voltage source.
+        """Phase of the voltage source.
 
         Returns
         -------
@@ -452,8 +433,7 @@ class VoltageSource(Source):
 
     @property
     def impedance(self):
-        """
-        Impedance of the voltage source.
+        """Impedance of the voltage source.
 
         Returns
         -------
@@ -469,8 +449,7 @@ class VoltageSource(Source):
 
     @property
     def source_type(self):
-        """
-        Source type.
+        """Source type.
 
         Returns
         -------
@@ -493,8 +472,7 @@ class CurrentSource(Source):
 
     @property
     def magnitude(self):
-        """
-        Magnitude of the current source.
+        """Magnitude of the current source.
 
         Returns
         -------
@@ -510,8 +488,7 @@ class CurrentSource(Source):
 
     @property
     def phase(self):
-        """
-        Phase of the current source.
+        """Phase of the current source.
 
         Returns
         -------
@@ -527,8 +504,7 @@ class CurrentSource(Source):
 
     @property
     def impedance(self):
-        """
-        Impedance of the current source.
+        """Impedance of the current source.
 
         Returns
         -------
@@ -544,8 +520,7 @@ class CurrentSource(Source):
 
     @property
     def source_type(self):
-        """
-        Source type.
+        """Source type.
 
         Returns
         -------
@@ -566,8 +541,7 @@ class DCTerminal(Source):
 
     @property
     def source_type(self):
-        """
-        Source type.
+        """Source type.
 
         Returns
         -------
@@ -588,8 +562,7 @@ class ResistorSource(Source):
 
     @property
     def rvalue(self):
-        """
-        Resistance value.
+        """Resistance value.
 
         Returns
         -------
@@ -605,8 +578,7 @@ class ResistorSource(Source):
 
     @property
     def source_type(self):
-        """
-        Source type.
+        """Source type.
 
         Returns
         -------

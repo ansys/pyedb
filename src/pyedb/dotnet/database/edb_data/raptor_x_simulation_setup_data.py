@@ -68,8 +68,7 @@ class RaptorXSimulationSetup(SimulationSetup):
             self.logger.error(f"RaptorX setup position input setter must be an integer. Provided value {value}")
 
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
-        """
-        Add frequency sweep.
+        """Add frequency sweep.
 
         Parameters
         ----------
@@ -177,8 +176,7 @@ class RaptorXGeneralSettings(object):
 
     @max_frequency.setter
     def max_frequency(self, value):
-        """
-        This allows user to specify the maximum simulation frequency, a parameter which controls how tight the model
+        """This allows user to specify the maximum simulation frequency, a parameter which controls how tight the model
         mesh will be. User can override the default meshing frequency as defined by Max Frequency using the Advanced
         settings > MeshFrequency. Example: "10GHz".
         """
@@ -203,8 +201,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def cell_per_wave_length(self):
-        """
-        This setting describes the number of cells that fit under each wavelength. The wavelength is
+        """This setting describes the number of cells that fit under each wavelength. The wavelength is
         calculated according to the Max Frequency or the Mesh Frequency, unless specified by user through
         this setting. E.g. Setting Cells/Wavelength to 20 means that an object will be divided into 10 cells
         if its width or length is 1/2 wavelengths.
@@ -221,8 +218,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def edge_mesh(self):
-        """
-        This option controls both, the thickness and the width of the exterior conductor filament.
+        """This option controls both, the thickness and the width of the exterior conductor filament.
         When specified, it prevails over the Mesh Frequency or Max Frequency during mesh calculation.
         Example: "0.8um".
         """
@@ -234,8 +230,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def eliminate_slit_per_hole(self):
-        """
-        This is a setting that internally simplifies layouts with strain relief or thermal relief slits and
+        """This is a setting that internally simplifies layouts with strain relief or thermal relief slits and
         holes. It will examine each hole separately against the whole polygon it belongs to.
         If the area of the hole is below the threshold defined in this setting, then the hole will be filled.
         Units: unitless.
@@ -248,8 +243,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def mesh_frequency(self):
-        """
-        User can override the default meshing applied by setting a custom frequency for mesh generation.
+        """User can override the default meshing applied by setting a custom frequency for mesh generation.
         Example: "1GHz".
         """
         return self._pedb.value(self._advanced_settings.MeshFrequency)
@@ -273,8 +267,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def override_shrink_fac(self):
-        """
-        Set the shrink factor explicitly, that is, review what-if scenarios of migrating to half-node
+        """Set the shrink factor explicitly, that is, review what-if scenarios of migrating to half-node
         technologies.
         Units: unitless.
         """
@@ -286,8 +279,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def plane_projection_factor(self):
-        """
-        To eliminate unnecessary mesh complexity of "large" metal planes and improve overall extraction time,
+        """To eliminate unnecessary mesh complexity of "large" metal planes and improve overall extraction time,
         user can define the mesh of certain planes using a combination of the Plane Projection Factor and
         settings of the Nets Advanced Options.
         Units: unitless.
@@ -300,8 +292,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_accelerate_via_extraction(self):
-        """
-        Setting this option will simplify/merge neighboring vias before sending the layout for processing
+        """Setting this option will simplify/merge neighboring vias before sending the layout for processing
         to the mesh engine and to the EM engine.
         """
         return self._advanced_settings.UseAccelerateViaExtraction
@@ -331,8 +322,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_cells_per_wavelength(self):
-        """
-        This setting describes the number of cells that fit under each wavelength. The wavelength is calculated
+        """This setting describes the number of cells that fit under each wavelength. The wavelength is calculated
         according to the Max Frequency or the Mesh Frequency, unless specified by user through this setting.
         """
         return self._advanced_settings.UseCellsPerWavelength
@@ -346,8 +336,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_edge_mesh(self):
-        """
-        This option controls both, the thickness and the width of the exterior conductor filament.
+        """This option controls both, the thickness and the width of the exterior conductor filament.
         When checked, it prevails over the Mesh Frequency or Max Frequency during mesh calculation.
         """
         return self._advanced_settings.UseEdgeMesh
@@ -361,8 +350,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_eliminate_slit_per_holes(self):
-        """
-        This is a setting that internally simplifies layouts with strain relief or thermal relief slits and
+        """This is a setting that internally simplifies layouts with strain relief or thermal relief slits and
         holes.
         """
         return self._advanced_settings.UseEliminateSlitPerHoles
@@ -378,8 +366,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_enable_advanced_cap_effects(self):
-        """
-        Applies all the capacitance related effects such as Conformal Dielectrics, Loading Effect,
+        """Applies all the capacitance related effects such as Conformal Dielectrics, Loading Effect,
         Dielectric Damage.
         """
         return self._advanced_settings.UseEnableAdvancedCapEffects
@@ -395,8 +382,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_enable_etch_transform(self):
-        """
-        Pre-distorts the layout based on the foundry rules, applying the conductor's bias (positive/negative –
+        """Pre-distorts the layout based on the foundry rules, applying the conductor's bias (positive/negative –
         deflation/inflation) at the conductor edges due to unavoidable optical effects in the manufacturing process.
         """
         return self._advanced_settings.UseEnableEtchTransform
@@ -412,8 +398,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_enable_hybrid_extraction(self):
-        """
-        This setting allows the modelling engine to separate the layout into two parts in an attempt to
+        """This setting allows the modelling engine to separate the layout into two parts in an attempt to
         decrease the complexity of EM modelling.
         """
         return self._edb_setup_info.UseEnableHybridExtraction
@@ -444,8 +429,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_extract_floating_metals_dummy(self):
-        """
-        Enables modeling of floating metals as dummy fills. Captures the effect of dummy fill by extracting
+        """Enables modeling of floating metals as dummy fills. Captures the effect of dummy fill by extracting
         the effective capacitance between any pairs of metal segments in the design, in the presence of each
         individual dummy metal islands. This setting cannot be used with UseExtractFloatingMetalsFloating.
         """
@@ -462,8 +446,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_extract_floating_metals_floating(self):
-        """
-        Enables modeling of floating metals as floating nets. Floating metal are grouped into a single entity
+        """Enables modeling of floating metals as floating nets. Floating metal are grouped into a single entity
         and treated as an independent net. This setting cannot be used with UseExtractFloatingMetalsDummy.
         """
         return self._advanced_settings.UseExtractFloatingMetalsFloating
@@ -479,8 +462,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_lde(self):
-        """
-        Takes into account the variation of resistivity as a function of a conductor’s drawn width and spacing to
+        """Takes into account the variation of resistivity as a function of a conductor’s drawn width and spacing to
         its neighbors or as a function of its local density, due to dishing, slotting, cladding thickness, and so
         on.
         """
@@ -495,8 +477,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_mesh_frequency(self):
-        """
-        User can override the default meshing applied by the mesh engine by checking this option and setting a
+        """User can override the default meshing applied by the mesh engine by checking this option and setting a
         custom frequency for mesh generation.
         """
         return self._advanced_settings.UseMeshFrequency
@@ -510,8 +491,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_override_shrink_fac(self):
-        """
-        Set the shrink factor explicitly, that is, review what-if scenarios of migrating to half-node
+        """Set the shrink factor explicitly, that is, review what-if scenarios of migrating to half-node
         technologies.
         """
         return self._advanced_settings.UseOverrideShrinkFac
@@ -525,8 +505,7 @@ class RaptorXSimulationAdvancedSettings(object):
 
     @property
     def use_plane_projection_factor(self):
-        """
-        To eliminate unnecessary mesh complexity of "large" metal planes and improve overall
+        """To eliminate unnecessary mesh complexity of "large" metal planes and improve overall
         extraction time, user can define the mesh of certain planes using a combination of the Plane Projection
         Factor and settings of the Nets Advanced Options.
         """

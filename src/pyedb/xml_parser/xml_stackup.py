@@ -33,8 +33,7 @@ SurfaceOption = Literal["all", "top", "bottom", "side"]
 
 
 class XmlMaterialProperty(BaseModel):
-    """
-    Represents a material property value in the XML stackup.
+    """Represents a material property value in the XML stackup.
 
     Parameters
     ----------
@@ -49,8 +48,7 @@ class XmlMaterialProperty(BaseModel):
 
 
 class XmlMaterial(BaseModel):
-    """
-    Represents a material definition in the XML stackup.
+    """Represents a material definition in the XML stackup.
 
     Parameters
     ----------
@@ -96,8 +94,7 @@ class XmlGroissSurfaceRoughness(BaseModel):
 
 
 class XmlLayer(BaseModel):
-    """
-    Represents a layer in the XML stackup.
+    """Represents a layer in the XML stackup.
 
     Parameters
     ----------
@@ -184,8 +181,7 @@ class XmlLayer(BaseModel):
 
 
 class XmlMaterials(BaseModel):
-    """
-    Container for material definitions in the XML stackup.
+    """Container for material definitions in the XML stackup.
 
     Parameters
     ----------
@@ -199,8 +195,7 @@ class XmlMaterials(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_material(self, name: str, **kwargs) -> XmlMaterial:
-        """
-        Add a material to the stackup.
+        """Add a material to the stackup.
 
         Parameters
         ----------
@@ -233,8 +228,7 @@ class XmlMaterials(BaseModel):
 
 
 class XmlLayers(BaseModel):
-    """
-    Container for layer definitions in the XML stackup.
+    """Container for layer definitions in the XML stackup.
 
     Parameters
     ----------
@@ -251,8 +245,7 @@ class XmlLayers(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_layer(self, **kwargs) -> XmlLayer:
-        """
-        Add a layer to the stackup.
+        """Add a layer to the stackup.
 
         Parameters
         ----------
@@ -280,8 +273,7 @@ class XmlLayers(BaseModel):
 
 
 class XmlStackup(BaseModel):
-    """
-    Main stackup configuration for EDB XML files.
+    """Main stackup configuration for EDB XML files.
 
     This class represents the complete stackup definition including materials
     and layers for a PCB design.
@@ -311,8 +303,7 @@ class XmlStackup(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_materials(self) -> XmlMaterials:
-        """
-        Add a materials container to the stackup.
+        """Add a materials container to the stackup.
 
         Returns
         -------
@@ -332,8 +323,7 @@ class XmlStackup(BaseModel):
         return self.materials
 
     def add_layers(self) -> XmlLayers:
-        """
-        Add a layers container to the stackup.
+        """Add a layers container to the stackup.
 
         Returns
         -------
@@ -352,8 +342,7 @@ class XmlStackup(BaseModel):
         return self.layers
 
     def import_from_cfg_stackup(self, cfg_stackup: "CfgStackup") -> None:
-        """
-        Import stackup configuration from a CFG stackup object.
+        """Import stackup configuration from a CFG stackup object.
 
         Parameters
         ----------
@@ -386,8 +375,7 @@ class XmlStackup(BaseModel):
             self.layers.add_layer(**layer_kwargs)
 
     def to_dict(self) -> dict:
-        """
-        Convert the stackup configuration to a dictionary.
+        """Convert the stackup configuration to a dictionary.
 
         Returns
         -------

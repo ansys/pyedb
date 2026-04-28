@@ -73,8 +73,7 @@ def __add_layers_to_hosting_edb(hosting_edb, merged_edb, base_layer, prefix, on_
 
 
 def _get_contact_layer(hosting_edb, on_top) -> str:
-    """
-    Retrieve the name of the contact layer in the hosting EDB, which will be used as reference for adding
+    """Retrieve the name of the contact layer in the hosting EDB, which will be used as reference for adding
     the merged layers.
 
     Parameters
@@ -269,8 +268,7 @@ def physical_merge(
     prefix="merged_",
     show_progress: bool = True,
 ) -> bool:
-    """
-    Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
+    """Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
 
     Parameters
     ----------

@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains the array building feature from unit cell.
+"""This module contains the array building feature from unit cell.
 """
 
 import itertools
@@ -43,8 +42,7 @@ def create_array_from_unit_cell(
     offset_x: Optional[Union[int, float, str]] = None,
     offset_y: Optional[Union[int, float, str]] = None,
 ) -> bool:
-    """
-    Create a 2-D rectangular array from the current EDB unit cell.
+    """Create a 2-D rectangular array from the current EDB unit cell.
 
     The function duplicates every primitive (polygon, rectangle, circle), path,
     padstack via, and component found in the active layout and places copies on
@@ -115,8 +113,7 @@ def __create_array_from_unit_cell_impl(
     offset_x: Optional[Union[int, float]],
     offset_y: Optional[Union[int, float]],
 ) -> bool:
-    """
-    Inner worker that performs the actual replication.
+    """Inner worker that performs the actual replication.
 
     Parameters
     ----------
@@ -223,8 +220,7 @@ class _BaseAdapter:
         raise NotImplementedError
 
     def pitch_from_outline(self, outline) -> tuple[float, float]:
-        """
-        Compute the (offset_x, offset_y) pitch from the bounding box of *outline*.
+        """Compute the (offset_x, offset_y) pitch from the bounding box of *outline*.
 
         Returns
         -------

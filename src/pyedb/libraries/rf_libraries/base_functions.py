@@ -30,8 +30,7 @@ from pyedb.libraries.common import Substrate
 
 
 class HatchGround:
-    """
-    Create a rectangular demo board whose ground layer is filled with an
+    """Create a rectangular demo board whose ground layer is filled with an
     orthogonal hatched copper pattern.
 
     Any requested copper fill ratio between 10 % and 90 % can be realised.
@@ -102,8 +101,7 @@ class HatchGround:
 
     @property
     def copper_fill_ratio(self) -> float:
-        """
-        Return the **actual** copper fill ratio in percent.
+        """Return the **actual** copper fill ratio in percent.
 
         Returns
         -------
@@ -177,8 +175,7 @@ class HatchGround:
         self._edb.modeler.create_polygon(points, layer_name=self.layer_gnd, net_name="GND")
 
     def create(self) -> bool:
-        """
-        Generate the stack-up, board outline and hatch pattern.
+        """Generate the stack-up, board outline and hatch pattern.
 
         Returns
         -------
@@ -191,8 +188,7 @@ class HatchGround:
 
 
 class Meander:
-    """
-    Fully-parametric micro-strip meander line.
+    """Fully-parametric micro-strip meander line.
 
     Parameters
     ----------
@@ -247,8 +243,7 @@ class Meander:
     # ------------------------------------------------------------------ #
     @property
     def analytical_z0(self) -> float:
-        """
-        Micro-strip characteristic impedance using the Hammerstad & Jensen
+        """Micro-strip characteristic impedance using the Hammerstad & Jensen
         closed-form expression.
 
         Returns
@@ -260,8 +255,7 @@ class Meander:
         return 60 / math.sqrt(self.substrate.er) * math.log(5.98 * 1.6e-3 / (0.8 * self.trace_width + self.trace_width))
 
     def electrical_length_deg(self, freq: float) -> float:
-        """
-        Electrical length of the meander at the specified frequency.
+        """Electrical length of the meander at the specified frequency.
 
         Parameters
         ----------
@@ -283,8 +277,7 @@ class Meander:
     # EDB creation
     # ------------------------------------------------------------------ #
     def create(self) -> bool:
-        """
-        Draw the meander in the attached EDB cell and calculate its
+        """Draw the meander in the attached EDB cell and calculate its
         physical length.
 
         Returns
@@ -319,8 +312,7 @@ class Meander:
 
 
 class MIMCapacitor:
-    """
-    Metal–Insulator–Metal parallel-plate capacitor.
+    """Metal–Insulator–Metal parallel-plate capacitor.
 
     Parameters
     ----------
@@ -367,8 +359,7 @@ class MIMCapacitor:
 
     @property
     def capacitance_f(self) -> float:
-        """
-        Analytical parallel-plate capacitance.
+        """Analytical parallel-plate capacitance.
 
         Returns
         -------
@@ -380,8 +371,7 @@ class MIMCapacitor:
         return eps0 * self.substrate.er * self.area / self.gap
 
     def create(self) -> bool:
-        """
-        Create the top plate, bottom plate and assign variables.
+        """Create the top plate, bottom plate and assign variables.
 
         Returns
         -------
@@ -400,8 +390,7 @@ class MIMCapacitor:
 
 
 class SpiralInductor:
-    """
-    Square spiral inductor with an optional under-pass bridge.
+    """Square spiral inductor with an optional under-pass bridge.
 
     Parameters
     ----------
@@ -482,8 +471,7 @@ class SpiralInductor:
 
     @property
     def inductance_nh(self) -> float:
-        """
-        Accurate inductance calculated with the improved Wheeler formula
+        """Accurate inductance calculated with the improved Wheeler formula
         for square spirals.
 
         Returns
@@ -583,8 +571,7 @@ class SpiralInductor:
 
 
 class CPW:
-    """
-    Coplanar waveguide with side ground planes.
+    """Coplanar waveguide with side ground planes.
 
     Parameters
     ----------
@@ -644,8 +631,7 @@ class CPW:
 
     @property
     def analytical_z0(self) -> float:
-        """
-        Characteristic impedance obtained with the conformal-mapping
+        """Characteristic impedance obtained with the conformal-mapping
         formula for CPW.
 
         Returns
@@ -663,8 +649,7 @@ class CPW:
         return 30 * math.pi / math.sqrt(self.substrate.er) * k_ratio
 
     def create(self) -> bool:
-        """
-        Draw the centre strip, side grounds and bottom ground plane.
+        """Draw the centre strip, side grounds and bottom ground plane.
 
         Returns
         -------
@@ -705,8 +690,7 @@ class CPW:
 
 
 class RadialStub:
-    """
-    Radial (fan) open stub for RF matching.
+    """Radial (fan) open stub for RF matching.
 
     Parameters
     ----------
@@ -751,8 +735,7 @@ class RadialStub:
 
     @property
     def electrical_length_deg(self, freq: float = 2e9) -> float:
-        """
-        Electrical length of the radial stub at a given frequency.
+        """Electrical length of the radial stub at a given frequency.
 
         Parameters
         ----------
@@ -771,8 +754,7 @@ class RadialStub:
         return math.degrees(beta * self.radius)
 
     def create(self) -> bool:
-        """
-        Draw the fan-shaped polygon and the feeding line.
+        """Draw the fan-shaped polygon and the feeding line.
 
         Returns
         -------
@@ -803,8 +785,7 @@ class RadialStub:
 
 
 class RatRace:
-    """
-    180° rat-race (ring) hybrid coupler.
+    """180° rat-race (ring) hybrid coupler.
 
     Parameters
     ----------
@@ -857,8 +838,7 @@ class RatRace:
 
     @property
     def circumference(self) -> float:
-        """
-        Physical circumference of the ring.
+        """Physical circumference of the ring.
 
         Returns
         -------
@@ -872,8 +852,7 @@ class RatRace:
 
     @property
     def radius(self) -> float:
-        """
-        Mean radius of the ring.
+        """Mean radius of the ring.
 
         Returns
         -------
@@ -913,8 +892,7 @@ class RatRace:
     # Main creation routine
     # ------------------------------------------------------------------
     def create(self) -> bool:
-        """
-        Draw the discretised ring and four 50 Ω port stubs.
+        """Draw the discretised ring and four 50 Ω port stubs.
 
         Returns
         -------
@@ -993,8 +971,7 @@ class RatRace:
 
 
 class InterdigitalCapacitor:
-    """
-    Inter-digitated comb capacitor with fully parametric fingers.
+    """Inter-digitated comb capacitor with fully parametric fingers.
 
     All dimensions are stored as native EDB variables so they remain
     editable inside AEDT after the library cell is imported.
@@ -1068,8 +1045,7 @@ class InterdigitalCapacitor:
 
     @property
     def capacitance_pf(self) -> float:
-        """
-        Quick parallel-plate estimate of the total capacitance.
+        """Quick parallel-plate estimate of the total capacitance.
 
         Returns
         -------
@@ -1087,8 +1063,7 @@ class InterdigitalCapacitor:
         return (eps0 * er * N * L * W / g) * 1e12
 
     def create(self) -> bool:
-        """
-        Draw the two bus bars and interleaved fingers.
+        """Draw the two bus bars and interleaved fingers.
 
         Returns
         -------
@@ -1143,8 +1118,7 @@ class InterdigitalCapacitor:
 
 
 class DifferentialTLine:
-    """
-    Edge-coupled differential pair with fully parametric geometry.
+    """Edge-coupled differential pair with fully parametric geometry.
 
     Parameters
     ----------
@@ -1208,8 +1182,7 @@ class DifferentialTLine:
 
     @property
     def diff_impedance(self) -> float:
-        """
-        Rough odd-mode impedance estimate for the differential pair.
+        """Rough odd-mode impedance estimate for the differential pair.
 
         Returns
         -------
@@ -1223,8 +1196,7 @@ class DifferentialTLine:
         return 2 * z0_single * (1 - 0.48 * math.exp(-0.96 * s / w))
 
     def create(self) -> List[float]:
-        """
-        Create the two traces using only parameter strings so the
+        """Create the two traces using only parameter strings so the
         geometry stays fully editable in AEDT.
 
         Returns
@@ -1264,8 +1236,7 @@ class DifferentialTLine:
 
 
 class MicroStripLine:
-    """
-    Single-ended micro-strip line with fixed geometry and editable stack-up.
+    """Single-ended micro-strip line with fixed geometry and editable stack-up.
 
     Parameters
     ----------
@@ -1356,8 +1327,7 @@ class MicroStripLine:
     # ------------------------------------------------------------------
     @property
     def impedance(self) -> float:
-        """
-        Accurate characteristic impedance (Ω) for a micro-strip line.
+        """Accurate characteristic impedance (Ω) for a micro-strip line.
         Valid for 0.05 ≤ w/h ≤ 1000 and 1 ≤ εr ≤ 128.
         Source: G. Wheeler, E. Hammerstad & Jensen, IEEE-MTT 1980.
         """
@@ -1389,8 +1359,7 @@ class MicroStripLine:
 
     @property
     def electrical_length(self) -> Optional[float]:
-        """
-        Electrical length in degrees at self.freq.
+        """Electrical length in degrees at self.freq.
         Returns None if freq is None.
         """
         if self.freq is None:

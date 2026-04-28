@@ -29,8 +29,7 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class PackageDef:
-    """
-    Manages EDB package definitions.
+    """Manages EDB package definitions.
 
     Parameters
     ----------
@@ -64,8 +63,7 @@ class PackageDef:
             self.__create_from_name(name, component_part_name, extent_bounding_box)
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
-        """
-        Create a package definition.
+        """Create a package definition.
 
         Parameters
         ----------
@@ -106,8 +104,7 @@ class PackageDef:
 
     @property
     def exterior_boundary(self) -> CorePolygonData:
-        """
-        Get the exterior boundary of a package definition.
+        """Get the exterior boundary of a package definition.
 
         Returns
         -------
@@ -122,8 +119,7 @@ class PackageDef:
 
     @property
     def maximum_power(self) -> float:
-        """
-        Maximum power of the package.
+        """Maximum power of the package.
 
         Returns
         -------
@@ -139,8 +135,7 @@ class PackageDef:
 
     @property
     def thermal_conductivity(self) -> float:
-        """
-        Thermal conductivity of the package.
+        """Thermal conductivity of the package.
 
         Returns
         -------
@@ -156,8 +151,7 @@ class PackageDef:
 
     @property
     def theta_jb(self) -> float:
-        """
-        Theta Junction-to-Board of the package.
+        """Theta Junction-to-Board of the package.
 
         Returns
         -------
@@ -173,8 +167,7 @@ class PackageDef:
 
     @property
     def theta_jc(self) -> float:
-        """
-        Theta Junction-to-Case of the package.
+        """Theta Junction-to-Case of the package.
 
         Returns
         -------
@@ -190,8 +183,7 @@ class PackageDef:
 
     @property
     def height(self) -> float:
-        """
-        Height of the package.
+        """Height of the package.
 
         Returns
         -------
@@ -207,8 +199,7 @@ class PackageDef:
 
     @property
     def heat_sink(self) -> "HeatSink | None":
-        """
-        Package heat sink.
+        """Package heat sink.
 
         Returns
         -------
@@ -226,8 +217,7 @@ class PackageDef:
 
     @staticmethod
     def create(edb, name: str) -> "PackageDef":
-        """
-        Create a package definition.
+        """Create a package definition.
 
         Parameters
         ----------
@@ -248,8 +238,7 @@ class PackageDef:
         return PackageDef(edb, grpc_package)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
-        """
-        Set heat sink.
+        """Set heat sink.
 
         Parameters
         ----------

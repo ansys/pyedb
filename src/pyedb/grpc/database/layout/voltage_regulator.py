@@ -39,8 +39,7 @@ class VoltageRegulator:
 
     @property
     def component(self):
-        """
-        Voltage regulator component
+        """Voltage regulator component
 
         Returns
         -------
@@ -67,8 +66,7 @@ class VoltageRegulator:
 
     @property
     def load_regulator_current(self) -> float:
-        """
-        Load regulator current value
+        """Load regulator current value
 
         Returns
         -------
@@ -84,8 +82,7 @@ class VoltageRegulator:
 
     @property
     def load_regulation_percent(self) -> float:
-        """
-        Retrieve load regulation percent value.
+        """Retrieve load regulation percent value.
 
         Returns
         -------
@@ -101,8 +98,7 @@ class VoltageRegulator:
 
     @property
     def negative_remote_sense_pin(self) -> PadstackInstance:
-        """
-        Retrieve negative remote sense pin.
+        """Retrieve negative remote sense pin.
 
         Returns
         -------
@@ -122,8 +118,7 @@ class VoltageRegulator:
 
     @property
     def positive_remote_sense_pin(self) -> PadstackInstance:
-        """
-        Retrieve positive remote sense pin.
+        """Retrieve positive remote sense pin.
 
         Returns
         -------
@@ -147,8 +142,7 @@ class VoltageRegulator:
 
     @property
     def voltage(self) -> float:
-        """
-        Retrieve voltage value.
+        """Retrieve voltage value.
 
         Returns
         -------

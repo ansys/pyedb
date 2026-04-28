@@ -73,8 +73,7 @@ class SkinDepthMeshOperation:
         max_elements: str = "1000",
         restrict_max_elements: bool = False,
     ) -> "SkinDepthMeshOperation":
-        """
-        Create a Length Mesh Operation.
+        """Create a Length Mesh Operation.
         Parameters
         ----------
         name : str
@@ -123,8 +122,7 @@ class SkinDepthMeshOperation:
 
     @property
     def name(self) -> str:
-        """
-        Get the name of the mesh operation.
+        """Get the name of the mesh operation.
 
         Returns
         -------
@@ -140,8 +138,7 @@ class SkinDepthMeshOperation:
 
     @property
     def enabled(self) -> bool:
-        """
-        Get the enabled status of the mesh operation.
+        """Get the enabled status of the mesh operation.
 
         Returns
         -------
@@ -157,8 +154,7 @@ class SkinDepthMeshOperation:
 
     @property
     def mesh_region(self) -> str:
-        """
-        Get the mesh region name.
+        """Get the mesh region name.
 
         Returns
         -------
@@ -174,8 +170,7 @@ class SkinDepthMeshOperation:
 
     @property
     def net_layer_info(self) -> list[tuple[str, str, bool]]:
-        """
-        Get the net layer information list.
+        """Get the net layer information list.
 
         Returns
         -------
@@ -193,8 +188,7 @@ class SkinDepthMeshOperation:
 
     @property
     def refine_inside(self) -> bool:
-        """
-        Get the refine inside status of the mesh operation.
+        """Get the refine inside status of the mesh operation.
 
         Returns
         -------
@@ -210,8 +204,7 @@ class SkinDepthMeshOperation:
 
     @property
     def solve_inside(self) -> bool:
-        """
-        Get the solve inside status of the mesh operation.
+        """Get the solve inside status of the mesh operation.
 
         Returns
         -------
@@ -227,8 +220,7 @@ class SkinDepthMeshOperation:
 
     @property
     def skin_depth(self) -> str:
-        """
-        Get the skin depth value.
+        """Get the skin depth value.
 
         Returns
         -------
@@ -244,8 +236,7 @@ class SkinDepthMeshOperation:
 
     @property
     def surface_triangle_length(self) -> str:
-        """
-        Get the surface triangle length value.
+        """Get the surface triangle length value.
 
         Returns
         -------
@@ -261,8 +252,7 @@ class SkinDepthMeshOperation:
 
     @property
     def num_layers(self) -> str:
-        """
-        Get the number of layers for the skin depth mesh operation.
+        """Get the number of layers for the skin depth mesh operation.
 
         Returns
         -------
@@ -278,8 +268,7 @@ class SkinDepthMeshOperation:
 
     @property
     def max_elements(self) -> str:
-        """
-        Get the maximum number of elements for the mesh operation.
+        """Get the maximum number of elements for the mesh operation.
 
         Returns
         -------
@@ -295,8 +284,7 @@ class SkinDepthMeshOperation:
 
     @property
     def restrict_max_elements(self) -> bool:
-        """
-        Get the restrict maximum elements status of the mesh operation.
+        """Get the restrict maximum elements status of the mesh operation.
 
         Returns
         -------

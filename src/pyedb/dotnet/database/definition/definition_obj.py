@@ -102,8 +102,7 @@ class DeprecatedMaterial:
     @property
     @deprecated_property("use dielectric_material_model property instead.", category=None)
     def dc_model(self):
-        """
-        Material dielectric model.
+        """Material dielectric model.
 
         .. deprecated:: 0.70.0
            Use ``dielectric_material_model`` instead.
@@ -269,8 +268,7 @@ class DeprecatedMaterial:
         advanced_quadratic_lower_constant: float = 1.1,
         advanced_quadratic_upper_constant: float = 1.1,
     ):
-        """
-        Sets the material property thermal modifier of a given material property.
+        """Sets the material property thermal modifier of a given material property.
 
         Parameters
         ----------
@@ -371,8 +369,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
         relative_permittivity_at_frequency: float | None = 4,
         use_dc_relative_permittivity: bool | None = False,
     ) -> DjordjecvicSarkarModel:
-        """
-        Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
+        """Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
         on it will not be reflected on the database.
 
         Parameters

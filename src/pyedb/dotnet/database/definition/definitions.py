@@ -35,8 +35,7 @@ class Definitions:
     @property
     @deprecated_property("use components property instead.", category=None)
     def component(self):
-        """
-        Component definitions.
+        """Component definitions.
 
         .. deprecated:: 0.66.0
 
@@ -53,8 +52,7 @@ class Definitions:
     @property
     @deprecated_property("use packages property instead.", category=None)
     def package(self):
-        """
-        Package definitions.
+        """Package definitions.
 
         .. deprecated:: 0.66.0
 
@@ -93,8 +91,7 @@ class Definitions:
 
     @deprecated("use add_package method instead.", category=None)
     def add_packages(self, name, component_part_name=None, boundary_points=None):
-        """
-        Add a package definition.
+        """Add a package definition.
 
         .. deprecated:: 0.66.0
 
@@ -105,8 +102,7 @@ class Definitions:
         return self.add_package(name, component_part_name=component_part_name, boundary_points=boundary_points)
 
     def add_package(self, name, component_part_name=None, boundary_points=None):
-        """
-        Add a package definition.
+        """Add a package definition.
 
         Parameters
         ----------
@@ -127,8 +123,7 @@ class Definitions:
         return package_def
 
     def create_jedec4_bondwire_def(self, name: str, top_to_die_distance: float = 30e-6):
-        """
-        Create a JEDEC 4 bondwire definition.
+        """Create a JEDEC 4 bondwire definition.
 
         Parameters
         ----------
@@ -146,8 +141,7 @@ class Definitions:
         return Jedec4BondwireDef.create(self._pedb, name, top_to_die_distance)
 
     def create_jedec5_bondwire_def(self, name: str, top_to_die_distance: float = 30e-6):
-        """
-        Create a JEDEC 5 bondwire definition.
+        """Create a JEDEC 5 bondwire definition.
 
         Parameters
         ----------
@@ -165,8 +159,7 @@ class Definitions:
         return Jedec5BondwireDef.create(self._pedb, name, top_to_die_distance)
 
     def create_apd_bondwire_def(self, name: str, top_to_die_distance: float = 30e-6):
-        """
-        Create an APD bondwire definition.
+        """Create an APD bondwire definition.
 
         Parameters
         ----------

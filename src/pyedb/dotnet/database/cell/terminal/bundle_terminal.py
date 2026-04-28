@@ -26,8 +26,7 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
 class BundleTerminal(Terminal):
-    """
-    Manages bundle terminal properties.
+    """Manages bundle terminal properties.
 
     Parameters
     ----------
@@ -52,8 +51,7 @@ class BundleTerminal(Terminal):
 
     @classmethod
     def create(cls, pedb, name="", terminals=None) -> "BundleTerminal":
-        """
-        Create a new bundle terminal from a collection of individual terminals.
+        """Create a new bundle terminal from a collection of individual terminals.
 
         A bundle terminal groups multiple terminals (edge terminals, padstack instance
         terminals, or other terminal types) into a single logical entity. This is useful

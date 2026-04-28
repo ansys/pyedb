@@ -28,8 +28,7 @@ class EdbDesignOptions:
 
     @property
     def suppress_pads(self):
-        """
-        Whether to suppress non-functional pads.
+        """Whether to suppress non-functional pads.
 
         Returns
         -------
@@ -45,8 +44,7 @@ class EdbDesignOptions:
 
     @property
     def antipads_always_on(self):
-        """
-        Whether to always turn on antipad.
+        """Whether to always turn on antipad.
 
         Returns
         -------
@@ -63,8 +61,7 @@ class EdbDesignOptions:
 
     @property
     def anti_pads_always_on(self):
-        """
-        Whether to always turn on antipad.
+        """Whether to always turn on antipad.
 
         Returns
         -------

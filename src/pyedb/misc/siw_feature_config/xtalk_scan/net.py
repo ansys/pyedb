@@ -24,8 +24,7 @@ from pyedb.generic.general_methods import ET
 
 
 class SingleEndedNet:
-    """
-    Single ended net class handler.
+    """Single ended net class handler.
 
     This class manages the configuration for single-ended nets including
     impedance, thresholds, and driver/termination parameters.
@@ -59,8 +58,7 @@ class SingleEndedNet:
         self.termination_impedance: float | None = None
 
     def extend_xml(self, parent) -> None:
-        """
-        Write XML object section.
+        """Write XML object section.
 
         Parameters
         ----------

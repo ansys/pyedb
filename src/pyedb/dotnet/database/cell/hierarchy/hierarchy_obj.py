@@ -32,8 +32,7 @@ class HierarchyObj(Connectable):
 
     @property
     def component_def(self) -> str:
-        """
-        Return the name of the component definition.
+        """Return the name of the component definition.
 
         Returns
         -------
@@ -45,8 +44,7 @@ class HierarchyObj(Connectable):
 
     @property
     def location(self) -> List[float] | None:
-        """
-        Return XY coordinates if available.
+        """Return XY coordinates if available.
 
         Returns
         -------
@@ -67,8 +65,7 @@ class Group(HierarchyObj):
         super().__init__(pedb, edb_object)
 
     def ungroup(self, recursive=False) -> bool:
-        """
-        Dissolve a group.
+        """Dissolve a group.
 
         Parameters
         ----------

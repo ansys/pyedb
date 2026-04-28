@@ -32,8 +32,7 @@ from typing import Any, Optional
 
 
 def _to_hz(text: str) -> float:
-    """
-    Convert a human-readable frequency string to hertz.
+    """Convert a human-readable frequency string to hertz.
 
     Parse frequency expressions with standard SI prefixes (k, M, G) and
     convert them to numerical values in hertz.
@@ -73,8 +72,7 @@ def _to_hz(text: str) -> float:
 
 
 def _to_sec(mm_ss: str) -> int:
-    """
-    Convert an Ansys time stamp to seconds.
+    """Convert an Ansys time stamp to seconds.
 
     Parse time stamps in various formats (MM:SS, H:MM:SS, or HH:MM:SS) and
     convert them to total elapsed seconds.
@@ -111,8 +109,7 @@ def _to_sec(mm_ss: str) -> int:
 
 
 def _as_dict(obj: Any) -> Any:
-    """
-    Recursively convert dataclasses to plain Python types.
+    """Recursively convert dataclasses to plain Python types.
 
     Convert dataclass instances, lists, and Path objects to JSON-serializable
     primitive types (dict, list, str, etc.).
@@ -155,8 +152,7 @@ def _as_dict(obj: Any) -> Any:
 
 @dataclass(slots=True)
 class ProjectInfo:
-    """
-    Basic meta-data extracted from the header of an HFSS batch log.
+    """Basic meta-data extracted from the header of an HFSS batch log.
 
     Attributes
     ----------
@@ -191,8 +187,7 @@ class ProjectInfo:
 
 @dataclass(slots=True)
 class InitMesh:
-    """
-    Statistics reported during the initial tetrahedral meshing phase.
+    """Statistics reported during the initial tetrahedral meshing phase.
 
     Attributes
     ----------
@@ -223,8 +218,7 @@ class InitMesh:
 
 @dataclass(slots=True)
 class AdaptivePass:
-    """
-    Single adaptive solution pass with convergence metrics.
+    """Single adaptive solution pass with convergence metrics.
 
     Attributes
     ----------
@@ -276,8 +270,7 @@ class AdaptivePass:
 
 @dataclass(slots=True)
 class Sweep:
-    """
-    Frequency-sweep summary block.
+    """Frequency-sweep summary block.
 
     Attributes
     ----------
@@ -307,8 +300,7 @@ class Sweep:
 
 
 class BlockParser:
-    """
-    Base class for a single block parser.
+    """Base class for a single block parser.
 
     Parameters
     ----------
@@ -328,8 +320,7 @@ class BlockParser:
         self.lines = lines
 
     def parse(self) -> Any:
-        """
-        Parse the stored lines.
+        """Parse the stored lines.
 
         Returns
         -------
@@ -341,8 +332,7 @@ class BlockParser:
 
 
 class ProjectBlockParser(BlockParser):
-    """
-    Extract project meta-data from the log header.
+    """Extract project meta-data from the log header.
 
     This parser searches for project name, design name, user information,
     and command line arguments in the log file header section.
@@ -363,8 +353,7 @@ class ProjectBlockParser(BlockParser):
     """
 
     def parse(self) -> ProjectInfo:
-        """
-        Parse the stored lines and return a ProjectInfo instance.
+        """Parse the stored lines and return a ProjectInfo instance.
 
         Returns
         -------
@@ -394,8 +383,7 @@ class ProjectBlockParser(BlockParser):
 
 
 class InitMeshBlockParser(BlockParser):
-    """
-    Extract initial mesh statistics from the log.
+    """Extract initial mesh statistics from the log.
 
     This parser searches for the initial meshing profile section and extracts
     tetrahedra count, memory usage, and timing information.
@@ -417,8 +405,7 @@ class InitMeshBlockParser(BlockParser):
     """
 
     def parse(self) -> InitMesh:
-        """
-        Parse initial mesh statistics from log lines.
+        """Parse initial mesh statistics from log lines.
 
         Returns
         -------
@@ -454,8 +441,7 @@ class InitMeshBlockParser(BlockParser):
 
 
 class AdaptiveBlockParser(BlockParser):
-    """
-    Build a list of AdaptivePass objects from the adaptive section.
+    """Build a list of AdaptivePass objects from the adaptive section.
 
     This parser extracts all adaptive pass information including convergence
     status, frequency, mesh statistics, and delta-S values.
@@ -481,8 +467,7 @@ class AdaptiveBlockParser(BlockParser):
     """
 
     def parse(self) -> list[AdaptivePass]:
-        """
-        Parse every adaptive pass and determine which one triggered convergence.
+        """Parse every adaptive pass and determine which one triggered convergence.
 
         Returns
         -------
@@ -550,8 +535,7 @@ class AdaptiveBlockParser(BlockParser):
 
 
 class SweepBlockParser(BlockParser):
-    """
-    Extract frequency-sweep summary from the log.
+    """Extract frequency-sweep summary from the log.
 
     This parser searches for frequency sweep information including sweep type,
     number of frequencies, and elapsed time.
@@ -575,8 +559,7 @@ class SweepBlockParser(BlockParser):
     """
 
     def parse(self) -> Optional[Sweep]:
-        """
-        Return sweep information or None if no sweep block exists.
+        """Return sweep information or None if no sweep block exists.
 
         Returns
         -------
@@ -607,8 +590,7 @@ class SweepBlockParser(BlockParser):
 
 
 class HFSSLogParser:
-    """
-    High-level parser that orchestrates all block parsers.
+    """High-level parser that orchestrates all block parsers.
 
     This class provides the main interface for parsing HFSS log files.
     It coordinates multiple specialized parsers to extract project info,
@@ -649,8 +631,7 @@ class HFSSLogParser:
         self.path = Path(log_path)
 
     def parse(self) -> ParsedLog:
-        """
-        Execute all sub-parsers and return a unified object.
+        """Execute all sub-parsers and return a unified object.
 
         Returns
         -------
@@ -684,8 +665,7 @@ class HFSSLogParser:
 
 @dataclass(slots=True)
 class ParsedLog:
-    """
-    Root container returned by HFSSLogParser.parse().
+    """Root container returned by HFSSLogParser.parse().
 
     This class holds all parsed information from an HFSS log file and provides
     convenience methods for checking convergence, completion status, and
@@ -722,8 +702,7 @@ class ParsedLog:
     sweep: Optional[Sweep]
 
     def to_dict(self) -> dict:
-        """
-        Deep-convert the entire object to JSON-serializable primitives.
+        """Deep-convert the entire object to JSON-serializable primitives.
 
         Returns
         -------
@@ -741,8 +720,7 @@ class ParsedLog:
         return _as_dict(self)
 
     def is_converged(self) -> bool:
-        """
-        Check if the adaptive solver declared convergence.
+        """Check if the adaptive solver declared convergence.
 
         Returns
         -------
@@ -775,8 +753,7 @@ class ParsedLog:
         return self.adaptive[-1].converged if self.adaptive else False
 
     def adaptive_passes(self) -> list[AdaptivePass]:
-        """
-        Return the list of adaptive passes.
+        """Return the list of adaptive passes.
 
         Returns
         -------
@@ -794,8 +771,7 @@ class ParsedLog:
         return self.adaptive
 
     def memory_on_convergence(self) -> float:
-        """
-        Memory consumed by the last converged adaptive pass.
+        """Memory consumed by the last converged adaptive pass.
 
         Returns
         -------
@@ -831,8 +807,7 @@ class ParsedLog:
         return math.nan
 
     def is_completed(self) -> bool:
-        """
-        Check if the simulation completed successfully.
+        """Check if the simulation completed successfully.
 
         A simulation is considered complete when both adaptive convergence
         occurred and a frequency sweep was executed.
@@ -868,8 +843,7 @@ class ParsedLog:
         return self.is_converged() and self.sweep is not None and self.sweep.elapsed_sec > 0
 
     def errors(self) -> list[str]:
-        """
-        Extract error lines from the log file.
+        """Extract error lines from the log file.
 
         Searches the log for lines containing error markers like ``[error]``
         or ``*** ERROR ***``. Warnings are ignored.

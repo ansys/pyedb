@@ -73,8 +73,7 @@ class PolygonData:
 
     @property
     def bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
-        """
-        Bounding box.
+        """Bounding box.
 
         Returns
         -------
@@ -88,8 +87,7 @@ class PolygonData:
         return (bbox[0].x.value, bbox[0].y.value), (bbox[1].x.value, bbox[1].y.value)
 
     def bounding_circle(self) -> tuple[tuple[float, float], float]:
-        """
-        Get the bounding circle of the polygon.
+        """Get the bounding circle of the polygon.
 
         Returns
         -------
@@ -102,8 +100,7 @@ class PolygonData:
 
     @property
     def arcs(self) -> list[ArcData]:
-        """
-        Get the Primitive Arc Data.
+        """Get the Primitive Arc Data.
 
         Returns
         -------
@@ -114,8 +111,7 @@ class PolygonData:
 
     @property
     def is_closed(self) -> bool:
-        """
-        Check if polygon is closed.
+        """Check if polygon is closed.
 
         Returns
         -------
@@ -125,8 +121,7 @@ class PolygonData:
         return self.core.is_closed
 
     def is_inside(self, point: tuple[float, float]) -> bool:
-        """
-        Check if polygon is inside.
+        """Check if polygon is inside.
 
         Returns
         -------
@@ -137,8 +132,7 @@ class PolygonData:
 
     @property
     def sense(self) -> CorePolygonSenseType:
-        """
-        Get the polygon sense type.
+        """Get the polygon sense type.
 
         Returns
         -------
@@ -149,8 +143,7 @@ class PolygonData:
 
     @property
     def holes(self):
-        """
-        Get all holes in polygon.
+        """Get all holes in polygon.
 
         Returns
         -------
@@ -161,8 +154,7 @@ class PolygonData:
 
     @property
     def points(self) -> list[tuple[float, float]]:
-        """
-        Get all points in polygon.
+        """Get all points in polygon.
 
         Returns
         -------
@@ -173,8 +165,7 @@ class PolygonData:
 
     @property
     def points_raw(self):
-        """
-        Get all points in polygon.
+        """Get all points in polygon.
 
         Returns
         -------
@@ -185,8 +176,7 @@ class PolygonData:
 
     @property
     def arc_data(self):
-        """
-        Get all arc data in polygon.
+        """Get all arc data in polygon.
 
         Returns
         -------
@@ -208,8 +198,7 @@ class PolygonData:
 
     @classmethod
     def create_from_bounding_box(cls, points) -> CorePolygonData:
-        """
-        Create PolygonData from point list.
+        """Create PolygonData from point list.
 
         Returns
         -------
@@ -219,8 +208,7 @@ class PolygonData:
         return cls(CorePolygonData(points=points))
 
     def has_self_intersections(self, tolerance=1e-12) -> bool:
-        """
-        Check if the polygon has self-intersections.
+        """Check if the polygon has self-intersections.
 
         Parameters
         ----------
@@ -236,8 +224,7 @@ class PolygonData:
         return self.core.has_self_intersections(tolerance)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> PolygonData:
-        """
-        Expand the polygon shape by an absolute value in all direction.
+        """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -267,8 +254,7 @@ class PolygonData:
         return PolygonData(self._pedb, core)
 
     def unite(self, polygons) -> list[PolygonData]:
-        """
-        Create union of polygons.
+        """Create union of polygons.
 
         Parameters
         ----------
@@ -290,8 +276,7 @@ class PolygonData:
         return [PolygonData(self._pedb, core_polygon_data) for core_polygon_data in new_poly]
 
     def area(self):
-        """
-        Get area of polygon.
+        """Get area of polygon.
 
         Returns
         -------
@@ -301,8 +286,7 @@ class PolygonData:
         return self.core.area()
 
     def intersection_type(self, polygon_data):
-        """
-        Get intersection type of polygon.
+        """Get intersection type of polygon.
 
         Returns
         -------
@@ -321,8 +305,7 @@ class PolygonData:
         return self.core.intersection_type(polygon_data).value
 
     def without_arcs(self) -> "PolygonData":
-        """
-        Get a copy of the polygon without arcs.
+        """Get a copy of the polygon without arcs.
 
         Returns
         -------

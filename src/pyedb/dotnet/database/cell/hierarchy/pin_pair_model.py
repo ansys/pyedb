@@ -131,8 +131,7 @@ class PinPair(object):  # pragma: no cover
         second_pin: str | None = None,
         is_parallel: bool = False,
     ):
-        """
-        Add a pin pair definition.
+        """Add a pin pair definition.
 
         Parameters
         ----------

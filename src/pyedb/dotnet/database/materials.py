@@ -58,8 +58,7 @@ except:
 
 
 def get_line_float_value(line):
-    """
-    Retrieve the float value expected in the line of an AMAT file.
+    """Retrieve the float value expected in the line of an AMAT file.
 
     The associated string is expected to follow one of the following cases:
     - simple('permittivity', 12.)
@@ -130,8 +129,7 @@ class Materials(object):
         return materials
 
     def __edb_value(self, value):
-        """
-        Convert a value to an EDB value.
+        """Convert a value to an EDB value.
 
         Parameters
         ----------
@@ -141,8 +139,7 @@ class Materials(object):
         return self.__edb.edb_value(value)
 
     def add_material(self, name: str, **kwargs):
-        """
-        Add a new material.
+        """Add a new material.
 
         Parameters
         ----------
@@ -179,8 +176,7 @@ class Materials(object):
         return material
 
     def add_conductor_material(self, name, conductivity=58000000, **kwargs):
-        """
-        Add a new conductor material.
+        """Add a new conductor material.
 
         Parameters
         ----------
@@ -202,8 +198,7 @@ class Materials(object):
         return material
 
     def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs):
-        """
-        Add a new dielectric material in library.
+        """Add a new dielectric material in library.
 
         Parameters
         ----------
@@ -238,8 +233,7 @@ class Materials(object):
         dc_permittivity: int | float | None = None,
         **kwargs,
     ) -> MaterialDef:
-        """
-        Add a dielectric using the Djordjevic-Sarkar model.
+        """Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
         ----------
@@ -295,8 +289,7 @@ class Materials(object):
         dc_permittivity=None,
         **kwargs,
     ):
-        """
-        Add a dielectric using the Djordjevic-Sarkar model.
+        """Add a dielectric using the Djordjevic-Sarkar model.
 
         .. deprecated:: 0.7.0
             This method name contains a typo and is deprecated.
@@ -323,8 +316,7 @@ class Materials(object):
         higher_frequency,
         **kwargs,
     ):
-        """
-        Add a dielectric with the Debye model.
+        """Add a dielectric with the Debye model.
 
         Parameters
         ----------
@@ -389,8 +381,7 @@ class Materials(object):
         loss_tangents,
         **kwargs,
     ):
-        """
-        Add a dielectric with the Multipole Debye model.
+        """Add a dielectric with the Multipole Debye model.
 
         Parameters
         ----------
@@ -448,8 +439,7 @@ class Materials(object):
             raise ValueError("Use realistic values to define Multipole Debye model.")
 
     def __add_dielectric_material_model(self, name, material_model):
-        """
-        Add a dielectric material model.
+        """Add a dielectric material model.
 
         Parameters
         ----------
@@ -472,8 +462,7 @@ class Materials(object):
         raise MaterialModelException("Set dielectric material model failed.")
 
     def duplicate(self, material_name, new_material_name):
-        """
-        Duplicate a material from the database.
+        """Duplicate a material from the database.
 
         Parameters
         ----------
@@ -547,8 +536,7 @@ class Materials(object):
                 self.add_dielectric_material(material_name, material_permittivity, material_dlt)
 
     def material_property_to_id(self, property_name):
-        """
-        Convert a material property name to a material property ID.
+        """Convert a material property name to a material property ID.
 
         Parameters
         ----------
@@ -590,8 +578,7 @@ class Materials(object):
             return property_name_to_id["InvalidProperty"]
 
     def load_amat(self, amat_file):
-        """
-        Load materials from an AMAT file.
+        """Load materials from an AMAT file.
 
         Parameters
         ----------
@@ -625,8 +612,7 @@ class Materials(object):
         return True
 
     def iterate_materials_in_amat(self, amat_file=None):
-        """
-        Iterate over material description in an AMAT file.
+        """Iterate over material description in an AMAT file.
 
         Parameters
         ----------
@@ -701,8 +687,7 @@ class Materials(object):
                         in_material_def = True
 
     def read_materials(self, amat_file):
-        """
-        Read materials from an AMAT file.
+        """Read materials from an AMAT file.
 
         Parameters
         ----------
@@ -726,8 +711,7 @@ class Materials(object):
         return res
 
     def read_syslib_material(self, material_name):
-        """
-        Read a specific material from syslib AMAT file.
+        """Read a specific material from syslib AMAT file.
 
         Parameters
         ----------

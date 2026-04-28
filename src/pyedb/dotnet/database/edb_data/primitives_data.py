@@ -34,8 +34,7 @@ from pyedb.generic.geometry_operators import GeometryOperators
 
 
 def cast(raw_primitive, core_app):
-    """
-    Cast the primitive object to correct concrete type.
+    """Cast the primitive object to correct concrete type.
 
     Returns
     -------
@@ -74,8 +73,7 @@ class EdbPolygon(Primitive):
         Primitive.__init__(self, core_app, raw_primitive)
 
     def clone(self):
-        """
-        Clone a primitive object with keeping same definition and location.
+        """Clone a primitive object with keeping same definition and location.
 
         Returns
         -------
@@ -92,8 +90,7 @@ class EdbPolygon(Primitive):
 
     @property
     def has_self_intersections(self):
-        """
-        Check if Polygon has self intersections.
+        """Check if Polygon has self intersections.
 
         Returns
         -------
@@ -103,8 +100,7 @@ class EdbPolygon(Primitive):
         return self.polygon_data.core.HasSelfIntersections()
 
     def fix_self_intersections(self):
-        """
-        Remove self intersections if they exists.
+        """Remove self intersections if they exists.
 
         Returns
         -------
@@ -124,8 +120,7 @@ class EdbPolygon(Primitive):
         return new_polys
 
     def duplicate_across_layers(self, layers):
-        """
-        Duplicate across layer a primitive object.
+        """Duplicate across layer a primitive object.
 
         Parameters:
 
@@ -156,8 +151,7 @@ class EdbPolygon(Primitive):
         return True
 
     def move(self, vector):
-        """
-        Move polygon along a vector.
+        """Move polygon along a vector.
 
         Parameters
         ----------
@@ -179,8 +173,7 @@ class EdbPolygon(Primitive):
         return False
 
     def rotate(self, angle, center=None):
-        """
-        Rotate polygon around a center point by an angle.
+        """Rotate polygon around a center point by an angle.
 
         Parameters
         ----------
@@ -211,8 +204,7 @@ class EdbPolygon(Primitive):
         return False
 
     def move_layer(self, layer):
-        """
-        Move polygon to given layer.
+        """Move polygon to given layer.
 
         Parameters
         ----------
@@ -240,8 +232,7 @@ class EdbPolygon(Primitive):
         point_data,
         include_partial=True,
     ):
-        """
-        Check if padstack Instance is in given polygon data.
+        """Check if padstack Instance is in given polygon data.
 
         Parameters
         ----------
@@ -314,8 +305,7 @@ class EdbPolygon(Primitive):
         self.core.SetPolygonData(poly.core)
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """
-        Expand the polygon shape by an absolute value in all direction.
+        """Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -350,8 +340,7 @@ class EdbBondwire(Primitive, BondwireDotNet):
 
 
 class EDBArcs(object):
-    """
-    Manages EDB Arc Data functionalities.
+    """Manages EDB Arc Data functionalities.
     It Inherits EDB primitives arcs properties.
 
     """
@@ -362,8 +351,7 @@ class EDBArcs(object):
 
     @property
     def start(self):
-        """
-        Get the coordinates of the starting point.
+        """Get the coordinates of the starting point.
 
         Returns
         -------
@@ -376,8 +364,7 @@ class EDBArcs(object):
 
     @property
     def end(self):
-        """
-        Get the coordinates of the ending point.
+        """Get the coordinates of the ending point.
 
         Returns
         -------
@@ -390,8 +377,7 @@ class EDBArcs(object):
 
     @property
     def height(self):
-        """
-        Get the height of the arc.
+        """Get the height of the arc.
 
         Returns
         -------
@@ -403,8 +389,7 @@ class EDBArcs(object):
 
     @property
     def center(self):
-        """
-        Arc center.
+        """Arc center.
 
         Returns
         -------
@@ -416,8 +401,7 @@ class EDBArcs(object):
 
     @property
     def length(self):
-        """
-        Arc length.
+        """Arc length.
 
         Returns
         -------
@@ -428,8 +412,7 @@ class EDBArcs(object):
 
     @property
     def mid_point(self):
-        """
-        Arc mid point.
+        """Arc mid point.
 
         Returns
         -------
@@ -440,8 +423,7 @@ class EDBArcs(object):
 
     @property
     def radius(self):
-        """
-        Arc radius.
+        """Arc radius.
 
         Returns
         -------
@@ -452,8 +434,7 @@ class EDBArcs(object):
 
     @property
     def is_segment(self):
-        """
-        Either if it is a straight segment or not.
+        """Either if it is a straight segment or not.
 
         Returns
         -------
@@ -464,8 +445,7 @@ class EDBArcs(object):
 
     @property
     def is_point(self):
-        """
-        Either if it is a point or not.
+        """Either if it is a point or not.
 
         Returns
         -------
@@ -476,8 +456,7 @@ class EDBArcs(object):
 
     @property
     def is_ccw(self):
-        """
-        Test whether arc is counter clockwise.
+        """Test whether arc is counter clockwise.
 
         Returns
         -------
@@ -488,8 +467,7 @@ class EDBArcs(object):
 
     @property
     def points_raw(self):
-        """
-        Return a list of Edb points.
+        """Return a list of Edb points.
 
         Returns
         -------
@@ -501,8 +479,7 @@ class EDBArcs(object):
 
     @property
     def points(self, arc_segments=6):
-        """
-        Return the list of points with arcs converted to segments.
+        """Return the list of points with arcs converted to segments.
 
         Parameters
         ----------

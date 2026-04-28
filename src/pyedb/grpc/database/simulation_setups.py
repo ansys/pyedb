@@ -53,8 +53,7 @@ class SimulationSetups:
 
     @property
     def hfss(self) -> dict[str, HfssSimulationSetup]:
-        """
-        HFSS simulation setups.
+        """HFSS simulation setups.
 
         Returns
         -------
@@ -78,8 +77,7 @@ class SimulationSetups:
 
     @property
     def siwave(self) -> dict[str, SiwaveSimulationSetup]:
-        """
-        SIWave simulation setups.
+        """SIWave simulation setups.
 
         Returns
         -------
@@ -103,8 +101,7 @@ class SimulationSetups:
 
     @property
     def siwave_dcir(self) -> dict[str, SIWaveDCIRSimulationSetup]:
-        """
-        SIWave DCIR simulation setups.
+        """SIWave DCIR simulation setups.
 
         Returns
         -------
@@ -128,8 +125,7 @@ class SimulationSetups:
 
     @property
     def siwave_cpa(self) -> dict[str, SIWaveCPASimulationSetup]:
-        """
-        SIWave CPA simulation setups.
+        """SIWave CPA simulation setups.
 
         Returns
         -------
@@ -155,8 +151,7 @@ class SimulationSetups:
 
     @property
     def raptor_x(self) -> dict[str, RaptorXSimulationSetup]:
-        """
-        RaptorX simulation setups.
+        """RaptorX simulation setups.
 
         Returns
         -------
@@ -180,8 +175,7 @@ class SimulationSetups:
 
     @property
     def q3d(self) -> dict[str, Q3DSimulationSetup]:
-        """
-        Q3D simulation setups.
+        """Q3D simulation setups.
 
         Returns
         -------
@@ -205,8 +199,7 @@ class SimulationSetups:
 
     @property
     def hfss_pi(self) -> dict[str, HFSSPISimulationSetup]:
-        """
-        HFSS PI simulation setups.
+        """HFSS PI simulation setups.
 
         Returns
         -------
@@ -241,8 +234,7 @@ class SimulationSetups:
         | Q3DSimulationSetup
         | HFSSPISimulationSetup,
     ]:
-        """
-        All simulation setups.
+        """All simulation setups.
 
         Returns
         -------
@@ -262,8 +254,7 @@ class SimulationSetups:
         }
 
     def create(self, name=None, solver="hfss") -> BaseSimulationSetup | None:
-        """
-        Add analysis setup.
+        """Add analysis setup.
 
         Parameters
         ----------
@@ -316,8 +307,7 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> HfssSimulationSetup:
-        """
-        Add HFSS analysis setup.
+        """Add HFSS analysis setup.
 
         Parameters
         ----------
@@ -372,8 +362,7 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> HFSSPISimulationSetup:
-        """
-        Add HFSS analysis setup.
+        """Add HFSS analysis setup.
 
         Parameters
         ----------
@@ -428,8 +417,7 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> SiwaveSimulationSetup:
-        """
-        Add SIWave analysis setup.
+        """Add SIWave analysis setup.
 
         Parameters
         ----------
@@ -474,8 +462,7 @@ class SimulationSetups:
         return cast(SiwaveSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_dcir_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
-        """
-        Add SIWave DCIR analysis setup.
+        """Add SIWave DCIR analysis setup.
 
         Parameters
         ----------
@@ -494,8 +481,7 @@ class SimulationSetups:
         return cast(SIWaveDCIRSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_cpa_setup(self, name=None, siwave_cpa_config=None, **kwargs) -> SIWaveCPASimulationSetup:
-        """
-        Add SIWave CPA analysis setup.
+        """Add SIWave CPA analysis setup.
 
         Parameters
         ----------
@@ -536,8 +522,7 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> RaptorXSimulationSetup:
-        """
-        Add RaptorX analysis setup
+        """Add RaptorX analysis setup
         Parameters
         ----------
         name : str, optional
@@ -591,8 +576,7 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> Q3DSimulationSetup:
-        """
-        Add Q3D analysis setup
+        """Add Q3D analysis setup
         Parameters
         ----------
         name : str, optional

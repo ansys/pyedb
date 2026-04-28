@@ -37,8 +37,7 @@ class Definitions:
     @property
     @deprecated_property("use components property instead")
     def component_defs(self) -> Dict[str, ComponentDef]:
-        """
-        Component definitions.
+        """Component definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`components` instead.
@@ -49,8 +48,7 @@ class Definitions:
     @property
     @deprecated_property("use components property instead")
     def component(self):
-        """
-        Component definitions.
+        """Component definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`components` instead.
@@ -61,8 +59,7 @@ class Definitions:
     @property
     @deprecated_property("use apd_bondwires property instead")
     def apd_bondwire_defs(self):
-        """
-        Get all APD bondwire definitions in this Database.
+        """Get all APD bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
            Use :attr:`apd_bondwires` instead.
@@ -73,8 +70,7 @@ class Definitions:
     @property
     @deprecated_property("use jedec4_bondwires property instead")
     def jedec4_bondwire_defs(self):
-        """
-        Get all JEDEC4 bondwire definitions in this Database.
+        """Get all JEDEC4 bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
            Use :attr:`jedec4_bondwires` instead.
@@ -85,8 +81,7 @@ class Definitions:
     @property
     @deprecated_property("use jedec5_bondwires property instead")
     def jedec5_bondwire_defs(self):
-        """
-        Get all JEDEC5 bondwire definitions in this Database.
+        """Get all JEDEC5 bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
            Use :attr:`jedec5_bondwires` instead.
@@ -97,8 +92,7 @@ class Definitions:
     @property
     @deprecated_property("use packages property instead")
     def package_defs(self) -> Dict[str, PackageDef]:
-        """
-        Package definitions.
+        """Package definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`packages` instead.
@@ -108,8 +102,7 @@ class Definitions:
 
     @property
     def components(self) -> Dict[str, ComponentDef]:
-        """
-        Component definitions
+        """Component definitions
 
         Examples
         --------
@@ -125,8 +118,7 @@ class Definitions:
     @property
     @deprecated_property("use packages property instead")
     def package(self):
-        """
-        Package definitions.
+        """Package definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`packages` instead.
@@ -136,8 +128,7 @@ class Definitions:
 
     @property
     def packages(self) -> Dict[str, PackageDef]:
-        """
-        Package definitions.
+        """Package definitions.
 
         Examples
         --------
@@ -152,8 +143,7 @@ class Definitions:
 
     @property
     def apd_bondwires(self):
-        """
-        Get all APD bondwire definitions in this Database.
+        """Get all APD bondwire definitions in this Database.
 
         Returns
         -------
@@ -169,8 +159,7 @@ class Definitions:
 
     @property
     def jedec4_bondwires(self):
-        """
-        Get all JEDEC4 bondwire definitions in this Database.
+        """Get all JEDEC4 bondwire definitions in this Database.
 
         Returns
         -------
@@ -186,8 +175,7 @@ class Definitions:
 
     @property
     def jedec5_bondwires(self):
-        """
-        Get all JEDEC5 bondwire definitions in this Database.
+        """Get all JEDEC5 bondwire definitions in this Database.
 
         Returns
         -------
@@ -205,8 +193,7 @@ class Definitions:
     def add_package_def(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:
-        """
-        Add a package definition.
+        """Add a package definition.
 
         .. deprecated:: 0.66.0
 
@@ -218,8 +205,7 @@ class Definitions:
     def add_package(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:
-        """
-        Add a package definition.
+        """Add a package definition.
 
         Parameters
         ----------

@@ -68,8 +68,7 @@ class Layer:
 
     @classmethod
     def create(cls, name, layer_type: str = "solder_mask") -> Layer:
-        """
-        Parameters
+        """Parameters
         ----------
         name : str
             Layer name

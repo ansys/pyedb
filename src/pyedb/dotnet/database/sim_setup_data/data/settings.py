@@ -40,8 +40,7 @@ class AdaptiveSettings(object):
 
     @property
     def adaptive_settings(self):
-        """
-        Adaptive EDB settings.
+        """Adaptive EDB settings.
 
         Returns
         -------
@@ -52,8 +51,7 @@ class AdaptiveSettings(object):
 
     @property
     def adaptive_frequency_data_list(self):
-        """
-        List of all adaptive frequency data.
+        """List of all adaptive frequency data.
 
         Returns
         -------
@@ -69,8 +67,7 @@ class AdaptiveSettings(object):
 
     @property
     def adapt_type(self):
-        """
-        Adaptive type.
+        """Adaptive type.
         Options:
         1- ``kSingle``.
         2- ``kMultiFrequencies``.
@@ -91,8 +88,7 @@ class AdaptiveSettings(object):
 
     @property
     def basic(self):
-        """
-        Whether if turn on basic adaptive.
+        """Whether if turn on basic adaptive.
 
         Returns
         -------
@@ -108,8 +104,7 @@ class AdaptiveSettings(object):
 
     @property
     def do_adaptive(self):
-        """
-        Whether if adaptive mesh is on.
+        """Whether if adaptive mesh is on.
 
         Returns
         -------
@@ -121,8 +116,7 @@ class AdaptiveSettings(object):
 
     @property
     def max_refinement(self):
-        """
-        Maximum number of mesh elements to be added per pass.
+        """Maximum number of mesh elements to be added per pass.
 
         Returns
         -------
@@ -138,8 +132,7 @@ class AdaptiveSettings(object):
 
     @property
     def max_refine_per_pass(self):
-        """
-        Maximum number of mesh elementat that can be added during an adaptive pass.
+        """Maximum number of mesh elementat that can be added during an adaptive pass.
 
         Returns
         -------
@@ -155,8 +148,7 @@ class AdaptiveSettings(object):
 
     @property
     def min_passes(self):
-        """
-        Minimum number of passes.
+        """Minimum number of passes.
 
         Returns
         -------
@@ -172,8 +164,7 @@ class AdaptiveSettings(object):
 
     @property
     def min_converged_passes(self):
-        """
-        Minimum number of converged passes.
+        """Minimum number of converged passes.
 
         Returns
         -------
@@ -189,8 +180,7 @@ class AdaptiveSettings(object):
 
     @property
     def save_fields(self):
-        """
-        Whether to turn on save fields.
+        """Whether to turn on save fields.
 
         Returns
         -------
@@ -207,8 +197,7 @@ class AdaptiveSettings(object):
 
     @property
     def save_rad_field_only(self):
-        """
-        Flag indicating if the saving of only radiated fields is turned on.
+        """Flag indicating if the saving of only radiated fields is turned on.
 
         Returns
         -------
@@ -225,8 +214,7 @@ class AdaptiveSettings(object):
 
     @property
     def use_convergence_matrix(self):
-        """
-        Whether to turn on the convergence matrix.
+        """Whether to turn on the convergence matrix.
 
         Returns
         -------
@@ -243,8 +231,7 @@ class AdaptiveSettings(object):
 
     @property
     def use_max_refinement(self):
-        """
-        Whether to turn on maximum refinement.
+        """Whether to turn on maximum refinement.
 
         Returns
         -------
@@ -260,8 +247,7 @@ class AdaptiveSettings(object):
         self._parent._update_setup()
 
     def add_adaptive_frequency_data(self, frequency=0, max_num_passes=10, max_delta_s=0.02):
-        """
-        Add a setup for frequency data.
+        """Add a setup for frequency data.
 
         Parameters
         ----------
@@ -288,8 +274,7 @@ class AdaptiveSettings(object):
     def add_broadband_adaptive_frequency_data(
         self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
     ):
-        """
-        Add a setup for frequency data.
+        """Add a setup for frequency data.
 
         Parameters
         ----------
@@ -322,8 +307,7 @@ class AdaptiveSettings(object):
         return self._parent._update_setup()
 
     def add_multi_frequency_adaptive_setup(self, freq_list, max_num_passes=10, max_delta_s=0.02):
-        """
-        Add a setup for frequency data.
+        """Add a setup for frequency data.
 
         Parameters
         ----------
@@ -364,8 +348,7 @@ class DefeatureSettings(object):
 
     @property
     def defeature_abs_length(self):
-        """
-        Absolute length for polygon defeaturing.
+        """Absolute length for polygon defeaturing.
 
         Returns
         -------
@@ -381,8 +364,7 @@ class DefeatureSettings(object):
 
     @property
     def defeature_ratio(self):
-        """
-        Defeature ratio.
+        """Defeature ratio.
 
         Returns
         -------
@@ -398,8 +380,7 @@ class DefeatureSettings(object):
 
     @property
     def healing_option(self):
-        """
-        Whether to turn on healing of mis-aligned points and edges.
+        """Whether to turn on healing of mis-aligned points and edges.
         Options are:
         0- Turn off.
         1- Turn on.
@@ -418,8 +399,7 @@ class DefeatureSettings(object):
 
     @property
     def model_type(self):
-        """
-        Model type.
+        """Model type.
         Options:
         0- General.
         1- IC.
@@ -439,8 +419,7 @@ class DefeatureSettings(object):
 
     @property
     def remove_floating_geometry(self):
-        """
-        Whether to remove floating geometries.
+        """Whether to remove floating geometries.
 
         Returns
         -------
@@ -457,8 +436,7 @@ class DefeatureSettings(object):
 
     @property
     def small_void_area(self):
-        """
-        Small voids to remove area.
+        """Small voids to remove area.
 
         Returns
         -------
@@ -475,8 +453,7 @@ class DefeatureSettings(object):
 
     @property
     def union_polygons(self):
-        """
-        Whether to turn on the union of polygons before meshing.
+        """Whether to turn on the union of polygons before meshing.
 
         Returns
         -------
@@ -493,8 +470,7 @@ class DefeatureSettings(object):
 
     @property
     def use_defeature(self):
-        """
-        Whether to turn on the defeature.
+        """Whether to turn on the defeature.
 
         Returns
         -------
@@ -511,8 +487,7 @@ class DefeatureSettings(object):
 
     @property
     def use_defeature_abs_length(self):
-        """
-        Whether to turn on the defeature absolute length.
+        """Whether to turn on the defeature absolute length.
 
         Returns
         -------
@@ -540,8 +515,7 @@ class AdvancedMeshSettings(object):
 
     @property
     def layer_snap_tol(self):
-        """
-        Layer snap tolerance. Attempt to align independent stackups in the mesher.
+        """Layer snap tolerance. Attempt to align independent stackups in the mesher.
 
         Returns
         -------
@@ -557,8 +531,7 @@ class AdvancedMeshSettings(object):
 
     @property
     def mesh_display_attributes(self):
-        """
-        Mesh display attributes. Set color for mesh display (i.e. ``"#000000"``).
+        """Mesh display attributes. Set color for mesh display (i.e. ``"#000000"``).
 
         Returns
         -------
@@ -574,8 +547,7 @@ class AdvancedMeshSettings(object):
 
     @property
     def replace_3d_triangles(self):
-        """
-        Whether to turn on replace 3D triangles.
+        """Whether to turn on replace 3D triangles.
 
         Returns
         -------
@@ -613,8 +585,7 @@ class ViaSettings(object):
 
     @property
     def via_density(self):
-        """
-        Via density.
+        """Via density.
 
         Returns
         -------
@@ -630,8 +601,7 @@ class ViaSettings(object):
 
     @property
     def via_mesh_plating(self):
-        """
-        Via mesh plating.
+        """Via mesh plating.
 
         Returns
         -------
@@ -653,8 +623,7 @@ class ViaSettings(object):
 
     @property
     def via_material(self):
-        """
-        Via material.
+        """Via material.
 
         Returns
         -------
@@ -670,8 +639,7 @@ class ViaSettings(object):
 
     @property
     def via_num_sides(self):
-        """
-        Via number of sides.
+        """Via number of sides.
 
         Returns
         -------
@@ -687,8 +655,7 @@ class ViaSettings(object):
 
     @property
     def via_style(self):
-        """
-        Via style.
+        """Via style.
         Options:
         1- ``k25DViaWirebond``.
         2- ``k25DViaRibbon``.
@@ -721,8 +688,7 @@ class CurveApproxSettings(object):
 
     @property
     def arc_angle(self):
-        """
-        Step-size to be used for arc faceting.
+        """Step-size to be used for arc faceting.
 
         Returns
         -------
@@ -738,8 +704,7 @@ class CurveApproxSettings(object):
 
     @property
     def arc_to_chord_error(self):
-        """
-        Maximum tolerated error between straight edge (chord) and faceted arc.
+        """Maximum tolerated error between straight edge (chord) and faceted arc.
 
         Returns
         -------
@@ -755,8 +720,7 @@ class CurveApproxSettings(object):
 
     @property
     def max_arc_points(self):
-        """
-        Maximum number of mesh points for arc segments.
+        """Maximum number of mesh points for arc segments.
 
         Returns
         -------
@@ -772,8 +736,7 @@ class CurveApproxSettings(object):
 
     @property
     def start_azimuth(self):
-        """
-        Azimuth angle for first mesh point of the arc.
+        """Azimuth angle for first mesh point of the arc.
 
         Returns
         -------
@@ -789,8 +752,7 @@ class CurveApproxSettings(object):
 
     @property
     def use_arc_to_chord_error(self):
-        """
-        Whether to turn on the arc-to-chord error setting for arc faceting.
+        """Whether to turn on the arc-to-chord error setting for arc faceting.
 
         Returns
         -------
@@ -817,8 +779,7 @@ class DcrSettings(object):
 
     @property
     def conduction_max_passes(self):
-        """
-        Conduction maximum number of passes.
+        """Conduction maximum number of passes.
 
         Returns
         -------
@@ -834,8 +795,7 @@ class DcrSettings(object):
 
     @property
     def conduction_min_converged_passes(self):
-        """
-        Conduction minimum number of converged passes.
+        """Conduction minimum number of converged passes.
 
         Returns
         -------
@@ -851,8 +811,7 @@ class DcrSettings(object):
 
     @property
     def conduction_min_passes(self):
-        """
-        Conduction minimum number of passes.
+        """Conduction minimum number of passes.
 
         Returns
         -------
@@ -868,8 +827,7 @@ class DcrSettings(object):
 
     @property
     def conduction_per_error(self):
-        """
-        WConduction error percentage.
+        """WConduction error percentage.
 
         Returns
         -------
@@ -885,8 +843,7 @@ class DcrSettings(object):
 
     @property
     def conduction_per_refine(self):
-        """
-        Conduction refinement.
+        """Conduction refinement.
 
         Returns
         -------
@@ -913,8 +870,7 @@ class HfssPortSettings(object):
 
     @property
     def max_delta_z0(self):
-        """
-        Maximum change to Z0 in successive passes.
+        """Maximum change to Z0 in successive passes.
 
         Returns
         -------
@@ -930,8 +886,7 @@ class HfssPortSettings(object):
 
     @property
     def max_triangles_wave_port(self):
-        """
-        Maximum number of triangles allowed for wave ports.
+        """Maximum number of triangles allowed for wave ports.
 
         Returns
         -------
@@ -947,8 +902,7 @@ class HfssPortSettings(object):
 
     @property
     def min_triangles_wave_port(self):
-        """
-        Minimum number of triangles allowed for wave ports.
+        """Minimum number of triangles allowed for wave ports.
 
         Returns
         -------
@@ -964,8 +918,7 @@ class HfssPortSettings(object):
 
     @property
     def enable_set_triangles_wave_port(self):
-        """
-        Whether to enable setting of minimum and maximum mesh limits for wave ports.
+        """Whether to enable setting of minimum and maximum mesh limits for wave ports.
 
         Returns
         -------
@@ -994,8 +947,7 @@ class HfssSolverSettings(object):
     @property
     @deprecated_property("use enhanced_low_frequency_accuracy property instead")
     def enhanced_low_freq_accuracy(self):
-        """
-        Whether to enable legacy low-frequency sampling.
+        """Whether to enable legacy low-frequency sampling.
 
         .. deprecated:: pyedb 0.54.0
             Use :func:`enhanced_low_frequency_accuracy` instead.
@@ -1010,8 +962,7 @@ class HfssSolverSettings(object):
 
     @property
     def enhanced_low_frequency_accuracy(self):
-        """
-        Whether to enable legacy low-frequency sampling.
+        """Whether to enable legacy low-frequency sampling.
 
         Returns
         -------
@@ -1033,8 +984,7 @@ class HfssSolverSettings(object):
 
     @property
     def order_basis(self):
-        """
-        Order of the basic functions for HFSS.
+        """Order of the basic functions for HFSS.
         - 0=Zero.
         - 1=1st order.
         - 2=2nd order.
@@ -1057,8 +1007,7 @@ class HfssSolverSettings(object):
 
     @property
     def relative_residual(self):
-        """
-        Residual for use by the iterative solver.
+        """Residual for use by the iterative solver.
 
         Returns
         -------
@@ -1074,8 +1023,7 @@ class HfssSolverSettings(object):
 
     @property
     def solver_type(self):
-        """
-        Get solver type to use (Direct/Iterative/Auto) for HFSS.
+        """Get solver type to use (Direct/Iterative/Auto) for HFSS.
         Options:
         1- ``kAutoSolver``.
         2- ``kDirectSolver``.
@@ -1103,8 +1051,7 @@ class HfssSolverSettings(object):
 
     @property
     def use_shell_elements(self):
-        """
-        Whether to enable use of shell elements.
+        """Whether to enable use of shell elements.
 
         Returns
         -------

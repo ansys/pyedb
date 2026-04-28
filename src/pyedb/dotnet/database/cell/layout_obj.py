@@ -32,8 +32,7 @@ class LayoutObj(ObjBase):
 
     @property
     def _edb(self):
-        """
-        EDB object.
+        """EDB object.
 
         Returns
         -------
@@ -64,8 +63,7 @@ class LayoutObj(ObjBase):
 
     @property
     def id(self):
-        """
-        Primitive ID.
+        """Primitive ID.
 
         Returns
         -------

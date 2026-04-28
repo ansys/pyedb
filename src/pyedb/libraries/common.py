@@ -26,8 +26,7 @@ from typing import Tuple, Union
 
 @dataclass
 class Substrate:
-    """
-    Small helper that groups the four basic substrate parameters used
+    """Small helper that groups the four basic substrate parameters used
     throughout the library.
 
     Parameters
@@ -65,8 +64,7 @@ from typing import Union
 # Material
 # ------------------------------------------------------------------
 class Material:
-    """
-    Generic material definition.
+    """Generic material definition.
 
     When the material name is set, the object automatically registers
     itself in the provided PyEDB material database if the name is not
@@ -109,8 +107,7 @@ class Material:
 # Conductor
 # ------------------------------------------------------------------
 class Conductor(Material):
-    """
-    Metallic conductor material with electrical conductivity.
+    """Metallic conductor material with electrical conductivity.
 
     Parameters
     ----------
@@ -151,8 +148,7 @@ class Conductor(Material):
 # Dielectric
 # ------------------------------------------------------------------
 class Dielectric(Material):
-    """
-    Dielectric material with relative permittivity and loss tangent.
+    """Dielectric material with relative permittivity and loss tangent.
 
     Parameters
     ----------
@@ -206,8 +202,7 @@ class Dielectric(Material):
 # Layer
 # ------------------------------------------------------------------
 class Layer:
-    """
-    Physical layer inside a stackup.
+    """Physical layer inside a stackup.
 
     Parameters
     ----------
@@ -274,8 +269,7 @@ class Layer:
 # MetalLayer
 # ------------------------------------------------------------------
 class MetalLayer(Layer):
-    """
-    Convenience wrapper for metallic layers.
+    """Convenience wrapper for metallic layers.
 
     Automatically creates a ``Conductor`` material.
 
@@ -307,8 +301,7 @@ class MetalLayer(Layer):
 # DielectricLayer
 # ------------------------------------------------------------------
 class DielectricLayer(Layer):
-    """
-    Convenience wrapper for dielectric layers.
+    """Convenience wrapper for dielectric layers.
 
     Automatically creates a ``Dielectric`` material.
 
@@ -341,8 +334,7 @@ class DielectricLayer(Layer):
 # MicroStripTechnologyStackup
 # ------------------------------------------------------------------
 class MicroStripTechnologyStackup:
-    """
-    Pre-defined micro-strip stackup with bottom metal, substrate and top metal.
+    """Pre-defined micro-strip stackup with bottom metal, substrate and top metal.
 
     Parameters
     ----------

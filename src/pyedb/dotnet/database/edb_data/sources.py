@@ -158,8 +158,7 @@ class SourceBuilder(object):
 
     @property
     def amplitude(self):  # pragma: no cover
-        """
-        Amplitude value of the source. Either amperes for current source or volts for
+        """Amplitude value of the source. Either amperes for current source or volts for
         voltage source."""
         return self._amplitude
 
@@ -289,8 +288,7 @@ class PinGroup(object):
             return {i.name: i for i in pins}
 
     def remove_pins(self, pins: Union[str, List[str]]):
-        """
-        Remove pins from the pin group.
+        """Remove pins from the pin group.
 
         Parameters
         ----------
@@ -347,8 +345,7 @@ class PinGroup(object):
 
     @deprecated("use create_terminal method instead.")
     def _create_terminal(self, name=None):
-        """
-        Create a terminal on the pin group.
+        """Create a terminal on the pin group.
 
         Parameters
         ----------
@@ -368,8 +365,7 @@ class PinGroup(object):
             return self.create_terminal(name)
 
     def create_terminal(self, name=None):
-        """
-        Create a terminal.
+        """Create a terminal.
 
         Parameters
         ----------
@@ -425,8 +421,7 @@ class PinGroup(object):
         return terminal
 
     def delete(self):
-        """
-        Delete active pin group.
+        """Delete active pin group.
 
         Returns
         -------

@@ -57,8 +57,7 @@ class SettingsBase(object):
         return self._parent.get_sim_setup_info
 
     def get_configurations(self):
-        """
-        Get all attributes.
+        """Get all attributes.
 
         Returns
         -------
@@ -143,8 +142,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_inter_plane_coupling(self):
-        """
-        Whether to turn on InterPlane Coupling.
+        """Whether to turn on InterPlane Coupling.
         The setter will also enable custom settings.
 
         Returns
@@ -158,8 +156,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def xtalk_threshold(self):
-        """
-        XTalk threshold.
+        """XTalk threshold.
         The setter enables custom settings.
 
         Returns
@@ -172,8 +169,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def min_void_area(self):
-        """
-        Minimum void area to include.
+        """Minimum void area to include.
 
         Returns
         -------
@@ -185,8 +181,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def min_pad_area_to_mesh(self):
-        """
-        Minimum void pad area to mesh to include.
+        """Minimum void pad area to mesh to include.
 
         Returns
         -------
@@ -198,8 +193,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def min_plane_area_to_mesh(self):
-        """
-        Minimum plane area to mesh to include.
+        """Minimum plane area to mesh to include.
 
         Returns
         -------
@@ -211,8 +205,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def snap_length_threshold(self):
-        """
-        Snapping length threshold.
+        """Snapping length threshold.
 
         Returns
         -------
@@ -224,8 +217,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def return_current_distribution(self):
-        """
-        Whether to enable the return current distribution.
+        """Whether to enable the return current distribution.
         This option is used to accurately model the change of the characteristic impedance
         of transmission lines caused by a discontinuous ground plane. Instead of injecting
         the return current of a trace into a single point on the ground plane,
@@ -244,8 +236,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def ignore_non_functional_pads(self):
-        """
-        Exclude non-functional pads.
+        """Exclude non-functional pads.
 
         Returns
         -------
@@ -257,8 +248,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_coplane_coupling(self):
-        """
-        Whether to enable coupling between traces and adjacent plane edges.
+        """Whether to enable coupling between traces and adjacent plane edges.
         This option provides a model for crosstalk between signal lines and planes.
         Plane edges couple to traces when they are parallel.
         Traces and coplanar edges that are oblique to each other do not overlap
@@ -275,8 +265,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_fringe_coupling(self):
-        """
-        Whether to include the effect of fringe field coupling between stacked cavities.
+        """Whether to include the effect of fringe field coupling between stacked cavities.
 
 
         Returns
@@ -289,8 +278,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_split_plane_coupling(self):
-        """
-        Whether to account for coupling between adjacent parallel plane edges.
+        """Whether to account for coupling between adjacent parallel plane edges.
         Primarily, two different cases are being considered:
         - Plane edges that form a split.
         - Plane edges that form a narrow trace-like plane.
@@ -310,8 +298,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_infinite_ground(self):
-        """
-        Whether to Include a ground plane to serve as a voltage reference for traces and planes
+        """Whether to Include a ground plane to serve as a voltage reference for traces and planes
         if they are not defined in the layout.
 
         Returns
@@ -325,8 +312,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_trace_coupling(self):
-        """
-        Whether to model coupling between adjacent traces.
+        """Whether to model coupling between adjacent traces.
         Coupling is considered for parallel and almost parallel trace segments.
 
         Returns
@@ -340,8 +326,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def include_vi_sources(self):
-        """
-        Whether to include the effect of parasitic elements from voltage and
+        """Whether to include the effect of parasitic elements from voltage and
         current sources.
 
         Returns
@@ -355,8 +340,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def infinite_ground_location(self):
-        """
-        Elevation of the infinite unconnected ground plane placed under the design.
+        """Elevation of the infinite unconnected ground plane placed under the design.
 
         Returns
         -------
@@ -368,8 +352,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def max_coupled_lines(self):
-        """
-        Maximum number of coupled lines to build the new coupled transmission line model.
+        """Maximum number of coupled lines to build the new coupled transmission line model.
 
         Returns
         -------
@@ -380,8 +363,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def mesh_automatic(self):
-        """
-        Whether to automatically pick a suitable mesh refinement frequency,
+        """Whether to automatically pick a suitable mesh refinement frequency,
         depending on drawing size, number of modes, and/or maximum sweep
         frequency.
 
@@ -395,8 +377,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def perform_erc(self):
-        """
-        Whether to perform an electrical rule check while generating the solver input.
+        """Whether to perform an electrical rule check while generating the solver input.
         In some designs, the same net may be divided into multiple nets with separate names.
         These nets are connected at a "star" point. To simulate these nets, the error checking
         for DC shorts must be turned off. All overlapping nets are then internally united
@@ -412,8 +393,7 @@ class AdvancedSettings(SettingsBase):
 
     @property
     def mesh_frequency(self):
-        """
-        Mesh size based on the effective wavelength at the specified frequency.
+        """Mesh size based on the effective wavelength at the specified frequency.
 
         Returns
         -------
@@ -581,8 +561,7 @@ class DCSettings(SettingsBase):
 
     @property
     def compute_inductance(self):
-        """
-        Whether to compute Inductance.
+        """Whether to compute Inductance.
 
         Returns
         -------
@@ -602,8 +581,7 @@ class DCSettings(SettingsBase):
 
     @property
     def contact_radius(self):
-        """
-        Circuit element contact radius.
+        """Circuit element contact radius.
 
         Returns
         -------
@@ -621,8 +599,7 @@ class DCSettings(SettingsBase):
 
     @property
     def dc_slider_position(self):
-        """
-        DC simulation accuracy level slider position. This property only change slider position.
+        """DC simulation accuracy level slider position. This property only change slider position.
         Options:
         0- ``optimal speed``
         1- ``balanced``
@@ -639,8 +616,7 @@ class DCSettings(SettingsBase):
 
     @property
     def use_dc_custom_settings(self):
-        """
-        Whether to use DC custom settings.
+        """Whether to use DC custom settings.
         This setting is automatically enabled by other properties when needed.
 
         Returns
@@ -660,8 +636,7 @@ class DCSettings(SettingsBase):
 
     @property
     def plot_jv(self):
-        """
-        Plot current and voltage distributions.
+        """Plot current and voltage distributions.
 
         Returns
         -------
@@ -707,8 +682,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def dc_min_void_area_to_mesh(self):
-        """
-        DC minimum area below which voids are ignored.
+        """DC minimum area below which voids are ignored.
 
         Returns
         -------
@@ -726,8 +700,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def dc_min_plane_area_to_mesh(self):
-        """
-        Minimum area below which geometry is ignored.
+        """Minimum area below which geometry is ignored.
 
         Returns
         -------
@@ -745,8 +718,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def energy_error(self):
-        """
-        Energy error.
+        """Energy error.
 
         Returns
         -------
@@ -764,8 +736,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def max_init_mesh_edge_length(self):
-        """
-        Initial mesh maximum edge length.
+        """Initial mesh maximum edge length.
 
         Returns
         -------
@@ -783,8 +754,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def max_num_pass(self):
-        """
-        Maximum number of passes.
+        """Maximum number of passes.
 
         deprecated: Use `max_num_passes` instead.
 
@@ -802,8 +772,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def max_num_passes(self):
-        """
-        Maximum number of passes.
+        """Maximum number of passes.
 
         Returns
         -------
@@ -821,8 +790,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def min_num_pass(self):
-        """
-        Minimum number of passes.
+        """Minimum number of passes.
 
         deprecated: Use `min_num_passes` instead.
 
@@ -840,8 +808,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def min_num_passes(self):
-        """
-        Minimum number of passes.
+        """Minimum number of passes.
 
         Returns
         -------
@@ -859,8 +826,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def mesh_bondwires(self):
-        """
-        Mesh bondwires.
+        """Mesh bondwires.
 
         Returns
         -------
@@ -878,8 +844,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def mesh_vias(self):
-        """
-        Mesh vias.
+        """Mesh vias.
 
         Returns
         -------
@@ -897,8 +862,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def num_bondwire_sides(self):
-        """
-        Number of bondwire sides.
+        """Number of bondwire sides.
 
         deprecated: Use `num_bw_sides` instead.
 
@@ -916,8 +880,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def num_bw_sides(self):
-        """
-        Number of bondwire sides.
+        """Number of bondwire sides.
 
         Returns
         -------
@@ -935,8 +898,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def num_via_sides(self):
-        """
-        Number of via sides.
+        """Number of via sides.
 
         Returns
         -------
@@ -954,8 +916,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def percent_local_refinement(self):
-        """
-        Percentage of local refinement.
+        """Percentage of local refinement.
 
         Returns
         -------
@@ -973,8 +934,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def perform_adaptive_refinement(self):
-        """
-        Whether to perform adaptive mesh refinement.
+        """Whether to perform adaptive mesh refinement.
 
         Returns
         -------
@@ -993,8 +953,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def refine_bondwires(self):
-        """
-        Whether to refine mesh along bondwires.
+        """Whether to refine mesh along bondwires.
 
         deprecated: Use `refine_bws` instead.
 
@@ -1013,8 +972,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def refine_bws(self):
-        """
-        Whether to refine mesh along bondwires.
+        """Whether to refine mesh along bondwires.
 
         Returns
         -------
@@ -1033,8 +991,7 @@ class DCAdvancedSettings(SettingsBase):
 
     @property
     def refine_vias(self):
-        """
-        Whether to refine mesh along vias.
+        """Whether to refine mesh along vias.
 
         Returns
         -------

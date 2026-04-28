@@ -50,8 +50,7 @@ class Rectangle(Primitive):
 
     @property
     def representation_type(self) -> str:
-        """
-        Representation type.
+        """Representation type.
 
         Returns
         -------
@@ -84,8 +83,7 @@ class Rectangle(Primitive):
         corner_rad: float = 0.0,
         rotation: float = 0.0,
     ):
-        """
-        Create a rectangle primitive in the specified layout, layer, and net with the given parameters.
+        """Create a rectangle primitive in the specified layout, layer, and net with the given parameters.
 
         Parameters
         ----------
@@ -162,8 +160,7 @@ class Rectangle(Primitive):
         return new_rect
 
     def get_parameters(self):
-        """
-        Get coordinates parameters.
+        """Get coordinates parameters.
 
         Returns
         -------
@@ -207,8 +204,7 @@ class Rectangle(Primitive):
         return representation_type, parameter1, parameter2, parameter3, parameter4, corner_radius, rotation
 
     def set_parameters(self, rep_type, param1, param2, param3, param4, corner_rad, rotation):
-        """
-        Set coordinates parameters.
+        """Set coordinates parameters.
 
         Parameters
         ----------
@@ -241,8 +237,7 @@ class Rectangle(Primitive):
 
     @property
     def corner_radius(self):
-        """
-        Get corner radius.
+        """Get corner radius.
 
         Returns
         -------
@@ -254,8 +249,7 @@ class Rectangle(Primitive):
 
     @corner_radius.setter
     def corner_radius(self, value):
-        """
-        Set corner radius.
+        """Set corner radius.
 
         Parameters
         -------
@@ -276,8 +270,7 @@ class Rectangle(Primitive):
 
     @property
     def rotation(self):
-        """
-        Get rotation.
+        """Get rotation.
 
         Returns
         -------
@@ -302,8 +295,7 @@ class Rectangle(Primitive):
 
     @property
     def width(self):
-        """
-        Get rectangle width.
+        """Get rectangle width.
 
         Returns
         -------
@@ -335,8 +327,7 @@ class Rectangle(Primitive):
 
     @property
     def height(self):
-        """
-        Get rectangle height.
+        """Get rectangle height.
 
         Returns
         -------
@@ -367,8 +358,7 @@ class Rectangle(Primitive):
         )
 
     def duplicate_across_layers(self, layers) -> bool:
-        """
-        Duplicate across layer a primitive object.
+        """Duplicate across layer a primitive object.
 
         Parameters:
 

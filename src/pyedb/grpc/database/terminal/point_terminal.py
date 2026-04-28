@@ -46,8 +46,7 @@ class PointTerminal(Terminal):
 
     @classmethod
     def create(cls, layout, net, layer, name, point) -> "PointTerminal":
-        """
-        Create a point terminal.
+        """Create a point terminal.
 
         Parameters
         ----------
@@ -84,8 +83,7 @@ class PointTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """
-        Whether the terminal is a reference terminal.
+        """Whether the terminal is a reference terminal.
 
         Returns
         -------
@@ -97,8 +95,7 @@ class PointTerminal(Terminal):
 
     @property
     def point(self) -> tuple[float, float]:
-        """
-        Terminal point.
+        """Terminal point.
 
         Returns
         -------
@@ -109,8 +106,7 @@ class PointTerminal(Terminal):
 
     @property
     def location(self) -> tuple[float, float]:
-        """
-        Terminal position.
+        """Terminal position.
 
         Returns
         -------
@@ -128,8 +124,7 @@ class PointTerminal(Terminal):
 
     @property
     def reference_layer(self):
-        """
-        Reference layer of the terminal.
+        """Reference layer of the terminal.
 
         Returns
         -------

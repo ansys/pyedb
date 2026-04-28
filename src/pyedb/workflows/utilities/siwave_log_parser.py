@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-SIwave log file parser for extracting simulation results and metrics.
+"""SIwave log file parser for extracting simulation results and metrics.
 
 This module provides tools to parse Ansys SIwave batch simulation logs into
 structured dataclasses, making it easy to extract timing information, warnings,
@@ -67,8 +66,7 @@ RE_TS_TIME_FIRST = re.compile(
 
 
 def _parse_ts(txt: str) -> datetime:
-    """
-    Convert timestamp strings to datetime objects.
+    """Convert timestamp strings to datetime objects.
 
     Parse timestamp strings in two different SIwave log formats and return
     a datetime object. Supports both date-first and time-first formats.
@@ -115,8 +113,7 @@ def _parse_ts(txt: str) -> datetime:
 
 
 def _split_kv(line: str, sep: str = ":") -> tuple[str, str]:
-    """
-    Split a key-value line into key and value strings.
+    """Split a key-value line into key and value strings.
 
     Parse lines in the format ``'key: value'`` and return a tuple of the
     stripped key and value parts.
@@ -148,8 +145,7 @@ def _split_kv(line: str, sep: str = ":") -> tuple[str, str]:
 
 
 def _as_dict(obj: Any) -> Any:
-    """
-    Recursively convert dataclasses to JSON-serializable primitives.
+    """Recursively convert dataclasses to JSON-serializable primitives.
 
     Convert dataclass instances, lists, and Path objects to plain Python types
     that can be serialized to JSON.
@@ -195,8 +191,7 @@ def _as_dict(obj: Any) -> Any:
 # ------------------------------------------------------------------
 @dataclass(slots=True)
 class AEDTVersion:
-    """
-    AEDT version information extracted from log header.
+    """AEDT version information extracted from log header.
 
     Attributes
     ----------
@@ -222,8 +217,7 @@ class AEDTVersion:
 
 @dataclass(slots=True)
 class BatchInfo:
-    """
-    Batch simulation run metadata.
+    """Batch simulation run metadata.
 
     Attributes
     ----------
@@ -271,8 +265,7 @@ class BatchInfo:
 
 @dataclass(slots=True)
 class SimSettings:
-    """
-    Simulation settings and configuration.
+    """Simulation settings and configuration.
 
     Attributes
     ----------
@@ -314,8 +307,7 @@ class SimSettings:
 
 @dataclass(slots=True)
 class WarningEntry:
-    """
-    Single warning message from the simulation log.
+    """Single warning message from the simulation log.
 
     Attributes
     ----------
@@ -367,8 +359,7 @@ class WarningEntry:
 
 @dataclass(slots=True)
 class ProfileEntry:
-    """
-    Performance profile entry showing task timing and resource usage.
+    """Performance profile entry showing task timing and resource usage.
 
     Attributes
     ----------
@@ -413,8 +404,7 @@ class ProfileEntry:
 # Block Parsers
 # ------------------------------------------------------------------
 class BlockParser:
-    """
-    Base class for a single block parser.
+    """Base class for a single block parser.
 
     Parameters
     ----------
@@ -434,8 +424,7 @@ class BlockParser:
         self.lines = lines
 
     def parse(self) -> Any:
-        """
-        Parse the stored lines.
+        """Parse the stored lines.
 
         Returns
         -------
@@ -447,8 +436,7 @@ class BlockParser:
 
 
 class HeaderBlockParser(BlockParser):
-    """
-    Extract AEDT version information from the log header.
+    """Extract AEDT version information from the log header.
 
     This parser searches through log lines to find version, build, and
     installation location information.
@@ -467,8 +455,7 @@ class HeaderBlockParser(BlockParser):
     """
 
     def parse(self) -> AEDTVersion:
-        """
-        Parse the stored lines and return an AEDTVersion instance.
+        """Parse the stored lines and return an AEDTVersion instance.
 
         Returns
         -------
@@ -498,8 +485,7 @@ class HeaderBlockParser(BlockParser):
 
 
 class BatchSettingsBlockParser(BlockParser):
-    """
-    Extract batch information and simulation settings from the log.
+    """Extract batch information and simulation settings from the log.
 
     This parser processes batch run metadata including timestamps, user info,
     directories, and simulation configuration settings.
@@ -523,8 +509,7 @@ class BatchSettingsBlockParser(BlockParser):
     """
 
     def parse(self) -> tuple[BatchInfo, SimSettings]:
-        """
-        Parse batch information and simulation settings.
+        """Parse batch information and simulation settings.
 
         Returns
         -------
@@ -609,8 +594,7 @@ class BatchSettingsBlockParser(BlockParser):
 
 
 class WarningsBlockParser(BlockParser):
-    """
-    Extract warning entries from the simulation log.
+    """Extract warning entries from the simulation log.
 
     This parser identifies and extracts warning messages, particularly focusing
     on electrical short warnings with location information.
@@ -631,8 +615,7 @@ class WarningsBlockParser(BlockParser):
     """
 
     def parse(self) -> list[WarningEntry]:
-        """
-        Parse warning messages from log lines.
+        """Parse warning messages from log lines.
 
         Returns
         -------
@@ -699,8 +682,7 @@ class WarningsBlockParser(BlockParser):
 
 
 class ProfileBlockParser(BlockParser):
-    """
-    Extract profile entries showing task timing and resource usage.
+    """Extract profile entries showing task timing and resource usage.
 
     This parser processes [PROFILE] tagged lines to extract performance metrics
     including real time, CPU time, memory usage, and additional task-specific data.
@@ -721,8 +703,7 @@ class ProfileBlockParser(BlockParser):
     """
 
     def parse(self) -> list[ProfileEntry]:
-        """
-        Parse profile entries showing task timing and resource usage.
+        """Parse profile entries showing task timing and resource usage.
 
         Returns
         -------
@@ -781,8 +762,7 @@ class ProfileBlockParser(BlockParser):
 # ------------------------------------------------------------------
 @dataclass(slots=True)
 class ParsedSiwaveLog:
-    """
-    Root container returned by SiwaveLogParser.parse().
+    """Root container returned by SiwaveLogParser.parse().
 
     This class holds all parsed information from a SIwave log file and provides
     convenience methods for checking completion status, generating summaries,
@@ -837,8 +817,7 @@ class ParsedSiwaveLog:
     profile: list[ProfileEntry] = field(default_factory=list)
 
     def summary(self) -> None:
-        """
-        Print a summary of the parsed log to stdout.
+        """Print a summary of the parsed log to stdout.
 
         Examples
         --------
@@ -862,8 +841,7 @@ class ParsedSiwaveLog:
         print("Profile entries:", len(self.profile))
 
     def is_completed(self) -> bool:
-        """
-        Check if the simulation completed normally.
+        """Check if the simulation completed normally.
 
         Returns
         -------
@@ -892,8 +870,7 @@ class ParsedSiwaveLog:
         return self.batch.status == "Normal Completion"
 
     def is_aborted(self) -> bool:
-        """
-        Check if the simulation was aborted.
+        """Check if the simulation was aborted.
 
         Returns
         -------
@@ -922,8 +899,7 @@ class ParsedSiwaveLog:
         return bool(self.batch.status) and self.batch.status != "Normal Completion"
 
     def to_json(self, fp: str, **kw) -> None:
-        """
-        Serialize parsed log to JSON file.
+        """Serialize parsed log to JSON file.
 
         Parameters
         ----------
@@ -941,8 +917,7 @@ class ParsedSiwaveLog:
         Path(fp).write_text(json.dumps(self.to_dict(), **kw), encoding="utf-8")
 
     def to_dict(self) -> dict:
-        """
-        Deep-convert the entire object to JSON-serializable primitives.
+        """Deep-convert the entire object to JSON-serializable primitives.
 
         Returns
         -------
@@ -966,8 +941,7 @@ class ParsedSiwaveLog:
 # Main Parser Façade
 # ------------------------------------------------------------------
 class SiwaveLogParser:
-    """
-    High-level parser that orchestrates all block parsers.
+    """High-level parser that orchestrates all block parsers.
 
     This class provides the main interface for parsing SIwave log files.
     It coordinates multiple specialized parsers to extract version info,
@@ -1015,8 +989,7 @@ class SiwaveLogParser:
     }
 
     def __init__(self, log_path: str | Path):
-        """
-        Initialize the parser with a log file path.
+        """Initialize the parser with a log file path.
 
         Parameters
         ----------
@@ -1027,8 +1000,7 @@ class SiwaveLogParser:
         self.path = Path(log_path)
 
     def parse(self) -> ParsedSiwaveLog:
-        """
-        Execute all sub-parsers and return a unified object.
+        """Execute all sub-parsers and return a unified object.
 
         Returns
         -------

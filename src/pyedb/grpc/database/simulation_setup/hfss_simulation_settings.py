@@ -47,8 +47,7 @@ class HFSSSimulationSettings:
 
     @property
     def advanced(self) -> HFSSAdvancedSettings:
-        """
-        HFSS Advanced settings class.
+        """HFSS Advanced settings class.
 
 
         Returns
@@ -60,8 +59,7 @@ class HFSSSimulationSettings:
 
     @property
     def advanced_meshing(self) -> HFSSAdvancedMeshingSettings:
-        """
-        Advanced meshing class.
+        """Advanced meshing class.
 
         Returns
         -------
@@ -73,8 +71,7 @@ class HFSSSimulationSettings:
 
     @property
     def dcr(self) -> HFSSDCRSettings:
-        """
-        Dcr.
+        """Dcr.
 
         Returns
         -------
@@ -85,8 +82,7 @@ class HFSSSimulationSettings:
 
     @property
     def general(self) -> HFSSGeneralSettings:
-        """
-        General settings class.
+        """General settings class.
 
         Returns
         -------
@@ -97,8 +93,7 @@ class HFSSSimulationSettings:
 
     @property
     def options(self) -> HFSSSettingsOptions:
-        """
-        HFSS option class.
+        """HFSS option class.
 
         Returns
         -------
@@ -109,8 +104,7 @@ class HFSSSimulationSettings:
 
     @property
     def solver(self) -> HFSSSolverSettings:
-        """
-        HFSS solver settings class.
+        """HFSS solver settings class.
 
         Returns
         -------
@@ -122,8 +116,7 @@ class HFSSSimulationSettings:
     @property
     @deprecated_property("use options.enhanced_low_frequency_accuracy property instead.")
     def enhanced_low_frequency_accuracy(self) -> bool:
-        """
-        Enhanced low frequency accuracy flag.
+        """Enhanced low frequency accuracy flag.
 
         .. deprecated:: 0.67.0
             This property is deprecated. Please use :attr:`options.enhanced_low_frequency_accuracy`
@@ -139,8 +132,7 @@ class HFSSSimulationSettings:
     @property
     @deprecated_property("use options.relative_residual property instead.")
     def relative_residual(self) -> float:
-        """
-        Relative residual value.
+        """Relative residual value.
 
         .. deprecated:: 0.67.0
             This property is deprecated. Please use :attr:`options.relative_residual`
@@ -156,8 +148,7 @@ class HFSSSimulationSettings:
     @property
     @deprecated_property("use options.use_shell_elements property instead.")
     def use_shell_elements(self) -> bool:
-        """
-        Use shell elements flag.
+        """Use shell elements flag.
 
         .. deprecated:: 0.67.0
             This property is deprecated. Please use :attr:`options.use_shell_elements`

@@ -63,8 +63,7 @@ class FrequencyData:
 
     @property
     def distribution(self) -> str:
-        """
-        Get the distribution type of the frequency data.
+        """Get the distribution type of the frequency data.
 
         Returns
         -------
@@ -84,8 +83,7 @@ class FrequencyData:
 
     @property
     def start_frequency(self) -> str:
-        """
-        Get the start frequency in Hz.
+        """Get the start frequency in Hz.
 
         Returns
         -------
@@ -101,8 +99,7 @@ class FrequencyData:
 
     @property
     def end_frequency(self) -> str:
-        """
-        Get the end frequency in Hz.
+        """Get the end frequency in Hz.
 
         Returns
         -------
@@ -118,8 +115,7 @@ class FrequencyData:
 
     @property
     def step(self) -> str:
-        """
-        Get the frequency step in Hz.
+        """Get the frequency step in Hz.
 
         Returns
         -------
@@ -135,8 +131,7 @@ class FrequencyData:
 
 
 class SweepData:
-    """
-    Frequency sweep data class.
+    """Frequency sweep data class.
     PARAMETERS
     ----------
     pedb : Pedb
@@ -199,8 +194,7 @@ class SweepData:
 
     @property
     def frequency_data(self) -> list[CoreFrequencyData]:
-        """
-        Get the frequency data of the sweep.
+        """Get the frequency data of the sweep.
 
         Returns
         -------
@@ -214,8 +208,7 @@ class SweepData:
         return [FrequencyData(self.core.frequency_data)]
 
     def add_frequency_data(self, distribution: str, start_f: float, end_f: float, step: float):
-        """
-        Add frequency data to the sweep.
+        """Add frequency data to the sweep.
 
         Parameters
         ----------
@@ -249,8 +242,7 @@ class SweepData:
 
     @property
     def enabled(self) -> bool:
-        """
-        Get the enabled status of the frequency sweep.
+        """Get the enabled status of the frequency sweep.
 
         Returns
         -------
@@ -267,8 +259,7 @@ class SweepData:
 
     @property
     def type(self) -> str:
-        """
-        Get the type of the frequency sweep.
+        """Get the type of the frequency sweep.
 
         Returns
         -------
@@ -289,8 +280,7 @@ class SweepData:
 
     @property
     def use_q3d_for_dc(self) -> bool:
-        """
-        Get the flag indicating if Q3D is used for DC bias.
+        """Get the flag indicating if Q3D is used for DC bias.
 
         Returns
         -------
@@ -307,8 +297,7 @@ class SweepData:
 
     @property
     def save_fields(self) -> bool:
-        """
-        Get the flag indicating if fields are saved during the sweep.
+        """Get the flag indicating if fields are saved during the sweep.
 
         Returns
         -------
@@ -325,8 +314,7 @@ class SweepData:
 
     @property
     def save_rad_fields_only(self) -> bool:
-        """
-        Get the flag indicating if only radiation fields are saved.
+        """Get the flag indicating if only radiation fields are saved.
 
         Returns
         -------
@@ -342,8 +330,7 @@ class SweepData:
 
     @property
     def compute_dc_point(self) -> bool:
-        """
-        Get the flag indicating if DC point is computed.
+        """Get the flag indicating if DC point is computed.
 
         Returns
         -------
@@ -360,8 +347,7 @@ class SweepData:
 
     @property
     def siwave_with_3dddm(self) -> bool:
-        """
-        Get the flag indicating if SIwave with 3D-DDM is used.
+        """Get the flag indicating if SIwave with 3D-DDM is used.
 
         Returns
         -------
@@ -378,8 +364,7 @@ class SweepData:
 
     @property
     def adv_dc_extrapolation(self) -> bool:
-        """
-        Get the flag indicating if advanced DC extrapolation is used.
+        """Get the flag indicating if advanced DC extrapolation is used.
 
         Returns
         -------
@@ -397,8 +382,7 @@ class SweepData:
 
     @property
     def use_hfss_solver_regions(self) -> bool:
-        """
-        Get the flag indicating if HFSS solver regions are used.
+        """Get the flag indicating if HFSS solver regions are used.
 
         Returns
         -------
@@ -415,8 +399,7 @@ class SweepData:
 
     @property
     def frequency_string(self) -> str:
-        """
-        Get the frequency sweep string.
+        """Get the frequency sweep string.
 
         Returns
         -------
@@ -428,8 +411,7 @@ class SweepData:
 
     @property
     def enforce_causality(self) -> bool:
-        """
-        Get the flag indicating if causality is enforced.
+        """Get the flag indicating if causality is enforced.
 
         Returns
         -------
@@ -446,8 +428,7 @@ class SweepData:
 
     @property
     def enforce_passivity(self) -> bool:
-        """
-        Get the flag indicating if passivity is enforced.
+        """Get the flag indicating if passivity is enforced.
 
         Returns
         -------
@@ -464,8 +445,7 @@ class SweepData:
 
     @property
     def interpolation_data(self):
-        """
-        Get the interpolation data points.
+        """Get the interpolation data points.
 
         Returns
         -------

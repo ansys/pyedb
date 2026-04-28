@@ -36,8 +36,7 @@ class LayoutValidation:
 
     @execution_timer("dc_shorts")
     def dc_shorts(self, net_list=None, fix=False):
-        """
-        Find DC shorts on layout.
+        """Find DC shorts on layout.
 
         Parameters
         ----------
@@ -132,8 +131,7 @@ class LayoutValidation:
         order_by_area=False,
         keep_disjoint_pins=False,
     ):
-        """
-        Find and fix disjoint nets from a given netlist.
+        """Find and fix disjoint nets from a given netlist.
 
         Parameters
         ----------
@@ -265,8 +263,7 @@ class LayoutValidation:
 
     @execution_timer("self_intersections")
     def fix_self_intersections(self, net_list=None):
-        """
-        Find and fix self intersections from a given netlist.
+        """Find and fix self intersections from a given netlist.
 
         Parameters
         ----------

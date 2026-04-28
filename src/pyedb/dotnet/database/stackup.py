@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains the `EdbStackup` class.
+"""This module contains the `EdbStackup` class.
 
 """
 
@@ -78,8 +77,7 @@ class LayerCollection(object):
         }
 
     def update_layout(self):
-        """
-        Set layer collection into edb.
+        """Set layer collection into edb.
 
         Parameters
         ----------
@@ -97,8 +95,7 @@ class LayerCollection(object):
         self._lc = self._edb_object
 
     def _add_layer(self, add_method, base_layer_name="", **kwargs):
-        """
-        Add a layer to edb.
+        """Add a layer to edb.
 
         Parameters
         ----------
@@ -144,8 +141,7 @@ class LayerCollection(object):
         return obj
 
     def add_layer_top(self, name, layer_type="signal", **kwargs):
-        """
-        Add a layer on top of the stackup.
+        """Add a layer on top of the stackup.
 
         Parameters
         ----------
@@ -164,8 +160,7 @@ class LayerCollection(object):
         return self._add_layer(add_method="add_layer_top", **kwargs)
 
     def add_layer_bottom(self, name, layer_type="signal", **kwargs):
-        """
-        Add a layer on bottom of the stackup.
+        """Add a layer on bottom of the stackup.
 
         Parameters
         ----------
@@ -184,8 +179,7 @@ class LayerCollection(object):
         return self._add_layer(add_method="add_layer_bottom", **kwargs)
 
     def add_layer_below(self, name, base_layer_name, layer_type="signal", **kwargs):
-        """
-        Add a layer below a layer.
+        """Add a layer below a layer.
 
         Parameters
         ----------
@@ -206,8 +200,7 @@ class LayerCollection(object):
         return self._add_layer(add_method="add_layer_below", base_layer_name=base_layer_name, **kwargs)
 
     def add_layer_above(self, name, base_layer_name, layer_type="signal", **kwargs):
-        """
-        Add a layer above a layer.
+        """Add a layer above a layer.
 
         Parameters
         ----------
@@ -228,8 +221,7 @@ class LayerCollection(object):
         return self._add_layer(add_method="add_layer_above", base_layer_name=base_layer_name, **kwargs)
 
     def add_document_layer(self, name, layer_type="user", **kwargs):
-        """
-        Add a document layer.
+        """Add a document layer.
 
         Parameters
         ----------
@@ -286,8 +278,7 @@ class LayerCollection(object):
     @property
     @deprecated_property("use layers property instead.")
     def stackup_layers(self):
-        """
-        Retrieve the dictionary of signal and dielectric layers.
+        """Retrieve the dictionary of signal and dielectric layers.
 
         .. deprecated:: 0.71.0
            Use :attr: layers property instead.
@@ -317,8 +308,7 @@ class LayerCollection(object):
 
     @property
     def layers(self):
-        """
-        Retrieve the dictionary of layers.
+        """Retrieve the dictionary of layers.
 
         Returns
         -------
@@ -353,8 +343,7 @@ class Stackup(LayerCollection):
 
     @property
     def layer_types(self):
-        """
-        Layer types.
+        """Layer types.
 
         Returns
         -------
@@ -366,8 +355,7 @@ class Stackup(LayerCollection):
 
     @property
     def thickness(self):
-        """
-        Retrieve Stackup thickness.
+        """Retrieve Stackup thickness.
 
         Returns
         -------
@@ -379,8 +367,7 @@ class Stackup(LayerCollection):
 
     @property
     def num_layers(self):
-        """
-        Retrieve the stackup layer number.
+        """Retrieve the stackup layer number.
 
         Returns
         -------
@@ -477,8 +464,7 @@ class Stackup(LayerCollection):
         soldermask=True,
         soldermask_thickness="20um",
     ):  # pragma: no cover
-        """
-        Create a symmetric stackup.
+        """Create a symmetric stackup.
 
         Parameters
         ----------
@@ -590,8 +576,7 @@ class Stackup(LayerCollection):
 
     @property
     def _layer_collection(self):
-        """
-        Copy of EDB layer collection.
+        """Copy of EDB layer collection.
 
         Returns
         -------
@@ -604,8 +589,7 @@ class Stackup(LayerCollection):
 
     @property
     def mode(self):
-        """
-        Stackup mode.
+        """Stackup mode.
 
         Returns
         -------
@@ -641,8 +625,7 @@ class Stackup(LayerCollection):
 
     @property
     def signal_layers(self):
-        """
-        Retrieve the dictionary of signal layers.
+        """Retrieve the dictionary of signal layers.
 
         Returns
         -------
@@ -658,8 +641,7 @@ class Stackup(LayerCollection):
 
     @property
     def dielectric_layers(self):
-        """
-        Dielectric layers.
+        """Dielectric layers.
 
         Returns
         -------
@@ -678,8 +660,7 @@ class Stackup(LayerCollection):
         return self._pedb.edb_value(value)
 
     def _set_layout_stackup(self, layer_clone, operation, base_layer=None, method=1):
-        """
-        Internal method. Apply stackup change into EDB.
+        """Internal method. Apply stackup change into EDB.
 
         Parameters
         ----------
@@ -798,8 +779,7 @@ class Stackup(LayerCollection):
         return result
 
     def add_outline_layer(self, outline_name="Outline"):
-        """
-        Add an outline layer named ``"Outline"`` if it is not present.
+        """Add an outline layer named ``"Outline"`` if it is not present.
 
         Returns
         -------
@@ -826,8 +806,7 @@ class Stackup(LayerCollection):
         enable_roughness=False,
         elevation=None,
     ):
-        """
-        Insert a layer into stackup.
+        """Insert a layer into stackup.
 
         Parameters
         ----------
@@ -913,8 +892,7 @@ class Stackup(LayerCollection):
         return self.layers[layer_name]
 
     def remove_layer(self, name):
-        """
-        Remove a layer from stackup.
+        """Remove a layer from stackup.
 
         Parameters
         ----------
@@ -935,8 +913,7 @@ class Stackup(LayerCollection):
         return True
 
     def export(self, fpath, file_format="xml", include_material_with_layer=False):
-        """
-        Export stackup definition to a CSV or JSON file.
+        """Export stackup definition to a CSV or JSON file.
 
         Parameters
         ----------
@@ -1096,8 +1073,7 @@ class Stackup(LayerCollection):
             return True
 
     def limits(self, only_metals=False):
-        """
-        Retrieve stackup limits.
+        """Retrieve stackup limits.
 
         Parameters
         ----------
@@ -1119,8 +1095,7 @@ class Stackup(LayerCollection):
         return topl.GetName(), topz, bottoml.GetName(), bottomz
 
     def flip_design(self):
-        """
-        Flip the current design of a layout.
+        """Flip the current design of a layout.
 
         Returns
         -------
@@ -1257,8 +1232,7 @@ class Stackup(LayerCollection):
             return False
 
     def get_layout_thickness(self):
-        """
-        Return the layout thickness.
+        """Return the layout thickness.
 
         Returns
         -------
@@ -1292,8 +1266,7 @@ class Stackup(LayerCollection):
                 val.edbcomponent.SetComponentProperty(comp_prop)
 
     def adjust_solder_dielectrics(self):
-        """
-        Adjust the stack-up by adding or modifying dielectric layers that contains Solder Balls.
+        """Adjust the stack-up by adding or modifying dielectric layers that contains Solder Balls.
         This method identifies the solder-ball height and adjust the dielectric thickness on top (or bottom) to fit
         the thickness in order to merge another layout.
 
@@ -1338,8 +1311,7 @@ class Stackup(LayerCollection):
         flipped_stackup=True,
         place_on_top=True,
     ):
-        """
-        Place current Cell into another cell using layer placement method.
+        """Place current Cell into another cell using layer placement method.
         Flip the current layer stackup of a layout if requested. Transform parameters currently not supported.
 
         Parameters
@@ -1440,8 +1412,7 @@ class Stackup(LayerCollection):
         place_on_top=True,
         solder_height=0,
     ):
-        """
-        Place current Cell into another cell using 3d placement method.
+        """Place current Cell into another cell using 3d placement method.
         Flip the current layer stackup of a layout if requested. Transform parameters currently not supported.
 
         Parameters
@@ -1580,8 +1551,7 @@ class Stackup(LayerCollection):
         place_on_top=True,
         solder_height=0,
     ):
-        """
-        Place current Cell into another cell using 3d placement method.
+        """Place current Cell into another cell using 3d placement method.
         Flip the current layer stackup of a layout if requested. Transform parameters currently not supported.
 
         Parameters
@@ -1736,8 +1706,7 @@ class Stackup(LayerCollection):
         offset_z=0.0,
         place_on_top=True,
     ):
-        """
-        Place a 3D Component into current layout.
+        """Place a 3D Component into current layout.
          3D Component ports are not visible via EDB. They will be visible after the EDB has been opened in Ansys
          Electronics Desktop as a project.
 
@@ -1823,8 +1792,7 @@ class Stackup(LayerCollection):
         return True
 
     def residual_copper_area_per_layer(self):
-        """
-        Report residual copper area per layer in percentage.
+        """Report residual copper area per layer in percentage.
 
         Returns
         -------
@@ -2004,8 +1972,7 @@ class Stackup(LayerCollection):
             return self._import_dict(json_dict, rename)
 
     def _import_csv(self, file_path):
-        """
-        Import stackup definition from a CSV file.
+        """Import stackup definition from a CSV file.
 
         Parameters
         ----------
@@ -2054,8 +2021,7 @@ class Stackup(LayerCollection):
         return True
 
     def _set(self, layers=None, materials=None, roughness=None, non_stackup_layers=None):
-        """
-        Update stackup information.
+        """Update stackup information.
 
         Parameters
         ----------
@@ -2183,8 +2149,7 @@ class Stackup(LayerCollection):
         return True
 
     def _get(self):
-        """
-        Get stackup information from layout.
+        """Get stackup information from layout.
 
         Returns:
         tuple: (dict, dict, dict)
@@ -2277,8 +2242,7 @@ class Stackup(LayerCollection):
         return True
 
     def _import_xml(self, file_path: str | Path):
-        """
-        Load stackup from a XML file.
+        """Load stackup from a XML file.
 
         Parameters
         ----------
@@ -2310,8 +2274,7 @@ class Stackup(LayerCollection):
         return self._pedb.configuration.run()
 
     def _export_xml(self, file_path):
-        """
-        Export stackup information to an external XMLfile.
+        """Export stackup information to an external XMLfile.
 
         Parameters
         ----------
@@ -2362,8 +2325,7 @@ class Stackup(LayerCollection):
         return True
 
     def load(self, file_path, rename=False):
-        """
-        Import stackup from a file. The file format can be XML, CSV, or JSON. Valid control file must
+        """Import stackup from a file. The file format can be XML, CSV, or JSON. Valid control file must
         have the same number of signal layers. Signals layers can be renamed. Dielectric layers can be
         added and deleted.
 
@@ -2412,8 +2374,7 @@ class Stackup(LayerCollection):
         scale_elevation=True,
         show=True,
     ):
-        """
-        Plot current stackup and, optionally, overlap padstack definitions.
+        """Plot current stackup and, optionally, overlap padstack definitions.
         Plot supports only 'Laminate' and 'Overlapping' stackup types.
 
         Parameters
@@ -2879,8 +2840,7 @@ class Stackup(LayerCollection):
         return plt
 
     def load_from_xml(self, file_path):
-        """
-        Load stackup from a XML file.
+        """Load stackup from a XML file.
 
         Parameters
         ----------

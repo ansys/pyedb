@@ -27,8 +27,7 @@ from pyedb.dotnet.database.utilities.value import Value
 
 
 class HfssExtentInfo:
-    """
-    Manages EDB functionalities for HFSS extent information.
+    """Manages EDB functionalities for HFSS extent information.
 
     Parameters
     ----------
@@ -75,8 +74,7 @@ class HfssExtentInfo:
 
     @property
     def air_box_horizontal_extent(self):
-        """
-        Size of horizontal extent for the air box.
+        """Size of horizontal extent for the air box.
 
         Returns:
         dotnet.database.edb_data.edbvalue.EdbValue
@@ -169,8 +167,7 @@ class HfssExtentInfo:
 
     @property
     def base_polygon(self):
-        """
-        Base polygon.
+        """Base polygon.
 
         Returns
         -------
@@ -188,8 +185,7 @@ class HfssExtentInfo:
 
     @property
     def dielectric_base_polygon(self):
-        """
-        Dielectric base polygon.
+        """Dielectric base polygon.
 
         Returns
         -------
@@ -294,8 +290,7 @@ class HfssExtentInfo:
 
     @property
     def operating_freq(self):
-        """
-        PML Operating frequency.
+        """PML Operating frequency.
 
         Returns
         -------
@@ -377,8 +372,7 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(info)
 
     def load_config(self, config):
-        """
-        Load HFSS extent configuration.
+        """Load HFSS extent configuration.
 
         Parameters
         ----------
@@ -391,8 +385,7 @@ class HfssExtentInfo:
                 setattr(self, i, j)
 
     def export_config(self):
-        """
-        Export HFSS extent information.
+        """Export HFSS extent information.
 
         Returns:
         dict

@@ -30,8 +30,7 @@ class PinGroupTerminal(Terminal):
         super().__init__(pedb, edb_object)
 
     def create(self, name, net_name, pin_group_name, is_ref=False):
-        """
-        Create a pin group terminal.
+        """Create a pin group terminal.
 
         Parameters
         ----------

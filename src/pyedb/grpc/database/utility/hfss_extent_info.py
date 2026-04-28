@@ -28,8 +28,7 @@ from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class HfssExtentInfo:
-    """
-    Manages EDB functionalities for HFSS extent information.
+    """Manages EDB functionalities for HFSS extent information.
 
     Parameters
     ----------
@@ -57,8 +56,7 @@ class HfssExtentInfo:
         return self._pedb.active_cell.set_hfss_extent_info(hfss_extent)
 
     def get_air_box_horizontal_extent(self) -> (float, bool):
-        """
-        Size of horizontal extent for the air box.
+        """Size of horizontal extent for the air box.
 
         Returns
         -------
@@ -77,8 +75,7 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(hfss_extent)
 
     def get_air_box_positive_vertical_extent(self) -> (float, bool):
-        """
-        Negative vertical extent for the air box.
+        """Negative vertical extent for the air box.
 
         Returns
         -------
@@ -97,8 +94,7 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(hfss_exent)
 
     def get_air_box_negative_vertical_extent(self) -> (float, bool):
-        """
-        Negative vertical extent for the airbox.
+        """Negative vertical extent for the airbox.
 
         Returns
         -------
@@ -118,8 +114,7 @@ class HfssExtentInfo:
 
     @property
     def base_polygon(self) -> any:
-        """
-        Base polygon.
+        """Base polygon.
 
         Returns
         -------
@@ -140,8 +135,7 @@ class HfssExtentInfo:
 
     @property
     def dielectric_base_polygon(self) -> any:
-        """
-        Dielectric base polygon.
+        """Dielectric base polygon.
 
         Returns
         -------
@@ -161,8 +155,7 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(hfss_extent)
 
     def get_dielectric_extent(self) -> (float, bool):
-        """
-        Dielectric extent size.
+        """Dielectric extent size.
 
         Returns
         -------
@@ -182,8 +175,7 @@ class HfssExtentInfo:
 
     @property
     def dielectric_extent_type(self) -> str:
-        """
-        Dielectric extent type.
+        """Dielectric extent type.
 
         Returns
         -------
@@ -201,8 +193,7 @@ class HfssExtentInfo:
 
     @property
     def extent_type(self) -> str:
-        """
-        Extent type.
+        """Extent type.
 
         Returns
         -------
@@ -220,8 +211,7 @@ class HfssExtentInfo:
 
     @property
     def honor_user_dielectric(self) -> bool:
-        """
-        Honor user dielectric.
+        """Honor user dielectric.
 
         Returns
         -------
@@ -238,8 +228,7 @@ class HfssExtentInfo:
 
     @property
     def is_pml_visible(self) -> bool:
-        """
-        Whether visibility of the PML is enabled.
+        """Whether visibility of the PML is enabled.
 
         Returns
         -------
@@ -256,8 +245,7 @@ class HfssExtentInfo:
 
     @property
     def open_region_type(self) -> str:
-        """
-        Open region type.
+        """Open region type.
 
         Returns
         -------
@@ -275,8 +263,7 @@ class HfssExtentInfo:
 
     @property
     def operating_freq(self) -> float:
-        """
-        PML Operating frequency.
+        """PML Operating frequency.
 
         Returns
         -------
@@ -297,8 +284,7 @@ class HfssExtentInfo:
 
     @property
     def radiation_level(self) -> float:
-        """
-        PML Radiation level to calculate the thickness of boundary.
+        """PML Radiation level to calculate the thickness of boundary.
 
         Returns
         -------
@@ -319,8 +305,7 @@ class HfssExtentInfo:
 
     @property
     def sync_air_box_vertical_extent(self) -> bool:
-        """
-        Vertical extent of the sync air box.
+        """Vertical extent of the sync air box.
 
         Returns
         -------
@@ -338,8 +323,7 @@ class HfssExtentInfo:
 
     @property
     def truncate_air_box_at_ground(self) -> bool:
-        """
-        Truncate air box at ground.
+        """Truncate air box at ground.
 
         Returns
         -------
@@ -357,8 +341,7 @@ class HfssExtentInfo:
 
     @property
     def use_open_region(self) -> bool:
-        """
-        Whether using an open region is enabled.
+        """Whether using an open region is enabled.
 
         Returns
         -------
@@ -376,8 +359,7 @@ class HfssExtentInfo:
 
     @property
     def use_xy_data_extent_for_vertical_expansion(self) -> bool:
-        """
-        Whether using the xy data extent for vertical expansion is enabled.
+        """Whether using the xy data extent for vertical expansion is enabled.
 
         Returns
         -------
@@ -394,8 +376,7 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(hfss_extent)
 
     def load_config(self, config):
-        """
-        Load HFSS extent configuration.
+        """Load HFSS extent configuration.
 
         Parameters
         ----------
@@ -408,8 +389,7 @@ class HfssExtentInfo:
                 setattr(self, i, j)
 
     def export_config(self):
-        """
-        Export HFSS extent information.
+        """Export HFSS extent information.
 
         Returns
         -------

@@ -41,8 +41,7 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "Edb", name: str = "HFSS_PI") -> "HFSSPISimulationSetup":
-        """
-        Create a HFSS PI simulation setup.
+        """Create a HFSS PI simulation setup.
 
         Parameters
         ----------
@@ -63,8 +62,7 @@ class HFSSPISimulationSetup(SimulationSetup):
 
     @property
     def settings(self) -> HFSSPISimulationSettings:
-        """
-        Get the HFSS PI simulation settings.
+        """Get the HFSS PI simulation settings.
 
         Returns
         -------

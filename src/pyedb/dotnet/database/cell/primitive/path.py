@@ -32,8 +32,7 @@ class Path(Primitive):
 
     @property
     def width(self):
-        """
-        Path width.
+        """Path width.
 
         Returns
         -------
@@ -48,8 +47,7 @@ class Path(Primitive):
         self.primitive_object.SetWidth(self._pedb.edb_value(value))
 
     def get_end_cap_style(self):
-        """
-        Get path end cap styles.
+        """Get path end cap styles.
 
         Returns
         -------
@@ -70,8 +68,7 @@ class Path(Primitive):
         return self._edb_object.GetEndCapStyle()
 
     def set_end_cap_style(self, end_cap1, end_cap2):
-        """
-        Set path end cap styles.
+        """Set path end cap styles.
 
         Parameters
         ----------
@@ -85,8 +82,7 @@ class Path(Primitive):
 
     @property
     def length(self):
-        """
-        Path length in meters.
+        """Path length in meters.
 
         Returns
         -------
@@ -106,8 +102,7 @@ class Path(Primitive):
         return path_length
 
     def add_point(self, x, y, incremental=False):
-        """
-        Add a point at the end of the path.
+        """Add a point at the end of the path.
 
         Parameters
         ----------
@@ -136,8 +131,7 @@ class Path(Primitive):
         return self._edb_object.SetCenterLine(center_line)
 
     def get_center_line(self, to_string=False):
-        """
-        Get the center line of the trace.
+        """Get the center line of the trace.
 
         Parameters
         ----------
@@ -155,8 +149,7 @@ class Path(Primitive):
             return [[p.X.ToDouble(), p.Y.ToDouble()] for p in list(self._edb_object.GetCenterLine().Points)]
 
     def clone(self):
-        """
-        Clone a primitive object with keeping same definition and location.
+        """Clone a primitive object with keeping same definition and location.
 
         Returns
         -------
@@ -191,8 +184,7 @@ class Path(Primitive):
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
     ):
-        """
-        Parameters
+        """Parameters
         ----------
         name : str
             Name of the port.
@@ -233,8 +225,7 @@ class Path(Primitive):
             return self._app.excitation_manager.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
 
     def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
-        """
-        Create via fences on both sides of the trace.
+        """Create via fences on both sides of the trace.
 
         Parameters
         ----------

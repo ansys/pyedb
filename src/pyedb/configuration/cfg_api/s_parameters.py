@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build ``s_parameters`` configuration entries.
+"""Build ``s_parameters`` configuration entries.
 
 This module defines lightweight builders for assigning Touchstone models to
 component definitions.
@@ -45,8 +44,7 @@ class SParameterModelConfig:
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
     ):
-        """
-        Initialize an S-parameter model assignment.
+        """Initialize an S-parameter model assignment.
 
         Parameters
         ----------
@@ -78,8 +76,7 @@ class SParameterModelConfig:
         self.pin_order = pin_order
 
     def to_dict(self) -> dict:
-        """
-        Serialize the S-parameter model assignment.
+        """Serialize the S-parameter model assignment.
 
         Returns
         -------
@@ -121,8 +118,7 @@ class SParametersConfig:
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
     ) -> SParameterModelConfig:
-        """
-        Add an S-parameter model assignment.
+        """Add an S-parameter model assignment.
 
         Parameters
         ----------
@@ -164,8 +160,7 @@ class SParametersConfig:
         return m
 
     def to_list(self) -> List[dict]:
-        """
-        Serialize all configured S-parameter model assignments.
+        """Serialize all configured S-parameter model assignments.
 
         Returns
         -------

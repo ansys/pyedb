@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains the ``EdbHfss`` class.
+"""This module contains the ``EdbHfss`` class.
 """
 
 import math
@@ -40,8 +39,7 @@ from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class Hfss:
-    """
-    Manages EDB methods for HFSS setup configuration.
+    """Manages EDB methods for HFSS setup configuration.
 
     Provides access to HFSS-specific operations including:
     - Excitation and port creation
@@ -58,8 +56,7 @@ class Hfss:
 
     @property
     def hfss_extent_info(self) -> HfssExtentInfo:
-        """
-        HFSS extent information.
+        """HFSS extent information.
 
         Returns
         -------
@@ -71,8 +68,7 @@ class Hfss:
 
     @property
     def _logger(self):
-        """
-        Logger instance for message handling.
+        """Logger instance for message handling.
 
         Returns
         -------
@@ -84,8 +80,7 @@ class Hfss:
 
     @property
     def _edb(self):
-        """
-        EDB API object.
+        """EDB API object.
 
         Returns
         -------
@@ -97,8 +92,7 @@ class Hfss:
 
     @property
     def _active_layout(self):
-        """
-        Active layout object.
+        """Active layout object.
 
         Returns
         -------
@@ -110,8 +104,7 @@ class Hfss:
 
     @property
     def _layout(self):
-        """
-        Current layout object.
+        """Current layout object.
 
         Returns
         -------
@@ -123,8 +116,7 @@ class Hfss:
 
     @property
     def _cell(self):
-        """
-        Current cell object.
+        """Current cell object.
 
         Returns
         -------
@@ -136,8 +128,7 @@ class Hfss:
 
     @property
     def _db(self):
-        """
-        Active database object.
+        """Active database object.
 
         Returns
         -------
@@ -150,8 +141,7 @@ class Hfss:
     @property
     @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """
-        Get all ports.
+        """Get all ports.
 
         .. deprecated:: 0.71.0
            Use :attr: ports instead.
@@ -169,8 +159,7 @@ class Hfss:
 
     @property
     def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """
-        Get all ports.
+        """Get all ports.
 
         Returns
         -------
@@ -185,8 +174,7 @@ class Hfss:
 
     @property
     def sources(self):
-        """
-        All source definitions in the layout.
+        """All source definitions in the layout.
 
         Returns
         -------
@@ -198,8 +186,7 @@ class Hfss:
 
     @property
     def probes(self):
-        """
-        All probe definitions in the layout.
+        """All probe definitions in the layout.
 
         Returns
         -------
@@ -210,8 +197,7 @@ class Hfss:
         return self._pedb.probes
 
     def get_trace_width_for_traces_with_ports(self):
-        """
-        Retrieve trace widths for traces with ports.
+        """Retrieve trace widths for traces with ports.
 
         Returns
         -------
@@ -256,8 +242,7 @@ class Hfss:
         )
 
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
-        """
-        Calculate layout bounding box.
+        """Calculate layout bounding box.
 
         Parameters
         ----------
@@ -298,8 +283,7 @@ class Hfss:
         return layout_bbox
 
     def _setup_decade_count_sweep(self, sweep, start_freq="1", stop_freq="1MHz", decade_count="10"):
-        """
-        Configure decade count sweep (internal).
+        """Configure decade count sweep (internal).
 
         Parameters
         ----------
@@ -328,8 +312,7 @@ class Hfss:
             sweep.Frequencies.Add(str(freq))
 
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
-        """
-        Get component terminals bounding box (internal).
+        """Get component terminals bounding box (internal).
 
         Parameters
         ----------
@@ -386,8 +369,7 @@ class Hfss:
         step_freq=None,
         discrete_sweep=False,
     ) -> Optional[HfssSimulationSetup]:
-        """
-        .. deprecated pyedb 0.67.0
+        """.. deprecated pyedb 0.67.0
 
         Add HFSS analysis setup (deprecated).
         use :func:`create_simulation_setup` instead.
@@ -398,8 +380,7 @@ class Hfss:
         )
 
     def generate_auto_hfss_regions(self):
-        """
-        Generate auto HFSS regions.
+        """Generate auto HFSS regions.
 
         This method automatically identifies areas for use as HFSS regions in SIwave simulations.
         """

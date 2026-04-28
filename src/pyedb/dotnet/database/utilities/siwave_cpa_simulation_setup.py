@@ -28,8 +28,7 @@ from pyedb.siwave_core.product_properties import SIwaveProperties
 
 
 class ChannelSetup:
-    """
-    A class to manage the channel setup configuration for SIWave CPA simulations.
+    """A class to manage the channel setup configuration for SIWave CPA simulations.
 
     Attributes:
         die_name (str): The name of the die associated with the channel setup.
@@ -64,8 +63,7 @@ class ChannelSetup:
 
     @die_name.setter
     def die_name(self, value):
-        """
-        Get the die name from the SIWave properties.
+        """Get the die name from the SIWave properties.
 
         Returns:
             str: The die name.
@@ -78,8 +76,7 @@ class ChannelSetup:
 
     @property
     def pin_grouping_mode(self):
-        """
-        Get the pin grouping mode from the SIWave properties.
+        """Get the pin grouping mode from the SIWave properties.
 
         Returns:
             str: The pin grouping mode ("perpin", "ploc", or "usediepingroups").
@@ -109,8 +106,7 @@ class ChannelSetup:
 
     @property
     def channel_component_exposure(self):
-        """
-        Get the channel component exposure configuration from the SIWave properties.
+        """Get the channel component exposure configuration from the SIWave properties.
 
         Returns:
             dict: A dictionary mapping component names to their exposure status (True/False).
@@ -143,8 +139,7 @@ class ChannelSetup:
 
     @property
     def vrm(self):
-        """
-        Get the VRM (Voltage Regulator Module) setup from the SIWave properties.
+        """Get the VRM (Voltage Regulator Module) setup from the SIWave properties.
 
         Returns:
             list: A list of VRM objects.
@@ -193,8 +188,7 @@ class ChannelSetup:
 
 
 class SolverOptions:
-    """
-    A class to manage solver options for SIWave CPA simulations.
+    """A class to manage solver options for SIWave CPA simulations.
 
     Attributes:
         mode (str): The extraction mode, either "si" or "pi".
@@ -269,8 +263,7 @@ class SolverOptions:
 
     @property
     def extraction_mode(self):
-        """
-        Get the extraction mode.
+        """Get the extraction mode.
 
         Returns:
             str: The extraction mode ("si" or "pi").
@@ -297,8 +290,7 @@ class SolverOptions:
 
     @property
     def custom_refinement(self):
-        """
-        Get whether custom refinement is enabled.
+        """Get whether custom refinement is enabled.
 
         Returns:
             bool: True if custom refinement is enabled, False otherwise.
@@ -325,8 +317,7 @@ class SolverOptions:
 
     @property
     def extraction_frequency(self):
-        """
-        Get the extraction frequency.
+        """Get the extraction frequency.
 
         Returns:
             str: The extraction frequency.
@@ -345,8 +336,7 @@ class SolverOptions:
 
     @property
     def compute_capacitance(self):
-        """
-        Get whether capacitance computation is enabled.
+        """Get whether capacitance computation is enabled.
 
         Returns:
             bool: True if enabled, False otherwise.
@@ -373,8 +363,7 @@ class SolverOptions:
 
     @property
     def compute_dc_parameters(self):
-        """
-        Property setter for the `compute_dc_parameters` attribute.
+        """Property setter for the `compute_dc_parameters` attribute.
 
         Sets whether the computation of DC parameters is enabled in the SIWave properties.
 
@@ -401,8 +390,7 @@ class SolverOptions:
 
     @property
     def compute_dc_rl(self):
-        """
-        Get whether DC resistance and inductance computation is enabled.
+        """Get whether DC resistance and inductance computation is enabled.
 
         Returns:
             bool: True if DC resistance and inductance computation is enabled, False otherwise.
@@ -428,8 +416,7 @@ class SolverOptions:
 
     @property
     def compute_dc_cg(self):
-        """
-        Get whether DC capacitance and conductance computation is enabled.
+        """Get whether DC capacitance and conductance computation is enabled.
 
         Returns:
             bool: True if DC capacitance and conductance computation is enabled, False otherwise.
@@ -455,8 +442,7 @@ class SolverOptions:
 
     @property
     def compute_ac_rl(self):
-        """
-        Get whether AC resistance and inductance computation is enabled.
+        """Get whether AC resistance and inductance computation is enabled.
 
         Returns:
             bool: True if AC resistance and inductance computation is enabled, False otherwise.
@@ -482,8 +468,7 @@ class SolverOptions:
 
     @property
     def ground_power_nets_for_si(self):
-        """
-        Gets the ground power nets for SI analysis setting from the database.
+        """Gets the ground power nets for SI analysis setting from the database.
 
         Returns:
             bool: True if grounding power nets for SI analysis is enabled, False otherwise.
@@ -509,8 +494,7 @@ class SolverOptions:
 
     @property
     def small_hole_diameter(self):
-        """
-        Gets the small hole diameter setting from the database.
+        """Gets the small hole diameter setting from the database.
 
         Returns:
             float|str: The small hole diameter as a float, or 'auto' if the value is set to -1.
@@ -539,8 +523,7 @@ class SolverOptions:
 
     @property
     def model_type(self):
-        """
-        Gets the model type setting from the database.
+        """Gets the model type setting from the database.
 
         Returns:
             str: The model type. Returns "rlcg" if the model type is set to "0", otherwise "esd_r".
@@ -558,8 +541,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_max_passes(self):
-        """
-        Gets the maximum number of passes for CG adaptive refinement from the database.
+        """Gets the maximum number of passes for CG adaptive refinement from the database.
 
         Returns:
             int: The maximum number of passes for CG adaptive refinement.
@@ -579,8 +561,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_cg_percent_error(self):
-        """
-        Gets the target error percentage for CG adaptive refinement from the database.
+        """Gets the target error percentage for CG adaptive refinement from the database.
 
         Returns:
             float: The target error percentage for CG adaptive refinement.
@@ -602,8 +583,7 @@ class SolverOptions:
 
     @property
     def cg_percent_refinement_per_pass(self):
-        """
-        Gets the percentage of CG refinement per pass from the database.
+        """Gets the percentage of CG refinement per pass from the database.
 
         Returns:
             float: The percentage of CG refinement per pass.
@@ -626,8 +606,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_rl_max_passes(self):
-        """
-        Gets the maximum number of passes for RL adaptive refinement from the database.
+        """Gets the maximum number of passes for RL adaptive refinement from the database.
 
         Returns:
             int: The maximum number of passes for RL adaptive refinement.
@@ -649,8 +628,7 @@ class SolverOptions:
 
     @property
     def adaptive_refinement_rl_percent_error(self):
-        """
-        Gets the target error percentage for RL adaptive refinement from the database.
+        """Gets the target error percentage for RL adaptive refinement from the database.
 
         Returns:
             float: The target error percentage for RL adaptive refinement.
@@ -672,8 +650,7 @@ class SolverOptions:
 
     @property
     def rl_percent_refinement_per_pass(self):
-        """
-        Gets the percentage of RL refinement per pass from the database.
+        """Gets the percentage of RL refinement per pass from the database.
 
         Returns:
             float: The percentage of RL refinement per pass.
@@ -696,8 +673,7 @@ class SolverOptions:
 
     @property
     def return_path_net_for_loop_parameters(self):
-        """
-        Gets the return path net setting for loop parameters from the database.
+        """Gets the return path net setting for loop parameters from the database.
 
         Returns:
             bool: True if the return path net is enabled for loop parameters, False otherwise.
@@ -723,8 +699,7 @@ class SolverOptions:
 
 
 class SIWaveCPASimulationSetup:
-    """
-    Represents the setup configuration for SIwave CPA simulations.
+    """Represents the setup configuration for SIwave CPA simulations.
 
     Attributes:
         _pedb: The database object representing the active cell.
@@ -773,8 +748,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def name(self) -> str:
-        """
-        Gets the name of the simulation setup.
+        """Gets the name of the simulation setup.
 
         Returns:
             str: The name of the simulation setup.
@@ -792,8 +766,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def mode(self):
-        """
-        Gets the mode of the simulation setup.
+        """Gets the mode of the simulation setup.
 
         Returns:
             str: The mode of the simulation setup ("channel" or "no_channel").
@@ -819,8 +792,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def model_type(self):
-        """
-        Gets the model type of the simulation setup.
+        """Gets the model type of the simulation setup.
 
         Returns:
             str: The model type ("rlcg" or "esd_r").
@@ -847,8 +819,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def use_q3d_solver(self):
-        """
-        Gets the Q3D solver usage setting.
+        """Gets the Q3D solver usage setting.
 
         Returns:
             bool: True if the Q3D solver is used, False otherwise.
@@ -875,8 +846,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def net_processing_mode(self):
-        """
-        Gets the net processing mode.
+        """Gets the net processing mode.
 
         Returns:
             str: The net processing mode.
@@ -894,8 +864,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def channel_setup(self):
-        """
-        Gets the channel setup configuration.
+        """Gets the channel setup configuration.
 
         Returns:
             ChannelSetup: The channel setup configuration.
@@ -910,8 +879,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def solver_options(self):
-        """
-        Gets the solver options configuration.
+        """Gets the solver options configuration.
 
         Returns:
             SolverOptions: The solver options configuration.
@@ -926,8 +894,7 @@ class SIWaveCPASimulationSetup:
 
     @property
     def nets_to_process(self):
-        """
-        Gets the list of nets to process.
+        """Gets the list of nets to process.
 
         Returns:
             list: A list of nets to process.

@@ -57,8 +57,7 @@ class Bondwire(Primitive):
         start_cell_inst=None,
         end_cell_inst=None,
     ) -> "Bondwire":
-        """
-        Create a bondwire object.
+        """Create a bondwire object.
 
         Parameters
         ----------
@@ -143,8 +142,7 @@ class Bondwire(Primitive):
 
     @property
     def material(self):
-        """
-        Bondwire material
+        """Bondwire material
 
         Returns
         -------
@@ -160,8 +158,7 @@ class Bondwire(Primitive):
 
     @property
     def type(self):
-        """
-        str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
+        """str: Bondwire-type of a bondwire object. Supported values for setter: `"apd"`, `"jedec4"`, `"jedec5"`,
         `"num_of_type"`"""
         return self.core.type.name.lower()
 
@@ -177,8 +174,7 @@ class Bondwire(Primitive):
 
     @property
     def cross_section_type(self):
-        """
-        str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
+        """str: Bondwire-cross-section-type of a bondwire object. Supported values for setter: `"round",
         `"rectangle"`
 
         Returns
@@ -196,8 +192,7 @@ class Bondwire(Primitive):
 
     @property
     def cross_section_height(self):
-        """
-        float: Bondwire-cross-section height of a bondwire object.
+        """float: Bondwire-cross-section height of a bondwire object.
 
         Returns
         -------
@@ -213,8 +208,7 @@ class Bondwire(Primitive):
 
     @property
     def width(self):
-        """
-        :class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
+        """:class:`Value <ansys.edb.utility.Value>`: Width of a bondwire object.
 
         Returns
         -------
@@ -229,8 +223,7 @@ class Bondwire(Primitive):
         self.core.width = self._pedb._value_setter(width)
 
     def get_material(self):
-        """
-        Get the bondwire material.
+        """Get the bondwire material.
 
         Returns
         -------
@@ -241,8 +234,7 @@ class Bondwire(Primitive):
         return self.core.get_material().value
 
     def set_material(self, material):
-        """
-        Set the bondwire material.
+        """Set the bondwire material.
 
         Parameters
         ----------
@@ -253,8 +245,7 @@ class Bondwire(Primitive):
         self.core.set_material(material)
 
     def get_definition_name(self) -> str:
-        """
-        Get the bondwire definition name.
+        """Get the bondwire definition name.
 
         Returns
         -------
@@ -265,8 +256,7 @@ class Bondwire(Primitive):
         return self.core.get_definition_name()
 
     def set_definition_name(self, definition_name):
-        """
-        Set the bondwire definition name.
+        """Set the bondwire definition name.
 
         Parameters
         ----------

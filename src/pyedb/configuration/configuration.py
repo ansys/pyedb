@@ -94,8 +94,7 @@ class Configuration:
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
     def create_config_builder(self):
-        """
-        Create and return an empty :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`.
+        """Create and return an empty :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`.
 
         Use the returned builder to populate configuration sections
         programmatically, then pass it directly to :meth:`run`.
@@ -119,8 +118,7 @@ class Configuration:
         return EdbConfigBuilder()
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
-        """
-        Import configuration settings from a configure file.
+        """Import configuration settings from a configure file.
 
         Parameters
         ----------
@@ -203,8 +201,7 @@ class Configuration:
         return self.cfg_data
 
     def run(self, config=None, **kwargs):
-        """
-        Apply configuration settings to the current design.
+        """Apply configuration settings to the current design.
 
         Parameters
         ----------
@@ -851,8 +848,7 @@ class Configuration:
             set_padstack_instance(inst, inst_obj)
 
     def get_data_from_db(self, **kwargs):
-        """
-        Get configuration data from layout.
+        """Get configuration data from layout.
 
         Returns
         -------
@@ -1106,8 +1102,7 @@ class Configuration:
         variables=True,
         terminals=False,
     ):
-        """
-        Export the configuration data from layout to a file.
+        """Export the configuration data from layout to a file.
 
         Parameters
         ----------

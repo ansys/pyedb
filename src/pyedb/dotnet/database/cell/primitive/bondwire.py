@@ -51,8 +51,7 @@ class Bondwire(Primitive):
         )
 
     def get_material(self, evaluated=True):
-        """
-        Get material of the bondwire.
+        """Get material of the bondwire.
 
         Parameters
         ----------
@@ -68,8 +67,7 @@ class Bondwire(Primitive):
         return self._edb_object.GetMaterial(evaluated)
 
     def set_material(self, material):
-        """
-        Set the material of a bondwire.
+        """Set the material of a bondwire.
 
         Parameters
         ----------
@@ -110,8 +108,7 @@ class Bondwire(Primitive):
         self._edb_object.SetCrossSectionHeight(self._pedb.edb_value(height))
 
     def get_definition_name(self, evaluated=True):
-        """
-        Get definition name of a bondwire object.
+        """Get definition name of a bondwire object.
 
         Parameters
         ----------
@@ -127,8 +124,7 @@ class Bondwire(Primitive):
         return self._edb_object.GetDefinitionName(evaluated)
 
     def set_definition_name(self, definition_name):
-        """
-        Set the definition name of a bondwire.
+        """Set the definition name of a bondwire.
 
         Parameters
         ----------
@@ -139,8 +135,7 @@ class Bondwire(Primitive):
         self._edb_object.SetDefinitionName(definition_name)
 
     def get_trajectory(self):
-        """
-        Get trajectory parameters of a bondwire object.
+        """Get trajectory parameters of a bondwire object.
 
         Returns
         -------
@@ -167,8 +162,7 @@ class Bondwire(Primitive):
         return [i.ToDouble() for i in self._edb_object.GetTrajectory() if not isinstance(i, bool)]
 
     def set_trajectory(self, x1, y1, x2, y2):
-        """
-        Set the parameters of the trajectory of a bondwire.
+        """Set the parameters of the trajectory of a bondwire.
 
         Parameters
         ----------
@@ -195,8 +189,7 @@ class Bondwire(Primitive):
         self._edb_object.SetWidth(self._pedb.edb_value(width))
 
     def set_start_elevation(self, layer, start_context=None):
-        """
-        Set the start elevation of a bondwire.
+        """Set the start elevation of a bondwire.
 
         Parameters
         ----------
@@ -209,8 +202,7 @@ class Bondwire(Primitive):
         self._edb_object.SetStartElevation(start_context, layer)
 
     def set_end_elevation(self, layer, end_context=None):
-        """
-        Set the end elevation of a bondwire.
+        """Set the end elevation of a bondwire.
 
         Parameters
         ----------

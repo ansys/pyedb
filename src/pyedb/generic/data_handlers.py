@@ -107,8 +107,7 @@ UNIT_VAL = {
 
 
 def format_decimals(el: int | str) -> str:  # pragma: no cover
-    """
-    Format a number with appropriate decimal places and commas.
+    """Format a number with appropriate decimal places and commas.
 
     Parameters
     ----------
@@ -131,8 +130,7 @@ def format_decimals(el: int | str) -> str:  # pragma: no cover
 
 
 def random_string(length: int = 6, only_digits: bool = False, char_set: str | None = None) -> str:  # pragma: no cover
-    """
-    Generate a random string
+    """Generate a random string
 
     Parameters
     ----------
@@ -160,8 +158,7 @@ def random_string(length: int = 6, only_digits: bool = False, char_set: str | No
 
 
 def unique_string_list(element_list: str | Iterable[str], only_string: bool = True) -> list[str]:  # pragma: no cover
-    """
-    Return a unique list of strings from an element list.
+    """Return a unique list of strings from an element list.
 
     Parameters
     ----------
@@ -186,8 +183,7 @@ def unique_string_list(element_list: str | Iterable[str], only_string: bool = Tr
 
 
 def string_list(element_list: str | list) -> list[str]:  # pragma: no cover
-    """
-    Return a list of strings from a string or a list of strings.
+    """Return a list of strings from a string or a list of strings.
 
     Parameters
     ----------
@@ -208,8 +204,7 @@ def string_list(element_list: str | list) -> list[str]:  # pragma: no cover
 
 
 def ensure_list(element_list: Any) -> list[Any]:  # pragma: no cover
-    """
-    Check if the input is a list, if not, convert it to a list.
+    """Check if the input is a list, if not, convert it to a list.
 
     Parameters
     ----------
@@ -228,8 +223,7 @@ def ensure_list(element_list: Any) -> list[Any]:  # pragma: no cover
 
 
 def from_rkm(code: str) -> str:  # pragma: no cover
-    """
-    Convert an RKM code string to a string with a decimal point.
+    """Convert an RKM code string to a string with a decimal point.
 
     Parameters
     ----------
@@ -296,8 +290,7 @@ def from_rkm(code: str) -> str:  # pragma: no cover
 
 
 def str_to_bool(s: str) -> bool | str:  # pragma: no cover
-    """
-    Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
+    """Convert a ``"True"`` or ``"False"`` string to its corresponding Boolean value.
 
     If the passed arguments are not relevant in the context of conversion, the argument
     itself is returned. This method can be called using the ``map()`` function to
@@ -330,8 +323,7 @@ def str_to_bool(s: str) -> bool | str:  # pragma: no cover
 
 
 def float_units(val_str: str, units: str = "") -> float:  # pragma: no cover
-    """
-    Retrieve units for a value.
+    """Retrieve units for a value.
 
     Parameters
     ----------
@@ -363,8 +355,7 @@ def float_units(val_str: str, units: str = "") -> float:  # pragma: no cover
 
 
 def json_to_dict(fn: str) -> dict[str, Any]:  # pragma: no cover
-    """
-    Load JSON file to a dictionary.
+    """Load JSON file to a dictionary.
 
     Parameters
     ----------

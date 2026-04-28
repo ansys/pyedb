@@ -28,8 +28,7 @@ from pyedb.misc.utilities import compute_arc_points
 
 
 class Primitive(Connectable):
-    """
-    Manages EDB functionalities for a primitives.
+    """Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -74,8 +73,7 @@ class Primitive(Connectable):
 
     @property
     def type(self):
-        """
-        Return the type of the primitive.
+        """Return the type of the primitive.
 
         Expected output is among ``"Circle"``, ``"Rectangle"``,``"Polygon"``,``"Path"`` or ``"Bondwire"``.
 
@@ -91,8 +89,7 @@ class Primitive(Connectable):
 
     @property
     def primitive_type(self):
-        """
-        Return the type of the primitive.
+        """Return the type of the primitive.
 
         Expected output is among ``"circle"``, ``"rectangle"``,``"polygon"``,``"path"`` or ``"bondwire"``.
 
@@ -114,8 +111,7 @@ class Primitive(Connectable):
 
     @property
     def layer_name(self):
-        """
-        Get the primitive layer name.
+        """Get the primitive layer name.
 
         Returns
         -------
@@ -146,8 +142,7 @@ class Primitive(Connectable):
 
     @property
     def is_void(self):
-        """
-        Either if the primitive is a void or not.
+        """Either if the primitive is a void or not.
 
         Returns
         -------
@@ -157,8 +152,7 @@ class Primitive(Connectable):
         return self.core.IsVoid()
 
     def area(self, include_voids=True):
-        """
-        Return the total area.
+        """Return the total area.
 
         Parameters
         ----------
@@ -181,8 +175,7 @@ class Primitive(Connectable):
 
     @property
     def is_negative(self):
-        """
-        Determine whether this primitive is negative.
+        """Determine whether this primitive is negative.
 
         Returns
         -------
@@ -197,8 +190,7 @@ class Primitive(Connectable):
         self.core.SetIsNegative(value)
 
     def _get_points_for_plot(self, my_net_points, num):
-        """
-        Get the points to be plotted.
+        """Get the points to be plotted.
         """
         # fmt: off
         x = []
@@ -224,8 +216,7 @@ class Primitive(Connectable):
 
     @property
     def center(self):
-        """
-        Return the primitive bounding box center coordinate.
+        """Return the primitive bounding box center coordinate.
 
         Returns
         -------
@@ -237,8 +228,7 @@ class Primitive(Connectable):
         return [(bbox[0] + bbox[2]) / 2, (bbox[1] + bbox[3]) / 2]
 
     def is_arc(self, point):
-        """
-        Either if a point is an arc or not.
+        """Either if a point is an arc or not.
 
         Returns
         -------
@@ -249,8 +239,7 @@ class Primitive(Connectable):
 
     @property
     def bbox(self):
-        """
-        Return the primitive bounding box points. Lower left corner, upper right corner.
+        """Return the primitive bounding box points. Lower left corner, upper right corner.
 
         Returns
         -------
@@ -267,8 +256,7 @@ class Primitive(Connectable):
         ]
 
     def convert_to_polygon(self):
-        """
-        Convert path to polygon.
+        """Convert path to polygon.
 
         Returns
         -------
@@ -285,8 +273,7 @@ class Primitive(Connectable):
             return False
 
     def intersection_type(self, primitive):
-        """
-        Get intersection type between actual primitive and another primitive or polygon data.
+        """Get intersection type between actual primitive and another primitive or polygon data.
 
         Parameters
         ----------
@@ -311,8 +298,7 @@ class Primitive(Connectable):
         return int(self.polygon_data.core.GetIntersectionType(poly.core))
 
     def is_intersecting(self, primitive):
-        """
-        Check if actual primitive and another primitive or polygon data intesects.
+        """Check if actual primitive and another primitive or polygon data intesects.
 
         Parameters
         ----------
@@ -326,8 +312,7 @@ class Primitive(Connectable):
         return True if self.intersection_type(primitive) >= 1 else False
 
     def get_closest_point(self, point):
-        """
-        Get the closest point of the primitive to the input data.
+        """Get the closest point of the primitive to the input data.
 
         Parameters
         ----------
@@ -361,8 +346,7 @@ class Primitive(Connectable):
         return arc
 
     def subtract(self, primitives):
-        """
-        Subtract active primitive with one or more primitives.
+        """Subtract active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -413,8 +397,7 @@ class Primitive(Connectable):
         return new_polys
 
     def intersect(self, primitives):
-        """
-        Intersect active primitive with one or more primitives.
+        """Intersect active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -486,8 +469,7 @@ class Primitive(Connectable):
         return new_polys
 
     def unite(self, primitives):
-        """
-        Unite active primitive with one or more primitives.
+        """Unite active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -539,8 +521,7 @@ class Primitive(Connectable):
         return new_polys
 
     def get_closest_arc_midpoint(self, point):
-        """
-        Get the closest arc midpoint of the primitive to the input data.
+        """Get the closest arc midpoint of the primitive to the input data.
 
         Parameters
         ----------
@@ -587,8 +568,7 @@ class Primitive(Connectable):
 
     @property
     def aedt_name(self):
-        """
-        Name to be visualized in AEDT.
+        """Name to be visualized in AEDT.
 
         Returns
         -------
@@ -627,8 +607,7 @@ class Primitive(Connectable):
         return PolygonData(self._pedb, self.core.GetPolygonData())
 
     def add_void(self, point_list):
-        """
-        Add a void to current primitive.
+        """Add a void to current primitive.
 
         Parameters
         ----------
@@ -661,8 +640,7 @@ class Primitive(Connectable):
         return self._pedb._edb.Cell.Primitive
 
     def set_hfss_prop(self, material, solve_inside):
-        """
-        Set HFSS properties.
+        """Set HFSS properties.
 
         Parameters
         ----------
@@ -676,8 +654,7 @@ class Primitive(Connectable):
 
     @property
     def has_voids(self):
-        """
-        :obj:`bool`: If a primitive has voids inside.
+        """:obj:`bool`: If a primitive has voids inside.
 
         Read-Only.
         """
@@ -685,8 +662,7 @@ class Primitive(Connectable):
 
     @property
     def owner(self):
-        """
-        :class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
+        """:class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
 
         Read-Only.
         """
@@ -695,16 +671,14 @@ class Primitive(Connectable):
 
     @property
     def is_parameterized(self):
-        """
-        :obj:`bool`: Primitive's parametrization.
+        """:obj:`bool`: Primitive's parametrization.
 
         Read-Only.
         """
         return self.core.IsParameterized()
 
     def get_hfss_prop(self):
-        """
-        Get HFSS properties.
+        """Get HFSS properties.
 
         Returns
         -------
@@ -725,8 +699,7 @@ class Primitive(Connectable):
 
     @property
     def is_zone_primitive(self):
-        """
-        :obj:`bool`: If primitive object is a zone.
+        """:obj:`bool`: If primitive object is a zone.
 
         Read-Only.
         """
@@ -734,16 +707,14 @@ class Primitive(Connectable):
 
     @property
     def can_be_zone_primitive(self):
-        """
-        :obj:`bool`: If a primitive can be a zone.
+        """:obj:`bool`: If a primitive can be a zone.
 
         Read-Only.
         """
         return True
 
     def make_zone_primitive(self, zone_id):
-        """
-        Make primitive a zone primitive with a zone specified by the provided id.
+        """Make primitive a zone primitive with a zone specified by the provided id.
 
         Parameters
         ----------
@@ -754,8 +725,7 @@ class Primitive(Connectable):
         self.core.MakeZonePrimitive(zone_id)
 
     def points(self, arc_segments=6):
-        """
-        Return the list of points with arcs converted to segments.
+        """Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
@@ -776,8 +746,7 @@ class Primitive(Connectable):
         return x, y
 
     def points_raw(self):
-        """
-        Return a list of Edb points.
+        """Return a list of Edb points.
 
         Returns
         -------
@@ -792,8 +761,7 @@ class Primitive(Connectable):
         return points
 
     def scale(self, factor, center=None):
-        """
-        Scales the polygon relative to a center point by a factor.
+        """Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------

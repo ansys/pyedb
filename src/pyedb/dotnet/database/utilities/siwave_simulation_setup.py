@@ -200,8 +200,7 @@ class DeprecatedSettings:
 
     @property
     def source_terms_to_ground(self) -> dict[str, int]:
-        """
-        Dictionary of grounded terminals.
+        """Dictionary of grounded terminals.
 
         Returns
         -------
@@ -227,8 +226,7 @@ class DeprecatedSettings:
     @property
     @deprecated_property("use settings.dc.per_pin_use_pin_format property instead.")
     def per_pin_use_pin_format(self):
-        """
-        Flag to use pin format for per-pin calculations.
+        """Flag to use pin format for per-pin calculations.
         .. deprecated:: 0.68.2
             Use :property:`settings.dc.per_pin_use_pin_format` property instead.
 
@@ -250,8 +248,7 @@ class DeprecatedSettings:
         self.dc_ir.via_report_path = value
 
     def add_source_terminal_to_ground(self, source_name, terminal=0) -> None:
-        """
-        Add a source terminal to ground.
+        """Add a source terminal to ground.
 
         Parameters
         ----------
@@ -289,8 +286,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         self._siwave_sweeps_list = []
 
     def create(self, name=None):
-        """
-        Create a SIwave SYZ setup.
+        """Create a SIwave SYZ setup.
 
         Returns
         -------
@@ -304,8 +300,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         return self
 
     def get_configurations(self):
-        """
-        Get SIwave SYZ simulation settings.
+        """Get SIwave SYZ simulation settings.
 
         Returns
         -------
@@ -348,8 +343,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         return sim_setup_info
 
     def set_si_slider(self, value):
-        """
-        Set SIwave SI simulation accuracy level.
+        """Set SIwave SI simulation accuracy level.
 
         Options are:
         - ``0``: Optimal speed;
@@ -415,8 +409,7 @@ class SIwaveSimulationSetup(SimulationSetup):
 
     @property
     def use_custom_settings(self):
-        """
-        Custom settings to use.
+        """Custom settings to use.
 
         Returns
         -------
@@ -434,8 +427,7 @@ class SIwaveSimulationSetup(SimulationSetup):
 
     @property
     def use_si_settings(self):
-        """
-        Whether to use SI Settings.
+        """Whether to use SI Settings.
 
         Returns
         -------
@@ -452,8 +444,7 @@ class SIwaveSimulationSetup(SimulationSetup):
         self._update_setup()
 
     def add_sweep(self, name: str = None, frequency_set: list = None, sweep_type: str = "interpolation", **kwargs):
-        """
-        Add frequency sweep.
+        """Add frequency sweep.
 
         Parameters
         ----------
@@ -490,8 +481,7 @@ class SIwaveSimulationSetup(SimulationSetup):
 
     @property
     def dc_advanced_settings(self):
-        """
-        Siwave DC advanced settings.
+        """Siwave DC advanced settings.
 
         Returns
         -------
@@ -515,8 +505,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
             self._update_setup()
 
     def create(self, name=None):
-        """
-        Create a SIwave DCIR setup.
+        """Create a SIwave DCIR setup.
 
         Returns
         -------
@@ -549,8 +538,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
     @property
     def settings(self):
-        """
-        Get the settings interface for SIwave DC simulation.
+        """Get the settings interface for SIwave DC simulation.
 
         Returns
         -------
@@ -563,8 +551,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.dc_ir property instead.", category=None)
     def dc_ir_settings(self):
-        """
-        DC IR settings.
+        """DC IR settings.
         ..deprecated:: 0.68.2
 
         use :property:`settings.dc_ir` property instead.
@@ -574,8 +561,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         return self.settings
 
     def get_configurations(self):
-        """
-        Get SIwave DC simulation settings.
+        """Get SIwave DC simulation settings.
 
         Returns
         -------
@@ -589,8 +575,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
         }
 
     def set_dc_slider(self, value):
-        """
-        Set DC simulation accuracy level.
+        """Set DC simulation accuracy level.
 
         Options are:
 
@@ -604,8 +589,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
     @property
     def dc_settings(self):
-        """
-        SIwave DC setting.
+        """SIwave DC setting.
 
         deprecated:: 0.57.0
               Use :property:`settings` property instead.
@@ -616,8 +600,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
     @property
     def dc_advanced_settings(self):
-        """
-        Siwave DC advanced settings.
+        """Siwave DC advanced settings.
 
         .. deprecated :: 0.57.0
                 Use :property:`settings` property instead.
@@ -632,8 +615,7 @@ class SiwaveDCSimulationSetup(SimulationSetup):
 
 
 class SIWaveGeneralSettings:
-    """
-    Class to manage global settings for the Siwave simulation setup module.
+    """Class to manage global settings for the Siwave simulation setup module.
     Added to be compliant with ansys-edbe-core settings structure."""
 
     def __init__(self, parent):

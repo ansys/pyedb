@@ -59,8 +59,7 @@ class SIWaveDCIRSettings:
 
     @property
     def dc_report_config_file(self) -> str:
-        """
-        DC report configuration file path.
+        """DC report configuration file path.
 
         Returns
         -------
@@ -76,8 +75,7 @@ class SIWaveDCIRSettings:
 
     @property
     def dc_report_show_active_devices(self) -> bool:
-        """
-        Whether to show active devices in the DC report.
+        """Whether to show active devices in the DC report.
 
         Returns
         -------
@@ -93,8 +91,7 @@ class SIWaveDCIRSettings:
 
     @property
     def enabled(self):
-        """
-        Whether the DC IR simulation is enabled.
+        """Whether the DC IR simulation is enabled.
 
         Returns
         -------
@@ -110,8 +107,7 @@ class SIWaveDCIRSettings:
 
     @property
     def export_dc_thermal_data(self) -> bool:
-        """
-        Whether to export DC thermal data.
+        """Whether to export DC thermal data.
 
         Returns
         -------
@@ -127,8 +123,7 @@ class SIWaveDCIRSettings:
 
     @property
     def full_dc_report_path(self) -> str:
-        """
-        Full DC report path.
+        """Full DC report path.
 
         Returns
         -------
@@ -144,8 +139,7 @@ class SIWaveDCIRSettings:
 
     @property
     def icepak_temp_file(self) -> str:
-        """
-        Icepak temperature file path.
+        """Icepak temperature file path.
 
         Returns
         -------
@@ -161,8 +155,7 @@ class SIWaveDCIRSettings:
 
     @property
     def import_thermal_data(self) -> bool:
-        """
-        Whether to import thermal data.
+        """Whether to import thermal data.
 
         Returns
         -------
@@ -178,8 +171,7 @@ class SIWaveDCIRSettings:
 
     @property
     def per_pin_res_path(self) -> str:
-        """
-        Per-pin resistance file path.
+        """Per-pin resistance file path.
 
         Returns
         -------
@@ -195,8 +187,7 @@ class SIWaveDCIRSettings:
 
     @property
     def per_pin_use_pin_format(self) -> bool:
-        """
-        Whether to use pin format for per-pin resistance.
+        """Whether to use pin format for per-pin resistance.
 
         Returns
         -------
@@ -211,8 +202,7 @@ class SIWaveDCIRSettings:
         self.core.per_pin_use_pin_format = value
 
     def add_source_terminal_to_ground(self, source_name: str, terminal: int = 1) -> None:
-        """
-        Add source terminal to ground mapping.
+        """Add source terminal to ground mapping.
 
         Parameters
         ----------
@@ -228,8 +218,7 @@ class SIWaveDCIRSettings:
 
     @property
     def source_terms_to_ground(self) -> dict[str, int]:
-        """
-        Source terms to ground mapping.
+        """Source terms to ground mapping.
 
         Returns
         -------
@@ -245,8 +234,7 @@ class SIWaveDCIRSettings:
 
     @property
     def use_loop_res_for_per_pin(self) -> bool:
-        """
-        Whether to use loop resistance for per-pin resistance.
+        """Whether to use loop resistance for per-pin resistance.
 
         Returns
         -------
@@ -262,8 +250,7 @@ class SIWaveDCIRSettings:
 
     @property
     def via_report_path(self) -> str:
-        """
-        Via report file path.
+        """Via report file path.
 
         Returns
         -------

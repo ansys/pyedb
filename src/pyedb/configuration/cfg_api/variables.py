@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build the ``variables`` configuration section.
+"""Build the ``variables`` configuration section.
 
 The builder in this module wraps
 :class:`pyedb.configuration.cfg_common.CfgVariables` and serializes design
@@ -35,8 +34,7 @@ from pyedb.configuration.cfg_common import CfgVariables
 
 
 class VariablesConfig:
-    """
-    Fluent builder for the ``variables`` configuration section.
+    """Fluent builder for the ``variables`` configuration section.
 
     Wraps :class:`~pyedb.configuration.cfg_common.CfgVariables`.
 
@@ -51,8 +49,7 @@ class VariablesConfig:
         self._model = CfgVariables()
 
     def add(self, name: str, value: Union[str, int, float], description: str = ""):
-        """
-        Add a design variable.
+        """Add a design variable.
 
         Parameters
         ----------
@@ -67,8 +64,7 @@ class VariablesConfig:
         self._model.add_variable(name=name, value=value, description=description)
 
     def to_list(self) -> List[dict]:
-        """
-        Serialize configured design variables.
+        """Serialize configured design variables.
 
         Returns
         -------

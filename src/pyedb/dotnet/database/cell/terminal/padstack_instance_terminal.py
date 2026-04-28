@@ -32,8 +32,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def position(self):
-        """
-        Return terminal position.
+        """Return terminal position.
         Returns
         -------
         Position [x,y] : [float, float]
@@ -53,8 +52,7 @@ class PadstackInstanceTerminal(Terminal):
 
     @classmethod
     def create(cls, edb, padstack_instance, name=None, layer=None, is_ref=False):
-        """
-        Create an edge terminal.
+        """Create an edge terminal.
 
         Parameters
         ----------

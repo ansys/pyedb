@@ -29,8 +29,7 @@ class Icepak:
         self._psiw = psiw
 
     def run(self, name: str, dc_simulation_name: str) -> bool:
-        """
-        Run Icepak analysis.
+        """Run Icepak analysis.
 
         Parameters
         ----------
@@ -48,8 +47,7 @@ class Icepak:
         return True if flag == 0 else False
 
     def set_meshing_detail(self, mesh_level: int = 0) -> bool:
-        """
-        Sets the meshing detail level for Icepak simulations.
+        """Sets the meshing detail level for Icepak simulations.
 
         Parameters
         ----------
@@ -64,8 +62,7 @@ class Icepak:
         return True if flag == 0 else False
 
     def set_board_outline_fidelity(self, fidelity: int = 2) -> bool:
-        """
-        Specifies the minimum edge length when modifying the board outline for export to Icepak. This
+        """Specifies the minimum edge length when modifying the board outline for export to Icepak. This
         minimum edge length is used when indiscretion arcs into a series of straight lines and when
         simplifying the outline to remove very small edges.
 
@@ -95,8 +92,7 @@ class Icepak:
         gravity_vector_y: int | float = 0,
         gravity_vector_z: int | float = 9.8,
     ) -> bool:
-        """
-        Sets the thermal environment settings to use for Icepak simulations.
+        """Sets the thermal environment settings to use for Icepak simulations.
 
         Parameters
         ----------
@@ -141,8 +137,7 @@ class Icepak:
         return True if flag == 0 else False
 
     def export_report(self, simulation_name: str, file_path: str | Path) -> bool:
-        """
-        Export Icepak simulation report to a file.
+        """Export Icepak simulation report to a file.
 
         Parameters
         ----------

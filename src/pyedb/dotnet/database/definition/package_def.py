@@ -27,8 +27,7 @@ from pyedb.misc.decorators import deprecated_property
 
 
 class PackageDef(ObjBase):
-    """
-    Manages EDB functionalities for package definitions.
+    """Manages EDB functionalities for package definitions.
 
     Parameters
     ----------
@@ -51,8 +50,7 @@ class PackageDef(ObjBase):
             self._edb_object = edb_object
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
-        """
-        Create a package definition.
+        """Create a package definition.
 
         Parameters
         ----------
@@ -121,8 +119,7 @@ class PackageDef(ObjBase):
     @property
     @deprecated_property("use thermal_conductivity property instead.", category=None)
     def therm_cond(self):
-        """
-        Thermal conductivity of the package.
+        """Thermal conductivity of the package.
 
         ..deprecated:: 0.48.0
            Use: func:`thermal_conductivity` property instead.

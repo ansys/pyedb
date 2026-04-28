@@ -37,8 +37,7 @@ class AdaptiveFrequency:
 
     @property
     def adaptive_frequency(self) -> float:
-        """
-        Get the adaptive frequency value.
+        """Get the adaptive frequency value.
 
         Returns
         -------
@@ -50,8 +49,7 @@ class AdaptiveFrequency:
 
     @adaptive_frequency.setter
     def adaptive_frequency(self, value: float):
-        """
-        Set the adaptive frequency value.
+        """Set the adaptive frequency value.
 
         Parameters
         ----------
@@ -63,8 +61,7 @@ class AdaptiveFrequency:
 
     @property
     def max_delta(self):
-        """
-        Get the maximum delta value.
+        """Get the maximum delta value.
 
         Returns
         -------
@@ -76,8 +73,7 @@ class AdaptiveFrequency:
 
     @max_delta.setter
     def max_delta(self, value: float):
-        """
-        Set the maximum delta value.
+        """Set the maximum delta value.
 
         Parameters
         ----------
@@ -93,8 +89,7 @@ class AdaptiveFrequency:
         return self.core.output_variables
 
     def add_output_variable(self, variable_name: str, max_delta_s: float):
-        """
-        Add an output variable with its maximum delta S.
+        """Add an output variable with its maximum delta S.
 
         Parameters
         ----------
@@ -110,8 +105,7 @@ class AdaptiveFrequency:
 
     @output_variables.setter
     def output_variables(self, value: dict[str, str]):
-        """
-        Set the output variables map.
+        """Set the output variables map.
 
         Parameters
         ----------

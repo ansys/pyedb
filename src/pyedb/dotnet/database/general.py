@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains EDB general methods and related methods.
+"""This module contains EDB general methods and related methods.
 
 """
 
@@ -37,8 +36,7 @@ logger = logging.getLogger(__name__)
 
 
 def convert_netdict_to_pydict(dict_in):
-    """
-    Convert a net dictionary to a Python dictionary.
+    """Convert a net dictionary to a Python dictionary.
 
     Parameters
     ----------
@@ -59,8 +57,7 @@ def convert_netdict_to_pydict(dict_in):
 
 
 def convert_pytuple_to_nettuple(_tuple):
-    """
-    Convert a Python tuple into a .NET tuple.
+    """Convert a Python tuple into a .NET tuple.
     Parameters
     ----------
     tuple : Python tuple
@@ -74,8 +71,7 @@ def convert_pytuple_to_nettuple(_tuple):
 
 
 def convert_pydict_to_netdict(input_dict):
-    """
-    Convert a Python dictionary to a .NET dictionary.
+    """Convert a Python dictionary to a .NET dictionary.
 
     Parameters
     ----------
@@ -97,8 +93,7 @@ def convert_pydict_to_netdict(input_dict):
 
 
 def convert_py_list_to_net_list(pylist, list_type=None):
-    """
-    Convert a Python list to a Net list.
+    """Convert a Python list to a Net list.
 
     Parameters
     ----------
@@ -125,8 +120,7 @@ def convert_py_list_to_net_list(pylist, list_type=None):
 
 
 def convert_net_list_to_py_list(netlist):
-    """
-    Convert a Net list to a Python list.
+    """Convert a Net list to a Python list.
 
     Parameters
     ----------

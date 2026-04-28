@@ -26,8 +26,7 @@ from pyedb.misc.siw_feature_config.xtalk_scan.pins import DriverPin, ReceiverPin
 
 
 class CrossTalkTime:
-    """
-    Time domain crosstalk configuration class handler.
+    """Time domain crosstalk configuration class handler.
 
     Parameters
     ----------
@@ -44,8 +43,7 @@ class CrossTalkTime:
     """
 
     def __init__(self, pedb) -> None:
-        """
-        Initialize time domain crosstalk configuration.
+        """Initialize time domain crosstalk configuration.
 
         Parameters
         ----------
@@ -66,8 +64,7 @@ class CrossTalkTime:
         driver_impedance: float | str = 5.0,
         termination_impedance: float | str = 5.0,
     ) -> bool:
-        """
-        Add single ended net.
+        """Add single ended net.
 
         Parameters
         ----------
@@ -114,8 +111,7 @@ class CrossTalkTime:
     def add_driver_pins(
         self, name: str, ref_des: str, rise_time: str = "100ps", voltage: float = 1.0, impedance: float = 50.0
     ) -> None:
-        """
-        Add driver pins.
+        """Add driver pins.
 
         Parameters
         ----------
@@ -148,8 +144,7 @@ class CrossTalkTime:
         self.driver_pins.append(pin)
 
     def add_receiver_pin(self, name: str, ref_des: str, impedance: float) -> None:
-        """
-        Add receiver pin.
+        """Add receiver pin.
 
         Parameters
         ----------
@@ -173,8 +168,7 @@ class CrossTalkTime:
         self.receiver_pins.append(pin)
 
     def extend_xml(self, parent) -> None:
-        """
-        Extend XML tree with crosstalk configuration.
+        """Extend XML tree with crosstalk configuration.
 
         Parameters
         ----------

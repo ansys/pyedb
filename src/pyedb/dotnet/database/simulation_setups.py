@@ -40,8 +40,7 @@ class SimulationSetups:
         name=None,
         solver="hfss",
     ):
-        """
-        Add analysis setup.
+        """Add analysis setup.
 
         Parameters
         ----------
@@ -78,8 +77,7 @@ class SimulationSetups:
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
     ) -> HfssSimulationSetup:
-        """
-        Create an HFSS simulation setup from a template.
+        """Create an HFSS simulation setup from a template.
 
         Parameters
         ----------
@@ -115,8 +113,7 @@ class SimulationSetups:
         return setup
 
     def create_hfss_pi_setup(self, name=None):
-        """
-        Create an HFSS PI simulation setup from a template.
+        """Create an HFSS PI simulation setup from a template.
 
         Parameters
         ----------
@@ -142,8 +139,7 @@ class SimulationSetups:
         return HFSSPISimulationSetup.create(self._pedb, name=name)
 
     def create_raptor_x_setup(self, name=None):
-        """
-        Create an RaptorX simulation setup from a template.
+        """Create an RaptorX simulation setup from a template.
 
         Parameters
         ----------
@@ -165,8 +161,7 @@ class SimulationSetups:
             return setup
 
     def create_siwave_dcir_setup(self, name=None, **kwargs):
-        """
-        Create a setup from a template.
+        """Create a setup from a template.
 
         Parameters
         ----------
@@ -195,8 +190,7 @@ class SimulationSetups:
         return setup
 
     def create_siwave_setup(self, name=None, **kwargs):
-        """
-        Create a setup from a template.
+        """Create a setup from a template.
 
         Parameters
         ----------

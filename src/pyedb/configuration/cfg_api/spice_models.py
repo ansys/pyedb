@@ -19,8 +19,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-Build ``spice_models`` configuration entries.
+"""Build ``spice_models`` configuration entries.
 
 The builders in this module describe how SPICE subcircuits are assigned to
 component definitions.
@@ -44,8 +43,7 @@ class SpiceModelConfig:
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
     ):
-        """
-        Initialize a SPICE model assignment.
+        """Initialize a SPICE model assignment.
 
         Parameters
         ----------
@@ -74,8 +72,7 @@ class SpiceModelConfig:
         self.terminal_pairs = terminal_pairs
 
     def to_dict(self) -> dict:
-        """
-        Serialize the SPICE model assignment.
+        """Serialize the SPICE model assignment.
 
         Returns
         -------
@@ -113,8 +110,7 @@ class SpiceModelsConfig:
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
     ) -> SpiceModelConfig:
-        """
-        Add a SPICE model assignment.
+        """Add a SPICE model assignment.
 
         Parameters
         ----------
@@ -153,8 +149,7 @@ class SpiceModelsConfig:
         return m
 
     def to_list(self) -> List[dict]:
-        """
-        Serialize all configured SPICE model assignments.
+        """Serialize all configured SPICE model assignments.
 
         Returns
         -------

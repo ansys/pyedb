@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains the `EdbStackup` class.
+"""This module contains the `EdbStackup` class.
 
 """
 
@@ -67,8 +66,7 @@ logger = logging.getLogger(__name__)
 
 
 class LayerCollection:
-    """
-    Manages layer collections in an EDB database.
+    """Manages layer collections in an EDB database.
 
     Parameters
     ----------
@@ -85,8 +83,7 @@ class LayerCollection:
 
     @classmethod
     def create(cls, mode: str = "laminate") -> LayerCollection:
-        """
-        Create layer collection.
+        """Create layer collection.
 
         Parameters
         ----------
@@ -102,8 +99,7 @@ class LayerCollection:
         return cls(None, layer_collection)
 
     def update_layout(self):
-        """
-        Update the layout with the current layer collection.
+        """Update the layout with the current layer collection.
 
         Examples
         --------
@@ -115,8 +111,7 @@ class LayerCollection:
         self._pedb.layout.layer_collection = self
 
     def add_layer_top(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
-        """
-        Add a layer on top of the stackup.
+        """Add a layer on top of the stackup.
 
         Parameters
         ----------
@@ -158,8 +153,7 @@ class LayerCollection:
         return self.core.add_layer_top(layer.core)
 
     def add_layer_bottom(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
-        """
-        Add a layer at the bottom of the stackup.
+        """Add a layer at the bottom of the stackup.
 
         Parameters
         ----------
@@ -214,8 +208,7 @@ class LayerCollection:
     def add_layer_below(
         self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
     ) -> Union["Layer", None]:
-        """
-        Add a layer below a specified layer.
+        """Add a layer below a specified layer.
 
         Parameters
         ----------
@@ -265,8 +258,7 @@ class LayerCollection:
     def add_layer_above(
         self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
     ) -> Union["Layer", None]:
-        """
-        Add a layer above a specified layer.
+        """Add a layer above a specified layer.
 
         Parameters
         ----------
@@ -309,8 +301,7 @@ class LayerCollection:
 
     @property
     def non_stackup_layers(self) -> Dict[str, Layer]:
-        """
-        Retrieve the dictionary of non-stackup layers.
+        """Retrieve the dictionary of non-stackup layers.
 
         Returns
         -------
@@ -328,8 +319,7 @@ class LayerCollection:
 
     @property
     def all_layers(self) -> Dict[str, Layer]:
-        """
-        Retrieve all layers.
+        """Retrieve all layers.
 
         Returns
         -------
@@ -347,8 +337,7 @@ class LayerCollection:
 
     @property
     def signal_layers(self) -> Dict[str, StackupLayer]:
-        """
-        Retrieve the dictionary of signal layers.
+        """Retrieve the dictionary of signal layers.
 
         Returns
         -------
@@ -369,8 +358,7 @@ class LayerCollection:
 
     @property
     def dielectric_layers(self) -> Dict[str, StackupLayer]:
-        """
-        Retrieve the dictionary of dielectric layers.
+        """Retrieve the dictionary of dielectric layers.
 
         Returns
         -------
@@ -391,8 +379,7 @@ class LayerCollection:
 
     @property
     def layers_by_id(self) -> List[List[Union[int, str]]]:
-        """
-        Retrieve the list of layers with their IDs.
+        """Retrieve the list of layers with their IDs.
 
         Returns
         -------
@@ -410,8 +397,7 @@ class LayerCollection:
 
     @property
     def layers(self) -> Dict[str, StackupLayer]:
-        """
-        Retrieve the dictionary of stackup layers (signal and dielectric).
+        """Retrieve the dictionary of stackup layers (signal and dielectric).
 
         Returns
         -------
@@ -431,8 +417,7 @@ class LayerCollection:
 
 
 class Stackup:
-    """
-    Manages EDB methods for stackup operations.
+    """Manages EDB methods for stackup operations.
 
     Parameters
     ----------
@@ -462,8 +447,7 @@ class Stackup:
 
     @property
     def signal_layers(self):
-        """
-        Retrieve the dictionary of signal layers.
+        """Retrieve the dictionary of signal layers.
 
         Returns
         -------
@@ -484,8 +468,7 @@ class Stackup:
 
     @property
     def dielectric_layers(self):
-        """
-        Retrieve the dictionary of dielectric layers.
+        """Retrieve the dictionary of dielectric layers.
 
         Returns
         -------
@@ -500,8 +483,7 @@ class Stackup:
 
     @property
     def layers(self):
-        """
-        Retrieve the dictionary of stackup layers (signal and dielectric).
+        """Retrieve the dictionary of stackup layers (signal and dielectric).
 
         Returns
         -------
@@ -521,8 +503,7 @@ class Stackup:
 
     @property
     def non_stackup_layers(self):
-        """
-        Retrieve the dictionary of non-stackup layers.
+        """Retrieve the dictionary of non-stackup layers.
 
         Returns
         -------
@@ -543,8 +524,7 @@ class Stackup:
 
     @property
     def all_layers(self):
-        """
-        Retrieve all the dictionary layers.
+        """Retrieve all the dictionary layers.
 
         Returns
         -------
@@ -563,8 +543,7 @@ class Stackup:
 
     @property
     def thickness(self) -> float:
-        """
-        Retrieve the stackup thickness.
+        """Retrieve the stackup thickness.
 
         Returns
         -------
@@ -582,8 +561,7 @@ class Stackup:
 
     @property
     def num_layers(self) -> int:
-        """
-        Retrieve the number of layers in the stackup.
+        """Retrieve the number of layers in the stackup.
 
         Returns
         -------
@@ -609,8 +587,7 @@ class Stackup:
         soldermask: bool = True,
         soldermask_thickness: str = "20um",
     ) -> bool:
-        """
-        Create a symmetric stackup.
+        """Create a symmetric stackup.
 
         Parameters
         ----------
@@ -729,8 +706,7 @@ class Stackup:
 
     @property
     def mode(self) -> str:
-        """
-        Stackup mode.
+        """Stackup mode.
 
         Returns
         -------
@@ -768,8 +744,7 @@ class Stackup:
     def _set_layout_stackup(
         self, layer_clone: CoreStackupLayer, operation: str, base_layer: Optional[str] = None, method: int = 1
     ) -> bool:
-        """
-        Internal method. Apply stackup change into EDB.
+        """Internal method. Apply stackup change into EDB.
 
         Parameters
         ----------
@@ -848,8 +823,7 @@ class Stackup:
         return layer
 
     def add_outline_layer(self, name: str = "Outline") -> bool:
-        """
-        Add an outline layer named "Outline" if it is not present.
+        """Add an outline layer named "Outline" if it is not present.
 
         Returns
         -------
@@ -866,8 +840,7 @@ class Stackup:
         return self.add_layer(layer_name="Outline", layer_type="outline")
 
     def add_document_layer(self, name: str, layer_type: str = "user", **kwargs: Any) -> Optional["Layer"]:
-        """
-        Add a document layer.
+        """Add a document layer.
 
         Parameters
         ----------
@@ -909,8 +882,7 @@ class Stackup:
         enable_roughness: bool = False,
         elevation: Optional[float] = None,
     ) -> bool:
-        """
-        Insert a layer into stackup.
+        """Insert a layer into stackup.
 
         Parameters
         ----------
@@ -1018,8 +990,7 @@ class Stackup:
         return False
 
     def add_layer_top(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
-        """
-        Add a layer on top of the stackup.
+        """Add a layer on top of the stackup.
 
         Parameters
         ----------
@@ -1049,8 +1020,7 @@ class Stackup:
         return self.layer_collection.add_layer_top(name, layer_type, **kwargs)
 
     def add_layer_bottom(self, name: str, layer_type: str = "signal", **kwargs) -> Union["Layer", None]:
-        """
-        Add a layer at the bottom of the stackup.
+        """Add a layer at the bottom of the stackup.
 
         Parameters
         ----------
@@ -1082,8 +1052,7 @@ class Stackup:
     def add_layer_below(
         self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
     ) -> Union["Layer", None]:
-        """
-        Add a layer below a specified layer.
+        """Add a layer below a specified layer.
 
         Parameters
         ----------
@@ -1115,8 +1084,7 @@ class Stackup:
     def add_layer_above(
         self, name: str, base_layer_name: str, layer_type: str = "signal", **kwargs
     ) -> Union["Layer", None]:
-        """
-        Add a layer above a specified layer.
+        """Add a layer above a specified layer.
 
         Parameters
         ----------
@@ -1147,8 +1115,7 @@ class Stackup:
 
     @property
     def layers_by_id(self) -> List[List[Union[int, str]]]:
-        """
-        Retrieve the list of layers with their IDs.
+        """Retrieve the list of layers with their IDs.
 
         Returns
         -------
@@ -1165,8 +1132,7 @@ class Stackup:
         return self.layer_collection.layers_by_id
 
     def remove_layer(self, name: str) -> bool:
-        """
-        Remove a layer from stackup.
+        """Remove a layer from stackup.
 
         Parameters
         ----------
@@ -1188,8 +1154,7 @@ class Stackup:
         return True
 
     def export(self, fpath: str, file_format: str = "xml", include_material_with_layer: bool = False) -> bool:
-        """
-        Export stackup definition to a file.
+        """Export stackup definition to a file.
 
         Parameters
         ----------
@@ -1299,8 +1264,7 @@ class Stackup:
             return False
 
     def limits(self, only_metals: bool = False) -> Tuple[any, any, any, any]:
-        """
-        Retrieve stackup limits.
+        """Retrieve stackup limits.
 
         Parameters
         ----------
@@ -1330,8 +1294,7 @@ class Stackup:
         return upper_layer.name, upper_layer_top_elevationm, lower_layer.name, lower_layer_lower_elevation
 
     def flip_design(self) -> bool:
-        """
-        Flip the current design of a layout.
+        """Flip the current design of a layout.
 
         Returns
         -------
@@ -1428,8 +1391,7 @@ class Stackup:
             return False
 
     def get_layout_thickness(self) -> float:
-        """
-        Return the layout thickness.
+        """Return the layout thickness.
 
         Returns
         -------
@@ -1470,8 +1432,7 @@ class Stackup:
                 val.component_property = comp_prop
 
     def adjust_solder_dielectrics(self) -> bool:
-        """
-        Adjust the stack-up by adding or modifying dielectric layers that contain solder balls.
+        """Adjust the stack-up by adding or modifying dielectric layers that contain solder balls.
 
         This method identifies the solder-ball height and adjusts the dielectric thickness on top (or bottom)
         to fit the thickness in order to merge another layout.
@@ -1518,8 +1479,7 @@ class Stackup:
         flipped_stackup: bool = True,
         place_on_top: bool = True,
     ) -> bool:
-        """
-        Place current cell into another cell using layer placement method.
+        """Place current cell into another cell using layer placement method.
 
         Flip the current layer stackup of a layout if requested.
 
@@ -1615,8 +1575,7 @@ class Stackup:
         place_on_top: bool = True,
         solder_height: float = 0,
     ) -> bool:
-        """
-        Place current cell into another cell using 3D placement method.
+        """Place current cell into another cell using 3D placement method.
 
         Flip the current layer stackup of a layout if requested.
 
@@ -1749,8 +1708,7 @@ class Stackup:
         place_on_top: bool = True,
         solder_height: float = 0,
     ) -> CoreCellInstance:
-        """
-        Place a component instance in the layout using 3D placement.
+        """Place a component instance in the layout using 3D placement.
 
         Parameters
         ----------
@@ -1884,8 +1842,7 @@ class Stackup:
         offset_z: float = 0.0,
         place_on_top: bool = True,
     ) -> bool:
-        """
-        Place a 3D component into the current layout.
+        """Place a 3D component into the current layout.
 
         3D Component ports are not visible via EDB. They will be visible after the EDB has been opened in Ansys
         Electronics Desktop as a project.
@@ -1960,8 +1917,7 @@ class Stackup:
         return True
 
     def residual_copper_area_per_layer(self) -> Dict[str, float]:
-        """
-        Report residual copper area per layer in percentage.
+        """Report residual copper area per layer in percentage.
 
         Returns
         -------
@@ -1991,8 +1947,7 @@ class Stackup:
         return temp_data
 
     def _import_dict(self, json_dict: Dict[str, Any], rename: bool = False) -> bool:
-        """
-        Import stackup from a dictionary.
+        """Import stackup from a dictionary.
 
         Parameters
         ----------
@@ -2145,8 +2100,7 @@ class Stackup:
         return True
 
     def _import_json(self, file_path: str, rename: bool = False) -> bool:
-        """
-        Import stackup from a JSON file.
+        """Import stackup from a JSON file.
 
         Parameters
         ----------
@@ -2167,8 +2121,7 @@ class Stackup:
             return self._import_dict(json_dict, rename)
 
     def _import_csv(self, file_path: str) -> bool:
-        """
-        Import stackup definition from a CSV file.
+        """Import stackup definition from a CSV file.
 
         Parameters
         ----------
@@ -2227,8 +2180,7 @@ class Stackup:
         roughness: Optional[Dict] = None,
         non_stackup_layers: Optional[Dict] = None,
     ) -> bool:
-        """
-        Update stackup information.
+        """Update stackup information.
 
         Parameters
         ----------
@@ -2360,8 +2312,7 @@ class Stackup:
         return True
 
     def _get(self) -> Tuple[Dict, Dict, Dict, Dict]:
-        """
-        Get stackup information from layout.
+        """Get stackup information from layout.
 
         Returns
         -------
@@ -2447,8 +2398,7 @@ class Stackup:
         return True
 
     def _import_xml(self, file_path: str | Path):
-        """
-        Load stackup from a XML file.
+        """Load stackup from a XML file.
 
         Parameters
         ----------
@@ -2480,8 +2430,7 @@ class Stackup:
         return self._pedb.configuration.run()
 
     def _export_xml(self, file_path: str) -> bool:
-        """
-        Export stackup information to an external XML file.
+        """Export stackup information to an external XML file.
 
         Parameters
         ----------
@@ -2532,8 +2481,7 @@ class Stackup:
         return True
 
     def load(self, file_path: Union[str, Dict], rename: bool = False) -> bool:
-        """
-        Import stackup from a file.
+        """Import stackup from a file.
 
         Supported formats: XML, CSV, JSON.
 
@@ -2580,8 +2528,7 @@ class Stackup:
         scale_elevation: bool = True,
         show: bool = True,
     ) -> Any:
-        """
-        Plot the current stackup and optionally overlap padstack definitions.
+        """Plot the current stackup and optionally overlap padstack definitions.
 
         Only supports 'Laminate' and 'Overlapping' stackup types.
 

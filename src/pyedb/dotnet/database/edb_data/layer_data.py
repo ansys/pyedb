@@ -28,8 +28,7 @@ from pyedb.dotnet.database.cell.roughness_model import GroisseRoughnessModel, Hu
 
 
 def _clear_is_owner(obj):
-    """
-    Use reflection to set the protected IsOwner property to False on a .NET Layer object.
+    """Use reflection to set the protected IsOwner property to False on a .NET Layer object.
 
     This prevents the buggy ``EDBLayer_Cleanup`` destructor from being called when the
     Python-side wrapper is garbage-collected, which would otherwise cause an
@@ -179,8 +178,7 @@ class LayerEdbClass(object):
 
     @property
     def is_stackup_layer(self):
-        """
-        Determine whether this layer is a stackup layer.
+        """Determine whether this layer is a stackup layer.
 
         Returns
         -------
@@ -192,8 +190,7 @@ class LayerEdbClass(object):
 
     @property
     def is_via_layer(self):
-        """
-        Determine whether this layer is a via layer.
+        """Determine whether this layer is a via layer.
 
         Returns
         -------
@@ -205,8 +202,7 @@ class LayerEdbClass(object):
 
     @property
     def color(self):
-        """
-        Color of the layer.
+        """Color of the layer.
 
         Returns
         -------
@@ -226,8 +222,7 @@ class LayerEdbClass(object):
 
     @property
     def transparency(self):
-        """
-        Retrieve transparency of the layer.
+        """Retrieve transparency of the layer.
 
         Returns
         -------
@@ -245,8 +240,7 @@ class LayerEdbClass(object):
 
     @property
     def name(self):
-        """
-        Retrieve name of the layer.
+        """Retrieve name of the layer.
 
         Returns
         -------
@@ -336,8 +330,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def lower_elevation(self):
-        """
-        Lower elevation.
+        """Lower elevation.
 
         Returns
         -------
@@ -357,8 +350,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def upper_elevation(self):
-        """
-        Upper elevation.
+        """Upper elevation.
 
         Returns
         -------
@@ -371,8 +363,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def is_negative(self):
-        """
-        Determine whether this layer is a negative layer.
+        """Determine whether this layer is a negative layer.
 
         Returns
         -------
@@ -390,8 +381,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def material(self):
-        """
-        Get/Set the material loss_tangent.
+        """Get/Set the material loss_tangent.
 
         Returns
         -------
@@ -409,8 +399,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def conductivity(self):
-        """
-        Get the material conductivity.
+        """Get the material conductivity.
 
         Returns
         -------
@@ -425,8 +414,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def permittivity(self):
-        """
-        Get the material permittivity.
+        """Get the material permittivity.
 
         Returns
         -------
@@ -440,8 +428,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def loss_tangent(self):
-        """
-        Get the material loss_tangent.
+        """Get the material loss_tangent.
 
         Returns
         -------
@@ -475,8 +462,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def thickness(self):
-        """
-        Retrieve thickness of the layer.
+        """Retrieve thickness of the layer.
 
         Returns
         -------
@@ -499,8 +485,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def etch_factor(self):
-        """
-        Retrieve etch factor of this layer.
+        """Retrieve etch factor of this layer.
 
         Returns
         -------
@@ -526,8 +511,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def etch_net_class(self) -> str:
-        """
-        Retrieve net class name where etching is enabled.
+        """Retrieve net class name where etching is enabled.
 
         Returns
         -------
@@ -553,8 +537,7 @@ class StackupLayerEdbClass(LayerEdbClass):
 
     @property
     def roughness_enabled(self):
-        """
-        Determine whether roughness is enabled on this layer.
+        """Determine whether roughness is enabled on this layer.
 
         Returns
         -------
@@ -708,8 +691,7 @@ class StackupLayerEdbClass(LayerEdbClass):
                 self._pedb.stackup._set_layout_stackup(layer_clone, "change_attribute")
 
     def _get_roughness_model(self, surface="top"):
-        """
-        Get roughness model of the layer.
+        """Get roughness model of the layer.
 
         Parameters
         ----------
@@ -731,8 +713,7 @@ class StackupLayerEdbClass(LayerEdbClass):
             return self._edb_layer.GetRoughnessModel(self._pedb.core.Cell.RoughnessModel.Region.Side)
 
     def get_roughness_model(self, surface: str = "top") -> HurrayRoughnessModel | GroisseRoughnessModel:
-        """
-        Get roughness model of the layer.
+        """Get roughness model of the layer.
 
         Parameters
         ----------
@@ -773,8 +754,7 @@ class StackupLayerEdbClass(LayerEdbClass):
         groisse_roughness="1um",
         apply_on_surface="all",
     ):
-        """
-        Assign roughness model on this layer.
+        """Assign roughness model on this layer.
 
         Parameters
         ----------

@@ -32,8 +32,7 @@ from pyedb.xml_parser.xml_stackup import XmlStackup
 
 
 class XmlNet(BaseModel):
-    """
-    Represents a net configuration in the XML file.
+    """Represents a net configuration in the XML file.
 
     Parameters
     ----------
@@ -51,8 +50,7 @@ class XmlNet(BaseModel):
 
 
 class XmlImportOptions(BaseModel):
-    """
-    Represents import options for the XML configuration.
+    """Represents import options for the XML configuration.
 
     Parameters
     ----------
@@ -70,8 +68,7 @@ class XmlImportOptions(BaseModel):
 
 
 class XmlParser(BaseModel):
-    """
-    Main parser for EDB XML configuration files.
+    """Main parser for EDB XML configuration files.
 
     This class provides methods to load, parse, and export XML configuration files
     used in EDB designs. It supports stackup definitions, import options, and net
@@ -104,8 +101,7 @@ class XmlParser(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_stackup(self) -> XmlStackup:
-        """
-        Add a stackup configuration to the parser.
+        """Add a stackup configuration to the parser.
 
         Returns
         -------
@@ -124,8 +120,7 @@ class XmlParser(BaseModel):
 
     @classmethod
     def load_xml_file(cls, path: str | Path) -> "XmlParser":
-        """
-        Load and parse an XML configuration file.
+        """Load and parse an XML configuration file.
 
         Parameters
         ----------
@@ -154,8 +149,7 @@ class XmlParser(BaseModel):
         return cls.model_validate(control_dict)
 
     def to_xml(self, root_name: str = "c:Control", pretty: bool = True) -> str:
-        """
-        Convert the parser configuration to XML string.
+        """Convert the parser configuration to XML string.
 
         Parameters
         ----------
@@ -188,8 +182,7 @@ class XmlParser(BaseModel):
         return xmltodict.unparse(d, pretty=pretty)
 
     def to_xml_file(self, file_path: str | Path) -> str:
-        """
-        Write the parser configuration to an XML file.
+        """Write the parser configuration to an XML file.
 
         Parameters
         ----------
@@ -214,8 +207,7 @@ class XmlParser(BaseModel):
         return str(file_path)
 
     def to_dict(self) -> dict:
-        """
-        Convert the parser configuration to a dictionary.
+        """Convert the parser configuration to a dictionary.
 
         Returns
         -------

@@ -30,8 +30,7 @@ from pyedb.misc.utilities import compute_arc_points
 
 
 class EdbNets(CommonNets):
-    """
-    Manages EDB methods for nets management accessible from `Edb.nets` property.
+    """Manages EDB methods for nets management accessible from `Edb.nets` property.
 
     Examples
     --------
@@ -42,8 +41,7 @@ class EdbNets(CommonNets):
     """
 
     def __getitem__(self, name):
-        """
-        Get  a net from the Edb project.
+        """Get  a net from the Edb project.
 
         Parameters
         ----------
@@ -57,8 +55,7 @@ class EdbNets(CommonNets):
         return self._pedb.layout.find_net_by_name(name)
 
     def __contains__(self, name):
-        """
-        Determine if a net is named ``name`` or not.
+        """Determine if a net is named ``name`` or not.
 
         Parameters
         ----------
@@ -109,8 +106,7 @@ class EdbNets(CommonNets):
 
     @property
     def nets(self):
-        """
-        Nets.
+        """Nets.
 
         Returns
         -------
@@ -122,8 +118,7 @@ class EdbNets(CommonNets):
 
     @property
     def netlist(self):
-        """
-        Return the cell netlist.
+        """Return the cell netlist.
 
         Returns
         -------
@@ -135,8 +130,7 @@ class EdbNets(CommonNets):
 
     @property
     def signal(self):
-        """
-        Signal nets.
+        """Signal nets.
 
         Returns
         -------
@@ -152,8 +146,7 @@ class EdbNets(CommonNets):
 
     @property
     def power(self):
-        """
-        Power nets.
+        """Power nets.
 
         Returns
         -------
@@ -168,8 +161,7 @@ class EdbNets(CommonNets):
         return nets
 
     def eligible_power_nets(self, threshold=0.3):
-        """
-        Return a list of nets calculated by area to be eligible for PWR/Ground net classification.
+        """Return a list of nets calculated by area to be eligible for PWR/Ground net classification.
             It uses the same algorithm implemented in SIwave.
 
         Parameters
@@ -234,8 +226,7 @@ class EdbNets(CommonNets):
         include_power=True,
     ):
         # type: (int | float, int | float, int |float, list, bool, bool) -> list
-        """
-        Get extended net and associated components.
+        """Get extended net and associated components.
 
         Parameters
         ----------
@@ -355,8 +346,7 @@ class EdbNets(CommonNets):
         return _extended_nets
 
     def _get_points_for_plot(self, my_net_points):
-        """
-        Get the points to be plot
+        """Get the points to be plot
         """
         # fmt: off
         x = []
@@ -382,8 +372,7 @@ class EdbNets(CommonNets):
         return x, y
 
     def classify_nets(self, power_nets=None, signal_nets=None):
-        """
-        Reassign power/ground or signal nets based on list of nets.
+        """Reassign power/ground or signal nets based on list of nets.
 
         Parameters
         ----------
@@ -415,8 +404,7 @@ class EdbNets(CommonNets):
         return True
 
     def is_power_gound_net(self, netname_list):
-        """
-        Determine if one of the  nets in a list is power or ground.
+        """Determine if one of the  nets in a list is power or ground.
 
         Parameters
         ----------
@@ -438,8 +426,7 @@ class EdbNets(CommonNets):
         return False
 
     def get_dcconnected_net_list(self, ground_nets=["GND"], res_value=0.001):
-        """
-        Get the nets connected to the direct current through inductors.
+        """Get the nets connected to the direct current through inductors.
 
         .. note::
            Only inductors are considered.
@@ -490,8 +477,7 @@ class EdbNets(CommonNets):
         return dcconnected_net_list
 
     def get_powertree(self, power_net_name, ground_nets):
-        """
-        Retrieve the power tree.
+        """Retrieve the power tree.
 
         Parameters
         ----------
@@ -557,8 +543,7 @@ class EdbNets(CommonNets):
             return self._pedb.pedb_class.database.edb_data.nets_data.EDBNetsData(edb_net, self._pedb)
 
     def delete(self, netlist):
-        """
-        Delete one or more nets from EDB.
+        """Delete one or more nets from EDB.
 
         Parameters
         ----------
@@ -591,8 +576,7 @@ class EdbNets(CommonNets):
         return nets_deleted
 
     def find_or_create_net(self, net_name="", start_with="", contain="", end_with=""):
-        """
-        Find or create the net with the given name in the layout.
+        """Find or create the net with the given name in the layout.
 
         Parameters
         ----------
@@ -663,8 +647,7 @@ class EdbNets(CommonNets):
                 return nets_found
 
     def is_net_in_component(self, component_name, net_name):
-        """
-        Check if a net belongs to a component.
+        """Check if a net belongs to a component.
 
         Parameters
         ----------
@@ -690,8 +673,7 @@ class EdbNets(CommonNets):
     def find_and_fix_disjoint_nets(
         self, net_list=None, keep_only_main_net=False, clean_disjoints_less_than=0.0, order_by_area=False
     ):
-        """
-        Find and fix disjoint nets from a given netlist.
+        """Find and fix disjoint nets from a given netlist.
 
         .. deprecated::
            Use :attr:`layout_validation.disjoint_nets` instead.
@@ -724,8 +706,7 @@ class EdbNets(CommonNets):
         )
 
     def merge_nets_polygons(self, net_names_list):
-        """
-        Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
+        """Convert paths from net into polygons, evaluate all connected polygons and perform the merge.
 
         Parameters
         ----------

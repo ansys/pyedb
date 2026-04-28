@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""
-This module contains these classes: `EdbLayout` and `Shape`.
+"""This module contains these classes: `EdbLayout` and `Shape`.
 """
 
 from typing import TypeVar
@@ -198,8 +197,7 @@ class PrimitivesQuery:
         prim_type: str | list = None,
         is_void: bool | None = None,
     ) -> list[Primitive]:
-        """
-        Filter primitives by one or more attributes.
+        """Filter primitives by one or more attributes.
 
         Parameters
         ----------
@@ -243,8 +241,7 @@ class PrimitivesQuery:
 
     @property
     def primitives(self) -> list[Primitive]:
-        """
-        List of primitives.Read-Only.
+        """List of primitives.Read-Only.
 
         Returns
         -------
@@ -267,8 +264,7 @@ class PrimitivesQuery:
 
     @property
     def bondwires(self) -> list[Bondwire]:
-        """
-        Bondwires.
+        """Bondwires.
 
         Returns
         -------
@@ -279,8 +275,7 @@ class PrimitivesQuery:
         return self._primitives_by_class(Bondwire)
 
     def find_object_by_id(self, value: int) -> EDBPadstackInstance | Primitive | None:
-        """
-        Find a layout object by Database ID.
+        """Find a layout object by Database ID.
 
         Parameters
         ----------
@@ -307,8 +302,7 @@ class PrimitivesQuery:
 
     @deprecate_argument_name({"layer_name": "layer"})
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
-        """
-        Return primitive given coordinate point [x, y], layer name and nets.
+        """Return primitive given coordinate point [x, y], layer name and nets.
 
         Parameters
         ----------
@@ -366,8 +360,7 @@ class PrimitivesQuery:
         prim_type: str | list = None,
         is_void: bool | None = None,
     ) -> list[Primitive]:
-        """
-        Find a primitive objects by layer name.
+        """Find a primitive objects by layer name.
 
         Parameters
         ----------
@@ -393,8 +386,7 @@ class PrimitivesQuery:
 
     @property
     def primitives_by_layer(self) -> dict:
-        """
-        Get primitives by layer name.
+        """Get primitives by layer name.
 
         Returns
         -------
@@ -410,8 +402,7 @@ class PrimitivesQuery:
 
     @property
     def polygons_by_layer(self) -> dict:
-        """
-        Get polygons by layer name.
+        """Get polygons by layer name.
 
         Returns
         -------
@@ -427,8 +418,7 @@ class PrimitivesQuery:
 
     @property
     def primitives_by_net(self) -> dict:
-        """
-        Get primitives by net name.
+        """Get primitives by net name.
 
         Returns
         -------
@@ -467,8 +457,7 @@ class PrimitivesQuery:
         ]
 
     def get_polygon_bounding_box(self, polygon) -> list[float] | None:
-        """
-        Retrieve a polygon bounding box.
+        """Retrieve a polygon bounding box.
 
         Parameters
         ----------
@@ -493,8 +482,7 @@ class PrimitivesQuery:
         return self._polygon_bbox_to_list(polygon_data.GetBBox())
 
     def get_polygon_points(self, polygon) -> list[list[float]]:
-        """
-        Retrieve polygon points.
+        """Retrieve polygon points.
 
         .. note::
            For arcs, one point is returned.
@@ -539,8 +527,7 @@ class PrimitivesQuery:
 
     @deprecated("Use `filter_primitives` instead.")
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[Primitive]:
-        """
-        Get primitives by conditions.
+        """Get primitives by conditions.
 
         Parameters
         ----------
@@ -572,8 +559,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
     @property
     def cell(self):
-        """
-        :class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
+        """:class:`Cell <ansys.edb.layout.Cell>`: Owning cell for this layout.
 
         Read-Only.
         """
@@ -594,8 +580,7 @@ class Layout(ObjBase, PrimitivesQuery):
         return self._pedb.core
 
     def expanded_extent(self, nets, extent, expansion_factor, expansion_unitless, use_round_corner, num_increments):
-        """
-        Get an expanded polygon for the Nets collection.
+        """Get an expanded polygon for the Nets collection.
 
         Parameters
         ----------
@@ -638,8 +623,7 @@ class Layout(ObjBase, PrimitivesQuery):
         )
 
     def convert_primitives_to_vias(self, primitives, is_pins=False):
-        """
-        Convert a list of primitives into vias or pins.
+        """Convert a list of primitives into vias or pins.
 
         Parameters
         ----------
@@ -662,8 +646,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
     @property
     def terminals(self):
-        """
-        Get terminals belonging to active layout.
+        """Get terminals belonging to active layout.
 
         Returns
         -------
@@ -696,8 +679,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
     @property
     def layout_instance(self):
-        """
-        :class:`LayoutInstance <ansys.edb.layout_instance.LayoutInstance>` : Layout instance of this layout.
+        """:class:`LayoutInstance <ansys.edb.layout_instance.LayoutInstance>` : Layout instance of this layout.
 
         Read-Only.
         """
@@ -705,8 +687,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
     @property
     def nets(self):
-        """
-        Nets.
+        """Nets.
 
         Returns
         -------
@@ -746,8 +727,7 @@ class Layout(ObjBase, PrimitivesQuery):
 
     @property
     def port_reference_terminals_connected(self) -> bool:
-        """
-        :obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
+        """:obj:`bool`: Determine if port reference terminals are connected, applies to lumped ports and circuit ports.
 
         True if they are connected, False otherwise.
         Read-Only.
@@ -755,8 +735,7 @@ class Layout(ObjBase, PrimitivesQuery):
         return self._edb_object.ArePortReferenceTerminalsConnected()
 
     def find_net_by_name(self, value: str):
-        """
-        Find a net object by name
+        """Find a net object by name
 
         Parameters
         ----------
@@ -774,8 +753,7 @@ class Layout(ObjBase, PrimitivesQuery):
             return EDBNetsData(obj, self._pedb)
 
     def find_component_by_name(self, value: str) -> EDBComponent | None:
-        """
-        Find a component object by name. Component name is the reference designator in layout.
+        """Find a component object by name. Component name is the reference designator in layout.
 
         Parameters
         ----------
@@ -796,8 +774,7 @@ class Layout(ObjBase, PrimitivesQuery):
         net_name: str | list[str] = None,
         instance_id: int | list[int] = None,
     ) -> list[EDBPadstackInstance]:
-        """
-        Finds padstack instances matching the specified criteria.
+        """Finds padstack instances matching the specified criteria.
 
         This method filters the available padstack instances based on specified attributes such as
         `aedt_name`, `component_name`, `component_pin_name`, `net_name`, or `instance_id`. Criteria
