@@ -168,6 +168,7 @@ class GrpcCutout:
         self.simple_pad_check: bool = True
         self.keep_lines_as_path: bool = False
         self.include_voids_in_extents: bool = False
+        self.compute_extent_only: bool = False
 
     @property
     def logger(self):
@@ -818,6 +819,8 @@ class GrpcCutout:
         >>> cutout.output_file = "cutout.aedb"
         >>> polygon = cutout.run()
         """
+        if self.compute_extent_only:
+            return [(pt.x.value, pt.y.value) for pt in self._extent().points]
         if not self.use_pyaedt_cutout:
             return self._create_cutout_legacy()
         else:
@@ -978,6 +981,7 @@ class DotNetCutout:
         self.simple_pad_check: bool = True
         self.keep_lines_as_path: bool = False
         self.include_voids_in_extents: bool = False
+        self.compute_extent_only: bool = False
 
     @property
     def logger(self):
@@ -1668,6 +1672,8 @@ class DotNetCutout:
         >>> cutout.output_file = "cutout.aedb"
         >>> polygon = cutout.run()
         """
+        if self.compute_extent_only:
+            return [(pt.X.ToDouble(), pt.Y.ToDouble()) for pt in list(self._extent().Points)]
         if not self.use_pyaedt_cutout:
             return self._create_cutout_legacy()
         else:

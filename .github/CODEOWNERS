@@ -1,0 +1,7 @@
+# These owners will be defined only for CI and general maintenance.
+.github/* @ecoussoux-ansys
+pyproject.toml @ecoussoux-ansys
+
+
+# These owners will be the default owners for everything in the repo.
+* @svandenb-dev @ring630 @maxcapodi78 @SMoraisAnsys @Samuelopez-ansys

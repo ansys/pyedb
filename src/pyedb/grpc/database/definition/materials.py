@@ -169,8 +169,9 @@ class Material:
 
         Returns
         -------
-        The dielectric model object, or ``0.0`` when no dielectric
-        model is assigned.
+        DebyeModel, MultipoleDebyeModel, DjordjecvicSarkarModel, or float
+            The dielectric model object, or ``0.0`` when no dielectric model is assigned.
+
         """
         return self.dielectric_material_model
 
@@ -182,8 +183,10 @@ class Material:
 
         Returns
         -------
-        The dielectric model object associated with the material, or
-        ``0.0`` when no dielectric model is assigned.
+        DebyeModel, MultipoleDebyeModel, DjordjecvicSarkarModel, or float
+            The dielectric model object associated with the material, or
+            ``0.0`` when no dielectric model is assigned.
+
         """
         # Todo missing wrapper classes for dielctric model classes.
         if self.core.dielectric_material_model.is_null:
@@ -204,6 +207,7 @@ class Material:
         -------
         float
             Conductivity value.
+
         """
         if "conductivity" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.CONDUCTIVITY))

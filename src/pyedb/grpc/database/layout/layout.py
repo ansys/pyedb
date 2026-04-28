@@ -373,7 +373,7 @@ class PrimitivesQuery:
 
         Returns
         -------
-        list of :class:`pyedb.grpc.database.primitive.primitive.Primitive`
+        list[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
             List of primitives, polygons, paths and rectangles.
         """
         layer_names = self._normalize_layer_filter(layer)

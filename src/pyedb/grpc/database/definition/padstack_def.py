@@ -736,6 +736,7 @@ class PadstackDef:
 
         Returns
         -------
+        bool
             ``True`` when successful, ``False`` when failed.
         """
 
@@ -859,7 +860,8 @@ class PadstackDef:
 
         Returns
         -------
-        List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
+        list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`] or bool
+            List of new microvias padstack instances, or ``False`` when conversion fails.
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
@@ -976,24 +978,54 @@ class PadstackDef:
         Returns
         -------
         dict
-            params = {
-            'regular_pad': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0.1mm', 'offset_y': '0',
-                'rotation': '0', 'diameter': '0.5mm'}
-            ],
-            'anti_pad': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                'diameter': '1mm'}
-            ],
-            'thermal_pad': [
-                {'layer_name': '1_Top', 'shape': 'round90', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                'inner': '1mm', 'channel_width': '0.2mm', 'isolation_gap': '0.3mm'},
-            ],
-            'hole': [
-                {'layer_name': '1_Top', 'shape': 'circle', 'offset_x': '0', 'offset_y': '0', 'rotation': '0',
-                 'diameter': '0.1499997mm'},
-            ]
-        }
+            Dictionary with pad type names as keys and lists of layer pad parameter dictionaries as values.
+
+            .. code-block:: python
+
+                {
+                    "regular_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0.1mm",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "0.5mm",
+                        }
+                    ],
+                    "anti_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "1mm",
+                        }
+                    ],
+                    "thermal_pad": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "round90",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "inner": "1mm",
+                            "channel_width": "0.2mm",
+                            "isolation_gap": "0.3mm",
+                        }
+                    ],
+                    "hole": [
+                        {
+                            "layer_name": "1_Top",
+                            "shape": "circle",
+                            "offset_x": "0",
+                            "offset_y": "0",
+                            "rotation": "0",
+                            "diameter": "0.1499997mm",
+                        }
+                    ],
+                }
         """
 
         pdef_data = self.core.data

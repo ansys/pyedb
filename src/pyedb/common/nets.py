@@ -193,62 +193,63 @@ class CommonNets:
                 else:
                     continue
                 for pinst in comp.pins.values():
-                    pdef = pinst.definition
-                    p_b_l = {i: j for i, j in pdef.pad_by_layer.items()}
-                    pinst_net_name = pinst.net_name
-                    if top_view and top_layer in p_b_l and pinst_net_name in nets:
-                        try:
-                            shape = p_b_l[top_layer].shape
-                            if shape.lower() == "circle":
-                                poly = Point(pinst.position)
-                                top_comps.append(poly.buffer(p_b_l[top_layer].parameters_values[0] / 2))
-                            elif shape.lower() == "rectangle":
-                                px, py = pinst.position
-                                w, h = p_b_l[top_layer].parameters_values
-                                poly = [
-                                    [px - w / 2, py - h / 2],
-                                    [px - w / 2, py + h / 2],
-                                    [px + w / 2, py + h / 2],
-                                    [px + w / 2, py - h / 2],
-                                ]
-                                poly = Polygon(poly)
-                                top_comps.append(
-                                    affinity.rotate(
-                                        poly,
-                                        (float(p_b_l[top_layer].rotation) + pinst.rotation + comp.rotation)
-                                        / math.pi
-                                        * 180,
+                    if hasattr(pinst, "definition"):
+                        pdef = pinst.definition
+                        p_b_l = {i: j for i, j in pdef.pad_by_layer.items()}
+                        pinst_net_name = pinst.net_name
+                        if top_view and top_layer in p_b_l and pinst_net_name in nets:
+                            try:
+                                shape = p_b_l[top_layer].shape
+                                if shape.lower() == "circle":
+                                    poly = Point(pinst.position)
+                                    top_comps.append(poly.buffer(p_b_l[top_layer].parameters_values[0] / 2))
+                                elif shape.lower() == "rectangle":
+                                    px, py = pinst.position
+                                    w, h = p_b_l[top_layer].parameters_values
+                                    poly = [
+                                        [px - w / 2, py - h / 2],
+                                        [px - w / 2, py + h / 2],
+                                        [px + w / 2, py + h / 2],
+                                        [px + w / 2, py - h / 2],
+                                    ]
+                                    poly = Polygon(poly)
+                                    top_comps.append(
+                                        affinity.rotate(
+                                            poly,
+                                            (float(p_b_l[top_layer].rotation) + pinst.rotation + comp.rotation)
+                                            / math.pi
+                                            * 180,
+                                        )
                                     )
-                                )
-                        except KeyError:
-                            pass
-                    elif not top_view and bottom_layer in p_b_l and pinst.net_name in nets:
-                        try:
-                            shape = p_b_l[bottom_layer].shape
-                            if shape == "Circle":
-                                x, y = pinst.position
-                                poly = Point(-x, y)
-                                bottom_comps.append(poly.buffer(p_b_l[bottom_layer].parameters_values[0] / 2))
-                            elif shape == "Rectangle":
-                                px, py = pinst.position
-                                w, h = p_b_l[bottom_layer].parameters_values
-                                poly = [
-                                    [px - w / 2, py - h / 2],
-                                    [px - w / 2, py + h / 2],
-                                    [px + w / 2, py + h / 2],
-                                    [px + w / 2, py - h / 2],
-                                ]
-                                poly = Polygon(mirror_poly(poly))
-                                bottom_comps.append(
-                                    affinity.rotate(
-                                        poly,
-                                        -(float(p_b_l[bottom_layer].rotation) + pinst.rotation + comp.rotation)
-                                        / math.pi
-                                        * 180,
+                            except KeyError:
+                                pass
+                        elif not top_view and bottom_layer in p_b_l and pinst.net_name in nets:
+                            try:
+                                shape = p_b_l[bottom_layer].shape
+                                if shape == "Circle":
+                                    x, y = pinst.position
+                                    poly = Point(-x, y)
+                                    bottom_comps.append(poly.buffer(p_b_l[bottom_layer].parameters_values[0] / 2))
+                                elif shape == "Rectangle":
+                                    px, py = pinst.position
+                                    w, h = p_b_l[bottom_layer].parameters_values
+                                    poly = [
+                                        [px - w / 2, py - h / 2],
+                                        [px - w / 2, py + h / 2],
+                                        [px + w / 2, py + h / 2],
+                                        [px + w / 2, py - h / 2],
+                                    ]
+                                    poly = Polygon(mirror_poly(poly))
+                                    bottom_comps.append(
+                                        affinity.rotate(
+                                            poly,
+                                            -(float(p_b_l[bottom_layer].rotation) + pinst.rotation + comp.rotation)
+                                            / math.pi
+                                            * 180,
+                                        )
                                     )
-                                )
-                        except KeyError:
-                            pass
+                            except KeyError:
+                                pass
                 cbb = comp.bounding_box
                 x = [cbb[0], cbb[0], cbb[2], cbb[2]]
                 y = [cbb[1], cbb[3], cbb[3], cbb[1]]
