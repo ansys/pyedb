@@ -519,13 +519,13 @@ class EdbConfigBuilder:
             ):
                 if comp.get(key):
                     setattr(c, key, comp[key])
-        ptd = modeler_data.get("primitives_to_delete", {})
-        if ptd.get("layer_name"):
-            builder.modeler.delete_primitives_by_layer(ptd["layer_name"])
-        if ptd.get("name"):
-            builder.modeler.delete_primitives_by_name(ptd["name"])
-        if ptd.get("net_name"):
-            builder.modeler.delete_primitives_by_net(ptd["net_name"])
+        prim = modeler_data.get("primitives_to_delete", {})
+        if prim.get("layer_name"):
+            builder.modeler.delete_primitives_by_layer(prim["layer_name"])
+        if prim.get("name"):
+            builder.modeler.delete_primitives_by_name(prim["name"])
+        if prim.get("net_name"):
+            builder.modeler.delete_primitives_by_net(prim["net_name"])
 
         return builder
 
