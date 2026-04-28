@@ -38,7 +38,8 @@ from pyedb.grpc.database.primitive.rectangle import Rectangle
 
 
 class Net:
-    """Class managing :class:`Net <ansys.edb.core.net.net.Net>` objects in EDB database.
+    """
+    Class managing :class:`Net <ansys.edb.core.net.net.Net>` objects in EDB database.
 
     Parameters
     ----------
@@ -54,6 +55,7 @@ class Net:
     >>> edb_net = edb.nets["GND"]
     >>> edb_net.name
     'GND'
+
     """
 
     def __init__(self, pedb, core):
@@ -65,12 +67,14 @@ class Net:
 
     @property
     def name(self):
-        """Name of the net.
+        """
+        Name of the net.
 
         Returns
         -------
         str
             Name of the net.
+
         """
         try:
             return self.core.name
@@ -79,23 +83,27 @@ class Net:
 
     @name.setter
     def name(self, value: str):
-        """Set the name of the net.
+        """
+        Set the name of the net.
 
         Parameters
         ----------
         value : str
             New name for the net.
+
         """
         self.core.name = value
 
     @property
     def is_null(self) -> bool:
-        """Check if the net is a null net.
+        """
+        Check if the net is a null net.
 
         Returns
         -------
         bool
             ``True`` if the net is a null net, ``False`` otherwise.
+
         """
         try:
             return self.core.is_null
@@ -104,29 +112,34 @@ class Net:
 
     @property
     def is_power_ground(self):
-        """Check if the net is a power or ground net.
+        """
+        Check if the net is a power or ground net.
 
         Returns
         -------
         bool
             ``True`` if the net is a power or ground net, ``False`` otherwise.
+
         """
         return self.core.is_power_ground
 
     @is_power_ground.setter
     def is_power_ground(self, value: bool):
-        """Set the net as a power or ground net.
+        """
+        Set the net as a power or ground net.
 
         Parameters
         ----------
         value : bool
             ``True`` to set the net as a power or ground net, ``False`` otherwise.
+
         """
         self.core.is_power_ground = value
 
     @property
     def primitives(self) -> list[Union[Path, Polygon, Circle, Rectangle, Bondwire]]:
-        """All primitives belonging to this net.
+        """
+        All primitives belonging to this net.
 
         Returns
         -------
@@ -137,6 +150,7 @@ class Net:
             - :class:`Circle <pyedb.grpc.database.primitive.circle.Circle>`
             - :class:`Rectangle <pyedb.grpc.database.primitive.rectangle.Rectangle>`
             - :class:`Bondwire <pyedb.grpc.database.primitive.bondwire.Bondwire>`
+
         """
         from pyedb.grpc.database.primitive.circle import Circle
 
@@ -157,12 +171,14 @@ class Net:
 
     @property
     def padstack_instances(self) -> list[PadstackInstance]:
-        """All padstack instances belonging to this net.
+        """
+        All padstack instances belonging to this net.
 
         Returns
         -------
         list of :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             Padstack instances associated with the net.
+
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
@@ -170,13 +186,15 @@ class Net:
 
     @property
     def components(self) -> dict[str, Component]:
-        """Components connected to this net.
+        """
+        Components connected to this net.
 
         Returns
         -------
         dict
             Dictionary of components keyed by component name, with values as
             :class:`Component <pyedb.grpc.database.hierarchy.component.Component>` objects.
+
         """
         components = {}
         for padstack_instance in self.padstack_instances:
@@ -193,7 +211,8 @@ class Net:
 
     @classmethod
     def create(cls, layout, name: str):
-        """Create a new net in the EDB database.
+        """
+        Create a new net in the EDB database.
         Parameters
         ----------
         layout : :class:`pyedb.grpc.database.layout.layout.Layout`
@@ -205,11 +224,13 @@ class Net:
         -------
         :class:`Net <pyedb.grpc.database.net.net.Net>`
             Newly created net object.
+
         """
         return cls(layout._pedb, CoreNet.create(layout=layout.core, name=name))
 
     def find_dc_short(self, fix=False) -> list[list[str]]:
-        """Find DC-shorted nets connected to this net.
+        """
+        Find DC-shorted nets connected to this net.
 
         Parameters
         ----------
@@ -221,13 +242,15 @@ class Net:
         -------
         list[list[str]]
             List of shorted net pairs in the format [[net_name1, net_name2], ...].
+
         """
         return self._pedb.layout_validation.dc_shorts(self.name, fix)
 
     def plot(
         self, layers=None, show_legend=True, save_plot=None, outline=None, size=(2000, 1000), show=True, title=None
     ):
-        """Plot the net using Matplotlib.
+        """
+        Plot the net using Matplotlib.
 
         Parameters
         ----------
@@ -245,6 +268,7 @@ class Net:
             Display the plot. Default: ``True``.
         title : str, optional
             Plot title. Uses net name if ``None``. Default: ``None``.
+
         """
         self._pedb.nets.plot(
             self.name,
@@ -260,12 +284,14 @@ class Net:
         )
 
     def get_smallest_trace_width(self) -> float:
-        """Get the minimum trace width from path primitives in this net.
+        """
+        Get the minimum trace width from path primitives in this net.
 
         Returns
         -------
         float
             Smallest width found in database units. Returns 1e10 if no paths exist.
+
         """
         current_value = 1e10
         paths = [prim for prim in self.primitives if prim.primitive_type == "path"]
@@ -276,7 +302,8 @@ class Net:
 
     @property
     def extended_net(self):
-        """Extended net associated with this net.
+        """
+        Extended net associated with this net.
 
         Returns
         -------
@@ -288,6 +315,7 @@ class Net:
         >>> from pyedb import Edb
         >>> edb = Edb("myedb", version="2026.1")
         >>> edb.nets["BST_V3P3_S5"].extended_net
+
         """
         if self.name in self._pedb.extended_nets.items:
             return self._pedb.extended_nets.items[self.name]
@@ -300,7 +328,8 @@ class Net:
 
     @classmethod
     def find_by_name(cls, layout, name):
-        """Find a net by name in a given layout.
+        """
+        Find a net by name in a given layout.
 
         Parameters
         ----------
@@ -314,6 +343,7 @@ class Net:
         Net
             Net found. Check the :obj:`is_null <.Net.is_null>` property
             of the returned net to see if it exists.
+
         """
         net = CoreNet.find_by_name(layout.core, name)
         return Net(layout._pedb, net)

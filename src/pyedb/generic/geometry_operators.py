@@ -36,7 +36,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def List2list(input_list) -> list:  # pragma: no cover
-        """Convert a C# list object to a Python list.
+        """
+        Convert a C# list object to a Python list.
 
         This function performs a deep conversion.
 
@@ -70,7 +71,8 @@ class GeometryOperators(object):
     def parse_dim_arg(
         string: str | float, scale_to_unit: str | None = None, variable_manager: "VariableManager" = None
     ) -> float | str | None:  # pragma: no cover
-        """Convert a number and unit to a float.
+        """
+        Convert a number and unit to a float.
 
         Angles are converted in radians.
 
@@ -138,7 +140,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def draft_type_str(val: int) -> str:  # pragma: no cover
-        """Retrieve the draft type.
+        """
+        Retrieve the draft type.
 
         Parameters
         ----------
@@ -167,7 +170,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def get_mid_point(v1: list[float], v2: list[float]) -> list[float]:
-        """Evaluate the midpoint between two points.
+        """
+        Evaluate the midpoint between two points.
 
         Parameters
         ----------
@@ -195,7 +199,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def get_triangle_area(v1: list[float], v2: list[float], v3: list[float]) -> float:  # pragma: no cover
-        """Evaluate the area of a triangle defined by its three vertices.
+        """
+        Evaluate the area of a triangle defined by its three vertices.
 
         Parameters
         ----------
@@ -232,7 +237,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_cross(a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate the cross product of two geometry vectors.
+        """
+        Evaluate the cross product of two geometry vectors.
 
         Parameters
         ----------
@@ -260,7 +266,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def _v_dot(a: list[float], b: list[float]) -> float | bool:  # pragma: no cover
-        """Evaluate the dot product between two geometry vectors.
+        """
+        Evaluate the dot product between two geometry vectors.
 
         Parameters
         ----------
@@ -293,7 +300,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_dot(a: list[float], b: list[float]) -> float | bool:  # pragma: no cover
-        """Evaluate the dot product between two geometry vectors.
+        """
+        Evaluate the dot product between two geometry vectors.
 
         Parameters
         ----------
@@ -320,7 +328,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_prod(s: float, v: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate the product between a scalar value and a vector.
+        """
+        Evaluate the product between a scalar value and a vector.
 
         Parameters
         ----------
@@ -351,7 +360,8 @@ class GeometryOperators(object):
     def v_rotate_about_axis(
         vector: list[float], angle: float, radians: bool = False, axis: str = "z"
     ) -> tuple[float, float, float]:  # pragma: no cover
-        """Evaluate rotation of a vector around an axis.
+        """
+        Evaluate rotation of a vector around an axis.
 
         Parameters
         ----------
@@ -376,6 +386,7 @@ class GeometryOperators(object):
         >>> v = [1.0, 0.0, 0.0]
         >>> go.v_rotate_about_axis(v, 90.0, axis="z")
         (6.123233995736766e-17, 1.0, 0.0)
+
         """
         if not radians:
             angle = math.radians(angle)
@@ -399,7 +410,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_sub(a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate two geometry vectors by subtracting them (a-b).
+        """
+        Evaluate two geometry vectors by subtracting them (a-b).
 
         Parameters
         ----------
@@ -427,7 +439,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_sum(a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate two geometry vectors by adding them (a+b).
+        """
+        Evaluate two geometry vectors by adding them (a+b).
 
         Parameters
         ----------
@@ -455,7 +468,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_norm(a: list[float]) -> float:  # pragma: no cover
-        """Evaluate the Euclidean norm of a geometry vector.
+        """
+        Evaluate the Euclidean norm of a geometry vector.
 
         Parameters
         ----------
@@ -483,7 +497,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def normalize_vector(v: list[float]) -> list[float]:  # pragma: no cover
-        """Normalize a geometry vector.
+        """
+        Normalize a geometry vector.
 
         Parameters
         ----------
@@ -510,7 +525,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_points(p1: list[float], p2: list[float]) -> list[float]:  # pragma: no cover
-        """Vector from one point to another point.
+        """
+        Vector from one point to another point.
 
         Parameters
         ----------
@@ -537,7 +553,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def points_distance(p1: list[float], p2: list[float]) -> float | bool:  # pragma: no cover
-        """Evaluate the distance between two points expressed as their Cartesian coordinates.
+        """
+        Evaluate the distance between two points expressed as their Cartesian coordinates.
 
         Parameters
         ----------
@@ -570,7 +587,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def find_point_on_plane(pointlists: list[list[float]], direction: int = 0) -> float:  # pragma: no cover
-        """Find a point on a plane.
+        """
+        Find a point on a plane.
 
         Parameters
         ----------
@@ -599,7 +617,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def distance_vector(p: list[float], a: list[float], b: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate the vector distance between point ``p`` and a line defined by two points, ``a`` and ``b``.
+        """
+        Evaluate the vector distance between point ``p`` and a line defined by two points, ``a`` and ``b``.
 
         The formula is  ``d = (a-p)-((a-p)dot p)n``, where ``a`` is a point of the line (either ``a`` or ``b``)
         and ``n`` is the unit vector in the direction of the line.
@@ -640,7 +659,8 @@ class GeometryOperators(object):
     def is_between_points(
         p: list[float], a: list[float], b: list[float], tol: float = 1e-6
     ) -> bool:  # pragma: no cover
-        """Check if a point lies on the segment defined by two points.
+        """
+        Check if a point lies on the segment defined by two points.
 
         Parameters
         ----------
@@ -683,7 +703,8 @@ class GeometryOperators(object):
     def is_parallel(
         a1: list[float], a2: list[float], b1: list[float], b2: list[float], tol: float = 1e-6
     ) -> bool:  # pragma: no cover
-        """Check if a segment defined by two points is parallel to a segment defined by two other points.
+        """
+        Check if a segment defined by two points is parallel to a segment defined by two other points.
 
         Parameters
         ----------
@@ -721,7 +742,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def parallel_coeff(a1: list[float], a2: list[float], b1: list[float], b2: list[float]) -> float:  # pragma: no cover
-        """Evaluate the parallelism coefficient between two segments.
+        """
+        Evaluate the parallelism coefficient between two segments.
 
         Parameters
         ----------
@@ -749,7 +771,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def is_collinear(a: list[float], b: list[float], tol: float = 1e-6) -> bool:  # pragma: no cover
-        """Check if two vectors are collinear (parallel or anti-parallel).
+        """
+        Check if two vectors are collinear (parallel or anti-parallel).
 
         Parameters
         ----------
@@ -786,7 +809,8 @@ class GeometryOperators(object):
     def is_projection_inside(
         a1: list[float], a2: list[float], b1: list[float], b2: list[float]
     ) -> bool:  # pragma: no cover
-        """Project a segment onto another segment and check if the projected segment is inside it.
+        """
+        Project a segment onto another segment and check if the projected segment is inside it.
 
         Parameters
         ----------
@@ -818,7 +842,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def arrays_positions_sum(vertlist1: list[list[float]], vertlist2: list[list[float]]) -> float:  # pragma: no cover
-        """Return the sum of two vertices lists.
+        """
+        Return the sum of two vertices lists.
 
         Parameters
         ----------
@@ -841,7 +866,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_angle(a: list[float], b: list[float]) -> float:  # pragma: no cover
-        """Evaluate the angle between two geometry vectors.
+        """
+        Evaluate the angle between two geometry vectors.
 
         Parameters
         ----------
@@ -878,7 +904,8 @@ class GeometryOperators(object):
     def pointing_to_axis(
         x_pointing: list[float], y_pointing: list[float]
     ) -> tuple[list[float], list[float], list[float]]:  # pragma: no cover
-        """Retrieve the axes from the HFSS X axis and Y pointing axis.
+        """
+        Retrieve the axes from the HFSS X axis and Y pointing axis.
 
         This is as per the definition of the AEDT interface coordinate system.
 
@@ -908,7 +935,8 @@ class GeometryOperators(object):
     def axis_to_euler_zxz(
         x: list[float], y: list[float], z: list[float]
     ) -> tuple[float, float, float]:  # pragma: no cover
-        """Retrieve Euler angles of a frame following the rotation sequence ZXZ.
+        """
+        Retrieve Euler angles of a frame following the rotation sequence ZXZ.
 
         Provides assumption for the gimbal lock problem.
 
@@ -953,7 +981,8 @@ class GeometryOperators(object):
     def axis_to_euler_zyz(
         x: list[float], y: list[float], z: list[float]
     ) -> tuple[float, float, float]:  # pragma: no cover
-        """Retrieve Euler angles of a frame following the rotation sequence ZYZ.
+        """
+        Retrieve Euler angles of a frame following the rotation sequence ZYZ.
 
         Provides assumption for the gimbal lock problem.
 
@@ -996,7 +1025,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def quaternion_to_axis(q: list[float]) -> tuple[list[float], list[float], list[float]]:  # pragma: no cover
-        """Convert a quaternion to a rotated frame defined by X, Y, and Z axes.
+        """
+        Convert a quaternion to a rotated frame defined by X, Y, and Z axes.
 
         Parameters
         ----------
@@ -1034,7 +1064,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def quaternion_to_axis_angle(q: list[float]) -> tuple[list[float], float]:  # pragma: no cover
-        """Convert a quaternion to the axis angle rotation formulation.
+        """
+        Convert a quaternion to the axis angle rotation formulation.
 
         Parameters
         ----------
@@ -1059,7 +1090,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def axis_angle_to_quaternion(u: list[float], theta: float) -> list[float]:  # pragma: no cover
-        """Convert the axis angle rotation formulation to a quaternion.
+        """
+        Convert the axis angle rotation formulation to a quaternion.
 
         Parameters
         ----------
@@ -1084,7 +1116,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def quaternion_to_euler_zxz(q: list[float]) -> tuple[float, float, float]:  # pragma: no cover
-        """Convert a quaternion to Euler angles following rotation sequence ZXZ.
+        """
+        Convert a quaternion to Euler angles following rotation sequence ZXZ.
 
         Parameters
         ----------
@@ -1113,7 +1146,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def euler_zxz_to_quaternion(phi: float, theta: float, psi: float) -> list[float]:  # pragma: no cover
-        """Convert the Euler angles following rotation sequence ZXZ to a quaternion.
+        """
+        Convert the Euler angles following rotation sequence ZXZ to a quaternion.
 
         Parameters
         ----------
@@ -1143,7 +1177,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def quaternion_to_euler_zyz(q: list[float]) -> tuple[float, float, float]:  # pragma: no cover
-        """Convert a quaternion to Euler angles following rotation sequence ZYZ.
+        """
+        Convert a quaternion to Euler angles following rotation sequence ZYZ.
 
         Parameters
         ----------
@@ -1172,7 +1207,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def euler_zyz_to_quaternion(phi: float, theta: float, psi: float) -> list[float]:  # pragma: no cover
-        """Convert the Euler angles following rotation sequence ZYZ to a quaternion.
+        """
+        Convert the Euler angles following rotation sequence ZYZ to a quaternion.
 
         Parameters
         ----------
@@ -1202,7 +1238,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def deg2rad(angle: float) -> float:
-        """Convert the angle from degrees to radians.
+        """
+        Convert the angle from degrees to radians.
 
         Parameters
         ----------
@@ -1226,7 +1263,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def rad2deg(angle: float) -> float:
-        """Convert the angle from radians to degrees.
+        """
+        Convert the angle from radians to degrees.
 
         Parameters
         ----------
@@ -1251,7 +1289,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def atan2(y: float, x: float) -> float:  # pragma: no cover
-        """Implementation of atan2 that does not suffer from sign issues.
+        """
+        Implementation of atan2 that does not suffer from sign issues.
 
         This implementation always returns 0.0 for very small values.
 
@@ -1277,7 +1316,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def q_prod(p: list[float], q: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate the product of two quaternions.
+        """
+        Evaluate the product of two quaternions.
 
         The product is defined as:
         p = p0 + p' = p0 + ip1 + jp2 + kp3.
@@ -1313,7 +1353,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def q_rotation(v: list[float], q: list[float]) -> list[float]:  # pragma: no cover
-        """Evaluate the rotation of a vector, defined by a quaternion.
+        """
+        Evaluate the rotation of a vector, defined by a quaternion.
 
         Evaluated as:
         ``q = q0 + q' = q0 + iq1 + jq2 + kq3``,
@@ -1350,7 +1391,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def q_rotation_inv(v: list[float], q: list[float]) -> list[float]:
-        """Evaluate the inverse rotation of a vector that is defined by a quaternion.
+        """
+        Evaluate the inverse rotation of a vector that is defined by a quaternion.
 
         It can also be the rotation of the coordinate frame with respect to the vector.
 
@@ -1376,7 +1418,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def get_polygon_centroid(pts: list[list[float]]) -> list[float]:  # pragma: no cover
-        """Evaluate the centroid of a polygon defined by its points.
+        """
+        Evaluate the centroid of a polygon defined by its points.
 
         Parameters
         ----------
@@ -1418,7 +1461,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def cs_xy_pointing_expression(yaw: str, pitch: str, roll: str) -> list[list[str]]:  # pragma: no cover
-        """Return x_pointing and y_pointing vectors as expressions.
+        """
+        Return x_pointing and y_pointing vectors as expressions.
 
         Parameters
         ----------
@@ -1457,7 +1501,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def get_numeric(s: str | float | None) -> float:
-        """Convert a string to a numeric value. Discard the suffix.
+        """
+        Convert a string to a numeric value. Discard the suffix.
 
         Parameters
         ----------
@@ -1488,7 +1533,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def is_small(s: str | float) -> bool:
-        """Return ``True`` if the number represented by s is zero (i.e very small).
+        """
+        Return ``True`` if the number represented by s is zero (i.e very small).
 
         Parameters
         ----------
@@ -1516,7 +1562,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def numeric_cs(cs_in: list[str] | str) -> list[float] | None:  # pragma: no cover
-        """Return a list of [x,y,z] numeric values given a coordinate system as input.
+        """
+        Return a list of [x,y,z] numeric values given a coordinate system as input.
 
         Parameters
         ----------
@@ -1542,7 +1589,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def orient_polygon(x: list[float], y: list[float], clockwise: bool = True) -> tuple[list[float], list[float]]:
-        """Orient a polygon clockwise or counterclockwise.
+        """
+        Orient a polygon clockwise or counterclockwise.
 
         The vertices should be already ordered either way.
         Use this function to change the orientation.
@@ -1627,7 +1675,8 @@ class GeometryOperators(object):
     def v_angle_sign(
         va: list[float], vb: list[float], vn: list[float], right_handed: bool = True
     ) -> float:  # pragma: no cover
-        """Evaluate the signed angle between two geometry vectors.
+        """
+        Evaluate the signed angle between two geometry vectors.
 
         The sign is evaluated respect to the normal to the plane containing the two vectors as per the following rule.
         In case of opposite vectors, it returns an angle equal to 180deg (always positive).
@@ -1672,7 +1721,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def v_angle_sign_2D(va: list[float], vb: list[float], right_handed: bool = True) -> float:
-        """Evaluate the signed angle between two 2D geometry vectors.
+        """
+        Evaluate the signed angle between two 2D geometry vectors.
 
         It is the 2D version of the ``GeometryOperators.v_angle_sign`` considering vn = [0,0,1].
         In case of opposite vectors, it returns an angle equal to 180deg (always positive).
@@ -1713,7 +1763,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def point_in_polygon(point: list[float], polygon: list[list[float]], tolerance: float = 1e-8) -> int:
-        """Determine if a point is inside, outside the polygon or at exactly at the border.
+        """
+        Determine if a point is inside, outside the polygon or at exactly at the border.
 
         The method implements the radial algorithm (https://es.wikipedia.org/wiki/Algoritmo_radial)
 
@@ -1771,7 +1822,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def is_point_in_polygon(point: list[float], polygon: list[list[float]]) -> bool:
-        """Determine if a point is inside or outside a polygon, both located on the same plane.
+        """
+        Determine if a point is inside or outside a polygon, both located on the same plane.
 
         The method implements the radial algorithm (https://es.wikipedia.org/wiki/Algoritmo_radial)
 
@@ -1807,7 +1859,8 @@ class GeometryOperators(object):
     def are_segments_intersecting(
         a1: list[float], a2: list[float], b1: list[float], b2: list[float], include_collinear: bool = True
     ) -> bool:
-        """Determine if the two segments a and b are intersecting.
+        """
+        Determine if the two segments a and b are intersecting.
 
         Parameters
         ----------
@@ -1898,7 +1951,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def is_segment_intersecting_polygon(a: list[float], b: list[float], polygon: list[list[float]]) -> bool:
-        """Determine if a segment defined by two points ``a`` and ``b`` intersects a polygon.
+        """
+        Determine if a segment defined by two points ``a`` and ``b`` intersects a polygon.
 
         Points on the vertices and on the polygon boundaries are not considered intersecting.
 
@@ -1936,7 +1990,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def is_perpendicular(a: list[float], b: list[float], tol: float = 1e-6) -> bool:
-        """Check if two vectors are perpendicular.
+        """
+        Check if two vectors are perpendicular.
 
         Parameters
         ----------
@@ -1969,7 +2024,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def is_point_projection_in_segment(p: list[float], a: list[float], b: list[float]) -> bool:
-        """Check if a point projection lies on the segment defined by two points.
+        """
+        Check if a point projection lies on the segment defined by two points.
 
         Parameters
         ----------
@@ -1995,7 +2051,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def point_segment_distance(p: list[float], a: list[float], b: list[float]) -> float:  # pragma: no cover
-        """Calculate the distance between a point ``p`` and a segment defined by two points ``a`` and ``b``.
+        """
+        Calculate the distance between a point ``p`` and a segment defined by two points ``a`` and ``b``.
 
         Parameters
         ----------
@@ -2023,7 +2080,8 @@ class GeometryOperators(object):
     def find_largest_rectangle_inside_polygon(
         polygon: list[list[float]], partition_max_order: int = 16
     ) -> list[list[list[float]]]:
-        """Find the largest area rectangles of arbitrary orientation in a polygon.
+        """
+        Find the largest area rectangles of arbitrary orientation in a polygon.
 
         Implements the algorithm described by Rubén Molano, et al.
         *"Finding the largest area rectangle of arbitrary orientation in a closed contour"*, published in
@@ -2132,7 +2190,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def degrees_over_rounded(angle: float, digits: int) -> float:
-        """Ceil of angle.
+        """
+        Ceil of angle.
 
         Parameters
         ----------
@@ -2151,7 +2210,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def radians_over_rounded(angle: float, digits: int) -> float:
-        """Radian angle ceiling.
+        """
+        Radian angle ceiling.
 
         Parameters
         ----------
@@ -2170,7 +2230,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def degrees_default_rounded(angle: float, digits: int) -> float:
-        """Convert angle to degree with given digits rounding.
+        """
+        Convert angle to degree with given digits rounding.
 
         Parameters
         ----------
@@ -2189,7 +2250,8 @@ class GeometryOperators(object):
 
     @staticmethod
     def radians_default_rounded(angle: float, digits: int) -> float:
-        """Convert to radians with given round.
+        """
+        Convert to radians with given round.
 
         Parameters
         ----------
@@ -2210,7 +2272,8 @@ class GeometryOperators(object):
     def find_closest_points(
         points_list: list[list[float]], reference_point: list[float], tol: float = 1e-6
     ) -> list[list[float]] | bool:  # pragma: no cover
-        """Given a list of points, finds the closest points to a reference point.
+        """
+        Given a list of points, finds the closest points to a reference point.
 
         It returns a list of points because more than one can be found.
         It works with 2D or 3D points. The tolerance used to evaluate the distance
@@ -2261,7 +2324,8 @@ class GeometryOperators(object):
     def mirror_point(
         start: list[float], reference: list[float], vector: list[float]
     ) -> list[float]:  # pragma: no cover
-        """Mirror point about a plane defining by a point on the plane and a normal point.
+        """
+        Mirror point about a plane defining by a point on the plane and a normal point.
 
         Parameters
         ----------
@@ -2302,7 +2366,8 @@ class GeometryOperators(object):
         selected_angles: list[float] | None = None,
         return_additional_info: bool = False,
     ) -> tuple:
-        """Detect all points that are placed along lines.
+        """
+        Detect all points that are placed along lines.
 
         The method takes as input a list of 2D points and detects all lines that contain at least 3 points.
         Optionally, the minimum number of points contained in a line can be specified by setting the
@@ -2494,7 +2559,8 @@ class GeometryOperators(object):
     def smallest_distance_between_polygons(
         polygon1: list[tuple[float, float]], polygon2: list[tuple[float, float]]
     ) -> float:
-        """Find the smallest distance between two polygons using KDTree for efficient nearest neighbor search.
+        """
+        Find the smallest distance between two polygons using KDTree for efficient nearest neighbor search.
 
         Parameters
         ----------

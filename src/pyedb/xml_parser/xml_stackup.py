@@ -33,12 +33,14 @@ SurfaceOption = Literal["all", "top", "bottom", "side"]
 
 
 class XmlMaterialProperty(BaseModel):
-    """Represents a material property value in the XML stackup.
+    """
+    Represents a material property value in the XML stackup.
 
     Parameters
     ----------
     value : float, optional
         Numerical value of the material property. The default is ``None``.
+
     """
 
     value: float | None = Field(None, alias="Double")
@@ -47,7 +49,8 @@ class XmlMaterialProperty(BaseModel):
 
 
 class XmlMaterial(BaseModel):
-    """Represents a material definition in the XML stackup.
+    """
+    Represents a material definition in the XML stackup.
 
     Parameters
     ----------
@@ -63,6 +66,7 @@ class XmlMaterial(BaseModel):
         Dielectric loss tangent. The default is ``None``.
     magnetic_loss_tangent : XmlMaterialProperty, optional
         Magnetic loss tangent. The default is ``None``.
+
     """
 
     name: str = Field(alias="@Name")
@@ -92,7 +96,8 @@ class XmlGroissSurfaceRoughness(BaseModel):
 
 
 class XmlLayer(BaseModel):
-    """Represents a layer in the XML stackup.
+    """
+    Represents a layer in the XML stackup.
 
     Parameters
     ----------
@@ -112,6 +117,7 @@ class XmlLayer(BaseModel):
         Layer thickness value with or without units. The default is ``None``.
     type : str, optional
         Layer type (signal, dielectric, conductor, etc.). The default is ``None``.
+
     """
 
     color: str | None = Field(None, alias="@Color")
@@ -178,12 +184,14 @@ class XmlLayer(BaseModel):
 
 
 class XmlMaterials(BaseModel):
-    """Container for material definitions in the XML stackup.
+    """
+    Container for material definitions in the XML stackup.
 
     Parameters
     ----------
     material : list of XmlMaterial, optional
         List of material definitions. The default is an empty list.
+
     """
 
     material: list[XmlMaterial] | None = Field(list(), alias="Material")
@@ -191,7 +199,8 @@ class XmlMaterials(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_material(self, name: str, **kwargs) -> XmlMaterial:
-        """Add a material to the stackup.
+        """
+        Add a material to the stackup.
 
         Parameters
         ----------
@@ -213,6 +222,7 @@ class XmlMaterials(BaseModel):
         >>> materials = XmlMaterials()
         >>> copper = materials.add_material("copper", conductivity=5.8e7)
         >>> fr4 = materials.add_material("fr4", permittivity=4.5, dielectric_loss_tangent=0.02)
+
         """
         mat = XmlMaterial(
             **{"name": name},
@@ -223,7 +233,8 @@ class XmlMaterials(BaseModel):
 
 
 class XmlLayers(BaseModel):
-    """Container for layer definitions in the XML stackup.
+    """
+    Container for layer definitions in the XML stackup.
 
     Parameters
     ----------
@@ -231,6 +242,7 @@ class XmlLayers(BaseModel):
         Unit for layer thickness measurements. The default is ``None``.
     layer : list of XmlLayer, optional
         List of layer definitions. The default is an empty list.
+
     """
 
     length_unit: str | None = Field(None, alias="@LengthUnit")
@@ -239,7 +251,8 @@ class XmlLayers(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_layer(self, **kwargs) -> XmlLayer:
-        """Add a layer to the stackup.
+        """
+        Add a layer to the stackup.
 
         Parameters
         ----------
@@ -259,6 +272,7 @@ class XmlLayers(BaseModel):
         >>> layers = XmlLayers(length_unit="mm")
         >>> signal = layers.add_layer(name="TOP", type="signal", thickness=0.035, material="copper")
         >>> dielectric = layers.add_layer(name="Core", type="dielectric", thickness=0.2, material="fr4")
+
         """
         layer = XmlLayer(**kwargs)
         self.layer.append(layer)
@@ -266,7 +280,8 @@ class XmlLayers(BaseModel):
 
 
 class XmlStackup(BaseModel):
-    """Main stackup configuration for EDB XML files.
+    """
+    Main stackup configuration for EDB XML files.
 
     This class represents the complete stackup definition including materials
     and layers for a PCB design.
@@ -286,6 +301,7 @@ class XmlStackup(BaseModel):
     >>> stackup = XmlStackup()
     >>> materials = stackup.add_materials()
     >>> layers = stackup.add_layers()
+
     """
 
     materials: XmlMaterials | None = Field(None, alias="Materials")
@@ -295,7 +311,8 @@ class XmlStackup(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_materials(self) -> XmlMaterials:
-        """Add a materials container to the stackup.
+        """
+        Add a materials container to the stackup.
 
         Returns
         -------
@@ -308,13 +325,15 @@ class XmlStackup(BaseModel):
         >>> stackup = XmlStackup()
         >>> materials = stackup.add_materials()
         >>> materials.add_material("copper", conductivity=5.8e7)
+
         """
         # noinspection PyArgumentList
         self.materials = XmlMaterials()
         return self.materials
 
     def add_layers(self) -> XmlLayers:
-        """Add a layers container to the stackup.
+        """
+        Add a layers container to the stackup.
 
         Returns
         -------
@@ -327,12 +346,14 @@ class XmlStackup(BaseModel):
         >>> stackup = XmlStackup()
         >>> layers = stackup.add_layers()
         >>> layers.add_layer(name="TOP", type="signal", thickness=0.035, material="copper")
+
         """
         self.layers = XmlLayers(length_unit="mm")
         return self.layers
 
     def import_from_cfg_stackup(self, cfg_stackup: "CfgStackup") -> None:
-        """Import stackup configuration from a CFG stackup object.
+        """
+        Import stackup configuration from a CFG stackup object.
 
         Parameters
         ----------
@@ -347,6 +368,7 @@ class XmlStackup(BaseModel):
         >>> stackup = XmlStackup()
         >>> cfg_data = CfgStackup(materials=[...], layers=[...])
         >>> stackup.import_from_cfg_stackup(cfg_data)
+
         """
         self.add_materials()
         for mat in cfg_stackup.materials:
@@ -364,7 +386,8 @@ class XmlStackup(BaseModel):
             self.layers.add_layer(**layer_kwargs)
 
     def to_dict(self) -> dict:
-        """Convert the stackup configuration to a dictionary.
+        """
+        Convert the stackup configuration to a dictionary.
 
         Returns
         -------
@@ -384,6 +407,7 @@ class XmlStackup(BaseModel):
         >>> config = stackup.to_dict()
         >>> print(config["materials"])
         [{'name': 'copper', 'conductivity': 58000000.0}]
+
         """
         layer_data = []
         unit = self.layers.length_unit

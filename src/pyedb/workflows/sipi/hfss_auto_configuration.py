@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""HFSS automatic configuration workflow for SI/PI analysis.
+"""
+HFSS automatic configuration workflow for SI/PI analysis.
 
 This module provides tools to automatically configure HFSS simulations from EDB designs,
 including net grouping, batch processing, cutout generation, port creation, and
@@ -46,6 +47,7 @@ Create configuration with specific net groups:
 >>> config.group_nets_by_prefix(["DDR", "PCIe", "USB"])
 >>> config.add_solder_ball("U1", diameter="0.3mm", height="0.2mm")
 >>> config.create_projects()
+
 """
 
 from __future__ import annotations
@@ -113,7 +115,8 @@ combined_ref = re.compile("|".join("(?:%s)" % p for p in ref_patterns), re.I)
 
 @dataclass
 class SolderBallsInfo:
-    """Solder ball configuration for component modeling.
+    """
+    Solder ball configuration for component modeling.
 
     This dataclass stores geometric parameters for solder ball definitions
     used in HFSS port creation and component modeling.
@@ -139,6 +142,7 @@ class SolderBallsInfo:
     'U1'
     >>> ball.diameter
     '0.3mm'
+
     """
 
     ref_des: str = field(default="")
@@ -150,7 +154,8 @@ class SolderBallsInfo:
 
 @dataclass
 class SimulationSetup:
-    """HFSS simulation setup parameters.
+    """
+    HFSS simulation setup parameters.
 
     This dataclass defines the simulation configuration including meshing
     frequency, convergence criteria, and frequency sweep settings.
@@ -175,6 +180,7 @@ class SimulationSetup:
     20
     >>> setup.stop_frequency
     '60GHz'
+
     """
 
     meshing_frequency: str | float = field(default="10GHz")
@@ -186,7 +192,8 @@ class SimulationSetup:
 
 @dataclass
 class BatchGroup:
-    """Group of nets to be processed together in a batch simulation.
+    """
+    Group of nets to be processed together in a batch simulation.
 
     This dataclass represents a collection of signal nets that will be
     simulated together with optional custom simulation settings.
@@ -212,6 +219,7 @@ class BatchGroup:
     'DDR4_Signals'
     >>> len(group.nets)
     3
+
     """
 
     name: str = field(default="")
@@ -220,7 +228,8 @@ class BatchGroup:
 
 
 class HFSSAutoConfiguration:
-    """Automatic HFSS simulation configuration from EDB designs.
+    """
+    Automatic HFSS simulation configuration from EDB designs.
 
     This class automates the process of configuring HFSS simulations including
     net grouping, cutout creation, port generation, and simulation setup.
@@ -290,15 +299,18 @@ class HFSSAutoConfiguration:
     >>> config.signal_nets = ["DDR4_DQ0", "DDR4_CLK"]
     >>> config.reference_net = "GND"
     >>> config.add_solder_ball("U1", diameter="0.3mm", height="0.2mm")
+
     """
 
     def __init__(self, edb=None):
-        """Initialize the HFSS automatic configuration.
+        """
+        Initialize the HFSS automatic configuration.
 
         Parameters
         ----------
         edb : Edb or None, optional
             Existing EDB object instance. The default is ``None``.
+
         """
         self._pedb = edb
         self.ansys_version: str = "2026.1"
@@ -326,7 +338,8 @@ class HFSSAutoConfiguration:
         self,
         pattern: str | list[str] | None = None,
     ) -> None:
-        """Automatically create and populate batch groups from signal nets.
+        """
+        Automatically create and populate batch groups from signal nets.
 
         This method discovers signal nets, identifies reference nets, and groups
         nets by prefix patterns. It is a convenience wrapper around
@@ -368,6 +381,7 @@ class HFSSAutoConfiguration:
         - Clears and repopulates ``batch_groups`` in-place
         - Automatically identifies reference nets (typically GND variants)
         - Opens and closes the EDB internally
+
         """
         if not self._pedb:
             self._pedb = Edb(edbpath=self.source_edb_path, version=self.ansys_version, grpc=self.grpc)
@@ -396,7 +410,8 @@ class HFSSAutoConfiguration:
         *,
         simulation_setup: SimulationSetup | None = None,
     ) -> BatchGroup:
-        """Append a new BatchGroup to the configuration.
+        """
+        Append a new BatchGroup to the configuration.
 
         Parameters
         ----------
@@ -431,6 +446,7 @@ class HFSSAutoConfiguration:
         >>> group = config.add_batch_group("PCIe", simulation_setup=setup)
         >>> group.simulation_setup.stop_frequency
         '30GHz'
+
         """
         bg = BatchGroup(
             name=name,
@@ -448,7 +464,8 @@ class HFSSAutoConfiguration:
         mid_diameter: str | float | None = None,
         height: str | float | None = None,
     ) -> SolderBallsInfo:
-        """Append a new solder ball definition to the configuration.
+        """
+        Append a new solder ball definition to the configuration.
 
         Parameters
         ----------
@@ -489,6 +506,7 @@ class HFSSAutoConfiguration:
         >>> config.add_solder_ball("U2", shape="spheroid", diameter="0.25mm", mid_diameter="0.35mm", height="0.18mm")
         >>> config.solder_balls[1].shape
         'spheroid'
+
         """
         sb = SolderBallsInfo(
             ref_des=ref_des,
@@ -509,7 +527,8 @@ class HFSSAutoConfiguration:
         frequency_step: str | float | None = "0.05GHz",
         replace: bool = True,
     ) -> SimulationSetup:
-        """Create a SimulationSetup instance and attach it to the configuration.
+        """
+        Create a SimulationSetup instance and attach it to the configuration.
 
         Parameters
         ----------
@@ -551,6 +570,7 @@ class HFSSAutoConfiguration:
         >>> config.add_simulation_setup(frequency_step="0.1GHz", replace=False)
         >>> config.batch_groups[-1].name
         'extra_setup'
+
         """
         setup = SimulationSetup(
             meshing_frequency=meshing_frequency,
@@ -609,7 +629,8 @@ class HFSSAutoConfiguration:
         self,
         prefix_patterns: list[str] | None = None,
     ) -> dict[str, list[list[str]]]:
-        """Group signal nets into disjoint batches while preserving differential pairs.
+        """
+        Group signal nets into disjoint batches while preserving differential pairs.
 
         This method organizes signal nets into batches based on prefix patterns,
         ensuring differential pairs (e.g., ``_P``/``_N``, ``_M``/``_L``) stay together.
@@ -654,6 +675,7 @@ class HFSSAutoConfiguration:
         - Every net is assigned to exactly one batch.
         - No batch contains only a single net; orphans are merged into the largest
           compatible group.
+
         """
         if not self.signal_nets:
             return {}
@@ -719,7 +741,8 @@ class HFSSAutoConfiguration:
         return grouped
 
     def create_projects(self):
-        """Generate HFSS projects from configured batch groups.
+        """
+        Generate HFSS projects from configured batch groups.
 
         This method executes the complete workflow for each batch group including:
 
@@ -757,6 +780,7 @@ class HFSSAutoConfiguration:
         - For multiple batch groups, projects are saved in ``batch_group_folder``
         - Each batch can have custom simulation settings
         - Automatically handles EDB session management
+
         """
 
         def del_ro(func, path, _):
@@ -912,7 +936,8 @@ def create_hfss_auto_configuration(
     port_type: str | None = None,
     create_pin_group: bool | None = None,
 ) -> HFSSAutoConfiguration:
-    """Factory function to create an HFSSAutoConfiguration instance with optional overrides.
+    """
+    Factory function to create an HFSSAutoConfiguration instance with optional overrides.
 
     This function creates a configuration object with all specified parameters,
     providing a convenient alternative to manual attribute assignment.
@@ -982,6 +1007,7 @@ def create_hfss_auto_configuration(
     ... )
     >>> config.simulation_setup.stop_frequency
     '60GHz'
+
     """
     cfg = HFSSAutoConfiguration(edb)
 

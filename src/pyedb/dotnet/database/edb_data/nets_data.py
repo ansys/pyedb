@@ -36,7 +36,8 @@ if TYPE_CHECKING:
 
 
 class EDBNetsData(NetDotNet):
-    """Manages EDB functionalities for a primitives.
+    """
+    Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
 
     Examples
@@ -46,6 +47,7 @@ class EDBNetsData(NetDotNet):
     >>> edb_net = edb.nets.nets["GND"]
     >>> edb_net.name  # Class Property
     >>> edb_net.name  # EDB Object Property
+
     """
 
     def __init__(self, raw_net, core_app):
@@ -58,11 +60,13 @@ class EDBNetsData(NetDotNet):
 
     @property
     def primitives(self) -> list["PrimitiveDotNet"]:
-        """Return the list of primitives that belongs to the net.
+        """
+        Return the list of primitives that belongs to the net.
 
         Returns
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+
         """
         from pyedb.dotnet.database.cell.layout import primitive_cast
 
@@ -70,21 +74,26 @@ class EDBNetsData(NetDotNet):
 
     @property
     def padstack_instances(self) -> list[EDBPadstackInstance]:
-        """Return the list of primitives that belongs to the net.
+        """
+        Return the list of primitives that belongs to the net.
 
         Returns
         -------
-        list of :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`"""
+        list of :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+
+        """
 
         return [EDBPadstackInstance(i, self._app) for i in self.net_object.PadstackInstances]
 
     @property
     def components(self) -> dict[str, "EDBComponent"]:
-        """Return the list of components that touch the net.
+        """
+        Return the list of components that touch the net.
 
         Returns
         -------
         dict[str, :class:`pyedb.dotnet.database.cell.hierarchy.component.EDBComponent`]
+
         """
         comps = {}
         for p in self.padstack_instances:
@@ -95,7 +104,8 @@ class EDBNetsData(NetDotNet):
         return comps
 
     def find_dc_short(self, fix=False) -> list[list[str]]:
-        """Find DC-shorted nets.
+        """
+        Find DC-shorted nets.
 
         Parameters
         ----------
@@ -107,6 +117,7 @@ class EDBNetsData(NetDotNet):
         -------
         List[List[str, str]]
             [[net name, net name]].
+
         """
         return self._app.layout_validation.dc_shorts(self.name, fix)
 
@@ -119,7 +130,8 @@ class EDBNetsData(NetDotNet):
         size=(2000, 1000),
         show=True,
     ):
-        """Plot a net to Matplotlib 2D chart.
+        """
+        Plot a net to Matplotlib 2D chart.
 
         Parameters
         ----------
@@ -137,6 +149,7 @@ class EDBNetsData(NetDotNet):
             Image size in pixel (width, height).
         show : bool, optional
             Whether to show the plot or not. Default is `True`.
+
         """
 
         return self._app.nets.plot(
@@ -152,12 +165,14 @@ class EDBNetsData(NetDotNet):
         )
 
     def get_smallest_trace_width(self) -> float:
-        """Retrieve the smallest trace width from paths.
+        """
+        Retrieve the smallest trace width from paths.
 
         Returns
         -------
         float
             Trace smallest width.
+
         """
         current_value = 1e10
         for prim in self.net_object.Primitives:
@@ -169,7 +184,8 @@ class EDBNetsData(NetDotNet):
 
     @property
     def extended_net(self) -> "EDBExtendedNetData | None":
-        """Get extended net and associated components.
+        """
+        Get extended net and associated components.
 
         Returns
         -------
@@ -180,6 +196,7 @@ class EDBNetsData(NetDotNet):
         >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets["BST_V3P3_S5"].extended_net
+
         """
         api_extended_net = self._api_get_extended_net
         obj = EDBExtendedNetData(self._app, api_extended_net)
@@ -191,7 +208,8 @@ class EDBNetsData(NetDotNet):
 
 
 class EDBNetClassData(NetClassDotNet):
-    """Manages EDB functionalities for a primitives.
+    """
+    Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -199,6 +217,7 @@ class EDBNetClassData(NetClassDotNet):
     >>> from pyedb import Edb
     >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb.net_classes
+
     """
 
     def __init__(self, core_app, raw_extended_net=None):
@@ -215,7 +234,8 @@ class EDBNetClassData(NetClassDotNet):
 
 
 class EDBExtendedNetData(ExtendedNetDotNet):
-    """Manages EDB functionalities for a primitives.
+    """
+    Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
 
     Examples
@@ -224,6 +244,7 @@ class EDBExtendedNetData(ExtendedNetDotNet):
     >>> edb = Edb("myedb", edbversion="2026.1")
     >>> edb_extended_net = edb.nets.extended_nets["GND"]
     >>> edb_extended_net.name  # Class Property
+
     """
 
     def __init__(self, core_app, raw_extended_net=None):
@@ -279,7 +300,8 @@ class EDBExtendedNetData(ExtendedNetDotNet):
 
 
 class EDBDifferentialPairData(DifferentialPairDotNet):
-    """Manages EDB functionalities for a primitive.
+    """
+    Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
 
     """

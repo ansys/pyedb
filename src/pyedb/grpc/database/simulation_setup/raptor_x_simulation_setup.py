@@ -46,7 +46,8 @@ class RaptorXSimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "Edb", name: str = "RaptorX_Simulation_Setup"):
-        """Create RaptorX simulation setup.
+        """
+        Create RaptorX simulation setup.
 
         Parameters
         ----------
@@ -66,7 +67,8 @@ class RaptorXSimulationSetup(SimulationSetup):
 
     @property
     def settings(self) -> RaptorXSimulationSettings:
-        """RaptorX simulation settings.
+        """
+        RaptorX simulation settings.
 
         Returns
         -------

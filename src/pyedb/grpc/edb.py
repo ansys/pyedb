@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Provides the main interface for interacting with Ansys Electronics Desktop Database (EDB).
+"""
+Provides the main interface for interacting with Ansys Electronics Desktop Database (EDB).
 
 This module contains the ``Edb`` class which serves as the primary interface for:
 - Creating and managing EDB projects
@@ -59,6 +60,7 @@ Examples
 
     # Exporting to HFSS
     edb.export_hfss("output_dir")
+
 """
 
 from itertools import combinations
@@ -153,7 +155,8 @@ if TYPE_CHECKING:
 
 
 class Edb(EdbInit):
-    """Main class for interacting with Ansys Electronics Desktop Database (EDB).
+    """
+    Main class for interacting with Ansys Electronics Desktop Database (EDB).
 
     Provides comprehensive control over EDB projects including:
     - Project creation/management
@@ -203,6 +206,7 @@ class Edb(EdbInit):
 
     >>> # Import board file:
     >>> edb = Edb("my_board.brd")
+
     """
 
     # Declare _init_objects and commonly-used property names for static analysis tools
@@ -342,7 +346,8 @@ class Edb(EdbInit):
         self._signal_handler(ex_type, ex_value)
 
     def __getitem__(self, variable_name):
-        """Get project or design variable value.
+        """
+        Get project or design variable value.
 
         Parameters
         ----------
@@ -353,13 +358,15 @@ class Edb(EdbInit):
         -------
         float or None
             Variable value if exists, else None.
+
         """
         if self.variable_exists(variable_name):
             return self.variables[variable_name]
         return None
 
     def __setitem__(self, variable_name, variable_value):
-        """Set project or design variable.
+        """
+        Set project or design variable.
 
         Parameters
         ----------
@@ -367,6 +374,7 @@ class Edb(EdbInit):
             Variable name (with '$' prefix for project variables).
         variable_value : str, float, int, list/tuple
             Value with units. List/tuple format: [value, description]
+
         """
         type_error_message = "Allowed values are str, numeric or two-item list with variable description."
         if type(variable_value) in [
@@ -407,7 +415,8 @@ class Edb(EdbInit):
 
     @staticmethod
     def number_with_units(value, units=None) -> str:
-        """Convert a number to a string with units. If value is a string, it's returned as is.
+        """
+        Convert a number to a string with units. If value is a string, it's returned as is.
 
         Parameters
         ----------
@@ -431,7 +440,8 @@ class Edb(EdbInit):
 
     @staticmethod
     def _get_terminal_net_name(terminal) -> Optional[str]:
-        """Normalize various terminal objects to a net name string.
+        """
+        Normalize various terminal objects to a net name string.
 
         This helper centralizes the common nested getattr pattern used across the
         file. It tries the following, in order:
@@ -448,6 +458,7 @@ class Edb(EdbInit):
         -------
         Optional[str]
             Net name or None if not available.
+
         """
         try:
             # Some wrappers expose .net_name directly
@@ -484,56 +495,66 @@ class Edb(EdbInit):
 
     @property
     def cell_names(self) -> List[str]:
-        """List of all cell names in the database.
+        """
+        List of all cell names in the database.
 
         Returns
         -------
         list[str]
             Names of all circuit cells.
+
         """
         return [cell.name for cell in self.active_db.top_circuit_cells]
 
     @property
     def design_variables(self) -> Dict[str, Variable]:
-        """All design variables in active cell.
+        """
+        All design variables in active cell.
 
         Returns
         -------
         dict[str, Variable]
             Variable names and values.
+
         """
         return {i: Variable(self.active_cell, i) for i in self.active_cell.get_all_variable_names()}
 
     @property
     def project_variables(self) -> Dict[str, Variable]:
-        """All project variables in database.
+        """
+        All project variables in database.
 
         Returns
         -------
         dict[str, Variable]
             Variable names and values.
+
         """
         return {i: Variable(self.active_db, i) for i in self.active_db.get_all_variable_names()}
 
     @property
     def layout_validation(self) -> LayoutValidation:
-        """Layout validation utilities.
+        """
+        Layout validation utilities.
 
         Returns
         -------
         :class:`LayoutValidation <pyedb.grpc.database.layout_validation.LayoutValidation>`
             Tools for design rule checking and layout validation.
+
         """
         return LayoutValidation(self)
 
     @property
     def variables(self) -> Dict[str, Variable]:
-        """All variables (project + design) in database.
+        """
+        All variables (project + design) in database.
 
         Returns
         -------
         dict[str, Variable]
             Combined dictionary of all variables.
+
         """
         all_vars = dict()
         for i, j in self.project_variables.items():
@@ -544,12 +565,14 @@ class Edb(EdbInit):
 
     @property
     def terminals(self) -> Dict[str, Terminal]:
-        """Terminals in active layout.
+        """
+        Terminals in active layout.
 
         Returns
         -------
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Terminal names and objects.
+
         """
         return {i.name: i for i in self.layout.terminals}
 
@@ -557,7 +580,8 @@ class Edb(EdbInit):
     @deprecated("Use ports property instead.", category=None)
     @runtime_deprecated_property("use ports property instead.")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         .. deprecated:: 0.71.0
            Use :attr: `ports` instead.
@@ -575,7 +599,8 @@ class Edb(EdbInit):
 
     @property
     def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         Returns
         -------
@@ -614,12 +639,14 @@ class Edb(EdbInit):
 
     @property
     def excitations_nets(self) -> List[str]:
-        """Nets with excitations defined.
+        """
+        Nets with excitations defined.
 
         Returns
         -------
         list[str]
             Net names with excitations.
+
         """
         # Use getattr to be robust for different terminal wrappers
         return list(
@@ -632,12 +659,14 @@ class Edb(EdbInit):
 
     @property
     def sources(self) -> Dict[str, Terminal]:
-        """All layout sources.
+        """
+        All layout sources.
 
         Returns
         -------
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Source names and objects.
+
         """
         return {
             k: i
@@ -648,12 +677,14 @@ class Edb(EdbInit):
 
     @property
     def voltage_regulator_modules(self) -> Dict[str, "VoltageRegulator"]:
-        """Voltage regulator modules in design.
+        """
+        Voltage regulator modules in design.
 
         Returns
         -------
         dict[str, :class:`VoltageRegulator <pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator>`]
             VRM names and objects.
+
         """
         vrms = self.layout.voltage_regulators
         _vrms = {}
@@ -672,12 +703,14 @@ class Edb(EdbInit):
 
     @property
     def probes(self) -> Dict[str, Terminal]:
-        """All layout probes.
+        """
+        All layout probes.
 
         Returns
         -------
         dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Probe names and objects.
+
         """
         terms = [
             term
@@ -687,7 +720,8 @@ class Edb(EdbInit):
         return {ter.name: ter for ter in terms}
 
     def open(self, restart_rpc_server: bool = False) -> bool:
-        """Open EDB database.
+        """
+        Open EDB database.
 
         Returns
         -------
@@ -698,6 +732,7 @@ class Edb(EdbInit):
         --------
         >>> # Open an existing EDB database:
         >>> edb = Edb("myproject.aedb")
+
         """
         self.standalone = self.standalone
         n_try = 10
@@ -730,12 +765,14 @@ class Edb(EdbInit):
             return True
 
     def create(self, restart_rpc_server=False) -> "Edb | None":
-        """Create new EDB database.
+        """
+        Create new EDB database.
 
         Returns
         -------
         bool
             True if successful, False otherwise.
+
         """
         from ansys.edb.core.layout.cell import Cell as GrpcCell, CellType as GrpcCellType
 
@@ -773,7 +810,8 @@ class Edb(EdbInit):
         tech_file=None,
         layer_filter=None,
     ) -> bool:
-        """Import layout file and generate AEDB.
+        """
+        Import layout file and generate AEDB.
 
         .. deprecated:: v0.50.0
                 Use :func:`import_layout_file() <pyedb.grpc.edb.Edb.import_layout_file>` instead,
@@ -804,6 +842,7 @@ class Edb(EdbInit):
         -------
         bool
             True if translation is successful, False otherwise.
+
         """
         return self.import_layout_file(
             input_file,
@@ -827,7 +866,8 @@ class Edb(EdbInit):
         tech_file=None,
         layer_filter=None,
     ) -> bool:
-        """Import a board file and generate an ``edb.def`` file in the working directory.
+        """
+        Import a board file and generate an ``edb.def`` file in the working directory.
 
         This function supports all AEDT formats, including DXF, GDS, SML (IPC2581), BRD, MCM, SIP, ZIP and TGZ.
 
@@ -870,6 +910,7 @@ class Edb(EdbInit):
         >>> edb.import_layout_file("my_board.brd", r"C:/project")
         >>> # Import a GDS file with control file:
         >>> edb.import_layout_file("layout.gds", control_file="control.xml")
+
         """
         self._components = None
         self._core_primitives = None
@@ -929,7 +970,8 @@ class Edb(EdbInit):
         working_dir="",
         export_xml=None,
     ) -> bool | str:
-        """Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
+        """
+        Import a vlc.tech file and generate an ``edb.def`` file in the working directory containing only the stackup.
 
         Parameters
         ----------
@@ -945,6 +987,7 @@ class Edb(EdbInit):
         -------
         bool or str
             `False` if translation failed, file path otherwise.
+
         """
         if not working_dir:
             working_dir = os.path.dirname(vlctech_file)
@@ -980,7 +1023,8 @@ class Edb(EdbInit):
         return self.edbpath
 
     def export_to_ipc2581(self, edbpath="", anstranslator_full_path="", ipc_path=None) -> str:
-        """Export design to IPC2581 format.
+        """
+        Export design to IPC2581 format.
 
         Parameters
         ----------
@@ -1001,6 +1045,7 @@ class Edb(EdbInit):
         >>> # Create an Edb instance and export to IPC2581 format:
         >>> edb = Edb()
         >>> edb.export_to_ipc2581("output.xml")
+
         """
         if not float(self.version) >= 2025.2:
             raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")
@@ -1027,30 +1072,35 @@ class Edb(EdbInit):
 
     @property
     def layout_bounding_box(self) -> list[float]:
-        """Get the bounding box of the active layout.
+        """
+        Get the bounding box of the active layout.
 
         Returns
         -------
         list[float]
             Bounding box coordinates as [xmin, ymin, xmax, ymax].
+
         """
         return self.hfss.get_layout_bounding_box(self.active_layout)
 
     @property
     def configuration(self) -> Configuration:
-        """Project configuration manager.
+        """
+        Project configuration manager.
 
         Returns
         -------
         :class:`Configuration <pyedb.configuration.configuration.Configuration>`
             Configuration file interface.
+
         """
         if not self._configuration:
             self._configuration = Configuration(self)
         return self._configuration
 
     def edb_exception(self, ex_value: Exception, tb_data: Any):
-        """Log Python exceptions to EDB logger.
+        """
+        Log Python exceptions to EDB logger.
 
         Parameters
         ----------
@@ -1058,6 +1108,7 @@ class Edb(EdbInit):
             Exception value.
         tb_data : traceback
             Traceback object.
+
         """
         tb_trace = traceback.format_tb(tb_data)
         tblist = tb_trace[0].split("\n")
@@ -1067,29 +1118,34 @@ class Edb(EdbInit):
 
     @property
     def active_db(self):
-        """Active database object.
+        """
+        Active database object.
 
         Returns
         -------
         :class:`ansys.edb.core.database.Database`
             Current database instance.
+
         """
         return self.db
 
     @property
     def active_cell(self):
-        """Active cell in the database.
+        """
+        Active cell in the database.
 
         Returns
         -------
         :class:`ansys.edb.core.layout.cell.Cell`
             Currently active cell.
+
         """
         return self._active_cell
 
     @active_cell.setter
     def active_cell(self, value):
-        """Set active cell by name or object.
+        """
+        Set active cell by name or object.
 
         Parameters
         ----------
@@ -1100,6 +1156,7 @@ class Edb(EdbInit):
         ------
         ValueError
             If cell not found in database.
+
         """
         self._layout = None
         if isinstance(value, str):
@@ -1119,12 +1176,14 @@ class Edb(EdbInit):
 
     @property
     def components(self) -> Components:
-        """Component management interface.
+        """
+        Component management interface.
 
         Returns
         -------
         :class:`Components <pyedb.grpc.database.components.Components>`
             Component manipulation tools.
+
         """
         if not self._components and self.active_db:
             self._components = Components(self)
@@ -1136,12 +1195,14 @@ class Edb(EdbInit):
 
     @property
     def stackup(self) -> Stackup:
-        """Stackup management interface.
+        """
+        Stackup management interface.
 
         Returns
         -------
         :class:`Stackup <pyedb.grpc.database.stackup.Stackup>`
             Layer stack configuration tools.
+
         """
         if self.active_db:
             self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
@@ -1151,7 +1212,8 @@ class Edb(EdbInit):
     @deprecated("Use excitation_manager property instead.", category=None)
     @runtime_deprecated_property("use excitation_manager property instead.")
     def source_excitation(self) -> Optional[SourceExcitation]:
-        """Source excitation management.
+        """
+        Source excitation management.
 
         .. deprecated:: 0.70
            Use :attr:`excitation_manager` property instead.
@@ -1159,6 +1221,7 @@ class Edb(EdbInit):
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
             Source and port creation tools.
+
         """
         if self.active_db:
             return self.excitation_manager
@@ -1166,12 +1229,14 @@ class Edb(EdbInit):
 
     @property
     def excitation_manager(self) -> SourceExcitation | None:
-        """Source excitation manager.
+        """
+        Source excitation manager.
 
         Returns
         -------
         :class:`SourceExcitation <pyedb.grpc.database.source_excitations.SourceExcitation>`
             Source and port creation tools.
+
         """
         if self.active_db:
             return self._source_excitation
@@ -1179,12 +1244,14 @@ class Edb(EdbInit):
 
     @property
     def materials(self) -> Materials:
-        """Material database interface.
+        """
+        Material database interface.
 
         Returns
         -------
         :class:`Materials <pyedb.grpc.database.definition.materials.Materials>`
             Material definition and management.
+
         """
         if self.active_db:
             self._materials = Materials(self)
@@ -1192,12 +1259,14 @@ class Edb(EdbInit):
 
     @property
     def padstacks(self) -> Padstacks:
-        """Padstack management interface.
+        """
+        Padstack management interface.
 
         Returns
         -------
         :class:`Padstacks <pyedb.grpc.database.padstack.Padstacks>`
             Padstack definition and editing.
+
         """
         if not self._padstack and self.active_db:
             self._padstack = Padstacks(self)
@@ -1205,12 +1274,14 @@ class Edb(EdbInit):
 
     @property
     def siwave(self) -> Siwave:
-        """SIwave simulation interface.
+        """
+        SIwave simulation interface.
 
         Returns
         -------
         :class:`Siwave <pyedb.grpc.database.siwave.Siwave>`
             SIwave analysis setup tools.
+
         """
         if not self._siwave and self.active_db:
             self._siwave = Siwave(self)
@@ -1218,12 +1289,14 @@ class Edb(EdbInit):
 
     @property
     def hfss(self) -> Hfss:
-        """HFSS simulation interface.
+        """
+        HFSS simulation interface.
 
         Returns
         -------
         :class:`Hfss <pyedb.grpc.database.hfss.Hfss>`
             HFSS analysis setup tools.
+
         """
         if not self._hfss and self.active_db:
             self._hfss = Hfss(self)
@@ -1231,12 +1304,14 @@ class Edb(EdbInit):
 
     @property
     def nets(self) -> "Nets":
-        """Net management interface.
+        """
+        Net management interface.
 
         Returns
         -------
         :class:`Nets <pyedb.grpc.database.nets.Nets>`
             Net manipulation tools.
+
         """
         from pyedb.grpc.database.nets import Nets
 
@@ -1246,12 +1321,14 @@ class Edb(EdbInit):
 
     @property
     def net_classes(self) -> Optional["NetClasses"]:
-        """Net class management.
+        """
+        Net class management.
 
         Returns
         -------
         :class:`NetClass <pyedb.grpc.database.nets.NetClasses>`
             Net classes objects.
+
         """
         from pyedb.grpc.database.nets import NetClasses
 
@@ -1261,12 +1338,14 @@ class Edb(EdbInit):
 
     @property
     def extended_nets(self) -> ExtendedNets:
-        """Extended net management.
+        """
+        Extended net management.
 
         Returns
         -------
         :class:`ExtendedNets <pyedb.grpc.database.net.extended_net.ExtendedNets>`
             Extended net tools.
+
         """
         if not self._extended_nets:
             self._extended_nets = ExtendedNets(self)
@@ -1274,12 +1353,14 @@ class Edb(EdbInit):
 
     @property
     def differential_pairs(self) -> DifferentialPairs:
-        """Differential pair management.
+        """
+        Differential pair management.
 
         Returns
         -------
         :class:`DifferentialPairs <pyedb.grpc.database.net.differential_par.DifferentialPairs>`
             Differential pair tools.
+
         """
         if not self._differential_pairs and self.active_db:
             self._differential_pairs = DifferentialPairs(self)
@@ -1287,12 +1368,14 @@ class Edb(EdbInit):
 
     @property
     def modeler(self) -> Modeler:
-        """Geometry modeling interface.
+        """
+        Geometry modeling interface.
 
         Returns
         -------
         :class:`Modeler <pyedb.grpc.database.modeler.Modeler>`
             Geometry creation and editing.
+
         """
         if not self._modeler and self.active_db:
             self._modeler = Modeler(self)
@@ -1301,12 +1384,14 @@ class Edb(EdbInit):
 
     @property
     def layout(self) -> Layout:
-        """Layout access interface.
+        """
+        Layout access interface.
 
         Returns
         -------
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Layout manipulation tools.
+
         """
         if self._layout:
             return self._layout
@@ -1315,30 +1400,35 @@ class Edb(EdbInit):
 
     @property
     def active_layout(self) -> Layout:
-        """Active layout access.
+        """
+        Active layout access.
 
         Returns
         -------
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Current layout tools.
+
         """
         return self.layout
 
     @property
     def layout_instance(self):
-        """Layout instance object.
+        """
+        Layout instance object.
 
         Returns
         -------
         :class:`LayoutInstance <ansys.edb.core.layout_instance.layout_instance.LayoutInstance>`
             Current layout instance.
+
         """
         if not self._layout_instance:
             self._layout_instance = self.layout.core.layout_instance
         return self._layout_instance
 
     def get_connected_objects(self, layout_object_instance) -> list[PadstackInstance | Path | Polygon]:
-        """Get objects connected to a layout object.
+        """
+        Get objects connected to a layout object.
 
         Parameters
         ----------
@@ -1349,6 +1439,7 @@ class Edb(EdbInit):
         -------
         list
             Connected objects (padstacks, paths, polygons, etc.).
+
         """
         from ansys.edb.core.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal as GrpcPadstackInstanceTerminal,
@@ -1392,7 +1483,8 @@ class Edb(EdbInit):
 
     @staticmethod
     def point_3d(x, y, z=0.0) -> Point3DData:
-        """Create 3D point.
+        """
+        Create 3D point.
 
         This method does not use instance state and is therefore a staticmethod.
 
@@ -1409,12 +1501,14 @@ class Edb(EdbInit):
         -------
         :class:`Point3DData <pyedb.grpc.database.geometry.point_3d_data.Point3DData>`
             3D point object.
+
         """
 
         return Point3DData(x, y, z)
 
     def point_data(self, x, y=None):
-        """Create 2D point.
+        """
+        Create 2D point.
 
         This method does not use instance state and is therefore a staticmethod.
 
@@ -1429,6 +1523,7 @@ class Edb(EdbInit):
         -------
         :class:`PointData <pyedb.grpc.database.geometry.point_data.PointData>`
             2D point object.
+
         """
         from collections.abc import Iterable
 
@@ -1486,7 +1581,8 @@ class Edb(EdbInit):
     @deprecated("Use close() instead.", category=None)
     @runtime_deprecated("Use close() instead.")
     def close_edb(self) -> bool:
-        """Close EDB and clean up resources.
+        """
+        Close EDB and clean up resources.
 
         ..deprecated:: 0.51.0
            Use :func:`close` instead.
@@ -1501,13 +1597,15 @@ class Edb(EdbInit):
         Close the EDB session:
         >>> edb = Edb()
         >>> edb.close()
+
         """
         return self.close()
 
     @deprecated("Use save() instead.", category=None)
     @runtime_deprecated("Use save() instead.")
     def save_edb(self) -> bool:
-        """Save current EDB database.
+        """
+        Save current EDB database.
 
         ..deprecated:: 0.51.0
            Use :func:`save` instead.
@@ -1518,7 +1616,8 @@ class Edb(EdbInit):
     @deprecated("Use save_as() instead.", category=None)
     @runtime_deprecated("Use save_as() instead.")
     def save_edb_as(self, fname) -> bool:
-        """Save EDB database to new location.
+        """
+        Save EDB database to new location.
 
         ..deprecated:: 0.51.0
            Use :func:`save_as` instead.
@@ -1526,12 +1625,14 @@ class Edb(EdbInit):
         return self.save_as(fname)
 
     def execute(self, func):
-        """Execute EDB utility command (Not implemented in gRPC).
+        """
+        Execute EDB utility command (Not implemented in gRPC).
 
         Parameters
         ----------
         func : str
             Command to execute.
+
         """
         # return self.core.utility.utility.Command.Execute(func)
         pass
@@ -1547,7 +1648,8 @@ class Edb(EdbInit):
         map_file=None,
         layer_filter=None,
     ) -> bool:
-        """Import GDS file.
+        """
+        Import GDS file.
 
         .. warning::
             Do not execute this function with untrusted function argument, environment
@@ -1575,6 +1677,7 @@ class Edb(EdbInit):
         -------
         bool
             True if import is successful, False otherwise.
+
         """
         control_file_temp = os.path.join(tempfile.gettempdir(), os.path.split(input_gds)[-1][:-3] + "xml")
         if float(self.version) < 2024.1:
@@ -1661,7 +1764,8 @@ class Edb(EdbInit):
         include_voids_in_extents=False,
         compute_extent_only: bool = False,
     ) -> list:
-        """Create a cutout using an approach entirely based on PyAEDT.
+        """
+        Create a cutout using an approach entirely based on PyAEDT.
         This method replaces all legacy cutout methods in PyAEDT.
         It does in sequence:
         - delete all nets not in list,
@@ -1806,7 +1910,8 @@ class Edb(EdbInit):
 
     @staticmethod
     def write_export3d_option_config_file(path_to_output, config_dictionaries=None):
-        """Write the options for a 3D export to a configuration file.
+        """
+        Write the options for a 3D export to a configuration file.
 
         Parameters
         ----------
@@ -1850,7 +1955,8 @@ class Edb(EdbInit):
         aedt_file_name=None,
         hidden=False,
     ) -> str:
-        """Export to HFSS project.
+        """
+        Export to HFSS project.
 
         Parameters
         ----------
@@ -1875,6 +1981,7 @@ class Edb(EdbInit):
         >>> # Create an Edb instance and export to HFSS project:
         >>> edb = Edb()
         >>> edb.export_hfss(r"C:/output", net_list=["SignalNet"])
+
         """
         siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad("HFSS", path_to_output, net_list, num_cores, aedt_file_name, hidden=hidden)
@@ -1887,7 +1994,8 @@ class Edb(EdbInit):
         aedt_file_name=None,
         hidden=False,
     ) -> str:
-        """Export to Q3D project.
+        """
+        Export to Q3D project.
 
         Parameters
         ----------
@@ -1912,6 +2020,7 @@ class Edb(EdbInit):
         >>> # Create an Edb instance and export to Q3D project:
         >>> edb = Edb()
         >>> edb.export_q3d(r"C:/output")
+
         """
         siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
@@ -1931,7 +2040,8 @@ class Edb(EdbInit):
         aedt_file_name=None,
         hidden=False,
     ) -> str:
-        """Export to Maxwell project.
+        """
+        Export to Maxwell project.
 
         Parameters
         ----------
@@ -1956,6 +2066,7 @@ class Edb(EdbInit):
         >>> # Create an Edb instance and export to Maxwell project:
         >>> edb = Edb()
         >>> edb.export_maxwell(r"C:/output")
+
         """
         siwave_s = SiwaveSolve(self)
         return siwave_s.export_3d_cad(
@@ -1968,7 +2079,8 @@ class Edb(EdbInit):
         )
 
     def solve_siwave(self) -> str:
-        """Solve with SIwave.
+        """
+        Solve with SIwave.
 
         Returns
         -------
@@ -1980,6 +2092,7 @@ class Edb(EdbInit):
         >>> # Create an Edb instance and solve with SIwave:
         >>> edb = Edb()
         >>> edb.solve_siwave()
+
         """
         process = SiwaveSolve(self)
         try:
@@ -2004,7 +2117,8 @@ class Edb(EdbInit):
         power_tree=True,
         loop_res=True,
     ) -> list[str]:
-        """Export SIwave DC results.
+        """
+        Export SIwave DC results.
 
         Parameters
         ----------
@@ -2033,6 +2147,7 @@ class Edb(EdbInit):
         -------
         list[str]
             Generated report files.
+
         """
         process = SiwaveSolve(self)
         try:
@@ -2056,7 +2171,8 @@ class Edb(EdbInit):
         )
 
     def variable_exists(self, variable_name) -> bool:
-        """Check if variable exists.
+        """
+        Check if variable exists.
 
         Parameters
         ----------
@@ -2067,6 +2183,7 @@ class Edb(EdbInit):
         -------
         bool
             True if variable exists.
+
         """
         if "$" in variable_name:
             if variable_name.index("$") == 0:
@@ -2080,7 +2197,8 @@ class Edb(EdbInit):
         return False
 
     def get_variable(self, variable_name) -> Value | bool:
-        """Get variable value.
+        """
+        Get variable value.
 
         Parameters
         ----------
@@ -2091,6 +2209,7 @@ class Edb(EdbInit):
         -------
         float or bool
             Variable value if exists, else False.
+
         """
         if self.variable_exists(variable_name):
             if variable_name.startswith("$"):
@@ -2103,7 +2222,8 @@ class Edb(EdbInit):
         return False
 
     def get_all_variable_names(self) -> List[str]:
-        """Method added for compatibility with grpc.
+        """
+        Method added for compatibility with grpc.
 
         Returns
         -------
@@ -2114,7 +2234,8 @@ class Edb(EdbInit):
         return list(self.active_cell.get_all_variable_names())
 
     def add_project_variable(self, variable_name, variable_value, description=None) -> bool:
-        """Add project variable.
+        """
+        Add project variable.
 
         Parameters
         ----------
@@ -2129,6 +2250,7 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False if variable exists.
+
         """
         if not variable_name.startswith("$"):
             variable_name = f"${variable_name}"
@@ -2142,7 +2264,8 @@ class Edb(EdbInit):
             return False
 
     def add_design_variable(self, variable_name, variable_value, description: str = "") -> bool:
-        """Add design variable.
+        """
+        Add design variable.
 
         Parameters
         ----------
@@ -2157,6 +2280,7 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False if variable exists.
+
         """
         if variable_name.startswith("$"):
             variable_name = variable_name[1:]
@@ -2170,7 +2294,8 @@ class Edb(EdbInit):
             return False
 
     def change_design_variable_value(self, variable_name, variable_value):
-        """Update variable value.
+        """
+        Update variable value.
 
         Parameters
         ----------
@@ -2178,6 +2303,7 @@ class Edb(EdbInit):
             Variable name.
         variable_value : str, float
             New value with units.
+
         """
         if self.variable_exists(variable_name):
             if variable_name in self.db.get_all_variable_names():
@@ -2187,23 +2313,27 @@ class Edb(EdbInit):
 
     @property
     def design_mode(self) -> str:
-        """Get mode of the edb design.
+        """
+        Get mode of the edb design.
 
         Returns
         -------
         str
             Value is either "general" or "ic" (lowercase).
+
         """
         return ("general", "ic")[self.active_cell.design_mode.value]
 
     @design_mode.setter
     def design_mode(self, value: str) -> None:
-        """Update the design mode of the edb.
+        """
+        Update the design mode of the edb.
 
         Parameters
         ----------
         value : str
             It can be either "general" or "ic" (case-insensitive).
+
         """
         try:
             self.active_cell.design_mode = CoreDesignMode(("general", "ic").index(value.lower()))
@@ -2211,19 +2341,22 @@ class Edb(EdbInit):
             raise ValueError("Value must be 'general' or 'ic' (case-insensitive)") from exc
 
     def get_bounding_box(self) -> tuple[tuple[float, float], tuple[float, float]]:
-        """Get layout bounding box.
+        """
+        Get layout bounding box.
 
         Returns
         -------
         tuple
             tuple[tuple[min_x, min_y], tuple[max_x, max_y]] in meters.
+
         """
         lay_inst_polygon_data = [obj_inst.get_bbox() for obj_inst in self.layout_instance.query_layout_obj_instances()]
         layout_bbox = CorePolygonData.bbox_of_polygons(lay_inst_polygon_data)
         return (Value(layout_bbox[0].x), Value(layout_bbox[0].y)), (Value(layout_bbox[1].x), Value(layout_bbox[1].y))
 
     def get_statistics(self, compute_area=False) -> "LayoutStatistics":
-        """Get layout statistics.
+        """
+        Get layout statistics.
 
         Parameters
         ----------
@@ -2234,11 +2367,13 @@ class Edb(EdbInit):
         -------
         :class:`LayoutStatistics <pyedb.grpc.database.utility.layout_statistics.LayoutStatistics>`
             Layout statistics report.
+
         """
         return self.modeler.get_layout_statistics(evaluate_area=compute_area, net_list=None)
 
     def are_port_reference_terminals_connected(self, common_reference=None) -> bool:
-        """Check if port reference terminals are connected.
+        """
+        Check if port reference terminals are connected.
 
         Parameters
         ----------
@@ -2249,6 +2384,7 @@ class Edb(EdbInit):
         -------
         bool
             True if all port references are connected.
+
         """
         all_sources: List[Any] = [
             i for i in self.ports.values() if not isinstance(i, (WavePort, GapPort, BundleWavePort))
@@ -2321,11 +2457,13 @@ class Edb(EdbInit):
     def setups(
         self,
     ) -> dict[str, HfssSimulationSetup | SIWaveDCIRSimulationSetup | SiwaveSimulationSetup]:
-        """Get the dictionary of all EDB simulation setups.
+        """
+        Get the dictionary of all EDB simulation setups.
 
         Returns
         -------
         dict[str, object]
+
         """
 
         return self.simulation_setups.setups
@@ -2339,7 +2477,8 @@ class Edb(EdbInit):
     @deprecated("Use simulation_setups.hfss property instead.", category=None)
     @runtime_deprecated_property("use simulation_setups.hfss property instead")
     def hfss_setups(self) -> dict[str, HfssSimulationSetup]:
-        """Active HFSS setup in EDB.
+        """
+        Active HFSS setup in EDB.
 
         .. deprecated:: pyedb 0.67.0
            Use :attr:`simulation_setups.hfss` instead.
@@ -2350,7 +2489,8 @@ class Edb(EdbInit):
     @deprecated("Use simulation_setups.siwave_dcir property instead.", category=None)
     @runtime_deprecated_property("use simulation_setups.siwave_dcir property instead")
     def siwave_dc_setups(self) -> dict[str, SIWaveDCIRSimulationSetup]:
-        """Active Siwave DC IR Setups.
+        """
+        Active Siwave DC IR Setups.
 
         .. deprecated:: pyedb 0.67.0
            Use :attr:`simulation_setups.siwave_dcir` instead.
@@ -2362,7 +2502,8 @@ class Edb(EdbInit):
     @deprecated("Use simulation_setups.siwave property instead.", category=None)
     @runtime_deprecated_property("use simulation_setups.siwave property instead")
     def siwave_ac_setups(self) -> dict[str, SiwaveSimulationSetup]:
-        """Active Siwave SYZ setups.
+        """
+        Active Siwave SYZ setups.
 
         .. deprecated:: pyedb 0.67.0
            Use :attr:`simulation_setups.siwave` instead.
@@ -2374,7 +2515,8 @@ class Edb(EdbInit):
     def create_hfss_setup(
         self, name=None, start_frequency="0GHz", stop_frequency="20GHz", step_frequency="10MHz"
     ) -> HfssSimulationSetup:
-        """Create an HFSS simulation setup from a template.
+        """
+        Create an HFSS simulation setup from a template.
 
         . deprecated:: pyedb 0.67.0
         Use :func:`self.simulation_setups.create` instead.
@@ -2390,7 +2532,8 @@ class Edb(EdbInit):
     @deprecated("Use simulation_setups.create_raptor_x_setup() instead.", category=None)
     @runtime_deprecated("Use simulation_setups.create_raptor_x_setup() instead.")
     def create_raptorx_setup(self, name=None) -> RaptorXSimulationSetup:
-        """Create RaptorX analysis setup (2024R2+ only).
+        """
+        Create RaptorX analysis setup (2024R2+ only).
 
         ..deprecated:: pyedb 0.67.0
               Use :func:`self.simulation_setups.create` instead.
@@ -2400,7 +2543,8 @@ class Edb(EdbInit):
     @deprecated("Use simulation_setups.create_siwave_setup() instead.", category=None)
     @runtime_deprecated("Use simulation_setups.create_siwave_setup() instead.")
     def create_siwave_syz_setup(self, name=None, **kwargs) -> SiwaveSimulationSetup:
-        """Create SIwave SYZ analysis setup.
+        """
+        Create SIwave SYZ analysis setup.
 
         .. deprecated:: pyedb 0.67.0
             Use :func:`self.simulation_setups.create_siwave_setup` instead.
@@ -2410,7 +2554,8 @@ class Edb(EdbInit):
     @deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.", category=None)
     @runtime_deprecated("Use simulation_setups.create_siwave_dcir_setup() instead.")
     def create_siwave_dc_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
-        """Create SIwave DC analysis setup.
+        """
+        Create SIwave DC analysis setup.
 
         ..deprecated:: pyedb 0.67.0
             Use :func:`self.simulation_setups.create` instead.
@@ -2418,7 +2563,8 @@ class Edb(EdbInit):
         return self.simulation_setups.create_siwave_dcir_setup(name=name, **kwargs)
 
     def calculate_initial_extent(self, expansion_factor) -> float:
-        """Compute a float representing the larger number between the dielectric thickness or trace width
+        """
+        Compute a float representing the larger number between the dielectric thickness or trace width
         multiplied by the nW factor. The trace width search is limited to nets with ports attached.
 
         Parameters
@@ -2429,6 +2575,7 @@ class Edb(EdbInit):
         Returns
         -------
         float
+
         """
         nets = []
         for port in self.ports.values():
@@ -2450,7 +2597,8 @@ class Edb(EdbInit):
         return max_width
 
     def copy_zones(self, working_directory=None) -> dict[str, tuple[int, CorePolygonData]]:
-        """Copy multi-zone EDB project to one new edb per zone.
+        """
+        Copy multi-zone EDB project to one new edb per zone.
 
         Parameters
         ----------
@@ -2500,7 +2648,8 @@ class Edb(EdbInit):
         return edb_zones
 
     def cutout_multizone_layout(self, zones, common_reference_net=None) -> tuple[dict[str, str], list[str]]:
-        """Create a multizone project cutout.
+        """
+        Create a multizone project cutout.
 
         Parameters
         ----------
@@ -2558,7 +2707,8 @@ class Edb(EdbInit):
 
     @staticmethod
     def _get_connected_ports_from_multizone_cutout(terminal_info_dict):
-        """Return connected port list from clipped multizone layout.
+        """
+        Return connected port list from clipped multizone layout.
 
         Parameters
             terminal_info_dict : dict[str][str]
@@ -2576,6 +2726,7 @@ class Edb(EdbInit):
         -------
         list[str]
             list of connected ports.
+
         """
         if terminal_info_dict:
             tolerance = 1e-8
@@ -2638,7 +2789,8 @@ class Edb(EdbInit):
     @deprecated("Use excitation_manager.create_port() instead.", category=None)
     @runtime_deprecated("Use excitation_manager.create_port() instead.")
     def create_port(self, terminal, ref_terminal=None, is_circuit_port=False, name=None):
-        """Create a port.
+        """
+        Create a port.
 
         ..deprecated:: 0.51.0
            Use :func:`create_port` has been moved to source_excitation.create_port.
@@ -2649,7 +2801,8 @@ class Edb(EdbInit):
     @deprecated("Use excitation_manager.create_voltage_probe() instead.", category=None)
     @runtime_deprecated("Use excitation_manager.create_voltage_probe() instead.")
     def create_voltage_probe(self, terminal, ref_terminal):
-        """Create a voltage probe.
+        """
+        Create a voltage probe.
 
         ..deprecated:: 0.50.0
            Use :func:`create_voltage_probe` has been moved to edb.excitation_manager.create_voltage_probe.
@@ -2660,7 +2813,8 @@ class Edb(EdbInit):
     @deprecated("Use excitation_manager.create_voltage_source() instead.", category=None)
     @runtime_deprecated("Use excitation_manager.create_voltage_source() instead.")
     def create_voltage_source(self, terminal, ref_terminal):
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         ..deprecated:: 0.50.0
            Use: func:`create_voltage_source` has been moved to edb.excitation_manager.create_voltage_source.
@@ -2671,7 +2825,8 @@ class Edb(EdbInit):
     @deprecated("Use excitation_manager.create_current_source() instead.", category=None)
     @runtime_deprecated("Use excitation_manager.create_current_source() instead.")
     def create_current_source(self, terminal, ref_terminal):
-        """Create a current source.
+        """
+        Create a current source.
 
         ..deprecated:: 0.50.0
            Use :func:`create_current_source` has been moved to edb.excitation_manager.create_current_source.
@@ -2682,7 +2837,8 @@ class Edb(EdbInit):
     @deprecated("Use excitation_manager.get_point_terminal() instead.", category=None)
     @runtime_deprecated("Use excitation_manager.get_point_terminal() instead.")
     def get_point_terminal(self, name, net_name, location, layer):
-        """Place terminal between two points.
+        """
+        Place terminal between two points.
 
         ..deprecated:: 0.50.0
            Use: func:`get_point_terminal` has been moved to edb.excitation_manager.get_point_terminal.
@@ -2709,7 +2865,8 @@ class Edb(EdbInit):
         expand_voids_size=0,
         via_offset=True,
     ) -> list[str]:
-        """Automatically parametrize design elements.
+        """
+        Automatically parametrize design elements.
 
         Parameters
         ----------
@@ -2760,6 +2917,7 @@ class Edb(EdbInit):
         >>>     layers=True,
         >>>     materials=True,
         >>>     trace_net_filter=["Clock"])
+
         """
         edb_original_path = self.edbpath
         if output_aedb_path:
@@ -2967,7 +3125,8 @@ class Edb(EdbInit):
 
     @staticmethod
     def _clean_string_for_variable_name(variable_name):
-        """Remove forbidden character for variable name.
+        """
+        Remove forbidden character for variable name.
         Parameters
         ----------
         variable_name : str
@@ -2976,6 +3135,7 @@ class Edb(EdbInit):
         -------
         str
             Edited name.
+
         """
         if "-" in variable_name:
             variable_name = variable_name.replace("-", "_")
@@ -2994,7 +3154,8 @@ class Edb(EdbInit):
         output_edb=None,
         launching_box_thickness="100um",
     ):
-        """Create simplified model for arbitrary wave port generation.
+        """
+        Create simplified model for arbitrary wave port generation.
 
         Parameters
         ----------
@@ -3015,6 +3176,7 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
         """
         try:
             import rtree
@@ -3147,12 +3309,14 @@ class Edb(EdbInit):
 
     @property
     def definitions(self):
-        """EDB definitions access.
+        """
+        EDB definitions access.
 
         Returns
         -------
         :class:`Definitions <pyedb.grpc.database.definitions.Definitions>`
             Definitions interface.
+
         """
         from pyedb.grpc.database.definitions import Definitions
 
@@ -3160,19 +3324,22 @@ class Edb(EdbInit):
 
     @property
     def workflow(self):
-        """Workflow automation interface.
+        """
+        Workflow automation interface.
 
         Returns
         -------
         :class:`Workflow <pyedb.workflow.Workflow>`
             Workflow automation tools.
+
         """
         from pyedb.workflow import Workflow
 
         return Workflow(self)
 
     def export_gds_comp_xml(self, comps_to_export, gds_comps_unit="mm", control_path=None):
-        """Export component data to GDS XML control file.
+        """
+        Export component data to GDS XML control file.
 
         Parameters
         ----------
@@ -3187,6 +3354,7 @@ class Edb(EdbInit):
         -------
         bool
             True if successful, False otherwise.
+
         """
         from pyedb.generic.general_methods import ET
 
@@ -3214,7 +3382,8 @@ class Edb(EdbInit):
         return True if os.path.exists(control_path) else False
 
     def compare(self, input_file, results=""):
-        """Compares current open database with another one.
+        """
+        Compares current open database with another one.
 
         .. warning::
             Do not execute this function with untrusted function argument, environment
@@ -3232,6 +3401,7 @@ class Edb(EdbInit):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         self.save()
         if not results:
@@ -3258,7 +3428,8 @@ class Edb(EdbInit):
             return True
 
     def import_layout_component(self, component_path) -> CoreLayoutComponent:
-        """Import a layout component inside the current layout and place it at the origin.
+        """
+        Import a layout component inside the current layout and place it at the origin.
         This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
 
         Parameters
@@ -3269,6 +3440,7 @@ class Edb(EdbInit):
         Returns
         -------
             class:`LayoutComponent <ansys.edb.core.hierarchy.layout_component.LayoutComponent>`.
+
         """
 
         return CoreLayoutComponent.import_layout_component(
@@ -3276,7 +3448,8 @@ class Edb(EdbInit):
         )
 
     def export_layout_component(self, component_path) -> bool:
-        """Export a layout component from the current layout.
+        """
+        Export a layout component from the current layout.
         This feature is only supported with PyEDB gRPC. Encryption is not yet supported.
 
         Parameters
@@ -3288,6 +3461,7 @@ class Edb(EdbInit):
         -------
         bool
             `True` if layout component is successfully exported, `False` otherwise.
+
         """
 
         return CoreLayoutComponent.export_layout_component(
@@ -3302,7 +3476,8 @@ class Edb(EdbInit):
         prefix: str = "merged_",
         show_progress: bool = True,
     ):
-        """Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
+        """
+        Merge two EDBs together by copying the primitives from the merged_edb into the hosting_edb.
 
         Parameters
         ----------
@@ -3346,7 +3521,8 @@ class Edb(EdbInit):
             edb2.close(terminate_rpc_session=False)
 
     def _init_objects(self):
-        """Initialize commonly used cached objects for the gRPC EDB implementation.
+        """
+        Initialize commonly used cached objects for the gRPC EDB implementation.
 
         This method mirrors the behavior of the dotnet implementation: it creates
         high-level helper objects and stores them on the Edb instance so that

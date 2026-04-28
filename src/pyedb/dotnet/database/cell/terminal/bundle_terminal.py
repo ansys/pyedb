@@ -26,7 +26,8 @@ from pyedb.dotnet.database.general import convert_py_list_to_net_list
 
 
 class BundleTerminal(Terminal):
-    """Manages bundle terminal properties.
+    """
+    Manages bundle terminal properties.
 
     Parameters
     ----------
@@ -34,6 +35,7 @@ class BundleTerminal(Terminal):
         EDB object from the ``Edblib`` library.
     edb_object : Ansys.Ansoft.Edb.Cell.Terminal.BundleTerminal
         BundleTerminal instance from EDB.
+
     """
 
     def __init__(self, pedb, edb_object):

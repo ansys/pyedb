@@ -34,12 +34,14 @@ class NPortComponentModel:
 
     @classmethod
     def create(cls, name: str = None) -> "NPortComponentModel":
-        """Create a new NPortComponentModel object.
+        """
+        Create a new NPortComponentModel object.
 
         Returns
         -------
         NPortComponentModel
             The newly created NPortComponentModel object.
+
         """
         if not name:
             raise ValueError("Name must be provided to create NPortComponentModel.")

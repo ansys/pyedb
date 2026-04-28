@@ -40,21 +40,25 @@ class AdaptiveSettings(object):
 
     @property
     def adaptive_settings(self):
-        """Adaptive EDB settings.
+        """
+        Adaptive EDB settings.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.hfss_simulation_setup_data.AdaptiveSettings`
+
         """
         return self._parent.sim_setup_info.simulation_settings.AdaptiveSettings
 
     @property
     def adaptive_frequency_data_list(self):
-        """List of all adaptive frequency data.
+        """
+        List of all adaptive frequency data.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.hfss_simulation_setup_data.AdaptiveFrequencyData`
+
         """
         return [AdaptiveFrequencyData(i) for i in list(self.adaptive_settings.AdaptiveFrequencyDataList)]
 
@@ -65,7 +69,8 @@ class AdaptiveSettings(object):
 
     @property
     def adapt_type(self):
-        """Adaptive type.
+        """
+        Adaptive type.
         Options:
         1- ``kSingle``.
         2- ``kMultiFrequencies``.
@@ -75,6 +80,7 @@ class AdaptiveSettings(object):
         Returns
         -------
         str
+
         """
         return self.adaptive_settings.AdaptType.ToString()
 
@@ -85,11 +91,13 @@ class AdaptiveSettings(object):
 
     @property
     def basic(self):
-        """Whether if turn on basic adaptive.
+        """
+        Whether if turn on basic adaptive.
 
         Returns
         -------
             ``True`` if basic adaptive is used, ``False`` otherwise.
+
         """
         return self.adaptive_settings.Basic
 
@@ -100,7 +108,8 @@ class AdaptiveSettings(object):
 
     @property
     def do_adaptive(self):
-        """Whether if adaptive mesh is on.
+        """
+        Whether if adaptive mesh is on.
 
         Returns
         -------
@@ -112,11 +121,13 @@ class AdaptiveSettings(object):
 
     @property
     def max_refinement(self):
-        """Maximum number of mesh elements to be added per pass.
+        """
+        Maximum number of mesh elements to be added per pass.
 
         Returns
         -------
         int
+
         """
         return self.adaptive_settings.MaxRefinement
 
@@ -127,11 +138,13 @@ class AdaptiveSettings(object):
 
     @property
     def max_refine_per_pass(self):
-        """Maximum number of mesh elementat that can be added during an adaptive pass.
+        """
+        Maximum number of mesh elementat that can be added during an adaptive pass.
 
         Returns
         -------
         int
+
         """
         return self.adaptive_settings.MaxRefinePerPass
 
@@ -142,11 +155,13 @@ class AdaptiveSettings(object):
 
     @property
     def min_passes(self):
-        """Minimum number of passes.
+        """
+        Minimum number of passes.
 
         Returns
         -------
         int
+
         """
         return self.adaptive_settings.MinPasses
 
@@ -157,11 +172,13 @@ class AdaptiveSettings(object):
 
     @property
     def min_converged_passes(self):
-        """Minimum number of converged passes.
+        """
+        Minimum number of converged passes.
 
         Returns
         -------
             int
+
         """
         return self.adaptive_settings.MinConvergedPasses
 
@@ -172,12 +189,14 @@ class AdaptiveSettings(object):
 
     @property
     def save_fields(self):
-        """Whether to turn on save fields.
+        """
+        Whether to turn on save fields.
 
         Returns
         -------
         bool
             ``True`` if save fields is used, ``False`` otherwise.
+
         """
         return self.adaptive_settings.SaveFields
 
@@ -188,7 +207,8 @@ class AdaptiveSettings(object):
 
     @property
     def save_rad_field_only(self):
-        """Flag indicating if the saving of only radiated fields is turned on.
+        """
+        Flag indicating if the saving of only radiated fields is turned on.
 
         Returns
         -------
@@ -205,7 +225,8 @@ class AdaptiveSettings(object):
 
     @property
     def use_convergence_matrix(self):
-        """Whether to turn on the convergence matrix.
+        """
+        Whether to turn on the convergence matrix.
 
         Returns
         -------
@@ -222,12 +243,14 @@ class AdaptiveSettings(object):
 
     @property
     def use_max_refinement(self):
-        """Whether to turn on maximum refinement.
+        """
+        Whether to turn on maximum refinement.
 
         Returns
         -------
         bool
             ``True`` if maximum refinement is used, ``False`` otherwise.
+
         """
         return self.adaptive_settings.UseMaxRefinement
 
@@ -237,7 +260,8 @@ class AdaptiveSettings(object):
         self._parent._update_setup()
 
     def add_adaptive_frequency_data(self, frequency=0, max_num_passes=10, max_delta_s=0.02):
-        """Add a setup for frequency data.
+        """
+        Add a setup for frequency data.
 
         Parameters
         ----------
@@ -252,6 +276,7 @@ class AdaptiveSettings(object):
         -------
         bool
             ``True`` if method is successful, ``False`` otherwise.
+
         """
         low_freq_adapt_data = self._parent._pedb.simsetupdata.AdaptiveFrequencyData()
         low_freq_adapt_data.MaxDelta = self._parent._pedb.edb_value(max_delta_s).ToString()
@@ -263,7 +288,8 @@ class AdaptiveSettings(object):
     def add_broadband_adaptive_frequency_data(
         self, low_frequency=0, high_frequency=10e9, max_num_passes=10, max_delta_s=0.02
     ):
-        """Add a setup for frequency data.
+        """
+        Add a setup for frequency data.
 
         Parameters
         ----------
@@ -280,6 +306,7 @@ class AdaptiveSettings(object):
         -------
         bool
             ``True`` if method is successful, ``False`` otherwise.
+
         """
         low_freq_adapt_data = self._parent._pedb.simsetupdata.AdaptiveFrequencyData()
         low_freq_adapt_data.MaxDelta = self._parent._pedb.edb_value(max_delta_s).ToString()
@@ -295,7 +322,8 @@ class AdaptiveSettings(object):
         return self._parent._update_setup()
 
     def add_multi_frequency_adaptive_setup(self, freq_list, max_num_passes=10, max_delta_s=0.02):
-        """Add a setup for frequency data.
+        """
+        Add a setup for frequency data.
 
         Parameters
         ----------
@@ -312,6 +340,7 @@ class AdaptiveSettings(object):
         -------
         bool
             ``True`` if method is successful, ``False`` otherwise.
+
         """
         self.adaptive_settings.AdaptiveFrequencyDataList.Clear()
         for i in freq_list:
@@ -335,11 +364,13 @@ class DefeatureSettings(object):
 
     @property
     def defeature_abs_length(self):
-        """Absolute length for polygon defeaturing.
+        """
+        Absolute length for polygon defeaturing.
 
         Returns
         -------
         str
+
         """
         return self._defeature_settings.DefeatureAbsLength
 
@@ -350,11 +381,13 @@ class DefeatureSettings(object):
 
     @property
     def defeature_ratio(self):
-        """Defeature ratio.
+        """
+        Defeature ratio.
 
         Returns
         -------
         float
+
         """
         return self._defeature_settings.DefeatureRatio
 
@@ -365,7 +398,8 @@ class DefeatureSettings(object):
 
     @property
     def healing_option(self):
-        """Whether to turn on healing of mis-aligned points and edges.
+        """
+        Whether to turn on healing of mis-aligned points and edges.
         Options are:
         0- Turn off.
         1- Turn on.
@@ -373,6 +407,7 @@ class DefeatureSettings(object):
         Returns
         -------
         int
+
         """
         return self._defeature_settings.HealingOption
 
@@ -383,7 +418,8 @@ class DefeatureSettings(object):
 
     @property
     def model_type(self):
-        """Model type.
+        """
+        Model type.
         Options:
         0- General.
         1- IC.
@@ -391,6 +427,7 @@ class DefeatureSettings(object):
         Returns
         -------
         int
+
         """
         return self._defeature_settings.ModelType
 
@@ -402,12 +439,14 @@ class DefeatureSettings(object):
 
     @property
     def remove_floating_geometry(self):
-        """Whether to remove floating geometries.
+        """
+        Whether to remove floating geometries.
 
         Returns
         -------
         bool
             ``True`` if floating geometry removal is used, ``False`` otherwise.
+
         """
         return self._defeature_settings.RemoveFloatingGeometry
 
@@ -418,11 +457,13 @@ class DefeatureSettings(object):
 
     @property
     def small_void_area(self):
-        """Small voids to remove area.
+        """
+        Small voids to remove area.
 
         Returns
         -------
         float
+
         """
         return self._parent._pedb.value(self._defeature_settings.SmallVoidArea)
 
@@ -434,12 +475,14 @@ class DefeatureSettings(object):
 
     @property
     def union_polygons(self):
-        """Whether to turn on the union of polygons before meshing.
+        """
+        Whether to turn on the union of polygons before meshing.
 
         Returns
         -------
         bool
             ``True`` if union polygons is used, ``False`` otherwise.
+
         """
         return self._defeature_settings.UnionPolygons
 
@@ -450,12 +493,14 @@ class DefeatureSettings(object):
 
     @property
     def use_defeature(self):
-        """Whether to turn on the defeature.
+        """
+        Whether to turn on the defeature.
 
         Returns
         -------
         bool
             ``True`` if defeature is used, ``False`` otherwise.
+
         """
         return self._defeature_settings.UseDefeature
 
@@ -466,7 +511,8 @@ class DefeatureSettings(object):
 
     @property
     def use_defeature_abs_length(self):
-        """Whether to turn on the defeature absolute length.
+        """
+        Whether to turn on the defeature absolute length.
 
         Returns
         -------
@@ -494,7 +540,8 @@ class AdvancedMeshSettings(object):
 
     @property
     def layer_snap_tol(self):
-        """Layer snap tolerance. Attempt to align independent stackups in the mesher.
+        """
+        Layer snap tolerance. Attempt to align independent stackups in the mesher.
 
         Returns
         -------
@@ -510,11 +557,13 @@ class AdvancedMeshSettings(object):
 
     @property
     def mesh_display_attributes(self):
-        """Mesh display attributes. Set color for mesh display (i.e. ``"#000000"``).
+        """
+        Mesh display attributes. Set color for mesh display (i.e. ``"#000000"``).
 
         Returns
         -------
         str
+
         """
         return self._advanced_mesh_settings.MeshDisplayAttributes
 
@@ -525,7 +574,8 @@ class AdvancedMeshSettings(object):
 
     @property
     def replace_3d_triangles(self):
-        """Whether to turn on replace 3D triangles.
+        """
+        Whether to turn on replace 3D triangles.
 
         Returns
         -------
@@ -563,11 +613,13 @@ class ViaSettings(object):
 
     @property
     def via_density(self):
-        """Via density.
+        """
+        Via density.
 
         Returns
         -------
         float
+
         """
         return self._via_settings.ViaDensity
 
@@ -578,11 +630,13 @@ class ViaSettings(object):
 
     @property
     def via_mesh_plating(self):
-        """Via mesh plating.
+        """
+        Via mesh plating.
 
         Returns
         -------
         bool
+
         """
         if float(self._parent._pedb.version) < 2024.1:
             self._parent._pedb.logger.error("Property only supported on Ansys release 2024R1 and later")
@@ -599,11 +653,13 @@ class ViaSettings(object):
 
     @property
     def via_material(self):
-        """Via material.
+        """
+        Via material.
 
         Returns
         -------
         str
+
         """
         return self._via_settings.ViaMaterial
 
@@ -614,11 +670,13 @@ class ViaSettings(object):
 
     @property
     def via_num_sides(self):
-        """Via number of sides.
+        """
+        Via number of sides.
 
         Returns
         -------
         int
+
         """
         return self._via_settings.ViaNumSides
 
@@ -629,7 +687,8 @@ class ViaSettings(object):
 
     @property
     def via_style(self):
-        """Via style.
+        """
+        Via style.
         Options:
         1- ``k25DViaWirebond``.
         2- ``k25DViaRibbon``.
@@ -640,6 +699,7 @@ class ViaSettings(object):
         Returns
         -------
         str
+
         """
         return self._via_settings.ViaStyle.ToString()
 
@@ -661,11 +721,13 @@ class CurveApproxSettings(object):
 
     @property
     def arc_angle(self):
-        """Step-size to be used for arc faceting.
+        """
+        Step-size to be used for arc faceting.
 
         Returns
         -------
         str
+
         """
         return self._curve_approx_settings.ArcAngle
 
@@ -676,11 +738,13 @@ class CurveApproxSettings(object):
 
     @property
     def arc_to_chord_error(self):
-        """Maximum tolerated error between straight edge (chord) and faceted arc.
+        """
+        Maximum tolerated error between straight edge (chord) and faceted arc.
 
         Returns
         -------
         str
+
         """
         return self._curve_approx_settings.ArcToChordError
 
@@ -691,11 +755,13 @@ class CurveApproxSettings(object):
 
     @property
     def max_arc_points(self):
-        """Maximum number of mesh points for arc segments.
+        """
+        Maximum number of mesh points for arc segments.
 
         Returns
         -------
         int
+
         """
         return self._curve_approx_settings.MaxArcPoints
 
@@ -706,11 +772,13 @@ class CurveApproxSettings(object):
 
     @property
     def start_azimuth(self):
-        """Azimuth angle for first mesh point of the arc.
+        """
+        Azimuth angle for first mesh point of the arc.
 
         Returns
         -------
         str
+
         """
         return self._curve_approx_settings.StartAzimuth
 
@@ -721,11 +789,13 @@ class CurveApproxSettings(object):
 
     @property
     def use_arc_to_chord_error(self):
-        """Whether to turn on the arc-to-chord error setting for arc faceting.
+        """
+        Whether to turn on the arc-to-chord error setting for arc faceting.
 
         Returns
         -------
             ``True`` if arc-to-chord error is used, ``False`` otherwise.
+
         """
         return self._curve_approx_settings.UseArcToChordError
 
@@ -747,11 +817,13 @@ class DcrSettings(object):
 
     @property
     def conduction_max_passes(self):
-        """Conduction maximum number of passes.
+        """
+        Conduction maximum number of passes.
 
         Returns
         -------
         int
+
         """
         return self._dcr_settings.ConductionMaxPasses
 
@@ -762,11 +834,13 @@ class DcrSettings(object):
 
     @property
     def conduction_min_converged_passes(self):
-        """Conduction minimum number of converged passes.
+        """
+        Conduction minimum number of converged passes.
 
         Returns
         -------
         int
+
         """
         return self._dcr_settings.ConductionMinConvergedPasses
 
@@ -777,11 +851,13 @@ class DcrSettings(object):
 
     @property
     def conduction_min_passes(self):
-        """Conduction minimum number of passes.
+        """
+        Conduction minimum number of passes.
 
         Returns
         -------
         int
+
         """
         return self._dcr_settings.ConductionMinPasses
 
@@ -792,11 +868,13 @@ class DcrSettings(object):
 
     @property
     def conduction_per_error(self):
-        """WConduction error percentage.
+        """
+        WConduction error percentage.
 
         Returns
         -------
         float
+
         """
         return self._dcr_settings.ConductionPerError
 
@@ -807,11 +885,13 @@ class DcrSettings(object):
 
     @property
     def conduction_per_refine(self):
-        """Conduction refinement.
+        """
+        Conduction refinement.
 
         Returns
         -------
         float
+
         """
         return self._dcr_settings.ConductionPerRefine
 
@@ -833,11 +913,13 @@ class HfssPortSettings(object):
 
     @property
     def max_delta_z0(self):
-        """Maximum change to Z0 in successive passes.
+        """
+        Maximum change to Z0 in successive passes.
 
         Returns
         -------
         float
+
         """
         return self._hfss_port_settings.MaxDeltaZ0
 
@@ -848,11 +930,13 @@ class HfssPortSettings(object):
 
     @property
     def max_triangles_wave_port(self):
-        """Maximum number of triangles allowed for wave ports.
+        """
+        Maximum number of triangles allowed for wave ports.
 
         Returns
         -------
         int
+
         """
         return self._hfss_port_settings.MaxTrianglesWavePort
 
@@ -863,11 +947,13 @@ class HfssPortSettings(object):
 
     @property
     def min_triangles_wave_port(self):
-        """Minimum number of triangles allowed for wave ports.
+        """
+        Minimum number of triangles allowed for wave ports.
 
         Returns
         -------
         int
+
         """
         return self._hfss_port_settings.MinTrianglesWavePort
 
@@ -878,12 +964,14 @@ class HfssPortSettings(object):
 
     @property
     def enable_set_triangles_wave_port(self):
-        """Whether to enable setting of minimum and maximum mesh limits for wave ports.
+        """
+        Whether to enable setting of minimum and maximum mesh limits for wave ports.
 
         Returns
         -------
         bool
             ``True`` if triangles wave port  is used, ``False`` otherwise.
+
         """
         return self._hfss_port_settings.SetTrianglesWavePort
 
@@ -906,7 +994,8 @@ class HfssSolverSettings(object):
     @property
     @deprecated_property("use enhanced_low_frequency_accuracy property instead")
     def enhanced_low_freq_accuracy(self):
-        """Whether to enable legacy low-frequency sampling.
+        """
+        Whether to enable legacy low-frequency sampling.
 
         .. deprecated:: pyedb 0.54.0
             Use :func:`enhanced_low_frequency_accuracy` instead.
@@ -915,17 +1004,20 @@ class HfssSolverSettings(object):
         -------
         bool
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
+
         """
         return self._hfss_solver_settings.EnhancedLowFreqAccuracy
 
     @property
     def enhanced_low_frequency_accuracy(self):
-        """Whether to enable legacy low-frequency sampling.
+        """
+        Whether to enable legacy low-frequency sampling.
 
         Returns
         -------
         bool
             ``True`` if low frequency accuracy is used, ``False`` otherwise.
+
         """
         return self._hfss_solver_settings.EnhancedLowFreqAccuracy
 
@@ -941,7 +1033,8 @@ class HfssSolverSettings(object):
 
     @property
     def order_basis(self):
-        """Order of the basic functions for HFSS.
+        """
+        Order of the basic functions for HFSS.
         - 0=Zero.
         - 1=1st order.
         - 2=2nd order.
@@ -950,7 +1043,9 @@ class HfssSolverSettings(object):
         Returns
         -------
         int
-            Integer value according to the description."""
+            Integer value according to the description.
+
+        """
         mapping = {0: "zero", 1: "first", 2: "second", 3: "mixed"}
         return mapping[self._hfss_solver_settings.OrderBasis]
 
@@ -962,11 +1057,13 @@ class HfssSolverSettings(object):
 
     @property
     def relative_residual(self):
-        """Residual for use by the iterative solver.
+        """
+        Residual for use by the iterative solver.
 
         Returns
         -------
         float
+
         """
         return self._hfss_solver_settings.RelativeResidual
 
@@ -977,7 +1074,8 @@ class HfssSolverSettings(object):
 
     @property
     def solver_type(self):
-        """Get solver type to use (Direct/Iterative/Auto) for HFSS.
+        """
+        Get solver type to use (Direct/Iterative/Auto) for HFSS.
         Options:
         1- ``kAutoSolver``.
         2- ``kDirectSolver``.
@@ -987,6 +1085,7 @@ class HfssSolverSettings(object):
         Returns
         -------
         str
+
         """
         mapping = {"kAutoSolver": "auto", "kDirectSolver": "direct", "kIterativeSolver": "iterative"}
         solver_type = self._hfss_solver_settings.SolverType.ToString()
@@ -1004,12 +1103,14 @@ class HfssSolverSettings(object):
 
     @property
     def use_shell_elements(self):
-        """Whether to enable use of shell elements.
+        """
+        Whether to enable use of shell elements.
 
         Returns
         -------
         bool
             ``True`` if shall elements are used, ``False`` otherwise.
+
         """
         return self._hfss_solver_settings.UseShellElements
 

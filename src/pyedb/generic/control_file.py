@@ -36,7 +36,8 @@ from pyedb.misc.misc import list_installed_ansysem
 
 
 def convert_technology_file(tech_file, edbversion=None, control_file=None):
-    """Convert a technology file to EDB control file (XML).
+    """
+    Convert a technology file to EDB control file (XML).
 
     .. warning::
         Do not execute this function with untrusted function argument, environment
@@ -68,6 +69,7 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
     ... )
     >>> if converted_file:
     >>>     print(f"Converted to: {converted_file}")
+
     """
     if is_linux:  # pragma: no cover
         if not edbversion:
@@ -131,7 +133,8 @@ def convert_technology_file(tech_file, edbversion=None, control_file=None):
 
 
 class ControlProperty:
-    """Property in the control file.
+    """
+    Property in the control file.
 
     This property has a name, value, and type.
 
@@ -141,6 +144,7 @@ class ControlProperty:
         Name of the property.
     value : str, float, or list
         Value of the property.
+
     """
 
     def __init__(self, property_name: str, value: str | float | list) -> None:
@@ -162,12 +166,14 @@ class ControlProperty:
                 return -1
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write the property to XML element.
+        """
+        Write the property to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         try:
             if self.type == 0:
@@ -184,7 +190,8 @@ class ControlProperty:
 
 
 class ControlFileMaterial:
-    """Material in the control file.
+    """
+    Material in the control file.
 
     Parameters
     ----------
@@ -192,6 +199,7 @@ class ControlFileMaterial:
         Material name.
     properties : dict
         Material properties dictionary.
+
     """
 
     def __init__(self, name: str, properties: dict[str, Any]) -> None:
@@ -201,12 +209,14 @@ class ControlFileMaterial:
         }
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write material to XML element.
+        """
+        Write material to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Material")
         content.set("Name", self.name)
@@ -215,7 +225,8 @@ class ControlFileMaterial:
 
 
 class ControlFileDielectric:
-    """Dielectric layer in the control file.
+    """
+    Dielectric layer in the control file.
 
     Parameters
     ----------
@@ -223,6 +234,7 @@ class ControlFileDielectric:
         Layer name.
     properties : dict
         Layer properties dictionary.
+
     """
 
     def __init__(self, name: str, properties: dict[str, Any]) -> None:
@@ -230,12 +242,14 @@ class ControlFileDielectric:
         self.properties: dict[str, Any] = {name: prop for name, prop in properties.items()}
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write dielectric layer to XML element.
+        """
+        Write dielectric layer to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Layer")
         for property_name, property in self.properties.items():
@@ -244,7 +258,8 @@ class ControlFileDielectric:
 
 
 class ControlFileLayer:
-    """General layer in the control file.
+    """
+    General layer in the control file.
 
     Parameters
     ----------
@@ -252,6 +267,7 @@ class ControlFileLayer:
         Layer name.
     properties : dict
         Layer properties dictionary.
+
     """
 
     def __init__(self, name: str, properties: dict[str, Any]) -> None:
@@ -259,12 +275,14 @@ class ControlFileLayer:
         self.properties: dict[str, Any] = {name: prop for name, prop in properties.items()}
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write layer to XML element.
+        """
+        Write layer to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Layer")
         content.set("Color", self.properties.get("Color", "#5c4300"))
@@ -290,7 +308,8 @@ class ControlFileLayer:
 
 
 class ControlFileVia(ControlFileLayer):
-    """Via layer in the control file.
+    """
+    Via layer in the control file.
 
     Parameters
     ----------
@@ -314,12 +333,14 @@ class ControlFileVia(ControlFileLayer):
         self.snap_tolerance: int = 3
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write via to XML element.
+        """
+        Write via to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Layer")
         content.set("Color", self.properties.get("Color", "#5c4300"))
@@ -352,12 +373,14 @@ class ControlFileVia(ControlFileLayer):
 
 
 class ControlFileStackup:
-    """Stackup information for the control file.
+    """
+    Stackup information for the control file.
 
     Parameters
     ----------
     units : str, optional
         Length units (e.g., "mm", "um"). Default is "mm".
+
     """
 
     def __init__(self, units: str = "mm") -> None:
@@ -371,45 +394,53 @@ class ControlFileStackup:
 
     @property
     def vias(self) -> list[ControlFileVia]:
-        """List of via objects.
+        """
+        List of via objects.
 
         Returns
         -------
         list
             List of ControlFileVia objects.
+
         """
         return self._vias
 
     @property
     def materials(self) -> dict[str, ControlFileMaterial]:
-        """Dictionary of material objects.
+        """
+        Dictionary of material objects.
 
         Returns
         -------
         dict
             Dictionary of material names to ControlFileMaterial objects.
+
         """
         return self._materials
 
     @property
     def dielectrics(self) -> list[ControlFileDielectric]:
-        """List of dielectric layers.
+        """
+        List of dielectric layers.
 
         Returns
         -------
         list
             List of ControlFileDielectric objects.
+
         """
         return self._dielectrics
 
     @property
     def layers(self) -> list[ControlFileLayer]:
-        """List of general layers.
+        """
+        List of general layers.
 
         Returns
         -------
         list
             List of ControlFileLayer objects.
+
         """
         return self._layers
 
@@ -422,7 +453,8 @@ class ControlFileStackup:
         conductivity: float = 0.0,
         properties: dict[str, Any] | None = None,
     ) -> ControlFileMaterial:
-        """Add a new material.
+        """
+        Add a new material.
 
         Parameters
         ----------
@@ -443,6 +475,7 @@ class ControlFileStackup:
         -------
         ControlFileMaterial
             Created material object.
+
         """
         if isinstance(properties, dict):
             cfm = ControlFileMaterial(material_name, properties)
@@ -470,7 +503,8 @@ class ControlFileStackup:
         solve_inside: bool = True,
         properties: dict[str, Any] | None = None,
     ) -> ControlFileLayer:
-        """Add a new layer.
+        """
+        Add a new layer.
 
         Parameters
         ----------
@@ -497,6 +531,7 @@ class ControlFileStackup:
         -------
         ControlFileLayer
             Created layer object.
+
         """
         if isinstance(properties, dict):
             cfl = ControlFileLayer(layer_name, properties)
@@ -525,7 +560,8 @@ class ControlFileStackup:
         base_layer: str | None = None,
         add_on_top: bool = True,
     ) -> ControlFileDielectric:
-        """Add a new dielectric layer.
+        """
+        Add a new dielectric layer.
 
         Parameters
         ----------
@@ -549,6 +585,7 @@ class ControlFileStackup:
         -------
         ControlFileDielectric
             Created dielectric layer object.
+
         """
         if isinstance(properties, dict):
             cfd = ControlFileDielectric(layer_name, properties)
@@ -593,7 +630,8 @@ class ControlFileStackup:
         snap_via_group_tol: float = 10e-9,
         properties: dict[str, Any] | None = None,
     ) -> ControlFileVia:
-        """Add a new via layer.
+        """
+        Add a new via layer.
 
         Parameters
         ----------
@@ -628,6 +666,7 @@ class ControlFileStackup:
         -------
         ControlFileVia
             Created via object.
+
         """
         if isinstance(properties, dict):
             cfv = ControlFileVia(layer_name, properties)
@@ -651,12 +690,14 @@ class ControlFileStackup:
         return cfv
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write stackup to XML element.
+        """
+        Write stackup to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Stackup")
         content.set("schemaVersion", "1.0")
@@ -704,7 +745,8 @@ class ControlFileImportOptions:
         self.delete_empty_non_laminate_signal_layers: bool = False
 
     def _write_xml(self, root: ET.Element) -> bool:
-        """Write control file to XML element.
+        """
+        Write control file to XML element.
 
         Parameters
         ----------
@@ -715,6 +757,7 @@ class ControlFileImportOptions:
         -------
         bool
             True if XML content was written successfully.
+
         """
 
         content = ET.SubElement(root, "ImportOptions")
@@ -742,7 +785,8 @@ class ControlFileImportOptions:
 
 
 class ControlExtent:
-    """Extent options for boundaries for the control file..
+    """
+    Extent options for boundaries for the control file..
 
     Parameters
     ----------
@@ -764,6 +808,7 @@ class ControlExtent:
         Honor primitives. Default is ``True``.
     truncate_at_gnd : bool, optional
         Truncate at ground. Default is ``True``.
+
     """
 
     def __init__(
@@ -789,12 +834,14 @@ class ControlExtent:
         self.truncate_at_gnd: bool = truncate_at_gnd
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write extent options to XML element.
+        """
+        Write extent options to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Extents")
         content.set("Type", self.type)
@@ -809,7 +856,8 @@ class ControlExtent:
 
 
 class ControlCircuitPt:
-    """Circuit port for the control file.
+    """
+    Circuit port for the control file.
 
     Parameters
     ----------
@@ -829,6 +877,7 @@ class ControlCircuitPt:
         Layer of the second point.
     z0 : float
         Characteristic impedance.
+
     """
 
     def __init__(self, name, x1, y1, lay1, x2, y2, lay2, z0):
@@ -842,12 +891,14 @@ class ControlCircuitPt:
         self.z0: float = z0
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write circuit port to XML element.
+        """
+        Write circuit port to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "CircuitPortPt")
         content.set("Name", self.name)
@@ -877,7 +928,8 @@ class ControlFileComponent:
         self.ports: list[dict[str, str | float | None]] = []
 
     def add_pin(self, name: str, x: float, y: float, layer: str) -> None:
-        """Add a pin to the component.
+        """
+        Add a pin to the component.
 
         Parameters
         ----------
@@ -889,6 +941,7 @@ class ControlFileComponent:
             Y-coordinate.
         layer : str
             Layer name.
+
         """
         self.pins.append({"Name": name, "x": x, "y": y, "Layer": layer})
 
@@ -901,7 +954,8 @@ class ControlFileComponent:
         pos_type: str = "pin",
         ref_type: str = "pin",
     ) -> None:
-        """Add a port to the component.
+        """
+        Add a port to the component.
 
         Parameters
         ----------
@@ -917,6 +971,7 @@ class ControlFileComponent:
             Positive element type ("pin" or "pingroup"). Default is ``"pin"``.
         ref_type : str, optional
             Reference element type ("pin", "pingroup", or "net"). Default is ``"pin"``.
+
         """
         args = {"Name": name, "Z0": z0}
         if pos_type == "pin":
@@ -933,12 +988,14 @@ class ControlFileComponent:
         self.ports.append(args)
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write component to XML element.
+        """
+        Write component to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "GDS_COMPONENT")
         for p in self.pins:
@@ -974,7 +1031,8 @@ class ControlFileComponents:
     def add_component(
         self, ref_des: str, partname: str, component_type: str, die_type: str = "None", solderball_shape: str = "None"
     ) -> ControlFileComponent:
-        """Add a new component.
+        """
+        Add a new component.
 
         Parameters
         ----------
@@ -993,6 +1051,7 @@ class ControlFileComponents:
         -------
         ControlFileComponent
             Created component object.
+
         """
         comp = ControlFileComponent()
         comp.refdes = ref_des
@@ -1005,12 +1064,14 @@ class ControlFileComponents:
 
 
 class ControlFileBoundaries:
-    """Boundaries for the control file.
+    """
+    Boundaries for the control file.
 
     Parameters
     ----------
     units : str, optional
         Length units. Default is ``"um"``.
+
     """
 
     # FIXME: Commented circui_models and circuit_elements since they are never defined.
@@ -1024,7 +1085,8 @@ class ControlFileBoundaries:
     def add_port(
         self, name: str, x1: float, y1: float, layer1: str, x2: float, y2: float, layer2: str, z0: float = 50
     ) -> ControlCircuitPt:
-        """Add a port.
+        """
+        Add a port.
 
         Parameters
         ----------
@@ -1049,6 +1111,7 @@ class ControlFileBoundaries:
         -------
         ControlCircuitPt
             Created port object.
+
         """
         ccp = ControlCircuitPt(name, str(x1), str(y1), layer1, str(x2), str(y2), layer2, str(z0))
         self.ports[name] = ccp
@@ -1066,7 +1129,8 @@ class ControlFileBoundaries:
         honor_primitives: bool = True,
         truncate_at_gnd: bool = True,
     ) -> ControlExtent:
-        """Add an extent.
+        """
+        Add an extent.
 
         Parameters
         ----------
@@ -1093,6 +1157,7 @@ class ControlFileBoundaries:
         -------
         ControlExtent
             Created extent object.
+
         """
         ce = ControlExtent(
             type=type,
@@ -1110,12 +1175,14 @@ class ControlFileBoundaries:
 
     # FIXME: Commented circui_models and circuit_elements since they are never defined.
     def _write_xml(self, root: ET.Element) -> None:
-        """Write boundaries to XML element.
+        """
+        Write boundaries to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "Boundaries")
         content.set("LengthUnit", self.units)
@@ -1130,7 +1197,8 @@ class ControlFileBoundaries:
 
 
 class ControlFileSweep:
-    """Frequency sweep in the control file.
+    """
+    Frequency sweep in the control file.
 
     Parameters
     ----------
@@ -1148,6 +1216,7 @@ class ControlFileSweep:
         Step type ("LinearStep", "DecadeCount", or "LinearCount").
     use_q3d : bool
         Whether to use Q3D for DC point.
+
     """
 
     def __init__(
@@ -1162,12 +1231,14 @@ class ControlFileSweep:
         self.use_q3d: bool = use_q3d
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write sweep to XML element.
+        """
+        Write sweep to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         sweep = ET.SubElement(root, "FreqSweep")
         prop = ET.SubElement(sweep, "Name")
@@ -1189,7 +1260,8 @@ class ControlFileSweep:
 
 
 class ControlFileMeshOp:
-    """Mesh operation in the control file.
+    """
+    Mesh operation in the control file.
 
     Parameters
     ----------
@@ -1201,6 +1273,7 @@ class ControlFileMeshOp:
         Operation type ("MeshOperationLength" or "MeshOperationSkinDepth").
     nets_layers : dict
         Dictionary of nets and layers.
+
     """
 
     def __init__(self, name: str, region: str, type: str, nets_layers: dict[str, str]) -> None:
@@ -1218,12 +1291,14 @@ class ControlFileMeshOp:
         self.region_solve_inside: bool = False
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write mesh operation to XML element.
+        """
+        Write mesh operation to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         mop = ET.SubElement(root, "MeshOperation")
         prop = ET.SubElement(mop, "Name")
@@ -1262,12 +1337,14 @@ class ControlFileMeshOp:
 
 
 class ControlFileSetup:
-    """Simulation setup for the control file.
+    """
+    Simulation setup for the control file.
 
     Parameters
     ----------
     name : str
         Setup name.
+
     """
 
     def __init__(self, name: str) -> None:
@@ -1298,7 +1375,8 @@ class ControlFileSetup:
         step_type: str = "LinearStep",
         use_q3d: bool = True,
     ) -> ControlFileSweep:
-        """Add a frequency sweep.
+        """
+        Add a frequency sweep.
 
         Parameters
         ----------
@@ -1321,13 +1399,15 @@ class ControlFileSetup:
         -------
         ControlFileSweep
             Created sweep object.
+
         """
         sweep = ControlFileSweep(name, start, stop, step, sweep_type, step_type, use_q3d)
         self.sweeps.append(sweep)
         return sweep
 
     def add_mesh_operation(self, name: str, region: str, type: str, nets_layers: dict[str, str]) -> ControlFileMeshOp:
-        """Add a mesh operation.
+        """
+        Add a mesh operation.
 
         Parameters
         ----------
@@ -1344,18 +1424,21 @@ class ControlFileSetup:
         -------
         ControlFileMeshOp
             Created mesh operation object.
+
         """
         mop = ControlFileMeshOp(name, region, type, nets_layers)
         self.mesh_operations.append(mop)
         return mop
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write setup to XML element.
+        """
+        Write setup to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         setups = ET.SubElement(root, "HFSSSetup")
         setups.set("schemaVersion", "1.0")
@@ -1408,7 +1491,8 @@ class ControlFileSetups:
         self.setups: list[ControlFileSetup] = []
 
     def add_setup(self, name: str, frequency: str) -> ControlFileSetup:
-        """Add a simulation setup.
+        """
+        Add a simulation setup.
 
         Parameters
         ----------
@@ -1421,6 +1505,7 @@ class ControlFileSetups:
         -------
         ControlFileSetup
             Created setup object.
+
         """
         setup = ControlFileSetup(name)
         setup.frequency = frequency
@@ -1428,12 +1513,14 @@ class ControlFileSetups:
         return setup
 
     def _write_xml(self, root: ET.Element) -> None:
-        """Write setups to XML element.
+        """
+        Write setups to XML element.
 
         Parameters
         ----------
         root : xml.etree.ElementTree.Element
             Parent XML element to append to.
+
         """
         content = ET.SubElement(root, "SimulationSetups")
         for setup in self.setups:
@@ -1441,7 +1528,8 @@ class ControlFileSetups:
 
 
 class ControlFile:
-    """Main class for EDB control file creation and management.
+    """
+    Main class for EDB control file creation and management.
 
     Parameters
     ----------
@@ -1451,6 +1539,7 @@ class ControlFile:
         Path to technology file to convert.
     layer_map : str, optional
         Path to layer map file.
+
     """
 
     def __init__(
@@ -1472,7 +1561,8 @@ class ControlFile:
         self.import_options = ControlFileImportOptions()
 
     def parse_technology(self, tecnhology: str, edbversion: str | None = None) -> None:
-        """Parse a technology file and convert to an XML control file.
+        """
+        Parse a technology file and convert to an XML control file.
 
         Parameters
         ----------
@@ -1480,6 +1570,7 @@ class ControlFile:
             Path to technology file.
         edbversion : str, optional
             EDB version to use for conversion.
+
         """
         xml_temp = os.path.splitext(tecnhology)[0] + "_temp.xml"
         xml_temp = convert_technology_file(tech_file=tecnhology, edbversion=edbversion, control_file=xml_temp)
@@ -1487,12 +1578,14 @@ class ControlFile:
             return self.parse_xml(xml_temp)
 
     def parse_layer_map(self, layer_map: str) -> None:
-        """Parse a layer map file and update stackup.
+        """
+        Parse a layer map file and update stackup.
 
         Parameters
         ----------
         layer_map : str
             Path to layer map file.
+
         """
         with open(layer_map, "r") as f:
             lines = f.readlines()
@@ -1531,12 +1624,14 @@ class ControlFile:
                             break
 
     def parse_xml(self, xml_input: str) -> None:
-        """Parse an XML control file and populate the object.
+        """
+        Parse an XML control file and populate the object.
 
         Parameters
         ----------
         xml_input : str
             Path to XML control file.
+
         """
         tree = defused_parse(xml_input)
         root = tree.getroot()
@@ -1596,7 +1691,8 @@ class ControlFile:
                                                 )
 
     def write_xml(self, xml_output):
-        """Write control file to XML.
+        """
+        Write control file to XML.
 
         Parameters
         ----------
@@ -1607,6 +1703,7 @@ class ControlFile:
         -------
         bool
             ``True`` if file created successfully, ``False`` otherwise.
+
         """
         control = ET.Element("{http://www.ansys.com/control}Control", attrib={"schemaVersion": "1.0"})
         self.stackup._write_xml(control)

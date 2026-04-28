@@ -32,7 +32,8 @@ from pyedb.xml_parser.xml_stackup import XmlStackup
 
 
 class XmlNet(BaseModel):
-    """Represents a net configuration in the XML file.
+    """
+    Represents a net configuration in the XML file.
 
     Parameters
     ----------
@@ -40,6 +41,7 @@ class XmlNet(BaseModel):
         Name of the net.
     pins_become_ports : bool, optional
         Whether pins in this net should become ports. The default is ``None``.
+
     """
 
     name: str = Field(alias="@Name")
@@ -49,7 +51,8 @@ class XmlNet(BaseModel):
 
 
 class XmlImportOptions(BaseModel):
-    """Represents import options for the XML configuration.
+    """
+    Represents import options for the XML configuration.
 
     Parameters
     ----------
@@ -57,6 +60,7 @@ class XmlImportOptions(BaseModel):
         Whether to enable default component values during import. The default is ``None``.
     flatten : bool, optional
         Whether to flatten the design hierarchy during import. The default is ``None``.
+
     """
 
     enable_default_component_values: Optional[bool] = Field(None, alias="EnableDefaultComponentValues")
@@ -66,7 +70,8 @@ class XmlImportOptions(BaseModel):
 
 
 class XmlParser(BaseModel):
-    """Main parser for EDB XML configuration files.
+    """
+    Main parser for EDB XML configuration files.
 
     This class provides methods to load, parse, and export XML configuration files
     used in EDB designs. It supports stackup definitions, import options, and net
@@ -88,6 +93,7 @@ class XmlParser(BaseModel):
     >>> from pyedb.xml_parser.xml_parser import XmlParser
     >>> parser = XmlParser.load_xml_file("config.xml")
     >>> parser.to_xml_file("output.xml")
+
     """
 
     stackup: Optional[XmlStackup] = Field(default=None, alias="Stackup")
@@ -98,7 +104,8 @@ class XmlParser(BaseModel):
     model_config = dict(populate_by_name=True)
 
     def add_stackup(self) -> XmlStackup:
-        """Add a stackup configuration to the parser.
+        """
+        Add a stackup configuration to the parser.
 
         Returns
         -------
@@ -110,13 +117,15 @@ class XmlParser(BaseModel):
         >>> from pyedb.xml_parser.xml_parser import XmlParser
         >>> parser = XmlParser()
         >>> stackup = parser.add_stackup()
+
         """
         self.stackup = XmlStackup()
         return self.stackup
 
     @classmethod
     def load_xml_file(cls, path: str | Path) -> "XmlParser":
-        """Load and parse an XML configuration file.
+        """
+        Load and parse an XML configuration file.
 
         Parameters
         ----------
@@ -133,6 +142,7 @@ class XmlParser(BaseModel):
         >>> from pyedb.xml_parser.xml_parser import XmlParser
         >>> parser = XmlParser.load_xml_file("config.xml")
         >>> print(parser.stackup)
+
         """
         with open(path, "r", encoding="utf-8") as f:
             xml_data = f.read()
@@ -144,7 +154,8 @@ class XmlParser(BaseModel):
         return cls.model_validate(control_dict)
 
     def to_xml(self, root_name: str = "c:Control", pretty: bool = True) -> str:
-        """Convert the parser configuration to XML string.
+        """
+        Convert the parser configuration to XML string.
 
         Parameters
         ----------
@@ -163,6 +174,7 @@ class XmlParser(BaseModel):
         >>> from pyedb.xml_parser.xml_parser import XmlParser
         >>> parser = XmlParser()
         >>> xml_string = parser.to_xml()
+
         """
         root = self.model_dump(by_alias=True, exclude_none=True)
 
@@ -176,7 +188,8 @@ class XmlParser(BaseModel):
         return xmltodict.unparse(d, pretty=pretty)
 
     def to_xml_file(self, file_path: str | Path) -> str:
-        """Write the parser configuration to an XML file.
+        """
+        Write the parser configuration to an XML file.
 
         Parameters
         ----------
@@ -193,6 +206,7 @@ class XmlParser(BaseModel):
         >>> from pyedb.xml_parser.xml_parser import XmlParser
         >>> parser = XmlParser()
         >>> output_path = parser.to_xml_file("output.xml")
+
         """
         xml_out = self.to_xml()
         with open(file_path, "w", encoding="utf-8") as f:
@@ -200,7 +214,8 @@ class XmlParser(BaseModel):
         return str(file_path)
 
     def to_dict(self) -> dict:
-        """Convert the parser configuration to a dictionary.
+        """
+        Convert the parser configuration to a dictionary.
 
         Returns
         -------
@@ -212,6 +227,7 @@ class XmlParser(BaseModel):
         >>> from pyedb.xml_parser.xml_parser import XmlParser
         >>> parser = XmlParser()
         >>> config_dict = parser.to_dict()
+
         """
         stackup_dict = self.stackup.to_dict()
         return {"stackup": stackup_dict}

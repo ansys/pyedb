@@ -254,7 +254,8 @@ class PrimitivesQuery:
         prim_type: str | list = None,
         is_void: bool | None = None,
     ) -> list[Primitive]:
-        """Filter primitives by one or more attributes.
+        """
+        Filter primitives by one or more attributes.
 
         Parameters
         ----------
@@ -274,6 +275,7 @@ class PrimitivesQuery:
         -------
         list[Primitive]
             Filtered primitives.
+
         """
         layer_name_set = self._as_filter_set(layer_name)
         name_set = self._as_filter_set(name)
@@ -329,22 +331,26 @@ class PrimitivesQuery:
 
     @property
     def bondwires(self) -> list[Bondwire]:
-        """Bondwires.
+        """
+        Bondwires.
 
         Returns
         -------
         list :
             List of bondwires.
+
         """
         return self._primitives_by_class("Bondwire")
 
     def find_object_by_id(self, value: int) -> PadstackInstance | Primitive | None:
-        """Find a layout object by Database ID.
+        """
+        Find a layout object by Database ID.
 
         Parameters
         ----------
         value : int
             ID of the object.
+
         """
         object_by_id = self._find_primitive_or_void_by_id(value)
         if object_by_id is not None:
@@ -358,7 +364,8 @@ class PrimitivesQuery:
 
     @deprecate_argument_name({"layer_name": "layer"})
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
-        """Return primitive given coordinate point [x, y], layer name and nets.
+        """
+        Return primitive given coordinate point [x, y], layer name and nets.
 
         Parameters
         ----------
@@ -375,6 +382,7 @@ class PrimitivesQuery:
         -------
         list[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
             List of primitives, polygons, paths and rectangles.
+
         """
         layer_names = self._normalize_layer_filter(layer)
         if not isinstance(point, (list, tuple)) or len(point) != 2:
@@ -424,6 +432,7 @@ class PrimitivesQuery:
         -------
         list[Primitive]
             Filtered list of primitives.
+
         """
         return self.filter_primitives(
             layer_name=layer_name, name=name, net_name=net_name, prim_type=prim_type, is_void=is_void
@@ -431,12 +440,14 @@ class PrimitivesQuery:
 
     @property
     def primitives_by_layer(self) -> dict[str, list[Primitive]]:
-        """Get primitives by layer name.
+        """
+        Get primitives by layer name.
 
         Returns
         -------
         dict
             Returns dict[str, list] with all specified layer names as keys organized by layer.
+
         """
         return self._group_primitives_by(
             "layer_name",
@@ -446,12 +457,14 @@ class PrimitivesQuery:
 
     @property
     def polygons_by_layer(self) -> dict[str, list[Primitive]]:
-        """Get polygons by layer name.
+        """
+        Get polygons by layer name.
 
         Returns
         -------
         dict
             dictionary of polygons with layer name as key and list of polygons as value.
+
         """
         return self._group_primitives_by(
             "layer_name",
@@ -461,12 +474,14 @@ class PrimitivesQuery:
 
     @property
     def primitives_by_net(self) -> dict:
-        """Get primitives by net name.
+        """
+        Get primitives by net name.
 
         Returns
         -------
         dict
             Returns dict[str, list] with all specified net names as keys organized by net.
+
         """
         return self._group_primitives_by(
             "net_name",
@@ -530,7 +545,8 @@ class PrimitivesQuery:
 
     @deprecated("Use `filter_primitives` instead.")
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[Primitive]:
-        """Get primitives by conditions.
+        """
+        Get primitives by conditions.
 
         Parameters
         ----------
@@ -545,6 +561,7 @@ class PrimitivesQuery:
         Returns
         -------
         List of filtered primitives
+
         """
         return self.filter_primitives(
             net_name=net_name,
@@ -572,12 +589,14 @@ class Layout(PrimitivesQuery):
     def terminals(
         self,
     ) -> list[PinGroupTerminal | PadstackInstanceTerminal | EdgeTerminal | BundleTerminal | PointTerminal]:
-        """Get terminals belonging to active layout.
+        """
+        Get terminals belonging to active layout.
 
         Returns
         -------
         Terminal dictionary : Dict[str, :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`]
             Dictionary of terminals.
+
         """
         temp = []
         try:
@@ -610,12 +629,14 @@ class Layout(PrimitivesQuery):
 
     @property
     def nets(self) -> list["Net"]:
-        """Nets.
+        """
+        Nets.
 
         Returns
         -------
         List[:class:`Net <pyedb.grpc.database.net.net.Net>`]
             List of Net.
+
         """
         from pyedb.grpc.database.net.net import Net
 
@@ -623,7 +644,8 @@ class Layout(PrimitivesQuery):
 
     @property
     def groups(self) -> list[Component]:
-        """Groups
+        """
+        Groups
 
         Returns
         -------
@@ -637,7 +659,8 @@ class Layout(PrimitivesQuery):
 
     @property
     def pin_groups(self) -> list[PinGroup]:
-        """Pin groups.
+        """
+        Pin groups.
 
         Returns
         -------
@@ -649,7 +672,8 @@ class Layout(PrimitivesQuery):
 
     @property
     def net_classes(self) -> list[NetClass]:
-        """Net classes.
+        """
+        Net classes.
 
         Returns
         -------
@@ -661,19 +685,22 @@ class Layout(PrimitivesQuery):
 
     @property
     def extended_nets(self) -> list[ExtendedNet]:
-        """Extended nets.
+        """
+        Extended nets.
 
         Returns
         -------
         List[:class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             List of extended nets.
+
         """
 
         return [ExtendedNet(self._pedb, i) for i in self._pedb.active_cell.layout.extended_nets]
 
     @property
     def differential_pairs(self) -> list[DifferentialPair]:
-        """Differential pairs.
+        """
+        Differential pairs.
 
         Returns
         -------
@@ -692,7 +719,8 @@ class Layout(PrimitivesQuery):
 
     @property
     def voltage_regulators(self) -> list[VoltageRegulator]:
-        """Voltage regulators.
+        """
+        Voltage regulators.
 
         List[:class:`VoltageRegulator <pyedb.grpc.database.layout.voltage_regulator.VoltageRegulator>`.
             List of VoltageRegulator.
@@ -733,6 +761,7 @@ class Layout(PrimitivesQuery):
         -------
         List
             A list of padstack instances matching the specified criteria.
+
         """
         candidates = self.padstack_instances  # make a copy of the list to filter down
         if instance_id is not None:

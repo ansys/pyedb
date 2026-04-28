@@ -48,7 +48,8 @@ class PinGroup:
 
     @classmethod
     def create(cls, layout, name, padstack_instances) -> PinGroup:
-        """Create a pin group.
+        """
+        Create a pin group.
 
         Parameters
         ----------
@@ -73,7 +74,8 @@ class PinGroup:
 
     @property
     def name(self):
-        """Pin group name.
+        """
+        Pin group name.
 
         Returns
         -------
@@ -89,7 +91,8 @@ class PinGroup:
 
     @property
     def _active_layout(self):
-        """Active layout.
+        """
+        Active layout.
 
         Returns
         -------
@@ -101,7 +104,8 @@ class PinGroup:
 
     @property
     def component(self) -> Component:
-        """Component.
+        """
+        Component.
 
         Return
         ------
@@ -121,7 +125,8 @@ class PinGroup:
 
     @property
     def is_null(self) -> bool:
-        """Check if pin group is null.
+        """
+        Check if pin group is null.
 
         Returns
         -------
@@ -133,11 +138,13 @@ class PinGroup:
 
     @property
     def pins(self) -> dict[str, PadstackInstance]:
-        """Pin group pins.
+        """
+        Pin group pins.
 
         Returns
         -------
         Dict[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`].
+
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
@@ -145,11 +152,13 @@ class PinGroup:
 
     @property
     def net(self) -> Net:
-        """Net.
+        """
+        Net.
 
         Returns
         -------
         :class:`Net <ansys.edb.core.net.net.Net>`.
+
         """
         from pyedb.grpc.database.net.net import Net
 
@@ -164,7 +173,8 @@ class PinGroup:
 
     @property
     def net_name(self) -> str:
-        """Net name.
+        """
+        Net name.
 
         Returns
         -------
@@ -186,7 +196,8 @@ class PinGroup:
 
     @staticmethod
     def unique_name(layout, base_name: str) -> str:
-        """Generate unique name.
+        """
+        Generate unique name.
 
         Parameters
         ----------
@@ -204,7 +215,8 @@ class PinGroup:
         return CorePinGroup.unique_name(layout.core, base_name)
 
     def create_terminal(self, name=None, is_ref: bool = False) -> PinGroupTerminal:
-        """Create a terminal.
+        """
+        Create a terminal.
 
         Parameters
         ----------
@@ -233,17 +245,20 @@ class PinGroup:
         return term
 
     def _json_format(self) -> dict[str, Component | str | Net | int]:
-        """Format json.
+        """
+        Format json.
 
         Returns
         -------
         Dict
+
         """
         dict_out = {"component": self.component, "name": self.name, "net": self.net, "node_type": self.core.node_type}
         return dict_out
 
     def create_current_source_terminal(self, magnitude=1.0, phase=0, impedance=1e6) -> PinGroupTerminal:
-        """Create current source terminal.
+        """
+        Create current source terminal.
 
         Parameters
         ----------
@@ -268,7 +283,8 @@ class PinGroup:
         return terminal
 
     def create_voltage_source_terminal(self, magnitude=1, phase=0, impedance=0.001) -> PinGroupTerminal:
-        """Create voltage source terminal.
+        """
+        Create voltage source terminal.
 
         Parameters
         ----------
@@ -293,7 +309,8 @@ class PinGroup:
         return terminal
 
     def create_voltage_probe_terminal(self, impedance=1e6) -> PinGroupTerminal:
-        """Create voltage probe terminal.
+        """
+        Create voltage probe terminal.
 
         Parameters
         ----------
@@ -312,7 +329,8 @@ class PinGroup:
         return terminal
 
     def create_port_terminal(self, impedance=50) -> PinGroupTerminal:
-        """Create port terminal.
+        """
+        Create port terminal.
 
         Parameters
         ----------
@@ -332,7 +350,8 @@ class PinGroup:
         return terminal
 
     def delete(self):
-        """Delete active pin group.
+        """
+        Delete active pin group.
 
         Returns
         -------
@@ -342,7 +361,8 @@ class PinGroup:
         return self.core.delete()
 
     def remove_pins(self, pins: list[str | PadstackInstance]):
-        """Remove pins from pin group.
+        """
+        Remove pins from pin group.
 
         Parameters
         ----------

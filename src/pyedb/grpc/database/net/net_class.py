@@ -30,7 +30,8 @@ from ansys.edb.core.net.net_class import NetClass as CoreNetClass
 
 
 class NetClass:
-    """Manages EDB functionalities for a primitives.
+    """
+    Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -39,6 +40,7 @@ class NetClass:
     >>> myedb = "path_to_your_edb_file.edb"
     >>> edb = Edb(myedb, version="2026.1")
     >>> edb.net_classes
+
     """
 
     def __init__(self, pedb, core):
@@ -139,6 +141,7 @@ class NetClass:
         ----------
         value : str
             Name of the net class.
+
         """
         self.core.name = value
 
@@ -202,6 +205,7 @@ class NetClass:
         Returns
         -------
         bool
+
         """
 
         if isinstance(net, str):

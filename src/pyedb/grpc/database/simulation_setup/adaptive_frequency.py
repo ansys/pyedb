@@ -37,45 +37,53 @@ class AdaptiveFrequency:
 
     @property
     def adaptive_frequency(self) -> float:
-        """Get the adaptive frequency value.
+        """
+        Get the adaptive frequency value.
 
         Returns
         -------
         float
             Adaptive frequency value.
+
         """
         return CoreValue(self.core.adaptive_frequency).value
 
     @adaptive_frequency.setter
     def adaptive_frequency(self, value: float):
-        """Set the adaptive frequency value.
+        """
+        Set the adaptive frequency value.
 
         Parameters
         ----------
         value : float
             Adaptive frequency value.
+
         """
         self.core.adaptive_frequency = str(CoreValue(value))
 
     @property
     def max_delta(self):
-        """Get the maximum delta value.
+        """
+        Get the maximum delta value.
 
         Returns
         -------
         float
             Maximum delta value.
+
         """
         return float(self.core.max_delta)
 
     @max_delta.setter
     def max_delta(self, value: float):
-        """Set the maximum delta value.
+        """
+        Set the maximum delta value.
 
         Parameters
         ----------
         value : float
             Maximum delta value.
+
         """
         self.core.max_delta = str(value)
 
@@ -85,7 +93,8 @@ class AdaptiveFrequency:
         return self.core.output_variables
 
     def add_output_variable(self, variable_name: str, max_delta_s: float):
-        """Add an output variable with its maximum delta S.
+        """
+        Add an output variable with its maximum delta S.
 
         Parameters
         ----------
@@ -93,6 +102,7 @@ class AdaptiveFrequency:
             Name of the output variable.
         max_delta_s : float
             Maximum delta S for the output variable.
+
         """
         output_dict = self.output_variables
         output_dict[variable_name] = str(max_delta_s)
@@ -100,11 +110,13 @@ class AdaptiveFrequency:
 
     @output_variables.setter
     def output_variables(self, value: dict[str, str]):
-        """Set the output variables map.
+        """
+        Set the output variables map.
 
         Parameters
         ----------
         value : dict[str, str]
             Map of output variable names to maximum delta S.
+
         """
         self.core.output_variables = value

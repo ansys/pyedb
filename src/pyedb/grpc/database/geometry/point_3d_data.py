@@ -33,7 +33,8 @@ class Point3DData:
 
     @property
     def x(self) -> float:
-        """X position.
+        """
+        X position.
 
         Returns
         -------
@@ -49,7 +50,8 @@ class Point3DData:
 
     @property
     def y(self) -> float:
-        """Y position.
+        """
+        Y position.
 
         Returns
         -------
@@ -65,7 +67,8 @@ class Point3DData:
 
     @property
     def z(self) -> float:
-        """Z position.
+        """
+        Z position.
 
         Returns
         -------

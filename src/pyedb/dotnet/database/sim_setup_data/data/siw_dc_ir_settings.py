@@ -34,12 +34,14 @@ class SiwaveDCIRSettings:
 
     @property
     def export_dc_thermal_data(self):
-        """Export DC Thermal Data.
+        """
+        Export DC Thermal Data.
 
         Returns
         -------
             bool
             ``True`` when activated, ``False`` deactivated.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.ExportDCThermalData
 
@@ -52,12 +54,14 @@ class SiwaveDCIRSettings:
 
     @property
     def import_thermal_data(self):
-        """Import Thermal Data.
+        """
+        Import Thermal Data.
 
         Returns
         -------
             bool
             ``True`` when activated, ``False`` deactivated.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.ImportThermalData
 
@@ -70,12 +74,14 @@ class SiwaveDCIRSettings:
 
     @property
     def dc_report_show_active_devices(self):
-        """DC Report Show Active Devices.
+        """
+        DC Report Show Active Devices.
 
         Returns
         -------
             bool
             ``True`` when activated, ``False`` deactivated.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.DCReportShowActiveDevices
 
@@ -88,12 +94,14 @@ class SiwaveDCIRSettings:
 
     @property
     def per_pin_use_pin_format(self):
-        """Per Pin Use Pin Format.
+        """
+        Per Pin Use Pin Format.
 
         Returns
         -------
             bool
             ``True`` when activated, ``False`` deactivated.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.PerPinUsePinFormat
 
@@ -106,12 +114,14 @@ class SiwaveDCIRSettings:
 
     @property
     def use_loop_res_for_per_pin(self):
-        """Use loop Res Per Pin.
+        """
+        Use loop Res Per Pin.
 
         Returns
         -------
             bool
             ``True`` when activated, ``False`` deactivated.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.UseLoopResForPerPin
 
@@ -124,12 +134,14 @@ class SiwaveDCIRSettings:
 
     @property
     def dc_report_config_file(self):
-        """DC Report Config File.
+        """
+        DC Report Config File.
 
         Returns
         -------
             str
             path to the DC report configuration file.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.DCReportConfigFile
 
@@ -142,12 +154,14 @@ class SiwaveDCIRSettings:
 
     @property
     def full_dc_report_path(self):
-        """Full DC Report Path.
+        """
+        Full DC Report Path.
 
         Returns
         -------
             str
             full path to the DC report file.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.FullDCReportPath
 
@@ -160,12 +174,14 @@ class SiwaveDCIRSettings:
 
     @property
     def icepak_temp_file(self):
-        """Icepack Temp File.
+        """
+        Icepack Temp File.
 
         Returns
         -------
             str
             path to the temp Icepak file.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.IcepakTempFile
 
@@ -179,12 +195,14 @@ class SiwaveDCIRSettings:
     @property
     @deprecated_property("use icepak_temp_file property instead")
     def icepak_temp_file_path(self):
-        """Icepak Temp File Path.
+        """
+        Icepak Temp File Path.
 
         Returns
         -------
             str
             path for the Icepak temp file.
+
         """
         return self.icepak_temp_file
 
@@ -194,12 +212,14 @@ class SiwaveDCIRSettings:
 
     @property
     def per_pin_res_path(self):
-        """Per Pin Res Path.
+        """
+        Per Pin Res Path.
 
         Returns
         -------
             str
             path for per pin res.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.PerPinResPath
 
@@ -212,12 +232,14 @@ class SiwaveDCIRSettings:
 
     @property
     def via_report_path(self):
-        """Via Report Path.
+        """
+        Via Report Path.
 
         Returns
         -------
             str
             path for the Via Report.
+
         """
         return self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.ViaReportPath
 
@@ -230,7 +252,8 @@ class SiwaveDCIRSettings:
 
     @property
     def source_terms_to_ground(self):
-        """A dictionary of SourceName, NodeToGround pairs,
+        """
+        A dictionary of SourceName, NodeToGround pairs,
         where NodeToGround is one of 0 (unspecified), 1 (negative), 2 (positive).
 
 
@@ -239,6 +262,7 @@ class SiwaveDCIRSettings:
             dict <str, int>
                 str: source name,
                 int: node to ground pairs, 0 (unspecified), 1 (negative), 2 (positive) .
+
         """
         temp = dict(self._parent.get_sim_setup_info.simulation_settings.DCIRSettings.SourceTermsToGround)
         temp = {name.strip("'"): node for name, node in temp.items()}  # strip single quotes from the source names

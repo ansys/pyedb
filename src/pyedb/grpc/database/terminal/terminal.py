@@ -76,7 +76,8 @@ class Terminal(ConnObj):
 
     @property
     def net(self):
-        """Terminal net.
+        """
+        Terminal net.
 
         Returns
         -------
@@ -99,12 +100,14 @@ class Terminal(ConnObj):
 
     @property
     def horizontal_extent_factor(self) -> float:
-        """Horizontal extent factor.
+        """
+        Horizontal extent factor.
 
         Returns
         -------
         float
             Extent value.
+
         """
         return self._hfss_port_property.horizontal_extent_factor
 
@@ -116,7 +119,8 @@ class Terminal(ConnObj):
 
     @property
     def vertical_extent_factor(self) -> float:
-        """Vertical extent factor.
+        """
+        Vertical extent factor.
 
         Returns
         -------
@@ -134,12 +138,14 @@ class Terminal(ConnObj):
 
     @property
     def pec_launch_width(self) -> str:
-        """Launch width for the printed electronic component (PEC).
+        """
+        Launch width for the printed electronic component (PEC).
 
         Returns
         -------
         float
             Pec launch width value.
+
         """
         return self._hfss_port_property.pec_launch_width
 
@@ -172,7 +178,8 @@ class Terminal(ConnObj):
 
     @property
     def do_renormalize(self) -> bool:
-        """Determine whether port renormalization is enabled.
+        """
+        Determine whether port renormalization is enabled.
 
         Returns
         -------
@@ -187,8 +194,10 @@ class Terminal(ConnObj):
 
     @property
     def do_deembed(self) -> bool:
-        """Determine whether port deembed is enabled.
+        """
+        Determine whether port deembed is enabled.
         Returns
+
         """
         return self.port_post_processing_prop.do_deembed
 
@@ -199,7 +208,8 @@ class Terminal(ConnObj):
     @property
     @deprecated_property("use do_deembed property instead")
     def deembed(self) -> bool:
-        """Determine whether port deembed is enabled.
+        """
+        Determine whether port deembed is enabled.
 
         .. deprecated:: 0.71.0
             The `deembed` property is deprecated. Please use `do_deembed` instead.
@@ -212,7 +222,8 @@ class Terminal(ConnObj):
 
     @property
     def renormalization_impedance(self) -> float:
-        """Get the renormalization impedance value.
+        """
+        Get the renormalization impedance value.
 
         Returns
         -------
@@ -227,12 +238,14 @@ class Terminal(ConnObj):
 
     @property
     def net_name(self) -> str:
-        """Net name.
+        """
+        Net name.
 
         Returns
         -------
         str
             Name of the net.
+
         """
         if self.core.is_null:
             return ""
@@ -248,12 +261,14 @@ class Terminal(ConnObj):
 
     @property
     def terminal_type(self) -> str | None:
-        """Terminal Type. Accepted values for setter: `"edge"`, `"point"`, `"terminal_instance"`,
+        """
+        Terminal Type. Accepted values for setter: `"edge"`, `"point"`, `"terminal_instance"`,
         `"padstack_instance"`, `"bundle_terminal"`, `"pin_group"`.
 
         Returns
         -------
         str
+
         """
         return TerminalTypeMapper.get_grpc(self.core.type.name)
 
@@ -271,12 +286,14 @@ class Terminal(ConnObj):
 
     @property
     def boundary_type(self) -> str:
-        """Boundary type.
+        """
+        Boundary type.
 
         Returns
         -------
         str
             port, pec, rlc, current_source, voltage_source, nexxim_ground, nexxim_pPort, dc_terminal, voltage_probe.
+
         """
         return BoundaryTypeMapper.get_grpc(self.core.boundary_type.name)
 
@@ -294,12 +311,14 @@ class Terminal(ConnObj):
 
     @property
     def source_amplitude(self) -> float:
-        """Source amplitude.
+        """
+        Source amplitude.
 
         Returns
         -------
         float
             Amplitude value.
+
         """
         return Value(self.core.source_amplitude)
 
@@ -309,12 +328,14 @@ class Terminal(ConnObj):
 
     @property
     def source_phase(self) -> float:
-        """Source phase.
+        """
+        Source phase.
 
         Returns
         -------
         float
             Phase value.
+
         """
         return Value(self.core.source_phase)
 
@@ -324,7 +345,8 @@ class Terminal(ConnObj):
 
     @property
     def is_port(self) -> bool:
-        """Whether it is a port.
+        """
+        Whether it is a port.
 
         Returns
         -------
@@ -335,7 +357,8 @@ class Terminal(ConnObj):
 
     @property
     def is_current_source(self) -> bool:
-        """Whether it is a current source.
+        """
+        Whether it is a current source.
 
         Returns
         -------
@@ -346,7 +369,8 @@ class Terminal(ConnObj):
 
     @property
     def is_voltage_source(self) -> bool:
-        """Whether it is a voltage source.
+        """
+        Whether it is a voltage source.
 
         Returns
         -------
@@ -357,7 +381,8 @@ class Terminal(ConnObj):
 
     @property
     def impedance(self) -> float:
-        """Impedance of the port.
+        """
+        Impedance of the port.
 
         Returns
         -------
@@ -373,13 +398,15 @@ class Terminal(ConnObj):
 
     @property
     def reference_object(self) -> Primitive | PadstackInstance | bool:
-        """This returns the object assigned as reference. It can be a primitive or a padstack instance.
+        """
+        This returns the object assigned as reference. It can be a primitive or a padstack instance.
 
 
         Returns
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>` or
         :class:`Primitive <pyedb.grpc.database.primitive.primitives.Primitive>`
+
         """
         if not self._reference_object:
             if self.terminal_type == "edge":
@@ -403,7 +430,8 @@ class Terminal(ConnObj):
 
     @property
     def reference_net_name(self) -> str:
-        """Net name to which reference_object belongs.
+        """
+        Net name to which reference_object belongs.
 
         Returns
         -------
@@ -417,7 +445,8 @@ class Terminal(ConnObj):
         return ""
 
     def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
-        """Get a list of pad stacks instances and serves Coax wave ports,
+        """
+        Get a list of pad stacks instances and serves Coax wave ports,
         pingroup terminals, PadEdge terminals.
 
         Parameters
@@ -428,6 +457,7 @@ class Terminal(ConnObj):
         Returns
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+
         """
 
         if self.core.is_circuit_port:
@@ -439,7 +469,8 @@ class Terminal(ConnObj):
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
     def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance | bool | None:
-        """Return a list of pins and serves terminals connected to pingroups.
+        """
+        Return a list of pins and serves terminals connected to pingroups.
 
         Parameters
         ----------
@@ -449,6 +480,7 @@ class Terminal(ConnObj):
         Returns
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+
         """
 
         ref_term = self.core.reference_terminal
@@ -472,12 +504,14 @@ class Terminal(ConnObj):
         return False
 
     def get_edge_terminal_reference_primitive(self) -> Primitive | None:
-        """Check and return a primitive instance that serves Edge ports,
+        """
+        Check and return a primitive instance that serves Edge ports,
         wave-ports and coupled-edge ports that are directly connected to primitives.
 
         Returns
         -------
         :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`
+
         """
         # TODO check this method most likely does not work : issue #1903
         ref_layer = self.reference_layer
@@ -501,6 +535,7 @@ class Terminal(ConnObj):
             Returns an instance of :class:`PadstackInstance
             <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             or :class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`.
+
         """
 
         ref_term = self.core.reference_terminal  # return value is type terminal
@@ -521,7 +556,8 @@ class Terminal(ConnObj):
         return False
 
     def get_pad_edge_terminal_reference_pin(self, gnd_net_name_preference=None) -> PadstackInstance:
-        """Get the closest pin padstack instances and serves any edge terminal connected to a pad.
+        """
+        Get the closest pin padstack instances and serves any edge terminal connected to a pad.
 
         Parameters
         ----------
@@ -531,6 +567,7 @@ class Terminal(ConnObj):
         Returns
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
+
         """
         comp_inst = self.core.component
         pins = self._pedb.components.get_pin_from_component(comp_inst.name)
@@ -570,12 +607,14 @@ class Terminal(ConnObj):
 
     @property
     def magnitude(self) -> float:
-        """Get the magnitude of the source.
+        """
+        Get the magnitude of the source.
 
         Returns
         -------
         float
             Source magnitude.
+
         """
         return Value(self.core.source_amplitude)
 
@@ -585,7 +624,8 @@ class Terminal(ConnObj):
 
     @property
     def phase(self) -> float:
-        """Get the phase of the source.
+        """
+        Get the phase of the source.
 
         Returns
         -------
@@ -611,12 +651,14 @@ class Terminal(ConnObj):
 
     @property
     def reference_terminal(self):
-        """Return reference terminal.
+        """
+        Return reference terminal.
 
         Returns
         -------
         PadstackInstanceTerminal
             Reference terminal object.
+
         """
         if self.core.reference_terminal:
             return self._pedb.terminals[self.core.reference_terminal.name]
@@ -641,7 +683,8 @@ class Terminal(ConnObj):
 
     @property
     def is_circuit_port(self) -> bool:
-        """Whether the terminal is a circuit port.
+        """
+        Whether the terminal is a circuit port.
 
         Returns
         -------
@@ -662,7 +705,8 @@ class Terminal(ConnObj):
     @property
     @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self) -> bool:
-        """Check if the terminal is a circuit terminal.
+        """
+        Check if the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
            use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
@@ -671,13 +715,15 @@ class Terminal(ConnObj):
         -------
         bool
             True if the terminal is a circuit terminal, False otherwise.
+
         """
         return self.is_circuit_port
 
     @is_circuit.setter
     @deprecated_property("use is_circuit_port property instead")
     def is_circuit(self, value: bool):
-        """Set whether the terminal is a circuit terminal.
+        """
+        Set whether the terminal is a circuit terminal.
 
         .. deprecated:: 0.70.0
            Use :attr: `is_circuit` property is deprecated. Please use `is_circuit_port` instead.
@@ -686,5 +732,6 @@ class Terminal(ConnObj):
         ----------
         value : bool
             True to set the terminal as a circuit terminal, False otherwise.
+
         """
         self.is_circuit_port = value

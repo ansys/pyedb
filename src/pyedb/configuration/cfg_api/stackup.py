@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build the ``stackup`` configuration section.
+"""
+Build the ``stackup`` configuration section.
 
 This module wraps the stackup-related configuration models with fluent builders
 for materials, layers, roughness, and etching definitions.
@@ -41,7 +42,8 @@ from pyedb.configuration.cfg_stackup import (
 
 
 class MaterialConfig:
-    """Fluent builder for a single stackup material.
+    """
+    Fluent builder for a single stackup material.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgMaterial`.
 
@@ -55,7 +57,8 @@ class MaterialConfig:
     """
 
     def __init__(self, name: str, **kwargs):
-        """Initialize a material configuration.
+        """
+        Initialize a material configuration.
 
         Parameters
         ----------
@@ -73,7 +76,8 @@ class MaterialConfig:
 
 
 class LayerConfig:
-    """Fluent builder for a single stackup layer.
+    """
+    Fluent builder for a single stackup layer.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgLayer`.
 
@@ -86,7 +90,8 @@ class LayerConfig:
     """
 
     def __init__(self, name: str, **kwargs):
-        """Initialize a layer configuration.
+        """
+        Initialize a layer configuration.
 
         Parameters
         ----------
@@ -107,7 +112,8 @@ class LayerConfig:
         bottom: bool = True,
         side: bool = True,
     ):
-        """Configure Huray roughness on selected surfaces.
+        """
+        Configure Huray roughness on selected surfaces.
 
         Parameters
         ----------
@@ -141,7 +147,8 @@ class LayerConfig:
         bottom: bool = True,
         side: bool = True,
     ):
-        """Configure Groisse roughness on selected surfaces.
+        """
+        Configure Groisse roughness on selected surfaces.
 
         Parameters
         ----------
@@ -171,7 +178,8 @@ class LayerConfig:
         etch_power_ground_nets: bool = False,
         enabled: bool = True,
     ):
-        """Configure the etching model.
+        """
+        Configure the etching model.
 
         Parameters
         ----------
@@ -190,7 +198,8 @@ class LayerConfig:
         )
 
     def to_dict(self) -> dict:
-        """Serialize the layer definition.
+        """
+        Serialize the layer definition.
 
         Returns
         -------
@@ -202,7 +211,8 @@ class LayerConfig:
 
 
 class StackupConfig:
-    """Fluent builder for the ``stackup`` configuration section.
+    """
+    Fluent builder for the ``stackup`` configuration section.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgStackup`.
     """
@@ -212,7 +222,8 @@ class StackupConfig:
         self._model = CfgStackup()
 
     def add_material(self, name: str, **kwargs) -> MaterialConfig:
-        """Add a material definition.
+        """
+        Add a material definition.
 
         Parameters
         ----------
@@ -231,7 +242,8 @@ class StackupConfig:
         return cfg
 
     def add_layer(self, name: str, **kwargs) -> LayerConfig:
-        """Append a layer.
+        """
+        Append a layer.
 
         Parameters
         ----------
@@ -256,7 +268,8 @@ class StackupConfig:
         fill_material: str = "FR4_epoxy",
         thickness: Union[str, float] = "35um",
     ) -> LayerConfig:
-        """Add a signal layer with common defaults.
+        """
+        Add a signal layer with common defaults.
 
         Returns
         -------
@@ -272,7 +285,8 @@ class StackupConfig:
         material: str = "FR4_epoxy",
         thickness: Union[str, float] = "100um",
     ) -> LayerConfig:
-        """Add a dielectric layer with common defaults.
+        """
+        Add a dielectric layer with common defaults.
 
         Returns
         -------
@@ -283,7 +297,8 @@ class StackupConfig:
         return self.add_layer(name, type="dielectric", material=material, thickness=thickness)
 
     def to_dict(self) -> dict:
-        """Serialize the configured stackup.
+        """
+        Serialize the configured stackup.
 
         Returns
         -------

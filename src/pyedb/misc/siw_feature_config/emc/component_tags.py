@@ -24,7 +24,8 @@ from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
 
 
 class Comp(XmlGeneric):
-    """Manages individual component configuration and properties.
+    """
+    Manages individual component configuration and properties.
 
     This class handles component-specific attributes including component name, value,
     device type, capacitor type, and physical location information. It also tracks
@@ -50,7 +51,8 @@ class Comp(XmlGeneric):
     """
 
     def __init__(self, element) -> None:
-        """Initialize component configuration.
+        """
+        Initialize component configuration.
 
         Parameters
         ----------
@@ -84,7 +86,8 @@ class Comp(XmlGeneric):
 
 
 class ComponentTags(XmlGeneric):
-    """Manages collection of component tags.
+    """
+    Manages collection of component tags.
 
     This class handles the complete collection of component configurations, providing
     a container for multiple Comp objects within the EMC configuration. It serves as
@@ -111,7 +114,8 @@ class ComponentTags(XmlGeneric):
     CLS_MAPPING: dict = {"Comp": Comp}
 
     def __init__(self, element) -> None:
-        """Initialize component tags collection.
+        """
+        Initialize component tags collection.
 
         Parameters
         ----------

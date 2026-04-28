@@ -40,7 +40,8 @@ EXAMPLES_PATH = Path(tempfile.gettempdir()) / "PyAEDTExamples"
 
 
 def delete_downloads() -> None:
-    """Delete all downloaded examples to free space or update the files.
+    """
+    Delete all downloaded examples to free space or update the files.
 
     Examples
     --------
@@ -52,7 +53,8 @@ def delete_downloads() -> None:
 
 
 def list_examples_files(folder) -> list:
-    """List all files in a folder of the example-data repository.
+    """
+    List all files in a folder of the example-data repository.
 
     Parameters
     ----------
@@ -63,6 +65,7 @@ def list_examples_files(folder) -> list:
     -------
     list
         A list of file paths in the specified folder.
+
     """
     import requests
 
@@ -89,7 +92,8 @@ def _download_file(
     strip_prefix: str | Path | None = None,
     force: bool = False,
 ) -> str:
-    """Download a file from the example repository.
+    """
+    Download a file from the example repository.
 
     Parameters
     ----------
@@ -149,7 +153,8 @@ def _download_file(
 def _download_folder(
     directory: str, destination: str, strip_prefix: str | Path | None = None, force: bool = False
 ) -> str:
-    """Download a file from the example repository.
+    """
+    Download a file from the example repository.
 
     Parameters
     ----------
@@ -184,7 +189,8 @@ def _download_folder(
 
 
 def download_aedb(destination: str | None = None) -> str:
-    """Download an example of AEDB File and return the def path.
+    """
+    Download an example of AEDB File and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
     re-downloading the same file twice.
@@ -214,7 +220,8 @@ def download_aedb(destination: str | None = None) -> str:
 
 
 def download_edb_merge_utility(force_download: bool = False, destination: str | None = None) -> str:
-    """Download an example of WPF Project which allows to merge 2 aedb files.
+    """
+    Download an example of WPF Project which allows to merge 2 aedb files.
 
     Examples files are downloaded to a persistent cache to avoid
     re-downloading the same file twice.
@@ -262,7 +269,8 @@ def download_edb_merge_utility(force_download: bool = False, destination: str | 
 
 
 def download_via_wizard(destination: str | None = None) -> str:
-    """Download an example of Hfss Via Wizard and return the def path.
+    """
+    Download an example of Hfss Via Wizard and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
     re-downloading the same file twice.
@@ -286,6 +294,7 @@ def download_via_wizard(destination: str | None = None) -> str:
     >>> path = pyedb.misc.downloads.download_via_wizard()
     >>> path
     'C:/Users/user/AppData/local/temp/PyAEDTExamples/viawizard_vacuum_FR4.aedt'
+
     """
     if not destination:  # pragma: no cover
         destination = EXAMPLES_PATH
@@ -296,7 +305,8 @@ def download_via_wizard(destination: str | None = None) -> str:
 
 
 def download_touchstone(destination: str | None = None) -> str:
-    """Download an example of touchstone File and return the def path.
+    """
+    Download an example of touchstone File and return the def path.
 
     Examples files are downloaded to a persistent cache to avoid
     re-downloading the same file twice.
@@ -329,7 +339,8 @@ def download_touchstone(destination: str | None = None) -> str:
 
 
 def download_file(directory: str, filename: str | None = None, destination: str | None = None) -> str:
-    """Download file from directory.
+    """
+    Download file from directory.
 
     Files are downloaded to a destination. If filename is not specified, the full directory will be downloaded.
 
@@ -369,7 +380,8 @@ def download_file(directory: str, filename: str | None = None, destination: str 
 
 
 def unzip(source_filename: str, dest_dir: str) -> None:
-    """Extract all files from a zip archive.
+    """
+    Extract all files from a zip archive.
 
     Parameters
     ----------

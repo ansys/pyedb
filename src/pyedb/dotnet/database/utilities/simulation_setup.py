@@ -74,7 +74,8 @@ class AdaptiveType(object):
 
 
 class SimulationSetup(SystemObject):
-    """Provide base simulation setup.
+    """
+    Provide base simulation setup.
 
     Parameters
     ----------
@@ -84,6 +85,7 @@ class SimulationSetup(SystemObject):
     :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`,
     :class:`Ansys.Ansoft.Edb.Utility.HFSSSimulationSettings`
         EDB object.
+
     """
 
     def __init__(self, pedb, edb_object=None):
@@ -301,7 +303,8 @@ class SimulationSetup(SystemObject):
         discrete=False,
         **kwargs,
     ):
-        """Add frequency sweep.
+        """
+        Add frequency sweep.
 
         Parameters
         ----------
@@ -326,6 +329,7 @@ class SimulationSetup(SystemObject):
         --------
         >>> setup1 = edbapp.create_siwave_syz_setup("setup1")
         >>> setup1.add_sweep(name="sw1", frequency_set=["linear count", "1MHz", "100MHz", 10])
+
         """
         if "sweep_type" in kwargs:
             self._pedb.logger.warning("sweep_type parameter is deprecated. Use ``discrete`` parameter instead")
@@ -365,21 +369,25 @@ class SimulationSetup(SystemObject):
         self._pedb.layout.cell.DeleteSimulationSetup(self.name)
 
     def _add_frequency_sweep(self, sweep_data):
-        """Add a frequency sweep.
+        """
+        Add a frequency sweep.
 
         Parameters
         ----------
         sweep_data: SweepData
+
         """
         warnings.warn("Use new property :func:`add_sweep_data` instead.", DeprecationWarning)
         return self.sim_setup_info.add_sweep_data(sweep_data)
 
     def delete_frequency_sweep(self, sweep_data):
-        """Delete a frequency sweep.
+        """
+        Delete a frequency sweep.
 
         Parameters
         ----------
             sweep_data : EdbFrequencySweep.
+
         """
         name = sweep_data.name
         if name in self.sweeps:
@@ -395,7 +403,8 @@ class SimulationSetup(SystemObject):
             return False if name in self.sweeps else True
 
     def add_frequency_sweep(self, name=None, frequency_sweep=None):
-        """Add frequency sweep.
+        """
+        Add frequency sweep.
 
         Parameters
         ----------
@@ -418,17 +427,20 @@ class SimulationSetup(SystemObject):
         ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
         ...     ]
         ... )
+
         """
         warnings.warn("`add_frequency_sweep` is deprecated. Use `add_sweep` method instead.", DeprecationWarning)
         return self.add_sweep(name, frequency_sweep)
 
     @property
     def settings(self):
-        """Get the settings interface for SIwave DC simulation.
+        """
+        Get the settings interface for SIwave DC simulation.
 
         Returns
         -------
         SIWaveSimulationSettings
             An instance of the Settings class providing access to SIwave DC simulation settings.
+
         """
         raise NotImplementedError("The `settings` property is not implemented in the base SimulationSetup class")

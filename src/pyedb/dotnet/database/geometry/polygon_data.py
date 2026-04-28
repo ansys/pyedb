@@ -77,7 +77,8 @@ class PolygonData:
 
     @property
     def bounding_box(self) -> list[float]:
-        """Bounding box.
+        """
+        Bounding box.
 
         Returns
         -------
@@ -85,6 +86,7 @@ class PolygonData:
             List of coordinates for the component's bounding box, with the list of
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
+
         """
         return BBox(self._pedb, self.core.GetBBox()).corner_points
 
@@ -98,11 +100,13 @@ class PolygonData:
 
     @property
     def points(self) -> list[tuple[float, float]]:
-        """Get all points in polygon.
+        """
+        Get all points in polygon.
 
         Returns
         -------
         list[tuple[float, float]]
+
         """
         return [
             (self._pedb.edb_value(i.X).ToDouble(), self._pedb.edb_value(i.Y).ToDouble()) for i in list(self.core.Points)
@@ -138,7 +142,8 @@ class PolygonData:
         round_corners: bool = True,
         maximum_corner_extension: float = 0.001,
     ) -> "PolygonData":
-        """Expand the polygon shape by an absolute value in all direction.
+        """
+        Expand the polygon shape by an absolute value in all direction.
 
         Offset can be negative for negative expansion.
 
@@ -153,19 +158,22 @@ class PolygonData:
             If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
         """
         new_poly = self.core.Expand(offset, tolerance, round_corners, maximum_corner_extension)
         core = new_poly[0]
         return PolygonData(self._pedb, core)
 
     def create_from_arcs(self, arcs: list[Any], flag: bool) -> "PolygonData":
-        """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+        """
+        Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
 
         Parameters
         ----------
         arcs : list or `Edb.Geometry.ArcData`
             List of ArcData.
         flag : bool
+
         """
         if isinstance(arcs, list):
             arcs = convert_py_list_to_net_list(arcs)
@@ -181,7 +189,8 @@ class PolygonData:
     # TODO: Same argument as above
     @deprecated("Use is_inside method instead.", category=None)
     def point_in_polygon(self, x: str | float, y: str | float | None = None) -> bool:
-        """Determines whether a point is inside the polygon.
+        """
+        Determines whether a point is inside the polygon.
 
         ..deprecated:: 0.48.0
            Use: func:`is_inside` instead.

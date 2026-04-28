@@ -78,6 +78,7 @@ class RectangularPatch:
     >>> edb = pyedb.Edb()
     >>> RectangularPatch(edb, freq=2.4e9, inset=0).create()
     >>> edb.save_as("probe_patch_2p4GHz.aedb")
+
     """
 
     def __init__(
@@ -109,6 +110,7 @@ class RectangularPatch:
         -------
         float
             Resonant frequency in Hz.
+
         """
         # Effective length
         c = 299_792_458
@@ -140,12 +142,14 @@ class RectangularPatch:
         return round(0.5 * 299_792_458 / (self.target_frequency * math.sqrt(eps_eff)) - 2 * delta_l, 5)
 
     def create(self) -> bool:
-        """Draw the patch, ground plane and feed geometry in EDB.
+        """
+        Draw the patch, ground plane and feed geometry in EDB.
 
         Returns
         -------
         bool
             True when the geometry has been successfully created.
+
         """
         self._edb["w"] = self.width
         self._edb["l"] = self.length
@@ -254,6 +258,7 @@ class CircularPatch:
     >>> edb = pyedb.Edb()
     >>> CircularPatch(edb, freq=2.4e9).create()
     >>> edb.save_as("probe_circ_patch_2p4GHz.aedb")
+
     """
 
     def __init__(
@@ -286,6 +291,7 @@ class CircularPatch:
         -------
         float
             Resonant frequency in Hz.
+
         """
         c = 299_792_458.0
         a = self.radius
@@ -326,12 +332,14 @@ class CircularPatch:
         return round(a, 5)
 
     def create(self) -> bool:
-        """Draw the patch, ground plane and feed geometry in EDB.
+        """
+        Draw the patch, ground plane and feed geometry in EDB.
 
         Returns
         -------
         bool
             True when the geometry has been successfully created.
+
         """
         self._edb["r"] = self.radius
         self._edb["d"] = self.length_feeding_line
@@ -425,6 +433,7 @@ class TriangularPatch:
     >>> edb = pyedb.Edb()
     >>> TriangularPatch(edb, freq=2.4e9).create()
     >>> edb.save_as("probe_tri_patch_2p4GHz.aedb")
+
     """
 
     def __init__(
@@ -457,6 +466,7 @@ class TriangularPatch:
         -------
         float
             Resonant frequency in Hz.
+
         """
         c = 299_792_458.0
         s = self.side
@@ -536,12 +546,14 @@ class TriangularPatch:
         return round(s, 6)
 
     def create(self) -> bool:
-        """Draw the patch, ground plane and feed geometry in EDB.
+        """
+        Draw the patch, ground plane and feed geometry in EDB.
 
         Returns
         -------
         bool
             True when the geometry has been successfully created.
+
         """
         side = self.side
         self._edb["s"] = side

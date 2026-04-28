@@ -67,34 +67,40 @@ class SimulationSetup(SimulationSetupDeprecated):
 
     @property
     def id(self) -> int:
-        """Unique ID of the EDB object.
+        """
+        Unique ID of the EDB object.
 
         Returns
         -------
         int
             Simulation setup ID.
+
         """
         return self.core.id
 
     @property
     def is_null(self) -> bool:
-        """Check if the simulation setup is null.
+        """
+        Check if the simulation setup is null.
 
         Returns
         -------
         bool
             True if the simulation setup is null, False otherwise.
+
         """
         return self.core.is_null
 
     @property
     def name(self) -> str:
-        """Get or set the name of the simulation setup.
+        """
+        Get or set the name of the simulation setup.
 
         Returns
         -------
         str
             Simulation setup name.
+
         """
         return self.core.name
 
@@ -104,12 +110,14 @@ class SimulationSetup(SimulationSetupDeprecated):
 
     @property
     def position(self) -> int:
-        """Get or set the position of the simulation setup.
+        """
+        Get or set the position of the simulation setup.
 
         Returns
         -------
         int
             Simulation setup position.
+
         """
         return self.core.position
 
@@ -119,12 +127,14 @@ class SimulationSetup(SimulationSetupDeprecated):
 
     @property
     def sweep_data(self) -> list[SweepData]:
-        """Get the sweep data associated with the simulation setup.
+        """
+        Get the sweep data associated with the simulation setup.
 
         Returns
         -------
         list[SweepData]
             List of sweep data objects.
+
         """
 
         return [SweepData(self._pedb, core=sweep, simsetup=self) for sweep in self.core.sweep_data]
@@ -134,7 +144,8 @@ class SimulationSetup(SimulationSetupDeprecated):
         self.core.sweep_data = [sweep.core for sweep in sweeps]
 
     def _normalize_distribution(self, distribution: str) -> str:
-        """Normalize user-provided distribution string to internal code.
+        """
+        Normalize user-provided distribution string to internal code.
 
         Parameters
         ----------
@@ -145,6 +156,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         -------
         str
             One of: "LIN", "LINC", "ESTP", "DEC", "OCT".
+
         """
         if not distribution:
             return "LIN"
@@ -186,7 +198,8 @@ class SimulationSetup(SimulationSetupDeprecated):
         return sweep
 
     def _add_sweeps_from_frequency_set(self, frequency_set, name, init_sweep_count, discrete):
-        """Handle the legacy frequency_set format.
+        """
+        Handle the legacy frequency_set format.
 
         This function creates SweepData entries from the provided frequency_set and
         appends them to the existing core.sweep_data.
@@ -234,7 +247,8 @@ class SimulationSetup(SimulationSetupDeprecated):
         return sw_data
 
     def _add_single_sweep(self, sweep: SweepData) -> Union[SweepData, None]:
-        """Insert a single sweep into core.sweep_data preserving existing sweeps.
+        """
+        Insert a single sweep into core.sweep_data preserving existing sweeps.
 
         Returns the newly added SweepData on success, None otherwise.
         """
@@ -270,7 +284,8 @@ class SimulationSetup(SimulationSetupDeprecated):
         discrete: bool = False,
         frequency_set: list[list[str]] | None = None,
     ) -> SweepData | None:
-        """Add a HFSS frequency sweep.
+        """
+        Add a HFSS frequency sweep.
 
         This method was refactored to reduce complexity. The behavior is compatible
         with the previous implementation: it accepts either a legacy `frequency_set`
@@ -299,6 +314,7 @@ class SimulationSetup(SimulationSetupDeprecated):
         SweepData | None
             The newly added sweep when single sweep parameters are used, or None when
             `frequency_set` is provided (legacy multi-sweep behavior).
+
         """
         # Legacy batch mode
         if frequency_set:
@@ -322,11 +338,13 @@ class SimulationSetup(SimulationSetupDeprecated):
 
     @property
     def setup_type(self) -> str:
-        """Get the type of the simulation setup.
+        """
+        Get the type of the simulation setup.
 
         Returns
         -------
         str
             Simulation setup type.
+
         """
         return _mapping_simulation_types[self.core.type]

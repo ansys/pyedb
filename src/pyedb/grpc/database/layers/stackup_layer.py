@@ -93,23 +93,27 @@ class StackupLayer:
 
     @property
     def id(self):
-        """Layer ID.
+        """
+        Layer ID.
 
         Returns
         -------
         int
             Layer ID.
+
         """
         return self.core.id
 
     @property
     def type(self) -> str:
-        """Layer type.
+        """
+        Layer type.
 
         Returns
         -------
         str
             Layer name.
+
         """
         return self.core.type.name.lower().split("_")[0]
 
@@ -195,12 +199,14 @@ class StackupLayer:
 
     @property
     def lower_elevation(self) -> float:
-        """Lower elevation.
+        """
+        Lower elevation.
 
         Returns
         -------
         float
             Lower elevation.
+
         """
         return Value(self.core.lower_elevation, self._pedb.active_cell)
 
@@ -211,12 +217,14 @@ class StackupLayer:
 
     @property
     def fill_material(self) -> Union[str, None]:
-        """The layer's fill material.
+        """
+        The layer's fill material.
 
         Returns
         -------
         str
             Material name.
+
         """
         if self.type == "signal":
             return self.core.get_fill_material()
@@ -229,29 +237,34 @@ class StackupLayer:
 
     @property
     def upper_elevation(self) -> float:
-        """Upper elevation.
+        """
+        Upper elevation.
 
         Returns
         -------
         float
             Upper elevation.
+
         """
         return Value(self.core.upper_elevation, self._pedb.active_cell)
 
     @property
     def is_negative(self) -> bool:
-        """Determine whether this layer is a negative layer.
+        """
+        Determine whether this layer is a negative layer.
 
         Returns
         -------
         bool
             True if this layer is a negative layer, False otherwise.
+
         """
         return self.core.negative
 
     @property
     def name(self) -> str:
-        """Layer name.
+        """
+        Layer name.
 
         Returns
         -------
@@ -267,7 +280,8 @@ class StackupLayer:
 
     @is_negative.setter
     def is_negative(self, value):
-        """Layer negative.
+        """
+        Layer negative.
 
         Returns
         -------
@@ -278,11 +292,13 @@ class StackupLayer:
 
     @property
     def is_stackup_layer(self) -> bool:
-        """Testing if layer is stackup layer.
+        """
+        Testing if layer is stackup layer.
 
         Returns
         -------
         `True` if layer type is "signal" or "dielectric".
+
         """
         if self.type in ["signal", "dielectric", "via", "wirebond"]:
             return True
@@ -290,12 +306,14 @@ class StackupLayer:
 
     @property
     def material(self) -> str:
-        """Material.
+        """
+        Material.
 
         Returns
         -------
         str
             Material name.
+
         """
         return self.core.get_material()
 
@@ -305,12 +323,14 @@ class StackupLayer:
 
     @property
     def conductivity(self) -> float:
-        """Material conductivity.
+        """
+        Material conductivity.
 
         Returns
         -------
         float
             Material conductivity value.
+
         """
         if self.material in self._pedb.materials.materials:
             condcutivity = self._pedb.materials[self.material].conductivity
@@ -319,12 +339,14 @@ class StackupLayer:
 
     @property
     def permittivity(self) -> float:
-        """Material permittivity.
+        """
+        Material permittivity.
 
         Returns
         -------
         float
             Material permittivity value.
+
         """
         if self.material in self._pedb.materials.materials:
             permittivity = self._pedb.materials[self.material].permittivity
@@ -333,12 +355,14 @@ class StackupLayer:
 
     @property
     def loss_tangent(self) -> float:
-        """Material loss_tangent.
+        """
+        Material loss_tangent.
 
         Returns
         -------
         float
             Material loss tangent value.
+
         """
         if self.material in self._pedb.materials.materials:
             loss_tangent = self._pedb.materials[self.material].dielectric_loss_tangent
@@ -347,12 +371,14 @@ class StackupLayer:
 
     @property
     def dielectric_fill(self) -> Union[str, None]:
-        """Material name of the layer dielectric fill.
+        """
+        Material name of the layer dielectric fill.
 
         Returns
         -------
         str
             Material name.
+
         """
         if self.type == "signal":
             return self.core.get_fill_material()
@@ -368,12 +394,14 @@ class StackupLayer:
 
     @property
     def thickness(self) -> float:
-        """Layer thickness.
+        """
+        Layer thickness.
 
         Returns
         -------
         float
             Layer thickness.
+
         """
         return Value(self.core.thickness, self._pedb.active_cell)
 
@@ -383,12 +411,14 @@ class StackupLayer:
 
     @property
     def etch_factor_enabled(self) -> bool:
-        """Layer etching factor enable flag.
+        """
+        Layer etching factor enable flag.
 
         Returns
         -------
         bool
             Etching factor flag.
+
         """
         return self.core.etch_factor_enabled
 
@@ -398,12 +428,14 @@ class StackupLayer:
 
     @property
     def etch_factor(self) -> float:
-        """Layer etching factor.
+        """
+        Layer etching factor.
 
         Returns
         -------
         float
             Etching factor value.
+
         """
         return Value(self.core.etch_factor, self._pedb.active_cell)
 
@@ -427,6 +459,7 @@ class StackupLayer:
         -------
         str
             Net class on which etching is applied. Supported values `no_power_ground`, `all_nets`.
+
         """
         reverse_mapping = {v: k for k, v in _mapping_etch_net_class.items()}
         return reverse_mapping.get(self.core.etch_net_class, "all_nets")
@@ -441,12 +474,14 @@ class StackupLayer:
 
     @property
     def top_hallhuray_nodule_radius(self) -> float:
-        """Huray model nodule radius on layer top.
+        """
+        Huray model nodule radius on layer top.
 
         Returns
         -------
         float
             Nodule radius value.
+
         """
         if self.roughness_enabled:
             # grpc crashes if roughness is not enabled. check issue #711 on pyedb-core
@@ -466,12 +501,14 @@ class StackupLayer:
 
     @property
     def top_hallhuray_surface_ratio(self) -> float:
-        """Huray model surface ratio on layer top.
+        """
+        Huray model surface ratio on layer top.
 
         Returns
         -------
         float
             Surface ratio.
+
         """
         if self.roughness_enabled:
             if not self.top_rouhness_model_type == "huray":
@@ -491,12 +528,14 @@ class StackupLayer:
 
     @property
     def bottom_hallhuray_nodule_radius(self) -> float:
-        """Huray model nodule radius on layer bottom.
+        """
+        Huray model nodule radius on layer bottom.
 
         Returns
         -------
         float
             Nodule radius.
+
         """
         if self.roughness_enabled:
             if not self.bottom_rouhness_model_type == "huray":
@@ -518,12 +557,14 @@ class StackupLayer:
 
     @property
     def bottom_hallhuray_surface_ratio(self) -> float:
-        """Huray model surface ratio on layer bottom.
+        """
+        Huray model surface ratio on layer bottom.
 
         Returns
         -------
         float
             Surface ratio value.
+
         """
         if self.roughness_enabled:
             if not self.bottom_rouhness_model_type == "huray":
@@ -545,7 +586,8 @@ class StackupLayer:
 
     @property
     def side_hallhuray_nodule_radius(self) -> float:
-        """Huray model nodule radius on layer sides.
+        """
+        Huray model nodule radius on layer sides.
 
         Returns
         -------
@@ -571,12 +613,14 @@ class StackupLayer:
 
     @property
     def side_hallhuray_surface_ratio(self) -> float:
-        """Huray model surface ratio on layer sides.
+        """
+        Huray model surface ratio on layer sides.
 
         Returns
         -------
         float
             surface ratio.
+
         """
         # grpc crashes if roughness is not enabled. Check issue #711 on pyedb-core
         if self.roughness_enabled:
@@ -596,12 +640,14 @@ class StackupLayer:
 
     @property
     def top_groisse_roughness(self) -> float:
-        """Groisse model on layer top.
+        """
+        Groisse model on layer top.
 
         Returns
         -------
         float
             Roughness value.
+
         """
         # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
         if self.roughness_enabled:
@@ -622,12 +668,14 @@ class StackupLayer:
 
     @property
     def bottom_groisse_roughness(self) -> float:
-        """Groisse model on layer bottom.
+        """
+        Groisse model on layer bottom.
 
         Returns
         -------
         float
             Roughness value.
+
         """
         # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
         if self.roughness_enabled:
@@ -648,12 +696,14 @@ class StackupLayer:
 
     @property
     def side_groisse_roughness(self) -> float:
-        """Groisse model on layer bottom.
+        """
+        Groisse model on layer bottom.
 
         Returns
         -------
         float
             Roughness value.
+
         """
         # grpc crashes if rouhgness is not enabled. Check issue #711 on pyedb-core
         if self.roughness_enabled:
@@ -674,12 +724,14 @@ class StackupLayer:
 
     @property
     def color(self) -> tuple[int, int, int]:
-        """Layer color.
+        """
+        Layer color.
 
         Returns
         -------
         str
             Layer color in hex format.
+
         """
         return self.core.color
 
@@ -689,12 +741,14 @@ class StackupLayer:
 
     @property
     def transparency(self) -> int:
-        """Layer transparency.
+        """
+        Layer transparency.
 
         Returns
         -------
         float
             Layer transparency value between 0 and 100.
+
         """
         return self.core.transparency
 
@@ -704,39 +758,46 @@ class StackupLayer:
 
     @property
     def top_rouhness_model_type(self) -> str:
-        """Roughness model type on layer top.
+        """
+        Roughness model type on layer top.
 
         Returns
         -------
         str
             Roughness model type. Options are "huray", "groisse", or "none".
+
         """
         return self.get_roughness_model_type(location="top")
 
     @property
     def bottom_rouhness_model_type(self) -> str:
-        """Roughness model type on layer bottom.
+        """
+        Roughness model type on layer bottom.
 
         Returns
         -------
         str
             Roughness model type. Options are "huray", "groisse", or "none".
+
         """
         return self.get_roughness_model_type(location="bottom")
 
     @property
     def side_rouhness_model_type(self) -> str:
-        """Roughness model type on layer sides.
+        """
+        Roughness model type on layer sides.
 
         Returns
         -------
         str
             Roughness model type. Options are "huray", "groisse", or "none".
+
         """
         return self.get_roughness_model_type(location="side")
 
     def get_roughness_model_type(self, location=None) -> str:
-        """Roughness model type.
+        """
+        Roughness model type.
 
         Parameters
         ----------
@@ -748,6 +809,7 @@ class StackupLayer:
         -------
         str
             Roughness model type. Options are "huray", "groisse", or "none".
+
         """
         if self.roughness_enabled:
             if location.lower() in _mapping_rougness_location:
@@ -761,12 +823,14 @@ class StackupLayer:
 
     @property
     def roughness_enabled(self) -> bool:
-        """Roughness model enabled status.
+        """
+        Roughness model enabled status.
 
         Returns
         -------
         bool
             True if roughness model is enabled, False otherwise.
+
         """
         return self.core.roughness_enabled
 
@@ -785,7 +849,8 @@ class StackupLayer:
         groisse_roughness="1um",
         apply_on_surface="all",
     ) -> bool:
-        """Assign roughness model on this layer.
+        """
+        Assign roughness model on this layer.
 
         Parameters
         ----------
@@ -804,6 +869,7 @@ class StackupLayer:
         Returns
         -------
         bool
+
         """
         regions = []
         if self.type == "signal":

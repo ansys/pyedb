@@ -64,12 +64,14 @@ class SIWaveSParameterSettings:
 
     @property
     def dc_behavior(self) -> str:
-        """Get or set the DC behavior for S-Parameter simulation.
+        """
+        Get or set the DC behavior for S-Parameter simulation.
 
         Returns
         -------
         str
             The DC behavior as a string.
+
         """
         reverse_mapping = {v: k for k, v in _mapping_dc_behavior.items()}
         return reverse_mapping[self.core.dc_behavior]
@@ -82,12 +84,14 @@ class SIWaveSParameterSettings:
 
     @property
     def extrapolation(self) -> str:
-        """Get or set the S-Parameter extrapolation method.
+        """
+        Get or set the S-Parameter extrapolation method.
 
         Returns
         -------
         str
             The S-Parameter extrapolation method as a string.
+
         """
         reverse_mapping = {v: k for k, v in _mapping_s_parameter_extrapolation.items()}
         return reverse_mapping[self.core.extrapolation]
@@ -103,12 +107,14 @@ class SIWaveSParameterSettings:
 
     @property
     def interpolation(self) -> str:
-        """Get or set the S-Parameter interpolation method.
+        """
+        Get or set the S-Parameter interpolation method.
 
         Returns
         -------
         str
             The S-Parameter interpolation method as a string.
+
         """
         reverse_mapping = {v: k for k, v in _mapping_s_parameter_interpolation.items()}
         return reverse_mapping[self.core.interpolation]
@@ -124,12 +130,14 @@ class SIWaveSParameterSettings:
 
     @property
     def use_state_space(self) -> bool:
-        """Get or set whether to use state space representation.
+        """
+        Get or set whether to use state space representation.
 
         Returns
         -------
         bool
             True if state space representation is used, False otherwise.
+
         """
         return self.core.use_state_space
 

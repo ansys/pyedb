@@ -35,7 +35,8 @@ class SIWaveDCSettings:
 
     @property
     def compute_inductance(self) -> bool:
-        """Compute inductance flag.
+        """
+        Compute inductance flag.
 
         Returns
         -------
@@ -47,7 +48,8 @@ class SIWaveDCSettings:
 
     @compute_inductance.setter
     def compute_inductance(self, value: bool):
-        """Set compute inductance flag.
+        """
+        Set compute inductance flag.
 
         Parameters
         ----------
@@ -59,7 +61,8 @@ class SIWaveDCSettings:
 
     @property
     def contact_radius(self) -> str:
-        """Contact radius value.
+        """
+        Contact radius value.
 
         Returns
         -------
@@ -75,7 +78,8 @@ class SIWaveDCSettings:
 
     @property
     def dc_slider_position(self) -> int:
-        """DC slider position.
+        """
+        DC slider position.
 
         Returns
         -------
@@ -91,7 +95,8 @@ class SIWaveDCSettings:
 
     @property
     def plot_jv(self) -> bool:
-        """Plot JV flag.
+        """
+        Plot JV flag.
 
         Returns
         -------
@@ -107,7 +112,8 @@ class SIWaveDCSettings:
 
     @property
     def use_dc_custom_settings(self) -> bool:
-        """Use DC custom settings flag.
+        """
+        Use DC custom settings flag.
 
         Returns
         -------
@@ -123,7 +129,8 @@ class SIWaveDCSettings:
 
     @property
     def export_dc_thermal_data(self) -> bool:
-        """Export DC thermal data flag.
+        """
+        Export DC thermal data flag.
 
         Returns
         -------
@@ -139,7 +146,8 @@ class SIWaveDCSettings:
 
     @property
     def import_thermal_data(self) -> bool:
-        """Import thermal data flag.
+        """
+        Import thermal data flag.
 
         Returns
         -------
@@ -155,7 +163,8 @@ class SIWaveDCSettings:
 
     @property
     def dc_report_show_active_devices(self) -> bool:
-        """DC report show active devices flag.
+        """
+        DC report show active devices flag.
 
         Returns
         -------
@@ -171,7 +180,8 @@ class SIWaveDCSettings:
 
     @property
     def per_pin_use_pin_format(self) -> bool:
-        """Per pin use pin format flag.
+        """
+        Per pin use pin format flag.
 
         Returns
         -------
@@ -187,7 +197,8 @@ class SIWaveDCSettings:
 
     @property
     def use_loop_res_for_per_pin(self) -> bool:
-        """Use loop resistance for per pin flag.
+        """
+        Use loop resistance for per pin flag.
 
         Returns
         -------
@@ -203,7 +214,8 @@ class SIWaveDCSettings:
 
     @property
     def dc_report_config_file(self) -> str:
-        """DC report configuration file.
+        """
+        DC report configuration file.
 
         Returns
         -------
@@ -219,7 +231,8 @@ class SIWaveDCSettings:
 
     @property
     def full_dc_report_path(self) -> str:
-        """Full DC report path.
+        """
+        Full DC report path.
 
         Returns
         -------
@@ -235,7 +248,8 @@ class SIWaveDCSettings:
 
     @property
     def icepak_temp_file(self) -> str:
-        """Icepak temperature file.
+        """
+        Icepak temperature file.
 
         Returns
         -------
@@ -251,7 +265,8 @@ class SIWaveDCSettings:
 
     @property
     def per_pin_res_path(self) -> bool:
-        """Per pin resistance path.
+        """
+        Per pin resistance path.
 
         Returns
         -------
@@ -267,7 +282,8 @@ class SIWaveDCSettings:
 
     @property
     def via_report_path(self) -> str:
-        """Via report path.
+        """
+        Via report path.
 
         Returns
         -------
@@ -283,7 +299,8 @@ class SIWaveDCSettings:
 
     @property
     def source_terms_to_ground(self) -> dict[str, int]:
-        """Source terms to ground mapping.
+        """
+        Source terms to ground mapping.
 
         Returns
         -------

@@ -52,12 +52,14 @@ class Path(Primitive):
 
     @property
     def width(self) -> float:
-        """Path width.
+        """
+        Path width.
 
         Returns
         -------
         float
             Path width or None.
+
         """
         return Value(self.core.width)
 
@@ -67,12 +69,14 @@ class Path(Primitive):
 
     @property
     def length(self) -> float:
-        """Path length in meters.
+        """
+        Path length in meters.
 
         Returns
         -------
         float
             Path length in meters.
+
         """
         center_line_arcs = self.core.center_line.arc_data
         path_length = 0.0
@@ -180,7 +184,8 @@ class Path(Primitive):
         return new_path
 
     def add_point(self, x, y, incremental=True) -> bool:
-        """Add a point at the end of the path.
+        """
+        Add a point at the end of the path.
 
         Parameters
         ----------
@@ -195,6 +200,7 @@ class Path(Primitive):
         Returns
         -------
         bool
+
         """
         if incremental:
             points = self.center_line
@@ -207,12 +213,14 @@ class Path(Primitive):
             return False
 
     def clone(self):
-        """Clone a primitive object with keeping same definition and location.
+        """
+        Clone a primitive object with keeping same definition and location.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         mapping = {
             "round": CorePathCornerType.ROUND,
@@ -246,7 +254,6 @@ class Path(Primitive):
         pec_launch_width="0.01mm",
     ):
         """
-
         Parameters
         ----------
         name : str
@@ -293,7 +300,8 @@ class Path(Primitive):
         )
 
     def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
-        """Create via fences on both sides of the trace.
+        """
+        Create via fences on both sides of the trace.
 
         Parameters
         ----------
@@ -398,7 +406,8 @@ class Path(Primitive):
 
     @property
     def center_line(self) -> list[list[float]]:
-        """Path center line
+        """
+        Path center line
 
         Returns
         -------
@@ -408,7 +417,8 @@ class Path(Primitive):
         return self.get_center_line()
 
     def get_center_line(self) -> list[list[float]]:
-        """Retrieve center line points list.
+        """
+        Retrieve center line points list.
 
         Returns
         -------
@@ -419,7 +429,8 @@ class Path(Primitive):
 
     @property
     def corner_style(self) -> str:
-        """Path's corner style as string.
+        """
+        Path's corner style as string.
 
         Returns
         -------
@@ -441,7 +452,8 @@ class Path(Primitive):
 
     @property
     def end_cap1(self) -> str:
-        """Path's start style as string.
+        """
+        Path's start style as string.
 
         Returns
         -------
@@ -458,7 +470,8 @@ class Path(Primitive):
 
     @property
     def end_cap2(self) -> str:
-        """Path's end style as string.
+        """
+        Path's end style as string.
 
         Returns
         -------
@@ -474,7 +487,8 @@ class Path(Primitive):
             self.core.set_end_cap_style(self.core.get_end_cap_style()[0], mapping[end_cap_style])
 
     def move(self, vector):
-        """Move the path by a given vector.
+        """
+        Move the path by a given vector.
 
         Parameters
         ----------

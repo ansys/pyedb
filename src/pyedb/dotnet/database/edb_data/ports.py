@@ -29,7 +29,8 @@ from pyedb.dotnet.database.cell.terminal.terminal import Terminal
 
 
 class GapPort(EdgeTerminal):
-    """Manages gap port properties.
+    """
+    Manages gap port properties.
 
     Parameters
     ----------
@@ -44,6 +45,7 @@ class GapPort(EdgeTerminal):
     >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> gap_port = edb.ports["gap_port"]
+
     """
 
     def __init__(self, pedb, edb_object):
@@ -69,7 +71,8 @@ class GapPort(EdgeTerminal):
 
 
 class CircuitPort(GapPort):
-    """Manages gap port properties.
+    """
+    Manages gap port properties.
     Parameters
     ----------
     pedb : pyedb.edb.Edb
@@ -79,6 +82,7 @@ class CircuitPort(GapPort):
     Examples
     --------
     This example shows how to access the ``GapPort`` class.
+
     """
 
     def __init__(self, pedb, edb_object):
@@ -86,7 +90,8 @@ class CircuitPort(GapPort):
 
 
 class WavePort(EdgeTerminal):
-    """Manages wave port properties.
+    """
+    Manages wave port properties.
 
     Parameters
     ----------
@@ -102,6 +107,7 @@ class WavePort(EdgeTerminal):
     >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> exc = edb.ports
+
     """
 
     def __init__(self, pedb, edb_terminal):
@@ -109,7 +115,8 @@ class WavePort(EdgeTerminal):
 
 
 class ExcitationSources(Terminal):
-    """Manage sources properties.
+    """
+    Manage sources properties.
 
     Parameters
     ----------
@@ -135,7 +142,8 @@ class ExcitationSources(Terminal):
 
 
 class BundleWavePort(BundleTerminal):
-    """Manages bundle wave port properties.
+    """
+    Manages bundle wave port properties.
 
     Parameters
     ----------
@@ -200,7 +208,8 @@ class BundleWavePort(BundleTerminal):
 
 
 class CoaxPort(PadstackInstanceTerminal):
-    """Manages bundle wave port properties.
+    """
+    Manages bundle wave port properties.
 
     Parameters
     ----------

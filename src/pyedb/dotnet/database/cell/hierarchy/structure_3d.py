@@ -28,12 +28,14 @@ class Structure3D:
 
     @classmethod
     def create(cls, edb, name: str) -> "Structure3D":
-        """Create a new structure 3D object
+        """
+        Create a new structure 3D object
 
         Returns
         -------
         Structure3D
             The created structure 3D object.
+
         """
         core = edb._edb.Cell.Hierarchy.Structure3D.Create(edb.layout.core, name)
         return Structure3D(pedb=edb, core=core)
@@ -44,23 +46,27 @@ class Structure3D:
 
     @property
     def id(self) -> int:
-        """The id of the structure 3D object
+        """
+        The id of the structure 3D object
 
         Returns
         -------
         int
             The id of the structure 3D object.
+
         """
         return self.core.GetId()
 
     @property
     def location(self) -> tuple[float, float]:
-        """The location of the structure 3D object.
+        """
+        The location of the structure 3D object.
 
         Returns
         -------
         tuple[float, float]
             The location of the structure 3D object.
+
         """
         location = self.core.GetLocation()
         return location[1], location[2]
@@ -72,12 +78,14 @@ class Structure3D:
 
     @property
     def name(self) -> str:
-        """The name of the structure 3D object.
+        """
+        The name of the structure 3D object.
 
         Returns
         -------
         str
             The name of the structure 3D object.
+
         """
         return self.core.GetName()
 
@@ -87,12 +95,14 @@ class Structure3D:
 
     @property
     def material(self) -> str:
-        """The material name of the structure 3D object.
+        """
+        The material name of the structure 3D object.
 
         Returns
         -------
         str
             The material name of the structure 3D object.
+
         """
         return self.core.GetMaterial()
 
@@ -102,12 +112,14 @@ class Structure3D:
 
     @property
     def net(self) -> str:
-        """The net of the structure 3D object.
+        """
+        The net of the structure 3D object.
 
         Returns
         -------
         str
             The net of the structure 3D object.
+
         """
         return self.core.GetNet().GetName()
 

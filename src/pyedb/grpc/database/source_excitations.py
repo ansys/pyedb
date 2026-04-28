@@ -118,7 +118,8 @@ class SourceExcitationInternal:
     def _create_terminal(
         self, pin: PadstackInstance, term_name: Optional[str] = None
     ) -> Optional[PadstackInstanceTerminal]:
-        """Create terminal on component pin.
+        """
+        Create terminal on component pin.
 
         Parameters
         ----------
@@ -130,6 +131,7 @@ class SourceExcitationInternal:
         Returns
         -------
         EDB terminal.
+
         """
 
         from_layer, _ = pin.get_layer_range()
@@ -180,7 +182,8 @@ class SourceExcitationInternal:
         term_name: Optional[str] = None,
         term_type: str = "circuit",
     ) -> Optional["PinGroupTerminal"]:
-        """Creates an EDB pin group terminal from a given EDB pin group.
+        """
+        Creates an EDB pin group terminal from a given EDB pin group.
 
         Parameters
         ----------
@@ -197,6 +200,7 @@ class SourceExcitationInternal:
         Returns
         -------
         Edb pin group terminal.
+
         """
         from ansys.edb.core.hierarchy.pin_group import PinGroup as GrpcPinGroup
 
@@ -234,7 +238,8 @@ class SourceExcitationInternal:
         terminal_name: Optional[str] = None,
         is_ref: bool = False,
     ) -> Optional[EdgeTerminal]:
-        """Create an edge terminal.
+        """
+        Create an edge terminal.
 
         Parameters
         ----------
@@ -253,6 +258,7 @@ class SourceExcitationInternal:
         Returns
         -------
         Edb.Cell.Terminal.EdgeTerminal
+
         """
 
         if not terminal_name:
@@ -275,7 +281,8 @@ class SourceExcitationInternal:
 
 
 class SourceExcitation(SourceExcitationInternal):
-    """Manage sources and excitations.
+    """
+    Manage sources and excitations.
 
     Examples
     --------
@@ -408,6 +415,7 @@ class SourceExcitation(SourceExcitationInternal):
     >>> # Save and close EDB
     >>> edb.save()
     >>> edb.close()
+
     """
 
     def __init__(self, pedb):
@@ -415,7 +423,8 @@ class SourceExcitation(SourceExcitationInternal):
 
     @property
     def pin_groups(self) -> Dict[str, Any]:
-        """All layout pin groups.
+        """
+        All layout pin groups.
 
         Returns
         -------
@@ -429,6 +438,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin_groups = edbapp.siwave.pin_groups
         >>> for name, group in pin_groups.items():
         ...     print(f"Pin group {name} has {len(group.pins)} pins")
+
         """
         _pingroups = {}
         for el in self._pedb.layout.pin_groups:
@@ -442,7 +452,8 @@ class SourceExcitation(SourceExcitationInternal):
     @property
     @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         .. deprecated:: 0.70.0
            Use :attr: `ports` instead.
@@ -460,7 +471,8 @@ class SourceExcitation(SourceExcitationInternal):
 
     @property
     def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         Returns
         -------
@@ -484,7 +496,8 @@ class SourceExcitation(SourceExcitationInternal):
         return self._pedb.probes
 
     def create_source_on_component(self, sources: Optional[Union[Source, List[Source]]] = None) -> bool:
-        """Create voltage, current source, or resistor on component.
+        """
+        Create voltage, current source, or resistor on component.
 
         Parameters
         ----------
@@ -503,6 +516,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb = Edb()
         >>> source = Source(source_type=SourceType.Vsource, amplitude="1V", ...)
         >>> edb.excitation_manager.create_source_on_component([source])
+
         """
 
         if not sources:  # pragma: no cover
@@ -580,7 +594,8 @@ class SourceExcitation(SourceExcitationInternal):
         is_circuit_port: bool = False,
         name: Optional[str] = None,
     ) -> Any:
-        """Create a port.
+        """
+        Create a port.
 
         Parameters
         ----------
@@ -612,6 +627,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> term = edb.terminals["MyTerminal"]
         >>> ref_term = edb.terminals["RefTerminal"]
         >>> port = edb.excitation_manager.create_port(term, ref_term, name="Port1")
+
         """
 
         from ansys.edb.core.terminal.terminal import BoundaryType as GrpcBoundaryType
@@ -637,7 +653,8 @@ class SourceExcitation(SourceExcitationInternal):
         pec_boundary: bool = False,
         pingroup_on_single_pin: bool = False,
     ) -> PadstackInstanceTerminal:
-        """Create circuit port between pins and reference ones.
+        """
+        Create circuit port between pins and reference ones.
 
         Parameters
         ----------
@@ -683,6 +700,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb.components.create_port_on_pins(refdes="U2A5", pins=pin, reference_pins=ref_pins)
         >>> edb.save()
         >>> edb.close()
+
         """
 
         if isinstance(refdes, str):
@@ -750,7 +768,8 @@ class SourceExcitation(SourceExcitationInternal):
         solder_balls_mid_size: Union[float, str] = None,
         extend_reference_pins_outside_component: Optional[bool] = False,
     ) -> List[str]:
-        """Create ports on a component.
+        """
+        Create ports on a component.
 
         Parameters
         ----------
@@ -965,7 +984,8 @@ class SourceExcitation(SourceExcitationInternal):
     def add_port_on_rlc_component(
         self, component: Optional[Union[str, Component]] = None, circuit_ports: bool = True, pec_boundary: bool = False
     ) -> bool:
-        """Deactivate RLC component and replace it with a circuit port.
+        """
+        Deactivate RLC component and replace it with a circuit port.
         The circuit port supports only two-pin components.
 
         Parameters
@@ -993,6 +1013,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.add_port_on_rlc_component("R1")
+
         """
         from pyedb.grpc.database.components import Component
 
@@ -1046,7 +1067,8 @@ class SourceExcitation(SourceExcitationInternal):
         return False
 
     def add_rlc_boundary(self, component: Optional[Union[str, Component]] = None, circuit_type: bool = True) -> bool:
-        """Add RLC gap boundary on component and replace it with a circuit port.
+        """
+        Add RLC gap boundary on component and replace it with a circuit port.
         The circuit port supports only 2-pin components.
 
         Parameters
@@ -1061,6 +1083,7 @@ class SourceExcitation(SourceExcitationInternal):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         from pyedb.grpc.database.components import Component
 
@@ -1127,7 +1150,8 @@ class SourceExcitation(SourceExcitationInternal):
         name: Optional[str] = None,
         create_on_top: bool = True,
     ) -> Optional[str]:
-        """Create HFSS 3Dlayout coaxial lumped port on a pastack
+        """
+        Create HFSS 3Dlayout coaxial lumped port on a pastack
         Requires to have solder ball defined before calling this method.
 
         Parameters
@@ -1156,6 +1180,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb = Edb()
         >>> pin = edb.padstacks.instances[0]
         >>> edb.excitation_manager.create_coax_port(pin, name="CoaxPort1")
+
         """
         if isinstance(padstackinstance, int):
             padstackinstance = self._pedb.padstacks.instances[padstackinstance]
@@ -1205,7 +1230,8 @@ class SourceExcitation(SourceExcitationInternal):
         impedance: Union[int, float] = 50,
         port_name: Optional[str] = None,
     ) -> Optional[str]:
-        """Create a circuit port on a pin.
+        """
+        Create a circuit port on a pin.
 
         Parameters
         ----------
@@ -1230,6 +1256,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_circuit_port_on_pin(pins[0], pins[1], 50, "port_name")
+
         """
         if not port_name:
             port_name = f"Port_{pos_pin.component.name}_{pos_pin.net_name}_{neg_pin.component.name}_{neg_pin.net_name}"
@@ -1251,7 +1278,8 @@ class SourceExcitation(SourceExcitationInternal):
         l: Union[int, float] = 0,
         c: Union[int, float] = 0,
     ) -> Optional[str] | bool:
-        """Create a terminal on pins.
+        """
+        Create a terminal on pins.
 
         Parameters
         ----------
@@ -1278,6 +1306,7 @@ class SourceExcitation(SourceExcitationInternal):
             Inductor value
         c : float, int
             Capacitor value
+
         """
 
         top_layer_pos, bottom_layer_pos = positive_pin.get_layer_range()
@@ -1366,7 +1395,8 @@ class SourceExcitation(SourceExcitationInternal):
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
     ) -> Optional[str]:
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         Parameters
         ----------
@@ -1393,6 +1423,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin1 = edb.components["U1"].pins["VCC"]
         >>> pin2 = edb.components["U1"].pins["GND"]
         >>> edb.excitation_manager.create_voltage_source_on_pin(pin1, pin2, 3.3, name="VSource1")
+
         """
 
         if not source_name:
@@ -1418,7 +1449,8 @@ class SourceExcitation(SourceExcitationInternal):
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
     ) -> Optional[str]:
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         Parameters
         ----------
@@ -1445,6 +1477,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin1 = edb.components["U1"].pins["IN"]
         >>> pin2 = edb.components["U1"].pins["GND"]
         >>> edb.excitation_manager.create_current_source_on_pin(pin1, pin2, 0.1, name="ISource1")
+
         """
 
         if not source_name:
@@ -1467,7 +1500,8 @@ class SourceExcitation(SourceExcitationInternal):
         rvalue: Union[int, float] = 1,
         resistor_name: Optional[str] = "",
     ) -> Optional[str]:
-        """Create a Resistor boundary between two given pins..
+        """
+        Create a Resistor boundary between two given pins..
 
         Parameters
         ----------
@@ -1492,6 +1526,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin1 = edb.components["U1"].pins["R1_p"]
         >>> pin2 = edb.components["U1"].pins["R1_n"]
         >>> edb.excitation_manager.create_resistor_on_pin(pin1, pin2, 50, "R1")
+
         """
         if not resistor_name:
             resistor_name = (
@@ -1510,7 +1545,8 @@ class SourceExcitation(SourceExcitationInternal):
         impedance_value: Union[int, float] = 50,
         port_name: Optional[str] = None,
     ) -> Optional[str]:
-        """Create a circuit port on a NET.
+        """
+        Create a circuit port on a NET.
 
         It groups all pins belonging to the specified net and then applies the port on PinGroups.
 
@@ -1540,6 +1576,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_circuit_port_on_net("U1", "VCC", "U1", "GND", 50, "PowerPort")
+
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1591,7 +1628,8 @@ class SourceExcitation(SourceExcitationInternal):
         l: float = 0.0,
         c: float = 0.0,
     ) -> str:
-        """Create a pin group terminal.
+        """
+        Create a pin group terminal.
 
         Parameters
         ----------
@@ -1616,6 +1654,7 @@ class SourceExcitation(SourceExcitationInternal):
             Inductor value.
         c : float, optional
             Capacitor value.
+
         """
         if isinstance(positive_pins, PadstackInstance):
             positive_pins = [positive_pins]
@@ -1723,7 +1762,8 @@ class SourceExcitation(SourceExcitationInternal):
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
     ) -> Optional[str]:
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         Parameters
         ----------
@@ -1753,6 +1793,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_voltage_source_on_net("U1", "VCC", "U1", "GND", 3.3, name="VCC_Source")
+
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1785,7 +1826,8 @@ class SourceExcitation(SourceExcitationInternal):
         phase_value: Union[int, float] = 0,
         source_name: Optional[str] = None,
     ) -> Optional[str]:
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         Parameters
         ----------
@@ -1816,6 +1858,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb = Edb()
         >>> edb.excitation_manager.create_current_source_on_net("U1", "INPUT", "U1", "GND", 0.1, name="InputCurrent")
         "InputCurrent"
+
         """
         if not negative_component_name:
             negative_component_name = positive_component_name
@@ -1844,7 +1887,8 @@ class SourceExcitation(SourceExcitationInternal):
         net_list: Union[str, List[str]],
         delete_existing_terminal: bool = False,
     ) -> List[str]:
-        """Create a coaxial port on a component or component list on a net or net list.
+        """
+        Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
         Parameters
@@ -1869,6 +1913,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_coax_port_on_component(["U1"], ["RF1", "RF2"])
+
         """
         coax = []
         if not isinstance(ref_des_list, list):
@@ -1936,7 +1981,8 @@ class SourceExcitation(SourceExcitationInternal):
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
     ) -> BundleTerminal:
-        """Create a differential wave port.
+        """
+        Create a differential wave port.
 
         Parameters
         ----------
@@ -1972,6 +2018,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> port_name, port = edb.excitation_manager.create_differential_wave_port(0, [0, 0], 1, [0, 0.2])
+
         """
         if not port_name:
             port_name = generate_unique_name("diff")
@@ -2178,7 +2225,8 @@ class SourceExcitation(SourceExcitationInternal):
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
     ) -> Tuple[str, WavePort]:
-        """Create a wave port.
+        """
+        Create a wave port.
 
         Parameters
         ----------
@@ -2210,6 +2258,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> port_name, port = edb.excitation_manager.create_wave_port(0, [0, 0])
+
         """
         if not port_name:
             port_name = generate_unique_name("Terminal_")
@@ -2241,7 +2290,8 @@ class SourceExcitation(SourceExcitationInternal):
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
     ) -> str | None:
-        """Create a vertical edge port.
+        """
+        Create a vertical edge port.
 
         Parameters
         ----------
@@ -2278,6 +2328,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> term = edb.excitation_manager.create_edge_port_vertical(0, [0, 0], reference_layer="TopLayer")
+
         """
         if not port_name:
             port_name = generate_unique_name("Terminal_")
@@ -2316,7 +2367,8 @@ class SourceExcitation(SourceExcitationInternal):
         impedance: Union[int, float] = 50,
         layer_alignment: str = "Upper",
     ) -> Optional[EdgeTerminal]:
-        """Create a horizontal edge port.
+        """
+        Create a horizontal edge port.
 
         Parameters
         ----------
@@ -2349,6 +2401,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_edge_port_horizontal(0, [0, 0], 1, [0, 0.1], "EdgePort")
+
         """
         pos_edge_term = self._create_edge_terminal(prim_id, point_on_edge, port_name)
         neg_edge_term = self._create_edge_terminal(ref_prim_id, point_on_ref_edge, port_name + "_ref", is_ref=True)
@@ -2375,7 +2428,8 @@ class SourceExcitation(SourceExcitationInternal):
         digit_resolution: int = 6,
         at_bounding_box: bool = True,
     ) -> bool:
-        """Create an edge port on nets. This command looks for traces and polygons on the
+        """
+        Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
 
         Parameters
@@ -2408,6 +2462,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> points = edb.excitation_manager.create_lumped_port_on_net(["Net1"], return_points_only=True)
+
         """
         if isinstance(nets, str):
             nets = [self._pedb.nets.signal[nets]]
@@ -2494,7 +2549,8 @@ class SourceExcitation(SourceExcitationInternal):
         reference_net: Optional[Union[str, Net]] = None,
         user_defined_extent: Optional[Union[List[float], CorePolygonData]] = None,
     ) -> Union[List[List[str]], bool]:
-        """Create an edge port on clipped signal traces.
+        """
+        Create an edge port on clipped signal traces.
 
         Parameters
         ----------
@@ -2518,6 +2574,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> terminals = edb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(["Net1"], "GND")
+
         """
         if not isinstance(nets, list):
             if isinstance(nets, str):
@@ -2598,7 +2655,8 @@ class SourceExcitation(SourceExcitationInternal):
         vertical_extent_factor: Union[int, float] = 3,
         pec_launch_width: str = "0.01mm",
     ) -> BundleWavePort:
-        """Create a bundle wave port.
+        """
+        Create a bundle wave port.
 
         Parameters
         ----------
@@ -2628,6 +2686,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> port_name, port = edb.excitation_manager.create_bundle_wave_port([0, 1], [[0, 0], [0, 0.2]])
+
         """
         if not port_name:
             port_name = generate_unique_name("bundle_port")
@@ -2651,7 +2710,8 @@ class SourceExcitation(SourceExcitationInternal):
         return bundle_waveport
 
     def create_hfss_ports_on_padstack(self, pinpos: PadstackInstance, portname: Optional[str] = None) -> bool:
-        """Create an HFSS port on a padstack.
+        """
+        Create an HFSS port on a padstack.
 
         Parameters
         ----------
@@ -2672,6 +2732,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> edb = Edb()
         >>> pin = edb.padstacks.instances[0]
         >>> edb.excitation_manager.create_hfss_ports_on_padstack(pin, "Port1")
+
         """
         top_layer, bottom_layer = pinpos.get_layer_range()
 
@@ -2686,7 +2747,8 @@ class SourceExcitation(SourceExcitationInternal):
             return False
 
     def get_ports_number(self) -> int:
-        """Return the total number of excitation ports in a layout.
+        """
+        Return the total number of excitation ports in a layout.
 
         Parameters
         ----------
@@ -2702,12 +2764,14 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> num_ports = edb.excitation_manager.get_ports_number()
+
         """
         terms = [term for term in self._pedb.layout.terminals]
         return len([i for i in terms if not i.is_reference_terminal])
 
     def get_point_terminal(self, name: str, net_name: str, location: List[float], layer: str) -> PointTerminal:
-        """Place terminal between two points.
+        """
+        Place terminal between two points.
 
         Parameters
         ----------
@@ -2729,6 +2793,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> term = edb.excitation_manager.get_point_terminal("Term1", "Net1", [0, 0], "TopLayer")
+
         """
         from pyedb.grpc.database.terminal.point_terminal import PointTerminal
 
@@ -2744,7 +2809,8 @@ class SourceExcitation(SourceExcitationInternal):
         lvalue: float = 0.0,
         cvalue: float = 0.0,
     ) -> Union[Terminal, bool]:
-        """Create hfss rlc boundary on pins.
+        """
+        Create hfss rlc boundary on pins.
 
         Parameters
         ----------
@@ -2772,6 +2838,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> pin1 = edb.components["U1"].pins["Pin1"]
         >>> pin2 = edb.components["U1"].pins["Pin2"]
         >>> term = edb.excitation_manager.create_rlc_boundary_on_pins(pin1, pin2, rvalue=50)
+
         """
 
         if positive_pin and negative_pin:
@@ -2858,7 +2925,8 @@ class SourceExcitation(SourceExcitationInternal):
         port_impedance: Union[int, float] = 50.0,
         force_circuit_port: bool = False,
     ) -> Optional[str]:
-        """Create lumped port between two edges from two different polygons. Can also create a vertical port when
+        """
+        Create lumped port between two edges from two different polygons. Can also create a vertical port when
         the reference layer name is only provided. When a port is created between two edge from two polygons which don't
         belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
         port instead of lumped,use the boolean force_circuit_port.
@@ -2892,6 +2960,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> poly = edb.modeler.primitives[0]
         >>> ref_poly = edb.modeler.primitives[1]
         >>> edb.excitation_manager.create_edge_port_on_polygon(poly, ref_poly, [0, 0], [0.1, 0])
+
         """
         from ansys.edb.core.terminal.edge_terminal import (
             EdgeTerminal as GrpcEdgeTerminal,
@@ -2955,7 +3024,8 @@ class SourceExcitation(SourceExcitationInternal):
         reference_net: Optional[str] = None,
         impedance: Union[int, float] = 50.0,
     ) -> bool:
-        """Create circuit port between pin and a reference layer.
+        """
+        Create circuit port between pin and a reference layer.
 
         Parameters
         ----------
@@ -2980,6 +3050,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> terms = edb.excitation_manager.create_port_between_pin_and_layer("U1", "Pin1", "GND", "GND")
+
         """
         if not pins_name:
             pins_name = []
@@ -3040,7 +3111,8 @@ class SourceExcitation(SourceExcitationInternal):
         magnitude: Union[int, float] = 1,
         phase: Union[int, float] = 0,
     ) -> Union[Terminal, bool]:
-        """Create a current source.
+        """
+        Create a current source.
 
         Parameters
         ----------
@@ -3068,6 +3140,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_current_source_on_pin_group("PG1", "PG2", 0.1, name="ISource1")
+
         """
         from pyedb.grpc.database.terminal.terminal import Terminal
 
@@ -3099,7 +3172,8 @@ class SourceExcitation(SourceExcitationInternal):
         phase: Union[int, float] = 0,
         name: Optional[str] = None,
     ) -> bool:
-        """Create current source between two pin groups.
+        """
+        Create current source between two pin groups.
 
         Parameters
         ----------
@@ -3143,7 +3217,8 @@ class SourceExcitation(SourceExcitationInternal):
         magnitude: Union[int, float] = 1,
         phase: Union[int, float] = 0,
     ) -> Union[Terminal, bool]:
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         Parameters
         ----------
@@ -3175,6 +3250,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_voltage_source("pin1", "pin2", 3.3, name="VSource1")
+
         """
         from pyedb.grpc.database.terminal.terminal import Terminal
 
@@ -3206,7 +3282,8 @@ class SourceExcitation(SourceExcitationInternal):
         name: Optional[str] = None,
         impedance: Union[int, float] = 0.001,
     ) -> bool:
-        """Create voltage source between two pin groups.
+        """
+        Create voltage source between two pin groups.
 
         Parameters
         ----------
@@ -3228,6 +3305,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_voltage_probe_on_pin_group("Probe1", "PG1", "PG2")
+
         """
         pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
         if not pos_pin_group:
@@ -3249,7 +3327,8 @@ class SourceExcitation(SourceExcitationInternal):
         return True
 
     def create_voltage_probe(self, terminal: Terminal, ref_terminal: Terminal) -> Union[Terminal, bool]:
-        """Create a voltage probe.
+        """
+        Create a voltage probe.
 
         Parameters
         ----------
@@ -3269,6 +3348,7 @@ class SourceExcitation(SourceExcitationInternal):
         Returns
         -------
         :class:`Terminal <pyedb.dotnet.database.edb_data.terminals.Terminal>`
+
         """
 
         if isinstance(terminal, PadstackInstance):
@@ -3292,7 +3372,8 @@ class SourceExcitation(SourceExcitationInternal):
     def create_voltage_probe_on_pin_group(
         self, probe_name: str, pos_pin_group_name: str, neg_pin_group_name: str, impedance: Union[int, float] = 1000000
     ) -> bool:
-        """Create voltage probe between two pin groups.
+        """
+        Create voltage probe between two pin groups.
 
         Parameters
         ----------
@@ -3332,7 +3413,8 @@ class SourceExcitation(SourceExcitationInternal):
     def create_dc_terminal(
         self, component_name: str, net_name: str, source_name: Optional[str] = None
     ) -> Optional[str]:
-        """Create a dc terminal.
+        """
+        Create a dc terminal.
 
         Parameters
         ----------
@@ -3353,6 +3435,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_dc_terminal("U1", "VCC", "DC_VCC")
+
         """
 
         node_pin = self._pedb.components.get_pin_from_component(component_name, net_name)
@@ -3371,7 +3454,8 @@ class SourceExcitation(SourceExcitationInternal):
         impedance: Union[int, float] = 50,
         name: Optional[str] = None,
     ) -> bool:
-        """Create a port between two pin groups.
+        """
+        Create a port between two pin groups.
 
         Parameters
         ----------
@@ -3393,6 +3477,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.excitation_manager.create_circuit_port_on_pin_group("PG1", "PG2", 50, "Port1")
+
         """
         pos_pin_group = next(pg for pg in self._pedb.layout.pin_groups if pg.name == pos_pin_group_name)
         if not pos_pin_group:
@@ -3420,7 +3505,8 @@ class SourceExcitation(SourceExcitationInternal):
         negative_location: List[float],
         negative_layer: str,
     ) -> Terminal:
-        """Place a voltage probe between two points.
+        """
+        Place a voltage probe between two points.
 
         Parameters
         ----------
@@ -3451,6 +3537,7 @@ class SourceExcitation(SourceExcitationInternal):
         >>> probe = edb.excitation_manager.place_voltage_probe(
         ...     "Probe1", "Net1", [0, 0], "TopLayer", "GND", [0.1, 0], "TopLayer"
         ... )
+
         """
         p_terminal = PointTerminal.create(
             layout=self._pedb.active_layout,

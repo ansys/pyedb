@@ -37,7 +37,8 @@ class Definitions:
     @property
     @deprecated_property("use components property instead")
     def component_defs(self) -> Dict[str, ComponentDef]:
-        """Component definitions.
+        """
+        Component definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`components` instead.
@@ -48,7 +49,8 @@ class Definitions:
     @property
     @deprecated_property("use components property instead")
     def component(self):
-        """Component definitions.
+        """
+        Component definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`components` instead.
@@ -59,7 +61,8 @@ class Definitions:
     @property
     @deprecated_property("use apd_bondwires property instead")
     def apd_bondwire_defs(self):
-        """Get all APD bondwire definitions in this Database.
+        """
+        Get all APD bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
            Use :attr:`apd_bondwires` instead.
@@ -70,7 +73,8 @@ class Definitions:
     @property
     @deprecated_property("use jedec4_bondwires property instead")
     def jedec4_bondwire_defs(self):
-        """Get all JEDEC4 bondwire definitions in this Database.
+        """
+        Get all JEDEC4 bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
            Use :attr:`jedec4_bondwires` instead.
@@ -81,7 +85,8 @@ class Definitions:
     @property
     @deprecated_property("use jedec5_bondwires property instead")
     def jedec5_bondwire_defs(self):
-        """Get all JEDEC5 bondwire definitions in this Database.
+        """
+        Get all JEDEC5 bondwire definitions in this Database.
 
         .. deprecated:: 0.66.0
            Use :attr:`jedec5_bondwires` instead.
@@ -92,7 +97,8 @@ class Definitions:
     @property
     @deprecated_property("use packages property instead")
     def package_defs(self) -> Dict[str, PackageDef]:
-        """Package definitions.
+        """
+        Package definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`packages` instead.
@@ -102,7 +108,8 @@ class Definitions:
 
     @property
     def components(self) -> Dict[str, ComponentDef]:
-        """Component definitions
+        """
+        Component definitions
 
         Examples
         --------
@@ -111,13 +118,15 @@ class Definitions:
         >>> component_defs = edb.definitions.component
         >>> for name, comp_def in component_defs.items():
         ...     print(f"Component: {name}, Part: {comp_def.part}")
+
         """
         return {l.name: ComponentDef(self._pedb, l) for l in self._pedb.active_db.component_defs}
 
     @property
     @deprecated_property("use packages property instead")
     def package(self):
-        """Package definitions.
+        """
+        Package definitions.
 
         .. deprecated:: 0.66.0
            Use :attr:`packages` instead.
@@ -127,7 +136,8 @@ class Definitions:
 
     @property
     def packages(self) -> Dict[str, PackageDef]:
-        """Package definitions.
+        """
+        Package definitions.
 
         Examples
         --------
@@ -136,16 +146,19 @@ class Definitions:
         >>> package_defs = edb.definitions.package
         >>> for name, pkg_def in package_defs.items():
         ...     print(f"Package: {name}, Boundary: {pkg_def.exterior_boundary}")
+
         """
         return {l.name: PackageDef(self._pedb, l) for l in self._pedb.active_db.package_defs}
 
     @property
     def apd_bondwires(self):
-        """Get all APD bondwire definitions in this Database.
+        """
+        Get all APD bondwire definitions in this Database.
 
         Returns
         -------
         list[:class:`ApdBondwireDef <ansys.edb.definition.ApdBondwireDef>`]
+
         """
         from pyedb.grpc.database.definition.wirebond_def import ApdBondwireDef
 
@@ -156,11 +169,13 @@ class Definitions:
 
     @property
     def jedec4_bondwires(self):
-        """Get all JEDEC4 bondwire definitions in this Database.
+        """
+        Get all JEDEC4 bondwire definitions in this Database.
 
         Returns
         -------
         list[:class:`Jedec4BondwireDef <ansys.edb.definition.Jedec4BondwireDef>`]
+
         """
         from pyedb.grpc.database.definition.wirebond_def import Jedec4BondwireDef
 
@@ -171,11 +186,13 @@ class Definitions:
 
     @property
     def jedec5_bondwires(self):
-        """Get all JEDEC5 bondwire definitions in this Database.
+        """
+        Get all JEDEC5 bondwire definitions in this Database.
 
         Returns
         -------
         list[:class:`Jedec5BondwireDef <ansys.edb.definition.Jedec5BondwireDef>`]
+
         """
         from pyedb.grpc.database.definition.wirebond_def import Jedec5BondwireDef
 
@@ -188,7 +205,8 @@ class Definitions:
     def add_package_def(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:
-        """Add a package definition.
+        """
+        Add a package definition.
 
         .. deprecated:: 0.66.0
 
@@ -200,7 +218,8 @@ class Definitions:
     def add_package(
         self, name: str, component_part_name: Optional[str] = None, boundary_points: Optional[List[List[float]]] = None
     ) -> Union[PackageDef, bool]:
-        """Add a package definition.
+        """
+        Add a package definition.
 
         Parameters
         ----------
@@ -230,6 +249,7 @@ class Definitions:
         >>> custom_pkg = edb.definitions.add_package_def("CustomIC", boundary_points=boundary)
         >>> if custom_pkg:
         ...     print(f"Custom package boundary: {custom_pkg.exterior_boundary}")
+
         """
         if not name in self.packages:
             package_def = PackageDef.create(self._pedb, name)

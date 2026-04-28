@@ -37,7 +37,8 @@ if TYPE_CHECKING:
 
 
 class ComponentDef:
-    """Manages EDB functionalities for component definitions.
+    """
+    Manages EDB functionalities for component definitions.
 
     Parameters
     ----------
@@ -45,6 +46,7 @@ class ComponentDef:
         EDB database object.
     core : :class:`ansys.edb.core.definition.component_def.ComponentDef`
         Core component definition object.
+
     """
 
     def __init__(self, pedb: "Edb", core: "CoreComponentDef"):
@@ -53,7 +55,8 @@ class ComponentDef:
 
     @property
     def part_name(self) -> str:
-        """Component definition name.
+        """
+        Component definition name.
 
         Returns
         -------
@@ -69,12 +72,14 @@ class ComponentDef:
 
     @property
     def type(self) -> str:
-        """Component definition type.
+        """
+        Component definition type.
 
         Returns
         -------
         str
             Component definition type.
+
         """
         if self.components:
             return list(self.components.values())[0].type
@@ -106,11 +111,13 @@ class ComponentDef:
 
     @property
     def components(self) -> dict[str, Component]:
-        """Component instances belonging to the definition.
+        """
+        Component instances belonging to the definition.
 
         Returns
         -------
         dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`]
+
         """
         from ansys.edb.core.hierarchy.component_group import ComponentGroup as CoreComponent
 
@@ -121,7 +128,8 @@ class ComponentDef:
 
     @property
     def is_null(self) -> bool:
-        """Check if the component definition is null.
+        """
+        Check if the component definition is null.
 
         Returns
         -------
@@ -133,7 +141,8 @@ class ComponentDef:
 
     @property
     def component_pins(self) -> list[ComponentPin]:
-        """Component pins.
+        """
+        Component pins.
 
         Returns
         -------
@@ -144,7 +153,8 @@ class ComponentDef:
 
     @classmethod
     def find(cls, edb, name) -> "ComponentDef | None":
-        """Find component definition by name.
+        """
+        Find component definition by name.
 
         Parameters
         ----------
@@ -156,6 +166,7 @@ class ComponentDef:
         Returns
         -------
         :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>` or None
+
         """
         core_comp_def = CoreComponentDef.find(edb.db, name)
         if not core_comp_def.is_null:
@@ -164,7 +175,8 @@ class ComponentDef:
 
     @classmethod
     def create(cls, edb, name, fp=None) -> "ComponentDef":
-        """Create a new component definition.
+        """
+        Create a new component definition.
 
         Parameters
         ----------
@@ -178,12 +190,14 @@ class ComponentDef:
         Returns
         -------
         :class:`ComponentDef <pyedb.grpc.database.definition.component_def.ComponentDef>`
+
         """
         component_def = CoreComponentDef.create(edb.db, name, fp)
         return ComponentDef(edb, component_def)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> bool:
-        """Assign RLC to all components under this part name.
+        """
+        Assign RLC to all components under this part name.
 
         Parameters
         ----------
@@ -207,7 +221,8 @@ class ComponentDef:
         return True
 
     def assign_s_param_model(self, file_path, model_name=None, reference_net=None) -> bool:
-        """Assign S-parameter to all components under this part name.
+        """
+        Assign S-parameter to all components under this part name.
 
         Parameters
         ----------
@@ -229,7 +244,8 @@ class ComponentDef:
         return True
 
     def assign_spice_model(self, file_path, model_name=None) -> bool:
-        """Assign Spice model to all components under this part name.
+        """
+        Assign Spice model to all components under this part name.
 
         Parameters
         ----------
@@ -241,6 +257,7 @@ class ComponentDef:
         Returns
         -------
         bool
+
         """
         for comp in list(self.components.values()):
             comp.assign_spice_model(file_path, model_name)
@@ -248,7 +265,8 @@ class ComponentDef:
 
     @property
     def reference_file(self) -> list[str]:
-        """Model reference file.
+        """
+        Model reference file.
 
         Returns
         -------
@@ -260,7 +278,8 @@ class ComponentDef:
 
     @property
     def component_models(self) -> dict[str, ComponentModel]:
-        """Component models.
+        """
+        Component models.
 
         Returns
         -------
@@ -273,7 +292,8 @@ class ComponentDef:
 
     @property
     def name(self) -> str:
-        """Component definition name.
+        """
+        Component definition name.
 
         Returns
         -------
@@ -288,7 +308,8 @@ class ComponentDef:
         self.core.name = value
 
     def add_n_port_model(self, fpath, name=None) -> CoreNPortComponentModel:
-        """Add N-port model.
+        """
+        Add N-port model.
 
         Returns
         -------

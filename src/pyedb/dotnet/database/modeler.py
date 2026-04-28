@@ -39,17 +39,20 @@ from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecate
 
 
 class Modeler:
-    """Manages EDB methods for primitives management accessible from `Edb.modeler` property.
+    """
+    Manages EDB methods for primitives management accessible from `Edb.modeler` property.
 
     Examples
     --------
     >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_layout = edbapp.modeler
+
     """
 
     def __getitem__(self, name):
-        """Get  a layout instance from the Edb project.
+        """
+        Get  a layout instance from the Edb project.
 
         Parameters
         ----------
@@ -76,7 +79,8 @@ class Modeler:
     @property
     @deprecated_property("use layout.primitives property instead.")
     def primitives(self):
-        """Primitives.
+        """
+        Primitives.
 
         .. deprecated:: 0.70.0
            Use layout.primitives instead.
@@ -85,11 +89,13 @@ class Modeler:
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
+
         """
         return self._pedb.layout.primitives
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None):
-        """Parametrize pieces of a polygon based on another polygon.
+        """
+        Parametrize pieces of a polygon based on another polygon.
 
         Parameters
         ----------
@@ -109,6 +115,7 @@ class Modeler:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
 
         def calc_slope(point, origin):
@@ -216,6 +223,7 @@ class Modeler:
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             ``True`` when successful, ``False`` when failed.
+
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if start_cap_style.lower() == "round":
@@ -293,6 +301,7 @@ class Modeler:
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
+
         """
         path = self.Shape("Polygon", points=path_list)
         primitive = self._create_path(
@@ -315,7 +324,8 @@ class Modeler:
         voids=[],
         net_name="",
     ):
-        """Create a polygon based on a list of points and voids.
+        """
+        Create a polygon based on a list of points and voids.
 
         Parameters
         ----------
@@ -337,6 +347,7 @@ class Modeler:
         -------
         bool, :class:`dotnet.database.edb_data.primitives.Primitive`
             Polygon when successful, ``False`` when failed.
+
         """
         from pyedb.dotnet.database.geometry.polygon_data import PolygonData
 
@@ -407,7 +418,8 @@ class Modeler:
         corner_radius="0mm",
         rotation="0deg",
     ):
-        """Create rectangle.
+        """
+        Create rectangle.
 
         Parameters
         ----------
@@ -437,6 +449,7 @@ class Modeler:
         -------
          :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             Rectangle when successful, ``False`` when failed.
+
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "LowerLeftUpperRight":
@@ -472,7 +485,8 @@ class Modeler:
         return False  # pragma: no cover
 
     def create_circle(self, layer_name, x, y, radius, net_name=""):
-        """Create a circle on a specified layer.
+        """
+        Create a circle on a specified layer.
 
         Parameters
         ----------
@@ -492,6 +506,7 @@ class Modeler:
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             Objects of the circle created when successful.
+
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
@@ -508,7 +523,8 @@ class Modeler:
         return False  # pragma: no cover
 
     def delete_primitives(self, net_names):
-        """Delete primitives by net names.
+        """
+        Delete primitives by net names.
 
         Parameters
         ----------
@@ -524,6 +540,7 @@ class Modeler:
         ----------
 
         >>> Edb.modeler.delete_primitives(net_names=["GND"])
+
         """
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
@@ -534,12 +551,14 @@ class Modeler:
         return True
 
     def fix_circle_void_for_clipping(self):
-        """Fix issues when circle void are clipped due to a bug in EDB.
+        """
+        Fix issues when circle void are clipped due to a bug in EDB.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when no changes were applied.
+
         """
         for void_circle in self.circles:
             if not void_circle.is_void:
@@ -565,7 +584,8 @@ class Modeler:
         return True
 
     def add_void(self, shape, void_shape):
-        """Add a void into a shape.
+        """
+        Add a void into a shape.
 
         Parameters
         ----------
@@ -573,6 +593,7 @@ class Modeler:
             Shape of the main object.
         void_shape : list, Path
             Shape of the voids.
+
         """
         flag = False
         if isinstance(shape, Primitive):
@@ -589,12 +610,14 @@ class Modeler:
         return True
 
     def shape_to_polygon_data(self, shape):
-        """Convert a shape to polygon data.
+        """
+        Convert a shape to polygon data.
 
         Parameters
         ----------
         shape : :class:`pyedb.dotnet.database.modeler.Modeler.Shape`
             Type of the shape to convert. Options are ``"rectangle"`` and ``"polygon"``.
+
         """
         if shape.type == "polygon":
             return self._createPolygonDataFromPolygon(shape)
@@ -751,7 +774,8 @@ class Modeler:
         return self._edb.Geometry.PolygonData.CreateFromBBox(points)
 
     class Shape(object):
-        """Shape class.
+        """
+        Shape class.
 
         Parameters
         ----------
@@ -770,6 +794,7 @@ class Modeler:
             List of points when ``type="polygon"``. The default is ``None``.
         properties : dict, optional
             Dictionary of properties associated with the shape. The default is ``{}``.
+
         """
 
         def __init__(
@@ -797,7 +822,8 @@ class Modeler:
         parameter_name="trace_width",
         variable_value=None,
     ):
-        """Parametrize a Trace on specific layer or all stackup.
+        """
+        Parametrize a Trace on specific layer or all stackup.
 
         Parameters
         ----------
@@ -814,6 +840,7 @@ class Modeler:
         Returns
         -------
         bool
+
         """
         if isinstance(nets_name, str):
             nets_name = [nets_name]
@@ -842,7 +869,8 @@ class Modeler:
         return True
 
     def unite_polygons_on_layer(self, layer_name=None, delete_padstack_gemometries=False, net_names_list=None):
-        """Try to unite all Polygons on specified layer.
+        """
+        Try to unite all Polygons on specified layer.
 
         Parameters
         ----------
@@ -857,14 +885,17 @@ class Modeler:
         -------
         bool
             ``True`` is successful.
+
         """
 
         def unite_polygons(polygons: list):
-            """Unite a list of polygons.
+            """
+            Unite a list of polygons.
 
             Parameters
             ----------
             polygons
+
             """
             if len(polygons) < 2:
                 raise ValueError("At least two polygons are required to unite.")
@@ -921,7 +952,8 @@ class Modeler:
         return True
 
     def defeature_polygon(self, poly, tolerance=0.001):
-        """Defeature the polygon based on the maximum surface deviation criteria.
+        """
+        Defeature the polygon based on the maximum surface deviation criteria.
 
         Parameters
         ----------
@@ -935,6 +967,7 @@ class Modeler:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         poly_data = poly.polygon_data
         new_poly = poly_data.core.Defeature(tolerance)
@@ -942,7 +975,8 @@ class Modeler:
         return True
 
     def get_layout_statistics(self, evaluate_area=False, net_list=False) -> EDBStatistics:
-        """Return EDBStatistics object from a layout.
+        """
+        Return EDBStatistics object from a layout.
 
         Parameters
         ----------
@@ -1007,7 +1041,8 @@ class Modeler:
         bondwire_type="jedec4",
         start_cell_instance_name=None,
     ):
-        """Create a bondwire object.
+        """
+        Create a bondwire object.
 
         Parameters
         ----------
@@ -1042,6 +1077,7 @@ class Modeler:
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
+
         """
         if start_cell_instance_name:
             self._pedb.logger.warning(f"start_cell_instance_name {start_cell_instance_name} is only valid with grpc.")
@@ -1068,7 +1104,8 @@ class Modeler:
         pins_by_aedt_name=None,
         pins_by_name=None,
     ):
-        """Create a PinGroup.
+        """
+        Create a PinGroup.
 
         Parameters
         ----------
@@ -1080,6 +1117,7 @@ class Modeler:
             List of pins by AEDT name.
         pins_by_name : list[str] or None
             List of pins by name.
+
         """
         pins = {}
         if pins_by_id:
@@ -1161,7 +1199,8 @@ class Modeler:
     @property
     @deprecated_property("use stackup.layers property instead.")
     def layers(self):
-        """Dictionary of layers.
+        """
+        Dictionary of layers.
 
         .. deprecated:: 0.70.0
            Use stackup.layers instead.
@@ -1170,12 +1209,14 @@ class Modeler:
         -------
         dict
             Dictionary of layers.
+
         """
         return self._pedb.stackup.layers
 
     @deprecated("Use layout.find_object_by_id method instead.")
     def get_primitive(self, primitive_id):
-        """Retrieve primitive from give id.
+        """
+        Retrieve primitive from give id.
 
         .. deprecated:: 0.70.0
            Use layout.find_object_by_id method instead.
@@ -1189,13 +1230,15 @@ class Modeler:
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives.
+
         """
         return self._pedb.layout.find_object_by_id(primitive_id)
 
     @property
     @deprecated_property("use layout.polygons_by_layer property instead.")
     def polygons_by_layer(self) -> dict[str, list[EdbPolygon]]:
-        """Primitives with layer names as keys.
+        """
+        Primitives with layer names as keys.
 
         .. deprecated:: 0.70.0
            Use layout.polygons_by_layer instead.
@@ -1204,13 +1247,15 @@ class Modeler:
         -------
         dict
             Dictionary of primitives with layer names as keys.
+
         """
         return self._pedb.layout.polygons_by_layer
 
     @property
     @deprecated_property("use layout.primitives_by_net property instead.")
     def primitives_by_net(self) -> dict[str, Primitive]:
-        """Primitives with net names as keys.
+        """
+        Primitives with net names as keys.
 
         .. deprecated:: 0.70.0
            Use layout.primitives_by_net instead.
@@ -1219,13 +1264,15 @@ class Modeler:
         -------
         dict
             Dictionary of primitives with nat names as keys.
+
         """
         return self._pedb.layout.primitives_by_net
 
     @property
     @deprecated_property("use layout.primitives_by_layer property instead.")
     def primitives_by_layer(self) -> dict[str, list[Primitive]]:
-        """Primitives with layer names as keys.
+        """
+        Primitives with layer names as keys.
 
         .. deprecated:: 0.70.0
            Use :attr: layout.primitives_by_layer instead.
@@ -1234,13 +1281,15 @@ class Modeler:
         -------
         dict
             Dictionary of primitives with layer names as keys.
+
         """
         return self._pedb.layout.primitives_by_layer
 
     @property
     @deprecated_property("Use layout.rectangles property instead.")
     def rectangles(self) -> list[RectangleDotNet]:
-        """Rectangles.
+        """
+        Rectangles.
 
         .. deprecated:: 0.70.0
            Use :attr: layout.rectangles instead.
@@ -1256,7 +1305,8 @@ class Modeler:
     @property
     @deprecated_property("Use layout.circles property instead.")
     def circles(self) -> list[CircleDotNet]:
-        """Circles.
+        """
+        Circles.
 
         .. deprecated:: 0.70.0
            Use :attr: layout.circles instead.
@@ -1272,7 +1322,8 @@ class Modeler:
     @property
     @deprecated_property("Use layout.paths property instead.")
     def paths(self) -> list[PathDotNet]:
-        """Paths.
+        """
+        Paths.
 
         .. deprecated:: 0.70.0
            Use :attr: layout.paths instead.
@@ -1281,13 +1332,15 @@ class Modeler:
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of paths.
+
         """
         return self._pedb.layout.paths
 
     @property
     @deprecated_property("use layout.polygons property instead.")
     def polygons(self) -> list[EdbPolygon]:
-        """Polygons.
+        """
+        Polygons.
 
         .. deprecated:: 0.70.0
            Use :attr: layout.polygons instead.
@@ -1296,12 +1349,14 @@ class Modeler:
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of polygons.
+
         """
         return self._pedb.layout.polygons
 
     @deprecated("Use layout.get_polygons_by_layer method instead.")
     def get_polygons_by_layer(self, layer_name, net_list=None) -> list[EdbPolygon]:
-        """Retrieve polygons by a layer.
+        """
+        Retrieve polygons by a layer.
 
         .. deprecated:: 0.70.0
            Use :func: layout.get_polygons_by_layer method instead.
@@ -1316,12 +1371,14 @@ class Modeler:
         Returns
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Polygon`
+
         """
         return self._pedb.layout.get_polygons_by_layer(layer_name=layer_name, net_list=net_list)
 
     @deprecated("Use layout.get_primitive_by_layer_and_point method instead.")
     def get_primitive_by_layer_and_point(self, point=None, layer=None, nets=None):
-        """Return primitive given coordinate point [x, y], layer name and nets.
+        """
+        Return primitive given coordinate point [x, y], layer name and nets.
 
         .. deprecated :: 0.70.0
            Use :func: layout.get_primitive_by_layer_and_point method instead.
@@ -1341,12 +1398,14 @@ class Modeler:
         -------
         list of :class:`pyedb.dotnet.database.edb_data.primitives_data.Primitive`
             List of primitives, polygons, paths and rectangles.
+
         """
         return self._pedb.layout.get_primitive_by_layer_and_point(point=point, layer=layer, nets=nets)
 
     @deprecated("Use layout.get_polygons_by_layer method instead.")
     def get_polygon_bounding_box(self, polygon):
-        """Retrieve a polygon bounding box.
+        """
+        Retrieve a polygon bounding box.
 
         .. deprecated:: 0.70.0
            Use :func: layout.get_polygon_bounding_box method instead.
@@ -1360,12 +1419,14 @@ class Modeler:
         -------
         list
             List of bounding box coordinates in the format ``[-x, -y, +x, +y]``.
+
         """
         return self._pedb.layout.get_polygon_bounding_box(polygon)
 
     @deprecated("Use layout.get_polygons_by_layer method instead.")
     def get_polygon_points(self, polygon) -> list[float]:
-        """Retrieve polygon points.
+        """
+        Retrieve polygon points.
 
         .. deprecated :: 0.70.0
            Use :func: layout.get_polygon_points method instead.
@@ -1375,7 +1436,8 @@ class Modeler:
 
     @deprecated("Use layout.filter_primitives method instead.")
     def get_primitives(self, net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[Primitive]:
-        """Get primitives by conditions.
+        """
+        Get primitives by conditions.
 
         .. deprecated:: 0.70.0
            Use :func: layout.filter_primitives method instead.
@@ -1394,6 +1456,7 @@ class Modeler:
         -------
         list
             List of filtered primitives
+
         """
         return self._pedb.layout.filter_primitives(
             net_name=net_name,
@@ -1613,6 +1676,7 @@ class Modeler:
         :meth:`stackup.add_layer` : Add a dielectric layer to the stackup
         :meth:`create_rectangle` : Create a rectangular primitive
         :meth:`create_polygon` : Create a polygonal primitive
+
         """
         if not solder_mask_material in self._pedb.materials:
             solder_mask_material = "SolderMask"

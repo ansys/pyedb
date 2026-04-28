@@ -22,7 +22,8 @@
 
 
 class EDBStatistics(object):
-    """Statistics object
+    """
+    Statistics object
 
     Object properties example.
     >>> stat_model = EDBStatistics()

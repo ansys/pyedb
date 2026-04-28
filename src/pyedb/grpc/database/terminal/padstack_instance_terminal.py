@@ -42,7 +42,8 @@ class PadstackInstanceTerminal(Terminal):
 
     @classmethod
     def create(cls, layout, name, padstack_instance, layer, is_ref=False, net=None) -> "PadstackInstanceTerminal":
-        """Create a padstack instance terminal.
+        """
+        Create a padstack instance terminal.
         Parameters
         ----------
         layout : :class: <``Layout` pyedb.grpc.database.layout.layout.Layout>
@@ -59,6 +60,7 @@ class PadstackInstanceTerminal(Terminal):
         -------
         PadstackInstanceTerminal
             Padstack instance terminal object.
+
         """
         if net is None:
             net = padstack_instance.net
@@ -74,45 +76,53 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """Check if the terminal is a reference terminal.
+        """
+        Check if the terminal is a reference terminal.
 
         Returns
         -------
         bool
             True if the terminal is a reference terminal, False otherwise.
+
         """
         return self.core.is_reference_terminal
 
     @property
     def id(self) -> int:
-        """Terminal ID.
+        """
+        Terminal ID.
 
         Returns
         -------
         int
             Terminal ID.
+
         """
         return self.core.edb_uid
 
     @property
     def edb_uid(self) -> int:
-        """Terminal EDB UID.
+        """
+        Terminal EDB UID.
 
         Returns
         -------
         int
             Terminal EDB UID.
+
         """
         return self.core.edb_uid
 
     @property
     def net(self) -> Net:
-        """Net.
+        """
+        Net.
 
         Returns
         -------
         :class:`Net <pyedb.grpc.database.net.net.Net>`
             Terminal net.
+
         """
         from pyedb.grpc.database.net.net import Net
 
@@ -120,11 +130,13 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def position(self) -> tuple[float, float]:
-        """Terminal position.
+        """
+        Terminal position.
 
         Returns
         -------
         Position [x,y] : [float, float]
+
         """
         pos_x, pos_y, rotation = self.padstack_instance.core.get_position_and_rotation()
         return Value(pos_x.value), Value(pos_y.value)
@@ -143,11 +155,13 @@ class PadstackInstanceTerminal(Terminal):
 
     @property
     def location(self) -> tuple[float, float]:
-        """Terminal position.
+        """
+        Terminal position.
 
         Returns
         -------
         Position [x,y] : [float, float]
+
         """
         p_inst, _ = self.core.params
         pos_x, pos_y, _ = p_inst.get_position_and_rotation()

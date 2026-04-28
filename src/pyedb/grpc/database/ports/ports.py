@@ -29,7 +29,8 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class GapPort(EdgeTerminal):
-    """Manages gap port properties.
+    """
+    Manages gap port properties.
 
     Parameters
     ----------
@@ -44,6 +45,7 @@ class GapPort(EdgeTerminal):
     >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> gap_port = edb.ports["gap_port"]
+
     """
 
     def __init__(self, pedb, core):
@@ -51,17 +53,20 @@ class GapPort(EdgeTerminal):
 
     @property
     def renormalize(self) -> bool:
-        """Whether renormalize is active.
+        """
+        Whether renormalize is active.
 
         Returns
         -------
         bool
+
         """
         return self.core.port_post_processing_prop.do_renormalize
 
     @property
     def deembed(self) -> bool:
-        """Deembed gap port.
+        """
+        Deembed gap port.
 
         Returns
         -------
@@ -72,12 +77,14 @@ class GapPort(EdgeTerminal):
 
     @property
     def renormalize_z0(self) -> tuple[float, float]:
-        """Renormalize Z0 value (real, imag).
+        """
+        Renormalize Z0 value (real, imag).
 
         Returns
         -------
         Tuple(float, float)
             (Real value, Imaginary value).
+
         """
         return (
             self.core.port_post_processing_prop.renormalizion_z0[0],
@@ -86,7 +93,8 @@ class GapPort(EdgeTerminal):
 
 
 class CircuitPort(GapPort):
-    """Manages gap port properties.
+    """
+    Manages gap port properties.
     Parameters
     ----------
     pedb : pyedb.edb.Edb
@@ -96,6 +104,7 @@ class CircuitPort(GapPort):
     Examples
     --------
     This example shows how to access the ``GapPort`` class.
+
     """
 
     def __init__(self, pedb, edb_object):
@@ -103,7 +112,8 @@ class CircuitPort(GapPort):
 
 
 class WavePort(EdgeTerminal):
-    """Manages wave port properties.
+    """
+    Manages wave port properties.
 
     Parameters
     ----------
@@ -119,6 +129,7 @@ class WavePort(EdgeTerminal):
     >>> from pyedb import Edb
     >>> edb = Edb("myaedb.aedb")
     >>> exc = edb.ports
+
     """
 
     def __init__(self, pedb, edb_terminal):
@@ -126,7 +137,8 @@ class WavePort(EdgeTerminal):
 
     @property
     def deembed(self) -> bool:
-        """Whether deembed is active.
+        """
+        Whether deembed is active.
 
         Returns
         -------
@@ -143,12 +155,14 @@ class WavePort(EdgeTerminal):
 
     @property
     def deembed_length(self) -> float:
-        """Deembed Length.
+        """
+        Deembed Length.
 
         Returns
         -------
         float
             deembed value.
+
         """
         return Value(self.core.port_post_processing_prop.deembed_length, self._pedb.active_cell)
 
@@ -160,7 +174,8 @@ class WavePort(EdgeTerminal):
 
 
 class ExcitationSources(EdgeTerminal):
-    """Manage sources properties.
+    """
+    Manage sources properties.
 
     Parameters
     ----------
@@ -187,7 +202,8 @@ class ExcitationSources(EdgeTerminal):
 
 
 class BundleWavePort(BundleTerminal):
-    """Manages bundle wave port properties.
+    """
+    Manages bundle wave port properties.
 
     Parameters
     ----------
@@ -203,7 +219,8 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def _wave_port(self) -> WavePort:
-        """ "Wave port.
+        """
+        "Wave port.
 
 
         Returns
@@ -215,12 +232,14 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def horizontal_extent_factor(self) -> float:
-        """Horizontal extent factor.
+        """
+        Horizontal extent factor.
 
         Returns
         -------
         float
             Horizontal extent value.
+
         """
         return self._wave_port.horizontal_extent_factor
 
@@ -230,12 +249,14 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def vertical_extent_factor(self) -> float:
-        """Vertical extent factor.
+        """
+        Vertical extent factor.
 
         Returns
         -------
         float
             Vertical extent value.
+
         """
         return self._wave_port.vertical_extent_factor
 
@@ -245,12 +266,14 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def pec_launch_width(self) -> float:
-        """Launch width for the printed electronic component (PEC).
+        """
+        Launch width for the printed electronic component (PEC).
 
         Returns
         -------
         float
             Width value.
+
         """
         return self._wave_port.pec_launch_width
 
@@ -260,11 +283,13 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def deembed(self) -> bool:
-        """Whether deembed is active.
+        """
+        Whether deembed is active.
 
         Returns
         -------
         bool
+
         """
         return self._wave_port.deembed
 
@@ -274,12 +299,14 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def deembed_length(self) -> float:
-        """Deembed Length.
+        """
+        Deembed Length.
 
         Returns
         -------
         float
             Length value.
+
         """
         return self._wave_port.deembed_length
 
@@ -289,7 +316,8 @@ class BundleWavePort(BundleTerminal):
 
 
 class CoaxPort(PadstackInstanceTerminal):
-    """Manages bundle wave port properties.
+    """
+    Manages bundle wave port properties.
 
     Parameters
     ----------
@@ -305,12 +333,14 @@ class CoaxPort(PadstackInstanceTerminal):
 
     @property
     def radial_extent_factor(self):
-        """Radial extent factor.
+        """
+        Radial extent factor.
 
         Returns
         -------
         float
             Radial extent value.
+
         """
         return self._hfss_port_property["Radial Extent Factor"]
 

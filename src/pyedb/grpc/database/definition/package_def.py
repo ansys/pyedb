@@ -29,7 +29,8 @@ from pyedb.grpc.database.utility.value import Value
 
 
 class PackageDef:
-    """Manages EDB package definitions.
+    """
+    Manages EDB package definitions.
 
     Parameters
     ----------
@@ -63,7 +64,8 @@ class PackageDef:
             self.__create_from_name(name, component_part_name, extent_bounding_box)
 
     def __create_from_name(self, name, component_part_name=None, extent_bounding_box=None):
-        """Create a package definition.
+        """
+        Create a package definition.
 
         Parameters
         ----------
@@ -74,6 +76,7 @@ class PackageDef:
         -------
         edb_object: object
             EDB PackageDef Object
+
         """
         self.core = CorePackageDef.create(self._pedb.active_db, name)
         if component_part_name:
@@ -103,7 +106,8 @@ class PackageDef:
 
     @property
     def exterior_boundary(self) -> CorePolygonData:
-        """Get the exterior boundary of a package definition.
+        """
+        Get the exterior boundary of a package definition.
 
         Returns
         -------
@@ -118,12 +122,14 @@ class PackageDef:
 
     @property
     def maximum_power(self) -> float:
-        """Maximum power of the package.
+        """
+        Maximum power of the package.
 
         Returns
         -------
         float
             maximum power value.
+
         """
         return Value(self.core.maximum_power)
 
@@ -133,7 +139,8 @@ class PackageDef:
 
     @property
     def thermal_conductivity(self) -> float:
-        """Thermal conductivity of the package.
+        """
+        Thermal conductivity of the package.
 
         Returns
         -------
@@ -149,12 +156,14 @@ class PackageDef:
 
     @property
     def theta_jb(self) -> float:
-        """Theta Junction-to-Board of the package.
+        """
+        Theta Junction-to-Board of the package.
 
         Returns
         -------
         float
             Theta jb value.
+
         """
         return Value(self.core.theta_jb)
 
@@ -164,12 +173,14 @@ class PackageDef:
 
     @property
     def theta_jc(self) -> float:
-        """Theta Junction-to-Case of the package.
+        """
+        Theta Junction-to-Case of the package.
 
         Returns
         -------
         float
             Theta jc value.
+
         """
         return Value(self.core.theta_jc)
 
@@ -179,12 +190,14 @@ class PackageDef:
 
     @property
     def height(self) -> float:
-        """Height of the package.
+        """
+        Height of the package.
 
         Returns
         -------
         float
             Height value.
+
         """
         return Value(self.core.height)
 
@@ -194,12 +207,14 @@ class PackageDef:
 
     @property
     def heat_sink(self) -> "HeatSink | None":
-        """Package heat sink.
+        """
+        Package heat sink.
 
         Returns
         -------
         :class:`HeatSink <pyedb.grpc.database.utility.heat_sink.HeatSink>`
             HeatSink object.
+
         """
         try:
             return HeatSink(self._pedb, self.core.heat_sink)
@@ -211,7 +226,8 @@ class PackageDef:
 
     @staticmethod
     def create(edb, name: str) -> "PackageDef":
-        """Create a package definition.
+        """
+        Create a package definition.
 
         Parameters
         ----------
@@ -224,6 +240,7 @@ class PackageDef:
         -------
         :class:`PackageDef <pyedb.grpc.database.definition.package_def.PackageDef>`
             PackageDef object.
+
         """
         grpc_package = CorePackageDef.create(edb.active_db, name)
         if grpc_package.is_null:
@@ -231,7 +248,8 @@ class PackageDef:
         return PackageDef(edb, grpc_package)
 
     def set_heatsink(self, fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness) -> HeatSink:
-        """Set heat sink.
+        """
+        Set heat sink.
 
         Parameters
         ----------
@@ -245,6 +263,7 @@ class PackageDef:
             Fin spacing.
         fin_thickness : str, float
             Fin thickness.
+
         """
         from ansys.edb.core.utility.heat_sink import (
             HeatSink as GrpcHeatSink,

@@ -60,7 +60,8 @@ layer_type_mapping = {
 
 
 class Primitive:
-    """Manages EDB functionalities for a primitives.
+    """
+    Manages EDB functionalities for a primitives.
     It inherits EDB Object properties.
 
     Examples
@@ -68,6 +69,7 @@ class Primitive:
     >>> from pyedb import Edb
     >>> edb = Edb("myedb", version="2026.1", grpc=True)
     >>> edb_prim = edb.layout.primitives[0]
+
     """
 
     def __init__(self, pedb, core):
@@ -79,19 +81,22 @@ class Primitive:
 
     @property
     def type(self) -> str:
-        """Type of the primitive.
+        """
+        Type of the primitive.
 
         Returns
         -------
         str
             Primitive type. Options are ``"circle"``, ``"rectangle"``, ``"polygon"``,
             ``"path"``, or ``"bondwire"``.
+
         """
         return self.core.primitive_type.name.lower()
 
     @property
     def layout(self):
-        """Layout object.
+        """
+        Layout object.
 
         Returns
         -------
@@ -102,7 +107,8 @@ class Primitive:
 
     @property
     def polygon_data(self):
-        """Polygon data.
+        """
+        Polygon data.
 
         Returns
         -------
@@ -114,7 +120,8 @@ class Primitive:
 
     @polygon_data.setter
     def polygon_data(self, value):
-        """Set polygon data.
+        """
+        Set polygon data.
 
         Parameters
         ----------
@@ -130,7 +137,8 @@ class Primitive:
 
     @property
     def object_instance(self):
-        """Layout object instance.
+        """
+        Layout object instance.
 
         Returns
         -------
@@ -143,7 +151,8 @@ class Primitive:
 
     @property
     def net_name(self) -> str | None:
-        """Net name.
+        """
+        Net name.
 
         Returns
         -------
@@ -162,12 +171,14 @@ class Primitive:
 
     @property
     def layer_name(self) -> str:
-        """Layer name.
+        """
+        Layer name.
 
         Returns
         -------
         str
             Layer name.
+
         """
         return self.core.layer.name
 
@@ -178,7 +189,8 @@ class Primitive:
 
     @property
     def voids(self) -> list[Any]:
-        """Primitive voids.
+        """
+        Primitive voids.
 
         Returns
         -------
@@ -189,27 +201,32 @@ class Primitive:
 
     @property
     def has_voids(self) -> bool:
-        """Check if primitive has voids.
+        """
+        Check if primitive has voids.
 
         Returns
         -------
         bool
+
         """
         return self.core.has_voids
 
     @property
     def is_negative(self) -> bool:
-        """Check if primitive is negative.
+        """
+        Check if primitive is negative.
 
         Returns
         -------
         bool
+
         """
         return self.core.is_negative
 
     @is_negative.setter
     def is_negative(self, value: bool):
-        """Set primitive as negative.
+        """
+        Set primitive as negative.
 
         Parameters
         ----------
@@ -221,45 +238,53 @@ class Primitive:
 
     @property
     def is_parameterized(self) -> bool:
-        """Check if any primitive is parameterized.
+        """
+        Check if any primitive is parameterized.
 
         Returns
         -------
         bool
             True if any primitive is parameterized, False otherwise.
+
         """
         return self.core.is_parameterized
 
     @property
     def is_zone_primitive(self) -> bool:
-        """Check if primitive is a zone primitive.
+        """
+        Check if primitive is a zone primitive.
 
         Returns
         -------
         bool
             True if primitive is a zone primitive, False otherwise.
+
         """
         return self.core.is_zone_primitive
 
     @property
     def can_be_zone_primitive(self) -> bool:
-        """Check if primitive can be a zone primitive.
+        """
+        Check if primitive can be a zone primitive.
 
         Returns
         -------
         bool
             True if primitive can be a zone primitive, False otherwise.
+
         """
         return self.core.can_be_zone_primitive
 
     @property
     def aedt_name(self) -> str:
-        """Name to be visualized in AEDT.
+        """
+        Name to be visualized in AEDT.
 
         Returns
         -------
         str
             Name.
+
         """
         try:
             name = self.core.get_product_property(CoreProductIdType.DESIGNER, 1)
@@ -286,7 +311,8 @@ class Primitive:
         self.core.set_product_property(CoreProductIdType.DESIGNER, 1, value)
 
     def get_connected_objects(self) -> list[Any]:
-        """Get connected objects.
+        """
+        Get connected objects.
 
         Returns
         -------
@@ -296,7 +322,8 @@ class Primitive:
         return self._pedb.get_connected_objects(self.object_instance)
 
     def area(self, include_voids=True) -> float:
-        """Return the total area.
+        """
+        Return the total area.
 
         Parameters
         ----------
@@ -308,6 +335,7 @@ class Primitive:
         -------
         float
             Area value.
+
         """
         area = self.core.cast().polygon_data.area()
         if include_voids:
@@ -341,7 +369,8 @@ class Primitive:
 
     @property
     def center(self) -> tuple[float, float]:
-        """Return the primitive bounding box center coordinate.
+        """
+        Return the primitive bounding box center coordinate.
 
         Returns
         -------
@@ -353,12 +382,14 @@ class Primitive:
         return center.x, center.y
 
     def get_connected_object_id_set(self) -> list[int]:
-        """Produce a list of all geometries physically connected to a given layout object.
+        """
+        Produce a list of all geometries physically connected to a given layout object.
 
         Returns
         -------
         List[int]
             Found connected objects IDs with Layout object.
+
         """
         layout_inst = self.core.layout.layout_instance
         layout_obj_inst = layout_inst.get_layout_obj_instance_in_context(self.core, None)  # 2nd arg was []
@@ -366,7 +397,8 @@ class Primitive:
 
     @property
     def bbox(self) -> list[float]:
-        """Return the primitive bounding box points. Lower left corner, upper right corner.
+        """
+        Return the primitive bounding box points. Lower left corner, upper right corner.
 
         Returns
         -------
@@ -378,7 +410,8 @@ class Primitive:
         return [Value(bbox[0].x), Value(bbox[0].y), Value(bbox[1].x), Value(bbox[1].y)]
 
     def convert_to_polygon(self) -> Polygon | bool:
-        """Convert path to polygon.
+        """
+        Convert path to polygon.
 
         Returns
         -------
@@ -395,7 +428,8 @@ class Primitive:
             return False
 
     def intersection_type(self, primitive) -> int:
-        """Get intersection type between actual primitive and another primitive or polygon data.
+        """
+        Get intersection type between actual primitive and another primitive or polygon data.
 
         Parameters
         ----------
@@ -410,6 +444,7 @@ class Primitive:
             2 - other object fully inside this,
             3 - common contour points,
             4 - undefined intersection.
+
         """
         if self.type in ["path, polygon"]:
             poly = primitive.polygon_data
@@ -418,7 +453,8 @@ class Primitive:
             return 4
 
     def is_intersecting(self, primitive) -> bool:
-        """Check if actual primitive and another primitive or polygon data intesects.
+        """
+        Check if actual primitive and another primitive or polygon data intesects.
 
         Parameters
         ----------
@@ -427,11 +463,13 @@ class Primitive:
         Returns
         -------
         bool
+
         """
         return True if self.intersection_type(primitive) >= 1 else False
 
     def get_closest_point(self, point) -> list[float]:
-        """Get the closest point of the primitive to the input data.
+        """
+        Get the closest point of the primitive to the input data.
 
         Parameters
         ----------
@@ -452,11 +490,13 @@ class Primitive:
 
     @property
     def arcs(self):
-        """Get the Primitive Arc Data.
+        """
+        Get the Primitive Arc Data.
 
         Returns
         -------
         :class:`ArcData <ansys.edb.core.geometry.arc_data.ArcData>`
+
         """
         from pyedb.grpc.database.geometry.arc_data import ArcData
 
@@ -464,12 +504,14 @@ class Primitive:
 
     @property
     def longest_arc(self) -> float:
-        """Longest arc.
+        """
+        Longest arc.
 
         Returns
         -------
         float
             Arc length.
+
         """
         len = 0
         arc = None
@@ -480,7 +522,8 @@ class Primitive:
         return arc
 
     def rotate(self, angle, center=None) -> bool:
-        """Rotate polygon around a center point by an angle.
+        """
+        Rotate polygon around a center point by an angle.
 
         Parameters
         ----------
@@ -493,6 +536,7 @@ class Primitive:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         if angle and hasattr(self, "polygon_data"):
             if center is None:
@@ -502,7 +546,8 @@ class Primitive:
         return False
 
     def move(self, vector) -> bool:
-        """Move polygon along a vector.
+        """
+        Move polygon along a vector.
 
         Parameters
         ----------
@@ -520,6 +565,7 @@ class Primitive:
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
+
         """
         if hasattr(self, "polygon_data"):
             if vector and isinstance(vector, list) and len(vector) == 2:
@@ -529,7 +575,8 @@ class Primitive:
         return False
 
     def scale(self, factor, center=None) -> bool:
-        """Scales the polygon relative to a center point by a factor.
+        """
+        Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------
@@ -542,6 +589,7 @@ class Primitive:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         if not isinstance(factor, str) and hasattr(self, "polygon_data"):
             factor = float(factor)
@@ -556,7 +604,8 @@ class Primitive:
         return False
 
     def subtract(self, primitives) -> list[Any]:
-        """Subtract active primitive with one or more primitives.
+        """
+        Subtract active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -606,7 +655,8 @@ class Primitive:
         return new_polys
 
     def intersect(self, primitives) -> list[Any]:
-        """Intersect active primitive with one or more primitives.
+        """
+        Intersect active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -677,7 +727,8 @@ class Primitive:
         return new_polys
 
     def unite(self, primitives) -> list[Any]:
-        """Unite active primitive with one or more primitives.
+        """
+        Unite active primitive with one or more primitives.
 
         Parameters
         ----------
@@ -730,7 +781,8 @@ class Primitive:
         return new_polys
 
     def get_closest_arc_midpoint(self, point) -> list[float]:
-        """Get the closest arc midpoint of the primitive to the input data.
+        """
+        Get the closest arc midpoint of the primitive to the input data.
 
         Parameters
         ----------
@@ -741,6 +793,7 @@ class Primitive:
         -------
         list[float]
             Closest arc midpoint coordinates as ``[x, y]``.
+
         """
 
         if isinstance(point, CorePointData):
@@ -756,12 +809,14 @@ class Primitive:
 
     @property
     def shortest_arc(self) -> float:
-        """Longest arc.
+        """
+        Longest arc.
 
         Returns
         -------
         float
             Arc length.
+
         """
         len = 1e12
         arc = None
@@ -772,7 +827,8 @@ class Primitive:
         return arc
 
     def add_void(self, point_list) -> bool:
-        """Add a void to current primitive.
+        """
+        Add a void to current primitive.
 
         Parameters
         ----------
@@ -783,6 +839,7 @@ class Primitive:
         -------
         bool
             ``True`` if successful, ``False`` otherwise.
+
         """
         if isinstance(point_list, list):
             plane = self._pedb.modeler.Shape("polygon", points=point_list)
@@ -796,7 +853,8 @@ class Primitive:
         return self.add_void(void_poly)
 
     def points(self, arc_segments=6) -> tuple[list[float], list[float]] | None:
-        """Return the list of points with arcs converted to segments.
+        """
+        Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
@@ -807,6 +865,7 @@ class Primitive:
         -------
         tuple[list[float], list[float]] or None
             Tuple of ``(x, y)`` coordinate lists, or ``None`` if no points are found.
+
         """
         xt, yt = self._get_points_for_plot(self.polygon_data.core.points, arc_segments)
         if not xt:
@@ -815,7 +874,8 @@ class Primitive:
         return x, y
 
     def points_raw(self):
-        """Return a list of Edb points.
+        """
+        Return a list of Edb points.
 
         Returns
         -------
@@ -827,34 +887,40 @@ class Primitive:
 
     @property
     def id(self) -> int:
-        """Primitive ID. This is the same as edb_uid, long Int.
+        """
+        Primitive ID. This is the same as edb_uid, long Int.
 
         Returns
         -------
         int
             Primitive ID.
+
         """
         return self.core.edb_uid
 
     @property
     def edb_uid(self) -> int:
-        """Primitive EDB UID. This is the same as id, long Int.
+        """
+        Primitive EDB UID. This is the same as id, long Int.
 
         Returns
         -------
         int
             Primitive EDB UID.
+
         """
         return self.core.edb_uid  # grpc has introduced id and edb_uid while dotnet got only edb_uid equivalent.
 
     @property
     def primitive_type(self) -> str:
-        """Primitive type.
+        """
+        Primitive type.
 
         Returns
         -------
         str
             Primitive type, such as "circle", "rectangle", "polygon", "path" or "bondwire".
+
         """
         return self.core.primitive_type.name.lower()
 
@@ -880,39 +946,46 @@ class Primitive:
 
     @property
     def is_void(self):
-        """Check if the primitive is a void.
+        """
+        Check if the primitive is a void.
 
         Returns
         -------
         bool
             ``True`` if the primitive is a void, ``False`` otherwise.
+
         """
         return self.core.is_void
 
     @property
     def is_null(self):
-        """Check if the primitive is null.
+        """
+        Check if the primitive is null.
 
         Returns
         -------
         bool
             ``True`` if the primitive is null, ``False`` otherwise.
+
         """
         return self.core.is_null
 
     @property
     def layer(self):
-        """Get the layer object of the primitive.
+        """
+        Get the layer object of the primitive.
 
         Returns
         -------
         :class:`Layer <pyedb.grpc.database.stackup.layer.Layer>`
             Layer object.
+
         """
         return self.core.layer
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001) -> list[Any]:
-        """Expand the polygon shape by an absolute value in all direction.
+        """
+        Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -937,7 +1010,8 @@ class Primitive:
         )
 
     def plot(self, plot_net=False, show=True, save_plot=None):
-        """Plot the current polygon on matplotlib.
+        """
+        Plot the current polygon on matplotlib.
 
         Parameters
         ----------
@@ -952,6 +1026,7 @@ class Primitive:
         -------
         (ax, fig)
             Matplotlib ax and figures.
+
         """
         try:
             import matplotlib.pyplot as plt

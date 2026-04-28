@@ -37,7 +37,8 @@ class HeatSinkConfig:
         fin_spacing: Optional[Union[str, float]] = None,
         fin_thickness: Optional[Union[str, float]] = None,
     ):
-        """Initialize heat-sink configuration.
+        """
+        Initialize heat-sink configuration.
 
         Parameters
         ----------
@@ -60,7 +61,8 @@ class HeatSinkConfig:
         self.fin_thickness = fin_thickness
 
     def to_dict(self) -> dict:
-        """Serialize non-null heat-sink properties.
+        """
+        Serialize non-null heat-sink properties.
 
         Returns
         -------
@@ -88,7 +90,8 @@ class PackageDefinitionConfig:
         extent_bounding_box=None,
         heatsink: Optional[HeatSinkConfig] = None,
     ):
-        """Initialize a package definition configuration.
+        """
+        Initialize a package definition configuration.
 
         Parameters
         ----------
@@ -136,7 +139,8 @@ class PackageDefinitionConfig:
         fin_spacing=None,
         fin_thickness=None,
     ) -> HeatSinkConfig:
-        """Attach heat-sink properties to the package definition.
+        """
+        Attach heat-sink properties to the package definition.
 
         Returns
         -------
@@ -154,7 +158,8 @@ class PackageDefinitionConfig:
         return self.heatsink
 
     def to_dict(self) -> dict:
-        """Serialize the package definition.
+        """
+        Serialize the package definition.
 
         Returns
         -------
@@ -200,7 +205,8 @@ class PackageDefinitionsConfig:
         components: Optional[List[str]] = None,
         **kwargs,
     ) -> PackageDefinitionConfig:
-        """Add a package definition entry.
+        """
+        Add a package definition entry.
 
         Parameters
         ----------
@@ -233,7 +239,8 @@ class PackageDefinitionsConfig:
         return pkg
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured package definitions.
+        """
+        Serialize all configured package definitions.
 
         Returns
         -------

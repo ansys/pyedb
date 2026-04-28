@@ -37,7 +37,8 @@ logger = logging.getLogger(__name__)
 
 
 def convert_netdict_to_pydict(dict_in):
-    """Convert a net dictionary to a Python dictionary.
+    """
+    Convert a net dictionary to a Python dictionary.
 
     Parameters
     ----------
@@ -58,7 +59,8 @@ def convert_netdict_to_pydict(dict_in):
 
 
 def convert_pytuple_to_nettuple(_tuple):
-    """Convert a Python tuple into a .NET tuple.
+    """
+    Convert a Python tuple into a .NET tuple.
     Parameters
     ----------
     tuple : Python tuple
@@ -66,12 +68,14 @@ def convert_pytuple_to_nettuple(_tuple):
     Returns
     -------
     .NET tuple.
+
     """
     return Tuple.Create(_tuple[0], _tuple[1])
 
 
 def convert_pydict_to_netdict(input_dict):
-    """Convert a Python dictionary to a .NET dictionary.
+    """
+    Convert a Python dictionary to a .NET dictionary.
 
     Parameters
     ----------
@@ -83,6 +87,7 @@ def convert_pydict_to_netdict(input_dict):
     -------
     dict
         Dictionary converted to .NET.
+
     """
     net_dict = Dictionary[type(list(input_dict.keys())[0]), type(list(input_dict.values())[0])]()
     for k1, v1 in input_dict.items():  # pragma: no cover
@@ -92,7 +97,8 @@ def convert_pydict_to_netdict(input_dict):
 
 
 def convert_py_list_to_net_list(pylist, list_type=None):
-    """Convert a Python list to a Net list.
+    """
+    Convert a Python list to a Net list.
 
     Parameters
     ----------
@@ -103,6 +109,7 @@ def convert_py_list_to_net_list(pylist, list_type=None):
     -------
     list
         List converted to Net.
+
     """
     if not isinstance(pylist, (list, tuple)):
         pylist = [pylist]
@@ -118,7 +125,8 @@ def convert_py_list_to_net_list(pylist, list_type=None):
 
 
 def convert_net_list_to_py_list(netlist):
-    """Convert a Net list to a Python list.
+    """
+    Convert a Net list to a Python list.
 
     Parameters
     ----------
@@ -130,6 +138,7 @@ def convert_net_list_to_py_list(netlist):
     -------
     list
         List converted to Python.
+
     """
     pylist = []
     for el in netlist:

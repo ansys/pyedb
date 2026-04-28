@@ -42,7 +42,8 @@ class SIWaveSimulationSettings:
 
     @property
     def advanced(self) -> SIWaveAdvancedSettings:
-        """Advanced settings class.
+        """
+        Advanced settings class.
 
         Returns
         -------
@@ -54,7 +55,8 @@ class SIWaveSimulationSettings:
 
     @property
     def dc(self) -> SIWaveDCSettings:
-        """DC settings class.
+        """
+        DC settings class.
 
         Returns
         -------
@@ -66,7 +68,8 @@ class SIWaveSimulationSettings:
 
     @property
     def dc_advanced(self) -> SIWaveDCAdvancedSettings:
-        """DC advanced settings class.
+        """
+        DC advanced settings class.
 
         Returns
         -------
@@ -78,7 +81,8 @@ class SIWaveSimulationSettings:
 
     @property
     def enabled(self) -> bool:
-        """Enabled status of the SIWave simulation.
+        """
+        Enabled status of the SIWave simulation.
 
         Returns
         -------
@@ -94,7 +98,8 @@ class SIWaveSimulationSettings:
 
     @property
     def general(self) -> SIWaveGeneralSettings:
-        """General settings class.
+        """
+        General settings class.
 
         Returns
         -------
@@ -106,7 +111,8 @@ class SIWaveSimulationSettings:
 
     @property
     def s_parameter(self) -> SIWaveSParameterSettings:
-        """S-Parameter settings class.
+        """
+        S-Parameter settings class.
 
         Returns
         -------

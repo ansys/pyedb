@@ -41,7 +41,8 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "pyedb.Edb", name: str = "Siwave_DCIR"):
-        """Create a SIWave DCIR simulation setup.
+        """
+        Create a SIWave DCIR simulation setup.
 
         Parameters
         ----------
@@ -63,7 +64,8 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings property instead.")
     def dc_ir_settings(self):
-        """SIWave DCIR simulation settings.
+        """
+        SIWave DCIR simulation settings.
 
         .. deprecated:: 0.77.3
            Use :attr:`settings.dc
@@ -75,7 +77,8 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
 
     @property
     def settings(self) -> SIWaveDCIRSettings:
-        """SIWave DCIR simulation settings.
+        """
+        SIWave DCIR simulation settings.
 
         Returns
         -------
@@ -87,7 +90,8 @@ class SIWaveDCIRSimulationSetup(SimulationSetup):
 
     @property
     def dc_settings(self) -> SIWaveDCIRSettings:
-        """SIWave DCIR simulation settings.
+        """
+        SIWave DCIR simulation settings.
 
         Returns
         -------

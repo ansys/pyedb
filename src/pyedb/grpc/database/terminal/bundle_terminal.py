@@ -39,7 +39,8 @@ from pyedb.grpc.database.utility.rlc import Rlc
 
 
 class BundleTerminal(Terminal):
-    """Manages bundle terminal properties.
+    """
+    Manages bundle terminal properties.
 
     Parameters
     ----------
@@ -47,6 +48,7 @@ class BundleTerminal(Terminal):
         EDB object.
     edb_object : :class:`BundleTerminal <ansys.edb.core.terminal.terminals.BundleTerminal>`
         BundleTerminal instance from EDB.
+
     """
 
     def __init__(self, pedb, core):
@@ -56,7 +58,8 @@ class BundleTerminal(Terminal):
 
     @classmethod
     def create(cls, pedb, name: str, terminals: list[Union[Terminal, WavePort, str]]) -> BundleTerminal:
-        """Create a bundle terminal.
+        """
+        Create a bundle terminal.
 
         Parameters
         ----------
@@ -69,6 +72,7 @@ class BundleTerminal(Terminal):
         -------
         BundleTerminal
             The created bundle terminal.
+
         """
         if not isinstance(terminals, list):
             raise TypeError("Terminals must be a list of Terminal objects.")
@@ -98,52 +102,62 @@ class BundleTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """Check if the bundle terminal is a reference terminal.
+        """
+        Check if the bundle terminal is a reference terminal.
 
         Returns
         -------
         bool
+
         """
         return self.core.is_reference_terminal
 
     def decouple(self) -> bool:
-        """Ungroup a bundle of terminals.
+        """
+        Ungroup a bundle of terminals.
 
         Returns
         -------
         bool
+
         """
         return self.core.ungroup()
 
     @property
     def component(self) -> Component:
-        """Component.
+        """
+        Component.
 
         Returns
         -------
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component`
+
         """
 
         return Component(self._pedb, self.core.component)
 
     @property
     def net(self) -> Net:
-        """Returns Net object.
+        """
+        Returns Net object.
 
         Returns
         -------
         :class:`Net <pyedb.grpc.database.net.net.Net>`
+
         """
 
         return Net(self._pedb, self.core.net)
 
     @property
     def hfss_pi_type(self) -> str:
-        """Returns HFSS PI type.
+        """
+        Returns HFSS PI type.
 
         Returns
         -------
         str
+
         """
         return self.core.hfss_pi_type.name.lower()
 
@@ -162,22 +176,26 @@ class BundleTerminal(Terminal):
 
     @property
     def rlc_boundary_parameters(self) -> Rlc:
-        """Returns Rlc parameters
+        """
+        Returns Rlc parameters
 
         Returns
         -------
         :class:`Rlc <pyedb.grpc.database.utility.rlc.Rlc>`
+
         """
         return Rlc(self._pedb, self.core.rlc)
 
     @property
     def term_to_ground(self) -> str:
-        """Returns terminal to ground.
+        """
+        Returns terminal to ground.
 
         Returns
         -------
         str
             Terminal name.
+
         """
         return self.core.term_to_ground.name.lower()
 

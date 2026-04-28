@@ -33,7 +33,8 @@ from pyedb.misc.decorators import deprecated, deprecated_class
 
 @deprecated("Please use pathlib.Path.glob for file searching.")
 def search_files(dirname: str, pattern: str = "*") -> list[str]:
-    """Search for files inside a directory given a specific pattern.
+    """
+    Search for files inside a directory given a specific pattern.
 
     Parameters
     ----------
@@ -45,6 +46,7 @@ def search_files(dirname: str, pattern: str = "*") -> list[str]:
     Returns
     -------
     list
+
     """
     return [os.path.abspath(i) for i in pathlib.Path(dirname).glob(pattern)]
 
@@ -110,7 +112,8 @@ class Scratch:
             settings.logger.error(f"An error occurred while removing {self._scratch_path}")
 
     def copyfile(self, src_file: str, dst_filename: str | None = None) -> str:
-        """Copy a file to the scratch directory.
+        """
+        Copy a file to the scratch directory.
 
         Parameters
         ----------
@@ -125,6 +128,7 @@ class Scratch:
         -------
         dst_file : str
             Full path and file name of the copied file.
+
         """
         if dst_filename:
             dst_file = os.path.join(self.path, dst_filename)
@@ -143,7 +147,8 @@ class Scratch:
         return dst_file
 
     def copyfolder(self, src_folder: str, destfolder: str | None = None) -> str:
-        """Copy a folder to the scratch directory.
+        """
+        Copy a folder to the scratch directory.
 
         Parameters
         ----------
@@ -157,6 +162,7 @@ class Scratch:
         -------
         destfolder : str
             Full path of the copied folder.
+
         """
         if not destfolder:
             destfolder = os.path.join(self.path, os.path.split(src_folder)[-1])
@@ -166,7 +172,8 @@ class Scratch:
 
 @deprecated("Please use pathlib.Path.glob for file searching.")
 def get_json_files(start_folder):
-    """Get the absolute path to all JSON files in start_folder.
+    """
+    Get the absolute path to all JSON files in start_folder.
 
     Parameters
     ----------
@@ -177,5 +184,6 @@ def get_json_files(start_folder):
     -------
     list
          List of paths to JSON files in start_folder.
+
     """
     return [y for x in os.walk(start_folder) for y in search_files(x[0], "*.json")]

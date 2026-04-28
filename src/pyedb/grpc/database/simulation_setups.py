@@ -53,12 +53,14 @@ class SimulationSetups:
 
     @property
     def hfss(self) -> dict[str, HfssSimulationSetup]:
-        """HFSS simulation setups.
+        """
+        HFSS simulation setups.
 
         Returns
         -------
         List[:class:`HFSSSimulationSetup <pyedb.grpc.database.simulation_setup.
         hfss_simulation_setup.HFSSSimulationSetup>`]
+
         """
         self._hfss_setups = {}
         setups = self._pedb.active_cell.simulation_setups
@@ -76,12 +78,14 @@ class SimulationSetups:
 
     @property
     def siwave(self) -> dict[str, SiwaveSimulationSetup]:
-        """SIWave simulation setups.
+        """
+        SIWave simulation setups.
 
         Returns
         -------
         List[:class:`SIWaveSimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_simulation_setup.SIWaveSimulationSetup>`]
+
         """
         self._siwave_setups = {}
         setups = self._pedb.active_cell.simulation_setups
@@ -99,12 +103,14 @@ class SimulationSetups:
 
     @property
     def siwave_dcir(self) -> dict[str, SIWaveDCIRSimulationSetup]:
-        """SIWave DCIR simulation setups.
+        """
+        SIWave DCIR simulation setups.
 
         Returns
         -------
         List[:class:`SIWaveDCIRSimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_dcir_simulation_setup.SIWaveDCIRSimulationSetup>`]
+
         """
         self._siwave_dcir_setups = {}
         setups = self._pedb.active_cell.simulation_setups
@@ -122,12 +128,14 @@ class SimulationSetups:
 
     @property
     def siwave_cpa(self) -> dict[str, SIWaveCPASimulationSetup]:
-        """SIWave CPA simulation setups.
+        """
+        SIWave CPA simulation setups.
 
         Returns
         -------
         List[:class:`SIWaveCPASimulationSetup <pyedb.grpc.database.simulation_setup.
         siwave_cpa_simulation_setup.SIWaveCPASimulationSetup>`]
+
         """
 
         # cpa setup is not a real simulation setup type in EDB.
@@ -147,12 +155,14 @@ class SimulationSetups:
 
     @property
     def raptor_x(self) -> dict[str, RaptorXSimulationSetup]:
-        """RaptorX simulation setups.
+        """
+        RaptorX simulation setups.
 
         Returns
         -------
         List[:class:`RaptorXSimulationSetup <pyedb.grpc.database.simulation_setup.
         raptor_x_simulation_setup.RaptorXSimulationSetup>`]
+
         """
         self._raptorx_setups = {}
         setups = self._pedb.active_cell.simulation_setups
@@ -170,12 +180,14 @@ class SimulationSetups:
 
     @property
     def q3d(self) -> dict[str, Q3DSimulationSetup]:
-        """Q3D simulation setups.
+        """
+        Q3D simulation setups.
 
         Returns
         -------
         List[:class:`Q3DSimulationSetup <pyedb.grpc.database.simulation_setup.
         q3d_simulation_setup.Q3DSimulationSetup>`]
+
         """
         self._q3d_setups = {}
         setups = self._pedb.active_cell.simulation_setups
@@ -193,12 +205,14 @@ class SimulationSetups:
 
     @property
     def hfss_pi(self) -> dict[str, HFSSPISimulationSetup]:
-        """HFSS PI simulation setups.
+        """
+        HFSS PI simulation setups.
 
         Returns
         -------
         List[:class:`HFSSPISimulationSetup <pyedb.grpc.database.simulation_setup.
         hfss_pi_simulation_setup.HFSSPISimulationSetup>`]
+
         """
         self._hfss_pi_setups = {}
         setups = self._pedb.active_cell.simulation_setups
@@ -227,12 +241,14 @@ class SimulationSetups:
         | Q3DSimulationSetup
         | HFSSPISimulationSetup,
     ]:
-        """All simulation setups.
+        """
+        All simulation setups.
 
         Returns
         -------
         dict[str:setup name, :class:`SimulationSetup <pyedb.grpc.database.simulation_setup.
         simulation_setup.SimulationSetup>`]
+
         """
         # Merge all per-solver dicts into a single mapping
         return {
@@ -246,7 +262,8 @@ class SimulationSetups:
         }
 
     def create(self, name=None, solver="hfss") -> BaseSimulationSetup | None:
-        """Add analysis setup.
+        """
+        Add analysis setup.
 
         Parameters
         ----------
@@ -257,6 +274,7 @@ class SimulationSetups:
 
         Returns
         -------
+
         """
         if not name:
             name = generate_unique_name(f"{solver}_setup")
@@ -298,7 +316,8 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> HfssSimulationSetup:
-        """Add HFSS analysis setup.
+        """
+        Add HFSS analysis setup.
 
         Parameters
         ----------
@@ -321,6 +340,7 @@ class SimulationSetups:
         -------
         HfssSimulationSetup
             Created setup object.
+
         """
         setup = self.create(
             name=name,
@@ -352,7 +372,8 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> HFSSPISimulationSetup:
-        """Add HFSS analysis setup.
+        """
+        Add HFSS analysis setup.
 
         Parameters
         ----------
@@ -375,6 +396,7 @@ class SimulationSetups:
         -------
         HfssSimulationSetup
             Created setup object.
+
         """
         setup = self.create(
             name=name,
@@ -406,7 +428,8 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> SiwaveSimulationSetup:
-        """Add SIWave analysis setup.
+        """
+        Add SIWave analysis setup.
 
         Parameters
         ----------
@@ -429,6 +452,7 @@ class SimulationSetups:
         -------
         SIWaveSimulationSetup
             Created setup object.
+
         """
         setup = self.create(
             name=name,
@@ -450,7 +474,8 @@ class SimulationSetups:
         return cast(SiwaveSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_dcir_setup(self, name=None, **kwargs) -> SIWaveDCIRSimulationSetup:
-        """Add SIWave DCIR analysis setup.
+        """
+        Add SIWave DCIR analysis setup.
 
         Parameters
         ----------
@@ -461,6 +486,7 @@ class SimulationSetups:
         -------
         SIWaveDCIRSimulationSetup
             Created setup object.
+
         """
         setup = self.create(name=name, solver="siwave_dcir")
         for k, v in kwargs.items():
@@ -468,7 +494,8 @@ class SimulationSetups:
         return cast(SIWaveDCIRSimulationSetup, setup)  # casting only for IDE type checking purposes
 
     def create_siwave_cpa_setup(self, name=None, siwave_cpa_config=None, **kwargs) -> SIWaveCPASimulationSetup:
-        """Add SIWave CPA analysis setup.
+        """
+        Add SIWave CPA analysis setup.
 
         Parameters
         ----------
@@ -479,6 +506,7 @@ class SimulationSetups:
         -------
         SIWaveCPASimulationSetup
             Created setup object.
+
         """
         if not name:
             name = generate_unique_name("siwave_cpa_setup")
@@ -508,7 +536,8 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> RaptorXSimulationSetup:
-        """Add RaptorX analysis setup
+        """
+        Add RaptorX analysis setup
         Parameters
         ----------
         name : str, optional
@@ -529,6 +558,7 @@ class SimulationSetups:
         -------
         RaptorXSimulationSetup
             Created setup object.
+
         """
 
         setup = self.create(
@@ -561,7 +591,8 @@ class SimulationSetups:
         sweep_name: str = "frequency_sweep",
         **kwargs,
     ) -> Q3DSimulationSetup:
-        """Add Q3D analysis setup
+        """
+        Add Q3D analysis setup
         Parameters
         ----------
         name : str, optional
@@ -582,6 +613,7 @@ class SimulationSetups:
         -------
         Q3DSimulationSetup
             Created setup object.
+
         """
 
         setup = self.create(

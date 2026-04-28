@@ -24,7 +24,8 @@ from pyedb.misc.siw_feature_config.emc.xml_generic import XmlGeneric
 
 
 class Net(XmlGeneric):
-    """Manages individual net configuration and properties.
+    """
+    Manages individual net configuration and properties.
 
     This class handles net-specific attributes including bus status, clock signals,
     criticality, and differential pair configurations.
@@ -48,7 +49,8 @@ class Net(XmlGeneric):
     """
 
     def __init__(self, element=None) -> None:
-        """Initialize net configuration.
+        """
+        Initialize net configuration.
 
         Parameters
         ----------
@@ -78,7 +80,8 @@ class Net(XmlGeneric):
 
 
 class NetTags(XmlGeneric):
-    """Manages collection of net tags.
+    """
+    Manages collection of net tags.
 
     This class handles the complete collection of net configurations, providing
     a container for multiple Net objects within the EMC configuration.
@@ -104,7 +107,8 @@ class NetTags(XmlGeneric):
     CLS_MAPPING: dict = {"Net": Net}
 
     def __init__(self, element) -> None:
-        """Initialize net tags collection.
+        """
+        Initialize net tags collection.
 
         Parameters
         ----------

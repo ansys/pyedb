@@ -44,7 +44,8 @@ class Q3DSimulationSettings:
 
     @property
     def acrl(self) -> Q3DACRLSettings:
-        """ACRL settings class.
+        """
+        ACRL settings class.
 
         Returns
         -------
@@ -56,7 +57,8 @@ class Q3DSimulationSettings:
 
     @property
     def advanced(self) -> Q3DAdvancedSettings:
-        """Advanced settings class.
+        """
+        Advanced settings class.
 
         Returns
         -------
@@ -68,18 +70,21 @@ class Q3DSimulationSettings:
 
     @property
     def advanced_meshing(self) -> Q3DAdvancedMeshingSettings:
-        """Advanced meshing settings class.
+        """
+        Advanced meshing settings class.
 
         Returns
         -------
         :class:`Q3DAdvancedMeshingSettings <pyedb.grpc.database.simulation_setup.
         q3d_advanced_meshing_settings.Q3DAdvancedMeshingSettings>`
+
         """
         return Q3DAdvancedMeshingSettings(self._pedb, self.core.advanced_meshing)
 
     @property
     def cg(self) -> Q3DCGSettings:
-        """CG settings class.
+        """
+        CG settings class.
 
         Returns
         -------
@@ -91,7 +96,8 @@ class Q3DSimulationSettings:
 
     @property
     def dcrl(self) -> Q3DDCRLSettings:
-        """DCRL settings class.
+        """
+        DCRL settings class.
 
         Returns
         -------
@@ -103,7 +109,8 @@ class Q3DSimulationSettings:
 
     @property
     def enabled(self) -> bool:
-        """Enabled flag.
+        """
+        Enabled flag.
 
         Returns
         -------
@@ -119,7 +126,8 @@ class Q3DSimulationSettings:
 
     @property
     def general(self) -> Q3DGeneralSettings:
-        """General settings class.
+        """
+        General settings class.
 
         Returns
         -------

@@ -37,10 +37,12 @@ class EdbCommon:
 
     @property
     def _layout(self):
-        """Get layout.
+        """
+        Get layout.
 
         Returns
         -------
+
         """
         return self._pedb.layout
 
@@ -50,7 +52,8 @@ class EdbCommon:
         return self._pedb.logger
 
     def __getitem__(self, name):
-        """Get  a net from the EDB project.
+        """
+        Get  a net from the EDB project.
 
         Parameters
         ----------
@@ -68,13 +71,15 @@ class EdbCommon:
 
 
 class EdbNetClasses(EdbCommon, object):
-    """Manages EDB methods for managing nets accessible from the ``Edb.net_classes`` property.
+    """
+    Manages EDB methods for managing nets accessible from the ``Edb.net_classes`` property.
 
     Examples
     --------
     >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.net_classes
+
     """
 
     def __init__(self, p_edb):
@@ -82,12 +87,14 @@ class EdbNetClasses(EdbCommon, object):
 
     @property
     def items(self):
-        """Extended nets.
+        """
+        Extended nets.
 
         Returns
         -------
         dict[str, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
+
         """
         temp = {}
         for i in self._layout.net_classes:
@@ -96,7 +103,8 @@ class EdbNetClasses(EdbCommon, object):
 
     def create(self, name, net):
         # type: (str, str|list)->EDBNetClassData
-        """Create a new net class.
+        """
+        Create a new net class.
 
         Parameters
         ----------
@@ -108,6 +116,7 @@ class EdbNetClasses(EdbCommon, object):
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetClassData`
+
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -124,13 +133,15 @@ class EdbNetClasses(EdbCommon, object):
 
 
 class EdbExtendedNets(EdbCommon, object):
-    """Manages EDB methods for managing nets accessible from the ``Edb.extended_nets`` property.
+    """
+    Manages EDB methods for managing nets accessible from the ``Edb.extended_nets`` property.
 
     Examples
     --------
     >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.extended_nets
+
     """
 
     def __init__(self, p_edb):
@@ -138,12 +149,14 @@ class EdbExtendedNets(EdbCommon, object):
 
     @property
     def items(self):
-        """Extended nets.
+        """
+        Extended nets.
 
         Returns
         -------
         dict[str, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`]
             Dictionary of extended nets.
+
         """
         nets = {}
         for extended_net in self._pedb.layout.extended_nets:
@@ -152,7 +165,8 @@ class EdbExtendedNets(EdbCommon, object):
 
     def create(self, name, net):
         # type: (str, str|list)->EDBExtendedNetData
-        """Create a new Extended net.
+        """
+        Create a new Extended net.
 
         Parameters
         ----------
@@ -164,6 +178,7 @@ class EdbExtendedNets(EdbCommon, object):
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.nets_data.EDBExtendedNetsData`
+
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -180,7 +195,8 @@ class EdbExtendedNets(EdbCommon, object):
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
-        """Get extended signal net and associated components.
+        """
+        Get extended signal net and associated components.
 
         Parameters
         ----------
@@ -207,6 +223,7 @@ class EdbExtendedNets(EdbCommon, object):
         >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_signal()
+
         """
         return self._pedb.nets.generate_extended_nets(
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
@@ -214,7 +231,8 @@ class EdbExtendedNets(EdbCommon, object):
 
     def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
-        """Get all extended power nets and their associated components.
+        """
+        Get all extended power nets and their associated components.
 
         Parameters
         ----------
@@ -241,6 +259,7 @@ class EdbExtendedNets(EdbCommon, object):
         >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_power()
+
         """
         return self._pedb.nets.generate_extended_nets(
             resistor_below, inductor_below, capacitor_above, exception_list, True, True
@@ -253,7 +272,8 @@ class EdbExtendedNets(EdbCommon, object):
 
 
 class EdbDifferentialPairs(EdbCommon, object):
-    """Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
+    """
+    Manages EDB methods for managing nets accessible from the ``Edb.differential_pairs`` property.
 
     Examples
     --------
@@ -261,6 +281,7 @@ class EdbDifferentialPairs(EdbCommon, object):
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_nets = edbapp.differential_pairs.items
     >>> edb_nets = edbapp.differential_pairs["DQ4"]
+
     """
 
     def __init__(self, p_edb):
@@ -268,12 +289,14 @@ class EdbDifferentialPairs(EdbCommon, object):
 
     @property
     def items(self):
-        """Extended nets.
+        """
+        Extended nets.
 
         Returns
         -------
         dict[str, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
+
         """
         diff_pairs = {}
         for diff_pair in self._layout.differential_pairs:
@@ -283,7 +306,6 @@ class EdbDifferentialPairs(EdbCommon, object):
     def create(self, name, net_p, net_n):
         # type: (str, str, str) -> EDBDifferentialPairData
         """
-
         Parameters
         ----------
         name : str
@@ -296,6 +318,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -307,7 +330,8 @@ class EdbDifferentialPairs(EdbCommon, object):
         return self.items[name]
 
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N"):
-        """Auto identify differential pairs by naming conversion.
+        """
+        Auto identify differential pairs by naming conversion.
 
         Parameters
         ----------
@@ -325,6 +349,7 @@ class EdbDifferentialPairs(EdbCommon, object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2023.1")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
+
         """
         nets = self._pedb.nets.nets
         pos_net = []

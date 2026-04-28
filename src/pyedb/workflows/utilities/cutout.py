@@ -37,14 +37,16 @@ def _get_convert_py_list_to_net_list():
 
 
 class Cutout:
-    """Factory class for creating cutout instances based on EDB mode.
+    """
+    Factory class for creating cutout instances based on EDB mode.
 
     This class automatically selects the appropriate cutout implementation
     (gRPC or .NET) based on the EDB object's configuration.
     """
 
     def __new__(self, edb):
-        """Create a new cutout instance.
+        """
+        Create a new cutout instance.
 
         Parameters
         ----------
@@ -55,6 +57,7 @@ class Cutout:
         -------
         GrpcCutout or DotNetCutout
             Cutout instance appropriate for the EDB mode.
+
         """
         if edb.grpc:
             return GrpcCutout(edb)
@@ -63,7 +66,8 @@ class Cutout:
 
 
 class GrpcCutout:
-    """Create a clipped (cut-out) EDB cell from an existing layout.
+    """
+    Create a clipped (cut-out) EDB cell from an existing layout.
     High-performance EDB cut-out utility.
 
     Attributes
@@ -132,15 +136,18 @@ class GrpcCutout:
     >>> cut.references = ["GND"]
     >>> cut.expansion_size = 0.001
     >>> polygon = cut.run()
+
     """
 
     def __init__(self, edb):
-        """Initialize the GrpcCutout object.
+        """
+        Initialize the GrpcCutout object.
 
         Parameters
         ----------
         edb : Edb
             EDB object instance containing the layout to be cut.
+
         """
         self._edb = edb
         self.signals: list[str] = []  # list of signal nets
@@ -172,12 +179,14 @@ class GrpcCutout:
 
     @property
     def logger(self):
-        """EDB logger instance.
+        """
+        EDB logger instance.
 
         Returns
         -------
         Logger
             Logger object from the EDB instance.
+
         """
         return self._edb.logger
 
@@ -186,7 +195,8 @@ class GrpcCutout:
         return self._edb.modeler
 
     def calculate_initial_extent(self, expansion_factor: float) -> float:
-        """Compute initial extent based on trace width and dielectric thickness.
+        """
+        Compute initial extent based on trace width and dielectric thickness.
 
         Calculate a float representing the larger number between the dielectric thickness
         or trace width multiplied by the nW factor. The trace width search is limited to
@@ -207,6 +217,7 @@ class GrpcCutout:
         >>> from pyedb.workflows.utilities.cutout import Cutout
         >>> cutout = Cutout(edb)
         >>> initial_extent = cutout.calculate_initial_extent(3.0)
+
         """
         nets = []
         for port in self._edb.ports.values():
@@ -231,7 +242,8 @@ class GrpcCutout:
         self,
         tolerance: float = 1e-12,
     ) -> CorePolygonData:
-        """Create a convex hull extent polygon from signal nets.
+        """
+        Create a convex hull extent polygon from signal nets.
 
         Parameters
         ----------
@@ -242,6 +254,7 @@ class GrpcCutout:
         -------
         GrpcPolygonData
             Convex hull polygon data representing the extent.
+
         """
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
@@ -276,7 +289,8 @@ class GrpcCutout:
         self,
         tolerance: float = 1e-12,
     ) -> CorePolygonData:
-        """Create a conformal extent polygon that tightly follows geometry.
+        """
+        Create a conformal extent polygon that tightly follows geometry.
 
         Parameters
         ----------
@@ -287,6 +301,7 @@ class GrpcCutout:
         -------
         GrpcPolygonData
             Conformal polygon data representing the extent.
+
         """
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
@@ -376,12 +391,14 @@ class GrpcCutout:
             return _poly_unite[areas.index(max(areas))]
 
     def _smart_cut(self) -> list[CorePolygonData]:
-        """Generate additional polygons around reference terminals for smart cutout.
+        """
+        Generate additional polygons around reference terminals for smart cutout.
 
         Returns
         -------
         list[GrpcPolygonData]
             List of polygon data around terminal positions.
+
         """
         _polys = []
         terms = [term for term in self._edb.layout.terminals if int(term.boundary_type) in [0, 3, 4, 7, 8]]
@@ -401,7 +418,8 @@ class GrpcCutout:
         return _polys
 
     def pins_to_preserve(self) -> tuple:
-        """Identify pins and nets that must be preserved during cutout.
+        """
+        Identify pins and nets that must be preserved during cutout.
 
         Returns
         -------
@@ -412,6 +430,7 @@ class GrpcCutout:
                 List of pin IDs to keep.
             - nets_to_preserve : list[str]
                 List of net names to keep.
+
         """
         _pins_to_preserve = []
         _nets_to_preserve = []
@@ -433,12 +452,14 @@ class GrpcCutout:
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self) -> CorePolygonData:
-        """Compute extent polygon using PyAEDT implementation.
+        """
+        Compute extent polygon using PyAEDT implementation.
 
         Returns
         -------
         GrpcPolygonData
             Extent polygon data.
+
         """
         signal_nets = [self._edb.nets.nets[n].core for n in self.signals]
 
@@ -465,12 +486,14 @@ class GrpcCutout:
         return _poly
 
     def _compute_legacy_extent(self) -> CorePolygonData:
-        """Compute extent polygon using legacy EDB API.
+        """
+        Compute extent polygon using legacy EDB API.
 
         Returns
         -------
         GrpcPolygonData
             Extent polygon data.
+
         """
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             extent_type = GrpcExtentType.CONFORMING
@@ -489,12 +512,14 @@ class GrpcCutout:
         return _poly
 
     def _extent(self) -> CorePolygonData:
-        """Compute extent polygon using native EDB API.
+        """
+        Compute extent polygon using native EDB API.
 
         Returns
         -------
         GrpcPolygonData
             Extent polygon for clipping operations.
+
         """
         if self.custom_extent:
             point_list = self.custom_extent[::]
@@ -522,12 +547,14 @@ class GrpcCutout:
         return _poly
 
     def _add_setups(self, _cutout):
-        """Add simulation setups to the cutout cell.
+        """
+        Add simulation setups to the cutout cell.
 
         Parameters
         ----------
         _cutout : Cell
             Cutout cell to add simulation setups to.
+
         """
         id = 1
         for _setup in self._edb.active_cell.simulation_setups:
@@ -543,12 +570,14 @@ class GrpcCutout:
     def _create_cutout_legacy(
         self,
     ) -> list:
-        """Create cutout using legacy EDB API method.
+        """
+        Create cutout using legacy EDB API method.
 
         Returns
         -------
         list[list[float, float]]
             List of [x, y] coordinate pairs defining the extent polygon.
+
         """
         _poly = self._extent()
         # Create new cutout cell/design
@@ -615,7 +644,8 @@ class GrpcCutout:
         return [[pt.x.value, pt.y.value] for pt in _poly.without_arcs().points]
 
     def _create_cutout_multithread(self) -> list:
-        """Create cutout using optimized multi-threaded gRPC-friendly approach.
+        """
+        Create cutout using optimized multi-threaded gRPC-friendly approach.
 
         This method uses a three-phase approach for optimal performance:
 
@@ -627,6 +657,7 @@ class GrpcCutout:
         -------
         list[list[float, float]]
             List of [x, y] coordinate pairs defining the extent polygon.
+
         """
         _t0 = time.time()
         self.logger.info("GRPC cut-out started")
@@ -792,7 +823,8 @@ class GrpcCutout:
         return [[pt.x.value, pt.y.value] for pt in extent_poly.without_arcs().points]
 
     def run(self) -> list:
-        """Execute the cutout operation.
+        """
+        Execute the cutout operation.
 
         This method performs the complete cutout workflow including:
 
@@ -818,6 +850,7 @@ class GrpcCutout:
         >>> cutout.expansion_size = 0.002
         >>> cutout.output_file = "cutout.aedb"
         >>> polygon = cutout.run()
+
         """
         if self.compute_extent_only:
             return [(pt.x.value, pt.y.value) for pt in self._extent().points]
@@ -876,7 +909,8 @@ class GrpcCutout:
 
 
 class DotNetCutout:
-    """Create a clipped (cut-out) EDB cell from an existing layout.
+    """
+    Create a clipped (cut-out) EDB cell from an existing layout.
     High-performance EDB cut-out utility.
 
     Attributes
@@ -945,15 +979,18 @@ class DotNetCutout:
     >>> cut.references = ["GND"]
     >>> cut.expansion_size = 0.001
     >>> polygon = cut.run()
+
     """
 
     def __init__(self, edb):
-        """Initialize the DotNetCutout object.
+        """
+        Initialize the DotNetCutout object.
 
         Parameters
         ----------
         edb : Edb
             EDB object instance containing the layout to be cut.
+
         """
         self._edb = edb
         self.signals: list[str] = []  # list of signal nets
@@ -985,12 +1022,14 @@ class DotNetCutout:
 
     @property
     def logger(self):
-        """EDB logger instance.
+        """
+        EDB logger instance.
 
         Returns
         -------
         Logger
             Logger object from the EDB instance.
+
         """
         return self._edb.logger
 
@@ -999,7 +1038,8 @@ class DotNetCutout:
         return self._edb.modeler
 
     def calculate_initial_extent(self, expansion_factor: float) -> float:
-        """Compute initial extent based on trace width and dielectric thickness.
+        """
+        Compute initial extent based on trace width and dielectric thickness.
 
         Calculate a float representing the larger number between the dielectric thickness
         or trace width multiplied by the nW factor. The trace width search is limited to
@@ -1019,6 +1059,7 @@ class DotNetCutout:
         --------
         >>> cutout = Cutout(edb)
         >>> initial_extent = cutout.calculate_initial_extent(3.0)
+
         """
         nets = []
         for port in self._edb.ports.values():
@@ -1043,7 +1084,8 @@ class DotNetCutout:
         self,
         tolerance=1e-12,
     ) -> CorePolygonData:
-        """Create a convex hull extent polygon from signal nets.
+        """
+        Create a convex hull extent polygon from signal nets.
 
         Parameters
         ----------
@@ -1054,6 +1096,7 @@ class DotNetCutout:
         -------
         GrpcPolygonData
             Convex hull polygon data representing the extent.
+
         """
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
@@ -1085,7 +1128,8 @@ class DotNetCutout:
         self,
         tolerance=1e-12,
     ) -> CorePolygonData:
-        """Create a conformal extent polygon that tightly follows geometry.
+        """
+        Create a conformal extent polygon that tightly follows geometry.
 
         Parameters
         ----------
@@ -1096,6 +1140,7 @@ class DotNetCutout:
         -------
         GrpcPolygonData
             Conformal polygon data representing the extent.
+
         """
         _polys = []
         _pins_to_preserve, _ = self.pins_to_preserve()
@@ -1176,12 +1221,14 @@ class DotNetCutout:
             return _poly_unite[areas.index(max(areas))]
 
     def _smart_cut(self) -> list:
-        """Generate additional polygons around reference terminals for smart cutout.
+        """
+        Generate additional polygons around reference terminals for smart cutout.
 
         Returns
         -------
         list[GrpcPolygonData]
             List of polygon data around terminal positions.
+
         """
         from pyedb.dotnet.clr_module import Tuple
 
@@ -1212,7 +1259,8 @@ class DotNetCutout:
         return _polys
 
     def pins_to_preserve(self) -> tuple:
-        """Identify pins and nets that must be preserved during cutout.
+        """
+        Identify pins and nets that must be preserved during cutout.
 
         Returns
         -------
@@ -1223,6 +1271,7 @@ class DotNetCutout:
                 List of pin IDs to keep.
             - nets_to_preserve : list[str]
                 List of net names to keep.
+
         """
         _pins_to_preserve = []
         _nets_to_preserve = []
@@ -1244,12 +1293,14 @@ class DotNetCutout:
         return _pins_to_preserve, _nets_to_preserve
 
     def _compute_pyaedt_extent(self) -> CorePolygonData:
-        """Compute extent polygon using PyAEDT implementation.
+        """
+        Compute extent polygon using PyAEDT implementation.
 
         Returns
         -------
         GrpcPolygonData
             Extent polygon data.
+
         """
         signal_nets = [self._edb.nets.nets[n] for n in self.signals]
 
@@ -1276,12 +1327,14 @@ class DotNetCutout:
         return _poly
 
     def _compute_legacy_extent(self) -> CorePolygonData:
-        """Compute extent polygon using legacy EDB API.
+        """
+        Compute extent polygon using legacy EDB API.
 
         Returns
         -------
         GrpcPolygonData
             Extent polygon data.
+
         """
         if str(self.extent_type).lower() in ["conforming", "conformal", "1"]:
             extent_type = self._edb.core.Geometry.ExtentType.Conforming
@@ -1300,12 +1353,14 @@ class DotNetCutout:
         return _poly
 
     def _extent(self) -> CorePolygonData:
-        """Compute extent polygon using native EDB API.
+        """
+        Compute extent polygon using native EDB API.
 
         Returns
         -------
         GrpcPolygonData
             Extent polygon for clipping operations.
+
         """
         if self.custom_extent:
             point_list = self.custom_extent[::]
@@ -1334,12 +1389,14 @@ class DotNetCutout:
         return _poly
 
     def _add_setups(self, _cutout):
-        """Add simulation setups to the cutout cell.
+        """
+        Add simulation setups to the cutout cell.
 
         Parameters
         ----------
         _cutout : Cell
             Cutout cell to add simulation setups to.
+
         """
         id = 1
         for _setup in self._edb.active_cell.SimulationSetups:
@@ -1359,12 +1416,14 @@ class DotNetCutout:
     def _create_cutout_legacy(
         self,
     ) -> list:
-        """Create cutout using legacy EDB API method.
+        """
+        Create cutout using legacy EDB API method.
 
         Returns
         -------
         list[list[float, float]]
             List of [x, y] coordinate pairs defining the extent polygon.
+
         """
         _poly = self._extent()
         # Create new cutout cell/design
@@ -1438,7 +1497,8 @@ class DotNetCutout:
     def _create_cutout_multithread(
         self,
     ) -> list:
-        """Create cutout using optimized multi-threaded gRPC-friendly approach.
+        """
+        Create cutout using optimized multi-threaded gRPC-friendly approach.
 
         This method uses a three-phase approach for optimal performance:
 
@@ -1450,6 +1510,7 @@ class DotNetCutout:
         -------
         list[list[float, float]]
             List of [x, y] coordinate pairs defining the extent polygon.
+
         """
         from concurrent.futures import ThreadPoolExecutor
 
@@ -1645,7 +1706,8 @@ class DotNetCutout:
         return [[pt.X.ToDouble(), pt.Y.ToDouble()] for pt in list(_poly.GetPolygonWithoutArcs().Points)]
 
     def run(self) -> list | bool:
-        """Execute the cutout operation.
+        """
+        Execute the cutout operation.
 
         This method performs the complete cutout workflow including:
 
@@ -1671,6 +1733,7 @@ class DotNetCutout:
         >>> cutout.expansion_size = 0.002
         >>> cutout.output_file = "cutout.aedb"
         >>> polygon = cutout.run()
+
         """
         if self.compute_extent_only:
             return [(pt.X.ToDouble(), pt.Y.ToDouble()) for pt in list(self._extent().Points)]

@@ -137,7 +137,8 @@ def Edb(
     layer_filter: str | None = None,
     in_memory: bool = True,
 ) -> EdbGrpc | EdbDotnet | None:
-    """Provides the EDB application interface.
+    """
+    Provides the EDB application interface.
 
     This module inherits all objects that belong to EDB.
 
@@ -336,6 +337,7 @@ def Edb(
     >>> workflow.add_task("Cutout", signal_nets=["PCIe"])
     >>> workflow.add_task("Export", format="IPC2581")
     >>> workflow.run()
+
     """
     settings.is_student_version = student_version
     if version is None:
@@ -419,13 +421,15 @@ def Edb(
 def Siwave(
     specified_version=None,
 ) -> "SiwaveApp":
-    """Provides the SIwave application interface.
+    """
+    Provides the SIwave application interface.
 
     Parameters
     ----------
     specified_version : str, optional
         Version of SIwave to use. The default is ``None``.
         If not specified, the latest installed version will be used.
+
     """
     from pyedb.siwave import Siwave as app
 

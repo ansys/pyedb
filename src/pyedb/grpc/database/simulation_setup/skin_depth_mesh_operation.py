@@ -73,7 +73,8 @@ class SkinDepthMeshOperation:
         max_elements: str = "1000",
         restrict_max_elements: bool = False,
     ) -> "SkinDepthMeshOperation":
-        """Create a Length Mesh Operation.
+        """
+        Create a Length Mesh Operation.
         Parameters
         ----------
         name : str
@@ -103,6 +104,7 @@ class SkinDepthMeshOperation:
         -------
         LengthMeshOperation : LengthMeshOperation
             The Length Mesh Operation object.
+
         """
         core_op = CoreSkinDepthMeshOperation(
             name=name,
@@ -121,12 +123,14 @@ class SkinDepthMeshOperation:
 
     @property
     def name(self) -> str:
-        """Get the name of the mesh operation.
+        """
+        Get the name of the mesh operation.
 
         Returns
         -------
         str
             Name of the mesh operation.
+
         """
         return self.core.name
 
@@ -136,12 +140,14 @@ class SkinDepthMeshOperation:
 
     @property
     def enabled(self) -> bool:
-        """Get the enabled status of the mesh operation.
+        """
+        Get the enabled status of the mesh operation.
 
         Returns
         -------
         bool
             True if the mesh operation is enabled, False otherwise.
+
         """
         return self.core.enabled
 
@@ -151,12 +157,14 @@ class SkinDepthMeshOperation:
 
     @property
     def mesh_region(self) -> str:
-        """Get the mesh region name.
+        """
+        Get the mesh region name.
 
         Returns
         -------
         str
             Name of the mesh region.
+
         """
         return self.core.mesh_region
 
@@ -166,12 +174,14 @@ class SkinDepthMeshOperation:
 
     @property
     def net_layer_info(self) -> list[tuple[str, str, bool]]:
-        """Get the net layer information list.
+        """
+        Get the net layer information list.
 
         Returns
         -------
         list[tuple(str, str, bool)]
             List of net layer information for the mesh operation.
+
         """
         return list(self.core.net_layer_info)
 
@@ -183,12 +193,14 @@ class SkinDepthMeshOperation:
 
     @property
     def refine_inside(self) -> bool:
-        """Get the refine inside status of the mesh operation.
+        """
+        Get the refine inside status of the mesh operation.
 
         Returns
         -------
         bool
             True if refining inside is enabled, False otherwise.
+
         """
         return self.core.refine_inside
 
@@ -198,12 +210,14 @@ class SkinDepthMeshOperation:
 
     @property
     def solve_inside(self) -> bool:
-        """Get the solve inside status of the mesh operation.
+        """
+        Get the solve inside status of the mesh operation.
 
         Returns
         -------
         bool
             True if solving inside is enabled, False otherwise.
+
         """
         return self.core.solve_inside
 
@@ -213,12 +227,14 @@ class SkinDepthMeshOperation:
 
     @property
     def skin_depth(self) -> str:
-        """Get the skin depth value.
+        """
+        Get the skin depth value.
 
         Returns
         -------
         str
             Skin depth value.
+
         """
         return self.core.skin_depth
 
@@ -228,12 +244,14 @@ class SkinDepthMeshOperation:
 
     @property
     def surface_triangle_length(self) -> str:
-        """Get the surface triangle length value.
+        """
+        Get the surface triangle length value.
 
         Returns
         -------
         str
             Surface triangle length value.
+
         """
         return self.core.surface_triangle_length
 
@@ -243,12 +261,14 @@ class SkinDepthMeshOperation:
 
     @property
     def num_layers(self) -> str:
-        """Get the number of layers for the skin depth mesh operation.
+        """
+        Get the number of layers for the skin depth mesh operation.
 
         Returns
         -------
         int
             Number of layers.
+
         """
         return self.core.num_layers
 
@@ -258,12 +278,14 @@ class SkinDepthMeshOperation:
 
     @property
     def max_elements(self) -> str:
-        """Get the maximum number of elements for the mesh operation.
+        """
+        Get the maximum number of elements for the mesh operation.
 
         Returns
         -------
         int
             Maximum number of elements.
+
         """
         return self.core.max_elements
 
@@ -273,12 +295,14 @@ class SkinDepthMeshOperation:
 
     @property
     def restrict_max_elements(self) -> bool:
-        """Get the restrict maximum elements status of the mesh operation.
+        """
+        Get the restrict maximum elements status of the mesh operation.
 
         Returns
         -------
         bool
             True if restricting maximum elements is enabled, False otherwise.
+
         """
         return self.core.restrict_max_elements
 

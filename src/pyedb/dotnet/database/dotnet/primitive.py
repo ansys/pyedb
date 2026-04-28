@@ -29,11 +29,13 @@ from pyedb.misc.utilities import compute_arc_points
 
 
 def cast(api, prim_object):
-    """Cast the primitive object to correct concrete type.
+    """
+    Cast the primitive object to correct concrete type.
 
     Returns
     -------
     PrimitiveDotNet
+
     """
     prim_type = prim_object.GetPrimitiveType()
     if prim_type == prim_type.Rectangle:
@@ -109,14 +111,16 @@ class PrimitiveDotNet:
 
     @property
     def primitive_type(self):
-        """:class:`PrimitiveType`: Primitive type of the primitive.
+        """
+        :class:`PrimitiveType`: Primitive type of the primitive.
 
         Read-Only.
         """
         return self.prim_obj.GetPrimitiveType()
 
     def add_void(self, point_list):
-        """Add a void to current primitive.
+        """
+        Add a void to current primitive.
 
         Parameters
         ----------
@@ -127,6 +131,7 @@ class PrimitiveDotNet:
         -------
         bool
             ``True`` if successful, either  ``False``.
+
         """
         if isinstance(point_list, list):
             plane = self._app.modeler.Shape("polygon", points=point_list)
@@ -144,7 +149,8 @@ class PrimitiveDotNet:
         return self.prim_obj.AddVoid(point_list)
 
     def set_hfss_prop(self, material, solve_inside):
-        """Set HFSS properties.
+        """
+        Set HFSS properties.
 
         Parameters
         ----------
@@ -152,6 +158,7 @@ class PrimitiveDotNet:
             Material property name to be set.
         solve_inside : bool
             Whether to do solve inside.
+
         """
         self.prim_obj.SetHfssProp(material, solve_inside)
 
@@ -198,7 +205,8 @@ class PrimitiveDotNet:
 
     @property
     def has_voids(self):
-        """:obj:`bool`: If a primitive has voids inside.
+        """
+        :obj:`bool`: If a primitive has voids inside.
 
         Read-Only.
         """
@@ -215,7 +223,8 @@ class PrimitiveDotNet:
 
     @property
     def owner(self):
-        """:class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
+        """
+        :class:`Primitive <ansys.edb.primitive.Primitive>`: Owner of the primitive object.
 
         Read-Only.
         """
@@ -223,7 +232,8 @@ class PrimitiveDotNet:
 
     @property
     def is_parameterized(self):
-        """:obj:`bool`: Primitive's parametrization.
+        """
+        :obj:`bool`: Primitive's parametrization.
 
         Read-Only.
         """
@@ -239,6 +249,7 @@ class PrimitiveDotNet:
             Material property name.
         solve_inside : bool
             If solve inside.
+
         """
         material = ""
         solve_inside = True
@@ -251,7 +262,8 @@ class PrimitiveDotNet:
 
     @property
     def is_zone_primitive(self):
-        """:obj:`bool`: If primitive object is a zone.
+        """
+        :obj:`bool`: If primitive object is a zone.
 
         Read-Only.
         """
@@ -259,14 +271,16 @@ class PrimitiveDotNet:
 
     @property
     def can_be_zone_primitive(self):
-        """:obj:`bool`: If a primitive can be a zone.
+        """
+        :obj:`bool`: If a primitive can be a zone.
 
         Read-Only.
         """
         return True
 
     def make_zone_primitive(self, zone_id):
-        """Make primitive a zone primitive with a zone specified by the provided id.
+        """
+        Make primitive a zone primitive with a zone specified by the provided id.
 
         Parameters
         ----------
@@ -301,7 +315,8 @@ class PrimitiveDotNet:
         return x, y
 
     def points(self, arc_segments=6):
-        """Return the list of points with arcs converted to segments.
+        """
+        Return the list of points with arcs converted to segments.
 
         Parameters
         ----------
@@ -312,6 +327,7 @@ class PrimitiveDotNet:
         -------
         tuple
             The tuple contains 2 lists made of X and Y points coordinates.
+
         """
         try:
             my_net_points = list(self.prim_obj.GetPolygonData().Points)
@@ -326,12 +342,14 @@ class PrimitiveDotNet:
         return x, y
 
     def points_raw(self):
-        """Return a list of Edb points.
+        """
+        Return a list of Edb points.
 
         Returns
         -------
         list
             Edb Points.
+
         """
         points = []
         try:
@@ -343,7 +361,8 @@ class PrimitiveDotNet:
             return points
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """Expand the polygon shape by an absolute value in all direction.
+        """
+        Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -357,13 +376,15 @@ class PrimitiveDotNet:
             If True, use rounded corners in the expansion otherwise use straight edges (can be degenerate).
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
+
         """
         new_poly = self.polygon_data.core.Expand(offset, tolerance, round_corners, maximum_corner_extension)
         self.polygon_data = new_poly[0]
         return True
 
     def scale(self, factor, center=None):
-        """Scales the polygon relative to a center point by a factor.
+        """
+        Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------
@@ -376,6 +397,7 @@ class PrimitiveDotNet:
         -------
         bool
            ``True`` when successful, ``False`` when failed.
+
         """
         if not isinstance(factor, str):
             factor = float(factor)
@@ -405,7 +427,8 @@ class RectangleDotNet(PrimitiveDotNet):
         PrimitiveDotNet.__init__(self, api, prim_obj)
 
     def create(self, layout, layer, net, rep_type, param1, param2, param3, param4, corner_rad, rotation):
-        """Create a rectangle.
+        """
+        Create a rectangle.
 
         Parameters
         ----------
@@ -435,6 +458,7 @@ class RectangleDotNet(PrimitiveDotNet):
         :class:`pyedb.dotnet.database.dotnet.primitive.RectangleDotNet`
 
             Rectangle that was created.
+
         """
         if isinstance(net, NetDotNet):
             net = net.api_object
@@ -457,7 +481,8 @@ class RectangleDotNet(PrimitiveDotNet):
         )
 
     def get_parameters(self):
-        """Get coordinates parameters.
+        """
+        Get coordinates parameters.
 
         Returns
         -------
@@ -488,11 +513,13 @@ class RectangleDotNet(PrimitiveDotNet):
             **corner_radius** : Corner radius.
 
             **rotation** : Rotation.
+
         """
         return self.prim_obj.GetParameters()
 
     def set_parameters(self, rep_type, param1, param2, param3, param4, corner_rad, rotation):
-        """Set coordinates parameters.
+        """
+        Set coordinates parameters.
 
         Parameters
         ----------
@@ -510,6 +537,7 @@ class RectangleDotNet(PrimitiveDotNet):
             Corner radius.
         rotation : :class:`Value <ansys.edb.utility.Value>`
             Rotation.
+
         """
         return self.prim_obj.SetParameters(
             rep_type,
@@ -523,7 +551,8 @@ class RectangleDotNet(PrimitiveDotNet):
 
     @property
     def can_be_zone_primitive(self):
-        """:obj:`bool`: If a rectangle can be a zone.
+        """
+        :obj:`bool`: If a rectangle can be a zone.
 
         Read-Only.
         """
@@ -538,7 +567,8 @@ class CircleDotNet(PrimitiveDotNet):
         self._edb_object = prim_obj
 
     def create(self, layout, layer, net, center_x, center_y, radius):
-        """Create a circle.
+        """
+        Create a circle.
 
         Parameters
         ----------
@@ -559,6 +589,7 @@ class CircleDotNet(PrimitiveDotNet):
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.CircleDotNet`
             Circle object created.
+
         """
         if isinstance(net, NetDotNet):
             net = net.api_object
@@ -575,7 +606,8 @@ class CircleDotNet(PrimitiveDotNet):
         )
 
     def get_parameters(self):
-        """Get parameters of a circle.
+        """
+        Get parameters of a circle.
 
         Returns
         -------
@@ -594,11 +626,13 @@ class CircleDotNet(PrimitiveDotNet):
             **center_y** : Y value of center point.
 
             **radius** : Radius value of the circle.
+
         """
         return self.prim_obj.GetParameters()
 
     def set_parameters(self, center_x, center_y, radius):
-        """Set parameters of a circle.
+        """
+        Set parameters of a circle.
 
          Parameters
          ----------
@@ -608,6 +642,7 @@ class CircleDotNet(PrimitiveDotNet):
             Y value of center point.
         radius: :class:`Value <ansys.edb.utility.Value>`
             Radius value of the circle.
+
         """
         self.prim_obj.SetParameters(
             center_x,
@@ -624,7 +659,8 @@ class CircleDotNet(PrimitiveDotNet):
         return True
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """Expand the polygon shape by an absolute value in all direction.
+        """
+        Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -640,6 +676,7 @@ class CircleDotNet(PrimitiveDotNet):
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
              Ignored for Circle and Path.
+
         """
         center_x, center_y, radius = self.get_parameters()
         self.set_parameters(center_x, center_y, radius.ToFloat() + offset)
@@ -653,7 +690,8 @@ class TextDotNet(PrimitiveDotNet):
         PrimitiveDotNet.__init__(self, api, prim_obj)
 
     def create(self, layout, layer, center_x, center_y, text):
-        """Create a text object.
+        """
+        Create a text object.
 
         Parameters
         ----------
@@ -672,6 +710,7 @@ class TextDotNet(PrimitiveDotNet):
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.TextDotNet`
             The text Object that was created.
+
         """
         return TextDotNet(
             self._app,
@@ -685,7 +724,8 @@ class TextDotNet(PrimitiveDotNet):
         )
 
     def get_text_data(self):
-        """Get the text data of a text.
+        """
+        Get the text data of a text.
 
         Returns
         -------
@@ -703,11 +743,13 @@ class TextDotNet(PrimitiveDotNet):
             **center_y** : Y value of center point.
 
             **radius** : Text object's String value.
+
         """
         return self.prim_obj.GetTextData()
 
     def set_text_data(self, center_x, center_y, text):
-        """Set the text data of a text.
+        """
+        Set the text data of a text.
 
         Parameters
         ----------
@@ -717,6 +759,7 @@ class TextDotNet(PrimitiveDotNet):
             Y value of center point.
         text: str
             Text object's String value.
+
         """
         return self.prim_obj.SetTextData(
             center_x,
@@ -732,7 +775,8 @@ class PathDotNet(PrimitiveDotNet):
         PrimitiveDotNet.__init__(self, api, prim_obj)
 
     def create(self, layout, layer, net, width, end_cap1, end_cap2, corner_style, points):
-        """Create a path.
+        """
+        Create a path.
 
         Parameters
         ----------
@@ -757,6 +801,7 @@ class PathDotNet(PrimitiveDotNet):
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.PathDotNet`
             Path object created.
+
         """
         if isinstance(net, NetDotNet):
             net = net.api_object
@@ -783,7 +828,8 @@ class PathDotNet(PrimitiveDotNet):
 
     @property
     def get_clip_info(self):
-        """Get data used to clip the path.
+        """
+        Get data used to clip the path.
 
         Returns
         -------
@@ -796,12 +842,14 @@ class PathDotNet(PrimitiveDotNet):
             **clipping_poly** : PolygonData used to clip the path.
 
             **keep_inside** : Indicates whether the part of the path inside the polygon is preserved.
+
         """
         return self._edb_object.GetClipInfo()
 
     @get_clip_info.setter
     def get_clip_info(self, clipping_poly, keep_inside=True):
-        """Set data used to clip the path.
+        """
+        Set data used to clip the path.
 
         Parameters
         ----------
@@ -809,6 +857,7 @@ class PathDotNet(PrimitiveDotNet):
             PolygonData used to clip the path.
         keep_inside: bool
             Indicates whether the part of the path inside the polygon should be preserved.
+
         """
         self._edb_object.SetClipInfo(
             clipping_poly,
@@ -844,14 +893,16 @@ class PathDotNet(PrimitiveDotNet):
 
     @property
     def can_be_zone_primitive(self):
-        """:obj:`bool`: If a path can be a zone.
+        """
+        :obj:`bool`: If a path can be a zone.
 
         Read-Only.
         """
         return True
 
     def expand(self, offset=0.001, tolerance=1e-12, round_corners=True, maximum_corner_extension=0.001):
-        """Expand the polygon shape by an absolute value in all direction.
+        """
+        Expand the polygon shape by an absolute value in all direction.
         Offset can be negative for negative expansion.
 
         Parameters
@@ -867,6 +918,7 @@ class PathDotNet(PrimitiveDotNet):
         maximum_corner_extension : float, optional
             The maximum corner extension (when round corners are not used) at which point the corner is clipped.
              Ignored for Circle and Path.
+
         """
         self.width = self.width + offset
         return True
@@ -896,7 +948,8 @@ class BondwireDotNet(PrimitiveDotNet):
         end_y,
         net,
     ):
-        """Create a bondwire object.
+        """
+        Create a bondwire object.
 
         Parameters
         ----------
@@ -935,6 +988,7 @@ class BondwireDotNet(PrimitiveDotNet):
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.BondwireDotNet`
             Bondwire object created.
+
         """
         if isinstance(net, NetDotNet):
             net = net.api_object
@@ -960,7 +1014,8 @@ class BondwireDotNet(PrimitiveDotNet):
         )
 
     def get_material(self, evaluated=True):
-        """Get material of the bondwire.
+        """
+        Get material of the bondwire.
 
         Parameters
         ----------
@@ -971,16 +1026,19 @@ class BondwireDotNet(PrimitiveDotNet):
         -------
         str
             Material name.
+
         """
         return self.prim_obj.GetMaterial(evaluated)
 
     def set_material(self, material):
-        """Set the material of a bondwire.
+        """
+        Set the material of a bondwire.
 
         Parameters
         ----------
         material : str
             Material name.
+
         """
         self.prim_obj.SetMaterial(material)
 
@@ -1012,7 +1070,8 @@ class BondwireDotNet(PrimitiveDotNet):
         self.prim_obj.SetCrossSectionHeight(height)
 
     def get_definition_name(self, evaluated=True):
-        """Get definition name of a bondwire object.
+        """
+        Get definition name of a bondwire object.
 
         Parameters
         ----------
@@ -1023,21 +1082,25 @@ class BondwireDotNet(PrimitiveDotNet):
         -------
         str
             Bondwire name.
+
         """
         return self.prim_obj.GetDefinitionName(evaluated)
 
     def set_definition_name(self, definition_name):
-        """Set the definition name of a bondwire.
+        """
+        Set the definition name of a bondwire.
 
         Parameters
         ----------
         definition_name : str
             Bondwire name to be set.
+
         """
         self.prim_obj.SetDefinitionName(definition_name)
 
     def get_traj(self):
-        """Get trajectory parameters of a bondwire object.
+        """
+        Get trajectory parameters of a bondwire object.
 
         Returns
         -------
@@ -1059,11 +1122,13 @@ class BondwireDotNet(PrimitiveDotNet):
             **x1** : X value of the end point.
 
             **y1** : Y value of the end point.
+
         """
         return self.prim_obj.GetTraj()
 
     def set_traj(self, x1, y1, x2, y2):
-        """Set the parameters of the trajectory of a bondwire.
+        """
+        Set the parameters of the trajectory of a bondwire.
 
         Parameters
         ----------
@@ -1075,6 +1140,7 @@ class BondwireDotNet(PrimitiveDotNet):
             X value of the end point.
         y2 : :class:`Value <ansys.edb.utility.Value>`
             Y value of the end point.
+
         """
         self.prim_obj.SetTraj(x1, y1, x2, y2)
 
@@ -1088,7 +1154,8 @@ class BondwireDotNet(PrimitiveDotNet):
         self.prim_obj.SetWidthValue(width)
 
     def get_start_elevation(self, start_context):
-        """Get the start elevation layer of a bondwire object.
+        """
+        Get the start elevation layer of a bondwire object.
 
         Parameters
         ----------
@@ -1099,11 +1166,13 @@ class BondwireDotNet(PrimitiveDotNet):
         -------
         :class:`Layer <ansys.edb.layer.Layer>`
             Start context of the bondwire.
+
         """
         return self.prim_obj.GetStartElevation(start_context)
 
     def set_start_elevation(self, start_context, layer):
-        """Set the start elevation of a bondwire.
+        """
+        Set the start elevation of a bondwire.
 
         Parameters
         ----------
@@ -1111,11 +1180,13 @@ class BondwireDotNet(PrimitiveDotNet):
             Start cell context of the bondwire. None means top level.
         layer : str or :class:`Layer <ansys.edb.layer.Layer>`
             Start layer of the bondwire.
+
         """
         self.prim_obj.SetStartElevation(start_context, layer)
 
     def get_end_elevation(self, end_context):
-        """Get the end elevation layer of a bondwire object.
+        """
+        Get the end elevation layer of a bondwire object.
 
         Parameters
         ----------
@@ -1126,11 +1197,13 @@ class BondwireDotNet(PrimitiveDotNet):
         -------
         :class:`Layer <ansys.edb.layer.Layer>`
             End context of the bondwire.
+
         """
         return self.prim_obj.GetEndElevation(end_context)
 
     def set_end_elevation(self, end_context, layer):
-        """Set the end elevation of a bondwire.
+        """
+        Set the end elevation of a bondwire.
 
         Parameters
         ----------
@@ -1138,6 +1211,7 @@ class BondwireDotNet(PrimitiveDotNet):
             End cell context of the bondwire. None means top level.
         layer : str or :class:`Layer <ansys.edb.layer.Layer>`
             End layer of the bondwire.
+
         """
         self.prim_obj.SetEndElevation(end_context, layer)
 
@@ -1161,7 +1235,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         solder_ball_layer,
         layer_map,
     ):
-        """Create a PadstackInstance object.
+        """
+        Create a PadstackInstance object.
 
         Parameters
         ----------
@@ -1188,6 +1263,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         -------
         :class:`pyedb.dotnet.database.dotnet.primitive.PadstackInstanceDotNet`
             Padstack instance object created.
+
         """
         if isinstance(net, NetDotNet):
             net = net.api_object
@@ -1227,7 +1303,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         self.prim_obj.SetName(name)
 
     def get_position_and_rotation(self):
-        """Get the position and rotation of a Padstack Instance.
+        """
+        Get the position and rotation of a Padstack Instance.
 
         Returns
         -------
@@ -1246,11 +1323,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             **y** : Y coordinate.
 
             **rotation** : Rotation in radians.
+
         """
         return self.prim_obj.GetPositionAndRotation()
 
     def set_position_and_rotation(self, x, y, rotation):
-        """Set the position and rotation of a Padstack Instance.
+        """
+        Set the position and rotation of a Padstack Instance.
 
         Parameters
         ----------
@@ -1260,11 +1339,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             y : Y coordinate.
         rotation : :class:`Value <ansys.edb.utility.Value>`
             rotation : Rotation in radians.
+
         """
         self.prim_obj.SetPositionAndRotation(x, y, rotation)
 
     def get_layer_range(self):
-        """Get the top and bottom layers of a Padstack Instance.
+        """
+        Get the top and bottom layers of a Padstack Instance.
 
         Returns
         -------
@@ -1280,11 +1361,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             **top_layer** : Top layer of the Padstack instance
 
             **bottom_layer** : Bottom layer of the Padstack instance
+
         """
         return self.prim_obj.GetLayerRange()
 
     def set_layer_range(self, top_layer, bottom_layer):
-        """Set the top and bottom layers of a Padstack Instance.
+        """
+        Set the top and bottom layers of a Padstack Instance.
 
         Parameters
         ----------
@@ -1292,6 +1375,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             Top layer of the Padstack instance.
         bottom_layer : :class:`Layer <ansys.edb.layer.Layer>`
             Bottom layer of the Padstack instance.
+
         """
         self.prim_obj.SetLayerRange(top_layer, bottom_layer)
 
@@ -1314,7 +1398,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         self.prim_obj.SetLayerMap(layer_map)
 
     def set_hole_overrides(self, is_hole_override, hole_override):
-        """Set the hole overrides of Padstack Instance.
+        """
+        Set the hole overrides of Padstack Instance.
 
         Parameters
         ----------
@@ -1322,6 +1407,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             If padstack instance is hole override.
         hole_override : :class:`Value <ansys.edb.utility.Value>`
             Hole override diameter of this padstack instance.
+
         """
         if isinstance(hole_override, float):
             hole_override = self._app._edb.value(hole_override)
@@ -1337,7 +1423,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         self.prim_obj.SetIsLayoutPin(is_layout_pin)
 
     def get_back_drill_type(self, from_bottom):
-        """Get the back drill type of Padstack Instance.
+        """
+        Get the back drill type of Padstack Instance.
 
         Parameters
         ----------
@@ -1348,11 +1435,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         -------
         :class:`BackDrillType`
             Back-Drill Type of padastack instance.
+
         """
         return self.prim_obj.GetBackDrillType(from_bottom)
 
     def get_back_drill_by_layer(self, from_bottom):
-        """Get the back drill by layer.
+        """
+        Get the back drill by layer.
 
         Parameters
         ----------
@@ -1377,11 +1466,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             **offset** : Layer offset (or depth if layer is empty).
 
             **diameter** : Drilling diameter.
+
         """
         return self.prim_obj.GetBackDrillByLayer(from_bottom)
 
     def set_back_drill_by_layer(self, drill_to_layer, offset, diameter, from_bottom):
-        """Set the back drill by layer.
+        """
+        Set the back drill by layer.
 
         Parameters
         ----------
@@ -1394,11 +1485,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             Drilling diameter.
         from_bottom : bool
             True to set drill type from bottom.
+
         """
         self.prim_obj.SetBackDrillByLayer(drill_to_layer, offset, diameter, from_bottom)
 
     def get_back_drill_by_depth(self, from_bottom):
-        """Get the back drill by depth.
+        """
+        Get the back drill by depth.
 
         Parameters
         ----------
@@ -1418,11 +1511,13 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             **drill_depth** : Drilling depth, may not align with layer.
 
             **diameter** : Drilling diameter.
+
         """
         return self.prim_obj.GetBackDrillByDepth(from_bottom)
 
     def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom):
-        """Set the back drill by Depth.
+        """
+        Set the back drill by Depth.
 
         Parameters
         ----------
@@ -1432,6 +1527,7 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
             Drilling diameter.
         from_bottom : bool
             True to set drill type from bottom.
+
         """
         self.prim_obj.SetBackDrillByDepth(drill_depth, diameter, from_bottom)
 
@@ -1440,7 +1536,8 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         return self.prim_obj.GetPadstackInstanceTerminal()
 
     def is_in_pin_group(self, pin_group):
-        """Check if Padstack instance is in the Pin Group.
+        """
+        Check if Padstack instance is in the Pin Group.
 
         Parameters
         ----------
@@ -1451,12 +1548,14 @@ class PadstackInstanceDotNet(PrimitiveDotNet):
         -------
         bool
             True if padstack instance is in pin group.
+
         """
         return self.prim_obj.IsInPinGroup(pin_group)
 
     @property
     def pin_groups(self):
-        """:obj:`list` of :class:`PinGroup <ansys.edb.hierarchy.PinGroup>`: Pin groups of Padstack instance object.
+        """
+        :obj:`list` of :class:`PinGroup <ansys.edb.hierarchy.PinGroup>`: Pin groups of Padstack instance object.
 
         Read-Only.
         """
@@ -1470,7 +1569,8 @@ class BoardBendDef(PrimitiveDotNet):
         PrimitiveDotNet.__init__(self, api, prim_obj)
 
     def create(self, zone_prim, bend_middle, bend_radius, bend_angle):
-        """Create a board bend definition.
+        """
+        Create a board bend definition.
 
         Parameters
         ----------
@@ -1487,6 +1587,7 @@ class BoardBendDef(PrimitiveDotNet):
         -------
         BoardBendDef
             BoardBendDef that was created.
+
         """
         return BoardBendDef(
             self._app,
@@ -1500,7 +1601,8 @@ class BoardBendDef(PrimitiveDotNet):
 
     @property
     def boundary_primitive(self):
-        """:class:`Primitive <Primitive>`: Zone primitive the board bend is placed on.
+        """
+        :class:`Primitive <Primitive>`: Zone primitive the board bend is placed on.
 
         Read-Only.
         """
@@ -1535,7 +1637,8 @@ class BoardBendDef(PrimitiveDotNet):
 
     @property
     def bent_regions(self):
-        """:obj:`list` of :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Bent region polygons.
+        """
+        :obj:`list` of :class:`PolygonData <ansys.edb.geometry.PolygonData>`: Bent region polygons.
 
             Collection of polygon data representing the areas bent by this bend definition.
 

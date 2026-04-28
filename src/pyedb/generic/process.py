@@ -68,7 +68,8 @@ class SiwaveSolve(object):
         return exec_path
 
     def solve_siwave(self, edbpath, analysis_type):
-        """Solve an SIWave setup. Only non-graphical batch mode is supported.
+        """
+        Solve an SIWave setup. Only non-graphical batch mode is supported.
 
         .. warning::
             Do not execute this function with untrusted function argument, environment
@@ -84,6 +85,7 @@ class SiwaveSolve(object):
             Full path to the .aedb folder, siw or siwz file to be solved.
         siwave_ng: str, optinial
             Path to the siwave_ng. Default is the SIWave installation path.
+
         """
 
         command = [
@@ -99,7 +101,8 @@ class SiwaveSolve(object):
             raise RuntimeError(f"An error occurred when launching the solver. Please check input paths") from e
 
     def solve(self, num_of_cores=4):
-        """Solve using siwave_ng.exe
+        """
+        Solve using siwave_ng.exe
 
         .. warning::
             Do not execute this function with untrusted function argument, environment
@@ -130,7 +133,8 @@ class SiwaveSolve(object):
     def export_3d_cad(
         self, format_3d="Q3D", output_folder=None, net_list=None, num_cores=4, aedt_file_name=None, hidden=False
     ):  # pragma: no cover
-        """Export edb to Q3D or HFSS
+        """
+        Export edb to Q3D or HFSS
 
         .. warning::
             Do not execute this function with untrusted function argument, environment
@@ -152,6 +156,7 @@ class SiwaveSolve(object):
         -------
         str
             path to aedt file
+
         """
         if not output_folder:
             output_folder = os.path.dirname(self._pedb.edbpath)
@@ -205,7 +210,8 @@ class SiwaveSolve(object):
         loop_res=True,
         hidden=True,
     ):
-        """Close EDB and solve it with Siwave.
+        """
+        Close EDB and solve it with Siwave.
 
         .. warning::
             Do not execute this function with untrusted function argument, environment
@@ -239,6 +245,7 @@ class SiwaveSolve(object):
         -------
         list
             list of files generated.
+
         """
         if not output_folder:
             output_folder = os.path.dirname(self._pedb.edbpath)

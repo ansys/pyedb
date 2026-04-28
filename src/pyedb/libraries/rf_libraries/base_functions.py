@@ -75,6 +75,7 @@ class HatchGround:
     >>> hatch.create()
     >>> round(hatch.copper_fill_ratio, 1)
     70.0
+
     """
 
     def __init__(
@@ -109,6 +110,7 @@ class HatchGround:
         float
             Percentage of the board area that is copper after the hatch
             has been generated.
+
         """
         cu_area = self._edb.modeler.polygons[0].area()
         return 100.0 * cu_area / (self.ground_length * self.ground_width)
@@ -182,6 +184,7 @@ class HatchGround:
         -------
         bool
             True when geometry has been created successfully.
+
         """
         self._generate_hatch()
         return True
@@ -216,6 +219,7 @@ class Meander:
     '50.1 Ω'
     >>> m.electrical_length_deg(1e9)
     59.8
+
     """
 
     def __init__(
@@ -251,6 +255,7 @@ class Meander:
         -------
         float
             Z0 in Ohm.
+
         """
         return 60 / math.sqrt(self.substrate.er) * math.log(5.98 * 1.6e-3 / (0.8 * self.trace_width + self.trace_width))
 
@@ -267,6 +272,7 @@ class Meander:
         -------
         float
             Phase shift in degrees.
+
         """
         c = 299_792_458
         v = c / math.sqrt(self.substrate.er)
@@ -285,6 +291,7 @@ class Meander:
         -------
         bool
             True on success.
+
         """
 
         # Parameters
@@ -338,6 +345,7 @@ class MIMCapacitor:
     >>> cap.create()
     >>> f"{cap.capacitance_f * 1e12:.2f} pF"
     '1.45 pF'
+
     """
 
     def __init__(
@@ -366,6 +374,7 @@ class MIMCapacitor:
         -------
         float
             Capacitance in Farads.
+
         """
         eps0 = 8.854e-12
         return eps0 * self.substrate.er * self.area / self.gap
@@ -378,6 +387,7 @@ class MIMCapacitor:
         -------
         bool
             True on success.
+
         """
         self._edb["area"] = self.area
         self._edb["gap"] = self.gap
@@ -432,6 +442,7 @@ class SpiralInductor:
     >>> sp.create()
     >>> f"{sp.inductance_nh:.1f} nH"
     '3.4 nH'
+
     """
 
     def __init__(
@@ -479,6 +490,7 @@ class SpiralInductor:
         -------
         float
             Inductance in nano-Henries.
+
         """
         w = self.trace_width
         s = self.spacing
@@ -603,6 +615,7 @@ class CPW:
     >>> cpw.create()
     >>> f"{cpw.analytical_z0:.1f} Ω"
     '46.5 Ω'
+
     """
 
     def __init__(
@@ -639,6 +652,7 @@ class CPW:
         -------
         float
             Z0 in Ohm.
+
         """
         a = self.width / 2
         b = a + self.gap
@@ -656,6 +670,7 @@ class CPW:
         -------
         bool
             True on success.
+
         """
         self._edb["l"] = self.length
         self._edb["w"] = self.width
@@ -714,6 +729,7 @@ class RadialStub:
     >>> stub.create()
     >>> f"{stub.electrical_length_deg(2e9):.1f}°"
     '108.0°'
+
     """
 
     def __init__(
@@ -747,6 +763,7 @@ class RadialStub:
         -------
         float
             Phase shift in degrees contributed by the stub.
+
         """
         c = 299_792_458
         v = c / math.sqrt(self.substrate.er)
@@ -761,6 +778,7 @@ class RadialStub:
         -------
         bool
             True on success.
+
         """
         self._edb["r"] = self.radius
         self._edb["ang"] = self.angle_deg
@@ -813,6 +831,7 @@ class RatRace:
     >>> rr.create()
     >>> f"{rr.circumference * 1e3:.2f} mm"
     '45.00 mm'
+
     """
 
     def __init__(
@@ -845,6 +864,7 @@ class RatRace:
         -------
         float
             Circumference in metres (1.5 guided wavelengths).
+
         """
         c = 299_792_458
         v = c / math.sqrt(self.substrate.er)
@@ -859,6 +879,7 @@ class RatRace:
         -------
         float
             Radius in metres.
+
         """
         return self.circumference / (2 * math.pi)
 
@@ -899,6 +920,7 @@ class RatRace:
         -------
         bool
             True on success.
+
         """
         self._edb["c"] = self.circumference
         self._edb["r"] = self.radius
@@ -1006,6 +1028,7 @@ class InterdigitalCapacitor:
     >>> idc.create()
     >>> f"{idc.capacitance_pf:.2f} pF"
     '0.74 pF'
+
     """
 
     VAR_PREFIX = "IDC"  # prefix for every EDB variable
@@ -1052,6 +1075,7 @@ class InterdigitalCapacitor:
         -------
         float
             Capacitance in pico-Farads.
+
         """
         pfx = self.VAR_PREFIX
         eps0 = 8.854e-12
@@ -1070,6 +1094,7 @@ class InterdigitalCapacitor:
         -------
         bool
             True on success.
+
         """
         pfx = self.VAR_PREFIX
         pitch = f"({pfx}_finger_width + {pfx}_gap)"
@@ -1148,6 +1173,7 @@ class DifferentialTLine:
     >>> traces = diff.create()
     >>> f"{diff.diff_impedance:.1f} Ω"
     '95.6 Ω'
+
     """
 
     def __init__(
@@ -1189,6 +1215,7 @@ class DifferentialTLine:
         -------
         float
             Differential impedance in Ohms.
+
         """
         w = self._edb.value(self._edb["diff_w"].value)
         s = self._edb.value(self._edb["diff_s"].value)
@@ -1204,6 +1231,7 @@ class DifferentialTLine:
         -------
         list[float]
             EDB object IDs of the positive and negative traces.
+
         """
         pos_trace = self._edb.modeler.create_trace(
             path_list=[
@@ -1256,6 +1284,7 @@ class MicroStripLine:
     freq : float, optional
         Reference frequency (Hz) used to compute the electrical length.
         If None, electrical_length will be None.
+
     """
 
     def __init__(

@@ -92,6 +92,7 @@ def create_array_from_unit_cell(
     >>> edb = Edb("unit_cell.aedb")
     >>> create_array_from_unit_cell(edb, x_number=4, y_number=3)
     True
+
     """
     if edb.grpc:
         adapter = _GrpcAdapter(edb)
@@ -136,6 +137,7 @@ def __create_array_from_unit_cell_impl(
     -------
     bool
         ``True`` when finished.
+
     """
     # ---------- Sanity & auto-pitch detection ----------
     if x_number <= 0 or y_number <= 0:
@@ -228,6 +230,7 @@ class _BaseAdapter:
         -------
         tuple[float, float]
             (width, height) of the outline primitive in database units.
+
         """
         raise NotImplementedError
 

@@ -26,12 +26,14 @@ from ansys.edb.core.utility.heat_sink import (
 
 
 class HeatSink:
-    """Heatsink model description.
+    """
+    Heatsink model description.
 
     Parameters
     ----------
     pedb : :class:`Edb < pyedb.grpc.edb.Edb>`
         Inherited object.
+
     """
 
     def __init__(self, pedb, core):
@@ -45,12 +47,14 @@ class HeatSink:
 
     @property
     def fin_base_height(self) -> float:
-        """The base elevation of the fins.
+        """
+        The base elevation of the fins.
 
         Returns
         -------
         float
             Height value.
+
         """
         return self._edb_object.fin_base_height.value
 
@@ -60,7 +64,8 @@ class HeatSink:
 
     @property
     def fin_height(self) -> float:
-        """Fin height.
+        """
+        Fin height.
 
         Returns
         -------
@@ -76,12 +81,14 @@ class HeatSink:
 
     @property
     def fin_orientation(self) -> str:
-        """Fin orientation.
+        """
+        Fin orientation.
 
         Returns
         -------
         str
             Fin orientation.
+
         """
         return self._edb_object.fin_orientation.name.lower()
 
@@ -91,7 +98,8 @@ class HeatSink:
 
     @property
     def fin_spacing(self) -> float:
-        """Fin spacing.
+        """
+        Fin spacing.
 
         Returns
         -------
@@ -107,7 +115,8 @@ class HeatSink:
 
     @property
     def fin_thickness(self) -> float:
-        """Fin thickness.
+        """
+        Fin thickness.
 
         Returns
         -------

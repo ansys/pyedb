@@ -97,7 +97,8 @@ class PolygonDataDotNet:  # pragma: no cover
         return list(self.core.GetArcData())
 
     def add_point(self, x, y, incremental=False):
-        """Add a point at the end of the point list of the polygon.
+        """
+        Add a point at the end of the point list of the polygon.
 
         Parameters
         ----------
@@ -113,6 +114,7 @@ class PolygonDataDotNet:  # pragma: no cover
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         if incremental:
             x = self._pedb.edb_value(x)
@@ -123,32 +125,39 @@ class PolygonDataDotNet:  # pragma: no cover
         return self.core.AddPoint(GeometryDotNet(self._pedb).point_data(x, y))
 
     def get_bbox_of_boxes(self, points):
-        """Get the EDB .NET API ``Edb.Geometry.GetBBoxOfBoxes`` database.
+        """
+        Get the EDB .NET API ``Edb.Geometry.GetBBoxOfBoxes`` database.
 
         Parameters
         ----------
         points : list or `Edb.Geometry.PointData`
+
         """
         if isinstance(points, list):
             points = convert_py_list_to_net_list(points)
         return self.dotnetobj.GetBBoxOfBoxes(points)
 
     def get_bbox_of_polygons(self, polygons):
-        """Edb Dotnet Api Database `Edb.Geometry.GetBBoxOfPolygons`.
+        """
+        Edb Dotnet Api Database `Edb.Geometry.GetBBoxOfPolygons`.
 
         Parameters
         ----------
-        polygons : list or `Edb.Geometry.PolygonData`"""
+        polygons : list or `Edb.Geometry.PolygonData`
+
+        """
         if isinstance(polygons, list):
             polygons = convert_py_list_to_net_list(polygons)
         return self.dotnetobj.GetBBoxOfPolygons(polygons)
 
     def create_from_bbox(self, points) -> list[Any]:
-        """Edb Dotnet Api Database `Edb.Geometry.CreateFromBBox`.
+        """
+        Edb Dotnet Api Database `Edb.Geometry.CreateFromBBox`.
 
         Parameters
         ----------
         points : list or `Edb.Geometry.PointData`
+
         """
         from pyedb.dotnet.clr_module import Tuple
 
@@ -157,20 +166,23 @@ class PolygonDataDotNet:  # pragma: no cover
         return self.dotnetobj.CreateFromBBox(points)
 
     def create_from_arcs(self, arcs, flag):
-        """Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
+        """
+        Edb Dotnet Api Database `Edb.Geometry.CreateFromArcs`.
 
         Parameters
         ----------
         arcs : list or `Edb.Geometry.ArcData`
             List of ArcData.
         flag : bool
+
         """
         if isinstance(arcs, list):
             arcs = convert_py_list_to_net_list(arcs)
         return self.dotnetobj.CreateFromArcs(arcs, flag)
 
     def unite(self, pdata):
-        """Edb Dotnet Api Database `Edb.Geometry.Unite`.
+        """
+        Edb Dotnet Api Database `Edb.Geometry.Unite`.
 
         Parameters
         ----------
@@ -183,12 +195,14 @@ class PolygonDataDotNet:  # pragma: no cover
         return list(self.dotnetobj.Unite(pdata))
 
     def get_convex_hull_of_polygons(self, pdata):
-        """Edb Dotnet Api Database `Edb.Geometry.GetConvexHullOfPolygons`.
+        """
+        Edb Dotnet Api Database `Edb.Geometry.GetConvexHullOfPolygons`.
 
         Parameters
         ----------
         pdata : list or List of `Edb.Geometry.PolygonData`
             Polygons to unite in a Convex Hull.
+
         """
         if isinstance(pdata, list):
             pdata = convert_py_list_to_net_list(pdata)
@@ -216,20 +230,24 @@ class NetDotNet:
         return self.net_obj
 
     def find_by_name(self, layout, net) -> "NetDotNet":  # pragma: no cover
-        """Edb Dotnet Api Database `Edb.Net.FindByName`.
+        """
+        Edb Dotnet Api Database `Edb.Net.FindByName`.
 
         Returns
         -------
         :class:`NetDotNet`
+
         """
         return NetDotNet(self._app, self.net.FindByName(layout, net))
 
     def create(self, layout, name) -> "NetDotNet":
-        """Edb Dotnet Api Database `Edb.Net.Create`.
+        """
+        Edb Dotnet Api Database `Edb.Net.Create`.
 
         Returns
         -------
         :class:`NetDotNet`
+
         """
 
         return NetDotNet(self._app, self.net.Create(layout, name))
@@ -242,12 +260,14 @@ class NetDotNet:
 
     @property
     def name(self) -> str:
-        """Edb Dotnet Api Database `net.name` and  `Net.SetName()`.
+        """
+        Edb Dotnet Api Database `net.name` and  `Net.SetName()`.
 
         Returns
         -------
         str
             Name of the net.
+
         """
         if self.net_obj:
             return self.net_obj.GetName()
@@ -274,7 +294,8 @@ class NetDotNet:
 
     @property
     def _api_get_extended_net(self):
-        """Extended net this net belongs to if it belongs to an extended net.
+        """
+        Extended net this net belongs to if it belongs to an extended net.
         If it does not belong to an extendednet, a null extended net is returned.
         """
         return self.net_obj.GetExtendedNet()
@@ -316,7 +337,8 @@ class NetClassDotNet:
             self.api_object.SetName(value)
 
     def add_net(self, name):
-        """Add a new net.
+        """
+        Add a new net.
 
         Parameters
         ----------
@@ -326,6 +348,7 @@ class NetClassDotNet:
         Returns
         -------
         object
+
         """
         if self.api_object:
             edb_api_net = self.core.Cell.Net.FindByName(self._app.active_layout, name)
@@ -383,7 +406,8 @@ class DifferentialPairDotNet(NetClassDotNet):
         return self.cell_diff_pair
 
     def find_by_name(self, layout, net) -> "DifferentialPairDotNet":  # pragma: no cover
-        """Edb Dotnet Api Database `Edb.DifferentialPair.FindByName`.
+        """
+        Edb Dotnet Api Database `Edb.DifferentialPair.FindByName`.
 
         Returns
         -------
@@ -451,7 +475,8 @@ class CellClassDotNet:
         return self._active_cell
 
     def create(self, db, cell_type, cell_name) -> "CellClassDotNet":
-        """Edb Dotnet Api Database `Edb.Cell.Create`.
+        """
+        Edb Dotnet Api Database `Edb.Cell.Create`.
 
         Returns
         -------
@@ -467,11 +492,13 @@ class CellClassDotNet:
 
     @property
     def hierarchy(self) -> "HierarchyDotNet":
-        """Edb Dotnet Api Database `Edb.Cell.Hierarchy`.
+        """
+        Edb Dotnet Api Database `Edb.Cell.Hierarchy`.
 
         Returns
         -------
         :class:`dotnet.database.dotnet.HierarchyDotNet`
+
         """
         return HierarchyDotNet(self._app)
 
@@ -517,7 +544,8 @@ class CellClassDotNet:
         return self._app.setups
 
     def get_all_variable_names(self):
-        """Method added for compatibility with grpc.
+        """
+        Method added for compatibility with grpc.
 
         Returns
         -------
@@ -627,16 +655,19 @@ class GeometryDotNet:
 
     @property
     def polygon_data(self):
-        """Polygon Data.
+        """
+        Polygon Data.
 
         Returns
         -------
         :class:`dotnet.database.dotnet.PolygonDataDotNet`
+
         """
         return PolygonDataDotNet(self._app)
 
     def arc_data(self, point1, point2, rotation=None, center=None, height=None):
-        """Compute EBD arc data.
+        """
+        Compute EBD arc data.
 
         Parameters
         ----------
@@ -649,6 +680,7 @@ class GeometryDotNet:
         Returns
         -------
         Edb ArcData object
+
         """
         if isinstance(point1, (list, tuple)):
             point1 = self.point_data(point1[0], point1[1])
@@ -693,30 +725,39 @@ class CellDotNet:
 
     @property
     def cell(self):
-        """Edb Dotnet Api Database `Edb.Cell`.
+        """
+        Edb Dotnet Api Database `Edb.Cell`.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.database.CellClassDotNet`"""
+        :class:`pyedb.dotnet.database.dotnet.database.CellClassDotNet`
+
+        """
         return CellClassDotNet(self._app)
 
     @property
     def utility(self):
-        """Utility class.
+        """
+        Utility class.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.database.UtilityDotNet`"""
+        :class:`pyedb.dotnet.database.dotnet.database.UtilityDotNet`
+
+        """
 
         return UtilityDotNet(self._app)
 
     @property
     def geometry(self):
-        """Geometry class.
+        """
+        Geometry class.
 
         Returns
         -------
-        :class:`pyedb.dotnet.database.dotnet.database.GeometryDotNet`"""
+        :class:`pyedb.dotnet.database.dotnet.database.GeometryDotNet`
+
+        """
         return GeometryDotNet(self._app)
 
 
@@ -734,12 +775,14 @@ class Database:
         return self.core.Definition
 
     def delete(self, db_path):
-        """Delete a database at the specified file location.
+        """
+        Delete a database at the specified file location.
 
         Parameters
         ----------
         db_path : str
             Path to top-level database folder.
+
         """
         return self.core.database.Delete(db_path)
 
@@ -748,7 +791,8 @@ class Database:
         return self._db.Save()
 
     def close(self):
-        """Close the database.
+        """
+        Close the database.
 
         .. note::
             Unsaved changes will be lost.
@@ -757,58 +801,69 @@ class Database:
 
     @property
     def top_circuit_cells(self):
-        """Get top circuit cells.
+        """
+        Get top circuit cells.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
+
         """
         return [CellClassDotNet(self._pedb, i) for i in list(self._db.TopCircuitCells)]
 
     @property
     def circuit_cells(self):
-        """Get all circuit cells in the Database.
+        """
+        Get all circuit cells in the Database.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
+
         """
         return [CellClassDotNet(self._pedb, i) for i in list(self._db.CircuitCells)]
 
     @property
     def footprint_cells(self) -> list[Any]:
-        """Get all footprint cells in the Database.
+        """
+        Get all footprint cells in the Database.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
+
         """
         return [CellClassDotNet(self._pedb, i) for i in list(self._db.FootprintCells)]
 
     @property
     def edb_uid(self) -> int:
-        """Get ID of the database.
+        """
+        Get ID of the database.
 
         Returns
         -------
         int
             The unique EDB id of the Database.
+
         """
         return self._db.GetId()
 
     @property
     def is_read_only(self) -> bool:
-        """Determine if the database is open in a read-only mode.
+        """
+        Determine if the database is open in a read-only mode.
 
         Returns
         -------
         bool
             True if Database is open with read only access, otherwise False.
+
         """
         return self._db.IsReadOnly()
 
     def find_by_id(self, db_id):
-        """Find a database by ID.
+        """
+        Find a database by ID.
 
         Parameters
         ----------
@@ -819,11 +874,13 @@ class Database:
         -------
         Database
             The Database or Null on failure.
+
         """
         return self.core.database.FindById(db_id)
 
     def save_as(self, path, version="") -> bool:
-        """Save this Database to a new location and older EDB version.
+        """
+        Save this Database to a new location and older EDB version.
 
         Parameters
         ----------
@@ -836,22 +893,26 @@ class Database:
         -------
         bool
             True if successful, False if failed.
+
         """
         return self._db.SaveAs(path, version)
 
     @property
     def directory(self) -> str:
-        """Get the directory of the Database.
+        """
+        Get the directory of the Database.
 
         Returns
         -------
         str
             Directory of the Database.
+
         """
         return self._db.GetDirectory()
 
     def get_product_property(self, prod_id, attr_it) -> str:
-        """Get the product-specific property value.
+        """
+        Get the product-specific property value.
 
         Parameters
         ----------
@@ -864,11 +925,13 @@ class Database:
         -------
         str
             Property value returned.
+
         """
         return self._db.GetProductProperty(prod_id, attr_it)
 
     def set_product_property(self, prod_id, attr_it, prop_value):
-        """Set the product property associated with the given product and attribute ids.
+        """
+        Set the product property associated with the given product and attribute ids.
 
         Parameters
         ----------
@@ -878,11 +941,13 @@ class Database:
             Attribute ID.
         prop_value : str
             Product property's new value
+
         """
         self._db.SetProductProperty(prod_id, attr_it, prop_value)
 
     def get_product_property_ids(self, prod_id) -> list[int]:
-        """Get a list of attribute ids corresponding to a product property id.
+        """
+        Get a list of attribute ids corresponding to a product property id.
 
         Parameters
         ----------
@@ -893,11 +958,13 @@ class Database:
         -------
         list[int]
             The attribute ids associated with this product property.
+
         """
         return self._db.GetProductPropertyIds(prod_id)
 
     def import_material_from_control_file(self, control_file, schema_dir=None, append=True):
-        """Import materials from the provided control file.
+        """
+        Import materials from the provided control file.
 
         Parameters
         ----------
@@ -907,6 +974,7 @@ class Database:
             Schema file path.
         append : bool
             True if the existing materials in Database are kept. False to remove existing materials in database.
+
         """
         self._db.ImportMaterialFromControlFile(
             control_file,
@@ -916,29 +984,34 @@ class Database:
 
     @property
     def version(self) -> tuple[int, int]:
-        """Get version of the Database.
+        """
+        Get version of the Database.
 
         Returns
         -------
         tuple(int, int)
             A tuple of the version numbers [major, minor]
+
         """
         major, minor = self._db.GetVersion()
         return major, minor
 
     def scale(self, scale_factor) -> float:
-        """Uniformly scale all geometry and their locations by a positive factor.
+        """
+        Uniformly scale all geometry and their locations by a positive factor.
 
         Parameters
         ----------
         scale_factor : float
             Amount that coordinates are multiplied by.
+
         """
         return self._db.Scale(scale_factor)
 
     @property
     def source(self) -> str:
-        """Get source name for this Database.
+        """
+        Get source name for this Database.
 
         This attribute is also used to set the source name.
 
@@ -946,6 +1019,7 @@ class Database:
         -------
         str
             name of the source
+
         """
         return self._db.GetSource()
 
@@ -956,7 +1030,8 @@ class Database:
 
     @property
     def source_version(self) -> str:
-        """Get the source version for this Database.
+        """
+        Get the source version for this Database.
 
         This attribute is also used to set the version.
 
@@ -974,7 +1049,8 @@ class Database:
         self._db.SetSourceVersion(source_version)
 
     def copy_cells(self, cells_to_copy) -> list[Any]:
-        """Copy Cells from other Databases or this Database into this Database.
+        """
+        Copy Cells from other Databases or this Database into this Database.
 
         Parameters
         ----------
@@ -985,6 +1061,7 @@ class Database:
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
             New Cells created in this Database.
+
         """
         if not isinstance(cells_to_copy, list):
             cells_to_copy = [cells_to_copy]
@@ -993,90 +1070,108 @@ class Database:
 
     @property
     def apd_bondwire_defs(self) -> list[Any]:
-        """Get all APD bondwire definitions in this Database.
+        """
+        Get all APD bondwire definitions in this Database.
 
         Returns
         -------
         list[:class:`ApdBondwireDef <ansys.edb.definition.ApdBondwireDef>`]
+
         """
         return list(self._db.APDBondwireDefs)
 
     @property
     def jedec4_bondwire_defs(self) -> list[Any]:
-        """Get all JEDEC4 bondwire definitions in this Database.
+        """
+        Get all JEDEC4 bondwire definitions in this Database.
 
         Returns
         -------
         list[:class:`Jedec4BondwireDef <ansys.edb.definition.Jedec4BondwireDef>`]
+
         """
         return list(self._db.Jedec4BondwireDefs)
 
     @property
     def jedec5_bondwire_defs(self) -> list[Any]:
-        """Get all JEDEC5 bondwire definitions in this Database.
+        """
+        Get all JEDEC5 bondwire definitions in this Database.
 
         Returns
         -------
         list[:class:`Jedec5BondwireDef <ansys.edb.definition.Jedec5BondwireDef>`]
+
         """
         return list(self._db.Jedec5BondwireDefs)
 
     @property
     def padstack_defs(self) -> list[Any]:
-        """Get all Padstack definitions in this Database.
+        """
+        Get all Padstack definitions in this Database.
 
         Returns
         -------
         list[:class:`PadstackDef <ansys.edb.definition.PadstackDef>`]
+
         """
         return list(self._db.PadstackDefs)
 
     @property
     def package_defs(self) -> list[Any]:
-        """Get all Package definitions in this Database.
+        """
+        Get all Package definitions in this Database.
 
         Returns
         -------
         list[:class:`PackageDef <ansys.edb.definition.PackageDef>`]
+
         """
         return list(self._db.PackageDefs)
 
     @property
     def component_defs(self) -> list[Any]:
-        """Get all component definitions in the database.
+        """
+        Get all component definitions in the database.
 
         Returns
         -------
         list[:class:`ComponentDef <ansys.edb.definition.ComponentDef>`]
+
         """
         return list(self._db.ComponentDefs)
 
     @property
     def material_defs(self) -> list[Any]:
-        """Get all material definitions in the database.
+        """
+        Get all material definitions in the database.
 
         Returns
         -------
         list[:class:`MaterialDef <ansys.edb.definition.MaterialDef>`]
+
         """
         return list(self._db.MaterialDefs)
 
     @property
     def dataset_defs(self) -> list[Any]:
-        """Get all dataset definitions in the database.
+        """
+        Get all dataset definitions in the database.
 
         Returns
         -------
         list[:class:`DatasetDef <ansys.edb.definition.DatasetDef>`]
+
         """
         return list(self._db.DatasetDefs)
 
     def attach(self, hdb):  # pragma no cover
-        """Attach the database to existing AEDT instance.
+        """
+        Attach the database to existing AEDT instance.
 
         Parameters
         ----------
         hdb
+
         """
         from pyedb.dotnet.clr_module import Convert
 

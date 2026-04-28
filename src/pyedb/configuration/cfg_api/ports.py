@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build port configuration entries.
+"""
+Build port configuration entries.
 
 This module defines builders for circuit, coaxial, wave, gap, and differential
 wave ports used in the ``ports`` configuration list.
@@ -31,7 +32,8 @@ from typing import List, Optional, Union
 
 
 class PortConfig:
-    """Circuit / coax port definition.
+    """
+    Circuit / coax port definition.
 
     Parameters
     ----------
@@ -58,7 +60,8 @@ class PortConfig:
         impedance: Optional[Union[float, str]] = None,
         distributed: bool = False,
     ):
-        """Initialize a port configuration.
+        """
+        Initialize a port configuration.
 
         Parameters
         ----------
@@ -87,7 +90,8 @@ class PortConfig:
         self.distributed = distributed
 
     def to_dict(self) -> dict:
-        """Serialize the port definition.
+        """
+        Serialize the port definition.
 
         Returns
         -------
@@ -108,7 +112,8 @@ class PortConfig:
 
 
 class EdgePortConfig:
-    """Edge (wave/gap) port definition.
+    """
+    Edge (wave/gap) port definition.
 
     Parameters
     ----------
@@ -135,7 +140,8 @@ class EdgePortConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ):
-        """Initialize an edge port configuration.
+        """
+        Initialize an edge port configuration.
 
         Parameters
         ----------
@@ -164,7 +170,8 @@ class EdgePortConfig:
         self.pec_launch_width = pec_launch_width
 
     def to_dict(self) -> dict:
-        """Serialize the edge-port definition.
+        """
+        Serialize the edge-port definition.
 
         Returns
         -------
@@ -184,7 +191,8 @@ class EdgePortConfig:
 
 
 class DiffWavePortConfig:
-    """Differential wave port.
+    """
+    Differential wave port.
 
     Parameters
     ----------
@@ -208,7 +216,8 @@ class DiffWavePortConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ):
-        """Initialize a differential wave port configuration.
+        """
+        Initialize a differential wave port configuration.
 
         Parameters
         ----------
@@ -234,7 +243,8 @@ class DiffWavePortConfig:
         self.pec_launch_width = pec_launch_width
 
     def to_dict(self) -> dict:
-        """Serialize the differential wave-port definition.
+        """
+        Serialize the differential wave-port definition.
 
         Returns
         -------
@@ -269,7 +279,8 @@ class PortsConfig:
         impedance: Optional[Union[float, str]] = None,
         distributed: bool = False,
     ) -> PortConfig:
-        """Add a circuit port.
+        """
+        Add a circuit port.
 
         Parameters
         ----------
@@ -310,7 +321,8 @@ class PortsConfig:
         reference_designator: Optional[str] = None,
         impedance: Optional[Union[float, str]] = None,
     ) -> PortConfig:
-        """Add a coaxial port.
+        """
+        Add a coaxial port.
 
         Parameters
         ----------
@@ -348,7 +360,8 @@ class PortsConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ) -> EdgePortConfig:
-        """Add a wave port.
+        """
+        Add a wave port.
 
         Parameters
         ----------
@@ -391,7 +404,8 @@ class PortsConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ) -> EdgePortConfig:
-        """Add a gap port.
+        """
+        Add a gap port.
 
         Parameters
         ----------
@@ -435,7 +449,8 @@ class PortsConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ) -> DiffWavePortConfig:
-        """Add a differential wave port.
+        """
+        Add a differential wave port.
 
         Parameters
         ----------
@@ -470,7 +485,8 @@ class PortsConfig:
         return port
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured ports.
+        """
+        Serialize all configured ports.
 
         Returns
         -------

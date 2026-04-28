@@ -73,7 +73,8 @@ class GrpcApiError(Exception):
 
 
 def installed_ansys_em_versions() -> dict[str, str]:
-    """Retrieve paths of installed ANSYS EM versions.
+    """
+    Retrieve paths of installed ANSYS EM versions.
 
     Scan the environment variables and return a dict of the form
     {version: installation_path} for every ANSYS EM release found.
@@ -83,6 +84,7 @@ def installed_ansys_em_versions() -> dict[str, str]:
     -------
     Dict[str, str]
         Dictionary of the form {version: installation_path} for every ANSYS EM release found.
+
     """
     pattern = re.compile(r"^ANSYSEM_ROOT(\d{3})$", re.IGNORECASE)
 
@@ -99,7 +101,8 @@ def installed_ansys_em_versions() -> dict[str, str]:
 
 @deprecated("Please use pathlib.Path.stem to get the filename without its extension.")
 def get_filename_without_extension(path: str | Path) -> str:
-    """Get the filename without its extension.
+    """
+    Get the filename without its extension.
 
     Parameters
     ----------
@@ -110,12 +113,14 @@ def get_filename_without_extension(path: str | Path) -> str:
     -------
     str
        Name for the file, excluding its extension.
+
     """
     return Path(path).stem
 
 
 def env_path(input_version: str) -> str:
-    """Get the path of the version environment variable for an AEDT version.
+    """
+    Get the path of the version environment variable for an AEDT version.
 
     Parameters
     ----------
@@ -131,6 +136,7 @@ def env_path(input_version: str) -> str:
     --------
     >>> env_path_student("2021.2")
     "C:/Program Files/ANSYSEM/ANSYSEM2021.2/Win64"
+
     """
     try:
         return os.getenv(
@@ -147,7 +153,8 @@ def env_path(input_version: str) -> str:
 
 
 def get_version_and_release(input_version: str) -> tuple[int, int]:
-    """Get the version and release numbers for an AEDT version.
+    """
+    Get the version and release numbers for an AEDT version.
 
     Parameters
     ----------
@@ -158,6 +165,7 @@ def get_version_and_release(input_version: str) -> tuple[int, int]:
     -------
     tuple[int, int]
         Tuple containing the version and release numbers.
+
     """
     version = int(input_version[2:4])
     release = int(input_version[5])
@@ -170,7 +178,8 @@ def get_version_and_release(input_version: str) -> tuple[int, int]:
 
 
 def env_value(input_version: str) -> str:
-    """Get the name of the version environment variable for an AEDT version.
+    """
+    Get the name of the version environment variable for an AEDT version.
 
     Parameters
     ----------
@@ -186,6 +195,7 @@ def env_value(input_version: str) -> str:
     --------
     >>> env_value("2021.2")
     "ANSYSEM_ROOT211"
+
     """
     return "ANSYSEM_ROOT{0}{1}".format(
         get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
@@ -193,7 +203,8 @@ def env_value(input_version: str) -> str:
 
 
 def generate_unique_name(rootname: str, suffix: str = "", n: int = 6) -> str:
-    """Generate a new name given a root name and optional suffix.
+    """
+    Generate a new name given a root name and optional suffix.
 
     Parameters
     ----------
@@ -208,6 +219,7 @@ def generate_unique_name(rootname: str, suffix: str = "", n: int = 6) -> str:
     -------
     str
         Newly generated name.
+
     """
     char_set = string.ascii_uppercase + string.digits
     name = "".join(secrets.choice(char_set) for _ in range(n))
@@ -219,7 +231,8 @@ def generate_unique_name(rootname: str, suffix: str = "", n: int = 6) -> str:
 
 @deprecated("Please use pathlib.Path.as_posix() to normalize path separators.")
 def normalize_path(path_in: str, sep: str | None = None) -> str:
-    """Normalize path separators.
+    """
+    Normalize path separators.
 
     Parameters
     ----------
@@ -232,6 +245,7 @@ def normalize_path(path_in: str, sep: str | None = None) -> str:
     -------
     str
         Path normalized to new separator.
+
     """
     if sep is None:
         sep = os.sep
@@ -239,7 +253,8 @@ def normalize_path(path_in: str, sep: str | None = None) -> str:
 
 
 def check_numeric_equivalence(a: int | float, b: int | float, relative_tolerance: float = 1e-7) -> bool:
-    """Check if two numeric values are equivalent to within a relative tolerance.
+    """
+    Check if two numeric values are equivalent to within a relative tolerance.
 
     Parameters
     ----------
@@ -255,6 +270,7 @@ def check_numeric_equivalence(a: int | float, b: int | float, relative_tolerance
     -------
     bool
         ``True`` if the two passed values are equivalent.
+
     """
     if abs(a) > 0.0:
         reldiff = abs(a - b) / a
@@ -264,7 +280,8 @@ def check_numeric_equivalence(a: int | float, b: int | float, relative_tolerance
 
 
 def check_and_download_file(local_path: str, remote_path: str, overwrite: bool = True) -> str:
-    """Check if a file is remote and either download it or return the path.
+    """
+    Check if a file is remote and either download it or return the path.
 
     Parameters
     ----------
@@ -279,6 +296,7 @@ def check_and_download_file(local_path: str, remote_path: str, overwrite: bool =
     Returns
     -------
     str
+
     """
     if settings.remote_rpc_session:
         remote_path = remote_path.replace("\\", "/") if remote_path[0] != "\\" else remote_path
@@ -288,7 +306,8 @@ def check_and_download_file(local_path: str, remote_path: str, overwrite: bool =
 
 
 def check_if_path_exists(path: str) -> bool:
-    """Check whether a path exists or not local or remote machine (for remote sessions only).
+    """
+    Check whether a path exists or not local or remote machine (for remote sessions only).
 
     Parameters
     ----------
@@ -298,6 +317,7 @@ def check_if_path_exists(path: str) -> bool:
     Returns
     -------
     bool
+
     """
     if settings.remote_rpc_session:
         return settings.remote_rpc_session.filemanager.pathexists(path)
@@ -305,7 +325,8 @@ def check_if_path_exists(path: str) -> bool:
 
 
 def check_and_download_folder(local_path: str, remote_path: str, overwrite: bool = True) -> str:
-    """Check if a folder is remote and either download it or return the path.
+    """
+    Check if a folder is remote and either download it or return the path.
 
     Parameters
     ----------
@@ -320,6 +341,7 @@ def check_and_download_folder(local_path: str, remote_path: str, overwrite: bool
     Returns
     -------
     str
+
     """
     if settings.remote_rpc_session:
         remote_path = remote_path.replace("\\", "/") if remote_path[0] != "\\" else remote_path
@@ -329,7 +351,8 @@ def check_and_download_folder(local_path: str, remote_path: str, overwrite: bool
 
 
 def open_file(file_path: str, file_options: str = "r") -> IO[Any]:  # pragma: no cover
-    """Open a file and return the object.
+    """
+    Open a file and return the object.
 
     Parameters
     ----------
@@ -342,6 +365,7 @@ def open_file(file_path: str, file_options: str = "r") -> IO[Any]:  # pragma: no
     -------
     IO[Any]
         Opened file.
+
     """
     file_path = file_path.replace("\\", "/") if file_path[0] != "\\" else file_path
     dir_name = os.path.dirname(file_path)
@@ -361,7 +385,8 @@ def open_file(file_path: str, file_options: str = "r") -> IO[Any]:  # pragma: no
 
 
 def get_string_version(input_version: float | int | str) -> str:
-    """Convert an input version to a string representation.
+    """
+    Convert an input version to a string representation.
 
     Parameters
     ----------
@@ -372,6 +397,7 @@ def get_string_version(input_version: float | int | str) -> str:
     -------
     str
         String representation of the input version.
+
     """
     output_version = input_version
     if isinstance(input_version, float):
@@ -390,7 +416,8 @@ def get_string_version(input_version: float | int | str) -> str:
 
 
 def env_path_student(input_version: str) -> str:
-    """Get the path of the version environment variable for an AEDT student version.
+    """
+    Get the path of the version environment variable for an AEDT student version.
 
     Parameters
     ----------
@@ -406,6 +433,7 @@ def env_path_student(input_version: str) -> str:
     --------
     >>> env_path_student("2021.2")
     "C:/Program Files/ANSYSEM/ANSYSEM2021.2/Win64"
+
     """
     return os.getenv(
         "ANSYSEMSV_ROOT{0}{1}".format(
@@ -416,7 +444,8 @@ def env_path_student(input_version: str) -> str:
 
 
 def env_value_student(input_version: str) -> str:
-    """Get the name of the version environment variable for an AEDT student version.
+    """
+    Get the name of the version environment variable for an AEDT student version.
 
     Parameters
     ----------
@@ -432,6 +461,7 @@ def env_value_student(input_version: str) -> str:
     --------
     >>> env_value_student("2021.2")
     "ANSYSEMSV_ROOT211"
+
     """
     return "ANSYSEMSV_ROOT{0}{1}".format(
         get_version_and_release(input_version)[0], get_version_and_release(input_version)[1]
@@ -439,7 +469,8 @@ def env_value_student(input_version: str) -> str:
 
 
 def generate_unique_folder_name(rootname: str | None = None, folder_name: str | None = None) -> str:  # pragma: no cover
-    """Generate a new AEDT folder name given a rootname.
+    """
+    Generate a new AEDT folder name given a rootname.
 
     Parameters
     ----------
@@ -451,6 +482,7 @@ def generate_unique_folder_name(rootname: str | None = None, folder_name: str | 
     Returns
     -------
     str
+
     """
     if not rootname:
         if settings.remote_rpc_session:
@@ -474,7 +506,8 @@ def generate_unique_project_name(
     project_name: str | None = None,
     project_format: str = "aedt",
 ) -> str:
-    """Generate a new AEDT project name given a rootname.
+    """
+    Generate a new AEDT project name given a rootname.
 
     Parameters
     ----------
@@ -492,6 +525,7 @@ def generate_unique_project_name(
     Returns
     -------
     str
+
     """
     if not project_name:
         project_name = generate_unique_name("Project", n=3)
@@ -505,7 +539,8 @@ def generate_unique_project_name(
 
 
 def _retry_ntimes(n: int, function: callable, *args: Any, **kwargs: Any) -> None:
-    """Retry a function several times.
+    """
+    Retry a function several times.
 
     Parameters
     ----------
@@ -521,6 +556,7 @@ def _retry_ntimes(n: int, function: callable, *args: Any, **kwargs: Any) -> None
     Returns
     -------
     None
+
     """
     func_name = None
     if function.__name__ == "InvokeAedtObjMethod":
@@ -556,7 +592,8 @@ def _retry_ntimes(n: int, function: callable, *args: Any, **kwargs: Any) -> None
 
 @deprecated("Please use time.perf_counter() or time.process_time() for timing functions.")
 def time_fn(fn: callable, *args: Any, **kwargs: Any) -> Any:  # pragma: no cover
-    """Time the execution of a function.
+    """
+    Time the execution of a function.
 
     Parameters
     ----------
@@ -571,6 +608,7 @@ def time_fn(fn: callable, *args: Any, **kwargs: Any) -> Any:  # pragma: no cover
     -------
     Any
         The result of the function.
+
     """
     start = datetime.datetime.now()
     results = fn(*args, **kwargs)
@@ -583,7 +621,8 @@ def time_fn(fn: callable, *args: Any, **kwargs: Any) -> Any:  # pragma: no cover
 
 @deprecated("Please use math.isclose for comparing floating point numbers.")
 def isclose(a: float, b: float, rel_tol: float = 1e-9, abs_tol: float = 0.0) -> bool:
-    """Determine whether two floating point numbers are close in value.
+    """
+    Determine whether two floating point numbers are close in value.
 
     Parameters
     ----------
@@ -600,12 +639,14 @@ def isclose(a: float, b: float, rel_tol: float = 1e-9, abs_tol: float = 0.0) -> 
     -------
     bool
         ``True`` if the numbers are close, ``False`` otherwise.
+
     """
     return abs(a - b) <= max(rel_tol * max(abs(a), abs(b)), abs_tol)
 
 
 def is_number(a: Any) -> bool:
-    """Whether the input is a number or a string that can be converted to a number.
+    """
+    Whether the input is a number or a string that can be converted to a number.
 
     Parameters
     ----------
@@ -615,6 +656,7 @@ def is_number(a: Any) -> bool:
     -------
     bool
         ``True`` if the input is a number or a string that can be converted to a number, ``False`` otherwise.
+
     """
     if isinstance(a, float) or isinstance(a, int):
         return True
@@ -629,7 +671,8 @@ def is_number(a: Any) -> bool:
 
 
 def is_array(a: Any) -> bool:  # pragma: no cover
-    """Whether the input is a list or a string that can be converted to a list.
+    """
+    Whether the input is a list or a string that can be converted to a list.
 
     Parameters
     ----------
@@ -640,6 +683,7 @@ def is_array(a: Any) -> bool:  # pragma: no cover
     -------
     bool
         ``True`` if the input is a list or a string that can be converted to a list, ``False`` otherwise.
+
     """
     try:
         v = list(ast.literal_eval(a))
@@ -653,7 +697,8 @@ def is_array(a: Any) -> bool:  # pragma: no cover
 
 
 def is_project_locked(project_path: str) -> bool:
-    """Check if an AEDT project lock file exists.
+    """
+    Check if an AEDT project lock file exists.
 
     Parameters
     ----------
@@ -664,12 +709,14 @@ def is_project_locked(project_path: str) -> bool:
     -------
     bool
         ``True`` when successful, ``False`` when failed.
+
     """
     return check_if_path_exists(project_path + ".lock")
 
 
 def remove_project_lock(project_path: str) -> bool:  # pragma: no cover
-    """Check if an AEDT project exists and try to remove the lock file.
+    """
+    Check if an AEDT project exists and try to remove the lock file.
 
     .. note::
        This operation is risky because the file could be opened in another AEDT instance.
@@ -683,6 +730,7 @@ def remove_project_lock(project_path: str) -> bool:  # pragma: no cover
     -------
     bool
         ``True`` when successful, ``False`` when failed.
+
     """
     if os.path.exists(project_path + ".lock"):
         os.remove(project_path + ".lock")
@@ -691,7 +739,8 @@ def remove_project_lock(project_path: str) -> bool:  # pragma: no cover
 
 @deprecated("Please use pandas.read_csv for reading CSV files.")
 def read_csv(filename: str, encoding: str = "utf-8") -> list:  # pragma: no cover
-    """Read information from a CSV file and return a list.
+    """
+    Read information from a CSV file and return a list.
 
     Parameters
     ----------
@@ -716,7 +765,8 @@ def read_csv(filename: str, encoding: str = "utf-8") -> list:  # pragma: no cove
 
 @deprecated("Please use pandas.read_csv for reading CSV files.")
 def read_csv_pandas(filename: str, encoding: str = "utf-8") -> "pd.DataFrame":  # pragma: no cover
-    """Read information from a CSV file and return a list.
+    """
+    Read information from a CSV file and return a list.
 
     Parameters
     ----------
@@ -743,7 +793,8 @@ def read_csv_pandas(filename: str, encoding: str = "utf-8") -> "pd.DataFrame":  
 
 @deprecated("Please use open() for reading TAB files.")
 def read_tab(filename: str) -> list:  # pragma: no cover
-    """Read information from a TAB file and return a list.
+    """
+    Read information from a TAB file and return a list.
 
     Parameters
     ----------
@@ -762,7 +813,8 @@ def read_tab(filename: str) -> list:  # pragma: no cover
 
 @deprecated("Please use pandas.read_excel for reading XLSX files.")
 def read_xlsx(filename: str) -> list:  # pragma: no cover
-    """Read information from an XLSX file and return a list.
+    """
+    Read information from an XLSX file and return a list.
 
     Parameters
     ----------
@@ -790,7 +842,8 @@ def read_xlsx(filename: str) -> list:  # pragma: no cover
 def write_csv(
     output: str, list_data: list, delimiter: str = ",", quotechar: str = "|", quoting: int = csv.QUOTE_MINIMAL
 ) -> bool:  # pragma: no cover
-    """Write a list to a CSV file.
+    """
+    Write a list to a CSV file.
 
     Parameters
     ----------
@@ -810,6 +863,7 @@ def write_csv(
     -------
     bool
         ``True`` when successful, ``False`` when failed.
+
     """
     f = open(output, "w", newline="")
     writer = csv.writer(f, delimiter=delimiter, quotechar=quotechar, quoting=quoting)
@@ -821,7 +875,8 @@ def write_csv(
 
 @deprecated("Please handle filtering of your own data.")
 def filter_tuple(value: tuple, search_key1: str, search_key2: str) -> bool:  # pragma: no cover
-    """Filter a tuple of two elements with two search keywords.
+    """
+    Filter a tuple of two elements with two search keywords.
 
     Parameters
     ----------
@@ -836,6 +891,7 @@ def filter_tuple(value: tuple, search_key1: str, search_key2: str) -> bool:  # p
     -------
     bool
         ``True`` if the tuple matches the search keywords, ``False`` otherwise.
+
     """
     ignore_case = True
 
@@ -860,7 +916,8 @@ def filter_tuple(value: tuple, search_key1: str, search_key2: str) -> bool:  # p
 
 @deprecated("Please handle filtering of your own data.")
 def filter_string(value: str, search_key1: str) -> bool:  # pragma: no cover
-    """Filter a string.
+    """
+    Filter a string.
 
     Parameters
     ----------
@@ -873,6 +930,7 @@ def filter_string(value: str, search_key1: str) -> bool:  # pragma: no cover
     -------
     bool
         ``True`` if the string matches the search keyword, ``False`` otherwise.
+
     """
     ignore_case = True
 
@@ -894,7 +952,8 @@ def filter_string(value: str, search_key1: str) -> bool:  # pragma: no cover
 
 
 def recursive_glob(startpath: str, filepattern: str) -> list:  # pragma: no cover
-    """Get a list of files matching a pattern, searching recursively from a start path.
+    """
+    Get a list of files matching a pattern, searching recursively from a start path.
 
     Parameters
     ----------
@@ -907,6 +966,7 @@ def recursive_glob(startpath: str, filepattern: str) -> list:  # pragma: no cove
     -------
     list
         List of matching file paths.
+
     """
     if settings.remote_rpc_session:
         files = []
@@ -927,7 +987,8 @@ def recursive_glob(startpath: str, filepattern: str) -> list:  # pragma: no cove
 
 @deprecated("Please handle sorting of your own data.")
 def number_aware_string_key(s: str) -> tuple:  # pragma: no cover
-    """Get a key for sorting strings that treats embedded digit sequences as integers.
+    """
+    Get a key for sorting strings that treats embedded digit sequences as integers.
 
     Parameters
     ----------
@@ -938,6 +999,7 @@ def number_aware_string_key(s: str) -> tuple:  # pragma: no cover
     -------
     tuple
         Tuple of key entries.
+
     """
 
     def is_digit(c):
@@ -965,7 +1027,8 @@ def number_aware_string_key(s: str) -> tuple:  # pragma: no cover
 
 @deprecated("This function is for internal use only and may be renamed.")
 def compute_fft(time_vals: "pd.Series", value: "pd.Series") -> tuple:  # pragma: no cover
-    """Compute FFT of input transient data.
+    """
+    Compute FFT of input transient data.
 
     Parameters
     ----------
@@ -978,6 +1041,7 @@ def compute_fft(time_vals: "pd.Series", value: "pd.Series") -> tuple:  # pragma:
     -------
     tuple
         Frequency and Values.
+
     """
     import numpy as np
 
@@ -1003,7 +1067,8 @@ def parse_excitation_file(
     encoding: str = "utf-8",
     out_mag: str = "Voltage",
 ) -> tuple[list[float], list[float], list[float]]:  # pragma: no cover
-    """Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
+    """
+    Parse a csv file and convert data in list that can be applied to Hfss and Hfss3dLayout sources.
 
     Parameters
     ----------
@@ -1030,6 +1095,7 @@ def parse_excitation_file(
     -------
     tuple[list[float], list[float], list[float]]
         Frequency, magnitude and phase.
+
     """
     import numpy as np
 
@@ -1076,7 +1142,8 @@ def parse_excitation_file(
 
 # NOTE: Not used in pyedb, should this function be removed ?
 def tech_to_control_file(tech_path: str, unit: str = "nm", control_path: str | None = None) -> str:  # pragma: no cover
-    """Convert a TECH file to an XML file for use in a GDS or DXF import.
+    """
+    Convert a TECH file to an XML file for use in a GDS or DXF import.
 
     Parameters
     ----------
@@ -1091,6 +1158,7 @@ def tech_to_control_file(tech_path: str, unit: str = "nm", control_path: str | N
     -------
     str
         Out xml file.
+
     """
     result = []
     with open(tech_path) as f:
@@ -1138,12 +1206,14 @@ class PropsManager(object):
     """Class for managing properties of an object."""
 
     def __getitem__(self, item):  # pragma: no cover
-        """Get the `self.props` key value.
+        """
+        Get the `self.props` key value.
 
         Parameters
         ----------
         item : str
             Key to search
+
         """
         item_split = item.split("/")
         if len(item_split) == 1:
@@ -1166,7 +1236,8 @@ class PropsManager(object):
         return None
 
     def __setitem__(self, key, value):  # pragma: no cover
-        """Set the `self.props` key value.
+        """
+        Set the `self.props` key value.
 
         Parameters
         ----------
@@ -1174,6 +1245,7 @@ class PropsManager(object):
             Key to apply.
         value : int, float, bool, str, dict
             Value to apply.
+
         """
         item_split = key.split("/")
         if len(item_split) == 1:
@@ -1239,11 +1311,13 @@ class PropsManager(object):
 
     @property
     def available_properties(self):  # pragma: no cover
-        """Available properties.
+        """
+        Available properties.
 
         Returns
         -------
         list
+
         """
         if self.props:
             return self._recursive_list(self.props)
@@ -1281,7 +1355,8 @@ rgb_color_codes = {
 def install_with_pip(
     package_name: str, package_path: str | None = None, upgrade: bool = False, uninstall: bool = False
 ):  # pragma: no cover
-    """Install a new package using pip.
+    """
+    Install a new package using pip.
 
     This method is useful for installing a package from the AEDT Console without launching the Python environment.
 
@@ -1300,6 +1375,7 @@ def install_with_pip(
         Whether to upgrade the package. The default is ``False``.
     uninstall : bool, optional
         Whether to install the package or uninstall the package. The default is ``False``.
+
     """
     import subprocess  # nosec B404
 
@@ -1345,7 +1421,8 @@ class Help:  # pragma: no cover
             webbrowser.open_new_tab(url)
 
     def search(self, keywords: str | list, app_name: str | None = None, search_in_examples_only: bool = False) -> None:
-        """Search for one or more keywords.
+        """
+        Search for one or more keywords.
 
         Parameters
         ----------
@@ -1356,6 +1433,7 @@ class Help:  # pragma: no cover
         search_in_examples_only : bool, optional
             Whether to search for the one or more keywords only in the PyEDB examples.
             The default is ``False``.
+
         """
         if isinstance(keywords, str):
             keywords = [keywords]
@@ -1382,12 +1460,14 @@ class Help:  # pragma: no cover
         self._launch_ur(url)
 
     def changelog(self, release: str | None = None) -> None:
-        """Open the PyEDB GitHub Changelog for a given release.
+        """
+        Open the PyEDB GitHub Changelog for a given release.
 
         Parameters
         ----------
         release : str, optional
             Release to get the changelog for. For example, ``"0.6.70"``. The default is ``None``.
+
         """
         if release is None:
             from pyedb import __version__ as release

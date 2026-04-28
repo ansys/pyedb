@@ -75,11 +75,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def auto_select_nets_for_simulation(self):
-        """Auto select nets for simulation.
+        """
+        Auto select nets for simulation.
 
         Returns
         -------
             bool
+
         """
         return self._edb_object.AutoSelectNetsForSimulation
 
@@ -89,11 +91,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def ignore_dummy_nets_for_selected_nets(self):
-        """Auto select Nets for simulation
+        """
+        Auto select Nets for simulation
 
         Returns
         -------
             bool
+
         """
         return self._edb_object.IgnoreDummyNetsForSelectedNets
 
@@ -103,11 +107,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def ignore_small_holes(self):
-        """Ignore small holes choice.
+        """
+        Ignore small holes choice.
 
         Returns
         -------
             bool
+
         """
         return self._edb_object.IgnoreSmallHoles
 
@@ -117,11 +123,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def ignore_small_holes_min_diameter(self):
-        """Min diameter to ignore small holes.
+        """
+        Min diameter to ignore small holes.
 
         Returns
         -------
             str
+
         """
         value = self._edb_object.IgnoreSmallHolesMinDiameter
         return float(value) if value else value
@@ -132,7 +140,8 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def improved_loss_model(self):
-        """Improved Loss Model on power ground nets option.
+        """
+        Improved Loss Model on power ground nets option.
         1: Level 1
         2: Level 2
         3: Level 3
@@ -147,11 +156,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def include_enhanced_bond_wire_modeling(self):
-        """Enhance Bond wire modeling.
+        """
+        Enhance Bond wire modeling.
 
         Returns
         -------
             bool
+
         """
         return self._edb_object.IncludeEnhancedBondWireModeling
 
@@ -161,12 +172,14 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def include_nets(self):
-        """Add Additional Nets for simulation.
+        """
+        Add Additional Nets for simulation.
 
         Returns
         -------
             [str]
             List of net name.
+
         """
         return list(self._edb_object.IncludeNets)
 
@@ -177,11 +190,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def min_plane_area_to_mesh(self):
-        """The minimum area below which geometry is ignored.
+        """
+        The minimum area below which geometry is ignored.
 
         Returns
         -------
             str
+
         """
         return self._edb_object.MinPlaneAreaToMesh
 
@@ -191,11 +206,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def min_void_area_to_mesh(self):
-        """The minimum area below which voids are ignored.
+        """
+        The minimum area below which voids are ignored.
 
         Returns
         -------
             str
+
         """
         return self._edb_object.MinVoidAreaToMesh
 
@@ -205,7 +222,8 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def model_type(self):
-        """Model Type setting.
+        """
+        Model Type setting.
 
         0: RDL,
         1: Package
@@ -224,11 +242,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def perform_erc(self):
-        """Perform ERC
+        """
+        Perform ERC
 
         Returns
         -------
             bool
+
         """
         return self._edb_object.PerformERC
 
@@ -238,11 +258,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def pi_slider_pos(self):
-        """The Simulation Preference Slider setting
+        """
+        The Simulation Preference Slider setting
         Model type: ``0``= balanced, ``1``=Accuracy.
         Returns
         -------
             int
+
         """
         return self._edb_object.PISliderPos
 
@@ -252,11 +274,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def rms_surface_roughness(self):
-        """RMS Surface Roughness setting
+        """
+        RMS Surface Roughness setting
 
         Returns
         -------
             str
+
         """
         return self._edb_object.RMSSurfaceRoughness
 
@@ -266,7 +290,8 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def signal_nets_conductor_modeling(self) -> int:
-        """Conductor Modeling.
+        """
+        Conductor Modeling.
         0: MeshInside,
         1: ImpedanceBoundary
         """
@@ -287,12 +312,14 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def signal_nets_error_tolerance(self):
-        """Error Tolerance
+        """
+        Error Tolerance
 
         Returns
         -------
             str
         Value between 0.02 and 1.
+
         """
         value = self._edb_object.SignalNetsErrorTolerance
         return "default" if value == "Default" else float(value)
@@ -311,11 +338,13 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def signal_nets_include_improved_loss_handling(self):
-        """Improved Dielectric Fill Refinement choice.
+        """
+        Improved Dielectric Fill Refinement choice.
 
         Returns
         -------
             bool
+
         """
         return self._edb_object.SignalNetsIncludeImprovedLossHandling
 
@@ -333,7 +362,8 @@ class HFSSPISimulationSettings(SimulationSettings):
 
     @property
     def surface_roughness_model(self):
-        """Chosen Model setting
+        """
+        Chosen Model setting
         Model allowed, ``"None"``, ``"Exponential"`` or ``"Hammerstad"``.
 
         Returns

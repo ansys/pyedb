@@ -32,23 +32,27 @@ class HierarchyObj(Connectable):
 
     @property
     def component_def(self) -> str:
-        """Return the name of the component definition.
+        """
+        Return the name of the component definition.
 
         Returns
         -------
         str
             Name of the component definition.
+
         """
         return self._edb_object.GetComponentDef().GetName()
 
     @property
     def location(self) -> List[float] | None:
-        """Return XY coordinates if available.
+        """
+        Return XY coordinates if available.
 
         Returns
         -------
         list[float] or None
             [x, y] if available, else None.
+
         """
         flag, x, y = self._edb_object.GetLocation()
         if flag:
@@ -63,7 +67,8 @@ class Group(HierarchyObj):
         super().__init__(pedb, edb_object)
 
     def ungroup(self, recursive=False) -> bool:
-        """Dissolve a group.
+        """
+        Dissolve a group.
 
         Parameters
         ----------

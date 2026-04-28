@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build the ``boundaries`` configuration section.
+"""
+Build the ``boundaries`` configuration section.
 
 This module provides a thin fluent layer over
 :class:`pyedb.configuration.cfg_boundaries.CfgBoundaries` for defining HFSS
@@ -34,7 +35,8 @@ from pyedb.configuration.cfg_boundaries import CfgBoundaries
 
 
 class BoundariesConfig(CfgBoundaries):
-    """Fluent builder for the ``boundaries`` configuration section.
+    """
+    Fluent builder for the ``boundaries`` configuration section.
 
     Inherits all fields from :class:`~pyedb.configuration.cfg_boundaries.CfgBoundaries`.
     All fields default to ``None`` so ``to_dict()`` only emits explicitly-set keys.
@@ -45,7 +47,8 @@ class BoundariesConfig(CfgBoundaries):
     # ── convenience setters ───────────────────────────────────────────────
 
     def set_radiation_boundary(self, use_open_region: bool = True):
-        """Configure a radiation open region.
+        """
+        Configure a radiation open region.
 
         Parameters
         ----------
@@ -57,7 +60,8 @@ class BoundariesConfig(CfgBoundaries):
         self.open_region_type = "radiation"
 
     def set_pml_boundary(self, operating_freq, radiation_level: float = 20, is_pml_visible: bool = False):
-        """Configure a perfectly matched layer boundary.
+        """
+        Configure a perfectly matched layer boundary.
 
         Parameters
         ----------
@@ -86,7 +90,8 @@ class BoundariesConfig(CfgBoundaries):
         sync: bool = False,
         truncate_at_ground: bool = False,
     ):
-        """Set horizontal and vertical air-box padding.
+        """
+        Set horizontal and vertical air-box padding.
 
         Parameters
         ----------
@@ -127,7 +132,8 @@ class BoundariesConfig(CfgBoundaries):
         base_polygon: Optional[str] = None,
         truncate_air_box_at_ground: bool = False,
     ):
-        """Set the layout extent used for region construction.
+        """
+        Set the layout extent used for region construction.
 
         Parameters
         ----------
@@ -152,7 +158,8 @@ class BoundariesConfig(CfgBoundaries):
         base_polygon: Optional[str] = None,
         honor_user_dielectric: bool = False,
     ):
-        """Configure the dielectric extent envelope.
+        """
+        Configure the dielectric extent envelope.
 
         Parameters
         ----------
@@ -176,7 +183,8 @@ class BoundariesConfig(CfgBoundaries):
             self.honor_user_dielectric = honor_user_dielectric
 
     def to_dict(self) -> dict:
-        """Serialize explicitly configured boundary fields.
+        """
+        Serialize explicitly configured boundary fields.
 
         Returns
         -------

@@ -94,7 +94,8 @@ class EdbInit(object):
         return self._db
 
     def _create(self, db_path, port=0, restart_rpc_server=False):
-        """Create a Database at the specified file location.
+        """
+        Create a Database at the specified file location.
 
         Parameters
         ----------
@@ -110,6 +111,7 @@ class EdbInit(object):
         Returns
         -------
         Database
+
         """
         RpcSession.start(
             edb_version=self.version,
@@ -125,7 +127,8 @@ class EdbInit(object):
         return self._db
 
     def _open(self, db_path, read_only, port=0, restart_rpc_server=False):
-        """Open an existing Database at the specified file location.
+        """
+        Open an existing Database at the specified file location.
 
         Parameters
         ----------
@@ -142,6 +145,7 @@ class EdbInit(object):
         -------
         Database or None
             The opened Database object, or None if not found.
+
         """
         RpcSession.start(
             edb_version=self.version,
@@ -157,12 +161,14 @@ class EdbInit(object):
         return self._db
 
     def delete(self, db_path):
-        """Delete a database at the specified file location.
+        """
+        Delete a database at the specified file location.
 
         Parameters
         ----------
         db_path : str
             Path to top-level database folder.
+
         """
         return database.Database.delete(db_path)
 
@@ -194,7 +200,8 @@ class EdbInit(object):
             return False
 
     def close(self, terminate_rpc_session=False):
-        """Close the database.
+        """
+        Close the database.
 
         Parameters
         ----------
@@ -207,6 +214,7 @@ class EdbInit(object):
         -----
         Unsaved changes will be lost. When ``terminate_rpc_session=True`` and multiple databases
         are open, all connections will be lost immediately.
+
         """
         self._db.close()
         self._db = None
@@ -236,58 +244,69 @@ class EdbInit(object):
 
     @property
     def top_circuit_cells(self):
-        """Get top circuit cells.
+        """
+        Get top circuit cells.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
+
         """
         return [i for i in self._db.top_circuit_cells]
 
     @property
     def circuit_cells(self):
-        """Get all circuit cells in the Database.
+        """
+        Get all circuit cells in the Database.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
+
         """
         return [i for i in self._db.circuit_cells]
 
     @property
     def footprint_cells(self):
-        """Get all footprint cells in the Database.
+        """
+        Get all footprint cells in the Database.
 
         Returns
         -------
         list[:class:`Cell <ansys.edb.layout.Cell>`]
+
         """
         return [i for i in self._db.footprint_cells]
 
     @property
     def edb_uid(self):
-        """Get ID of the database.
+        """
+        Get ID of the database.
 
         Returns
         -------
         int
             The unique EDB id of the Database.
+
         """
         return self._db.id
 
     @property
     def is_read_only(self):
-        """Determine if the database is open in a read-only mode.
+        """
+        Determine if the database is open in a read-only mode.
 
         Returns
         -------
         bool
             True if Database is open with read only access, otherwise False.
+
         """
         return self._db.is_read_only
 
     def find_by_id(self, db_id):
-        """Find a database by ID.
+        """
+        Find a database by ID.
 
         Parameters
         ----------
@@ -298,11 +317,13 @@ class EdbInit(object):
         -------
         Database
             The Database or Null on failure.
+
         """
         return database.Database.find_by_id(db_id)
 
     def save_as(self, path: str | Path, version: str = "") -> bool:
-        """Save this Database to a new location and older EDB version.
+        """
+        Save this Database to a new location and older EDB version.
 
         Parameters
         ----------
@@ -310,6 +331,7 @@ class EdbInit(object):
             New Database file location.
         version : str
             EDB version to save to. Empty string means current version.
+
         """
         path = str(path) if isinstance(path, Path) else path
         self._db.save_as(path, version)
@@ -319,17 +341,20 @@ class EdbInit(object):
 
     @property
     def directory(self):
-        """Get the directory of the Database.
+        """
+        Get the directory of the Database.
 
         Returns
         -------
         str
             Directory of the Database.
+
         """
         return self._db.directory
 
     def get_product_property(self, prod_id, attr_it):
-        """Get the product-specific property value.
+        """
+        Get the product-specific property value.
 
         Parameters
         ----------
@@ -342,11 +367,13 @@ class EdbInit(object):
         -------
         str
             Property value returned.
+
         """
         return self._db.get_product_property(prod_id, attr_it)
 
     def set_product_property(self, prod_id, attr_it, prop_value):
-        """Set the product property associated with the given product and attribute ids.
+        """
+        Set the product property associated with the given product and attribute ids.
 
         Parameters
         ----------
@@ -356,11 +383,13 @@ class EdbInit(object):
             Attribute ID.
         prop_value : str
             Product property's new value
+
         """
         self._db.set_product_property(prod_id, attr_it, prop_value)
 
     def get_product_property_ids(self, prod_id):
-        """Get a list of attribute ids corresponding to a product property id.
+        """
+        Get a list of attribute ids corresponding to a product property id.
 
         Parameters
         ----------
@@ -371,11 +400,13 @@ class EdbInit(object):
         -------
         list[int]
             The attribute ids associated with this product property.
+
         """
         return self._db.get_product_property_ids(prod_id)
 
     def import_material_from_control_file(self, control_file, schema_dir=None, append=True):
-        """Import materials from the provided control file.
+        """
+        Import materials from the provided control file.
 
         Parameters
         ----------
@@ -385,22 +416,26 @@ class EdbInit(object):
             Schema file path.
         append : bool
             True if the existing materials in Database are kept. False to remove existing materials in database.
+
         """
         self._db.import_material_from_control_file(control_file, schema_dir, append)
 
     def scale(self, scale_factor):
-        """Uniformly scale all geometry and their locations by a positive factor.
+        """
+        Uniformly scale all geometry and their locations by a positive factor.
 
         Parameters
         ----------
         scale_factor : float
             Amount that coordinates are multiplied by.
+
         """
         return self._db.scale(scale_factor)
 
     @property
     def source(self):
-        """Get source name for this Database.
+        """
+        Get source name for this Database.
 
         This attribute is also used to set the source name.
 
@@ -408,6 +443,7 @@ class EdbInit(object):
         -------
         str
             name of the source
+
         """
         return self._db.source
 
@@ -418,7 +454,8 @@ class EdbInit(object):
 
     @property
     def source_version(self):
-        """Get the source version for this Database.
+        """
+        Get the source version for this Database.
 
         This attribute is also used to set the version.
 
@@ -436,7 +473,8 @@ class EdbInit(object):
         self._db.source_version = source_version
 
     def copy_cells(self, cells_to_copy):
-        """Copy Cells from other Databases or this Database into this Database.
+        """
+        Copy Cells from other Databases or this Database into this Database.
 
         Parameters
         ----------
@@ -446,6 +484,7 @@ class EdbInit(object):
         Returns
         -------
         list[:class:`Cell <ansys.edb.core.layout.cell.Cell>`]
+
         """
         if not isinstance(cells_to_copy, list):
             cells_to_copy = [cells_to_copy]

@@ -25,7 +25,8 @@ from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 
 
 class ImpedanceScan:
-    """Impedance scan configuration class handler.
+    """
+    Impedance scan configuration class handler.
 
     This class manages impedance scanning configuration including transmission line
     segment length, frequency, and net-specific impedance parameters.
@@ -47,7 +48,8 @@ class ImpedanceScan:
     """
 
     def __init__(self, pedb) -> None:
-        """Initialize impedance scan configuration.
+        """
+        Initialize impedance scan configuration.
 
         Parameters
         ----------
@@ -61,7 +63,8 @@ class ImpedanceScan:
         self.nets: dict[str, SingleEndedNet] = {}
 
     def extend_xml(self, parent) -> None:
-        """Write object to XML section.
+        """
+        Write object to XML section.
 
         Parameters
         ----------
@@ -83,7 +86,8 @@ class ImpedanceScan:
         warning_threshold: float | str = 17.0,
         violation_threshold: float | str = 32.0,
     ) -> bool:
-        """Add single ended net to impedance scan configuration.
+        """
+        Add single ended net to impedance scan configuration.
 
         Parameters
         ----------

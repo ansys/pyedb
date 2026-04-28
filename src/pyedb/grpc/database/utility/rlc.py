@@ -32,7 +32,8 @@ class Rlc(CoreRlc):
 
     @property
     def r(self) -> float:
-        """R value.
+        """
+        R value.
 
         Returns
         -------
@@ -48,7 +49,8 @@ class Rlc(CoreRlc):
 
     @property
     def l(self) -> float:
-        """L value.
+        """
+        L value.
 
         Returns
         -------
@@ -64,7 +66,8 @@ class Rlc(CoreRlc):
 
     @property
     def c(self) -> float:
-        """C value.
+        """
+        C value.
 
         Returns
         -------

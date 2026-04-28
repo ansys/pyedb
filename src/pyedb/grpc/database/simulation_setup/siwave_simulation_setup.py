@@ -45,7 +45,8 @@ class SiwaveSimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "Edb", name: str = "siwave_setup") -> "SiwaveSimulationSetup":
-        """Create a SIWave simulation setup object.
+        """
+        Create a SIWave simulation setup object.
 
         Parameters
         ----------
@@ -59,6 +60,7 @@ class SiwaveSimulationSetup(SimulationSetup):
         -------
         SiwaveSimulationSetup
             The SIWave simulation setup object.
+
         """
         core = CoreSIWaveSimulationSetup.create(edb.active_cell, name)
         return cls(edb, core)
@@ -76,7 +78,8 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.dc property instead.")
     def dc_settings(self) -> SIWaveDCSettings:
-        """Setup dc settings.
+        """
+        Setup dc settings.
 
         .. deprecated:: 0.70.0
            Use :attr:`dc_advanced_settings is deprecated. Use :attr:`settings.dc instead.
@@ -87,7 +90,8 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.dc_advanced property instead.")
     def dc_advanced_settings(self) -> SIWaveDCAdvancedSettings:
-        """Setup dc settings.
+        """
+        Setup dc settings.
 
         .. deprecated:: 0.70.0
            Use :attr:`dc_advanced_settings is deprecated. Use :attr:`settings.dc_advanced instead.
@@ -98,7 +102,8 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.use_si_settings property instead.")
     def use_si_settings(self) -> bool:
-        """Whether to use SI settings.
+        """
+        Whether to use SI settings.
 
         .. deprecated:: 0.70.0
            Use :attr:`settings.use_si_settings is deprecated. Use :attr:`settings.general.use_si_settings` instead.
@@ -113,7 +118,8 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.general.si_slider_position property instead.")
     def si_slider_position(self) -> int:
-        """SI slider position.
+        """
+        SI slider position.
 
         .. deprecated:: 0.70.0
            Use :attr:`settings.general.si_slider_position` instead.
@@ -127,7 +133,8 @@ class SiwaveSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.general.pi_slider_pos property instead.")
     def pi_slider_position(self) -> int:
-        """I slider position.
+        """
+        I slider position.
 
         .. deprecated:: 0.70.0
            Use :attr:`settings.general.pi_slider_position` instead.

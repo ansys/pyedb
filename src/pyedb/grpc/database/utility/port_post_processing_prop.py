@@ -24,7 +24,8 @@ from ansys.edb.core.utility.value import Value as CoreValue
 
 
 class PortPostProcessingProp:
-    """Port post-processing properties.
+    """
+    Port post-processing properties.
 
     This class wraps the gRPC port post-processing properties, providing access to
     deembedding length, renormalization impedance, voltage magnitude and phase,
@@ -34,6 +35,7 @@ class PortPostProcessingProp:
     ----------
     core : GrpcPortPostProcessing
         The underlying gRPC port post-processing object.
+
     """
 
     def __init__(self, core):
@@ -41,12 +43,14 @@ class PortPostProcessingProp:
 
     @property
     def deembed_length(self):
-        """Deembedding length.
+        """
+        Deembedding length.
 
         Returns
         -------
         float
             The deembedding length value.
+
         """
         return self.core.deembed_length.value
 
@@ -56,12 +60,14 @@ class PortPostProcessingProp:
 
     @property
     def renormalization_impedance(self):
-        """Renormalization impedance.
+        """
+        Renormalization impedance.
 
         Returns
         -------
         float
             The renormalization impedance value.
+
         """
         return self.core.renormalization_impedance.value
 
@@ -71,12 +77,14 @@ class PortPostProcessingProp:
 
     @property
     def voltage_magnitude(self):
-        """Voltage magnitude.
+        """
+        Voltage magnitude.
 
         Returns
         -------
         float
             The voltage magnitude value.
+
         """
         return self.core.voltage_magnitude.value
 
@@ -86,12 +94,14 @@ class PortPostProcessingProp:
 
     @property
     def voltage_phase(self):
-        """Voltage phase.
+        """
+        Voltage phase.
 
         Returns
         -------
         float
             The voltage phase value.
+
         """
         return self.core.voltage_phase.value
 
@@ -101,12 +111,14 @@ class PortPostProcessingProp:
 
     @property
     def do_deembed(self):
-        """Whether to perform deembedding.
+        """
+        Whether to perform deembedding.
 
         Returns
         -------
         bool
             True if deembedding is enabled, False otherwise.
+
         """
         return self.core.do_deembed
 
@@ -116,12 +128,14 @@ class PortPostProcessingProp:
 
     @property
     def do_renormalize(self):
-        """Whether to perform renormalization.
+        """
+        Whether to perform renormalization.
 
         Returns
         -------
         bool
             True if renormalization is enabled, False otherwise.
+
         """
         return self.core.do_renormalize
 

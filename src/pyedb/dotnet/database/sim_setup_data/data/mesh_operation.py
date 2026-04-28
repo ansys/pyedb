@@ -47,11 +47,13 @@ class MeshOperation(object):
 
     @property
     def net_layer_info(self):
-        """Adding property for grpc compatibility.
+        """
+        Adding property for grpc compatibility.
 
         Returns
         -------
         The tuple is in this form: (net_name, layer_name, is_sheet)``.
+
         """
         layer_inf = []
         for net_name, mesh_op in self.nets_layers_list.items():
@@ -61,18 +63,21 @@ class MeshOperation(object):
 
     @property
     def enabled(self):
-        """Whether if mesh operation is enabled.
+        """
+        Whether if mesh operation is enabled.
 
         Returns
         -------
         bool
             ``True`` if mesh operation is used, ``False`` otherwise.
+
         """
         return self._edb_object.Enabled
 
     @property
     def mesh_operation_type(self):
-        """Mesh operation type.
+        """
+        Mesh operation type.
         Options:
         0- ``kMeshSetupBase``
         1- ``kMeshSetupLength``
@@ -82,6 +87,7 @@ class MeshOperation(object):
         Returns
         -------
         str
+
         """
         return self._edb_object.MeshOpType.ToString()
 
@@ -92,28 +98,33 @@ class MeshOperation(object):
 
     @property
     def mesh_region(self):
-        """Mesh region name.
+        """
+        Mesh region name.
 
         Returns
         -------
         str
             Name of the mesh region.
+
         """
         return self._edb_object.MeshRegion
 
     @property
     def name(self):
-        """Mesh operation name.
+        """
+        Mesh operation name.
 
         Returns
         -------
         str
+
         """
         return self._edb_object.Name
 
     @property
     def nets_layers_list(self):
-        """List of nets and layers.
+        """
+        List of nets and layers.
 
         Returns
         -------
@@ -150,7 +161,8 @@ class MeshOperation(object):
 
     @property
     def refine_inside(self):
-        """Whether to turn on refine inside objects.
+        """
+        Whether to turn on refine inside objects.
 
         Returns
         -------
@@ -178,21 +190,25 @@ class MeshOperation(object):
 
     @property
     def max_elements(self):
-        """Maximum number of elements.
+        """
+        Maximum number of elements.
 
         Returns
         -------
         str
+
         """
         return int(self._edb_object.MaxElems)
 
     @property
     def restrict_max_elements(self):
-        """Whether to restrict maximum number  of elements.
+        """
+        Whether to restrict maximum number  of elements.
 
         Returns
         -------
         bool
+
         """
         return self._edb_object.RestrictMaxElem
 
@@ -202,23 +218,27 @@ class MeshOperation(object):
 
     @restrict_max_elements.setter
     def restrict_max_elements(self, value):
-        """Whether to restrict maximum number  of elements.
+        """
+        Whether to restrict maximum number  of elements.
 
         Returns
         -------
         bool
+
         """
         self._edb_object.RestrictMaxElem = value
 
 
 class LengthMeshOperation(MeshOperation, object):
-    """Mesh operation Length class.
+    """
+    Mesh operation Length class.
     This class is accessible from Hfss Setup in EDB and add_length_mesh_operation method.
 
     Examples
     --------
     >>> mop = edbapp.setups["setup1a"].add_length_mesh_operation({"GND": ["TOP", "BOTTOM"]})
     >>> mop.max_elements = 3000
+
     """
 
     def __init__(self, parent, edb_object):
@@ -226,11 +246,13 @@ class LengthMeshOperation(MeshOperation, object):
 
     @property
     def max_length(self):
-        """Maximum length of elements.
+        """
+        Maximum length of elements.
 
         Returns
         -------
         str
+
         """
         return self._edb_object.MaxLength
 
@@ -241,11 +263,13 @@ class LengthMeshOperation(MeshOperation, object):
 
     @property
     def restrict_length(self):
-        """Whether to restrict length of elements.
+        """
+        Whether to restrict length of elements.
 
         Returns
         -------
         bool
+
         """
         return self._edb_object.RestrictLength
 
@@ -255,23 +279,27 @@ class LengthMeshOperation(MeshOperation, object):
 
     @restrict_length.setter
     def restrict_length(self, value):
-        """Whether to restrict length of elements.
+        """
+        Whether to restrict length of elements.
 
         Returns
         -------
         bool
+
         """
         self._edb_object.RestrictLength = value
 
 
 class SkinDepthMeshOperation(MeshOperation, object):
-    """Mesh operation Skin Depth class.
+    """
+    Mesh operation Skin Depth class.
     This class is accessible from Hfss Setup in EDB and assign_skin_depth_mesh_operation method.
 
     Examples
     --------
     >>> mop = edbapp.setups["setup1a"].add_skin_depth_mesh_operation({"GND": ["TOP", "BOTTOM"]})
     >>> mop.max_elements = 3000
+
     """
 
     def __init__(self, parent, edb_object):
@@ -279,11 +307,13 @@ class SkinDepthMeshOperation(MeshOperation, object):
 
     @property
     def skin_depth(self):
-        """Skin depth value.
+        """
+        Skin depth value.
 
         Returns
         -------
         str
+
         """
         return self._edb_object.SkinDepth
 
@@ -293,11 +323,13 @@ class SkinDepthMeshOperation(MeshOperation, object):
 
     @property
     def surface_triangle_length(self):
-        """Surface triangle length value.
+        """
+        Surface triangle length value.
 
         Returns
         -------
         str
+
         """
         return self._edb_object.SurfTriLength
 
@@ -312,11 +344,13 @@ class SkinDepthMeshOperation(MeshOperation, object):
 
     @property
     def number_of_layer_elements(self):
-        """Number of layer elements.
+        """
+        Number of layer elements.
 
         Returns
         -------
         str
+
         """
         return self._edb_object.NumLayers
 

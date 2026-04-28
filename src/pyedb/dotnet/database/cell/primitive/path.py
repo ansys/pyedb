@@ -32,12 +32,14 @@ class Path(Primitive):
 
     @property
     def width(self):
-        """Path width.
+        """
+        Path width.
 
         Returns
         -------
         float
             Path width or None.
+
         """
         return self._edb_object.GetWidth()
 
@@ -46,7 +48,8 @@ class Path(Primitive):
         self.primitive_object.SetWidth(self._pedb.edb_value(value))
 
     def get_end_cap_style(self):
-        """Get path end cap styles.
+        """
+        Get path end cap styles.
 
         Returns
         -------
@@ -62,11 +65,13 @@ class Path(Primitive):
             **end_cap1** : End cap style of path start end cap.
 
             **end_cap2** : End cap style of path end  cap.
+
         """
         return self._edb_object.GetEndCapStyle()
 
     def set_end_cap_style(self, end_cap1, end_cap2):
-        """Set path end cap styles.
+        """
+        Set path end cap styles.
 
         Parameters
         ----------
@@ -74,17 +79,20 @@ class Path(Primitive):
             End cap style of path start end cap.
         end_cap2: :class:`PathEndCapType`
             End cap style of path end cap.
+
         """
         self._edb_object.SetEndCapStyle(end_cap1, end_cap2)
 
     @property
     def length(self):
-        """Path length in meters.
+        """
+        Path length in meters.
 
         Returns
         -------
         float
             Path length in meters.
+
         """
         center_line_arcs = list(self._edb_object.GetCenterLine().GetArcData())
         path_length = 0.0
@@ -98,7 +106,8 @@ class Path(Primitive):
         return path_length
 
     def add_point(self, x, y, incremental=False):
-        """Add a point at the end of the path.
+        """
+        Add a point at the end of the path.
 
         Parameters
         ----------
@@ -113,6 +122,7 @@ class Path(Primitive):
         Returns
         -------
         bool
+
         """
         center_line = self._edb_object.GetCenterLine()
 
@@ -126,7 +136,8 @@ class Path(Primitive):
         return self._edb_object.SetCenterLine(center_line)
 
     def get_center_line(self, to_string=False):
-        """Get the center line of the trace.
+        """
+        Get the center line of the trace.
 
         Parameters
         ----------
@@ -144,12 +155,14 @@ class Path(Primitive):
             return [[p.X.ToDouble(), p.Y.ToDouble()] for p in list(self._edb_object.GetCenterLine().Points)]
 
     def clone(self):
-        """Clone a primitive object with keeping same definition and location.
+        """
+        Clone a primitive object with keeping same definition and location.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         corner_style = self.corner_style
         end_cap_style = self.get_end_cap_style()
@@ -179,7 +192,6 @@ class Path(Primitive):
         pec_launch_width="0.01mm",
     ):
         """
-
         Parameters
         ----------
         name : str
@@ -221,7 +233,8 @@ class Path(Primitive):
             return self._app.excitation_manager.create_edge_port_vertical(self.id, pos, name, 50, reference_layer)
 
     def create_via_fence(self, distance, gap, padstack_name, net_name="GND"):
-        """Create via fences on both sides of the trace.
+        """
+        Create via fences on both sides of the trace.
 
         Parameters
         ----------
@@ -236,6 +249,7 @@ class Path(Primitive):
 
         Returns
         -------
+
         """
 
         def getAngle(v1, v2):  # pragma: no cover

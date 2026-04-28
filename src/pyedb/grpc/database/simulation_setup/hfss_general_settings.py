@@ -32,7 +32,8 @@ class BroadbandAdaptiveSolution:
 
     @property
     def high_frequency(self) -> str:
-        """High frequency for broadband adaptive solution.
+        """
+        High frequency for broadband adaptive solution.
 
         Returns
         -------
@@ -48,7 +49,8 @@ class BroadbandAdaptiveSolution:
 
     @property
     def low_frequency(self) -> str:
-        """Low frequency for broadband adaptive solution.
+        """
+        Low frequency for broadband adaptive solution.
 
         Returns
         -------
@@ -64,7 +66,8 @@ class BroadbandAdaptiveSolution:
 
     @property
     def max_delta(self) -> str:
-        """Maximum delta for broadband adaptive solution.
+        """
+        Maximum delta for broadband adaptive solution.
 
         Returns
         -------
@@ -80,7 +83,8 @@ class BroadbandAdaptiveSolution:
 
     @property
     def max_num_passes(self) -> int:
-        """Maximum number of passes for broadband adaptive solution.
+        """
+        Maximum number of passes for broadband adaptive solution.
 
         Returns
         -------
@@ -96,7 +100,8 @@ class BroadbandAdaptiveSolution:
 
     @property
     def max_passes(self) -> int:
-        """Maximum number of passes for broadband adaptive solution.
+        """
+        Maximum number of passes for broadband adaptive solution.
 
         Returns
         -------
@@ -119,7 +124,8 @@ class AdaptiveFrequency:
 
     @property
     def adaptive_frequency(self) -> str:
-        """Adaptive frequency value.
+        """
+        Adaptive frequency value.
 
         Returns
         -------
@@ -135,7 +141,8 @@ class AdaptiveFrequency:
 
     @property
     def max_delta(self) -> str:
-        """Maximum delta for the adaptive frequency.
+        """
+        Maximum delta for the adaptive frequency.
 
         Returns
         -------
@@ -151,7 +158,8 @@ class AdaptiveFrequency:
 
     @property
     def output_variables(self) -> dict[str, float]:
-        """Map of output variable names to maximum delta S.
+        """
+        Map of output variable names to maximum delta S.
 
         Returns
         -------
@@ -162,7 +170,8 @@ class AdaptiveFrequency:
         return {var_name: self._pedb.value(value) for var_name, value in self.core.output_variables.items()}
 
     def add_output_variable(self, name: str, delta_s: float):
-        """Add an output variable for the adaptive frequency.
+        """
+        Add an output variable for the adaptive frequency.
 
         Parameters
         ----------
@@ -177,7 +186,8 @@ class AdaptiveFrequency:
         self.core.output_variables = variables
 
     def delete_output_variable(self, name: str) -> bool:
-        """Delete an output variable from the adaptive frequency.
+        """
+        Delete an output variable from the adaptive frequency.
 
         Parameters
         ----------
@@ -210,7 +220,8 @@ class MultiFrequencyAdaptiveSolution:
 
     @property
     def max_passes(self) -> int:
-        """Maximum number of passes for multi-frequency adaptive solution.
+        """
+        Maximum number of passes for multi-frequency adaptive solution.
 
         Returns
         -------
@@ -232,7 +243,8 @@ class MatrixConvergenceDataEntry:
 
     @property
     def mag_limit(self) -> float:
-        """Magnitude limit for the matrix convergence data entry.
+        """
+        Magnitude limit for the matrix convergence data entry.
 
         Returns
         -------
@@ -248,7 +260,8 @@ class MatrixConvergenceDataEntry:
 
     @property
     def phase_limit(self) -> float:
-        """Phase limit for the matrix convergence data entry.
+        """
+        Phase limit for the matrix convergence data entry.
 
         Returns
         -------
@@ -264,7 +277,8 @@ class MatrixConvergenceDataEntry:
 
     @property
     def port_1_name(self) -> str:
-        """Name of the first port.
+        """
+        Name of the first port.
 
         Returns
         -------
@@ -280,7 +294,8 @@ class MatrixConvergenceDataEntry:
 
     @property
     def port_2_name(self) -> str:
-        """Name of the second port.
+        """
+        Name of the second port.
 
         Returns
         -------
@@ -302,7 +317,8 @@ class MatrixConvergenceData:
 
     @property
     def all_constant(self) -> bool:
-        """Indicates whether all matrix convergence data entries are constant.
+        """
+        Indicates whether all matrix convergence data entries are constant.
 
         Returns
         -------
@@ -318,7 +334,8 @@ class MatrixConvergenceData:
 
     @property
     def all_diag_constant(self) -> bool:
-        """Indicates whether all diagonal matrix convergence data entries are constant.
+        """
+        Indicates whether all diagonal matrix convergence data entries are constant.
 
         Returns
         -------
@@ -334,7 +351,8 @@ class MatrixConvergenceData:
 
     @property
     def all_off_diag_constant(self) -> bool:
-        """Indicates whether all off-diagonal matrix convergence data entries are constant.
+        """
+        Indicates whether all off-diagonal matrix convergence data entries are constant.
 
         Returns
         -------
@@ -350,7 +368,8 @@ class MatrixConvergenceData:
 
     @property
     def entry_list(self) -> list[MatrixConvergenceDataEntry]:
-        """List of matrix convergence data entries.
+        """
+        List of matrix convergence data entries.
 
         Returns
         -------
@@ -362,7 +381,8 @@ class MatrixConvergenceData:
 
     @property
     def mag_min_threshold(self) -> float:
-        """Magnitude minimum threshold for matrix convergence data.
+        """
+        Magnitude minimum threshold for matrix convergence data.
 
         Returns
         -------
@@ -377,7 +397,8 @@ class MatrixConvergenceData:
         self.core.mag_min_threshold = self._pedb.value(value)
 
     def add_entry(self, port_name_1, port_name_2, mag_limit, phase_limit):
-        """Add a matrix convergence data entry.
+        """
+        Add a matrix convergence data entry.
 
         Parameters
         ----------
@@ -389,11 +410,13 @@ class MatrixConvergenceData:
             Magnitude limit.
         phase_limit : float
             Phase limit.
+
         """
         self.core.add_entry(port_name_1, port_name_2, mag_limit, phase_limit)
 
     def set_all_constant(self, mag_limit, phase_limit, port_names):
-        """Set all matrix convergence data entries to constant values.
+        """
+        Set all matrix convergence data entries to constant values.
 
         Parameters
         ----------
@@ -403,11 +426,13 @@ class MatrixConvergenceData:
             Phase limit.
         port_names : list[str]
             List of port names.
+
         """
         self.core.set_all_constant(mag_limit, phase_limit, port_names)
 
     def set_all_diag_constant(self, mag_limit, phase_limit, port_names, clear_entries):
-        """Set all diagonal matrix convergence data entries to constant values.
+        """
+        Set all diagonal matrix convergence data entries to constant values.
 
         Parameters
         ----------
@@ -419,11 +444,13 @@ class MatrixConvergenceData:
             List of port names.
         clear_entries : bool
             Whether to clear existing entries.
+
         """
         self.core.set_all_diag_constant(mag_limit, phase_limit, port_names, clear_entries)
 
     def set_all_off_diag_constant(self, mag_limit, phase_limit, port_names, clear_entries):
-        """Set all off-diagonal matrix convergence data entries to constant values.
+        """
+        Set all off-diagonal matrix convergence data entries to constant values.
 
         Parameters
         ----------
@@ -435,6 +462,7 @@ class MatrixConvergenceData:
             List of port names.
         clear_entries : bool
             Whether to clear existing entries.
+
         """
         self.core.set_all_off_diag_constant(mag_limit, phase_limit, port_names, clear_entries)
 
@@ -446,7 +474,8 @@ class SingleFrequencyAdaptiveSolution:
 
     @property
     def adaptive_frequency(self) -> float:
-        """Adaptive frequency for single frequency adaptive solution.
+        """
+        Adaptive frequency for single frequency adaptive solution.
 
         Returns
         -------
@@ -462,7 +491,8 @@ class SingleFrequencyAdaptiveSolution:
 
     @property
     def max_delta(self) -> float:
-        """Maximum delta for single frequency adaptive solution.
+        """
+        Maximum delta for single frequency adaptive solution.
 
         Returns
         -------
@@ -478,7 +508,8 @@ class SingleFrequencyAdaptiveSolution:
 
     @property
     def max_passes(self) -> int:
-        """Maximum number of passes for single frequency adaptive solution.
+        """
+        Maximum number of passes for single frequency adaptive solution.
 
         Returns
         -------
@@ -494,7 +525,8 @@ class SingleFrequencyAdaptiveSolution:
 
     @property
     def mx_conv_data(self) -> MatrixConvergenceData:
-        """Matrix convergence data for single frequency adaptive solution.
+        """
+        Matrix convergence data for single frequency adaptive solution.
 
         Returns
         -------
@@ -507,7 +539,8 @@ class SingleFrequencyAdaptiveSolution:
 
     @property
     def use_mx_conv_data(self) -> bool:
-        """Indicates whether to use matrix convergence data.
+        """
+        Indicates whether to use matrix convergence data.
 
         Returns
         -------
@@ -533,7 +566,8 @@ class HFSSGeneralSettings:
     @property
     @deprecated_property("use adaptive_solution_type property instead.")
     def adapt_type(self) -> str:
-        """Adaptation type.
+        """
+        Adaptation type.
 
         ..deprecated:: 0.67.0
             This property is deprecated and will be removed in future versions.
@@ -556,7 +590,8 @@ class HFSSGeneralSettings:
 
     @property
     def adaptive_solution_type(self) -> str:
-        """Adaptive solution type.
+        """
+        Adaptive solution type.
 
         Returns
         -------
@@ -583,18 +618,21 @@ class HFSSGeneralSettings:
 
     @property
     def adaptive_frequency_data_list(self):
-        """List the adaptive frequency data entries for multi-frequency adaptive solution.
+        """
+        List the adaptive frequency data entries for multi-frequency adaptive solution.
 
         Returns
         -------
         list[AdaptiveFrequency]
             List of adaptive frequency data entries.
+
         """
         return self.multi_frequency_adaptive_solution.adaptive_frequencies
 
     @property
     def broadband_adaptive_solution(self) -> BroadbandAdaptiveSolution:
-        """Settings for a broadband adaptive solution.
+        """
+        Settings for a broadband adaptive solution.
 
         Returns
         -------
@@ -607,7 +645,8 @@ class HFSSGeneralSettings:
 
     @property
     def mesh_region_name(self) -> str:
-        """Name of the mesh region to use.
+        """
+        Name of the mesh region to use.
 
         Returns
         -------
@@ -627,7 +666,8 @@ class HFSSGeneralSettings:
 
     @property
     def save_fields(self) -> bool:
-        """Indicates whether to save fields.
+        """
+        Indicates whether to save fields.
 
         Returns
         -------
@@ -644,7 +684,8 @@ class HFSSGeneralSettings:
     @property
     @deprecated_property("use save_rad_fields_only property instead.")
     def save_rad_field_only(self) -> bool:
-        """Indicates whether to save radiation field only.
+        """
+        Indicates whether to save radiation field only.
 
         .. deprecated:: 0.67.0
             This property is deprecated and will be removed in future versions.
@@ -659,7 +700,8 @@ class HFSSGeneralSettings:
 
     @property
     def save_rad_fields_only(self) -> bool:
-        """Indicates whether to save radiation fields only.
+        """
+        Indicates whether to save radiation fields only.
 
         Returns
         -------
@@ -679,7 +721,8 @@ class HFSSGeneralSettings:
 
     @property
     def use_mesh_region(self) -> bool:
-        """Indicates whether to use a mesh region.
+        """
+        Indicates whether to use a mesh region.
 
         Returns
         -------
@@ -695,7 +738,8 @@ class HFSSGeneralSettings:
 
     @property
     def use_parallel_refinement(self) -> bool:
-        """Indicates whether to use parallel refinement.
+        """
+        Indicates whether to use parallel refinement.
 
         Returns
         -------
@@ -712,7 +756,8 @@ class HFSSGeneralSettings:
     @property
     @deprecated_property("use settings.options.max_refinement_per_pass instead.")
     def max_refine_per_pass(self) -> float:
-        """Maximum refinement per pass.
+        """
+        Maximum refinement per pass.
 
         .. deprecated:: 0.67.0
         This property is deprecated and will be removed in future versions.
@@ -728,7 +773,8 @@ class HFSSGeneralSettings:
     @property
     @deprecated_property("use settings.options.min_passes instead.")
     def min_passes(self) -> int:
-        """Minimum number of passes.
+        """
+        Minimum number of passes.
 
         .. deprecated:: 0.67.0
         This property is deprecated and will be removed in future versions.
@@ -744,7 +790,8 @@ class HFSSGeneralSettings:
     @property
     @deprecated_property("use settings.options.use_max_refinement property instead.")
     def use_max_refinement(self) -> bool:
-        """Indicates whether to use maximum refinement.
+        """
+        Indicates whether to use maximum refinement.
 
         .. deprecated:: 0.67.0
         This property is deprecated and will be removed in future versions.

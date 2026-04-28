@@ -79,6 +79,7 @@ class Layer:
         Returns
         -------
         :class: `Layer <pyedb.`
+
         """
         layer = GrpcLayer.create(name=name, lyr_type=layer_type_mapping[layer_type])
         return cls(core=layer)

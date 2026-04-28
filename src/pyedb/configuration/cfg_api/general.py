@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build the ``general`` configuration section.
+"""
+Build the ``general`` configuration section.
 
 The builders in this module produce the plain dictionary structure consumed by
 :class:`pyedb.configuration.cfg_general.CfgGeneral` for design-wide library
@@ -32,7 +33,8 @@ from typing import Optional
 
 
 class GeneralConfig:
-    """Fluent builder for the ``general`` configuration section.
+    """
+    Fluent builder for the ``general`` configuration section.
 
     Wraps the attribute names expected by
     :class:`~pyedb.configuration.cfg_general.CfgGeneral`.
@@ -58,7 +60,8 @@ class GeneralConfig:
         self.suppress_pads: Optional[bool] = None
 
     def to_dict(self) -> dict:
-        """Serialize configured general settings.
+        """
+        Serialize configured general settings.
 
         Returns
         -------

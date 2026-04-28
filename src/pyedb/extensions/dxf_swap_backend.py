@@ -73,6 +73,7 @@ def create_polygon_from_dxf(edb: Edb, dxf_path: str, layer_name: str) -> Primiti
     >>> poly = create_polygon_from_dxf(edb, dxf_path="outline.dxf", layer_name="Outline")
     >>> print(poly)
     <pyedb.dotnet.edb_core.edb_data.primitives.EDBPrimitives object ...>
+
     """
     doc = readfile(dxf_path)
     msp = doc.modelspace()
@@ -142,6 +143,7 @@ def swap_polygon_with_dxf(edb: Edb, dxf_path: str, layer_name: str, point_dxf: L
     ...     point_aedt=["10", "5"],  # Where DXF origin should land
     ... )
     >>> edb.save()
+
     """
     if not float(edb.version) >= 2025.2:
         raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")
@@ -226,6 +228,7 @@ def swap_polygon_with_dxf_center_point(edb: Edb, dxf_path: str, layer_name: str,
     ...     point_aedt=["10", "5"],  # Where DXF origin should land
     ... )
     >>> edb.save()
+
     """
     if not float(edb.version) >= 2025.2:
         raise AttributeError("This function is only supported with ANSYS release 2025R2 and higher.")

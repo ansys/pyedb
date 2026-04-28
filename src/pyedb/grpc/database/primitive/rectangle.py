@@ -50,12 +50,14 @@ class Rectangle(Primitive):
 
     @property
     def representation_type(self) -> str:
-        """Representation type.
+        """
+        Representation type.
 
         Returns
         -------
         str.
             ``"center_width_height"`` or ``"lower_left_upper_right"``.
+
         """
         if not hasattr(self.core, "representation_type"):
             self.core.representation_type = self._mapping_representation_type["lower_left_upper_right"]
@@ -130,6 +132,7 @@ class Rectangle(Primitive):
             `param4` represent the width and height.
             - `"lower_left_upper_right"`: `param1` and `param2` represent the lower-left corner coordinates, while
             `param3` and `param4` represent the upper-right corner coordinates.
+
         """
         if not layout:
             raise ValueError("Layout must be provided.")
@@ -159,7 +162,8 @@ class Rectangle(Primitive):
         return new_rect
 
     def get_parameters(self):
-        """Get coordinates parameters.
+        """
+        Get coordinates parameters.
 
         Returns
         -------
@@ -190,6 +194,7 @@ class Rectangle(Primitive):
             **corner_radius** : Corner radius.
 
             **rotation** : Rotation.
+
         """
         parameters = self.core.get_parameters()
         representation_type = parameters[0].name.lower()
@@ -202,7 +207,8 @@ class Rectangle(Primitive):
         return representation_type, parameter1, parameter2, parameter3, parameter4, corner_radius, rotation
 
     def set_parameters(self, rep_type, param1, param2, param3, param4, corner_rad, rotation):
-        """Set coordinates parameters.
+        """
+        Set coordinates parameters.
 
         Parameters
         ----------
@@ -220,6 +226,7 @@ class Rectangle(Primitive):
             Corner radius.
         rotation : :class:`Value <ansys.edb.utility.Value>`
             Rotation.
+
         """
 
         return self.core.set_parameters(
@@ -234,23 +241,27 @@ class Rectangle(Primitive):
 
     @property
     def corner_radius(self):
-        """Get corner radius.
+        """
+        Get corner radius.
 
         Returns
         -------
         float
             Corner radius.
+
         """
         return self.core.get_parameters()[5].value
 
     @corner_radius.setter
     def corner_radius(self, value):
-        """Set corner radius.
+        """
+        Set corner radius.
 
         Parameters
         -------
         float
             Corner radius.
+
         """
         parameters = self.get_parameters()
         self.set_parameters(
@@ -265,12 +276,14 @@ class Rectangle(Primitive):
 
     @property
     def rotation(self):
-        """Get rotation.
+        """
+        Get rotation.
 
         Returns
         -------
         float
             Rotation.
+
         """
         return self.core.get_parameters()[6].value
 
@@ -289,12 +302,14 @@ class Rectangle(Primitive):
 
     @property
     def width(self):
-        """Get rectangle width.
+        """
+        Get rectangle width.
 
         Returns
         -------
         float
             Rectangle width.
+
         """
         if self.representation_type == "center_width_height":
             return self.core.get_parameters()[3].value
@@ -320,12 +335,14 @@ class Rectangle(Primitive):
 
     @property
     def height(self):
-        """Get rectangle height.
+        """
+        Get rectangle height.
 
         Returns
         -------
         float
             Rectangle height.
+
         """
         if self.representation_type == "center_width_height":
             return self.core.get_parameters()[4].value
@@ -350,7 +367,8 @@ class Rectangle(Primitive):
         )
 
     def duplicate_across_layers(self, layers) -> bool:
-        """Duplicate across layer a primitive object.
+        """
+        Duplicate across layer a primitive object.
 
         Parameters:
 
@@ -361,6 +379,7 @@ class Rectangle(Primitive):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         if isinstance(layers, str):
             layers = [layers]

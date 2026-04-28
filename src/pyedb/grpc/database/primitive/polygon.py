@@ -47,7 +47,8 @@ class Polygon(Primitive):
 
     @property
     def layer(self) -> Layer:
-        """Layer of the polygon.
+        """
+        Layer of the polygon.
 
         Returns
         -------
@@ -61,7 +62,8 @@ class Polygon(Primitive):
 
     @layer.setter
     def layer(self, value: Union[str, Layer]):
-        """Set layer of the polygon.
+        """
+        Set layer of the polygon.
 
         Parameters
         ----------
@@ -81,7 +83,8 @@ class Polygon(Primitive):
 
     @property
     def type(self) -> str:
-        """Primitive type.
+        """
+        Primitive type.
 
         Return
         ------
@@ -93,11 +96,13 @@ class Polygon(Primitive):
 
     @property
     def has_self_intersections(self) -> bool:
-        """Check if Polygon has self intersections.
+        """
+        Check if Polygon has self intersections.
 
         Returns
         -------
         bool
+
         """
         return self.polygon_data.has_self_intersections()
 
@@ -158,7 +163,8 @@ class Polygon(Primitive):
         return cls(layout._pedb, core)
 
     def fix_self_intersections(self) -> list[Polygon]:
-        """Remove self intersections if they exist.
+        """
+        Remove self intersections if they exist.
 
         Returns
         -------
@@ -178,7 +184,8 @@ class Polygon(Primitive):
         return new_polys
 
     def clone(self):
-        """Duplicate polygon.
+        """
+        Duplicate polygon.
 
         Returns
         -------
@@ -196,7 +203,8 @@ class Polygon(Primitive):
         return cloned_polygon
 
     def duplicate_across_layers(self, layers) -> bool:
-        """Duplicate across layer a primitive object.
+        """
+        Duplicate across layer a primitive object.
 
         Parameters
         ----------
@@ -207,6 +215,7 @@ class Polygon(Primitive):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         for layer in layers:
             if layer in self._pedb.stackup.layers:
@@ -227,7 +236,8 @@ class Polygon(Primitive):
         return True
 
     def move(self, vector) -> bool:
-        """Move polygon along a vector.
+        """
+        Move polygon along a vector.
 
         Parameters
         ----------
@@ -246,6 +256,7 @@ class Polygon(Primitive):
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.move(vector=["2mm", "100um"])
+
         """
         if vector and isinstance(vector, list) and len(vector) == 2:
             _vector = [self._pedb._value_setter(pt) for pt in vector]
@@ -254,7 +265,8 @@ class Polygon(Primitive):
         return False
 
     def scale(self, factor, center=None) -> bool:
-        """Scales the polygon relative to a center point by a factor.
+        """
+        Scales the polygon relative to a center point by a factor.
 
         Parameters
         ----------
@@ -267,6 +279,7 @@ class Polygon(Primitive):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         if not isinstance(factor, str):
             factor = float(factor)
@@ -284,7 +297,8 @@ class Polygon(Primitive):
         return False
 
     def rotate(self, angle, center=None) -> bool:
-        """Rotate polygon around a center point by an angle.
+        """
+        Rotate polygon around a center point by an angle.
 
         Parameters
         ----------
@@ -305,6 +319,7 @@ class Polygon(Primitive):
         >>> top_layer_polygon = [poly for poly in edbapp.modeler.polygons if poly.layer_name == "Top Layer"]
         >>> for polygon in top_layer_polygon:
         >>>     polygon.rotate(angle=45)
+
         """
         if angle:
             if not center:
@@ -318,7 +333,8 @@ class Polygon(Primitive):
         return False
 
     def move_layer(self, layer) -> bool:
-        """Move polygon to given layer.
+        """
+        Move polygon to given layer.
 
         Parameters
         ----------
@@ -329,6 +345,7 @@ class Polygon(Primitive):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         if layer and isinstance(layer, str) and layer in self._pedb.stackup.signal_layers:
             self.layer = layer
@@ -341,7 +358,8 @@ class Polygon(Primitive):
         point_data,
         include_partial=True,
     ) -> bool:
-        """Check if padstack Instance is in given polygon data.
+        """
+        Check if padstack Instance is in given polygon data.
 
         Parameters
         ----------
@@ -353,6 +371,7 @@ class Polygon(Primitive):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         int_val = 1 if self.polygon_data.core.is_inside(CorePointData(point_data)) else 0
         if int_val == 0:

@@ -38,7 +38,8 @@ class ScanType(Enum):
 
 
 class SiwaveScanConfig:
-    """XML control file handle for SIwave crosstalk scan.
+    """
+    XML control file handle for SIwave crosstalk scan.
 
     Parameters
     ----------
@@ -59,7 +60,8 @@ class SiwaveScanConfig:
     """
 
     def __init__(self, pedb, scan_type: str = "impedance") -> None:
-        """Initialize SIwave scan configuration.
+        """
+        Initialize SIwave scan configuration.
 
         Parameters
         ----------
@@ -87,7 +89,8 @@ class SiwaveScanConfig:
         self.time_xtalk_scan = CrossTalkTime(self._pedb)
 
     def write_xml(self) -> bool:
-        """Write XML control file.
+        """
+        Write XML control file.
 
         Returns
         -------

@@ -32,11 +32,13 @@ class LayoutObj(ObjBase):
 
     @property
     def _edb(self):
-        """EDB object.
+        """
+        EDB object.
 
         Returns
         -------
         Ansys.Ansoft.Edb
+
         """
         return self._pedb.core
 
@@ -62,11 +64,13 @@ class LayoutObj(ObjBase):
 
     @property
     def id(self):
-        """Primitive ID.
+        """
+        Primitive ID.
 
         Returns
         -------
         int
+
         """
         return self._edb_object.GetId()
 

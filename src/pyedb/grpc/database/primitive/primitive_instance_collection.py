@@ -32,7 +32,8 @@ class PrimitiveInstanceCollection(Primitive):
         self._pedb = pedb
 
     def decompose(self):
-        """Decompose into individual primitives.
+        """
+        Decompose into individual primitives.
         A primitive will be created for each geometry instantiation.
         """
         self.core.decompose()

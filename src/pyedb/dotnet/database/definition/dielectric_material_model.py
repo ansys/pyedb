@@ -33,7 +33,8 @@ class DjordjecvicSarkarModel(DielectricMaterialModel):
 
     @classmethod
     def create(cls, pedb) -> "DjordjecvicSarkarModel":
-        """Constructs a Djordjecvic-Sarkar model with the following default values.
+        """
+        Constructs a Djordjecvic-Sarkar model with the following default values.
         Frequency: 1GHz. Relative Permitivity: 4. Loss Tangent: 0.02.Use DC relative permitivity: false.
         DC relative permitivity: 5.DC conductivity: 1e-12."""
         return cls(pedb, pedb._edb.Definition.DjordjecvicSarkarModel())

@@ -71,7 +71,8 @@ def dbm(x, inverse=True):  # pragma: no cover
 
 
 def fah2kel(val, inverse=True):  # pragma: no cover
-    """Convert a temperature from Fahrenheit to Kelvin.
+    """
+    Convert a temperature from Fahrenheit to Kelvin.
 
     Parameters
     ----------
@@ -93,7 +94,8 @@ def fah2kel(val, inverse=True):  # pragma: no cover
 
 
 def cel2kel(val, inverse=True):  # pragma: no cover
-    """Convert a temperature from Celsius to Kelvin.
+    """
+    Convert a temperature from Celsius to Kelvin.
 
     Parameters
     ----------
@@ -116,7 +118,8 @@ def cel2kel(val, inverse=True):  # pragma: no cover
 
 
 def unit_system(units):  # pragma: no cover
-    """Retrieve the name of the unit system associated with a unit string.
+    """
+    Retrieve the name of the unit system associated with a unit string.
 
     Parameters
     ----------
@@ -139,7 +142,8 @@ def unit_system(units):  # pragma: no cover
 
 
 def _resolve_unit_system(unit_system_1, unit_system_2, operation):  # pragma: no cover
-    """Retrieve the unit string of an arithmetic operation on ``Variable`` objects. If no resulting unit system
+    """
+    Retrieve the unit string of an arithmetic operation on ``Variable`` objects. If no resulting unit system
     is defined for a specific operation (in unit_system_operations), an empty string is returned
 
     Parameters
@@ -184,7 +188,8 @@ def _find_units_in_dependent_variables(variable_value, full_variables={}):  # pr
 
 
 def decompose_variable_value(variable_value, full_variables={}):  # pragma: no cover
-    """Decompose a variable value.
+    """
+    Decompose a variable value.
 
     Parameters
     ----------
@@ -195,6 +200,7 @@ def decompose_variable_value(variable_value, full_variables={}):  # pragma: no c
     -------
     tuples
         Tuples made of the float value of the variable and the units exposed as a string.
+
     """
     # set default return values - then check for valid units
     float_value = variable_value
@@ -227,7 +233,8 @@ def decompose_variable_value(variable_value, full_variables={}):  # pragma: no c
 
 
 def unit_converter(values, unit_system="Length", input_units="meter", output_units="mm"):  # pragma: no cover
-    """Convert unit in specified unit system.
+    """
+    Convert unit in specified unit system.
 
     Parameters
     ----------
@@ -244,6 +251,7 @@ def unit_converter(values, unit_system="Length", input_units="meter", output_uni
     -------
     float, list
         Converted value.
+
     """
     if unit_system in AEDT_UNITS:
         if input_units not in AEDT_UNITS[unit_system]:
@@ -288,7 +296,8 @@ def unit_converter(values, unit_system="Length", input_units="meter", output_uni
 
 
 def scale_units(scale_to_unit):  # pragma: no cover
-    """Find the scale_to_unit into main system unit.
+    """
+    Find the scale_to_unit into main system unit.
 
     Parameters
     ----------
@@ -299,6 +308,7 @@ def scale_units(scale_to_unit):  # pragma: no cover
     -------
     float
         Return the scaling factor if any.
+
     """
     sunit = 1.0
     for val in list(AEDT_UNITS.values()):
@@ -313,7 +323,8 @@ def scale_units(scale_to_unit):  # pragma: no cover
 
 
 def validate_enum_class_value(cls, value):  # pragma: no cover
-    """Check whether the value for the class ``enumeration-class`` is valid.
+    """
+    Check whether the value for the class ``enumeration-class`` is valid.
 
     Parameters
     ----------
@@ -326,6 +337,7 @@ def validate_enum_class_value(cls, value):  # pragma: no cover
     -------
     bool
         ``True`` when the value is valid for the ``enumeration-class``, ``False`` otherwise.
+
     """
     return isinstance(value, int) and value >= 0 and value < cls.Invalid
 
@@ -661,7 +673,8 @@ class SweepType(object):
 
 
 class BasisOrder(object):
-    """Enumeration-class for HFSS basis order settings.
+    """
+    Enumeration-class for HFSS basis order settings.
 
 
     Warning: the value ``single`` has been renamed to ``Single`` for consistency. Please update references to

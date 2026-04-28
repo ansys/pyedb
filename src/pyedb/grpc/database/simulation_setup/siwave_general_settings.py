@@ -36,12 +36,14 @@ class SIWaveGeneralSettings:
 
     @property
     def pi_slider_pos(self) -> int:
-        """Position of the PI slider.
+        """
+        Position of the PI slider.
 
         Returns
         -------
         int
             Position value.
+
         """
         return self.core.pi_slider_pos
 
@@ -51,12 +53,14 @@ class SIWaveGeneralSettings:
 
     @property
     def si_slider_position(self) -> int:
-        """Position of the SI slider.
+        """
+        Position of the SI slider.
 
         Returns
         -------
         int
             Position value.
+
         """
         return self.core.si_slider_pos
 
@@ -66,12 +70,14 @@ class SIWaveGeneralSettings:
 
     @property
     def use_custom_settings(self) -> bool:
-        """Flag to indicate if custom settings are used.
+        """
+        Flag to indicate if custom settings are used.
 
         Returns
         -------
         bool
             True if custom settings are used, False otherwise.
+
         """
         return self.core.use_custom_settings
 
@@ -81,12 +87,14 @@ class SIWaveGeneralSettings:
 
     @property
     def use_si_settings(self) -> bool:
-        """Flag to indicate if SI settings are used.
+        """
+        Flag to indicate if SI settings are used.
 
         Returns
         -------
         bool
             True if SI settings are used, False otherwise.
+
         """
         return self.core.use_si_settings
 

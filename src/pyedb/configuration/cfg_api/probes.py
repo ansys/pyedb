@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build voltage-probe configuration entries.
+"""
+Build voltage-probe configuration entries.
 
 The classes in this module create serializable probe definitions for the
 ``probes`` configuration list.
@@ -40,7 +41,8 @@ class ProbeConfig:
         negative_terminal: dict,
         reference_designator: Optional[str] = None,
     ):
-        """Initialize a probe configuration.
+        """
+        Initialize a probe configuration.
 
         Parameters
         ----------
@@ -61,7 +63,8 @@ class ProbeConfig:
         self.reference_designator = reference_designator
 
     def to_dict(self) -> dict:
-        """Serialize the probe definition.
+        """
+        Serialize the probe definition.
 
         Returns
         -------
@@ -95,7 +98,8 @@ class ProbesConfig:
         negative_terminal: dict,
         reference_designator: Optional[str] = None,
     ) -> ProbeConfig:
-        """Add a voltage probe.
+        """
+        Add a voltage probe.
 
         Parameters
         ----------
@@ -125,7 +129,8 @@ class ProbesConfig:
         return probe
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured probes.
+        """
+        Serialize all configured probes.
 
         Returns
         -------

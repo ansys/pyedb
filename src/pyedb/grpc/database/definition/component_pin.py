@@ -31,7 +31,8 @@ class ComponentPin:
 
     @classmethod
     def create(cls, component_def, name) -> CoreComponentPin:
-        """Create a component pin.
+        """
+        Create a component pin.
 
         Parameters
         ----------
@@ -44,6 +45,7 @@ class ComponentPin:
         -------
         :class:`ComponentPin <pyedb.grpc.database.definition.component_pin.ComponentPin>`
             The created component pin object.
+
         """
         edb_obj = CoreComponentPin.create(component_def.core, name)
         return cls(edb_obj)

@@ -22,13 +22,15 @@
 
 
 class HeatSink:
-    """Heatsink model description.
+    """
+    Heatsink model description.
 
     Parameters
     ----------
     pedb : :class:`pyedb.dotnet.edb.Edb`
         Inherited object.
     edb_object : :class:`Ansys.Ansoft.Edb.Utility.HeatSink`,
+
     """
 
     def __init__(self, pedb, edb_object=None):
@@ -46,101 +48,121 @@ class HeatSink:
 
     @property
     def fin_base_height(self) -> float:
-        """The base elevation of the fins.
+        """
+        The base elevation of the fins.
 
         Returns
         -------
             float
+
         """
         return self._edb_object.FinBaseHeight.ToDouble()
 
     @fin_base_height.setter
     def fin_base_height(self, value):
-        """Set the base elevation of the fins.
+        """
+        Set the base elevation of the fins.
 
         Parameters
         -------
            value: float
+
         """
         self._edb_object.FinBaseHeight = self._pedb.edb_value(value)
 
     @property
     def fin_height(self) -> float:
-        """The fin height.
+        """
+        The fin height.
 
         Returns
         -------
             float
+
         """
         return self._edb_object.FinHeight.ToDouble()
 
     @fin_height.setter
     def fin_height(self, value):
-        """Set the fin height.
+        """
+        Set the fin height.
 
         Parameters
         -------
             value: float
+
         """
         self._edb_object.FinHeight = self._pedb.edb_value(value)
 
     @property
     def fin_orientation(self) -> str:
-        """The fin orientation.
+        """
+        The fin orientation.
 
         Returns
         -------
             str, can be either x_oriented", "y_oriented" or "other_oriented"
+
         """
         temp = self._edb_object.FinOrientation
         return list(self._fin_orientation_type.keys())[list(self._fin_orientation_type.values()).index(temp)]
 
     @fin_orientation.setter
     def fin_orientation(self, value):
-        """Set the fin orientation.
+        """
+        Set the fin orientation.
 
         Parameters
         -------
             value: str
+
         """
         self._edb_object.FinOrientation = self._fin_orientation_type[value]
 
     @property
     def fin_spacing(self) -> float:
-        """The fin spacing.
+        """
+        The fin spacing.
 
         Returns
         -------
             float
+
         """
         return self._edb_object.FinSpacing.ToDouble()
 
     @fin_spacing.setter
     def fin_spacing(self, value):
-        """Set the fin spacing.
+        """
+        Set the fin spacing.
 
         Parameters
         -------
             value: float
+
         """
         self._edb_object.FinSpacing = self._pedb.edb_value(value)
 
     @property
     def fin_thickness(self) -> float:
-        """The fin thickness.
+        """
+        The fin thickness.
 
         Returns
         -------
             float
+
         """
         return self._edb_object.FinThickness.ToDouble()
 
     @fin_thickness.setter
     def fin_thickness(self, value):
-        """Set the fin thickness.
+        """
+        Set the fin thickness.
 
         Parameters
          -------
             value: float
+
         """
         self._edb_object.FinThickness = self._pedb.edb_value(value)

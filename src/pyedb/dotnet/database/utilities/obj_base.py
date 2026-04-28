@@ -69,6 +69,7 @@ class SystemObject(object):
         >>> edb = Edb(db_path, edbversion="2024.2")  # doctest: +SKIP
         >>> # SystemObject is instantiated internally by wrapper classes
         >>> layer = edb.layout.layers[0]  # Returns a layer object whose parent class is SystemObject
+
         """
         self._pedb = pedb
         self.__core = core

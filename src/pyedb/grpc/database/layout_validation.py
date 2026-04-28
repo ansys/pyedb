@@ -38,7 +38,8 @@ class LayoutValidation:
         self._layout_instance = self._pedb.layout_instance
 
     def dc_shorts(self, net_list: Optional[Union[str, List[str]]] = None, fix: bool = False) -> List[List[str]]:
-        """Find DC shorts on layout.
+        """
+        Find DC shorts on layout.
 
         Parameters
         ----------
@@ -62,6 +63,7 @@ class LayoutValidation:
         >>>
         >>> # Find and fix shorts on specific nets
         >>> fixed_shorts = edb.layout_validation.dc_shorts(net_list=["GND", "VCC"], fix=True)
+
         """
         if not net_list:
             net_list = list(self._pedb.nets.nets.keys())
@@ -134,7 +136,8 @@ class LayoutValidation:
         order_by_area: bool = False,
         keep_disjoint_pins: bool = False,
     ) -> List[str]:
-        """Find and fix disjoint nets from a given netlist.
+        """
+        Find and fix disjoint nets from a given netlist.
 
         Parameters
         ----------
@@ -167,11 +170,13 @@ class LayoutValidation:
         ...     clean_disjoints_less_than=1e-6,
         ...     order_by_area=True
         ... ))
+
         """
         timer_start = self._pedb.logger.reset_timer()
 
         def area_calc(elem: List[int]) -> float:
-            """Calculate total area for a group of element ids.
+            """
+            Calculate total area for a group of element ids.
 
             The layout groups are stored as lists of element ids; resolve to
             actual objects using ``obj_dict`` before computing area.
@@ -291,7 +296,8 @@ class LayoutValidation:
         return new_nets
 
     def fix_self_intersections(self, net_list: Optional[Union[str, List[str]]] = None) -> bool:
-        """Find and fix self intersections from a given netlist.
+        """
+        Find and fix self intersections from a given netlist.
 
         Parameters
         ----------
@@ -311,6 +317,7 @@ class LayoutValidation:
         >>>
         >>> # Fix self-intersections on specific nets
         >>> edb.layout_validation.fix_self_intersections(net_list=["RF_line"])
+
         """
         if not net_list:
             net_list = list(self._pedb.nets.nets.keys())
@@ -327,7 +334,8 @@ class LayoutValidation:
         return True
 
     def illegal_net_names(self, fix: bool = False) -> None:
-        """Find and fix illegal net names.
+        """
+        Find and fix illegal net names.
 
         Examples
         --------
@@ -338,6 +346,7 @@ class LayoutValidation:
         >>>
         >>> # Find and automatically fix illegal names
         >>> edb.layout_validation.illegal_net_names(fix=True)
+
         """
         pattern = r"[\(\)\\\/:;*?<>\'\"|`~$]"
 
@@ -355,7 +364,8 @@ class LayoutValidation:
         return
 
     def illegal_rlc_values(self, fix: bool = False) -> List[str]:
-        """Find and fix RLC illegal values.
+        """
+        Find and fix RLC illegal values.
 
         Examples
         --------
@@ -366,6 +376,7 @@ class LayoutValidation:
         >>>
         # Automatically fix invalid inductor values
         #     edb.layout_validation.illegal_rlc_values(fix=True)
+
         """
         inductors = self._pedb.components.inductors
 
@@ -380,7 +391,8 @@ class LayoutValidation:
         return temp
 
     def padstacks_no_name(self, fix: bool = False) -> None:
-        """Identify and fix padstacks without names.
+        """
+        Identify and fix padstacks without names.
 
         Examples
         --------
@@ -389,6 +401,7 @@ class LayoutValidation:
         >>>
         # Automatically assign names to unnamed padstacks
         #     edb.layout_validation.padstacks_no_name(fix=True)
+
         """
         pds = self._pedb.layout.padstack_instances
         counts = 0

@@ -27,12 +27,14 @@ from pyedb.dotnet.database.utilities.value import Value
 
 
 class HfssExtentInfo:
-    """Manages EDB functionalities for HFSS extent information.
+    """
+    Manages EDB functionalities for HFSS extent information.
 
     Parameters
     ----------
     pedb : :class:`pyedb.edb.Edb`
         Inherited EDB object.
+
     """
 
     def __init__(self, pedb):
@@ -73,10 +75,12 @@ class HfssExtentInfo:
 
     @property
     def air_box_horizontal_extent(self):
-        """Size of horizontal extent for the air box.
+        """
+        Size of horizontal extent for the air box.
 
         Returns:
         dotnet.database.edb_data.edbvalue.EdbValue
+
         """
         return self._edb_hfss_extent_info.AirBoxHorizontalExtent.Item1
 
@@ -165,11 +169,13 @@ class HfssExtentInfo:
 
     @property
     def base_polygon(self):
-        """Base polygon.
+        """
+        Base polygon.
 
         Returns
         -------
         :class:`dotnet.database.edb_data.primitives_data.EDBPrimitive`
+
         """
         return cast(self._edb_hfss_extent_info.BasePolygon, self._pedb).aedt_name
 
@@ -182,11 +188,13 @@ class HfssExtentInfo:
 
     @property
     def dielectric_base_polygon(self):
-        """Dielectric base polygon.
+        """
+        Dielectric base polygon.
 
         Returns
         -------
         :class:`dotnet.database.edb_data.primitives_data.EDBPrimitive`
+
         """
         return cast(self._edb_hfss_extent_info.DielectricBasePolygon, self._pedb).aedt_name
 
@@ -286,11 +294,13 @@ class HfssExtentInfo:
 
     @property
     def operating_freq(self):
-        """PML Operating frequency.
+        """
+        PML Operating frequency.
 
         Returns
         -------
         pyedb.dotnet.database.edb_data.edbvalue.EdbValue
+
         """
         return Value(self._pedb, self._edb_hfss_extent_info.OperatingFreq)
 
@@ -367,23 +377,27 @@ class HfssExtentInfo:
         self._update_hfss_extent_info(info)
 
     def load_config(self, config):
-        """Load HFSS extent configuration.
+        """
+        Load HFSS extent configuration.
 
         Parameters
         ----------
         config: dict
             Parameters of the HFSS extent information.
+
         """
         for i, j in config.items():
             if hasattr(self, i):
                 setattr(self, i, j)
 
     def export_config(self):
-        """Export HFSS extent information.
+        """
+        Export HFSS extent information.
 
         Returns:
         dict
             Parameters of the HFSS extent information.
+
         """
         config = dict()
         for i in dir(self):

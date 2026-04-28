@@ -144,11 +144,13 @@ class Terminal(Connectable):
 
     @property
     def terminal_type(self):
-        """Terminal Type.
+        """
+        Terminal Type.
 
         Returns
         -------
         int
+
         """
         return TerminalTypeMapper.get_dotnet(self._edb_object.GetTerminalType().ToString())
 
@@ -160,13 +162,15 @@ class Terminal(Connectable):
 
     @property
     def boundary_type(self):
-        """Boundary type.
+        """
+        Boundary type.
 
         Returns
         -------
         str
             InvalidBoundary, PortBoundary, PecBoundary, RlcBoundary, kCurrentSource, kVoltageSource, kNexximGround,
             kNexximPort, kDcTerminal, kVoltageProbe
+
         """
         return BoundaryTypeMapper.get_dotnet(self._edb_object.GetBoundaryType().ToString())
 
@@ -221,7 +225,8 @@ class Terminal(Connectable):
     @property
     @deprecated_property("use reference_terminal property instead.")
     def ref_terminal(self):
-        """Get reference terminal.
+        """
+        Get reference terminal.
 
         .deprecated:: pyedb 0.47.0
         Use: attribute:`reference_terminal` instead.
@@ -235,13 +240,15 @@ class Terminal(Connectable):
 
     @property
     def reference_object(self):  # pragma : no cover
-        """This returns the object assigned as reference. It can be a primitive or a padstack instance.
+        """
+        This returns the object assigned as reference. It can be a primitive or a padstack instance.
 
 
         Returns
         -------
         :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` or
         :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+
         """
         if not self._reference_object:
             term = self._edb_object
@@ -274,7 +281,8 @@ class Terminal(Connectable):
         return ""
 
     def get_padstack_terminal_reference_pin(self, gnd_net_name_preference=None):  # pragma : no cover
-        """Get a list of pad stacks instances and serves Coax wave ports,
+        """
+        Get a list of pad stacks instances and serves Coax wave ports,
         pingroup terminals, PadEdge terminals.
 
         Parameters
@@ -285,6 +293,7 @@ class Terminal(Connectable):
         Returns
         -------
         :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
+
         """
 
         if self._edb_object.GetIsCircuitPort():
@@ -297,7 +306,8 @@ class Terminal(Connectable):
         return self._get_closest_pin(padStackInstance, pins, gnd_net_name_preference)
 
     def get_pin_group_terminal_reference_pin(self, gnd_net_name_preference=None):  # pragma : no cover
-        """Return a list of pins and serves terminals connected to pingroups.
+        """
+        Return a list of pins and serves terminals connected to pingroups.
 
         Parameters
         ----------
@@ -307,6 +317,7 @@ class Terminal(Connectable):
         Returns
         -------
         :class:`dotnet.database.edb_data.padstack_data.EDBPadstackInstance`
+
         """
 
         refTerm = self._edb_object.GetReferenceTerminal()
@@ -332,12 +343,14 @@ class Terminal(Connectable):
         return False
 
     def get_edge_terminal_reference_primitive(self):  # pragma : no cover
-        """Check and  return a primitive instance that serves Edge ports,
+        """
+        Check and  return a primitive instance that serves Edge ports,
         wave ports and coupled edge ports that are directly connedted to primitives.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+
         """
 
         ref_layer = self._edb_object.GetReferenceLayer()
@@ -355,12 +368,14 @@ class Terminal(Connectable):
         return None  # pragma: no cover
 
     def get_point_terminal_reference_primitive(self):  # pragma : no cover
-        """Find and return the primitive reference for the point terminal or the padstack instance.
+        """
+        Find and return the primitive reference for the point terminal or the padstack instance.
 
         Returns
         -------
         :class:`dotnet.database.edb_data.padstacks_data.EDBPadstackInstance` or
         :class:`pyedb.dotnet.database.edb_data.primitives_data.EDBPrimitives`
+
         """
 
         ref_term = self._edb_object.GetReferenceTerminal()  # return value is type terminal
@@ -385,7 +400,8 @@ class Terminal(Connectable):
         return False
 
     def get_pad_edge_terminal_reference_pin(self, gnd_net_name_preference=None):
-        """Get the closest pin padstack instances and serves any edge terminal connected to a pad.
+        """
+        Get the closest pin padstack instances and serves any edge terminal connected to a pad.
 
         Parameters
         ----------
@@ -395,6 +411,7 @@ class Terminal(Connectable):
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.padstacks_data.EDBPadstackInstance`
+
         """
         comp_inst = self._edb_object.GetComponent()
         pins = self._pedb.components.get_pin_from_component(comp_inst.GetName())

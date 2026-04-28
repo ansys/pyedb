@@ -52,7 +52,8 @@ def plot_matplotlib(
     annotations=None,
     show=True,
 ):
-    """Create a matplotlib plot based on a list of data.
+    """
+    Create a matplotlib plot based on a list of data.
 
     Parameters
     ----------
@@ -92,6 +93,7 @@ def plot_matplotlib(
     -------
     :class:`matplotlib.plt`
         Matplotlib fig object.
+
     """
     dpi = 100.0
     figsize = (size[0] / dpi, size[1] / dpi)

@@ -40,7 +40,8 @@ class LayerMap:
 
     @classmethod
     def create(cls, direction: str = "two_way") -> LayerMap:
-        """Create a layer map.
+        """
+        Create a layer map.
 
         Parameters
         ----------
@@ -51,6 +52,7 @@ class LayerMap:
         -------
         LayerMap
             Layer map object.
+
         """
         mapping = {
             "two_way": CoreLayerMapUniqueDirection.TWOWAY_UNIQUE,
@@ -62,23 +64,27 @@ class LayerMap:
 
     @property
     def id(self):
-        """Get the layer map ID.
+        """
+        Get the layer map ID.
 
         Returns
         -------
         int
             Layer map ID.
+
         """
         return self.core.id
 
     @property
     def is_null(self) -> bool:
-        """Check if the layer map is null.
+        """
+        Check if the layer map is null.
 
         Returns
         -------
         bool
             True if the layer map is null, False otherwise.
+
         """
         return self.core.is_null
 
@@ -87,7 +93,8 @@ class LayerMap:
         self.core.clear()
 
     def get_mapping_backward(self, layer_id: int) -> int:
-        """Get the backward mapping for a given layer ID.
+        """
+        Get the backward mapping for a given layer ID.
 
         Parameters
         ----------
@@ -98,11 +105,13 @@ class LayerMap:
         -------
         int
             Mapped layer ID.
+
         """
         return self.core.get_mapping_backward(layer_id)
 
     def get_mapping_forward(self, layer_id: int) -> int:
-        """Get the forward mapping for a given layer ID.
+        """
+        Get the forward mapping for a given layer ID.
 
         Parameters
         ----------
@@ -113,11 +122,13 @@ class LayerMap:
         -------
         int
             Mapped layer ID.
+
         """
         return self.core.get_mapping_forward(layer_id)
 
     def set_mapping(self, layer_id_from: int, layer_id_to: int):
-        """Set the mapping from one layer ID to another.
+        """
+        Set the mapping from one layer ID to another.
 
         Parameters
         ----------
@@ -125,5 +136,6 @@ class LayerMap:
             Layer ID to map from.
         layer_id_to : int
             Layer ID to map to.
+
         """
         self.core.set_mapping(layer_id_from, layer_id_to)

@@ -35,12 +35,14 @@ class Q3DACRLSettings:
 
     @property
     def max_passes(self) -> int:
-        """Maximum number of mesh refinement cycles to perform.
+        """
+        Maximum number of mesh refinement cycles to perform.
 
         Returns
         -------
         int
             Maximum number of passes.
+
         """
         return self.core.max_passes
 
@@ -50,12 +52,14 @@ class Q3DACRLSettings:
 
     @property
     def max_refine_per_pass(self) -> float:
-        """Maximum percentage of elements to refine per pass.
+        """
+        Maximum percentage of elements to refine per pass.
 
         Returns
         -------
         float
             Maximum percentage of elements to refine per pass.
+
         """
         return self.core.max_refine_per_pass
 
@@ -65,12 +69,14 @@ class Q3DACRLSettings:
 
     @property
     def min_converged_passes(self) -> int:
-        """Minimum number of converged passes required.
+        """
+        Minimum number of converged passes required.
 
         Returns
         -------
         int
             Minimum number of converged passes.
+
         """
         return self.core.min_converged_passes
 
@@ -80,12 +86,14 @@ class Q3DACRLSettings:
 
     @property
     def min_passes(self) -> int:
-        """Minimum number of passes required.
+        """
+        Minimum number of passes required.
 
         Returns
         -------
         int
             Minimum number of passes.
+
         """
         return self.core.min_passes
 
@@ -95,12 +103,14 @@ class Q3DACRLSettings:
 
     @property
     def percent_error(self) -> float:
-        """Target percent error for convergence.
+        """
+        Target percent error for convergence.
 
         Returns
         -------
         float
             Target percent error.
+
         """
         return self.core.percent_error
 

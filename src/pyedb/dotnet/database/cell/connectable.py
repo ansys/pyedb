@@ -32,11 +32,13 @@ class Connectable(LayoutObj):
 
     @property
     def net(self):
-        """Net Object.
+        """
+        Net Object.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.nets_data.EDBNetsData`
+
         """
         from pyedb.dotnet.database.edb_data.nets_data import EDBNetsData
 
@@ -50,12 +52,14 @@ class Connectable(LayoutObj):
 
     @property
     def net_name(self):
-        """Get the primitive layer name.
+        """
+        Get the primitive layer name.
 
 
         Returns
         -------
         str
+
         """
         net = self._edb_object.GetNet()
         if net.IsNull():
@@ -73,11 +77,13 @@ class Connectable(LayoutObj):
 
     @property
     def component(self):
-        """Component connected to this object.
+        """
+        Component connected to this object.
 
         Returns
         -------
         :class:`dotnet.database.edb_data.nets_data.EDBComponent`
+
         """
         return self._pedb.layout.find_component_by_name(self.component_name) if self.component_name else ""
 
@@ -95,21 +101,25 @@ class Connectable(LayoutObj):
             return comp.GetName()
 
     def get_connected_objects(self):
-        """Get connected objects.
+        """
+        Get connected objects.
 
         Returns
         -------
         list
+
         """
         return self._pedb.get_connected_objects(self._layout_obj_instance)
 
     def get_connected_object_id_set(self):
-        """Produce a list of all geometries physically connected to a given layout object.
+        """
+        Produce a list of all geometries physically connected to a given layout object.
 
         Returns
         -------
         list
             Found connected objects IDs with Layout object.
+
         """
         layoutInst = self._edb_object.GetLayout().GetLayoutInstance()
         layoutObjInst = layoutInst.GetLayoutObjInstance(self._edb_object, None)  # 2nd arg was []
@@ -133,7 +143,8 @@ class Connectable(LayoutObj):
 
     @property
     def dcir_equipotential_region(self) -> bool:
-        """Get or set whether this primitive or padstack instance has a DCIR equipotential region. If this padstack
+        """
+        Get or set whether this primitive or padstack instance has a DCIR equipotential region. If this padstack
         instance has pads on multiple layers, the region is set on top layer.
         """
         emp = self.get_em_properties()

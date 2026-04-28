@@ -38,7 +38,8 @@ class HFSSPISimulationSettings:
 
     @property
     def advanced(self) -> HFSSPIAdvancedSettings:
-        """Get the HFSS PI advanced simulation settings.
+        """
+        Get the HFSS PI advanced simulation settings.
 
         Returns
         -------
@@ -50,7 +51,8 @@ class HFSSPISimulationSettings:
 
     @property
     def enabled(self) -> bool:
-        """Get or set the enabled status of the HFSS PI simulation setup.
+        """
+        Get or set the enabled status of the HFSS PI simulation setup.
 
         Returns
         -------
@@ -66,7 +68,8 @@ class HFSSPISimulationSettings:
 
     @property
     def general(self) -> HFSSPIGeneralSettings:
-        """Get the HFSS PI general simulation settings.
+        """
+        Get the HFSS PI general simulation settings.
 
         Returns
         -------
@@ -78,7 +81,8 @@ class HFSSPISimulationSettings:
 
     @property
     def solver(self):
-        """Get the HFSS PI solver simulation settings.
+        """
+        Get the HFSS PI solver simulation settings.
 
         Returns
         -------

@@ -39,12 +39,14 @@ class DifferentialPairs:
 
     @property
     def items(self) -> dict[str, DifferentialPair]:
-        """Extended nets.
+        """
+        Extended nets.
 
         Returns
         -------
         dict[str, :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`]
             Dictionary of extended nets.
+
         """
         diff_pairs = {}
         for diff_pair in self._pedb.layout.differential_pairs:
@@ -54,7 +56,6 @@ class DifferentialPairs:
     def create(self, name, net_p, net_n):
         # type: (str, str, str) -> DifferentialPair
         """
-
         Parameters
         ----------
         name : str
@@ -67,6 +68,7 @@ class DifferentialPairs:
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.nets_data.EDBDifferentialPairData`
+
         """
         if name in self.items:
             self._pedb.logger.error("{} already exists.".format(name))
@@ -75,7 +77,8 @@ class DifferentialPairs:
         return self.items[name]
 
     def auto_identify(self, positive_differentiator="_P", negative_differentiator="_N") -> list[str]:
-        """Auto identify differential pairs by naming conversion.
+        """
+        Auto identify differential pairs by naming conversion.
 
         Parameters
         ----------
@@ -94,6 +97,7 @@ class DifferentialPairs:
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", edbversion="2026.1")
         >>> edb_nets = edbapp.differential_pairs.auto_identify()
+
         """
         nets = self._pedb.nets.nets
         pos_net = []
@@ -123,7 +127,8 @@ class DifferentialPairs:
 
 
 class DifferentialPair(CoreDifferentialPair):
-    """Manages EDB functionalities for a primitive.
+    """
+    Manages EDB functionalities for a primitive.
     It inherits EDB object properties.
     """
 

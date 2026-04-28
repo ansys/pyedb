@@ -37,12 +37,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def ac_dc_merge_mode(self) -> int:
-        """AC/DC merge mode.
+        """
+        AC/DC merge mode.
 
         Returns
         -------
         int
             AC/DC merge mode.
+
         """
         return self.core.ac_dc_merge_mode
 
@@ -52,12 +54,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def cross_talk_threshold(self) -> float:
-        """Cross talk threshold.
+        """
+        Cross talk threshold.
 
         Returns
         -------
         float
             Cross talk threshold.
+
         """
         return self._pedb.value(self.core.cross_talk_threshold)
 
@@ -67,12 +71,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def ignore_non_functional_pads(self) -> bool:
-        """Ignore non-functional pads flag.
+        """
+        Ignore non-functional pads flag.
 
         Returns
         -------
         bool
             Ignore non-functional pads flag.
+
         """
         return self.core.ignore_non_functional_pads
 
@@ -82,12 +88,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_co_plane_coupling(self) -> bool:
-        """Include co-plane coupling flag.
+        """
+        Include co-plane coupling flag.
 
         Returns
         -------
         bool
             Include co-plane coupling flag.
+
         """
         return self.core.include_co_plane_coupling
 
@@ -97,12 +105,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_fringe_plane_coupling(self) -> bool:
-        """Include fringe plane coupling flag.
+        """
+        Include fringe plane coupling flag.
 
         Returns
         -------
         bool
             Include fringe plane coupling flag.
+
         """
         return self.core.include_fringe_plane_coupling
 
@@ -112,12 +122,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_inf_gnd(self) -> bool:
-        """Include infinite ground flag.
+        """
+        Include infinite ground flag.
 
         Returns
         -------
         bool
             Include infinite ground flag.
+
         """
         return self.core.include_inf_gnd
 
@@ -127,12 +139,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_inter_plane_coupling(self) -> bool:
-        """Include inter-plane coupling flag.
+        """
+        Include inter-plane coupling flag.
 
         Returns
         -------
         bool
             Include inter-plane coupling flag.
+
         """
         return self.core.include_inter_plane_coupling
 
@@ -142,12 +156,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_split_plane_coupling(self) -> bool:
-        """Include split plane coupling flag.
+        """
+        Include split plane coupling flag.
 
         Returns
         -------
         bool
             Include split plane coupling flag.
+
         """
         return self.core.include_split_plane_coupling
 
@@ -157,12 +173,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_trace_plane_coupling(self) -> bool:
-        """Include trace-plane coupling flag.
+        """
+        Include trace-plane coupling flag.
 
         Returns
         -------
         bool
             Include trace-plane coupling flag.
+
         """
         return self.core.include_trace_plane_coupling
 
@@ -172,12 +190,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def include_vi_sources(self) -> bool:
-        """Include VI sources flag.
+        """
+        Include VI sources flag.
 
         Returns
         -------
         bool
             Include VI sources flag.
+
         """
         return self.core.include_vi_sources
 
@@ -187,12 +207,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def inf_gnd_location(self) -> float:
-        """Infinite ground location.
+        """
+        Infinite ground location.
 
         Returns
         -------
         float
             Infinite ground location.
+
         """
         return self._pedb.value(self.core.inf_gnd_location)
 
@@ -202,12 +224,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def max_coupled_lines(self) -> int:
-        """Maximum coupled lines.
+        """
+        Maximum coupled lines.
 
         Returns
         -------
         int
             Maximum coupled lines.
+
         """
         return self.core.max_coupled_lines
 
@@ -217,12 +241,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def mesh_automatic(self) -> bool:
-        """Automatic mesh flag.
+        """
+        Automatic mesh flag.
 
         Returns
         -------
         bool
             Automatic mesh flag.
+
         """
         return self.core.mesh_automatic
 
@@ -232,12 +258,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def mesh_frequency(self) -> float:
-        """Mesh frequency.
+        """
+        Mesh frequency.
 
         Returns
         -------
         float
             Mesh frequency.
+
         """
         return self._pedb.value(self.core.mesh_frequency)
 
@@ -247,12 +275,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def min_pad_area_to_mesh(self) -> float:
-        """Minimum pad area to mesh.
+        """
+        Minimum pad area to mesh.
 
         Returns
         -------
         float
             Minimum pad area to mesh.
+
         """
         return self._pedb.value(self.core.min_pad_area_to_mesh)
 
@@ -262,12 +292,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def min_plane_area_to_mesh(self) -> float:
-        """Minimum plane area to mesh.
+        """
+        Minimum plane area to mesh.
 
         Returns
         -------
         float
             Minimum plane area to mesh.
+
         """
         return self._pedb.value(self.core.min_plane_area_to_mesh)
 
@@ -277,12 +309,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def min_void_area(self) -> str:
-        """Minimum void area.
+        """
+        Minimum void area.
 
         Returns
         -------
         float
             Minimum void area.
+
         """
         value = self.core.min_void_area
         return self._pedb.value(value)
@@ -294,12 +328,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def perform_erc(self) -> bool:
-        """Perform ERC flag.
+        """
+        Perform ERC flag.
 
         Returns
         -------
         bool
             Perform ERC flag.
+
         """
         return self.core.perform_erc
 
@@ -309,12 +345,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def return_current_distribution(self) -> bool:
-        """Return current distribution flag.
+        """
+        Return current distribution flag.
 
         Returns
         -------
         bool
             Return current distribution flag.
+
         """
         return self.core.return_current_distribution
 
@@ -324,12 +362,14 @@ class SIWaveAdvancedSettings:
 
     @property
     def snap_length_threshold(self) -> float:
-        """Snap length threshold.
+        """
+        Snap length threshold.
 
         Returns
         -------
         float
             Snap length threshold.
+
         """
         return self._pedb.value(self.core.snap_length_threshold)
 

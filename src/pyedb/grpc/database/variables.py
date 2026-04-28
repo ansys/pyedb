@@ -45,11 +45,13 @@ class Variable:
 
     @property
     def value(self):
-        """Get the value of this variable.
+        """
+        Get the value of this variable.
 
         Returns
         -------
         float
+
         """
         return CoreValue(self._pedb.get_variable_value(self.name))
 
@@ -72,7 +74,8 @@ class Variable:
         return self._pedb.is_parameter(self.name)
 
     def delete(self):
-        """Delete this variable.
+        """
+        Delete this variable.
 
         Returns
         -------
@@ -84,5 +87,6 @@ class Variable:
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.design_variables["new_variable"].delete()
+
         """
         return self._pedb.delete(self.name)

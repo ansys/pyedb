@@ -40,7 +40,8 @@ from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class Hfss:
-    """Manages EDB methods for HFSS setup configuration.
+    """
+    Manages EDB methods for HFSS setup configuration.
 
     Provides access to HFSS-specific operations including:
     - Excitation and port creation
@@ -57,85 +58,100 @@ class Hfss:
 
     @property
     def hfss_extent_info(self) -> HfssExtentInfo:
-        """HFSS extent information.
+        """
+        HFSS extent information.
 
         Returns
         -------
         HfssExtentInfo
             Object containing HFSS extent configuration data.
+
         """
         return HfssExtentInfo(self._pedb)
 
     @property
     def _logger(self):
-        """Logger instance for message handling.
+        """
+        Logger instance for message handling.
 
         Returns
         -------
         logging.Logger
             Current logger instance.
+
         """
         return self._pedb.logger
 
     @property
     def _edb(self):
-        """EDB API object.
+        """
+        EDB API object.
 
         Returns
         -------
         Ansys.Ansoft.Edb
             EDB API instance.
+
         """
         return self._pedb
 
     @property
     def _active_layout(self):
-        """Active layout object.
+        """
+        Active layout object.
 
         Returns
         -------
         Edb.Cell.Layout
             Current active layout.
+
         """
         return self._pedb.active_layout
 
     @property
     def _layout(self):
-        """Current layout object.
+        """
+        Current layout object.
 
         Returns
         -------
         Edb.Cell.Layout
             Current layout.
+
         """
         return self._pedb.layout
 
     @property
     def _cell(self):
-        """Current cell object.
+        """
+        Current cell object.
 
         Returns
         -------
         Edb.Cell
             Current cell.
+
         """
         return self._pedb.cell
 
     @property
     def _db(self):
-        """Active database object.
+        """
+        Active database object.
 
         Returns
         -------
         Edb.Database
             Active database.
+
         """
         return self._pedb.active_db
 
     @property
     @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         .. deprecated:: 0.71.0
            Use :attr: ports instead.
@@ -153,7 +169,8 @@ class Hfss:
 
     @property
     def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         Returns
         -------
@@ -168,28 +185,33 @@ class Hfss:
 
     @property
     def sources(self):
-        """All source definitions in the layout.
+        """
+        All source definitions in the layout.
 
         Returns
         -------
         list
             List of source objects.
+
         """
         return self._pedb.sources
 
     @property
     def probes(self):
-        """All probe definitions in the layout.
+        """
+        All probe definitions in the layout.
 
         Returns
         -------
         list
             List of probe objects.
+
         """
         return self._pedb.probes
 
     def get_trace_width_for_traces_with_ports(self):
-        """Retrieve trace widths for traces with ports.
+        """
+        Retrieve trace widths for traces with ports.
 
         Returns
         -------
@@ -203,6 +225,7 @@ class Hfss:
         >>> widths = edb.hfss.get_trace_width_for_traces_with_ports()
         >>> for net_name, width in widths.items():
         ...     print(f"Net '{net_name}': Smallest width = {width}")
+
         """
         nets = {}
         for net in self._pedb.excitations_nets:
@@ -233,7 +256,8 @@ class Hfss:
         )
 
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
-        """Calculate layout bounding box.
+        """
+        Calculate layout bounding box.
 
         Parameters
         ----------
@@ -255,6 +279,7 @@ class Hfss:
         >>> print(f"Layout Bounding Box: {bbox}")
         >>> custom_layout = edb.active_layout
         >>> bbox = edb.hfss.get_layout_bounding_box(custom_layout, 5)
+
         """
         if not layout:
             layout = self._active_layout
@@ -273,7 +298,8 @@ class Hfss:
         return layout_bbox
 
     def _setup_decade_count_sweep(self, sweep, start_freq="1", stop_freq="1MHz", decade_count="10"):
-        """Configure decade count sweep (internal).
+        """
+        Configure decade count sweep (internal).
 
         Parameters
         ----------
@@ -285,6 +311,7 @@ class Hfss:
             Stop frequency.
         decade_count : str, float, optional
             Points per decade.
+
         """
         start_f = GeometryOperators.parse_dim_arg(start_freq)
         if start_f == 0.0:
@@ -301,7 +328,8 @@ class Hfss:
             sweep.Frequencies.Add(str(freq))
 
     def _get_terminals_bbox(self, comp, l_inst, terminals_only):
-        """Get component terminals bounding box (internal).
+        """
+        Get component terminals bounding box (internal).
 
         Parameters
         ----------
@@ -316,6 +344,7 @@ class Hfss:
         -------
         PolygonData
             Bounding box polygon.
+
         """
         terms_loi = []
         if terminals_only:
@@ -369,7 +398,8 @@ class Hfss:
         )
 
     def generate_auto_hfss_regions(self):
-        """Generate auto HFSS regions.
+        """
+        Generate auto HFSS regions.
 
         This method automatically identifies areas for use as HFSS regions in SIwave simulations.
         """

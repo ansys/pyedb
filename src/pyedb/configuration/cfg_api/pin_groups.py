@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build ``pin_groups`` configuration entries.
+"""
+Build ``pin_groups`` configuration entries.
 
 ``CfgPinGroup`` depends on a live EDB object for creation, so this module uses
 plain Python builders that serialize into the schema expected by the
@@ -32,7 +33,8 @@ from typing import List, Optional, Union
 
 
 class PinGroupConfig:
-    """Fluent builder for a single pin group.
+    """
+    Fluent builder for a single pin group.
 
     Parameters
     ----------
@@ -52,7 +54,8 @@ class PinGroupConfig:
         pins: Optional[List[str]] = None,
         net: Optional[Union[str, List[str]]] = None,
     ):
-        """Initialize a pin group configuration.
+        """
+        Initialize a pin group configuration.
 
         Parameters
         ----------
@@ -72,7 +75,8 @@ class PinGroupConfig:
         self.net = net
 
     def to_dict(self) -> dict:
-        """Serialize the pin-group definition.
+        """
+        Serialize the pin-group definition.
 
         Returns
         -------
@@ -103,7 +107,8 @@ class PinGroupsConfig:
         pins: Optional[List[str]] = None,
         net: Optional[Union[str, List[str]]] = None,
     ) -> PinGroupConfig:
-        """Add a pin group.
+        """
+        Add a pin group.
 
         Parameters
         ----------
@@ -126,7 +131,8 @@ class PinGroupsConfig:
         return pg
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured pin groups.
+        """
+        Serialize all configured pin groups.
 
         Returns
         -------

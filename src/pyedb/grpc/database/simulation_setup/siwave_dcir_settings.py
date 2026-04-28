@@ -59,12 +59,14 @@ class SIWaveDCIRSettings:
 
     @property
     def dc_report_config_file(self) -> str:
-        """DC report configuration file path.
+        """
+        DC report configuration file path.
 
         Returns
         -------
         str:
             file path.
+
         """
         return self.core.dc_report_config_file
 
@@ -74,12 +76,14 @@ class SIWaveDCIRSettings:
 
     @property
     def dc_report_show_active_devices(self) -> bool:
-        """Whether to show active devices in the DC report.
+        """
+        Whether to show active devices in the DC report.
 
         Returns
         -------
         bool:
             True if active devices are shown, False otherwise.
+
         """
         return self.core.dc_report_show_active_devices
 
@@ -89,12 +93,14 @@ class SIWaveDCIRSettings:
 
     @property
     def enabled(self):
-        """Whether the DC IR simulation is enabled.
+        """
+        Whether the DC IR simulation is enabled.
 
         Returns
         -------
         bool:
             True if enabled, False otherwise.
+
         """
         return self.core.enabled
 
@@ -104,12 +110,14 @@ class SIWaveDCIRSettings:
 
     @property
     def export_dc_thermal_data(self) -> bool:
-        """Whether to export DC thermal data.
+        """
+        Whether to export DC thermal data.
 
         Returns
         -------
         bool:
             True if DC thermal data is exported, False otherwise.
+
         """
         return self.core.export_dc_thermal_data
 
@@ -119,12 +127,14 @@ class SIWaveDCIRSettings:
 
     @property
     def full_dc_report_path(self) -> str:
-        """Full DC report path.
+        """
+        Full DC report path.
 
         Returns
         -------
         str:
             file path.
+
         """
         return self.core.full_dc_report_path
 
@@ -134,12 +144,14 @@ class SIWaveDCIRSettings:
 
     @property
     def icepak_temp_file(self) -> str:
-        """Icepak temperature file path.
+        """
+        Icepak temperature file path.
 
         Returns
         -------
         str:
             file path.
+
         """
         return self.core.icepak_temp_file
 
@@ -149,12 +161,14 @@ class SIWaveDCIRSettings:
 
     @property
     def import_thermal_data(self) -> bool:
-        """Whether to import thermal data.
+        """
+        Whether to import thermal data.
 
         Returns
         -------
         bool:
             True if thermal data is imported, False otherwise.
+
         """
         return self.core.import_thermal_data
 
@@ -164,12 +178,14 @@ class SIWaveDCIRSettings:
 
     @property
     def per_pin_res_path(self) -> str:
-        """Per-pin resistance file path.
+        """
+        Per-pin resistance file path.
 
         Returns
         -------
         str:
             file path.
+
         """
         return self.core.per_pin_res_path
 
@@ -179,12 +195,14 @@ class SIWaveDCIRSettings:
 
     @property
     def per_pin_use_pin_format(self) -> bool:
-        """Whether to use pin format for per-pin resistance.
+        """
+        Whether to use pin format for per-pin resistance.
 
         Returns
         -------
         bool:
             True if pin format is used, False otherwise.
+
         """
         return self.core.per_pin_use_pin_format
 
@@ -193,7 +211,8 @@ class SIWaveDCIRSettings:
         self.core.per_pin_use_pin_format = value
 
     def add_source_terminal_to_ground(self, source_name: str, terminal: int = 1) -> None:
-        """Add source terminal to ground mapping.
+        """
+        Add source terminal to ground mapping.
 
         Parameters
         ----------
@@ -202,18 +221,21 @@ class SIWaveDCIRSettings:
         terminal : int
             The terminal number to reference. `0` set the positive terminal `1` set the negative terminal as reference.
             Default is `1`
+
         """
         temp = {source_name: terminal}
         self.source_terms_to_ground = {**self.source_terms_to_ground, **temp}
 
     @property
     def source_terms_to_ground(self) -> dict[str, int]:
-        """Source terms to ground mapping.
+        """
+        Source terms to ground mapping.
 
         Returns
         -------
         dict[str, int]:
             Mapping of source terms to ground.
+
         """
         return self.core.source_terms_to_ground
 
@@ -223,12 +245,14 @@ class SIWaveDCIRSettings:
 
     @property
     def use_loop_res_for_per_pin(self) -> bool:
-        """Whether to use loop resistance for per-pin resistance.
+        """
+        Whether to use loop resistance for per-pin resistance.
 
         Returns
         -------
         bool:
             True if loop resistance is used for per-pin resistance, False otherwise.
+
         """
         return self.core.use_loop_res_for_per_pin
 
@@ -238,12 +262,14 @@ class SIWaveDCIRSettings:
 
     @property
     def via_report_path(self) -> str:
-        """Via report file path.
+        """
+        Via report file path.
 
         Returns
         -------
         str:
             file path.
+
         """
         return self.core.via_report_path
 

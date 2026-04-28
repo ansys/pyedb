@@ -66,17 +66,20 @@ def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
 
 
 class Modeler(object):
-    """Manages EDB methods for primitives management accessible from `Edb.modeler`.
+    """
+    Manages EDB methods for primitives management accessible from `Edb.modeler`.
 
     Examples
     --------
     >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder", edbversion="2021.2")
     >>> edb_layout = edbapp.modeler
+
     """
 
     def __getitem__(self, name: Union[str, int]) -> Primitive:
-        """Get a primitive by name or ID.
+        """
+        Get a primitive by name or ID.
 
         Parameters
         ----------
@@ -92,6 +95,7 @@ class Modeler(object):
         ------
         TypeError
             If name is not str or int.
+
         """
 
         if isinstance(name, int):
@@ -120,7 +124,8 @@ class Modeler(object):
     @property
     @deprecated_property("use edb.layout.primitives property instead.", category=None)
     def primitives(self):
-        """Primitives.
+        """
+        Primitives.
 
         .. deprecated:: 0.70.0
            Use :attr:`edb.layout.primitives` instead.
@@ -129,6 +134,7 @@ class Modeler(object):
         -------
         list of :class:`pyedb.grpc.database.primitives.Primitive`
             List of primitives.
+
         """
         warnings.warn("Deprecated. Use `edb.layout.primitives` instead.", DeprecationWarning, stacklevel=2)
         return self._pedb.layout.primitives
@@ -136,7 +142,8 @@ class Modeler(object):
     @property
     @deprecated_property("use layout.primitives_by_layer property instead.")
     def primitives_by_layer(self):
-        """Primitives organized by layer names.
+        """
+        Primitives organized by layer names.
 
         .. deprecated:: 0.70.0
         use layout.primitives_by_layer property instead.
@@ -146,7 +153,8 @@ class Modeler(object):
 
     @deprecated("use layout.find_object_by_id instead.")
     def get_primitive(self, primitive_id: int) -> list[Primitive]:
-        """Retrieve primitive from give id.
+        """
+        Retrieve primitive from give id.
 
         .. deprecated:: 0.70.0
         use layout.find_object_by_id method instead.
@@ -160,13 +168,15 @@ class Modeler(object):
         -------
         list of :class:`pyedb.grpc.database.primitive.primitive.Primitive`
             List of primitives.
+
         """
         return self._pedb.layout.find_object_by_id(primitive_id)
 
     @property
     @deprecated_property("use layout.polygons_by_layer property instead.")
     def polygons_by_layer(self) -> dict[str, List[Polygon]]:
-        """Primitives with layer names as keys.
+        """
+        Primitives with layer names as keys.
 
         .. deprecated:: 0.70.0
         use layout.polygons_by_layer property instead.
@@ -175,25 +185,29 @@ class Modeler(object):
         -------
         dict
             Dictionary of polygons with layer names as keys.
+
         """
         return self._pedb.layout.polygons_by_layer
 
     @property
     @deprecated_property("use layout.rectangles property instead.")
     def rectangles(self) -> List[Union[Rectangle, Primitive]]:
-        """All rectangle primitives.
+        """
+        All rectangle primitives.
 
         Returns
         -------
         list
             List of :class:`pyedb.grpc.database.edb_data.primitives_data.Rectangle` objects.
+
         """
         return self._pedb.layout.rectangles
 
     @property
     @deprecated_property("use layout.circles property instead.")
     def circles(self) -> List[Union[Circle, Primitive]]:
-        """All circle primitives.
+        """
+        All circle primitives.
 
         .. deprecated:: 0.70.0
         use layout.circles instead.
@@ -202,13 +216,15 @@ class Modeler(object):
         -------
         list
             List of :class:`pyedb.grpc.database.edb_data.primitives_data.Circle` objects.
+
         """
         return self._pedb.layout.circles
 
     @property
     @deprecated_property("use layout.paths property instead.")
     def paths(self) -> List[Union[Path, Primitive]]:
-        """All path primitives.
+        """
+        All path primitives.
 
         .. deprecated:: 0.70.0
         use layout.paths instead.
@@ -217,24 +233,28 @@ class Modeler(object):
         -------
         list
             List of :class:`pyedb.grpc.database.edb_data.primitives_data.Path` objects.
+
         """
         return self._pedb.layout.paths
 
     @property
     def texts(self) -> List[Union[Text, Primitive]]:
-        """All text primitives.
+        """
+        All text primitives.
 
         Returns
         -------
         list
             List of :class:`pyedb.grpc.database.edb_data.primitives_data.Text` objects.
+
         """
         return [i for i in self._pedb.layout.primitives if i.primitive_type == "text"]
 
     @property
     @deprecated_property("use layout.polygons property instead.")
     def polygons(self) -> List[Union[Polygon, Primitive]]:
-        """All polygon primitives.
+        """
+        All polygon primitives.
 
         .. deprecated:: 0.70.0
         use layout.polygons instead.
@@ -243,13 +263,15 @@ class Modeler(object):
         -------
         list
             List of :class:`pyedb.grpc.database.primitive.polygon.Polygon` objects.
+
         """
         return self._pedb.layout.polygons
 
     @property
     @deprecated_property("use layout.primitives_by_net property instead.")
     def primitives_by_net(self) -> dict[str, List[Primitive]]:
-        """Primitives with net names as keys.
+        """
+        Primitives with net names as keys.
 
         .. deprecated:: 0.70.0
         use layout.primitives_by_net instead.
@@ -258,12 +280,14 @@ class Modeler(object):
         -------
         dict
             Dictionary of primitives with net names as keys.
+
         """
         return self._pedb.layout.primitives_by_net
 
     @deprecated("use layout.get_polygons_by_layer method instead.")
     def get_polygons_by_layer(self, layer_name: str, net_list: Optional[List[str]] = None) -> List[Primitive]:
-        """Retrieve polygons by layer.
+        """
+        Retrieve polygons by layer.
 
         .. deprecated:: 0.70.0
         use layout.get_polygons_by_layer method instead.
@@ -279,6 +303,7 @@ class Modeler(object):
         -------
         list
             List of polygon objects.
+
         """
         return self._pedb.layout.get_polygons_by_layer(layer=layer_name, nets=net_list)
 
@@ -289,7 +314,8 @@ class Modeler(object):
         layer: Optional[Union[str, List[str]]] = None,
         nets: Optional[Union[str, List[str]]] = None,
     ) -> List[Primitive]:
-        """Get primitive at specified point on layer.
+        """
+        Get primitive at specified point on layer.
 
         Parameters
         ----------
@@ -309,12 +335,14 @@ class Modeler(object):
         ------
         ValueError
             If point is invalid.
+
         """
         return self._pedb.layout.get_primitive_by_layer_and_point(point=point, layer=layer, nets=nets)
 
     @deprecated("use layout.get_polygon_bounding_box method instead.")
     def get_polygon_bounding_box(self, polygon: Primitive) -> List[float]:
-        """Get bounding box of polygon.
+        """
+        Get bounding box of polygon.
 
         .. deprecated:: 0.70.0
         use layout.get_polygon_bounding_box method instead.
@@ -328,12 +356,14 @@ class Modeler(object):
         -------
         list
             Bounding box coordinates [min_x, min_y, max_x, max_y].
+
         """
         return self._pedb.layout.get_polygon_bounding_box(polygon)
 
     @deprecated("use layout.get_polygon_points method instead.")
     def get_polygon_points(self, polygon) -> List[List[float]]:
-        """Get points defining a polygon.
+        """
+        Get points defining a polygon.
 
         .. deprecated:: 0.70.0
         use layout.get_polygon_points method instead.
@@ -347,11 +377,13 @@ class Modeler(object):
         -------
         list
             List of point coordinates.
+
         """
         return self._pedb.layout.get_polygon_points(polygon)
 
     def parametrize_polygon(self, polygon, selection_polygon, offset_name="offsetx", origin=None) -> bool:
-        """Parametrize polygon points based on another polygon.
+        """
+        Parametrize polygon points based on another polygon.
 
         Parameters
         ----------
@@ -368,6 +400,7 @@ class Modeler(object):
         -------
         bool
             True if successful, False otherwise.
+
         """
 
         def calc_slope(point, origin):
@@ -470,6 +503,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Primitive`
             ``True`` when successful, ``False`` when failed.
+
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         _points = []
@@ -513,7 +547,8 @@ class Modeler(object):
         end_cap_style: str = "Round",
         corner_style: str = "Round",
     ) -> Optional[Primitive]:
-        """Create trace path.
+        """
+        Create trace path.
 
         Parameters
         ----------
@@ -537,6 +572,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Path` or bool
             Path object if created, False otherwise.
+
         """
 
         primitive = self._create_path(
@@ -558,7 +594,8 @@ class Modeler(object):
         voids: Optional[List[Any]] = [],
         net_name: str = "",
     ) -> Union[Optional[Primitive], bool]:
-        """Create polygon primitive.
+        """
+        Create polygon primitive.
 
         Parameters
         ----------
@@ -575,6 +612,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Polygon` or bool
             Polygon object if created, False otherwise.
+
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if isinstance(points, list):
@@ -621,7 +659,8 @@ class Modeler(object):
         corner_radius: str = "0mm",
         rotation: str = "0deg",
     ) -> Optional[Primitive]:
-        """Create rectangle primitive.
+        """
+        Create rectangle primitive.
 
         Parameters
         ----------
@@ -655,6 +694,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Rectangle` or bool
             Rectangle object if created, False otherwise.
+
         """
         net = self._pedb.nets.find_or_create_net(net_name)
         if representation_type == "lower_left_upper_right":
@@ -705,7 +745,8 @@ class Modeler(object):
     def create_circle(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], radius: Union[float, str], net_name: str = ""
     ) -> Optional[Primitive]:
-        """Create circle primitive.
+        """
+        Create circle primitive.
 
         Parameters
         ----------
@@ -724,6 +765,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Circle` or bool
             Circle object if created, False otherwise.
+
         """
         edb_net = self._pedb.nets.find_or_create_net(net_name)
 
@@ -742,7 +784,8 @@ class Modeler(object):
     def create_text(
         self, layer_name: str, x: Union[float, str], y: Union[float, str], text: str
     ) -> Optional[Primitive]:
-        """Create text primitive.
+        """
+        Create text primitive.
 
         Parameters
         ----------
@@ -759,6 +802,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Text` or bool
             Text object if created, False otherwise.
+
         """
         text = Text.create(
             layout=self._pedb.active_layout,
@@ -772,7 +816,8 @@ class Modeler(object):
         return False
 
     def delete_primitives(self, net_names: Union[str, List[str]]) -> bool:
-        """Delete primitives by net name(s).
+        """
+        Delete primitives by net name(s).
 
         Parameters
         ----------
@@ -783,6 +828,7 @@ class Modeler(object):
         -------
         bool
             True if successful, False otherwise.
+
         """
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
@@ -799,7 +845,8 @@ class Modeler(object):
         prim_type: Optional[str] = None,
         is_void: Optional[bool] = None,
     ) -> List[Primitive]:
-        """Get primitives with filtering.
+        """
+        Get primitives with filtering.
 
         Parameters
         ----------
@@ -816,6 +863,7 @@ class Modeler(object):
         -------
         list
             List of filtered primitives.
+
         """
         return self._pedb.layout.filter_primitives(
             net_name=net_name,
@@ -825,12 +873,14 @@ class Modeler(object):
         )
 
     def fix_circle_void_for_clipping(self) -> bool:
-        """Fix circle void clipping issues.
+        """
+        Fix circle void clipping issues.
 
         Returns
         -------
         bool
             True if changes made, False otherwise.
+
         """
         for void_circle in self.circles:
             if not void_circle.is_void:
@@ -904,7 +954,8 @@ class Modeler(object):
         parameter_name: str = "trace_width",
         variable_value: Optional[Union[float, str]] = None,
     ) -> bool:
-        """Parametrize trace width.
+        """
+        Parametrize trace width.
 
         Parameters
         ----------
@@ -921,6 +972,7 @@ class Modeler(object):
         -------
         bool
             True if successful, False otherwise.
+
         """
         if isinstance(nets_name, str):
             nets_name = [nets_name]
@@ -951,7 +1003,8 @@ class Modeler(object):
         delete_padstack_gemometries: bool = False,
         net_names_list: Optional[List[str]] = None,
     ) -> bool:
-        """Unite polygons on layer.
+        """
+        Unite polygons on layer.
 
         Parameters
         ----------
@@ -966,6 +1019,7 @@ class Modeler(object):
         -------
         bool
             True if successful, False otherwise.
+
         """
         if isinstance(layer_name, str):
             layer_name = [layer_name]
@@ -1018,7 +1072,8 @@ class Modeler(object):
         return True
 
     def defeature_polygon(self, poly: Polygon, tolerance: float = 0.001) -> bool:
-        """Defeature polygon.
+        """
+        Defeature polygon.
 
         Parameters
         ----------
@@ -1031,6 +1086,7 @@ class Modeler(object):
         -------
         bool
             True if successful, False otherwise.
+
         """
         new_poly = poly.polygon_data.core.defeature(tol=tolerance)
         if not new_poly.points:
@@ -1044,7 +1100,8 @@ class Modeler(object):
     def get_layout_statistics(
         self, evaluate_area: bool = False, net_list: Optional[List[str]] = None
     ) -> LayoutStatistics:
-        """Get layout statistics.
+        """
+        Get layout statistics.
 
         Parameters
         ----------
@@ -1057,6 +1114,7 @@ class Modeler(object):
         -------
         :class:`LayoutStatistics`
             Layout statistics object.
+
         """
         stat_model = LayoutStatistics()
         stat_model.num_layers = len(list(self._pedb.stackup.layers.values()))
@@ -1111,7 +1169,8 @@ class Modeler(object):
         end_cell_instance_name: Optional[str] = None,
         bondwire_type: str = "jedec4",
     ) -> Bondwire:
-        """Create bondwire.
+        """
+        Create bondwire.
 
         Parameters
         ----------
@@ -1148,6 +1207,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.edb_data.primitives_data.Bondwire` or bool
             Bondwire object if created, False otherwise.
+
         """
 
         from ansys.edb.core.hierarchy.cell_instance import (
@@ -1198,7 +1258,8 @@ class Modeler(object):
         pins_by_aedt_name: Optional[List[str]] = None,
         pins_by_name: Optional[List[str]] = None,
     ) -> bool:
-        """Create pin group.
+        """
+        Create pin group.
 
         Parameters
         ----------
@@ -1215,6 +1276,7 @@ class Modeler(object):
         -------
         :class:`pyedb.grpc.database.siwave.pin_group.PinGroup` or bool
             PinGroup object if created, False otherwise.
+
         """
         # TODO move this method to components and merge with existing one
         pins = {}
@@ -1259,7 +1321,8 @@ class Modeler(object):
 
     @staticmethod
     def add_void(shape: "Primitive", void_shape: Union["Primitive", List["Primitive"]]) -> bool:
-        """Add void to shape.
+        """
+        Add void to shape.
 
         Parameters
         ----------
@@ -1272,6 +1335,7 @@ class Modeler(object):
         -------
         bool
             True if successful, False otherwise.
+
         """
         if not isinstance(void_shape, list):
             void_shape = [void_shape]
@@ -1299,7 +1363,8 @@ class Modeler(object):
         local_origin_x: float | str | None = 0,
         local_origin_y: float | str | None = 0,
     ) -> Any:
-        """Insert a layout instance into the active layout.
+        """
+        Insert a layout instance into the active layout.
 
         Parameters
         ----------
@@ -1323,6 +1388,7 @@ class Modeler(object):
             Local origin X coordinate.
         local_origin_y: float or str
             Local origin Y coordinate.
+
         """
 
         placement_layer = self._pedb.stackup.layers[placement_layer]
@@ -1365,7 +1431,8 @@ class Modeler(object):
         local_origin_y: Union[float, str] = 0.0,
         local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
-        """Insert a 3D component placement into the active layout.
+        """
+        Insert a 3D component placement into the active layout.
 
         Parameters
         ----------
@@ -1389,6 +1456,7 @@ class Modeler(object):
             Local origin Y coordinate.
         local_origin_z: float or str
             Local origin Z coordinate.
+
         """
 
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
@@ -1462,7 +1530,8 @@ class Modeler(object):
         local_origin_y: Union[float, str] = 0.0,
         local_origin_z: Union[float, str] = 0.0,
     ) -> Any:
-        """Insert a 3D component placement into the active layout.
+        """
+        Insert a 3D component placement into the active layout.
 
         Parameters
         ----------
@@ -1486,6 +1555,7 @@ class Modeler(object):
             Local origin Y coordinate.
         local_origin_z: float or str
             Local origin Z coordinate.
+
         """
         from ansys.edb.core.geometry.point3d_data import Point3DData as GrpcPoint3DData
         from ansys.edb.core.layout.mcad_model import McadModel as GrpcMcadModel
@@ -1555,7 +1625,8 @@ class Modeler(object):
         local_origin_y: float | str | None = 0,
         local_origin_z: float | str | None = 0,
     ) -> Any:
-        """Insert a layout instance into the active layout.
+        """
+        Insert a layout instance into the active layout.
 
         Parameters
         ----------
@@ -1581,6 +1652,7 @@ class Modeler(object):
             Local origin Y coordinate.
         local_origin_z: float or str
             Local origin Z coordinate.
+
         """
 
         placement_layer = self._pedb.stackup.layers[placement_layer]
@@ -1622,7 +1694,8 @@ class Modeler(object):
         voids: list | None = None,
         net_name: str = "",
     ) -> Polygon:
-        """Create an RF trace taper polygon between two points.
+        """
+        Create an RF trace taper polygon between two points.
 
         The taper is a trapezoidal polygon with ``start_width`` at ``start_point``
         and ``end_width`` at ``end_point``, rotated to match the direction between
@@ -1662,6 +1735,7 @@ class Modeler(object):
         -------
         :class:`Polygon <pyedb.grpc.database.primitive.polygon.Polygon>`
             Created taper polygon object.
+
         """
 
         p0_x, p0_y = self._pedb.value(start_point[0]), self._pedb.value(start_point[1])
@@ -1829,6 +1903,7 @@ class Modeler(object):
         :meth:`stackup.add_layer` : Add a dielectric layer to the stackup
         :meth:`create_rectangle` : Create a rectangular primitive
         :meth:`create_polygon` : Create a polygonal primitive
+
         """
         if not solder_mask_material in self._pedb.materials:
             solder_mask_material = "SolderMask"

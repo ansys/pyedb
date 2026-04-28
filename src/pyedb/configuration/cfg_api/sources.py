@@ -27,7 +27,8 @@ from typing import List, Optional, Union
 
 
 class SourceConfig:
-    """Current or voltage source definition.
+    """
+    Current or voltage source definition.
 
     Parameters
     ----------
@@ -54,7 +55,8 @@ class SourceConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ):
-        """Initialize a source configuration.
+        """
+        Initialize a source configuration.
 
         Parameters
         ----------
@@ -86,7 +88,8 @@ class SourceConfig:
         self.distributed = distributed
 
     def to_dict(self) -> dict:
-        """Serialize the source definition.
+        """
+        Serialize the source definition.
 
         Returns
         -------
@@ -128,7 +131,8 @@ class SourcesConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ) -> SourceConfig:
-        """Add a current source.
+        """
+        Add a current source.
 
         Parameters
         ----------
@@ -175,7 +179,8 @@ class SourcesConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ) -> SourceConfig:
-        """Add a voltage source.
+        """
+        Add a voltage source.
 
         Parameters
         ----------
@@ -214,7 +219,8 @@ class SourcesConfig:
         return src
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured sources.
+        """
+        Serialize all configured sources.
 
         Returns
         -------

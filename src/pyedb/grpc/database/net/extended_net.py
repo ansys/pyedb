@@ -38,12 +38,14 @@ class ExtendedNets:
 
     @property
     def items(self) -> dict[str, ExtendedNet]:
-        """Extended nets.
+        """
+        Extended nets.
 
         Returns
         -------
         Dict[str, :class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`]
             Dictionary of extended nets.
+
         """
         nets = {}
         for extended_net in self._pedb.layout.extended_nets:
@@ -51,7 +53,8 @@ class ExtendedNets:
         return nets
 
     def create(self, name, net):
-        """Create a new Extended net.
+        """
+        Create a new Extended net.
 
         Parameters
         ----------
@@ -64,6 +67,7 @@ class ExtendedNets:
         -------
         :class:`ExtendedNet <pyedb.grpc.database.net.extended_net.ExtendedNet>`
             Created ExtendedNet object.
+
         """
         if name in self.items:
             self._pedb.logger.error(f"{name} already exists.")
@@ -77,7 +81,8 @@ class ExtendedNets:
 
     def auto_identify_signal(self, resistor_below=10, inductor_below=1, capacitor_above=1e-9, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list[ExtendedNet]
-        """Get extended signal net and associated components.
+        """
+        Get extended signal net and associated components.
 
         Parameters
         ----------
@@ -104,12 +109,14 @@ class ExtendedNets:
         >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_signal()
+
         """
         return self.generate_extended_nets(resistor_below, inductor_below, capacitor_above, exception_list, True, True)
 
     def auto_identify_power(self, resistor_below=10, inductor_below=1, capacitor_above=1, exception_list=None):
         # type: (int | float, int | float, int |float, list) -> list
-        """Get all extended power nets and their associated components.
+        """
+        Get all extended power nets and their associated components.
 
         Parameters
         ----------
@@ -136,6 +143,7 @@ class ExtendedNets:
         >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.extended_nets.auto_identify_power()
+
         """
         return self.generate_extended_nets(resistor_below, inductor_below, capacitor_above, exception_list, True, True)
 
@@ -149,7 +157,8 @@ class ExtendedNets:
         include_power=True,
     ):
         # type: (int | float, int | float, int |float, list, bool, bool) -> list[ExtendedNet]
-        """Get extended net and associated components.
+        """
+        Get extended net and associated components.
 
         Parameters
         ----------
@@ -179,6 +188,7 @@ class ExtendedNets:
         >>> from pyedb import Edb
         >>> app = Edb()
         >>> app.nets.get_extended_nets()
+
         """
         if exception_list is None:
             exception_list = []
@@ -284,7 +294,8 @@ class ExtendedNets:
 
 
 class ExtendedNet:
-    """Manages EDB functionalities for a primitives.
+    """
+    Manages EDB functionalities for a primitives.
     It Inherits EDB Object properties.
     """
 
@@ -294,7 +305,8 @@ class ExtendedNet:
 
     @classmethod
     def create(cls, layout, name):
-        """Create a extended net.
+        """
+        Create a extended net.
 
         Parameters
         ----------
@@ -307,18 +319,21 @@ class ExtendedNet:
         -------
         ExtendedNet
             Extended net object.
+
         """
         core_extended_net = CoreExtendedNet.create(layout.core, name)
         return cls(layout._pedb, core_extended_net)
 
     @property
     def name(self):
-        """Extended net name.
+        """
+        Extended net name.
 
         Returns
         -------
         str
             Extended net name.
+
         """
         return self.core.name
 
@@ -328,12 +343,14 @@ class ExtendedNet:
 
     @property
     def nets(self) -> dict[str, Net]:
-        """Nets dictionary.
+        """
+        Nets dictionary.
 
         Returns
         -------
         Dict[str, :class:`Net <pyedb.grpc.database.net.net.Net>`]
             Dict[net name, Net object].
+
         """
         from pyedb.grpc.database.net.net import Net
 
@@ -341,12 +358,14 @@ class ExtendedNet:
 
     @property
     def components(self) -> dict[str, Component]:
-        """Dictionary of components.
+        """
+        Dictionary of components.
 
         Returns
         -------
         Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
             Dict[net name, Component object].
+
         """
         comps = {}
         for _, obj in self.nets.items():
@@ -355,12 +374,14 @@ class ExtendedNet:
 
     @property
     def rlc(self) -> dict[str, any]:
-        """Dictionary of RLC components.
+        """
+        Dictionary of RLC components.
 
         Returns
         -------
         Dict[str, :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`].
             Dict[net name, Component object].
+
         """
         return {
             name: comp for name, comp in self.components.items() if comp.type in ["inductor", "resistor", "capacitor"]
@@ -368,7 +389,8 @@ class ExtendedNet:
 
     @property
     def serial_rlc(self) -> dict[str, any]:
-        """Dictionary of serial RLC components.
+        """
+        Dictionary of serial RLC components.
 
         Returns
         -------
@@ -387,7 +409,8 @@ class ExtendedNet:
 
     @property
     def shunt_rlc(self) -> dict[str, any]:
-        """Dictionary of shunt RLC components.
+        """
+        Dictionary of shunt RLC components.
 
         Returns
         -------

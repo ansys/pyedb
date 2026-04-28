@@ -48,6 +48,7 @@ class Substrate:
     >>> sub = Substrate(h=1.6e-3, er=4.4, tan_d=0.02, name="FR4", size=(10e-3, 15e-3))
     >>> sub.h
     0.0016
+
     """
 
     h: float = 100e-6  # height (m)
@@ -85,6 +86,7 @@ class Material:
     'MyMaterial'
     >>> edb.materials["MyMaterial"]  # now exists in the database
     <Material object at ...>
+
     """
 
     def __init__(self, pedb, name):
@@ -127,6 +129,7 @@ class Conductor(Material):
     >>> cu.conductivity = 3.5e7  # update on-the-fly
     >>> edb.materials["Copper"].conductivity
     35000000.0
+
     """
 
     def __init__(self, pedb, name: str, conductivity: float = 5.8e7):
@@ -170,6 +173,7 @@ class Dielectric(Material):
     >>> sub.loss_tg = 0.005
     >>> edb.materials["Silicon"].loss_tangent
     0.005
+
     """
 
     def __init__(self, pedb, name: str, permittivity: float = 11.9, loss_tg: float = 0.02):
@@ -223,6 +227,7 @@ class Layer:
     >>> lyr.thickness = 50e-6
     >>> edb.stackup.layers["Core"].thickness
     5e-05
+
     """
 
     def __init__(self, pedb, name: str, material: Union[Conductor, Dielectric] = None, thickness: float = 1e-6):
@@ -290,6 +295,7 @@ class MetalLayer(Layer):
     >>> top = MetalLayer(edb, "TOP", thickness=18e-6, material="Gold")
     >>> top.material.conductivity
     58000000.0
+
     """
 
     def __init__(self, pedb, name, thickness=1e-6, material: str = "Copper"):
@@ -322,6 +328,7 @@ class DielectricLayer(Layer):
     >>> core = DielectricLayer(edb, "Core", thickness=100e-6, material="FR4")
     >>> core.material.permittivity
     4.4
+
     """
 
     def __init__(self, pedb, name, thickness=1e-6, material: str = "FR4"):
@@ -356,6 +363,7 @@ class MicroStripTechnologyStackup:
     >>> stack = MicroStripTechnologyStackup(edb)
     >>> stack.top_metal.thickness = 5e-6
     >>> stack.substrate.material.permittivity = 9.8
+
     """
 
     def __init__(

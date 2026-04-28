@@ -86,7 +86,8 @@ def parser_file_path(file_path):
 
 
 class Siwave(object):  # pragma no cover
-    """Initializes SIwave based on the inputs provided and manages SIwave release and closing.
+    """
+    Initializes SIwave based on the inputs provided and manages SIwave release and closing.
 
     Parameters
     ----------
@@ -191,7 +192,8 @@ class Siwave(object):  # pragma no cover
 
     @property
     def project_name(self):
-        """Project name.
+        """
+        Project name.
 
         Returns
         -------
@@ -203,7 +205,8 @@ class Siwave(object):  # pragma no cover
 
     @property
     def project_path(self):
-        """Project path.
+        """
+        Project path.
 
         Returns
         -------
@@ -215,7 +218,8 @@ class Siwave(object):  # pragma no cover
 
     @property
     def project_file(self):
-        """Project file.
+        """
+        Project file.
 
         Returns
         -------
@@ -227,7 +231,8 @@ class Siwave(object):  # pragma no cover
 
     @property
     def lock_file(self):
-        """Lock file.
+        """
+        Lock file.
 
         Returns
         -------
@@ -239,34 +244,40 @@ class Siwave(object):  # pragma no cover
 
     @property
     def results_directory(self):
-        """Results directory.
+        """
+        Results directory.
 
         Returns
         -------
         str
             Full absolute path to the ``aedtresults`` directory.
+
         """
         return os.path.join(self.project_path, self.project_name + ".siwresults")
 
     @property
     def src_dir(self):
-        """Source directory.
+        """
+        Source directory.
 
         Returns
         -------
         str
             Full absolute path to the ``python`` directory.
+
         """
         return os.path.dirname(os.path.realpath(__file__))
 
     @property
     def pyaedt_dir(self):
-        """PyAEDT directory.
+        """
+        PyAEDT directory.
 
         Returns
         -------
         str
             Full absolute path to the ``pyaedt`` directory.
+
         """
         return os.path.realpath(os.path.join(self.src_dir, ".."))
 
@@ -280,7 +291,8 @@ class Siwave(object):  # pragma no cover
         return Icepak(self)
 
     def open_project(self, proj_path=None):
-        """Open a project.
+        """
+        Open a project.
 
         Parameters
         ----------
@@ -312,7 +324,8 @@ class Siwave(object):  # pragma no cover
         return self.oproject.GetFilePath()
 
     def save_project(self, projectpath=None, projectName=None):
-        """Save the project.
+        """
+        Save the project.
 
         Parameters
         ----------
@@ -336,12 +349,14 @@ class Siwave(object):  # pragma no cover
         return True
 
     def save(self, file_path: Optional[Union[str, Path]]):
-        """Save the project.
+        """
+        Save the project.
 
         Parameters
         ----------
         file_path : str, optional
             Full path to the project. The default is ``None``.
+
         """
 
         if file_path:
@@ -352,7 +367,8 @@ class Siwave(object):  # pragma no cover
             self.oproject.Save()
 
     def close_project(self, save_project=False):
-        """Close the project.
+        """
+        Close the project.
 
         Parameters
         ----------
@@ -372,7 +388,8 @@ class Siwave(object):  # pragma no cover
         return True
 
     def quit_application(self):
-        """Quit the application.
+        """
+        Quit the application.
 
         Returns
         -------
@@ -385,7 +402,8 @@ class Siwave(object):  # pragma no cover
         return True
 
     def export_element_data(self, simulation_name, file_path, data_type="Vias"):
-        """Export element data.
+        """
+        Export element data.
 
         Parameters
         ----------
@@ -400,6 +418,7 @@ class Siwave(object):  # pragma no cover
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         flag = self.oproject.ScrExportElementData(simulation_name, file_path, data_type)
         if flag == 0:
@@ -409,7 +428,8 @@ class Siwave(object):  # pragma no cover
             return False
 
     def export_siwave_report(self, simulation_name, file_path, bkground_color="White"):
-        """Export the Siwave report.
+        """
+        Export the Siwave report.
 
         Parameters
         ----------
@@ -430,7 +450,8 @@ class Siwave(object):  # pragma no cover
         return self.export_dc_simulation_report(simulation_name, file_path, bkground_color)
 
     def export_dc_simulation_report(self, simulation_name, file_path, background_color="White"):
-        """Export the Siwave DC simulation report.
+        """
+        Export the Siwave DC simulation report.
 
         Parameters
         ----------
@@ -466,7 +487,8 @@ class Siwave(object):  # pragma no cover
         return self.oproject.ScrRunDcSimulation(1)
 
     def export_icepak_project(self, file_path, dc_simulation_name):
-        """Exports an Icepak project for standalone use.
+        """
+        Exports an Icepak project for standalone use.
 
         Parameters
         ----------
@@ -488,7 +510,8 @@ class Siwave(object):  # pragma no cover
         return True if code == 0 else False
 
     def run_icepak_simulation(self, icepak_simulation_name, dc_simulation_name):
-        """Runs an Icepak simulation.
+        """
+        Runs an Icepak simulation.
 
         Parameters
         ----------
@@ -506,7 +529,8 @@ class Siwave(object):  # pragma no cover
         return self.oproject.ScrRunIcepakSimulation(icepak_simulation_name, dc_simulation_name)
 
     def export_edb(self, file_path: str):
-        """Export the layout as EDB.
+        """
+        Export the layout as EDB.
 
         Parameters
         ----------
@@ -516,6 +540,7 @@ class Siwave(object):  # pragma no cover
         Returns
         -------
         bool
+
         """
         if isinstance(file_path, Path):
             file_path = str(file_path)
@@ -527,7 +552,8 @@ class Siwave(object):  # pragma no cover
             raise RuntimeError(f"Failed to export EDB to {file_path}.")
 
     def import_edb(self, file_path: str):
-        """Import layout from EDB.
+        """
+        Import layout from EDB.
 
         Parameters
         ----------
@@ -536,6 +562,7 @@ class Siwave(object):  # pragma no cover
         Returns
         -------
         bool
+
         """
         if isinstance(file_path, Path):
             file_path = str(file_path)
@@ -550,12 +577,14 @@ class Siwave(object):  # pragma no cover
             raise RuntimeError(f"Failed to import EDB to {file_path}.")
 
     def load_configuration(self, file_path: str):
-        """Load configuration settings from a configure file.Import
+        """
+        Load configuration settings from a configure file.Import
 
         Parameters
         ----------
         file_path : str
             Path to the configuration file.
+
         """
         file_path = parser_file_path(file_path)
 
@@ -575,7 +604,8 @@ class Siwave(object):  # pragma no cover
         shutil.rmtree(Path(temp_edb), ignore_errors=True)
 
     def export_configuration(self, file_path: str, fix_padstack_names: bool = False):
-        """Export layout information into a configuration file.
+        """
+        Export layout information into a configuration file.
 
         Parameters
         ----------
@@ -583,6 +613,7 @@ class Siwave(object):  # pragma no cover
             Path to the configuration file.
         fix_padstack_names : bool
             Name all the padstacks in edb.
+
         """
         file_path = parser_file_path(file_path)
 

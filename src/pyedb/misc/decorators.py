@@ -39,7 +39,8 @@ def _mark_deprecated(target: _T, message: str) -> _T:
 
 
 def deprecated(reason: str = "", *, category: Any = FutureWarning):
-    """Decorator to mark functions or methods as deprecated.
+    """
+    Decorator to mark functions or methods as deprecated.
 
     Parameters
     ----------
@@ -47,6 +48,7 @@ def deprecated(reason: str = "", *, category: Any = FutureWarning):
         Message to display with the deprecation warning.
     category : Warning, optional
         Warning category to emit. Use ``None`` to disable runtime warnings while preserving metadata.
+
     """
 
     def decorator(func):
@@ -65,7 +67,8 @@ def deprecated(reason: str = "", *, category: Any = FutureWarning):
 
 
 def deprecated_class(reason: str = "", *, category: Any = FutureWarning):
-    """Decorator to mark a class as deprecated.
+    """
+    Decorator to mark a class as deprecated.
 
     Parameters
     ----------
@@ -73,6 +76,7 @@ def deprecated_class(reason: str = "", *, category: Any = FutureWarning):
         Message to display with the deprecation warning.
     category : Warning, optional
         Warning category to emit. Use ``None`` to disable runtime warnings while preserving metadata.
+
     """
 
     def decorator(cls):
@@ -104,6 +108,7 @@ def deprecated_property(message: str, *, category: Any = FutureWarning):
         Custom message to display after the deprecation warning.
     category : Warning, optional
         Warning category to emit. Use ``None`` to disable runtime warnings while preserving metadata.
+
     """
 
     def decorator(func):

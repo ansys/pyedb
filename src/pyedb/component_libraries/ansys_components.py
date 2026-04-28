@@ -70,7 +70,8 @@ class ComponentPart:
 
     @property
     def s_parameters(self) -> "Network":
-        """Return a skrf.network.Network object.
+        """
+        Return a skrf.network.Network object.
 
         See `scikit-rf documentation <https://scikit-rf.readthedocs.io/en/latest/api/network.html#network-class>`_.
         """

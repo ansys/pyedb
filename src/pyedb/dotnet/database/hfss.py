@@ -49,13 +49,15 @@ from pyedb.misc.decorators import deprecated, deprecated_property
 
 
 class EdbHfss(object):
-    """Manages EDB method to configure Hfss setup accessible from `Edb.hfss` property.
+    """
+    Manages EDB method to configure Hfss setup accessible from `Edb.hfss` property.
 
     Examples
     --------
     >>> from pyedb import Edb
     >>> edbapp = Edb("myaedbfolder")
     >>> edb_hfss = edb_3dedbapp.hfss
+
     """
 
     def __init__(self, p_edb):
@@ -72,11 +74,13 @@ class EdbHfss(object):
 
     @property
     def _edb(self):
-        """EDB object.
+        """
+        EDB object.
 
         Returns
         -------
         Ansys.Ansoft.Edb
+
         """
         return self._pedb.core
 
@@ -99,7 +103,8 @@ class EdbHfss(object):
     @property
     @deprecated_property("use ports property instead")
     def excitations(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         .. deprecated:: 0.71.0
            Use :attr: `ports` property instead.
@@ -117,7 +122,8 @@ class EdbHfss(object):
 
     @property
     def ports(self) -> Dict[str, Union[BundleWavePort, GapPort, CircuitPort, CoaxPort, WavePort]]:
-        """Get all ports.
+        """
+        Get all ports.
 
         Returns
         -------
@@ -146,12 +152,14 @@ class EdbHfss(object):
         return self._pedb.edb_value(value)
 
     def get_trace_width_for_traces_with_ports(self):
-        """Retrieve the trace width for traces with ports.
+        """
+        Retrieve the trace width for traces with ports.
 
         Returns
         -------<
         dict
             Dictionary of trace width data.
+
         """
         nets = {}
         for net in self._pedb.excitations_nets:
@@ -162,7 +170,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_circuit_port_on_pin method instead.")
     def create_circuit_port_on_pin(self, pos_pin, neg_pin, impedance=50, port_name=None):
-        """Create Circuit Port on Pin.
+        """
+        Create Circuit Port on Pin.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_circuit_port_on_pin` instead.
@@ -193,7 +202,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_voltage_source_on_pin method instead.")
     def create_voltage_source_on_pin(self, pos_pin, neg_pin, voltage_value=3.3, phase_value=0, source_name=""):
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_voltage_source_on_pin` instead.
@@ -223,6 +233,7 @@ class EdbHfss(object):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_voltage_source_on_pin(pins[0], pins[1], 50, "source_name")
+
         """
         return self._pedb.excitation_manager.create_voltage_source_on_pin(
             pos_pin, neg_pin, voltage_value, phase_value, source_name
@@ -230,7 +241,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_current_source_on_pin method instead.")
     def create_current_source_on_pin(self, pos_pin, neg_pin, current_value=0.1, phase_value=0, source_name=""):
-        """Create a current source.
+        """
+        Create a current source.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_current_source_on_pin` instead.
@@ -260,6 +272,7 @@ class EdbHfss(object):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_current_source_on_pin(pins[0], pins[1], 50, "source_name")
+
         """
         return self._pedb.excitation_manager.create_current_source_on_pin(
             pos_pin, neg_pin, current_value, phase_value, source_name
@@ -267,7 +280,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_resistor_on_pin method instead.")
     def create_resistor_on_pin(self, pos_pin, neg_pin, rvalue=1, resistor_name=""):
-        """Create a Resistor boundary between two given pins.
+        """
+        Create a Resistor boundary between two given pins.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_resistor_on_pin` instead.
@@ -295,6 +309,7 @@ class EdbHfss(object):
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> pins = edbapp.components.get_pin_from_component("U2A5")
         >>> edbapp.excitation_manager.create_resistor_on_pin(pins[0], pins[1], 50, "res_name")
+
         """
         return self._pedb.excitation_manager.create_resistor_on_pin(pos_pin, neg_pin, rvalue, resistor_name)
 
@@ -308,7 +323,8 @@ class EdbHfss(object):
         impedance_value=50,
         port_name="",
     ):
-        """Create a circuit port on a NET.
+        """
+        Create a circuit port on a NET.
         It groups all pins belonging to the specified net and then applies the port on PinGroups.
 
         .. deprecated:: 0.70.0
@@ -340,6 +356,7 @@ class EdbHfss(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edbapp.excitation_manager.create_circuit_port_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 50, "port_name")
+
         """
         return self._pedb.excitation_manager.create_circuit_port_on_net(
             positive_component_name,
@@ -361,7 +378,8 @@ class EdbHfss(object):
         phase_value=0,
         source_name="",
     ):
-        """Create a voltage source.
+        """
+        Create a voltage source.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_voltage_source_on_net` instead.
@@ -395,6 +413,7 @@ class EdbHfss(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_voltage_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 3.3, 0, "source_name")
+
         """
         return self._pedb.excitation_manager.create_voltage_source_on_net(
             positive_component_name,
@@ -417,7 +436,8 @@ class EdbHfss(object):
         phase_value=0,
         source_name="",
     ):
-        """Create a current source.
+        """
+        Create a current source.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_current_source_on_net` instead.
@@ -451,6 +471,7 @@ class EdbHfss(object):
         >>> from pyedb import Edb
         >>> edbapp = Edb("myaedbfolder", "project name", "release version")
         >>> edb.excitation_manager.create_current_source_on_net("U2A5", "V1P5_S3", "U2A5", "GND", 0.1, 0, "source_name")
+
         """
         return self._pedb.excitation_manager.create_current_source_on_net(
             positive_component_name,
@@ -464,7 +485,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_coax_port_on_component method instead.")
     def create_coax_port_on_component(self, ref_des_list, net_list, delete_existing_terminal=False):
-        """Create a coaxial port on a component or component list on a net or net list.
+        """
+        Create a coaxial port on a component or component list on a net or net list.
            The name of the new coaxial port is automatically assigned.
 
         .. deprecated:: 0.70.0
@@ -504,7 +526,8 @@ class EdbHfss(object):
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
     ):
-        """Create a differential wave port.
+        """
+        Create a differential wave port.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_differential_wave_port` instead.
@@ -540,6 +563,7 @@ class EdbHfss(object):
         Examples
         --------
         >>> edb.excitation_manager.create_differential_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+
         """
         return self._pedb.excitation_manager.create_differential_wave_port(
             positive_primitive_id=positive_primitive_id,
@@ -562,7 +586,8 @@ class EdbHfss(object):
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
     ):
-        """Create a bundle wave port.
+        """
+        Create a bundle wave port.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_bundle_wave_port` instead.
@@ -592,6 +617,7 @@ class EdbHfss(object):
         Examples
         --------
         >>> edb.excitation_manager.create_bundle_wave_port(0, ["-50mm", "-0mm"], 1, ["-50mm", "-0.2mm"])
+
         """
         return self._pedb.excitation_manager.create_bundle_wave_port(
             primitives_id=primitives_id,
@@ -604,7 +630,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_hfss_ports_on_padstack method instead.")
     def create_hfss_ports_on_padstack(self, pinpos, portname=None):
-        """Create an HFSS port on a padstack.
+        """
+        Create an HFSS port on a padstack.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_hfss_ports_on_padstack` instead.
@@ -621,6 +648,7 @@ class EdbHfss(object):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         return self._pedb.excitation_manager.create_hfss_ports_on_padstack(pinpos=pinpos, portname=portname)
 
@@ -636,7 +664,8 @@ class EdbHfss(object):
         vertical_extent_factor=1,
         pec_launch_width=0.0001,
     ) -> WavePort:
-        """Create an edge port on a primitive specific location.
+        """
+        Create an edge port on a primitive specific location.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.grpc.core.excitations.create_edge_port` instead.
@@ -684,7 +713,8 @@ class EdbHfss(object):
         port_impedance=50.0,
         force_circuit_port=False,
     ):
-        """Create lumped port between two edges from two different polygons. Can also create a vertical port when
+        """
+        Create lumped port between two edges from two different polygons. Can also create a vertical port when
         the reference layer name is only provided. When a port is created between two edge from two polygons which don't
         belong to the same layer, a circuit port will be automatically created instead of lumped. To enforce the circuit
         port instead of lumped,use the boolean force_circuit_port.
@@ -757,7 +787,8 @@ class EdbHfss(object):
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
     ):
-        """Create a wave port.
+        """
+        Create a wave port.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_wave_port` instead.
@@ -789,6 +820,7 @@ class EdbHfss(object):
         Examples
         --------
         >>> edb.excitation_manager.create_wave_port(0, ["-50mm", "-0mm"])
+
         """
         return self._pedb.excitation_manager.create_wave_port(
             prim_id=prim_id,
@@ -813,7 +845,8 @@ class EdbHfss(object):
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
     ):
-        """Create a vertical edge port.
+        """
+        Create a vertical edge port.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_edge_port_vertical` instead.
@@ -847,6 +880,7 @@ class EdbHfss(object):
         -------
         str
             Port name.
+
         """
         return self._pedb.excitation_manager.create_edge_port_vertical(
             prim_id=prim_id,
@@ -871,7 +905,8 @@ class EdbHfss(object):
         impedance=50,
         layer_alignment="Upper",
     ):
-        """Create a horizontal edge port.
+        """
+        Create a horizontal edge port.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_edge_port_horizontal` instead.
@@ -901,6 +936,7 @@ class EdbHfss(object):
         -------
         str
             Name of the port.
+
         """
         return self._pedb.excitation_manager.create_edge_port_horizontal(
             prim_id=prim_id,
@@ -916,7 +952,8 @@ class EdbHfss(object):
     def create_lumped_port_on_net(
         self, nets=None, reference_layer=None, return_points_only=False, digit_resolution=6, at_bounding_box=True
     ):
-        """Create an edge port on nets. This command looks for traces and polygons on the
+        """
+        Create an edge port on nets. This command looks for traces and polygons on the
         nets and tries to assign vertical lumped port.
 
         .. deprecated:: 0.70.0
@@ -946,6 +983,7 @@ class EdbHfss(object):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         return self._pedb.excitation_manager.create_lumped_port_on_net(
             nets=nets,
@@ -957,7 +995,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_vertical_circuit_port_on_clipped_traces method instead.")
     def create_vertical_circuit_port_on_clipped_traces(self, nets=None, reference_net=None, user_defined_extent=None):
-        """Create an edge port on clipped signal traces.
+        """
+        Create an edge port on clipped signal traces.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces` instead.
@@ -978,13 +1017,15 @@ class EdbHfss(object):
         [[str]]
             Nested list of str, with net name as first value, X value for point at border, Y value for point at border,
             and terminal name.
+
         """
         return self._pedb.excitation_manager.create_vertical_circuit_port_on_clipped_traces(
             nets=nets, reference_net=reference_net, user_defined_extent=user_defined_extent
         )
 
     def get_layout_bounding_box(self, layout=None, digit_resolution=6):
-        """Evaluate the layout bounding box.
+        """
+        Evaluate the layout bounding box.
 
         Parameters
         ----------
@@ -998,6 +1039,7 @@ class EdbHfss(object):
         -------
         list
             [lower left corner X, lower left corner, upper right corner X, upper right corner Y].
+
         """
         if layout is None:
             layout = self._active_layout
@@ -1073,7 +1115,8 @@ class EdbHfss(object):
         return self._edb.geometry.polygon_data.get_bbox_of_polygons(terms_bbox)
 
     def get_ports_number(self):
-        """Return the total number of excitation ports in a layout.
+        """
+        Return the total number of excitation ports in a layout.
 
         Parameters
         ----------
@@ -1090,7 +1133,8 @@ class EdbHfss(object):
 
     @deprecated("Use excitation_manager.create_rlc_boundary_on_pins method instead.")
     def create_rlc_boundary_on_pins(self, positive_pin=None, negative_pin=None, rvalue=0.0, lvalue=0.0, cvalue=0.0):
-        """Create hfss rlc boundary on pins.
+        """
+        Create hfss rlc boundary on pins.
 
         .. deprecated:: 0.70.0
            Use :func:`pyedb.excitation_manager.create_rlc_boundary_on_pins` instead.
@@ -1121,7 +1165,8 @@ class EdbHfss(object):
         )
 
     def generate_auto_hfss_regions(self):
-        """Generate auto HFSS regions.
+        """
+        Generate auto HFSS regions.
 
         This method automatically identifies areas for use as HFSS regions in SIwave simulations.
         """

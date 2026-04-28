@@ -37,45 +37,53 @@ class RaptorXGeneralSettings:
 
     @property
     def global_temperature(self) -> float:
-        """Simulation temperature in degrees Celsius.
+        """
+        Simulation temperature in degrees Celsius.
 
         Returns
         -------
         float
             Global temperature in Kelvin.
+
         """
         return self._pedb.value(self.core.global_temperature)
 
     @global_temperature.setter
     def global_temperature(self, value: float):
-        """Set simulation temperature in degrees Celsius.
+        """
+        Set simulation temperature in degrees Celsius.
 
         Parameters
         ----------
         value : float
             Global temperature in Kelvin.
+
         """
         self.core.global_temperature = self._pedb.value(value)
 
     @property
     def max_frequency(self) -> float:
-        """Maximum frequency for the simulation in Hz.
+        """
+        Maximum frequency for the simulation in Hz.
 
         Returns
         -------
         float
             Maximum frequency in Hz.
+
         """
         return self._pedb.value(self.core.max_frequency)
 
     @max_frequency.setter
     def max_frequency(self, value: float):
-        """Set maximum frequency for the simulation in Hz.
+        """
+        Set maximum frequency for the simulation in Hz.
 
         Parameters
         ----------
         value : float
             Maximum frequency in Hz.
+
         """
         self.core.max_frequency = str(self._pedb.value(value))
 

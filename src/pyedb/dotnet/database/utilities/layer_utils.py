@@ -22,7 +22,8 @@
 
 
 def clear_is_owner(obj):
-    """Use reflection to set the protected IsOwner property to False,
+    """
+    Use reflection to set the protected IsOwner property to False,
     preventing the buggy EDBLayer_Cleanup from being called in the destructor.
 
     This must be called on every Layer object obtained from the EDB API

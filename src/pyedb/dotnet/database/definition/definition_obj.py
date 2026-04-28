@@ -269,7 +269,8 @@ class DeprecatedMaterial:
         advanced_quadratic_lower_constant: float = 1.1,
         advanced_quadratic_upper_constant: float = 1.1,
     ):
-        """Sets the material property thermal modifier of a given material property.
+        """
+        Sets the material property thermal modifier of a given material property.
 
         Parameters
         ----------
@@ -370,7 +371,8 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
         relative_permittivity_at_frequency: float | None = 4,
         use_dc_relative_permittivity: bool | None = False,
     ) -> DjordjecvicSarkarModel:
-        """Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
+        """
+        Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
         on it will not be reflected on the database.
 
         Parameters
@@ -387,6 +389,7 @@ class MaterialDef(DefinitionObj, DeprecatedMaterial):
             Relative permittivity at frequency, by default 4
         use_dc_relative_permittivity : bool, optional
             Whether to use DC relative permittivity, by default False
+
         """
         ds_model = DjordjecvicSarkarModel.create(self._pedb)
         ds_model.dc_conductivity = dc_conductivity

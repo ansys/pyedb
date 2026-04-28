@@ -35,12 +35,14 @@ class Q3DGeneralSettings:
 
     @property
     def do_ac(self) -> bool:
-        """Whether to perform AC analysis.
+        """
+        Whether to perform AC analysis.
 
         Returns
         -------
         bool
             True if AC analysis is to be performed, False otherwise.
+
         """
         return self.core.do_ac
 
@@ -50,12 +52,14 @@ class Q3DGeneralSettings:
 
     @property
     def do_cg(self) -> bool:
-        """Whether to perform CG analysis.
+        """
+        Whether to perform CG analysis.
 
         Returns
         -------
         bool
             True if CG analysis is to be performed, False otherwise.
+
         """
         return self.core.do_cg
 
@@ -65,12 +69,14 @@ class Q3DGeneralSettings:
 
     @property
     def do_dc(self) -> bool:
-        """Whether to perform DC analysis.
+        """
+        Whether to perform DC analysis.
 
         Returns
         -------
         bool
             True if DC analysis is to be performed, False otherwise.
+
         """
         return self.core.do_dc
 
@@ -80,12 +86,14 @@ class Q3DGeneralSettings:
 
     @property
     def do_dc_res_only(self) -> bool:
-        """Whether to perform DC resistance only analysis.
+        """
+        Whether to perform DC resistance only analysis.
 
         Returns
         -------
         bool
             True if DC resistance only analysis is to be performed, False otherwise.
+
         """
         return self.core.do_dc_res_only
 
@@ -95,12 +103,14 @@ class Q3DGeneralSettings:
 
     @property
     def save_fields(self) -> bool:
-        """Whether to save fields.
+        """
+        Whether to save fields.
 
         Returns
         -------
         bool
             True if fields are to be saved, False otherwise.
+
         """
         return self.core.save_fields
 
@@ -110,12 +120,14 @@ class Q3DGeneralSettings:
 
     @property
     def solution_frequency(self) -> float:
-        """Solution frequency in Hz.
+        """
+        Solution frequency in Hz.
 
         Returns
         -------
         float
             Solution frequency in Hz.
+
         """
         return self._pedb.value(self.core.solution_frequency)
 

@@ -33,12 +33,14 @@ from pyedb.grpc.database.simulation_setup.sweep_data import SweepData
 
 
 class Q3DSimulationSetup(SimulationSetup):
-    """Q3D simulation setup management.
+    """
+    Q3D simulation setup management.
 
     Parameters
     ----------
     pedb : :class:`Edb`
         Inherited object.
+
     """
 
     def __init__(self, pedb, core: "GrpcQ3DSimulationSetup"):
@@ -48,7 +50,8 @@ class Q3DSimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "Edb", name: str = "Q3D_setup") -> "Q3DSimulationSetup":
-        """Create a Q3D simulation setup.
+        """
+        Create a Q3D simulation setup.
 
         Parameters
         ----------
@@ -62,17 +65,20 @@ class Q3DSimulationSetup(SimulationSetup):
         -------
         Q3DSimulationSetup
             The Q3D simulation setup object.
+
         """
         core = CoreQ3DSimulationSetup.create(edb.active_cell, name)
         return cls(edb, core)
 
     @property
     def settings(self) -> Q3DSimulationSettings:
-        """Q3D simulation settings.
+        """
+        Q3D simulation settings.
 
         Returns
         -------
         Q3DSimulationSettings
             The Q3D simulation settings object.
+
         """
         return Q3DSimulationSettings(self._pedb, self.core.settings)

@@ -56,22 +56,26 @@ class BondwireDef:
         self.core.delete()
 
     def get_parameters(self):
-        """Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+        """
+        Get the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
 
         Returns
         -------
         float
             Bondwire top-to-die distance.
+
         """
         return self.core.get_parameters().value
 
     def set_parameters(self, parameters):
-        """Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
+        """
+        Set the bondwire top-to-die distance of the JEDEC 4 bondwire definition.
 
         Parameters
         ----------
         parameters : float
             Bondwire top-to-die distance.
+
         """
 
         self.core.set_parameters(self._pedb.value(parameters))
@@ -87,7 +91,8 @@ class Jedec4BondwireDef(BondwireDef):
 
     @classmethod
     def create(cls, edb, name):
-        """Create a new JEDEC 4 bondwire definition.
+        """
+        Create a new JEDEC 4 bondwire definition.
 
         Parameters
         ----------
@@ -100,13 +105,15 @@ class Jedec4BondwireDef(BondwireDef):
         -------
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec4BondwireDef`
             The created JEDEC 4 bondwire definition.
+
         """
         grpc_bondwire_def = CoreJedec4BondwireDef.create(edb._db, name)
         return cls(edb, grpc_bondwire_def)
 
     @staticmethod
     def find_by_name(edb, name):
-        """Find a JEDEC 4 bondwire definition by name.
+        """
+        Find a JEDEC 4 bondwire definition by name.
 
         Parameters
         ----------
@@ -119,6 +126,7 @@ class Jedec4BondwireDef(BondwireDef):
         -------
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec4BondwireDef` or None
             The found JEDEC 4 bondwire definition or None if not found.
+
         """
         core_bondwire_def = CoreJedec4BondwireDef.find_by_name(edb._db, name)
         if core_bondwire_def:
@@ -136,7 +144,8 @@ class Jedec5BondwireDef(BondwireDef):
 
     @classmethod
     def create(cls, edb, name):
-        """Create a new JEDEC 5 bondwire definition.
+        """
+        Create a new JEDEC 5 bondwire definition.
 
         Parameters
         ----------
@@ -149,13 +158,15 @@ class Jedec5BondwireDef(BondwireDef):
         -------
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef`
             The created JEDEC 5 bondwire definition.
+
         """
         core_bondwire_def = CoreJedec5BondwireDef.create(edb._db, name)
         return cls(edb, core_bondwire_def)
 
     @staticmethod
     def find_by_name(edb, name):
-        """Find a JEDEC 5 bondwire definition by name.
+        """
+        Find a JEDEC 5 bondwire definition by name.
 
         Parameters
         ----------
@@ -168,6 +179,7 @@ class Jedec5BondwireDef(BondwireDef):
         -------
         :class:`pyedb.grpc.database.definition.wirebond_def.Jedec5BondwireDef` or None
             The found JEDEC 5 bondwire definition or None if not found.
+
         """
         grpc_bondwire_def = CoreJedec5BondwireDef.find_by_name(edb._db, name)
         if grpc_bondwire_def:
@@ -185,7 +197,8 @@ class ApdBondwireDef(BondwireDef):
 
     @classmethod
     def create(cls, edb, name):
-        """Create a new Apd bondwire definition.
+        """
+        Create a new Apd bondwire definition.
 
         Parameters
         ----------
@@ -198,13 +211,15 @@ class ApdBondwireDef(BondwireDef):
         -------
         :class:`pyedb.grpc.database.definition.wirebond_def.ApdBondwireDef`
             The created Apd bondwire definition.
+
         """
         grpc_bondwire_def = CoreApdBondwireDef.create(edb._db, name)
         return cls(edb, grpc_bondwire_def)
 
     @staticmethod
     def find_by_name(edb, name):
-        """Find an Apd bondwire definition by name.
+        """
+        Find an Apd bondwire definition by name.
 
         Parameters
         ----------
@@ -217,6 +232,7 @@ class ApdBondwireDef(BondwireDef):
         -------
         :class:`pyedb.grpc.database.definition.wirebond_def.ApdBondwireDef` or None
             The found Apd bondwire definition or None if not found.
+
         """
         grpc_bondwire_def = CoreApdBondwireDef.find_by_name(edb._db, name)
         if grpc_bondwire_def:

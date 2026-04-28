@@ -32,70 +32,82 @@ class VoltageRegulator(Connectable):
 
     @property
     def load_regulator_current(self) -> float:
-        """Get load regulator current value.
+        """
+        Get load regulator current value.
 
         Returns
         -------
         float
             Load regulator current.
+
         """
         return self._edb_object.GetLoadRegulationCurrent().ToDouble()
 
     @load_regulator_current.setter
     def load_regulator_current(self, value: float):
-        """Set load regulator current value.
+        """
+        Set load regulator current value.
 
         Parameters
         ----------
         value : float
             Load regulator current value.
+
         """
         _value = self._pedb.edb_value(value)
         self._edb_object.SetLoadRegulationCurrent(_value)
 
     @property
     def load_regulation_percent(self) -> float:
-        """Get load regulation percent value.
+        """
+        Get load regulation percent value.
 
         Returns
         -------
         float
             Load regulation percentage.
+
         """
         return self._edb_object.GetLoadRegulationPercent().ToDouble()
 
     @load_regulation_percent.setter
     def load_regulation_percent(self, value: float):
-        """Set load regulation percent value.
+        """
+        Set load regulation percent value.
 
         Parameters
         ----------
         value : float
             Load regulation percentage value.
+
         """
         _value = self._edb_object.edb_value(value)
         self._edb_object.SetLoadRegulationPercent(_value)
 
     @property
     def negative_remote_sense_pin(self) -> EDBPadstackInstance:
-        """Get negative remote sense pin.
+        """
+        Get negative remote sense pin.
 
         Returns
         -------
         EDBPadstackInstance
             Negative remote sense pin instance.
+
         """
         edb_pin = self._edb_object.GetNegRemoteSensePin()
         return self._pedb.padstacks.instances[edb_pin.GetId()]
 
     @negative_remote_sense_pin.setter
     def negative_remote_sense_pin(self, value: EDBPadstackInstance):
-        """Set negative remote sense pin.
+        """
+        Set negative remote sense pin.
 
         Parameters
         ----------
         value : int or EDBPadstackInstance
             ID or instance of the padstack to set as negative remote sense pin.
+
         """
         if isinstance(value, int):
             if value in self._pedb.padstacks.instances:
@@ -108,24 +120,28 @@ class VoltageRegulator(Connectable):
 
     @property
     def positive_remote_sense_pin(self) -> EDBPadstackInstance:
-        """Get positive remote sense pin.
+        """
+        Get positive remote sense pin.
 
         Returns
         -------
         EDBPadstackInstance
             Positive remote sense pin instance.
+
         """
         edb_pin = self._edb_object.GetPosRemoteSensePin()
         return self._pedb.padstacks.instances[edb_pin.GetId()]
 
     @positive_remote_sense_pin.setter
     def positive_remote_sense_pin(self, value: int | EDBPadstackInstance):
-        """Set positive remote sense pin.
+        """
+        Set positive remote sense pin.
 
         Parameters
         ----------
         value : int or EDBPadstackInstance
             ID or instance of the padstack to set as positive remote sense pin.
+
         """
         if isinstance(value, int):
             if value in self._pedb.padstacks.instances:
@@ -142,45 +158,53 @@ class VoltageRegulator(Connectable):
 
     @property
     def voltage(self) -> float:
-        """Get voltage value.
+        """
+        Get voltage value.
 
         Returns
         -------
         float
             Voltage of the regulator.
+
         """
         return self._edb_object.GetVoltage().ToDouble()
 
     @voltage.setter
     def voltage(self, value: float):
-        """Set voltage value.
+        """
+        Set voltage value.
 
         Parameters
         ----------
         value : float
             Voltage to set.
+
         """
         self._edb_object.SetVoltage(self._pedb.edb_value(value))
 
     @property
     def is_active(self) -> bool:
-        """Check if voltage regulator is active.
+        """
+        Check if voltage regulator is active.
 
         Returns
         -------
         bool
             True if active, False otherwise.
+
         """
         return self._edb_object.IsActive()
 
     @is_active.setter
     def is_active(self, value: bool):
-        """Set voltage regulator active state.
+        """
+        Set voltage regulator active state.
 
         Parameters
         ----------
         value : bool
             True to activate, False to deactivate.
+
         """
         if isinstance(value, bool):
             self._edb_object.SetIsActive(value)

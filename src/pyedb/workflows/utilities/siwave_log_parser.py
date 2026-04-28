@@ -20,7 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""SIwave log file parser for extracting simulation results and metrics.
+"""
+SIwave log file parser for extracting simulation results and metrics.
 
 This module provides tools to parse Ansys SIwave batch simulation logs into
 structured dataclasses, making it easy to extract timing information, warnings,
@@ -42,6 +43,7 @@ Check simulation completion status:
 ...     print("Simulation completed successfully")
 ... else:
 ...     print("Simulation failed or was aborted")
+
 """
 
 from __future__ import annotations
@@ -65,7 +67,8 @@ RE_TS_TIME_FIRST = re.compile(
 
 
 def _parse_ts(txt: str) -> datetime:
-    """Convert timestamp strings to datetime objects.
+    """
+    Convert timestamp strings to datetime objects.
 
     Parse timestamp strings in two different SIwave log formats and return
     a datetime object. Supports both date-first and time-first formats.
@@ -94,6 +97,7 @@ def _parse_ts(txt: str) -> datetime:
     ... except ValueError as e:
     ...     print("Cannot parse")
     Cannot parse
+
     """
     # Try date-first format
     m = RE_TS_DATE_FIRST.search(txt)
@@ -111,7 +115,8 @@ def _parse_ts(txt: str) -> datetime:
 
 
 def _split_kv(line: str, sep: str = ":") -> tuple[str, str]:
-    """Split a key-value line into key and value strings.
+    """
+    Split a key-value line into key and value strings.
 
     Parse lines in the format ``'key: value'`` and return a tuple of the
     stripped key and value parts.
@@ -136,13 +141,15 @@ def _split_kv(line: str, sep: str = ":") -> tuple[str, str]:
     ('Number of cores', '4')
     >>> _split_kv("Status:  Normal Completion")
     ('Status', 'Normal Completion')
+
     """
     k, _, v = line.partition(sep)
     return k.strip(), v.strip()
 
 
 def _as_dict(obj: Any) -> Any:
-    """Recursively convert dataclasses to JSON-serializable primitives.
+    """
+    Recursively convert dataclasses to JSON-serializable primitives.
 
     Convert dataclass instances, lists, and Path objects to plain Python types
     that can be serialized to JSON.
@@ -172,6 +179,7 @@ def _as_dict(obj: Any) -> Any:
     '/tmp/file.txt'
     >>> _as_dict([1, 2, Path("/test"), "hello"])
     [1, 2, '/test', 'hello']
+
     """
     if hasattr(obj, "__dataclass_fields__"):
         return {f: _as_dict(getattr(obj, f)) for f in obj.__dataclass_fields__}
@@ -187,7 +195,8 @@ def _as_dict(obj: Any) -> Any:
 # ------------------------------------------------------------------
 @dataclass(slots=True)
 class AEDTVersion:
-    """AEDT version information extracted from log header.
+    """
+    AEDT version information extracted from log header.
 
     Attributes
     ----------
@@ -203,6 +212,7 @@ class AEDTVersion:
     >>> version = AEDTVersion(version="2026.1", build="12345", location="C:\\Program Files\\AnsysEM")
     >>> version.version
     '2026.1'
+
     """
 
     version: str
@@ -212,7 +222,8 @@ class AEDTVersion:
 
 @dataclass(slots=True)
 class BatchInfo:
-    """Batch simulation run metadata.
+    """
+    Batch simulation run metadata.
 
     Attributes
     ----------
@@ -246,6 +257,7 @@ class BatchInfo:
     ... )
     >>> batch.status
     'Normal Completion'
+
     """
 
     path: str
@@ -259,7 +271,8 @@ class BatchInfo:
 
 @dataclass(slots=True)
 class SimSettings:
-    """Simulation settings and configuration.
+    """
+    Simulation settings and configuration.
 
     Attributes
     ----------
@@ -288,6 +301,7 @@ class SimSettings:
     ... )
     >>> settings.allow_off_core
     True
+
     """
 
     design_type: str
@@ -300,7 +314,8 @@ class SimSettings:
 
 @dataclass(slots=True)
 class WarningEntry:
-    """Single warning message from the simulation log.
+    """
+    Single warning message from the simulation log.
 
     Attributes
     ----------
@@ -337,6 +352,7 @@ class WarningEntry:
     ... )
     >>> warning.category
     'SHORT'
+
     """
 
     timestamp: datetime
@@ -351,7 +367,8 @@ class WarningEntry:
 
 @dataclass(slots=True)
 class ProfileEntry:
-    """Performance profile entry showing task timing and resource usage.
+    """
+    Performance profile entry showing task timing and resource usage.
 
     Attributes
     ----------
@@ -381,6 +398,7 @@ class ProfileEntry:
     ... )
     >>> profile.task
     'Mesh Generation'
+
     """
 
     timestamp: datetime
@@ -395,7 +413,8 @@ class ProfileEntry:
 # Block Parsers
 # ------------------------------------------------------------------
 class BlockParser:
-    """Base class for a single block parser.
+    """
+    Base class for a single block parser.
 
     Parameters
     ----------
@@ -408,24 +427,28 @@ class BlockParser:
     >>> parser = BlockParser(lines)
     >>> parser.lines
     ['Line 1', 'Line 2', 'Line 3']
+
     """
 
     def __init__(self, lines: list[str]) -> None:
         self.lines = lines
 
     def parse(self) -> Any:
-        """Parse the stored lines.
+        """
+        Parse the stored lines.
 
         Returns
         -------
         Any
             Parsed data structure.
+
         """
         raise NotImplementedError
 
 
 class HeaderBlockParser(BlockParser):
-    """Extract AEDT version information from the log header.
+    """
+    Extract AEDT version information from the log header.
 
     This parser searches through log lines to find version, build, and
     installation location information.
@@ -440,10 +463,12 @@ class HeaderBlockParser(BlockParser):
     >>> version = parser.parse()
     >>> version.version
     '2026.1'
+
     """
 
     def parse(self) -> AEDTVersion:
-        """Parse the stored lines and return an AEDTVersion instance.
+        """
+        Parse the stored lines and return an AEDTVersion instance.
 
         Returns
         -------
@@ -457,6 +482,7 @@ class HeaderBlockParser(BlockParser):
         >>> info = parser.parse()
         >>> info.build
         '12345'
+
         """
         pat_ver = re.compile(r"Version\s+([^,]+).*Build:\s+(.+)")
         pat_loc = re.compile(r"Location:\s+(.+)")
@@ -472,7 +498,8 @@ class HeaderBlockParser(BlockParser):
 
 
 class BatchSettingsBlockParser(BlockParser):
-    """Extract batch information and simulation settings from the log.
+    """
+    Extract batch information and simulation settings from the log.
 
     This parser processes batch run metadata including timestamps, user info,
     directories, and simulation configuration settings.
@@ -492,10 +519,12 @@ class BatchSettingsBlockParser(BlockParser):
     'engineer'
     >>> settings.design_type
     'SIwave'
+
     """
 
     def parse(self) -> tuple[BatchInfo, SimSettings]:
-        """Parse batch information and simulation settings.
+        """
+        Parse batch information and simulation settings.
 
         Returns
         -------
@@ -511,6 +540,7 @@ class BatchSettingsBlockParser(BlockParser):
         True
         >>> isinstance(settings, SimSettings)
         True
+
         """
         batch_path = ""
         started = stopped = None
@@ -579,7 +609,8 @@ class BatchSettingsBlockParser(BlockParser):
 
 
 class WarningsBlockParser(BlockParser):
-    """Extract warning entries from the simulation log.
+    """
+    Extract warning entries from the simulation log.
 
     This parser identifies and extracts warning messages, particularly focusing
     on electrical short warnings with location information.
@@ -596,10 +627,12 @@ class WarningsBlockParser(BlockParser):
     'SHORT'
     >>> warnings[0].net1
     'VCC'
+
     """
 
     def parse(self) -> list[WarningEntry]:
-        """Parse warning messages from log lines.
+        """
+        Parse warning messages from log lines.
 
         Returns
         -------
@@ -613,6 +646,7 @@ class WarningsBlockParser(BlockParser):
         >>> warnings = parser.parse()
         >>> len(warnings)
         0
+
         """
         pat = re.compile(
             r".*Geometry on nets (?P<n1>\w+) and (?P<n2>\w+) on layer \"(?P<layer>\w+)\" "
@@ -665,7 +699,8 @@ class WarningsBlockParser(BlockParser):
 
 
 class ProfileBlockParser(BlockParser):
-    """Extract profile entries showing task timing and resource usage.
+    """
+    Extract profile entries showing task timing and resource usage.
 
     This parser processes [PROFILE] tagged lines to extract performance metrics
     including real time, CPU time, memory usage, and additional task-specific data.
@@ -682,10 +717,12 @@ class ProfileBlockParser(BlockParser):
     'Mesh Generation'
     >>> profiles[0].real_time
     '00:05:30'
+
     """
 
     def parse(self) -> list[ProfileEntry]:
-        """Parse profile entries showing task timing and resource usage.
+        """
+        Parse profile entries showing task timing and resource usage.
 
         Returns
         -------
@@ -699,6 +736,7 @@ class ProfileBlockParser(BlockParser):
         >>> profiles = parser.parse()
         >>> len(profiles)
         0
+
         """
         pat = re.compile(r".*\[PROFILE\]\s+(?P<task>.+?)\s*:\s*(?P<rest>.+)")
         out: list[ProfileEntry] = []
@@ -743,7 +781,8 @@ class ProfileBlockParser(BlockParser):
 # ------------------------------------------------------------------
 @dataclass(slots=True)
 class ParsedSiwaveLog:
-    """Root container returned by SiwaveLogParser.parse().
+    """
+    Root container returned by SiwaveLogParser.parse().
 
     This class holds all parsed information from a SIwave log file and provides
     convenience methods for checking completion status, generating summaries,
@@ -788,6 +827,7 @@ class ParsedSiwaveLog:
     ... )
     >>> log.is_completed()
     True
+
     """
 
     aedt: AEDTVersion
@@ -797,7 +837,8 @@ class ParsedSiwaveLog:
     profile: list[ProfileEntry] = field(default_factory=list)
 
     def summary(self) -> None:
-        """Print a summary of the parsed log to stdout.
+        """
+        Print a summary of the parsed log to stdout.
 
         Examples
         --------
@@ -810,6 +851,7 @@ class ParsedSiwaveLog:
         Status  : Normal Completion
         Warnings: 0
         Profile entries: 0
+
         """
         print("Project :", Path(self.batch.path).stem)
         print("Run by  :", self.batch.run_by)
@@ -820,7 +862,8 @@ class ParsedSiwaveLog:
         print("Profile entries:", len(self.profile))
 
     def is_completed(self) -> bool:
-        """Check if the simulation completed normally.
+        """
+        Check if the simulation completed normally.
 
         Returns
         -------
@@ -844,11 +887,13 @@ class ParsedSiwaveLog:
         ... )
         >>> log.is_completed()
         True
+
         """
         return self.batch.status == "Normal Completion"
 
     def is_aborted(self) -> bool:
-        """Check if the simulation was aborted.
+        """
+        Check if the simulation was aborted.
 
         Returns
         -------
@@ -872,11 +917,13 @@ class ParsedSiwaveLog:
         ... )
         >>> log.is_aborted()
         True
+
         """
         return bool(self.batch.status) and self.batch.status != "Normal Completion"
 
     def to_json(self, fp: str, **kw) -> None:
-        """Serialize parsed log to JSON file.
+        """
+        Serialize parsed log to JSON file.
 
         Parameters
         ----------
@@ -889,11 +936,13 @@ class ParsedSiwaveLog:
         --------
         >>> log = ParsedSiwaveLog(aedt=..., batch=..., settings=...)
         >>> log.to_json("output.json", indent=2)
+
         """
         Path(fp).write_text(json.dumps(self.to_dict(), **kw), encoding="utf-8")
 
     def to_dict(self) -> dict:
-        """Deep-convert the entire object to JSON-serializable primitives.
+        """
+        Deep-convert the entire object to JSON-serializable primitives.
 
         Returns
         -------
@@ -908,6 +957,7 @@ class ParsedSiwaveLog:
         True
         >>> "aedt" in data_dict
         True
+
         """
         return _as_dict(self)
 
@@ -916,7 +966,8 @@ class ParsedSiwaveLog:
 # Main Parser Façade
 # ------------------------------------------------------------------
 class SiwaveLogParser:
-    """High-level parser that orchestrates all block parsers.
+    """
+    High-level parser that orchestrates all block parsers.
 
     This class provides the main interface for parsing SIwave log files.
     It coordinates multiple specialized parsers to extract version info,
@@ -953,6 +1004,7 @@ class SiwaveLogParser:
     >>> parser = SiwaveLogParser("simulation.log")
     >>> log = parser.parse()
     >>> log.to_json("output.json", indent=2)
+
     """
 
     BLOCK_MAP: dict[str, type[BlockParser]] = {
@@ -963,17 +1015,20 @@ class SiwaveLogParser:
     }
 
     def __init__(self, log_path: str | Path):
-        """Initialize the parser with a log file path.
+        """
+        Initialize the parser with a log file path.
 
         Parameters
         ----------
         log_path : str or pathlib.Path
             Path to the SIwave log file.
+
         """
         self.path = Path(log_path)
 
     def parse(self) -> ParsedSiwaveLog:
-        """Execute all sub-parsers and return a unified object.
+        """
+        Execute all sub-parsers and return a unified object.
 
         Returns
         -------
@@ -998,6 +1053,7 @@ class SiwaveLogParser:
         >>> log = parser.parse()
         >>> for entry in log.profile:
         ...     print(f"{entry.task}: {entry.real_time}")
+
         """
         text = self.path.read_text(encoding="utf-8", errors="ignore")
         lines = text.splitlines()

@@ -35,7 +35,8 @@ class Msg:
 
 
 class AppFilter(logging.Filter):
-    """Specifies the destination of the logger.
+    """
+    Specifies the destination of the logger.
 
     AEDT exposes three different loggers, which are the global, project, and design loggers.
 
@@ -46,6 +47,7 @@ class AppFilter(logging.Filter):
         The default is ``"Global"``.
     extra : str, optional
         Name of the design or project. The default is ``""``.
+
     """
 
     def __init__(self, destination="Global", extra=""):
@@ -60,6 +62,7 @@ class AppFilter(logging.Filter):
         ----------
         record : class:`logging.LogRecord`
             Contains information related to the event being logged.
+
         """
         record.destination = self._destination
 
@@ -87,6 +90,7 @@ class EdbLogger(object):
         Name of the file to write messages to. The default is ``None``.
     to_stdout : bool, optional
         Whether to write log messages to stdout. The default is ``False``.
+
     """
 
     log_file = ""
@@ -188,7 +192,8 @@ class EdbLogger(object):
             return None  # pragma: no cover
 
     def reset_timer(self, time_val=None):
-        """ "Reset actual timer to  actual time or specified time.
+        """
+        "Reset actual timer to  actual time or specified time.
 
         Parameters
         ----------
@@ -240,7 +245,8 @@ class EdbLogger(object):
         self.add_message(1, message_text)
 
     def add_info_message(self, message_text):
-        """Add a type 0 "Info" message to the active design level of the message manager tree.
+        """
+        Add a type 0 "Info" message to the active design level of the message manager tree.
 
         Also add an info message to the logger if the handler is present.
 
@@ -266,12 +272,14 @@ class EdbLogger(object):
         ----------
         message_text : str
             Text to display as the message.
+
         """
 
         return self.add_message(3, message_text)
 
     def add_message(self, message_type, message_text):
-        """Add a message to the message manager.
+        """
+        Add a message to the message manager.
 
         Parameters
         ----------
@@ -283,6 +291,7 @@ class EdbLogger(object):
             * ``3`` : Debug
         message_text : str
             Text to display as the message.
+
         """
         self._log_on_handler(message_type, message_text)
 
@@ -348,7 +357,8 @@ class EdbLogger(object):
         return self._log_on_handler(0, msg, *args, **kwargs)
 
     def info_timer(self, msg, start_time=None, *args, **kwargs):
-        """Write an info message to the global logger with elapsed time.
+        """
+        Write an info message to the global logger with elapsed time.
         Message will have an appendix of type Elapsed time: time."""
         if not self.settings.enable_logger:
             return

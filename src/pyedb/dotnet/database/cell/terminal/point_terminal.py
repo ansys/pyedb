@@ -31,7 +31,8 @@ class PointTerminal(Terminal):
         self._pedb = pedb
 
     def create(self, name, net, location, layer, is_ref=False):
-        """Create a point terminal.
+        """
+        Create a point terminal.
 
         Parameters
         ----------
@@ -49,6 +50,7 @@ class PointTerminal(Terminal):
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.terminals.PointTerminal`
+
         """
         terminal = self._pedb.core.Cell.Terminal.PointTerminal.Create(
             self._pedb.active_layout,
@@ -93,7 +95,8 @@ class PointTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """Whether the terminal is a reference terminal.
+        """
+        Whether the terminal is a reference terminal.
 
         Returns
         -------

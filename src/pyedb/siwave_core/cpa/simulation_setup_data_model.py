@@ -26,7 +26,8 @@ from pydantic import BaseModel, Field
 
 
 class SolverOptions(BaseModel):
-    """Configuration options for the SI-Wave solver.
+    """
+    Configuration options for the SI-Wave solver.
 
     Attributes:
         extraction_mode (str): Mode of extraction, defaults to "si"
@@ -46,6 +47,7 @@ class SolverOptions(BaseModel):
         compute_dc_rl (bool): Enable DC RL computation, defaults to True
         compute_dc_cg (bool): Enable DC CG computation, defaults to True
         return_path_net_for_loop_parameters (bool): Include return path net for loop parameters, defaults to True
+
     """
 
     extraction_mode: str = "si"
@@ -68,13 +70,15 @@ class SolverOptions(BaseModel):
 
 
 class Vrm(BaseModel):
-    """Voltage Regulator Module configuration.
+    """
+    Voltage Regulator Module configuration.
 
     Attributes:
         name (str): Name of the VRM, defaults to empty string
         voltage (float): Voltage value, defaults to 0.0
         power_net (str): Power net identifier, defaults to empty string
         reference_net (str): Reference net identifier, defaults to empty string
+
     """
 
     name: str = ""
@@ -84,13 +88,15 @@ class Vrm(BaseModel):
 
 
 class ChannelSetup(BaseModel):
-    """Channel configuration setup.
+    """
+    Channel configuration setup.
 
     Attributes:
         die_name (str): Name of the die, defaults to empty string
         pin_grouping_mode (str): Mode for pin grouping, defaults to "perpin"
         channel_component_exposure (Dict[str, bool]): Component exposure settings
         vrm_setup (List[Vrm]): List of VRM configurations
+
     """
 
     die_name: str = ""
@@ -100,7 +106,8 @@ class ChannelSetup(BaseModel):
 
 
 class SIwaveCpaSetup(BaseModel):
-    """Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
+    """
+    Main configuration class for SI-Wave CPA (Channel Parameter Analyzer) setup.
 
     Attributes:
         name (str): Name of the setup, defaults to empty string
@@ -112,6 +119,7 @@ class SIwaveCpaSetup(BaseModel):
         channel_setup (ChannelSetup): Channel configuration settings
         solver_options (SolverOptions): Solver configuration options
         nets_to_process (List[str]): List of nets to process
+
     """
 
     name: str = ""
@@ -126,13 +134,15 @@ class SIwaveCpaSetup(BaseModel):
 
     @classmethod
     def from_dict(cls, data: Dict) -> "SIwaveCpaSetup":
-        """Convert dictionary to SIwaveCpaSetup object.
+        """
+        Convert dictionary to SIwaveCpaSetup object.
 
         Args:
             data (Dict): Dictionary containing SIwaveCpaSetup configuration
 
         Returns:
             SIwaveCpaSetup: New instance created from the dictionary
+
         """
         if "channel_setup" in data:
             data["channel_setup"] = ChannelSetup(**data["channel_setup"])
@@ -141,10 +151,12 @@ class SIwaveCpaSetup(BaseModel):
         return cls(**data)
 
     def to_dict(self) -> Dict:
-        """Convert SIwaveCpaSetup object to dictionary.
+        """
+        Convert SIwaveCpaSetup object to dictionary.
 
         Returns:
             Dict: Dictionary representation of the SIwaveCpaSetup instance
+
         """
         data = self.model_dump()
         if self.channel_setup:

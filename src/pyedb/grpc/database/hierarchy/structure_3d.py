@@ -32,7 +32,8 @@ class Structure3D:
 
     @classmethod
     def create(cls, edb, name: str) -> "Structure3D":
-        """Create structure 3D component.
+        """
+        Create structure 3D component.
 
         Parameters
         ----------
@@ -45,6 +46,7 @@ class Structure3D:
         -------
         Structure3D
             The created structure 3D component.
+
         """
         core = CoreStructure3D.create(edb.layout.core, name)
         return Structure3D(pedb=edb, core=core)
@@ -55,23 +57,27 @@ class Structure3D:
 
     @property
     def id(self) -> int:
-        """Return structure 3D component.
+        """
+        Return structure 3D component.
 
         Returns
         -------
         int
             The structure 3D component unique ID.
+
         """
         return self.core.edb_uid
 
     @property
     def location(self) -> tuple[float, float]:
-        """ "Return structure 3D component.
+        """
+        "Return structure 3D component.
 
         Returns
         -------
         tuple[float, float]
             The structure 3D component location as a tuple of x and y coordinates.
+
         """
         return tuple([self._pedb._value_setter(val) for val in self.core.location])
 
@@ -81,12 +87,14 @@ class Structure3D:
 
     @property
     def name(self) -> str:
-        """ "Return structure 3D component.
+        """
+        "Return structure 3D component.
 
         Returns
         -------
         str
             The structure 3D component name.
+
         """
         return self.core.name
 
@@ -96,7 +104,8 @@ class Structure3D:
 
     @property
     def material(self) -> str:
-        """ "Return structure 3D component.
+        """
+        "Return structure 3D component.
 
         str
             The structure 3D component material.
@@ -109,12 +118,14 @@ class Structure3D:
 
     @property
     def net(self) -> str:
-        """ "Return structure 3D component net name
+        """
+        "Return structure 3D component net name
 
         Returns
         -------
         str
             The structure 3D component net name.
+
         """
         return self.core.net.name
 

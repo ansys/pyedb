@@ -40,7 +40,8 @@ class SimulationSetups:
         name=None,
         solver="hfss",
     ):
-        """Add analysis setup.
+        """
+        Add analysis setup.
 
         Parameters
         ----------
@@ -48,6 +49,7 @@ class SimulationSetups:
             Setup name (auto-generated if None).
         solver : str, optional
             Simulation setup type ("hfss", "siwave", "siwave_dcir", "raptor_x", "q3d").
+
         """
         if not name:
             name = generate_unique_name(f"{solver}_setup")
@@ -76,7 +78,8 @@ class SimulationSetups:
         discrete_sweep=False,
         sweep_name: str = "frequency_sweep",
     ) -> HfssSimulationSetup:
-        """Create an HFSS simulation setup from a template.
+        """
+        Create an HFSS simulation setup from a template.
 
         Parameters
         ----------
@@ -93,6 +96,7 @@ class SimulationSetups:
         >>> edbapp = Edb()
         >>> setup1 = edbapp.create_hfss_setup("setup1")
         >>> setup1.hfss_port_settings.max_delta_z0 = 0.5
+
         """
         if name in self._pedb.setups:
             raise RuntimeError("setup already exists")
@@ -111,7 +115,8 @@ class SimulationSetups:
         return setup
 
     def create_hfss_pi_setup(self, name=None):
-        """Create an HFSS PI simulation setup from a template.
+        """
+        Create an HFSS PI simulation setup from a template.
 
         Parameters
         ----------
@@ -137,7 +142,8 @@ class SimulationSetups:
         return HFSSPISimulationSetup.create(self._pedb, name=name)
 
     def create_raptor_x_setup(self, name=None):
-        """Create an RaptorX simulation setup from a template.
+        """
+        Create an RaptorX simulation setup from a template.
 
         Parameters
         ----------
@@ -159,7 +165,8 @@ class SimulationSetups:
             return setup
 
     def create_siwave_dcir_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
+        """
+        Create a setup from a template.
 
         Parameters
         ----------
@@ -188,7 +195,8 @@ class SimulationSetups:
         return setup
 
     def create_siwave_setup(self, name=None, **kwargs):
-        """Create a setup from a template.
+        """
+        Create a setup from a template.
 
         Parameters
         ----------
@@ -211,6 +219,7 @@ class SimulationSetups:
         ...         ["linear scale", "0.1GHz", "10GHz", "0.1GHz"],
         ...     ]
         ... )
+
         """
         if not name:
             name = generate_unique_name("Siwave_SYZ")

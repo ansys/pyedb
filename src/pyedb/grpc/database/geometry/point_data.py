@@ -82,7 +82,8 @@ class PointData:
         return self.core.is_arc
 
     def rotate(self, angle: str | float | int, center: tuple[str | float | int, str | float | int]) -> "PointData":
-        """Rotate a point at a given center by a given angle.
+        """
+        Rotate a point at a given center by a given angle.
 
         Parameters
         ----------
@@ -95,6 +96,7 @@ class PointData:
         -------
         .PointData or :obj:`None`
             PointData after rotating or :obj:`None` if either point is an arc.
+
         """
         cx = self._pedb.value(center[0])
         cy = self._pedb.value(center[1])

@@ -30,7 +30,8 @@ class SparamModel:  # pragma: no cover
 
     @property
     def is_null(self):
-        """Check if the S-parameter model is null.
+        """
+        Check if the S-parameter model is null.
 
         Returns
         -------
@@ -42,7 +43,8 @@ class SparamModel:  # pragma: no cover
 
     @property
     def name(self):
-        """Get the name of the S-parameter model.
+        """
+        Get the name of the S-parameter model.
 
         Returns
         -------
@@ -54,7 +56,8 @@ class SparamModel:  # pragma: no cover
 
     @name.setter
     def name(self, value):
-        """Set the name of the S-parameter model.
+        """
+        Set the name of the S-parameter model.
 
         Parameters
         ----------
@@ -67,7 +70,8 @@ class SparamModel:  # pragma: no cover
 
     @property
     def component_model_name(self):
-        """Get the name of the S-parameter model.
+        """
+        Get the name of the S-parameter model.
 
         Returns
         -------
@@ -79,7 +83,8 @@ class SparamModel:  # pragma: no cover
 
     @component_model_name.setter
     def component_model_name(self, value):
-        """Set the name of the S-parameter model.
+        """
+        Set the name of the S-parameter model.
 
         Parameters
         ----------
@@ -92,7 +97,8 @@ class SparamModel:  # pragma: no cover
 
     @property
     def reference_net(self):
-        """Get the reference net of the S-parameter model.
+        """
+        Get the reference net of the S-parameter model.
 
         Returns
         -------
@@ -104,7 +110,8 @@ class SparamModel:  # pragma: no cover
 
     @reference_net.setter
     def reference_net(self, value):
-        """Set the reference net of the S-parameter model.
+        """
+        Set the reference net of the S-parameter model.
 
         Parameters
         ----------
@@ -117,7 +124,8 @@ class SparamModel:  # pragma: no cover
 
     @property
     def file_path(self):
-        """Get the file path of the S-parameter model.
+        """
+        Get the file path of the S-parameter model.
 
         Returns
         -------
@@ -129,7 +137,8 @@ class SparamModel:  # pragma: no cover
 
     @file_path.setter
     def file_path(self, value):
-        """Set the file path of the S-parameter model.
+        """
+        Set the file path of the S-parameter model.
 
         Parameters
         ----------

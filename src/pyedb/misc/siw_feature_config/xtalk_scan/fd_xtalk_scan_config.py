@@ -25,7 +25,8 @@ from pyedb.misc.siw_feature_config.xtalk_scan.net import SingleEndedNet
 
 
 class CrosstalkFrequency:
-    """SIwave frequency domain crosstalk configuration handler.
+    """
+    SIwave frequency domain crosstalk configuration handler.
 
     This class manages frequency domain crosstalk scanning configuration including
     transmission line segment length, frequency, and net-specific crosstalk thresholds.
@@ -47,7 +48,8 @@ class CrosstalkFrequency:
     """
 
     def __init__(self, pedb) -> None:
-        """Initialize frequency domain crosstalk configuration.
+        """
+        Initialize frequency domain crosstalk configuration.
 
         Parameters
         ----------
@@ -61,7 +63,8 @@ class CrosstalkFrequency:
         self.nets: dict[str, SingleEndedNet] = {}
 
     def extend_xml(self, parent) -> None:
-        """Write class XML section.
+        """
+        Write class XML section.
 
         Parameters
         ----------
@@ -84,7 +87,8 @@ class CrosstalkFrequency:
         fext_warning_threshold_warning: float | str = 5.0,
         fext_violation_threshold: float | str = 5.0,
     ) -> bool:
-        """Add single ended net to frequency domain crosstalk configuration.
+        """
+        Add single ended net to frequency domain crosstalk configuration.
 
         Parameters
         ----------

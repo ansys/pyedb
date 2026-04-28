@@ -82,11 +82,13 @@ class Settings(object):
 
     @property
     def is_grpc(self):
-        """Whether Edb is launched using grpc or not.
+        """
+        Whether Edb is launched using grpc or not.
 
         Returns
         -------
         bool
+
         """
         return self.__is_grpc
 
@@ -96,12 +98,14 @@ class Settings(object):
 
     @property
     def is_in_memory(self):
-        """Whether Edb is launched using memory or not. sed only with gRPC. When `True` by pass connection socket.
+        """
+        Whether Edb is launched using memory or not. sed only with gRPC. When `True` by pass connection socket.
         Designed to be used when client and RPC server are both running locally. Performances are expected to be better.
 
         Returns
         -------
         bool
+
         """
         return self.__is_in_memory
 
@@ -111,7 +115,8 @@ class Settings(object):
 
     @property
     def edb_environment_variables(self):
-        """Environment variables that are set before launching a new AEDT session,
+        """
+        Environment variables that are set before launching a new AEDT session,
         including those that enable the beta features."""
         return self._edb_environment_variables
 
@@ -121,7 +126,8 @@ class Settings(object):
 
     @property
     def aedt_version(self):
-        """AEDT version in the form ``"2023.x"``. In AEDT 2022 R2 and later,
+        """
+        AEDT version in the form ``"2023.x"``. In AEDT 2022 R2 and later,
         evaluating a bounding box by exporting a SAT file is disabled."""
         return self._aedt_version
 
@@ -142,7 +148,8 @@ class Settings(object):
 
     @property
     def enable_global_log_file(self):
-        """Flag for enabling and disabling the global PyEDB log file located in the global temp folder.
+        """
+        Flag for enabling and disabling the global PyEDB log file located in the global temp folder.
         The default is ``True``."""
         return self._enable_global_log_file
 
@@ -152,7 +159,8 @@ class Settings(object):
 
     @property
     def enable_local_log_file(self):
-        """Flag for enabling and disabling the local PyEDB log file located
+        """
+        Flag for enabling and disabling the local PyEDB log file located
         in the ``projectname.pyedb`` project folder. The default is ``True``."""
         return self._enable_local_log_file
 
@@ -171,7 +179,8 @@ class Settings(object):
 
     @property
     def enable_debug_methods_argument_logger(self):
-        """Flag for whether to write out the method's arguments in the debug logger.
+        """
+        Flag for whether to write out the method's arguments in the debug logger.
         The default is ``False``."""
         return self._enable_debug_methods_argument_logger
 
@@ -217,7 +226,8 @@ class Settings(object):
 
     @property
     def logger_formatter(self):
-        """Message format of the log entries.
+        """
+        Message format of the log entries.
         The default is ``'%(asctime)s:%(destination)s:%(extra)s%(levelname)-8s:%(message)s'``"""
         return self._logger_formatter
 
@@ -227,7 +237,8 @@ class Settings(object):
 
     @property
     def logger_datefmt(self):
-        """Date format of the log entries.
+        """
+        Date format of the log entries.
         The default is ``'%Y/%m/%d %H.%M.%S'``"""
         return self._logger_datefmt
 
@@ -246,7 +257,8 @@ class Settings(object):
 
     @property
     def enable_debug_internal_methods_logger(self):
-        """Flag for enabling and disabling the logging for internal methods.
+        """
+        Flag for enabling and disabling the logging for internal methods.
         This setting is useful for debug purposes."""
         return self._enable_debug_internal_methods_logger
 
@@ -295,7 +307,8 @@ class Settings(object):
         self._retry_n_times_time_interval = float(value)
 
     def __get_version_information(self):
-        """Get the installed AEDT versions.
+        """
+        Get the installed AEDT versions.
 
         This method returns a dictionary, with the version as the key and the installation path
         as the value."""

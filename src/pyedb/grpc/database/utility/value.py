@@ -134,10 +134,12 @@ class Value(float, CoreValue):
         return self.__class__(core, self.owner)
 
     def __pow__(self, other):
-        """Power of the value.
+        """
+        Power of the value.
         Returns
         -------
         Value object
+
         """
         if self.__core is None and (
             (isinstance(other, Value) and other.__core is None) or (not isinstance(other, CoreValue))

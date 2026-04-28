@@ -26,7 +26,8 @@ from pyedb.misc.decorators import deprecated
 
 
 class SweepData(object):
-    """Manages EDB methods for a frequency sweep.
+    """
+    Manages EDB methods for a frequency sweep.
 
     Parameters
     ----------
@@ -35,6 +36,7 @@ class SweepData(object):
         Name of the frequency sweep.
     edb_object : :class:`Ansys.Ansoft.Edb.Utility.SIWDCIRSimulationSettings`, optional
         EDB object. The default is ``None``.
+
     """
 
     def __init__(self, pedb, edb_object=None, name: str = None, sim_setup=None):
@@ -75,23 +77,27 @@ class SweepData(object):
 
     @property
     def adaptive_sampling(self):
-        """Flag indicating if adaptive sampling is turned on.
+        """
+        Flag indicating if adaptive sampling is turned on.
 
         Returns
         -------
         bool
             ``True`` if adaptive sampling is used, ``False`` otherwise.
+
         """
         return self._edb_object.AdaptiveSampling
 
     @property
     def adv_dc_extrapolation(self):
-        """Flag indicating if advanced DC extrapolation is turned on.
+        """
+        Flag indicating if advanced DC extrapolation is turned on.
 
         Returns
         -------
         bool
             ``True`` if advanced DC Extrapolation is used, ``False`` otherwise.
+
         """
         return self._edb_object.AdvDCExtrapolation
 
@@ -112,40 +118,47 @@ class SweepData(object):
 
     @property
     def enforce_causality(self):
-        """Flag indicating if causality is enforced.
+        """
+        Flag indicating if causality is enforced.
 
         Returns
         -------
         bool
             ``True`` if enforce causality is used, ``False`` otherwise.
+
         """
         return self._edb_object.EnforceCausality
 
     @property
     def enforce_dc_and_causality(self):
-        """Flag indicating if DC point and causality are enforced.
+        """
+        Flag indicating if DC point and causality are enforced.
 
         Returns
         -------
         bool
             ``True`` if enforce dc point and causality is used, ``False`` otherwise.
+
         """
         return self._edb_object.EnforceDCAndCausality
 
     @property
     def enforce_passivity(self):
-        """Flag indicating if passivity is enforced.
+        """
+        Flag indicating if passivity is enforced.
 
         Returns
         -------
         bool
             ``True`` if enforce passivity is used, ``False`` otherwise.
+
         """
         return self._edb_object.EnforcePassivity
 
     @property
     def freq_sweep_type(self):
-        """Sweep type.
+        """
+        Sweep type.
 
         Options are:
         - ``"kInterpolatingSweep"``
@@ -156,6 +169,7 @@ class SweepData(object):
         -------
         str
             Sweep type.
+
         """
         return self._edb_object.FreqSweepType.ToString()
 
@@ -194,130 +208,154 @@ class SweepData(object):
 
     @property
     def interpolation_use_full_basis(self):
-        """Flag indicating if full-basis elements is used.
+        """
+        Flag indicating if full-basis elements is used.
 
         Returns
         -------
         bool
             ``True`` if full basis interpolation is used, ``False`` otherwise.
+
         """
         return self._edb_object.InterpUseFullBasis
 
     @property
     def interpolation_use_port_impedance(self):
-        """Flag indicating if port impedance interpolation is turned on.
+        """
+        Flag indicating if port impedance interpolation is turned on.
 
         Returns
         -------
         bool
             ``True`` if port impedance is used, ``False`` otherwise.
+
         """
         return self._edb_object.InterpUsePortImpedance
 
     @property
     def interpolation_use_prop_const(self):
-        """Flag indicating if propagation constants are used.
+        """
+        Flag indicating if propagation constants are used.
 
         Returns
         -------
         bool
             ``True`` if propagation constants are used, ``False`` otherwise.
+
         """
         return self._edb_object.InterpUsePropConst
 
     @property
     def interpolation_use_s_matrix(self):
-        """Flag indicating if the S matrix is used.
+        """
+        Flag indicating if the S matrix is used.
 
         Returns
         -------
         bool
             ``True`` if S matrix are used, ``False`` otherwise.
+
         """
         return self._edb_object.InterpUseSMatrix
 
     @property
     def max_solutions(self):
-        """Number of maximum solutions.
+        """
+        Number of maximum solutions.
 
         Returns
         -------
         int
+
         """
         return self._edb_object.MaxSolutions
 
     @property
     def min_freq_s_mat_only_solve(self):
-        """Minimum frequency SMatrix only solve.
+        """
+        Minimum frequency SMatrix only solve.
 
         Returns
         -------
         str
             Frequency with units.
+
         """
         return self._edb_object.MinFreqSMatOnlySolve
 
     @property
     def min_solved_freq(self):
-        """Minimum solved frequency with units.
+        """
+        Minimum solved frequency with units.
 
         Returns
         -------
         str
             Frequency with units.
+
         """
         return self._edb_object.MinSolvedFreq
 
     @property
     def passivity_tolerance(self):
-        """Tolerance for passivity enforcement.
+        """
+        Tolerance for passivity enforcement.
 
         Returns
         -------
         float
+
         """
         return self._edb_object.PassivityTolerance
 
     @property
     def relative_s_error(self):
-        """S-parameter error tolerance.
+        """
+        S-parameter error tolerance.
 
         Returns
         -------
         float
+
         """
         return self._edb_object.RelativeSError
 
     @property
     def save_fields(self):
-        """Flag indicating if the extraction of surface current data is turned on.
+        """
+        Flag indicating if the extraction of surface current data is turned on.
 
         Returns
         -------
         bool
             ``True`` if save fields is enabled, ``False`` otherwise.
+
         """
         return self._edb_object.SaveFields
 
     @property
     def save_rad_fields_only(self):
-        """Flag indicating if the saving of only radiated fields is turned on.
+        """
+        Flag indicating if the saving of only radiated fields is turned on.
 
         Returns
         -------
         bool
             ``True`` if save radiated field only is used, ``False`` otherwise.
+
         """
         return self._edb_object.SaveRadFieldsOnly
 
     @property
     def use_q3d_for_dc(self):
-        """Flag indicating if the Q3D solver is used for DC point extraction.
+        """
+        Flag indicating if the Q3D solver is used for DC point extraction.
 
         Returns
         -------
         bool
             ``True`` if Q3d for DC point is used, ``False`` otherwise.
+
         """
         return self._edb_object.UseQ3DForDC
 
@@ -418,7 +456,8 @@ class SweepData(object):
 
     @deprecated("use add method instead")
     def set_frequencies_linear_scale(self, start="0.1GHz", stop="20GHz", step="50MHz"):
-        """Set a linear scale frequency sweep.
+        """
+        Set a linear scale frequency sweep.
 
         Parameters
         ----------
@@ -433,13 +472,15 @@ class SweepData(object):
         -------
         bool
             ``True`` if correctly executed, ``False`` otherwise.
+
         """
         self._edb_object.Frequencies = self._edb_object.SetFrequencies(start, stop, step)
         return self._update_sweep()
 
     @deprecated("use add method instead")
     def set_frequencies_linear_count(self, start="1kHz", stop="0.1GHz", count=10):
-        """Set a linear count frequency sweep.
+        """
+        Set a linear count frequency sweep.
 
         Parameters
         ----------
@@ -454,6 +495,7 @@ class SweepData(object):
         -------
         bool
             ``True`` if correctly executed, ``False`` otherwise.
+
         """
         start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
         stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
@@ -462,7 +504,8 @@ class SweepData(object):
 
     @deprecated("use add method instead")
     def set_frequencies_log_scale(self, start="1kHz", stop="0.1GHz", samples=10):
-        """Set a log-count frequency sweep.
+        """
+        Set a log-count frequency sweep.
 
         Parameters
         ----------
@@ -477,6 +520,7 @@ class SweepData(object):
         -------
         bool
             ``True`` if correctly executed, ``False`` otherwise.
+
         """
         start = self.sim_setup._pedb.arg_to_dim(start, "Hz")
         stop = self.sim_setup._pedb.arg_to_dim(stop, "Hz")
@@ -485,7 +529,8 @@ class SweepData(object):
 
     @deprecated("use add method instead")
     def set_frequencies(self, frequency_list=None, update=True):
-        """Set frequency list to the sweep frequencies.
+        """
+        Set frequency list to the sweep frequencies.
 
         Parameters
         ----------
@@ -499,6 +544,7 @@ class SweepData(object):
         -------
         bool
             ``True`` if correctly executed, ``False`` otherwise.
+
         """
         if not frequency_list:
             frequency_list = [
@@ -547,7 +593,8 @@ class SweepData(object):
 
     @property
     def frequency_string(self):
-        """A string describing the frequency sweep. Below is an example.
+        """
+        A string describing the frequency sweep. Below is an example.
         ['LIN 0GHz 20GHz 0.05GHz', 'LINC 20GHz 30GHz 10', 'DEC 40GHz 50GHz 10']
         """
         pattern = r"(?:LIN[C]?|DEC) [^ ]+ [^ ]+ [^ ]+"

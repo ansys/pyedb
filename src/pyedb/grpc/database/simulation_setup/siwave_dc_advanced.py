@@ -38,12 +38,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def dc_min_plane_area_to_mesh(self) -> str:
-        """Minimum plane area to mesh.
+        """
+        Minimum plane area to mesh.
 
         Returns
         -------
         float
             Minimum plane area to mesh value.
+
         """
         return self.core.dc_min_plane_area_to_mesh
 
@@ -53,12 +55,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def dc_min_void_area_to_mesh(self) -> str:
-        """Minimum void area to mesh.
+        """
+        Minimum void area to mesh.
 
         Returns
         -------
         str
             Minimum void area to mesh value.
+
         """
         return self.core.dc_min_void_area_to_mesh
 
@@ -68,12 +72,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def energy_error(self) -> float:
-        """Energy error.
+        """
+        Energy error.
 
         Returns
         -------
         float
             Energy error value.
+
         """
         return self.core.energy_error
 
@@ -83,12 +89,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def max_init_mesh_edge_length(self) -> str:
-        """Maximum initial mesh edge length.
+        """
+        Maximum initial mesh edge length.
 
         Returns
         -------
         str
             Maximum initial mesh edge length value.
+
         """
         return self.core.max_init_mesh_edge_length
 
@@ -98,12 +106,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def max_num_passes(self) -> int:
-        """Maximum number of passes.
+        """
+        Maximum number of passes.
 
         Returns
         -------
         int
             Maximum number of passes value.
+
         """
         return self.core.max_num_passes
 
@@ -113,7 +123,8 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def max_passes(self) -> int:
-        """Maximum number of passes for broadband adaptive solution.
+        """
+        Maximum number of passes for broadband adaptive solution.
 
         Returns
         -------
@@ -129,12 +140,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def mesh_bws(self) -> bool:
-        """Mesh BWS.
+        """
+        Mesh BWS.
 
         Returns
         -------
         bool
             Mesh BWS value.
+
         """
         return self.core.mesh_bws
 
@@ -144,12 +157,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def mesh_vias(self) -> bool:
-        """Mesh vias.
+        """
+        Mesh vias.
 
         Returns
         -------
         bool
             Mesh vias value.
+
         """
         return self.core.mesh_vias
 
@@ -159,12 +174,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def min_num_passes(self) -> int:
-        """Minimum number of passes.
+        """
+        Minimum number of passes.
 
         Returns
         -------
         int
             Minimum number of passes value.
+
         """
         return self.core.min_num_passes
 
@@ -174,12 +191,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def num_bw_sides(self) -> int:
-        """Number of BWS sides.
+        """
+        Number of BWS sides.
 
         Returns
         -------
         int
             Number of BWS sides value.
+
         """
         return self.core.num_bw_sides
 
@@ -189,12 +208,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def num_via_sides(self) -> int:
-        """Number of via sides.
+        """
+        Number of via sides.
 
         Returns
         -------
         int
             Number of via sides value.
+
         """
         return self.core.num_via_sides
 
@@ -204,12 +225,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def percent_local_refinement(self) -> float:
-        """Percentage of local refinement.
+        """
+        Percentage of local refinement.
 
         Returns
         -------
         float
             Percentage of local refinement value.
+
         """
         return self.core.percent_local_refinement
 
@@ -219,12 +242,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def perform_adaptive_refinement(self) -> bool:
-        """Perform adaptive refinement.
+        """
+        Perform adaptive refinement.
 
         Returns
         -------
         bool
             Perform adaptive refinement value.
+
         """
         return self.core.perform_adaptive_refinement
 
@@ -234,12 +259,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def refine_bws(self) -> bool:
-        """Refine BWS.
+        """
+        Refine BWS.
 
         Returns
         -------
         bool
             Refine BWS value.
+
         """
         return self.core.refine_bws
 
@@ -249,12 +276,14 @@ class SIWaveDCAdvancedSettings:
 
     @property
     def refine_vias(self) -> bool:
-        """Refine vias.
+        """
+        Refine vias.
 
         Returns
         -------
         bool
             Refine vias value.
+
         """
         return self.core.refine_vias
 

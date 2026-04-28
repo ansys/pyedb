@@ -43,12 +43,14 @@ class Q3DDCRLSettings:
 
     @property
     def max_passes(self) -> int:
-        """Maximum number of passes.
+        """
+        Maximum number of passes.
 
         Returns
         -------
         int
             Maximum number of passes.
+
         """
         return self.core.max_passes
 
@@ -58,12 +60,14 @@ class Q3DDCRLSettings:
 
     @property
     def max_refine_per_pass(self) -> float:
-        """Maximum refinement per pass.
+        """
+        Maximum refinement per pass.
 
         Returns
         -------
         float
             Maximum refinement per pass.
+
         """
         return self.core.max_refine_per_pass
 
@@ -73,12 +77,14 @@ class Q3DDCRLSettings:
 
     @property
     def min_converged_passes(self) -> int:
-        """Minimum number of converged passes.
+        """
+        Minimum number of converged passes.
 
         Returns
         -------
         int
             Minimum number of converged passes.
+
         """
         return self.core.min_converged_passes
 
@@ -88,12 +94,14 @@ class Q3DDCRLSettings:
 
     @property
     def min_passes(self) -> int:
-        """Minimum number of passes.
+        """
+        Minimum number of passes.
 
         Returns
         -------
         int
             Minimum number of passes.
+
         """
         return self.core.min_passes
 
@@ -103,12 +111,14 @@ class Q3DDCRLSettings:
 
     @property
     def percent_error(self) -> float:
-        """Percent error.
+        """
+        Percent error.
 
         Returns
         -------
         float
             Percent error.
+
         """
         return self.core.percent_error
 
@@ -118,12 +128,14 @@ class Q3DDCRLSettings:
 
     @property
     def solution_order(self) -> str:
-        """Solution order.
+        """
+        Solution order.
 
         Returns
         -------
         str
             Solution order.
+
         """
         reverse_mapping = {v: k for k, v in _mapping_solution_order.items()}
         return reverse_mapping.get(self.core.solution_order, "normal")

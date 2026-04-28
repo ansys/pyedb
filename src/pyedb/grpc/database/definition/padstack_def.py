@@ -47,7 +47,8 @@ from pyedb.misc.decorators import deprecated_property
 
 
 class PadProperties:
-    """Manages EDB functionalities for pad properties.
+    """
+    Manages EDB functionalities for pad properties.
 
     Parameters
     ----------
@@ -65,6 +66,7 @@ class PadProperties:
     >>> from pyedb import Edb
     >>> edb = Edb("myedb", version="2026.1")
     >>> edb_pad_properties = edb.padstacks.definitions["MyPad"].pad_by_layer["TOP"]
+
     """
 
     def __init__(self, core, layer_name, pad_type, p_edb_padstack):
@@ -91,12 +93,14 @@ class PadProperties:
 
     @property
     def geometry_type(self) -> float:
-        """Geometry type.
+        """
+        Geometry type.
 
         Returns
         -------
         int
             Type of the geometry.
+
         """
         return self._pad_parameter_value[0].value
 
@@ -106,23 +110,27 @@ class PadProperties:
 
     @property
     def shape(self) -> str:
-        """Pad shape.
+        """
+        Pad shape.
 
         Returns
         -------
         str
             pad shape.
+
         """
         return self._pad_parameter_value[0].name.split("_")[-1].lower()
 
     @shape.setter
     def shape(self, value: str):
-        """Set pad shape.
+        """
+        Set pad shape.
 
         Parameters
         ----------
         value : str
             Pad shape.
+
         """
         if value.lower() == "circle":
             self._update_pad_parameters_parameters(geom_type=CorePadGeometryType.PADGEOMTYPE_CIRCLE)
@@ -137,12 +145,14 @@ class PadProperties:
 
     @property
     def parameters_values(self) -> list[float] | None:
-        """Parameters.
+        """
+        Parameters.
 
         Returns
         -------
         list
             List of parameters.
+
         """
         try:
             return [Value(i) for i in self._pad_parameter_value[1]]
@@ -165,35 +175,41 @@ class PadProperties:
 
     @property
     def polygon_data(self) -> CorePolygonData:
-        """Parameters.
+        """
+        Parameters.
 
         Returns
         -------
         PolygonData
             PolygonData object.
+
         """
         p = self._pad_parameter_value[1]
         return p if isinstance(p, ansys.edb.core.geometry.polygon_data.PolygonData) else None
 
     @property
     def offset_x(self) -> float:
-        """Offset for the X axis.
+        """
+        Offset for the X axis.
 
         Returns
         -------
         str
             Offset for the X axis.
+
         """
         return Value(self._pad_parameter_value[2])
 
     @property
     def offset_y(self) -> float:
-        """Offset for the Y axis.
+        """
+        Offset for the Y axis.
 
         Returns
         -------
         str
             Offset for the Y axis.
+
         """
 
         return Value(self._pad_parameter_value[3])
@@ -208,12 +224,14 @@ class PadProperties:
 
     @property
     def rotation(self) -> float:
-        """Rotation.
+        """
+        Rotation.
 
         Returns
         -------
         str
             Value for the rotation.
+
         """
 
         return Value(self._pad_parameter_value[4])
@@ -269,7 +287,8 @@ class PadProperties:
 
 
 class PadstackDef:
-    """Manages EDB functionalities for a padstack.
+    """
+    Manages EDB functionalities for a padstack.
 
     Parameters
     ----------
@@ -283,6 +302,7 @@ class PadstackDef:
     >>> from pyedb import Edb
     >>> edb = Edb("myedb", version="2026.1")
     >>> edb_padstack = edb.padstacks.definitions["MyPad"]
+
     """
 
     def __init__(self, pedb, edb_object):
@@ -311,12 +331,14 @@ class PadstackDef:
 
     @property
     def instances(self) -> list[PadstackInstance]:
-        """Definitions Instances.
+        """
+        Definitions Instances.
 
         Returns
         -------
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             Dict of PadstackInstance objects.
+
         """
         return [
             j
@@ -335,12 +357,14 @@ class PadstackDef:
 
     @property
     def data(self):
-        """Padstack definition data.
+        """
+        Padstack definition data.
 
         Returns
         -------
         PadstackDef
             Padstack definition data object.
+
         """
         return self.core.data
 
@@ -350,23 +374,27 @@ class PadstackDef:
 
     @property
     def layers(self) -> list[str]:
-        """Layers.
+        """
+        Layers.
 
         Returns
         -------
         list[str]
             List of layer names.
+
         """
         return self.core.data.layer_names
 
     @property
     def start_layer(self) -> str | None:
-        """Starting layer.
+        """
+        Starting layer.
 
         Returns
         -------
         str
             Name of the starting layer.
+
         """
         if not self.layers:
             return None
@@ -375,7 +403,8 @@ class PadstackDef:
     @property
     @deprecated_property("use start_layer property instead")
     def via_start_layer(self):
-        """Via starting layer.
+        """
+        Via starting layer.
 
         .deprecated
         Use: :method:`start_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.start_layer>`
@@ -385,17 +414,20 @@ class PadstackDef:
         -------
         str
             Name of the via starting layer.
+
         """
         return self.start_layer
 
     @property
     def stop_layer(self) -> str | None:
-        """Stopping layer.
+        """
+        Stopping layer.
 
         Returns
         -------
         str
             Name of the stopping layer.
+
         """
         if not self.layers:
             return None
@@ -404,7 +436,8 @@ class PadstackDef:
     @property
     @deprecated_property("use stop_layer property instead")
     def via_stop_layer(self):
-        """Via stop layer.
+        """
+        Via stop layer.
 
         .deprecated
         Use :method:`stop_layer <pyedb.grpc.database.definition.padstack_def.PadstackDef.stop_layer>`
@@ -414,17 +447,20 @@ class PadstackDef:
         -------
         str
             Name of the via stop layer.
+
         """
         return self.stop_layer
 
     @property
     def material(self) -> str:
-        """Return hole material name.
+        """
+        Return hole material name.
 
         Returns
         -------
         str
             Hole material name.
+
         """
         return self.core.data.material.value
 
@@ -435,7 +471,8 @@ class PadstackDef:
 
     @property
     def hole_diameter(self) -> float | None:
-        """Hole diameter.
+        """
+        Hole diameter.
 
         Returns
         -------
@@ -473,7 +510,8 @@ class PadstackDef:
 
     @property
     def hole_type(self) -> float:
-        """Holy type.
+        """
+        Holy type.
 
         Returns
         -------
@@ -485,7 +523,8 @@ class PadstackDef:
 
     @property
     def edb_hole_type(self):
-        """EDB hole type.
+        """
+        EDB hole type.
 
         Returns
         -------
@@ -497,12 +536,14 @@ class PadstackDef:
 
     @property
     def hole_offset_x(self) -> float:
-        """Hole offset for the X axis.
+        """
+        Hole offset for the X axis.
 
         Returns
         -------
         float
             Hole offset value for the X axis.
+
         """
         try:
             return Value(self.core.data.get_hole_parameters()[2])
@@ -523,12 +564,14 @@ class PadstackDef:
 
     @property
     def hole_offset_y(self) -> float:
-        """Hole offset for the Y axis.
+        """
+        Hole offset for the Y axis.
 
         Returns
         -------
         float
             Hole offset value for the Y axis.
+
         """
         try:
             return Value(self.core.data.get_hole_parameters()[3])
@@ -549,12 +592,14 @@ class PadstackDef:
 
     @property
     def hole_rotation(self) -> float:
-        """Hole rotation.
+        """
+        Hole rotation.
 
         Returns
         -------
         float
             Value for the hole rotation.
+
         """
         try:
             return Value(self.core.data.get_hole_parameters()[4])
@@ -577,12 +622,14 @@ class PadstackDef:
 
     @property
     def pad_by_layer(self) -> dict[str, PadProperties]:
-        """Pad by layer.
+        """
+        Pad by layer.
 
         Returns
         -------
         Dict[str, :class:`PadProperties <pyedb.grpc.database.definition.padstack_def.PadProperties>`]
             Dictionary with layer as key and PadProperties as value.
+
         """
         if not self._pad_by_layer:
             for layer in self.layers:
@@ -594,12 +641,14 @@ class PadstackDef:
 
     @property
     def antipad_by_layer(self) -> dict[str, PadProperties]:
-        """Antipad by layer.
+        """
+        Antipad by layer.
 
         Returns
         -------
         Dict[str, :class:`PadProperties <pyedb.grpc.database.definition.padstack_def.PadProperties>`]
             Dictionary with layer as key and PadProperties as value.
+
         """
         if not self._antipad_by_layer:
             for layer in self.layers:
@@ -611,12 +660,14 @@ class PadstackDef:
 
     @property
     def thermalpad_by_layer(self) -> dict[str, PadProperties]:
-        """Thermal by layer.
+        """
+        Thermal by layer.
 
         Returns
         -------
         Dict[str, :class:`PadProperties <pyedb.grpc.database.definition.padstack_def.PadProperties>`]
             Dictionary with layer as key and PadProperties as value.
+
         """
         if not self._thermalpad_by_layer:
             for layer in self.layers:
@@ -628,12 +679,14 @@ class PadstackDef:
 
     @property
     def hole_plating_ratio(self) -> float:
-        """Hole plating ratio.
+        """
+        Hole plating ratio.
 
         Returns
         -------
         float
             Percentage for the hole plating.
+
         """
         return Value(self.core.data.plating_percentage)
 
@@ -643,12 +696,14 @@ class PadstackDef:
 
     @property
     def hole_plating_thickness(self) -> float:
-        """Hole plating thickness.
+        """
+        Hole plating thickness.
 
         Returns
         -------
          float
             Thickness of the hole plating if present.
+
         """
         try:
             if len(self.core.data.get_hole_parameters()) > 0:
@@ -660,24 +715,28 @@ class PadstackDef:
 
     @hole_plating_thickness.setter
     def hole_plating_thickness(self, value):
-        """Hole plating thickness.
+        """
+        Hole plating thickness.
 
         Returns
         -------
         float
             Thickness of the hole plating if present.
+
         """
         hr = 200 * self._pedb.value(value).value / self.hole_diameter
         self.hole_plating_ratio = hr
 
     @property
     def hole_finished_size(self) -> float:
-        """Finished hole size.
+        """
+        Finished hole size.
 
         Returns
         -------
         float
             Finished size of the hole (Total Size + PlatingThickess*2).
+
         """
         try:
             if len(self.core.data.get_hole_parameters()) > 0:
@@ -689,13 +748,15 @@ class PadstackDef:
 
     @property
     def hole_range(self) -> str | None:
-        """Get hole range value from padstack definition.
+        """
+        Get hole range value from padstack definition.
 
         Returns
         -------
         str
             Possible returned values are ``"through"``, ``"begin_on_upper_pad"``,
             ``"end_on_lower_pad"``, ``"upper_pad_to_lower_pad"``, and ``"undefined"``.
+
         """
         try:
             return self.core.data.hole_range.name.lower()
@@ -719,7 +780,8 @@ class PadstackDef:
     def convert_to_3d_microvias(
         self, convert_only_signal_vias=True, hole_wall_angle=15, delete_padstack_def=True
     ) -> bool:
-        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+        """
+        Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
         ----------
@@ -738,6 +800,7 @@ class PadstackDef:
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
 
         if isinstance(self.core.data.get_hole_parameters()[0], CorePolygonData):
@@ -856,12 +919,14 @@ class PadstackDef:
         return True
 
     def split_to_microvias(self) -> list[PadstackInstance] | bool:
-        """Convert actual padstack definition to multiple microvias definitions.
+        """
+        Convert actual padstack definition to multiple microvias definitions.
 
         Returns
         -------
         list[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`] or bool
             List of new microvias padstack instances, or ``False`` when conversion fails.
+
         """
         from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
@@ -973,7 +1038,8 @@ class PadstackDef:
         return new_instances
 
     def get_pad_parameters(self):
-        """Pad parameters.
+        """
+        Pad parameters.
 
         Returns
         -------
@@ -1026,6 +1092,7 @@ class PadstackDef:
                         }
                     ],
                 }
+
         """
 
         pdef_data = self.core.data

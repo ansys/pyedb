@@ -29,7 +29,8 @@ from pyedb.misc.decorators import deprecate_argument_name
 
 
 class EDBComponentDef(ObjBase):
-    """Manages EDB functionalities for component definitions.
+    """
+    Manages EDB functionalities for component definitions.
 
     Parameters
     ----------
@@ -37,6 +38,7 @@ class EDBComponentDef(ObjBase):
         Inherited AEDT object.
     edb_object : object
         Edb ComponentDef Object
+
     """
 
     def __init__(self, pedb, edb_object=None):
@@ -58,11 +60,13 @@ class EDBComponentDef(ObjBase):
 
     @property
     def type(self):
-        """Retrieve the component definition type.
+        """
+        Retrieve the component definition type.
 
         Returns
         -------
         str
+
         """
         num = len(set(comp.type for refdes, comp in self.components.items()))
         if num == 0:  # pragma: no cover
@@ -79,11 +83,13 @@ class EDBComponentDef(ObjBase):
 
     @property
     def components(self):
-        """Get the list of components belonging to this component definition.
+        """
+        Get the list of components belonging to this component definition.
 
         Returns
         -------
         dict of :class:`EDBComponent`
+
         """
         from pyedb.dotnet.database.cell.hierarchy.component import EDBComponent
 
@@ -96,7 +102,8 @@ class EDBComponentDef(ObjBase):
         return {comp.refdes: comp for comp in comp_list}
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
-        """Assign RLC to all components under this part name.
+        """
+        Assign RLC to all components under this part name.
 
         Parameters
         ----------
@@ -108,6 +115,7 @@ class EDBComponentDef(ObjBase):
             Capacitance. Default is ``None``.
         is_parallel : bool, optional
             Whether it is parallel or series RLC component.
+
         """
         for comp in list(self.components.values()):
             res, ind, cap = res, ind, cap
@@ -116,7 +124,8 @@ class EDBComponentDef(ObjBase):
 
     @deprecate_argument_name({"model_name": "name"})
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
-        """Assign S-parameter to all components under this part name.
+        """
+        Assign S-parameter to all components under this part name.
 
         Parameters
         ----------
@@ -142,7 +151,8 @@ class EDBComponentDef(ObjBase):
         sub_circuit_name=None,
         terminal_pairs=None,
     ):
-        """Assign Spice model to all components under this part name.
+        """
+        Assign Spice model to all components under this part name.
 
         Parameters
         ----------

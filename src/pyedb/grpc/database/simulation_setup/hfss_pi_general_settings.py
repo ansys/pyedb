@@ -41,12 +41,14 @@ class HFSSPIGeneralSettings:
 
     @property
     def mesh_region_name(self) -> str:
-        """Mesh region name.
+        """
+        Mesh region name.
 
         Returns
         -------
         str
             Mesh region name.
+
         """
         return self.core.mesh_region_name
 
@@ -56,12 +58,14 @@ class HFSSPIGeneralSettings:
 
     @property
     def model_type(self) -> str:
-        """Model type.
+        """
+        Model type.
 
         Returns
         -------
         str
             Model type, possible values are "pcb", "rdl", and "package".
+
         """
         return self.core.model_type.name.lower()
 
@@ -73,12 +77,14 @@ class HFSSPIGeneralSettings:
 
     @property
     def use_auto_mesh_region(self) -> bool:
-        """Flag indicating if auto mesh regions are used.
+        """
+        Flag indicating if auto mesh regions are used.
 
         Returns
         -------
         bool
             True if auto mesh region is used, False otherwise.
+
         """
         return self.core.use_auto_mesh_region
 
@@ -88,12 +94,14 @@ class HFSSPIGeneralSettings:
 
     @property
     def use_mesh_region(self) -> bool:
-        """Flag indicating if mesh region is used.
+        """
+        Flag indicating if mesh region is used.
 
         Returns
         -------
         bool
             True if mesh region is used, False otherwise.
+
         """
         return self.core.use_mesh_region
 

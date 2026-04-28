@@ -51,7 +51,8 @@ class Variable:
 
     @property
     def value_string(self):
-        """Get/Set the value of this variable.
+        """
+        Get/Set the value of this variable.
 
         Returns
         -------
@@ -65,21 +66,25 @@ class Variable:
 
     @property
     def value_object(self):
-        """Get/Set the value of this variable.
+        """
+        Get/Set the value of this variable.
 
         Returns
         -------
         :class:`pyedb.dotnet.database.edb_data.edbvalue.EdbValue`
+
         """
         return self._pedb.get_variable(self.name)
 
     @property
     def value(self):
-        """Get the value of this variable.
+        """
+        Get the value of this variable.
 
         Returns
         -------
         float
+
         """
         return self._pedb.value(self._var_server.GetVariableValue(self.name)[1])
 
@@ -102,7 +107,8 @@ class Variable:
         return self._var_server.IsVariableParameter(self.name)
 
     def delete(self):
-        """Delete this variable.
+        """
+        Delete this variable.
 
         Returns
         -------
@@ -114,5 +120,6 @@ class Variable:
         >>> from pyedb import Edb
         >>> edb = Edb()
         >>> edb.design_variables["new_variable"].delete()
+
         """
         return self._var_server.DeleteVariable(self.name)

@@ -124,8 +124,8 @@ select = [
     "W",   # pycodestyle, see https://docs.astral.sh/ruff/rules/#pycodestyle-e-w
 ]
 ignore = [
-    "D203", # summary-on-first-line
-    "D213", # multi-line-summary-second-line
+    "D203", # one-blank-line-before-class (we use D211 = no blank line)
+    "D212", # multi-line-summary-first-line (we use D213 = second line)
     # "D" - pydocstyle, see https://docs.astral.sh/ruff/rules/#pydocstyle-d
     "D100", # undocumented-public-module
     "D101", # undocumented-public-class

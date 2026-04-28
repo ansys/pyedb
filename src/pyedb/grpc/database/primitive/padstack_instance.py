@@ -54,7 +54,8 @@ from pyedb.misc.decorators import deprecated
 
 
 class PadstackInstance(conn_obj.ConnObj):
-    """Manages EDB functionalities for a padstack.
+    """
+    Manages EDB functionalities for a padstack.
 
     Parameters
     ----------
@@ -66,6 +67,7 @@ class PadstackInstance(conn_obj.ConnObj):
     >>> from pyedb import Edb
     >>> edb = Edb("myedb", version="2026.1")
     >>> edb_padstack_instance = edb.padstacks.instances[0]
+
     """
 
     def __init__(self, pedb, core):
@@ -92,7 +94,8 @@ class PadstackInstance(conn_obj.ConnObj):
         solder_ball_layer: StackupLayer = None,
         layer_map: str = "two_way",
     ) -> PadstackInstance:
-        """Create a padstack instance.
+        """
+        Create a padstack instance.
 
         Parameters
         ----------
@@ -124,6 +127,7 @@ class PadstackInstance(conn_obj.ConnObj):
         -------
         :class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`
             PadstackInstance object.
+
         """
         if isinstance(net, str):
             net = layout._pedb.nets.nets.get(net, Net.create(layout, generate_unique_name("net")))
@@ -253,12 +257,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def net(self):
-        """Net.
+        """
+        Net.
 
         Returns
         -------
         :class:`Net <pyedb.grpc.database.net.net.Net>`
             Net object.
+
         """
 
         net = Net(self._pedb, self.core.net)
@@ -266,40 +272,47 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @net.setter
     def net(self, value):
-        """Net.
+        """
+        Net.
 
         Parameters
         ----------
         value : :class:`Net <pyedb.grpc.database.net.net.Net>`
             Net object.
+
         """
         if isinstance(value, Net):
             self.core.net = value.core
 
     @property
     def layout(self):
-        """Layout.
+        """
+        Layout.
 
         Returns
         -------
         :class:`Layout <pyedb.grpc.database.layout.layout.Layout>`
             Layout object.
+
         """
         return self._pedb.active_layout
 
     @property
     def definition(self) -> PadstackDef:
-        """Padstack definition.
+        """
+        Padstack definition.
 
         Returns
         -------
         :class:`PadstackDef`<pyedb.grpc.database.definition.padstack_def.PadstackDef>`
+
         """
         return PadstackDef(self._pedb, self.core.padstack_def)
 
     @property
     def padstack_definition(self) -> str:
-        """Padstack definition name.
+        """
+        Padstack definition name.
 
         Returns
         -------
@@ -311,13 +324,15 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def terminal(self) -> PadstackInstanceTerminal:
-        """PadstackInstanceTerminal.
+        """
+        PadstackInstanceTerminal.
 
         Returns
         -------
         :class:`PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.
         PadstackInstanceTerminal>`
             PadstackInstanceTerminal object.
+
         """
         from pyedb.grpc.database.terminal.padstack_instance_terminal import (
             PadstackInstanceTerminal,
@@ -330,12 +345,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def side_number(self):
-        """Return the number of sides meshed of the padstack instance.
+        """
+        Return the number of sides meshed of the padstack instance.
 
         Returns
         -------
         int
             Number of sides meshed of the padstack instance.
+
         """
         side_value = self.core.get_product_property(CoreProductIdType.HFSS_3D_LAYOUT, 21)
         if side_value:
@@ -356,7 +373,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @deprecated("use set_back_drill_by_layer or set_back_drill_by_depth methods instead")
     def set_backdrill_top(self, drill_depth, drill_diameter, offset=0.0):
-        """Set backdrill from top.
+        """
+        Set backdrill from top.
 
         .. deprecated:: 0.55.0
            Use :meth:`set_back_drill_by_layer` or :meth:`set_back_drill_by_depth` instead.
@@ -369,6 +387,7 @@ class PadstackInstance(conn_obj.ConnObj):
             Diameter of backdrill size.
         offset : str, optional
             Offset with respect to the layer to drill to.
+
         """
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
@@ -385,7 +404,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @deprecated("use set_back_drill_by_layer or set_back_drill_by_depth methods instead")
     def set_backdrill_bottom(self, drill_depth, drill_diameter, offset=0.0):
-        """Set backdrill from bottom.
+        """
+        Set backdrill from bottom.
 
         .. deprecated:: 0.55.0
            Use :meth:`set_back_drill_by_layer` or :meth:`set_back_drill_by_depth` instead.
@@ -398,6 +418,7 @@ class PadstackInstance(conn_obj.ConnObj):
             Diameter of backdrill size.
         offset : str, optional
             Offset with respect to the layer to drill to.
+
         """
         if isinstance(drill_depth, str):
             if drill_depth in self._pedb.stackup.layers:
@@ -413,7 +434,8 @@ class PadstackInstance(conn_obj.ConnObj):
                 )
 
     def create_terminal(self, name=None) -> PadstackInstanceTerminal:
-        """Create a padstack instance terminal.
+        """
+        Create a padstack instance terminal.
 
         Returns
         -------
@@ -440,7 +462,8 @@ class PadstackInstance(conn_obj.ConnObj):
         return term
 
     def get_terminal(self, create_new_terminal=True) -> PadstackInstanceTerminal:
-        """Returns padstack instance terminal.
+        """
+        Returns padstack instance terminal.
 
         Parameters
         ----------
@@ -462,7 +485,8 @@ class PadstackInstance(conn_obj.ConnObj):
         return PadstackInstanceTerminal(self._pedb, inst_term)
 
     def create_coax_port(self, name=None, radial_extent_factor=0):
-        """Create a coax port.
+        """
+        Create a coax port.
 
         Parameters
         ----------
@@ -475,13 +499,15 @@ class PadstackInstance(conn_obj.ConnObj):
         -------
         :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
             Port terminal.
+
         """
         port = self.create_port(name)
         port.radial_extent_factor = radial_extent_factor
         return port
 
     def create_port(self, name=None, reference=None, is_circuit_port=False):
-        """Create a port on the padstack instance.
+        """
+        Create a port on the padstack instance.
 
         Parameters
         ----------
@@ -496,6 +522,7 @@ class PadstackInstance(conn_obj.ConnObj):
         -------
         :class:`Terminal <pyedb.grpc.database.terminal.terminal.Terminal>`
             Port terminal.
+
         """
         if not name:
             name = f"Port_{self.component.name}_{self.net.name}_{self.name}"
@@ -546,7 +573,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def object_instance(self):
-        """Layout object instance.
+        """
+        Layout object instance.
 
         Returns
         -------
@@ -559,12 +587,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def bounding_box(self) -> list[float]:
-        """Padstack instance bounding box.
+        """
+        Padstack instance bounding box.
         Because this method is slow, the bounding box is stored in a variable and reused.
 
         Returns
         -------
         list of float
+
         """
         if self._bounding_box:
             return self._bounding_box
@@ -575,7 +605,8 @@ class PadstackInstance(conn_obj.ConnObj):
         return self._bounding_box
 
     def in_polygon(self, polygon_data, include_partial=True, arbitrary_extent_value=300e-6) -> bool:
-        """Check if padstack Instance is in given polygon data.
+        """
+        Check if padstack Instance is in given polygon data.
 
         Parameters
         ----------
@@ -592,6 +623,7 @@ class PadstackInstance(conn_obj.ConnObj):
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         int_val = 1 if polygon_data.is_inside(CorePointData(self.position)) else 0
         if int_val == 0:
@@ -616,12 +648,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def start_layer(self) -> str:
-        """Starting layer.
+        """
+        Starting layer.
 
         Returns
         -------
         str
             Name of the starting layer.
+
         """
         return self.core.get_layer_range()[0].name
 
@@ -633,12 +667,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def stop_layer(self) -> str:
-        """Stopping layer.
+        """
+        Stopping layer.
 
         Returns
         -------
         str
             Name of the stopping layer.
+
         """
         return self.core.get_layer_range()[-1].name
 
@@ -650,7 +686,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def layer_range_names(self) -> list[str]:
-        """List of all layers to which the padstack instance belongs.
+        """
+        List of all layers to which the padstack instance belongs.
 
         Returns
         -------
@@ -696,12 +733,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def net_name(self) -> str:
-        """Net name.
+        """
+        Net name.
 
         Returns
         -------
         str
             Name of the net.
+
         """
         if self.core.net.is_null:
             return ""
@@ -715,7 +754,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def layout_object_instance(self):
-        """Layout object instance.
+        """
+        Layout object instance.
 
         Returns
         -------
@@ -728,7 +768,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def component(self):
-        """Component.
+        """
+        Component.
 
         Returns
         -------
@@ -742,12 +783,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def position(self) -> list[float]:
-        """Padstack instance position.
+        """
+        Padstack instance position.
 
         Returns
         -------
         list[float]
             List of ``[x, y]`` coordinates for the padstack instance position.
+
         """
         position = self.core.get_position_and_rotation()
         if self.component:
@@ -776,12 +819,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def rotation(self) -> float:
-        """Padstack instance rotation.
+        """
+        Padstack instance rotation.
 
         Returns
         -------
         float
             Rotatation value for the padstack instance.
+
         """
         return Value(self.core.get_position_and_rotation()[-1])
 
@@ -791,12 +836,14 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def position_and_rotation(self) -> list[float]:
-        """Padstack instance position.
+        """
+        Padstack instance position.
 
         Returns
         -------
         list
             List of ``[x, y,r]`` coordinates for the padstack instance position and rotation.
+
         """
         position = self.core.get_position_and_rotation()
         if self.component:
@@ -824,7 +871,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def name(self) -> str:
-        """Padstack Instance Name.
+        """
+        Padstack Instance Name.
 
         Returns
         -------
@@ -845,7 +893,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def backdrill_type(self) -> str:
-        """Backdrill type.
+        """
+        Backdrill type.
 
 
         Returns
@@ -869,7 +918,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def backdrill_bottom(self) -> bool:
-        """Check is backdrill is starting at bottom.
+        """
+        Check is backdrill is starting at bottom.
 
 
         Returns
@@ -978,17 +1028,20 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def padstack_def(self):
-        """Padstack definition.
+        """
+        Padstack definition.
 
         Returns
         -------
         :class:`PadstackDef`<pyedb.grpc.database.definition.padstack_def.PadstackDef>`
+
         """
         return PadstackDef(self._pedb, self.core.padstack_def)
 
     @property
     def metal_volume(self) -> float:
-        """Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
+        """
+        Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.
 
         Returns
         -------
@@ -1025,7 +1078,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def component_pin(self) -> str:
-        """Component pin.
+        """
+        Component pin.
 
         Returns
         -------
@@ -1037,7 +1091,8 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def aedt_name(self) -> str:
-        """Retrieve the pin name that is shown in AEDT.
+        """
+        Retrieve the pin name that is shown in AEDT.
 
         .. note::
            To obtain the EDB core pin name, use `pin.name`.
@@ -1084,12 +1139,14 @@ class PadstackInstance(conn_obj.ConnObj):
         return temp
 
     def get_layer_range(self) -> tuple[str, str]:
-        """Get the layer range of the padstack instance.
+        """
+        Get the layer range of the padstack instance.
 
         Returns
         -------
         tuple
             Tuple of (start_layer_name, stop_layer_name).
+
         """
         layer_range = self.core.get_layer_range()
         if layer_range:
@@ -1098,7 +1155,8 @@ class PadstackInstance(conn_obj.ConnObj):
         return None, None
 
     def convert_hole_to_conical_shape(self, angle=75):
-        """Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
+        """
+        Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.
 
         Parameters
         ----------
@@ -1110,6 +1168,7 @@ class PadstackInstance(conn_obj.ConnObj):
 
         Returns
         -------
+
         """
         stackup_layers = self._pedb.stackup.layers
         signal_layers = self._pedb.stackup.signal_layers
@@ -1159,7 +1218,8 @@ class PadstackInstance(conn_obj.ConnObj):
         self.core.set_hole_overrides(hole_override_enabled, self._pedb._value_setter(hole_override_diam))
 
     def get_backdrill_type(self, from_bottom=True):
-        """Return backdrill type
+        """
+        Return backdrill type
         Parameters
         ----------
         from_bottom : bool, optional
@@ -1186,7 +1246,8 @@ class PadstackInstance(conn_obj.ConnObj):
     def get_back_drill_by_depth(
         self, from_bottom: bool, include_fill_material: bool = False
     ) -> tuple[float | Value, float | Value] | tuple[float | Value, float | Value, str]:
-        """Get the back drill type by depth.
+        """
+        Get the back drill type by depth.
 
         Parameters
         ----------
@@ -1226,7 +1287,8 @@ class PadstackInstance(conn_obj.ConnObj):
                 return Value(drill_depth), Value(drill_diameter)
 
     def set_back_drill_by_depth(self, drill_depth, diameter, from_bottom=True, fill_material=""):
-        """Set back drill by depth.
+        """
+        Set back drill by depth.
 
         Parameters
         ----------
@@ -1237,6 +1299,7 @@ class PadstackInstance(conn_obj.ConnObj):
         from_bottom : bool, optional
             Default value is `True`.
         fill_material : str, optional
+
         """
         if float(self._pedb.version) < 2027.1 and fill_material:
             warnings.warn(
@@ -1272,7 +1335,8 @@ class PadstackInstance(conn_obj.ConnObj):
     def get_back_drill_by_layer(
         self, from_bottom: bool, include_fill_material: bool = False
     ) -> tuple[str, float | Value, float | Value] | tuple[str, float | Value, float | Value, str]:
-        """Get the back drill type by the layer.
+        """
+        Get the back drill type by the layer.
 
         Parameters
         ----------
@@ -1320,7 +1384,8 @@ class PadstackInstance(conn_obj.ConnObj):
                 return drill_to_layer.name, Value(offset), Value(diameter)
 
     def set_back_drill_by_layer(self, drill_to_layer, diameter, offset, from_bottom=True, fill_material=""):
-        """Set back drill layer.
+        """
+        Set back drill layer.
 
         Parameters
         ----------
@@ -1334,6 +1399,7 @@ class PadstackInstance(conn_obj.ConnObj):
             Default value is `True`
         fill_material : str, optional
             Fill material name
+
         """
         if float(self._pedb.version) < 2027.1 and fill_material:
             warnings.warn(
@@ -1362,7 +1428,8 @@ class PadstackInstance(conn_obj.ConnObj):
             )
 
     def parametrize_position(self, prefix=None) -> list[str]:
-        """Parametrize the instance position.
+        """
+        Parametrize the instance position.
 
         Parameters
         ----------
@@ -1374,6 +1441,7 @@ class PadstackInstance(conn_obj.ConnObj):
         -------
         List
             List of variables created.
+
         """
         p = self.position
         if not prefix:
@@ -1386,7 +1454,8 @@ class PadstackInstance(conn_obj.ConnObj):
         return [var_name + "X", var_name + "Y"]
 
     def in_voids(self, net_name=None, layer_name=None) -> list[PadstackInstance]:
-        """Check if this padstack instance is in any void.
+        """
+        Check if this padstack instance is in any void.
 
         Parameters
         ----------
@@ -1399,6 +1468,7 @@ class PadstackInstance(conn_obj.ConnObj):
         -------
         List[:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             List of the voids that include this padstack instance.
+
         """
         x_pos = self._pedb._value_setter(self.position[0])
         y_pos = self._pedb._value_setter(self.position[1])
@@ -1413,62 +1483,73 @@ class PadstackInstance(conn_obj.ConnObj):
 
     @property
     def pingroups(self):
-        """Pin groups that the pin belongs to.
+        """
+        Pin groups that the pin belongs to.
 
         Returns
         -------
         List[:class:`PinGroup <ansys.edb.core.hierarchy.pin_group>`]
             List of pin groups that the pin belongs to.
+
         """
         return self.core.pin_groups
 
     @property
     def placement_layer(self):
-        """Placement layer name.
+        """
+        Placement layer name.
 
         Returns
         -------
         str
             Name of the placement layer.
+
         """
         return self.component.placement_layer
 
     @property
     def layer(self):
-        """Placement layer object.
+        """
+        Placement layer object.
 
         Returns
         -------
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
            Placement layer.
+
         """
         return self.component.layer
 
     @property
     def lower_elevation(self) -> float:
-        """Lower elevation of the placement layer.
+        """
+        Lower elevation of the placement layer.
 
         Returns
         -------
         float
             Lower elavation of the placement layer.
+
         """
         return self._pedb.stackup.layers[self.component.placement_layer].lower_elevation
 
     @property
     def upper_elevation(self) -> float:
-        """Upper elevation of the placement layer.
+        """
+        Upper elevation of the placement layer.
 
         Returns
         -------
         float
            Upper elevation of the placement layer.
+
         """
         return self._pedb.stackup.layers[self.component.placement_layer].upper_elevation
 
     @property
     def top_bottom_association(self) -> int:
-        """Top/bottom association of the placement layer.
+        """
+        Top/bottom association of the placement layer.
 
         Returns
         -------
@@ -1480,11 +1561,13 @@ class PadstackInstance(conn_obj.ConnObj):
             * 2 Bottom associated.
             * 4 Number of top/bottom association type.
             * -1 Undefined.
+
         """
         return self._pedb.stackup.layers[self.component.placement_layer].core.top_bottom_association.value
 
     def create_rectangle_in_pad(self, layer_name, return_points=False, partition_max_order=16):
-        """Create a rectangle inscribed inside a padstack instance pad.
+        """
+        Create a rectangle inscribed inside a padstack instance pad.
 
         The rectangle is fully inscribed in the pad and has the maximum area.
         It is necessary to specify the layer on which the rectangle will be created.
@@ -1513,6 +1596,7 @@ class PadstackInstance(conn_obj.ConnObj):
         >>> list_of_padstack_instances = list(edbapp.padstacks.instances.values())
         >>> padstack_inst = list_of_padstack_instances[0]
         >>> padstack_inst.create_rectangle_in_pad("TOP")
+
         """
         # TODO check if still used anf fix if yes.
         padstack_center = self.position
@@ -1685,7 +1769,8 @@ class PadstackInstance(conn_obj.ConnObj):
     def get_reference_pins(
         self, reference_net="GND", search_radius=5e-3, max_limit=0, component_only=True, pinlist_position=None
     ) -> list[PadstackInstance]:
-        """Search for reference pins using given criteria.
+        """
+        Search for reference pins using given criteria.
 
         Parameters
         ----------
@@ -1715,6 +1800,7 @@ class PadstackInstance(conn_obj.ConnObj):
         >>> pin = edbapp.components.instances["J5"].pins["19"]
         >>> reference_pins = pin.get_reference_pins(reference_net="GND", search_radius=5e-3, max_limit=0,
         >>> component_only=True)
+
         """
         return self._pedb.padstacks.get_reference_pins(
             positive_pin=self,
@@ -1726,16 +1812,19 @@ class PadstackInstance(conn_obj.ConnObj):
         )
 
     def get_connected_objects(self):
-        """Get connected objects.
+        """
+        Get connected objects.
 
         Returns
         -------
         List[:class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`]
+
         """
         return self._pedb.get_connected_objects(self.object_instance)
 
     def set_dcir_equipotential_advanced(self, contact_radius=None, layer_name=None):
-        """Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
+        """
+        Set DCIR equipotential region on the padstack instance. This method allows to set equipotential region on
         specified layer and specify contact circle size. If contact_radius is not specified, the method will use the
         pad size. If layer_name is not specified, the method will use the start layer of the padstack definition.
 
@@ -1747,6 +1836,7 @@ class PadstackInstance(conn_obj.ConnObj):
         layer_name : str, optional
             Layer name to set the equipotential region. The default is ``None``, in which case the method will use the
             start layer of the padstack definition.
+
         """
         layer_name = layer_name if layer_name else self.start_layer
         pad = self.definition.pad_by_layer[layer_name]

@@ -73,7 +73,8 @@ class ICDieProperties:
 
 
 def _clear_dotnet_owner(obj):
-    """Set the protected ``IsOwner`` flag to ``False`` on a cloned .NET object.
+    """
+    Set the protected ``IsOwner`` flag to ``False`` on a cloned .NET object.
 
     EDB 2026.1 has a bug where cloned objects call a buggy C++ destructor when
     the Python GC collects them.  Clearing ``IsOwner`` via reflection prevents
@@ -120,7 +121,8 @@ class ComponentProperties:
 
 
 class EDBComponent(Group):
-    """Manages EDB functionalities for components.
+    """
+    Manages EDB functionalities for components.
 
     Parameters
     ----------
@@ -169,7 +171,8 @@ class EDBComponent(Group):
 
     @property
     def component_property(self):
-        """``ComponentProperty`` object.
+        """
+        ``ComponentProperty`` object.
 
         Returns the live ``ComponentProperty`` **without cloning** for safe
         read access.  EDB 2026.1 has a bug where calling ``.Clone()`` on a
@@ -183,7 +186,8 @@ class EDBComponent(Group):
         return ComponentProperties(self.edbcomponent.GetComponentProperty())
 
     def _get_component_property_clone(self):
-        """Return a safe, mutable clone of the ``ComponentProperty``.
+        """
+        Return a safe, mutable clone of the ``ComponentProperty``.
 
         Applies ``_clear_dotnet_owner`` so the clone's buggy EDB 2026.1
         destructor is suppressed.  Always store the result in a **named local
@@ -201,7 +205,8 @@ class EDBComponent(Group):
 
     @staticmethod
     def _is_dotnet_null(obj):
-        """Return True when *obj* is a .NET null or a Python None.
+        """
+        Return True when *obj* is a .NET null or a Python None.
 
         PythonNET may represent a .NET ``null`` reference as a non-``None``
         Python object, so a plain ``is None`` check is insufficient.  Most EDB
@@ -222,7 +227,8 @@ class EDBComponent(Group):
 
     @staticmethod
     def _safe_get_model(comp_prop):
-        """Safely retrieve the component model from a live ComponentProperty.
+        """
+        Safely retrieve the component model from a live ComponentProperty.
 
         EDB 2026.1 has cases where ``GetModel()`` returns a dangling C++
         pointer after S-parameter assignment.  Wrapping in a try/except with
@@ -244,7 +250,8 @@ class EDBComponent(Group):
 
     @property
     def _edb_model(self):  # pragma: no cover
-        """Return the raw (non-cloned) EDB component model, or ``None``.
+        """
+        Return the raw (non-cloned) EDB component model, or ``None``.
 
         EDB 2026.1: cloning a model and then calling ``_clear_dotnet_owner``
         on the clone corrupts its internal ``PinPairs`` collection.  Return
@@ -256,7 +263,8 @@ class EDBComponent(Group):
 
     @property
     def model_type(self):
-        """Retrieve assigned model type.
+        """
+        Retrieve assigned model type.
 
         Returns
         -------
@@ -264,6 +272,7 @@ class EDBComponent(Group):
             ``"RLC"`` for pin-pair (RLC) models, ``"SPICEModel"``,
             ``"SParameterModel"``, ``"NetlistModel"``, or ``"NoModel"`` when
             the component has no model assigned.
+
         """
         _, type_str = self._safe_get_model(self.component_property.core)
         if type_str == "PinPairModel":
@@ -281,11 +290,13 @@ class EDBComponent(Group):
 
     @property
     def model(self):
-        """Component model.
+        """
+        Component model.
 
         Returns
         -------
         :class:`PinPairModel`, :class:`SPICEModel`, :class:`SParameterModel`, or ``None``
+
         """
         raw_model, model_type = self._safe_get_model(self.component_property.core)
         if raw_model is None:
@@ -345,7 +356,8 @@ class EDBComponent(Group):
         self._ic_die_properties = None
 
     def create_package_def(self, name="", component_part_name=None):
-        """Create a package definition and assign it to the component.
+        """
+        Create a package definition and assign it to the component.
 
         Parameters
         ----------
@@ -358,6 +370,7 @@ class EDBComponent(Group):
         -------
         bool
             ``True`` if succeeded, ``False`` otherwise.
+
         """
         if not name:
             name = "{}_{}".format(self.refdes, self.part_name)
@@ -534,12 +547,14 @@ class EDBComponent(Group):
 
     @property
     def refdes(self):
-        """Reference Designator Name.
+        """
+        Reference Designator Name.
 
         Returns
         -------
         str
             Reference Designator Name.
+
         """
         return self.name
 
@@ -555,7 +570,8 @@ class EDBComponent(Group):
     @property
     @deprecated_property("use enabled property instead")
     def is_enabled(self):
-        """Flag indicating if the current object is enabled.
+        """
+        Flag indicating if the current object is enabled.
 
         .. deprecated::
            Use :attr:`enabled` instead.
@@ -592,12 +608,14 @@ class EDBComponent(Group):
 
     @property
     def value(self):
-        """Retrieve discrete component value.
+        """
+        Retrieve discrete component value.
 
         Returns
         -------
         str
             Value. ``None`` if not an RLC Type.
+
         """
         if self.model_type == "RLC":
             _pin_pairs = self.pin_pairs
@@ -633,12 +651,14 @@ class EDBComponent(Group):
 
     @property
     def res_value(self):
-        """Resistance value.
+        """
+        Resistance value.
 
         Returns
         -------
         str
             Resistance value or ``None`` if not an RLC type.
+
         """
         _pin_pairs = self.pin_pairs
         if _pin_pairs:
@@ -681,12 +701,14 @@ class EDBComponent(Group):
 
     @property
     def cap_value(self):
-        """Capacitance Value.
+        """
+        Capacitance Value.
 
         Returns
         -------
         str
             Capacitance Value. ``None`` if not an RLC Type.
+
         """
         _pin_pairs = self.pin_pairs
         if _pin_pairs:
@@ -703,12 +725,14 @@ class EDBComponent(Group):
 
     @property
     def ind_value(self):
-        """Inductance Value.
+        """
+        Inductance Value.
 
         Returns
         -------
         str
             Inductance Value. ``None`` if not an RLC Type.
+
         """
         _pin_pairs = self.pin_pairs
         if _pin_pairs:
@@ -725,12 +749,14 @@ class EDBComponent(Group):
 
     @property
     def is_parallel_rlc(self):
-        """Define if model is Parallel or Series.
+        """
+        Define if model is Parallel or Series.
 
         Returns
         -------
         bool
             ``True`` if it is a parallel rlc model. ``False`` for series RLC. ``None`` if not an RLC Type.
+
         """
         cmp_type = int(self.edbcomponent.GetComponentType())
         if 0 < cmp_type < 4:
@@ -766,18 +792,21 @@ class EDBComponent(Group):
 
     @property
     def center(self):
-        """Compute the component center.
+        """
+        Compute the component center.
 
         Returns
         -------
         list
+
         """
         center = self.component_instance.GetCenter()
         return [round(center.X.ToDouble(), 6), round(center.Y.ToDouble(), 6)]
 
     @property
     def bounding_box(self):
-        """Component's bounding box.
+        """
+        Component's bounding box.
 
         Returns
         -------
@@ -785,6 +814,7 @@ class EDBComponent(Group):
             List of coordinates for the component's bounding box, with the list of
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
+
         """
         bbox = self.component_instance.GetBBox()
         pt1 = bbox.Item1
@@ -798,22 +828,26 @@ class EDBComponent(Group):
 
     @property
     def rotation(self):
-        """Compute the component rotation in radian.
+        """
+        Compute the component rotation in radian.
 
         Returns
         -------
         float
+
         """
         return round(self.edbcomponent.GetTransform().Rotation.ToDouble(), 6)
 
     @property
     def pinlist(self):
-        """Pins of the component.
+        """
+        Pins of the component.
 
         Returns
         -------
         list
             List of Pins of Component.
+
         """
         pins = [
             p
@@ -826,12 +860,14 @@ class EDBComponent(Group):
 
     @property
     def nets(self):
-        """Nets of Component.
+        """
+        Nets of Component.
 
         Returns
         -------
         list
             List of Nets of Component.
+
         """
         netlist = []
         for pin in self.pinlist:
@@ -840,12 +876,14 @@ class EDBComponent(Group):
 
     @property
     def pins(self):
-        """EDBPadstackInstance of Component.
+        """
+        EDBPadstackInstance of Component.
 
         Returns
         -------
         dic[str, :class:`dotnet.database.edb_data.definitions.EDBPadstackInstance`]
             Dictionary of EDBPadstackInstance Components.
+
         """
         pins = {}
         for el in self.pinlist:
@@ -854,12 +892,14 @@ class EDBComponent(Group):
 
     @property
     def type(self):
-        """Component type.
+        """
+        Component type.
 
         Returns
         -------
         str
             Component type.
+
         """
         cmp_type = int(self.edbcomponent.GetComponentType())
         if cmp_type == 1:
@@ -877,13 +917,15 @@ class EDBComponent(Group):
 
     @type.setter
     def type(self, new_type):
-        """Set component type
+        """
+        Set component type
 
         Parameters
         ----------
         new_type : str
             Type of the component. Options are ``"Resistor"``,  ``"Inductor"``, ``"Capacitor"``,
             ``"IC"``, ``"IO"`` and ``"Other"``.
+
         """
         new_type = new_type.lower()
         if new_type == "resistor":
@@ -904,23 +946,27 @@ class EDBComponent(Group):
 
     @property
     def numpins(self):
-        """Number of Pins of Component.
+        """
+        Number of Pins of Component.
 
         Returns
         -------
         int
             Number of Pins of Component.
+
         """
         return self.edbcomponent.GetNumberOfPins()
 
     @property
     def partname(self):  # pragma: no cover
-        """Component part name.
+        """
+        Component part name.
 
         Returns
         -------
         str
             Component Part Name.
+
         """
         return self.part_name
 
@@ -931,12 +977,14 @@ class EDBComponent(Group):
 
     @property
     def part_name(self):
-        """Component part name.
+        """
+        Component part name.
 
         Returns
         -------
         str
             Component part name.
+
         """
         return self.edbcomponent.GetComponentDef().GetName()
 
@@ -947,23 +995,27 @@ class EDBComponent(Group):
 
     @property
     def placement_layer(self):
-        """Placement layer.
+        """
+        Placement layer.
 
         Returns
         -------
         str
            Name of the placement layer.
+
         """
         return self.edbcomponent.GetPlacementLayer().Clone().GetName()
 
     @property
     def is_top_mounted(self):
-        """Check if a component is mounted on top or bottom of the layout.
+        """
+        Check if a component is mounted on top or bottom of the layout.
 
         Returns
         -------
         bool
             ``True`` component is mounted on top, ``False`` on down.
+
         """
         signal_layers = [lay.name for lay in list(self._pedb.stackup.signal_layers.values())]
         if self.placement_layer in signal_layers[: int(len(signal_layers) / 2)]:
@@ -972,18 +1024,21 @@ class EDBComponent(Group):
 
     @property
     def lower_elevation(self):
-        """Lower elevation of the placement layer.
+        """
+        Lower elevation of the placement layer.
 
         Returns
         -------
         float
             Lower elevation of the placement layer.
+
         """
         return round(self.edbcomponent.GetPlacementLayer().Clone().GetLowerElevation(), 6)
 
     @property
     def upper_elevation(self):
-        """Upper elevation of the placement layer.
+        """
+        Upper elevation of the placement layer.
 
         Returns
         -------
@@ -995,7 +1050,8 @@ class EDBComponent(Group):
 
     @property
     def top_bottom_association(self):
-        """Top/bottom association of the placement layer.
+        """
+        Top/bottom association of the placement layer.
 
         Returns
         -------
@@ -1007,6 +1063,7 @@ class EDBComponent(Group):
             * 2 - Bottom associated
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
+
         """
         return int(self.edbcomponent.GetPlacementLayer().GetTopBottomAssociation())
 
@@ -1028,7 +1085,8 @@ class EDBComponent(Group):
         sub_circuit_name: Optional[str] = None,
         terminal_pairs: Optional[list] = None,
     ):
-        """Assign Spice model to this component.
+        """
+        Assign Spice model to this component.
 
         Parameters
         ----------
@@ -1081,7 +1139,8 @@ class EDBComponent(Group):
         self,
         netlist,
     ):
-        """Assign Netlist to this component.
+        """
+        Assign Netlist to this component.
 
         Parameters
         ----------
@@ -1099,7 +1158,8 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None):
-        """Assign S-parameter to this component.
+        """
+        Assign S-parameter to this component.
 
         Parameters
         ----------
@@ -1130,7 +1190,8 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None):
-        """Use S-parameter model on the component.
+        """
+        Use S-parameter model on the component.
 
         Parameters
         ----------
@@ -1150,6 +1211,7 @@ class EDBComponent(Group):
         >>>comp_def = edbapp.definitions.components["CAPC3216X180X55ML20T25"]
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
+
         """
         model = self._edb.Cell.Hierarchy.SParameterModel()
         model.SetComponentModelName(name)
@@ -1158,7 +1220,8 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False):
-        """Assign RLC to this component.
+        """
+        Assign RLC to this component.
 
         Parameters
         ----------
@@ -1170,6 +1233,7 @@ class EDBComponent(Group):
             Capacitance. Default is ``None``.
         is_parallel : bool, optional
             Whether it is a parallel or series RLC component. The default is ``False``.
+
         """
         if res is None and ind is None and cap is None:
             self._pedb.logger.error("At least one value has to be provided.")
@@ -1192,7 +1256,8 @@ class EDBComponent(Group):
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4):
-        """Create a Clearance on Soldermask layer by drawing a rectangle.
+        """
+        Create a Clearance on Soldermask layer by drawing a rectangle.
 
         Parameters
         ----------
@@ -1202,6 +1267,7 @@ class EDBComponent(Group):
         Returns
         -------
             bool
+
         """
         bounding_box = self.bounding_box
         opening = [bounding_box[0] - extra_soldermask_clearance]

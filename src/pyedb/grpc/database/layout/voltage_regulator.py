@@ -39,12 +39,14 @@ class VoltageRegulator:
 
     @property
     def component(self):
-        """Voltage regulator component
+        """
+        Voltage regulator component
 
         Returns
         -------
         :class:`Component <pyedb.grpc.database.hierarchy.component.Component>`
             Component.
+
         """
         if not self.core.component.is_null:
             ref_des = self.core.component.name
@@ -65,12 +67,14 @@ class VoltageRegulator:
 
     @property
     def load_regulator_current(self) -> float:
-        """Load regulator current value
+        """
+        Load regulator current value
 
         Returns
         -------
         float
             Current value.
+
         """
         return Value(self.core.load_regulator_current)
 
@@ -80,12 +84,14 @@ class VoltageRegulator:
 
     @property
     def load_regulation_percent(self) -> float:
-        """Retrieve load regulation percent value.
+        """
+        Retrieve load regulation percent value.
 
         Returns
         -------
         float
             Percent value.
+
         """
         return Value(self.core.load_regulation_percent)
 
@@ -95,12 +101,14 @@ class VoltageRegulator:
 
     @property
     def negative_remote_sense_pin(self) -> PadstackInstance:
-        """Retrieve negative remote sense pin.
+        """
+        Retrieve negative remote sense pin.
 
         Returns
         -------
         :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
             PadstackInstance.
+
         """
         return self._pedb.padstacks.instances[self.core.negative_remote_sense_pin.id]
 
@@ -114,12 +122,14 @@ class VoltageRegulator:
 
     @property
     def positive_remote_sense_pin(self) -> PadstackInstance:
-        """Retrieve positive remote sense pin.
+        """
+        Retrieve positive remote sense pin.
 
         Returns
         -------
         :class:`PadstackInstance pyedb.grpc.database.primitive.padstack_instance.PadstackInstance`
             PadstackInstance.
+
         """
         return self._pedb.padstacks.instances[self.core.pos_remote_sense_pin.id]
 
@@ -137,12 +147,14 @@ class VoltageRegulator:
 
     @property
     def voltage(self) -> float:
-        """Retrieve voltage value.
+        """
+        Retrieve voltage value.
 
         Returns
         -------
         float
             Voltage value.
+
         """
         return Value(self.core.voltage)
 

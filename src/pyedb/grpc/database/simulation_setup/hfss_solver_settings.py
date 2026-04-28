@@ -51,7 +51,8 @@ class HFSSSolverSettings:
     @property
     @deprecated_property("use max_triangles_for_wave_port property instead.")
     def max_triangles_wave_port(self) -> int:
-        """Maximum number of triangles to use for meshing wave-ports.
+        """
+        Maximum number of triangles to use for meshing wave-ports.
 
         .. deprecated:: 0.70.0
                 Use :attr:`max_triangles_for_wave_port` instead.
@@ -74,7 +75,8 @@ class HFSSSolverSettings:
     @property
     @deprecated_property("use min_triangles_for_wave_port property instead.")
     def min_triangles_wave_port(self) -> int:
-        """Minimum number of triangles to use for meshing wave-ports.
+        """
+        Minimum number of triangles to use for meshing wave-ports.
 
         .. deprecated:: 0.70.0
                 Use :attr:`min_triangles_for_wave_port` instead.
@@ -98,7 +100,8 @@ class HFSSSolverSettings:
     @property
     @deprecated_property("use enable_set_triangles_wave_port property instead.")
     def enable_set_triangles_wave_port(self) -> bool:
-        """Flag indicating if the minimum and maximum triangle values for wave-ports are used.
+        """
+        Flag indicating if the minimum and maximum triangle values for wave-ports are used.
 
         .. deprecated:: 0.70.0
                 Use :attr:`enable_set_triangles_for_wave_port` instead.

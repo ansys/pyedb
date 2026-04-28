@@ -38,7 +38,8 @@ class EdgeTerminal(Terminal):
 
     @classmethod
     def create(cls, layout, name, edges, net, is_ref=False):
-        """Create an edge terminal.
+        """
+        Create an edge terminal.
 
         Parameters
         ----------
@@ -57,6 +58,7 @@ class EdgeTerminal(Terminal):
         -------
         :class:`EdgeTerminal <pyedb.grpc.database.terminal.edge_terminal.EdgeTerminal>`
             Edge terminal object.
+
         """
         if net is None:
             raise Exception("Net must be specified to create an Edge Terminal.")
@@ -71,12 +73,14 @@ class EdgeTerminal(Terminal):
 
     @property
     def component(self):
-        """Component.
+        """
+        Component.
 
         Returns
         -------
         Component object.
             :class:`Component <pyedb.grpc.database.component.Component>`.
+
         """
         from pyedb.grpc.database.hierarchy.component import Component
 
@@ -84,11 +88,13 @@ class EdgeTerminal(Terminal):
 
     @property
     def is_circuit_port(self) -> bool:
-        """Is circuit port.
+        """
+        Is circuit port.
 
         Returns
         -------
         bool : circuit port.
+
         """
         return self.core.is_circuit_port
 
@@ -113,11 +119,13 @@ class EdgeTerminal(Terminal):
 
     @property
     def is_reference_terminal(self) -> bool:
-        """Added for dotnet compatibility
+        """
+        Added for dotnet compatibility
 
         Returns
         -------
         bool
+
         """
         return self.core.is_reference_terminal
 
@@ -126,7 +134,8 @@ class EdgeTerminal(Terminal):
         self.core.set_product_solver_option(product_id, solver_name, option)
 
     def couple_ports(self, port) -> BundleTerminal:
-        """Create a bundle wave port.
+        """
+        Create a bundle wave port.
 
         Parameters
         ----------
@@ -137,6 +146,7 @@ class EdgeTerminal(Terminal):
         Returns
         -------
         :class:`BundleWavePort <pyedb.grpc.database.ports.ports.BundleWavePort>`
+
         """
         if not isinstance(port, (list, tuple)):
             port = [port]

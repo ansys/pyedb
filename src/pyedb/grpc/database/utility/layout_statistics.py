@@ -22,7 +22,8 @@
 
 
 class LayoutStatistics(object):
-    """Statistics object
+    """
+    Statistics object
 
     Object properties example.
     >>> stat_model = EDBStatistics()
@@ -60,7 +61,8 @@ class LayoutStatistics(object):
 
     @property
     def num_layers(self) -> int:
-        """Layer number.
+        """
+        Layer number.
 
         Returns
         -------
@@ -77,7 +79,8 @@ class LayoutStatistics(object):
 
     @property
     def stackup_thickness(self) -> float:
-        """Stackup total thickness.
+        """
+        Stackup total thickness.
 
         Returns
         -------
@@ -95,7 +98,8 @@ class LayoutStatistics(object):
 
     @property
     def num_vias(self) -> int:
-        """Via number.
+        """
+        Via number.
 
         Returns
         -------
@@ -112,7 +116,8 @@ class LayoutStatistics(object):
 
     @property
     def occupying_ratio(self) -> dict[str, float]:
-        """Occupying ratio.
+        """
+        Occupying ratio.
 
         Returns
         -------
@@ -130,7 +135,8 @@ class LayoutStatistics(object):
 
     @property
     def occupying_surface(self) -> dict[str, float]:
-        """Occupying surface.
+        """
+        Occupying surface.
 
         Returns
         -------
@@ -147,7 +153,8 @@ class LayoutStatistics(object):
 
     @property
     def layout_size(self) -> list[float]:
-        """Layout size.
+        """
+        Layout size.
 
         Returns
         -------
@@ -159,7 +166,8 @@ class LayoutStatistics(object):
 
     @property
     def num_polygons(self) -> int:
-        """Polygon number.
+        """
+        Polygon number.
 
         Returns
         -------
@@ -176,7 +184,8 @@ class LayoutStatistics(object):
 
     @property
     def num_traces(self) -> int:
-        """Trace number.
+        """
+        Trace number.
 
         Returns
         -------
@@ -193,7 +202,8 @@ class LayoutStatistics(object):
 
     @property
     def num_nets(self) -> int:
-        """Net number.
+        """
+        Net number.
 
         Returns
         -------
@@ -210,7 +220,8 @@ class LayoutStatistics(object):
 
     @property
     def num_discrete_components(self) -> int:
-        """Discrete component number.
+        """
+        Discrete component number.
 
         Returns
         -------
@@ -227,7 +238,8 @@ class LayoutStatistics(object):
 
     @property
     def num_inductors(self) -> int:
-        """Inductor number.
+        """
+        Inductor number.
 
         Returns
         -------
@@ -244,7 +256,8 @@ class LayoutStatistics(object):
 
     @property
     def num_capacitors(self) -> int:
-        """Capacitor number.
+        """
+        Capacitor number.
 
         Returns
         -------
@@ -261,7 +274,8 @@ class LayoutStatistics(object):
 
     @property
     def num_resistors(self) -> int:
-        """Resistor number.
+        """
+        Resistor number.
 
         Returns
         -------

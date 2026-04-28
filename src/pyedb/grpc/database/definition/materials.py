@@ -84,7 +84,8 @@ PERMEABILITY_DEFAULT_VALUE = 1
 
 
 def get_line_float_value(line):
-    """Retrieve the float value expected in the line of an AMAT file.
+    """
+    Retrieve the float value expected in the line of an AMAT file.
 
     The associated string is expected to follow one of the following cases:
     - simple('permittivity', 12.)
@@ -129,23 +130,27 @@ class Material:
 
     @property
     def name(self) -> str:
-        """Material name.
+        """
+        Material name.
 
         Returns
         -------
         str
             Material name.
+
         """
         return self.__name
 
     @property
     def all_properties(self) -> list[str]:
-        """All properties defined in the material definition.
+        """
+        All properties defined in the material definition.
 
         Returns
         -------
         list[str]
             List of all material properties available.
+
         """
         try:
             properties = []
@@ -165,7 +170,8 @@ class Material:
 
     @property
     def dc_model(self) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:
-        """Dielectric material model.
+        """
+        Dielectric material model.
 
         Returns
         -------
@@ -179,7 +185,8 @@ class Material:
     def dielectric_material_model(
         self,
     ) -> CoreDebyeModel | CoreMultipoleDebyeModel | CoreDjordjecvicSarkarModel | float:
-        """Material dielectric model.
+        """
+        Material dielectric model.
 
         Returns
         -------
@@ -201,7 +208,8 @@ class Material:
 
     @property
     def conductivity(self) -> float:
-        """Get material conductivity.
+        """
+        Get material conductivity.
 
         Returns
         -------
@@ -226,7 +234,8 @@ class Material:
 
     @property
     def dc_conductivity(self) -> float | str | None:
-        """Material DC conductivity.
+        """
+        Material DC conductivity.
 
         Returns
         -------
@@ -246,12 +255,14 @@ class Material:
 
     @property
     def use_dc_relative_conductivity(self) -> bool:
-        """Flag indicating whether the DC relative permittivity nominal value is used.
+        """
+        Flag indicating whether the DC relative permittivity nominal value is used.
 
         Returns
         -------
         bool
             Whether the DC relative permittivity nominal value is used.
+
         """
         if not self.core.dielectric_material_model.is_null:
             if hasattr(self.dielectric_material_model, "use_dc_relative_conductivity"):
@@ -266,7 +277,8 @@ class Material:
 
     @property
     def dc_relative_permittivity(self) -> float | None:
-        """Material DC permittivity.
+        """
+        Material DC permittivity.
 
         Returns
         -------
@@ -288,7 +300,8 @@ class Material:
     @property
     @deprecated_property("Use dc_relative_permittivity property instead.")
     def dc_permittivity(self) -> float | str | None:
-        """Material DC permittivity.
+        """
+        Material DC permittivity.
 
         .. deprecated:: 0.71.0
            Use :attr: dc_relative_permittivity property instead.
@@ -302,7 +315,8 @@ class Material:
 
     @property
     def loss_tangent_at_frequency(self) -> float | str | None:
-        """Material loss tangent at frequency if dielectric model is defined.
+        """
+        Material loss tangent at frequency if dielectric model is defined.
 
         Returns
         -------
@@ -323,7 +337,8 @@ class Material:
 
     @property
     def dielectric_model_frequency(self) -> float | str | None:
-        """Dielectric model frequency if model is defined.
+        """
+        Dielectric model frequency if model is defined.
 
         Returns
         -------
@@ -344,7 +359,8 @@ class Material:
 
     @property
     def relative_permittivity_at_frequency(self) -> float | str | None:
-        """Material relative permittivity at frequency if dielectric model is defined.
+        """
+        Material relative permittivity at frequency if dielectric model is defined.
 
         Returns
         -------
@@ -366,7 +382,8 @@ class Material:
     @property
     @deprecated_property("Use relative_permittivity_at_frequency property instead.")
     def permittivity_at_frequency(self) -> float | str | None:
-        """Material permittivity at frequency if model is defined.
+        """
+        Material permittivity at frequency if model is defined.
 
         .. deprecated:: 0.71.0
            Use :attr: relative_permittivity_at_frequency property instead.
@@ -385,7 +402,8 @@ class Material:
 
     @property
     def permittivity(self) -> float | str | None:
-        """Material permittivity.
+        """
+        Material permittivity.
 
 
         Returns
@@ -405,7 +423,8 @@ class Material:
 
     @property
     def permeability(self) -> float | str:
-        """Material permeability.
+        """
+        Material permeability.
 
         Returns
         -------
@@ -424,7 +443,8 @@ class Material:
 
     @property
     def dielectric_loss_tangent(self) -> float | str:
-        """Material loss tangent.
+        """
+        Material loss tangent.
 
         Returns
         -------
@@ -443,12 +463,14 @@ class Material:
 
     @property
     def magnetic_loss_tangent(self) -> float | str:
-        """Material magnetic loss tangent.
+        """
+        Material magnetic loss tangent.
 
         Returns
         -------
         float
             Magnetic loss tangent value.
+
         """
         if "magnetic_loss_tangent" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.MAGNETIC_LOSS_TANGENT))
@@ -461,7 +483,8 @@ class Material:
 
     @property
     def thermal_conductivity(self) -> float | str:
-        """Material thermal conductivity.
+        """
+        Material thermal conductivity.
 
         Returns
         -------
@@ -480,7 +503,8 @@ class Material:
 
     @property
     def mass_density(self) -> float | str:
-        """Material mass density.
+        """
+        Material mass density.
 
         Returns
         -------
@@ -499,7 +523,8 @@ class Material:
 
     @property
     def youngs_modulus(self) -> float | str:
-        """Material young modulus.
+        """
+        Material young modulus.
 
         Returns
         -------
@@ -518,12 +543,14 @@ class Material:
 
     @property
     def specific_heat(self) -> float | str:
-        """Material specific heat.
+        """
+        Material specific heat.
 
         Returns
         -------
         float
             Material specific heat value.
+
         """
         if "specific_heat" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.SPECIFIC_HEAT))
@@ -536,12 +563,14 @@ class Material:
 
     @property
     def poisson_ratio(self) -> float | str:
-        """Material poisson ratio.
+        """
+        Material poisson ratio.
 
         Returns
         -------
         float
             Material poisson ratio value.
+
         """
         if "poissons_ratio" in self.all_properties:
             return Value(self.core.get_property(CoreMaterialProperty.POISSONS_RATIO))
@@ -554,7 +583,8 @@ class Material:
 
     @property
     def thermal_expansion_coefficient(self) -> float | str:
-        """Material thermal coefficient.
+        """
+        Material thermal coefficient.
 
         Returns
         -------
@@ -675,23 +705,27 @@ class Materials(object):
 
     @property
     def syslib(self):
-        """Get the project sys library.
+        """
+        Get the project sys library.
 
         Returns
         -------
         str
             Syslib path.
+
         """
         return self.__syslib
 
     @property
     def materials(self) -> dict[str, Material]:
-        """Get materials.
+        """
+        Get materials.
 
         Returns
         -------
         Dict[str, :class:`Material <pyedb.grpc.database.definition.materials.Material>`]
             Materials dictionary.
+
         """
         materials = {
             material_def.name: Material(self.__edb, material_def) for material_def in self.__edb.active_db.material_defs
@@ -699,7 +733,8 @@ class Materials(object):
         return materials
 
     def add_material(self, name: str, **kwargs) -> Material:
-        """Add a new material.
+        """
+        Add a new material.
 
         Parameters
         ----------
@@ -710,6 +745,7 @@ class Materials(object):
         -------
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
+
         """
         if not ("skip_check" in kwargs and kwargs["skip_check"]):  # pragma: no cover
             curr_materials = self.materials
@@ -738,7 +774,8 @@ class Materials(object):
         return material
 
     def add_conductor_material(self, name, conductivity, **kwargs) -> Material:
-        """Add a new conductor material.
+        """
+        Add a new conductor material.
 
         Parameters
         ----------
@@ -760,7 +797,8 @@ class Materials(object):
         return material
 
     def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs) -> Material:
-        """Add a new dielectric material in library.
+        """
+        Add a new dielectric material in library.
 
         Parameters
         ----------
@@ -775,6 +813,7 @@ class Materials(object):
         -------
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
+
         """
         extended_kwargs = {key: value for (key, value) in kwargs.items() if not key == "name"}
         extended_kwargs["permittivity"] = permittivity
@@ -793,7 +832,8 @@ class Materials(object):
         dc_permittivity=None,
         **kwargs,
     ) -> Material:
-        """Add a dielectric using the Djordjevic-Sarkar model.
+        """
+        Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
         ----------
@@ -816,6 +856,7 @@ class Materials(object):
         -------
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -858,7 +899,8 @@ class Materials(object):
         higher_frequency,
         **kwargs,
     ) -> Material:
-        """Add a dielectric with the Debye model.
+        """
+        Add a dielectric with the Debye model.
 
         Parameters
         ----------
@@ -885,6 +927,7 @@ class Materials(object):
         -------
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -918,7 +961,8 @@ class Materials(object):
         loss_tangents,
         **kwargs,
     ) -> Material:
-        """Add a dielectric with the Multipole Debye model.
+        """
+        Add a dielectric with the Multipole Debye model.
 
         Parameters
         ----------
@@ -944,6 +988,7 @@ class Materials(object):
         >>> rel_perm = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
         >>> loss_tan = [0.025, 0.026, 0.027, 0.028, 0.029, 0.030]
         >>> diel = edb.materials.add_multipole_debye_material("My_MP_Debye", freq, rel_perm, loss_tan)
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -972,7 +1017,8 @@ class Materials(object):
             raise ValueError("Use realistic values to define Multipole Debye model.")
 
     def __add_dielectric_material_model(self, name, material_model):
-        """Add a dielectric material model.
+        """
+        Add a dielectric material model.
 
         Parameters
         ----------
@@ -980,6 +1026,7 @@ class Materials(object):
             Name of the dielectric.
         material_model : Any
             Dielectric material model.
+
         """
         if CoreMaterialDef.find_by_name(self.__edb.active_db, name).is_null:
             if name.lower() in (material.lower() for material in self.materials):
@@ -992,7 +1039,8 @@ class Materials(object):
         return material
 
     def duplicate(self, material_name, new_material_name) -> Material:
-        """Duplicate a material from the database.
+        """
+        Duplicate a material from the database.
 
         Parameters
         ----------
@@ -1005,6 +1053,7 @@ class Materials(object):
         -------
         :class:`Material <pyedb.grpc.database.definition.materials.Material>`
             Material object.
+
         """
         curr_materials = self.materials
         if new_material_name in curr_materials:
@@ -1022,7 +1071,6 @@ class Materials(object):
     @deprecated("use delete method instead")
     def delete_material(self, material_name):
         """
-
         .deprecated: pyedb 0.32.0 use `delete` instead.
 
         Parameters
@@ -1034,7 +1082,8 @@ class Materials(object):
         self.delete(material_name)
 
     def delete(self, material_name) -> bool:
-        """Remove a material from the database.
+        """
+        Remove a material from the database.
 
         Returns
         -------
@@ -1087,7 +1136,8 @@ class Materials(object):
                 self.add_dielectric_material(material_name, material_permittivity, material_dlt)
 
     def material_property_to_id(self, property_name):
-        """Convert a material property name to a material property ID.
+        """
+        Convert a material property name to a material property ID.
 
         Parameters
         ----------
@@ -1097,6 +1147,7 @@ class Materials(object):
         Returns
         -------
         Any
+
         """
         # material_property_id = GrpcMaterialProperty.CONDUCTIVITY self.__edb_definition.MaterialPropertyId
         property_name_to_id = {
@@ -1128,7 +1179,8 @@ class Materials(object):
             return property_name_to_id["InvalidProperty"]
 
     def load_amat(self, amat_file) -> bool:
-        """Load materials from an AMAT file.
+        """
+        Load materials from an AMAT file.
 
         Parameters
         ----------
@@ -1138,6 +1190,7 @@ class Materials(object):
         Returns
         -------
         bool
+
         """
         if not os.path.exists(amat_file):
             raise FileNotFoundError(f"File path {amat_file} does not exist.")
@@ -1162,7 +1215,8 @@ class Materials(object):
         return True
 
     def iterate_materials_in_amat(self, amat_file=None):
-        """Iterate over material description in an AMAT file.
+        """
+        Iterate over material description in an AMAT file.
 
         Parameters
         ----------
@@ -1172,6 +1226,7 @@ class Materials(object):
         Yields
         ------
         dict
+
         """
         if amat_file is None:
             amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
@@ -1236,7 +1291,8 @@ class Materials(object):
                         in_material_def = True
 
     def read_materials(self, amat_file) -> dict[str, Material]:
-        """Read materials from an AMAT file.
+        """
+        Read materials from an AMAT file.
 
         Parameters
         ----------
@@ -1247,6 +1303,7 @@ class Materials(object):
         -------
         dict
             {material name: dict of material properties}.
+
         """
         res = {}
         for material in self.iterate_materials_in_amat(amat_file):
@@ -1259,7 +1316,8 @@ class Materials(object):
         return res
 
     def read_syslib_material(self, material_name) -> dict[str, Material]:
-        """Read a specific material from syslib AMAT file.
+        """
+        Read a specific material from syslib AMAT file.
 
         Parameters
         ----------
@@ -1270,6 +1328,7 @@ class Materials(object):
         -------
         dict
             {material name: dict of material properties}.
+
         """
         res = {}
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")

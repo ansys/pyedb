@@ -56,7 +56,8 @@ class HfssSimulationSetup(SimulationSetup):
 
     @classmethod
     def create(cls, edb: "Edb", name: str = None):
-        """Create a new HFSS simulation setup.
+        """
+        Create a new HFSS simulation setup.
 
         Parameters
         ----------
@@ -68,6 +69,7 @@ class HfssSimulationSetup(SimulationSetup):
         Returns
         -------
         :class:`HfssSimulationSetup <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup>`
+
         """
         if not name:
             name = generate_unique_name("HFSS_Setup")
@@ -97,7 +99,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.advanced instead")
     def defeature_settings(self):
-        """HFSS defeature settings class.
+        """
+        HFSS defeature settings class.
 
         .. deprecated:: 0.67.2
         Use :attr:`settings
@@ -110,7 +113,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.advanced instead")
     def via_settings(self):
-        """HFSS via settings class.
+        """
+        HFSS via settings class.
 
         .. deprecated:: 0.67.2
         Use :attr:`settings
@@ -123,7 +127,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.advanced_meshing property instead")
     def advanced_mesh_settings(self):
-        """HFSS advanced meshing settings class.
+        """
+        HFSS advanced meshing settings class.
 
         .. deprecated:: 0.67.2
         Use :attr:`settings
@@ -136,7 +141,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.general property instead")
     def hfss_solver_settings(self):
-        """Legacy compatibility to settings properties.
+        """
+        Legacy compatibility to settings properties.
 
         .. deprecated:: 0.67.2
         Use :attr:`settings <pyedb.grpc.database.simulation_setup.hfss_simulation_setup.HfssSimulationSetup.settings>`
@@ -147,7 +153,8 @@ class HfssSimulationSetup(SimulationSetup):
 
     @property
     def settings(self) -> HFSSSimulationSettings:
-        """HFSS simulation settings class.
+        """
+        HFSS simulation settings class.
 
         Returns
         -------
@@ -161,7 +168,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.general property instead")
     def adaptive_settings(self):
-        """Legacy compatibility to general settings.
+        """
+        Legacy compatibility to general settings.
 
         .. deprecated:: 0.67.2
         use :attr:`general_settings
@@ -174,7 +182,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.advanced_meshing property instead")
     def curve_approx_settings(self):
-        """Legacy compatibility to advanced meshing settings.
+        """
+        Legacy compatibility to advanced meshing settings.
 
         .. deprecated:: 0.67.2
         use :attr:`advanced_mesh_settings
@@ -187,7 +196,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.dcr property instead")
     def dcr_settings(self):
-        """HFSS DCR settings class.
+        """
+        HFSS DCR settings class.
 
         .. deprecated:: 0.67.2
         use :attr:`dcr
@@ -199,7 +209,8 @@ class HfssSimulationSetup(SimulationSetup):
     @property
     @deprecated_property("use settings.solver property instead")
     def hfss_port_settings(self):
-        """HFSS port settings class.
+        """
+        HFSS port settings class.
 
         .. deprecated:: 0.67.2
         use :attr:`settings
@@ -210,7 +221,8 @@ class HfssSimulationSetup(SimulationSetup):
         return self.settings.solver
 
     def set_solution_single_frequency(self, frequency="5GHz", max_num_passes=10, max_delta_s=0.02) -> bool:
-        """Set HFSS single frequency solution.
+        """
+        Set HFSS single frequency solution.
         Parameters
         ----------
         frequency : str, optional
@@ -234,7 +246,8 @@ class HfssSimulationSetup(SimulationSetup):
         return True
 
     def set_solution_multi_frequencies(self, frequencies="5GHz", max_delta_s=0.02) -> bool:
-        """Set HFSS setup multi frequencies adaptive.
+        """
+        Set HFSS setup multi frequencies adaptive.
 
         Parameters
         ----------
@@ -263,7 +276,8 @@ class HfssSimulationSetup(SimulationSetup):
         return True
 
     def set_solution_broadband(self, low_frequency="1GHz", high_frequency="10GHz", max_delta_s=0.02, max_num_passes=10):
-        """Set solution to broadband.
+        """
+        Set solution to broadband.
 
         Parameters
         ----------
@@ -291,7 +305,8 @@ class HfssSimulationSetup(SimulationSetup):
         return True
 
     def add_adaptive_frequency_data(self, frequency="5GHz", max_delta_s="0.01"):
-        """Add adaptive frequency data to simulation setup.
+        """
+        Add adaptive frequency data to simulation setup.
 
         Parameters
         ----------
@@ -322,7 +337,8 @@ class HfssSimulationSetup(SimulationSetup):
         refine_inside=False,
         mesh_region=None,
     ):
-        """Add a mesh operation to the setup.
+        """
+        Add a mesh operation to the setup.
 
         Parameters
         ----------
@@ -390,7 +406,8 @@ class HfssSimulationSetup(SimulationSetup):
         refine_inside=False,
         mesh_region=None,
     ):
-        """Add a mesh operation to the setup.
+        """
+        Add a mesh operation to the setup.
 
         Parameters
         ----------
@@ -496,6 +513,7 @@ class HfssSimulationSetup(SimulationSetup):
         >>> setup.auto_mesh_operation(trace_ratio_seeding=4, signal_via_side_number=16)
         >>> setup.mesh_operations[0].max_length
         '2.5um'
+
         """
         net_for_mesh_seeding = list(set([term.net.name for term in list(self._pedb.terminals.values())]))
         if not net_for_mesh_seeding:

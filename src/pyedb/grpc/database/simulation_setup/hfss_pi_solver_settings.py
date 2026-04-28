@@ -41,46 +41,54 @@ class HFSSPISolverSettings:
 
     @property
     def enhanced_low_frequency_accuracy(self) -> bool:
-        """Flag indicating if enhanced low-frequency accuracy is enabled during simulation.
+        """
+        Flag indicating if enhanced low-frequency accuracy is enabled during simulation.
 
         Returns
         -------
         bool
             Enhanced low frequency accuracy setting value.
+
         """
         return self.core.enhanced_low_frequency_accuracy
 
     @enhanced_low_frequency_accuracy.setter
     def enhanced_low_frequency_accuracy(self, value: bool):
-        """Set enhanced low-frequency accuracy setting.
+        """
+        Set enhanced low-frequency accuracy setting.
 
         Parameters
         ----------
         value : bool
             Enhanced low frequency accuracy setting value.
+
         """
         self.core.enhanced_low_frequency_accuracy = value
 
     @property
     def via_area_cutoff_circ_elems(self) -> float:
-        """Pwr/Gnd vias with an area smaller than this value are simplified during simulation.
+        """
+        Pwr/Gnd vias with an area smaller than this value are simplified during simulation.
 
         Returns
         -------
         str
             Via area cutoff circular elements setting value.
+
         """
         # pyedb-core takes string value for via area cutoff circular elements, but returning float for user convenience.
         return float(self.core.via_area_cutoff_circ_elems)
 
     @via_area_cutoff_circ_elems.setter
     def via_area_cutoff_circ_elems(self, value: float):
-        """Set via area cutoff circular elements setting.
+        """
+        Set via area cutoff circular elements setting.
 
         Parameters
         ----------
         value : str
             Via area cutoff circular elements setting value.
+
         """
         # edb-core takes string value for via area cutoff circular elements, but allowing users to input float.
         self.core.via_area_cutoff_circ_elems = str(value)

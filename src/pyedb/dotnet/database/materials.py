@@ -58,7 +58,8 @@ except:
 
 
 def get_line_float_value(line):
-    """Retrieve the float value expected in the line of an AMAT file.
+    """
+    Retrieve the float value expected in the line of an AMAT file.
 
     The associated string is expected to follow one of the following cases:
     - simple('permittivity', 12.)
@@ -129,16 +130,19 @@ class Materials(object):
         return materials
 
     def __edb_value(self, value):
-        """Convert a value to an EDB value.
+        """
+        Convert a value to an EDB value.
 
         Parameters
         ----------
         val : str, float, int
+
         """
         return self.__edb.edb_value(value)
 
     def add_material(self, name: str, **kwargs):
-        """Add a new material.
+        """
+        Add a new material.
 
         Parameters
         ----------
@@ -148,6 +152,7 @@ class Materials(object):
         Returns
         -------
         :class:`pyedb.dotnet.database.materials.Material`
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -174,7 +179,8 @@ class Materials(object):
         return material
 
     def add_conductor_material(self, name, conductivity=58000000, **kwargs):
-        """Add a new conductor material.
+        """
+        Add a new conductor material.
 
         Parameters
         ----------
@@ -196,7 +202,8 @@ class Materials(object):
         return material
 
     def add_dielectric_material(self, name, permittivity, dielectric_loss_tangent, **kwargs):
-        """Add a new dielectric material in library.
+        """
+        Add a new dielectric material in library.
 
         Parameters
         ----------
@@ -210,6 +217,7 @@ class Materials(object):
         Returns
         -------
         :class:`pyedb.dotnet.database.materials.Material`
+
         """
         props = self.default_dielectric_property_values.copy()
         props["permittivity"] = permittivity
@@ -230,7 +238,8 @@ class Materials(object):
         dc_permittivity: int | float | None = None,
         **kwargs,
     ) -> MaterialDef:
-        """Add a dielectric using the Djordjevic-Sarkar model.
+        """
+        Add a dielectric using the Djordjevic-Sarkar model.
 
         Parameters
         ----------
@@ -250,6 +259,7 @@ class Materials(object):
         Returns
         -------
         :class:`pyedb.dotnet.database.materials.Material`
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -285,7 +295,8 @@ class Materials(object):
         dc_permittivity=None,
         **kwargs,
     ):
-        """Add a dielectric using the Djordjevic-Sarkar model.
+        """
+        Add a dielectric using the Djordjevic-Sarkar model.
 
         .. deprecated:: 0.7.0
             This method name contains a typo and is deprecated.
@@ -312,7 +323,8 @@ class Materials(object):
         higher_frequency,
         **kwargs,
     ):
-        """Add a dielectric with the Debye model.
+        """
+        Add a dielectric with the Debye model.
 
         Parameters
         ----------
@@ -338,6 +350,7 @@ class Materials(object):
         Returns
         -------
         :class:`pyedb.dotnet.database.materials.Material`
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -376,7 +389,8 @@ class Materials(object):
         loss_tangents,
         **kwargs,
     ):
-        """Add a dielectric with the Multipole Debye model.
+        """
+        Add a dielectric with the Multipole Debye model.
 
         Parameters
         ----------
@@ -401,6 +415,7 @@ class Materials(object):
         >>> rel_perm = [1e9, 1.1e9, 1.2e9, 1.3e9, 1.5e9, 1.6e9]
         >>> loss_tan = [0.025, 0.026, 0.027, 0.028, 0.029, 0.030]
         >>> diel = edb.materials.add_multipole_debye_material("My_MP_Debye", freq, rel_perm, loss_tan)
+
         """
         curr_materials = self.materials
         if name in curr_materials:
@@ -433,7 +448,8 @@ class Materials(object):
             raise ValueError("Use realistic values to define Multipole Debye model.")
 
     def __add_dielectric_material_model(self, name, material_model):
-        """Add a dielectric material model.
+        """
+        Add a dielectric material model.
 
         Parameters
         ----------
@@ -441,6 +457,7 @@ class Materials(object):
             Name of the dielectric.
         material_model : Any
             Dielectric material model.
+
         """
         if self.__edb_definition.MaterialDef.FindByName(self.__edb.active_db, name).IsNull():
             if name.lower() in (material.lower() for material in self.materials):
@@ -455,7 +472,8 @@ class Materials(object):
         raise MaterialModelException("Set dielectric material model failed.")
 
     def duplicate(self, material_name, new_material_name):
-        """Duplicate a material from the database.
+        """
+        Duplicate a material from the database.
 
         Parameters
         ----------
@@ -467,6 +485,7 @@ class Materials(object):
         Returns
         -------
         :class:`pyedb.dotnet.database.materials.Material`
+
         """
         curr_materials = self.materials
         if new_material_name in curr_materials:
@@ -528,7 +547,8 @@ class Materials(object):
                 self.add_dielectric_material(material_name, material_permittivity, material_dlt)
 
     def material_property_to_id(self, property_name):
-        """Convert a material property name to a material property ID.
+        """
+        Convert a material property name to a material property ID.
 
         Parameters
         ----------
@@ -538,6 +558,7 @@ class Materials(object):
         Returns
         -------
         Any
+
         """
         material_property_id = self.__edb_definition.MaterialPropertyId
         property_name_to_id = {
@@ -569,7 +590,8 @@ class Materials(object):
             return property_name_to_id["InvalidProperty"]
 
     def load_amat(self, amat_file):
-        """Load materials from an AMAT file.
+        """
+        Load materials from an AMAT file.
 
         Parameters
         ----------
@@ -579,6 +601,7 @@ class Materials(object):
         Returns
         -------
         bool
+
         """
         if not os.path.exists(amat_file):
             raise FileNotFoundError(f"File path {amat_file} does not exist.")
@@ -602,7 +625,8 @@ class Materials(object):
         return True
 
     def iterate_materials_in_amat(self, amat_file=None):
-        """Iterate over material description in an AMAT file.
+        """
+        Iterate over material description in an AMAT file.
 
         Parameters
         ----------
@@ -612,6 +636,7 @@ class Materials(object):
         Yields
         ------
         dict
+
         """
         if amat_file is None:
             amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")
@@ -676,7 +701,8 @@ class Materials(object):
                         in_material_def = True
 
     def read_materials(self, amat_file):
-        """Read materials from an AMAT file.
+        """
+        Read materials from an AMAT file.
 
         Parameters
         ----------
@@ -687,6 +713,7 @@ class Materials(object):
         -------
         dict
             {material name: dict of material properties}.
+
         """
         res = {}
         for material in self.iterate_materials_in_amat(amat_file):
@@ -699,7 +726,8 @@ class Materials(object):
         return res
 
     def read_syslib_material(self, material_name):
-        """Read a specific material from syslib AMAT file.
+        """
+        Read a specific material from syslib AMAT file.
 
         Parameters
         ----------
@@ -710,6 +738,7 @@ class Materials(object):
         -------
         dict
             {material name: dict of material properties}.
+
         """
         res = {}
         amat_file = os.path.join(self.__edb.base_path, "syslib", "Materials.amat")

@@ -93,7 +93,8 @@ class ComponentProperty:
 
 
 class Component:
-    """Manages EDB functionalities for components.
+    """
+    Manages EDB functionalities for components.
 
     Parameters
     ----------
@@ -101,6 +102,7 @@ class Component:
         An instance of the Edb class.
     edb_object : ansys.edb.core.hierarchy.component.Component
             An instance of the EDB component object.
+
     """
 
     def __init__(self, pedb, edb_object):
@@ -124,22 +126,26 @@ class Component:
 
     @property
     def is_null(self):
-        """Check if the component is null.
+        """
+        Check if the component is null.
 
         Returns
         -------
         bool
             True if the component is null, False otherwise.
+
         """
         return self.core.is_null
 
     @property
     def component_type(self) -> str:
-        """Component type.
+        """
+        Component type.
 
         Returns
         -------
         str
+
         """
         return component_type_mapping[self.core.component_type]
 
@@ -153,21 +159,25 @@ class Component:
 
     @property
     def layout_instance(self):
-        """Layout instance object.
+        """
+        Layout instance object.
 
         Returns
         -------
         :class:`LayoutInstance <ansys.edb.core.layout_instance.layout_instance.LayoutInstance>`
+
         """
         return self._pedb.layout_instance
 
     @property
     def component_instance(self):
-        """Component instance.
+        """
+        Component instance.
 
         Returns
         -------
         :class:`LayoutObjInstance <ansys.edb.core.layout_instance.layout_obj_instance.LayoutObjInstance>`
+
         """
         if self._comp_instance is None:
             self._comp_instance = self.layout_instance.get_layout_obj_instance_in_context(self.core, None)
@@ -175,7 +185,8 @@ class Component:
 
     @property
     def is_enabled(self) -> bool:
-        """Component enable.
+        """
+        Component enable.
 
         Returns
         -------
@@ -197,11 +208,13 @@ class Component:
 
     @property
     def ic_die_properties(self) -> "ICDieProperty | None":
-        """IC Die property.
+        """
+        IC Die property.
 
         returns
         -------
         :class:`ICDieProperty <pyedb.grpc.database.hierarchy.component.ICDieProperty>`
+
         """
         if self.type == "ic":
             return ICDieProperty(self)
@@ -210,17 +223,20 @@ class Component:
 
     @property
     def _active_layout(self):
-        """Active layout.
+        """
+        Active layout.
 
         Returns
         -------
         :class:`Layout <ansys.edb.core.layout.layout.Layout>
+
         """
         return self._pedb.active_layout
 
     @property
     def _edb_model(self):
-        """Component model.
+        """
+        Component model.
 
         Returns
         -------
@@ -232,18 +248,21 @@ class Component:
 
     @property  # pragma: no cover
     def _pin_pairs(self) -> PinPairModel:
-        """Pins pairs.
+        """
+        Pins pairs.
 
         Returns
         -------
         :class:`PinPairModel <ansys.edb.core.hierarchy.pin_pair_model.PinPairModel>`
+
         """
         edb_model = self._edb_model
         return edb_model.pin_pairs()
 
     @property
     def _rlc(self):
-        """Rlc class.
+        """
+        Rlc class.
 
         Returns
         -------
@@ -265,7 +284,8 @@ class Component:
 
     @property
     def component_definition(self):
-        """Component definition.
+        """
+        Component definition.
 
         Returns
         -------
@@ -288,7 +308,8 @@ class Component:
     @property
     @deprecated_property("use component_definition property instead")
     def component_def(self):
-        """Component definition.
+        """
+        Component definition.
 
         deprecated: use `component_definition` instead.
 
@@ -301,7 +322,8 @@ class Component:
 
     @property
     def component_property(self):
-        """Component property.
+        """
+        Component property.
 
         Returns
         -------
@@ -316,7 +338,8 @@ class Component:
 
     @property
     def model(self) -> SparamModel | SpiceModel | PinPairModel:
-        """Component model.
+        """
+        Component model.
 
         Returns
         -------
@@ -344,11 +367,13 @@ class Component:
 
     @property
     def package_def(self):
-        """Package definition.
+        """
+        Package definition.
 
         Returns
         -------
         :class:`PackageDef <ansys.edb.core.definition.package_def.PackageDef>`
+
         """
         return self.core.component_property.package_def
 
@@ -379,7 +404,8 @@ class Component:
 
     @property
     def is_mcad(self) -> bool:
-        """MCad component.
+        """
+        MCad component.
 
         Returns
         -------
@@ -395,7 +421,8 @@ class Component:
 
     @property
     def is_mcad_3d_comp(self) -> bool:
-        """Mcad 3D component.
+        """
+        Mcad 3D component.
 
         Returns
         -------
@@ -411,7 +438,8 @@ class Component:
 
     @property
     def is_mcad_hfss(self) -> bool:
-        """MCad HFSS.
+        """
+        MCad HFSS.
 
         Returns
         -------
@@ -427,7 +455,8 @@ class Component:
 
     @property
     def is_mcad_stride(self) -> bool:
-        """MCar stride.
+        """
+        MCar stride.
 
         Returns
         -------
@@ -442,7 +471,8 @@ class Component:
             self.core.is_mcad_stride = value
 
     def create_package_def(self, name=None, component_part_name=None) -> bool:
-        """Create a package definition and assign it to the component.
+        """
+        Create a package definition and assign it to the component.
 
         Parameters
         ----------
@@ -455,6 +485,7 @@ class Component:
         -------
         bool
             ``True`` if succeeded, ``False`` otherwise.
+
         """
         if not name:
             name = f"{self.refdes}_{self.part_name}"
@@ -470,7 +501,8 @@ class Component:
 
     @property
     def enabled(self) -> bool:
-        """Component active mode.
+        """
+        Component active mode.
 
         Returns
         -------
@@ -490,11 +522,13 @@ class Component:
 
     @property
     def spice_model(self) -> SpiceModel | None:
-        """Assigned Spice model.
+        """
+        Assigned Spice model.
 
         Returns
         -------
         :class:`SpiceModel <pyedb.grpc.database.hierarchy.spice_model.SpiceModel>`
+
         """
         if not self.model_type == "SPICEModel":
             return None
@@ -503,11 +537,13 @@ class Component:
 
     @property
     def s_param_model(self) -> SparamModel | None:
-        """Assigned S-parameter model.
+        """
+        Assigned S-parameter model.
 
         Returns
         -------
         :class:`SParameterModel <ansys.edb.core.hierarchy.sparameter_model.SParameterModel>`
+
         """
         if not self.model_type == "SParameterModel":
             return None
@@ -516,11 +552,13 @@ class Component:
 
     @property
     def netlist_model(self) -> NetlistModel | None:
-        """Assigned netlist model.
+        """
+        Assigned netlist model.
 
         Returns
         -------
         :class:`NetlistModel <ansys.edb.core.hierarchy.netlist_mode.NetlistModel>`
+
         """
         if not self.model_type == "NetlistModel":
             return None
@@ -529,12 +567,14 @@ class Component:
 
     @property
     def solder_ball_height(self) -> float:
-        """Solder ball height if available.
+        """
+        Solder ball height if available.
 
         Returns
         -------
         float
             Balls height value.
+
         """
         try:
             return Value(self.component_property.solder_ball_property.height)
@@ -550,12 +590,14 @@ class Component:
 
     @property
     def solder_ball_shape(self) -> str | None:
-        """Solder ball shape.
+        """
+        Solder ball shape.
 
         Returns
         -------
         str
             Solder balls shapes, ``none``, ``cylinder`` or ``spheroid``.
+
         """
         if not self.component_property.solder_ball_property.is_null:
             shape = self.component_property.solder_ball_property.shape
@@ -593,12 +635,14 @@ class Component:
 
     @property
     def solder_ball_diameter(self) -> Union[tuple[float, float], None]:
-        """Solder ball diameter.
+        """
+        Solder ball diameter.
 
         Returns
         -------
         float
             diameter value.
+
         """
         if not self.component_property.solder_ball_property.is_null:
             diameter, mid_diameter = self.component_property.solder_ball_property.get_diameter()
@@ -656,12 +700,14 @@ class Component:
 
     @property
     def refdes(self) -> str:
-        """Reference Designator Name.
+        """
+        Reference Designator Name.
 
         Returns
         -------
         str
             Reference Designator Name.
+
         """
         return self.core.name
 
@@ -671,12 +717,14 @@ class Component:
 
     @property
     def model_type(self) -> str:
-        """Retrieve assigned model type.
+        """
+        Retrieve assigned model type.
 
         Returns
         -------
         str
             Model type, ``RLC``, `` SParameterModel`` or ``SPICEModel``.
+
         """
         _model_type = str(self._edb_model).split(".")[-1]
         if _model_type == "PinPairModel":
@@ -690,11 +738,13 @@ class Component:
 
     @property
     def rlc_values(self) -> Union[List[list[float]], List[float]]:
-        """Get component rlc values.
+        """
+        Get component rlc values.
 
         Returns
         -------
         list[list[Rvalue(float), Lvalue(float), Cvalue(float)]].
+
         """
         if not len(self._rlc):
             return [0.0, 0.0, 0.0]
@@ -737,12 +787,14 @@ class Component:
 
     @property
     def value(self) -> float:
-        """Retrieve discrete component value.
+        """
+        Retrieve discrete component value.
 
         Returns
         -------
         float
             Value. ``None`` if not an RLC Type.
+
         """
         values_mapping = {
             "resistor": self.rlc_values[0],
@@ -763,12 +815,14 @@ class Component:
 
     @property
     def res_value(self) -> float:
-        """Resistance value.
+        """
+        Resistance value.
 
         Returns
         -------
         float
             Resistance value or ``None`` if not an RLC type.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.r) for rlc in self._rlc]
@@ -794,12 +848,14 @@ class Component:
 
     @property
     def rlc_enable(self) -> list[bool]:
-        """RLC enabled flag.
+        """
+        RLC enabled flag.
 
         Returns
         -------
         bool
             ``True`` if RLC is enabled.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             return [self._rlc[0].r_enabled, self._rlc[0].l_enabled, self._rlc[0].c_enabled]
@@ -807,12 +863,14 @@ class Component:
 
     @property
     def res_enabled(self) -> bool:
-        """Resistance enabled flag.
+        """
+        Resistance enabled flag.
 
         Returns
         -------
         bool
             ``True`` if resistor is enabled.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             return self._rlc[0].r_enabled
@@ -828,12 +886,14 @@ class Component:
 
     @property
     def cap_enabled(self) -> bool:
-        """Capacitance enabled flag.
+        """
+        Capacitance enabled flag.
 
         Returns
         -------
         bool
             ``True`` if capacitance is enabled.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             return self._rlc[0].c_enabled
@@ -849,12 +909,14 @@ class Component:
 
     @property
     def ind_enabled(self) -> bool:
-        """Inductance enabled flag.
+        """
+        Inductance enabled flag.
 
         Returns
         -------
         bool
             ``True`` if inductance is enabled.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             return self._rlc[0].l_enabled
@@ -870,12 +932,14 @@ class Component:
 
     @property
     def cap_value(self) -> float:
-        """Capacitance Value.
+        """
+        Capacitance Value.
 
         Returns
         -------
         float
             Capacitance Value. ``None`` if not an RLC Type.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.c) for rlc in self._rlc]
@@ -901,12 +965,14 @@ class Component:
 
     @property
     def ind_value(self):
-        """Inductance Value.
+        """
+        Inductance Value.
 
         Returns
         -------
         float
             Inductance Value. ``None`` if not an RLC Type.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             result = [Value(rlc.l) for rlc in self._rlc]
@@ -934,7 +1000,8 @@ class Component:
 
     @property
     def is_parallel_rlc(self) -> bool:
-        """Define if model is Parallel or Series.
+        """
+        Define if model is Parallel or Series.
 
         Returns
         -------
@@ -942,6 +1009,7 @@ class Component:
             `True´ if parallel rlc model.
             `False` series RLC.
             `None` if not RLC Type.
+
         """
         if self.component_type in ["resistor", "capacitor", "inductor"]:
             return self._rlc[0].is_parallel  # -> first pin pair change for managing multi pin pair components
@@ -956,12 +1024,14 @@ class Component:
 
     @property
     def center(self) -> tuple[float, float]:
-        """Compute the component center.
+        """
+        Compute the component center.
 
         Returns
         -------
         list
             [x value, y value].
+
         """
         location = self.core.location
         return location[0].value, location[1].value
@@ -974,7 +1044,8 @@ class Component:
 
     @property
     def location(self) -> tuple[float, float]:
-        """Component center.
+        """
+        Component center.
 
         Returns
         -------
@@ -993,7 +1064,8 @@ class Component:
 
     @property
     def bounding_box(self) -> list[float, float, float, float]:
-        """Component's bounding box.
+        """
+        Component's bounding box.
 
         Returns
         -------
@@ -1001,6 +1073,7 @@ class Component:
             List of coordinates for the component's bounding box, with the list of
             coordinates in this order: [X lower left corner, Y lower left corner,
             X upper right corner, Y upper right corner].
+
         """
         bbox = self.component_instance.get_bbox().points
         pt1 = bbox[0]
@@ -1009,34 +1082,40 @@ class Component:
 
     @property
     def rotation(self) -> float:
-        """Compute the component rotation in radian.
+        """
+        Compute the component rotation in radian.
 
         Returns
         -------
         float
             Rotation value.
+
         """
         return Value(self.core.transform.rotation)
 
     @property
     def pinlist(self) -> list[PadstackInstance]:
-        """Pins of the component.
+        """
+        Pins of the component.
 
         Returns
         -------
         list
             List of Pins of Component.
+
         """
         return list(self.pins.values())
 
     @property
     def nets(self):
-        """Nets of Component.
+        """
+        Nets of Component.
 
         Returns
         -------
         list[str]
             Component nets names.
+
         """
         nets = []
         for pin in list(self.pins.values()):
@@ -1046,12 +1125,14 @@ class Component:
 
     @property
     def pins(self) -> dict[str, PadstackInstance]:
-        """Component pins.
+        """
+        Component pins.
 
         Returns
         -------
         Dic[str,:class:`PadstackInstance <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance>`]
             Component dictionary pins.
+
         """
         _pins = {}
         for connectable in self.core.members:
@@ -1065,12 +1146,14 @@ class Component:
 
     @property
     def num_pins(self):
-        """Number of Pins of Component.
+        """
+        Number of Pins of Component.
 
         Returns
         -------
         int
             Component pins number.
+
         """
         try:
             return self.core.num_pins
@@ -1080,25 +1163,29 @@ class Component:
 
     @property
     def type(self) -> str:
-        """Component type.
+        """
+        Component type.
 
         Returns
         -------
         str
             Type of the component. Options are ``"resistor"``, ``"inductor"``, ``"capacitor"``,
             ``"ic"``, ``"io"`` and ``"other"``.
+
         """
         return self.component_type
 
     @type.setter
     def type(self, new_type):
-        """Set component type
+        """
+        Set component type
 
         Parameters
         ----------
         new_type : str
             Type of the component. Options are ``"resistor"``,  ``"inductor"``, ``"capacitor"``,
             ``"ic"``, ``"io"`` and ``"other"``.
+
         """
         new_type = new_type.lower()
         self.component_type = new_type
@@ -1106,7 +1193,8 @@ class Component:
     @property
     @deprecated_property("use num_pins property instead")
     def numpins(self) -> int:
-        """Number of Pins of Component.
+        """
+        Number of Pins of Component.
 
         ..deprecated:: 0.51.0
            Use: func:`num_pins` instead.
@@ -1114,6 +1202,7 @@ class Component:
         -------
         int
             Component pins number.
+
         """
 
         try:
@@ -1124,12 +1213,14 @@ class Component:
 
     @property
     def partname(self) -> str:
-        """Component part name.
+        """
+        Component part name.
 
         Returns
         -------
         str
             Component part name.
+
         """
         return self.part_name
 
@@ -1140,12 +1231,14 @@ class Component:
 
     @property
     def name(self):
-        """Component part name.
+        """
+        Component part name.
 
         Returns
         -------
         str
             Component part name.
+
         """
         return self.core.name
 
@@ -1156,12 +1249,14 @@ class Component:
 
     @property
     def ref_des(self):
-        """Reference Designator Name.
+        """
+        Reference Designator Name.
 
         Returns
         -------
         str
             Reference Designator Name.
+
         """
         return self.name
 
@@ -1171,12 +1266,14 @@ class Component:
 
     @property
     def part_name(self) -> str:
-        """Component part name.
+        """
+        Component part name.
 
         Returns
         -------
         str
             Component part name.
+
         """
         return self.core.component_def.name
 
@@ -1187,34 +1284,40 @@ class Component:
 
     @property
     def placement_layer(self) -> str:
-        """Placement layern name.
+        """
+        Placement layern name.
 
         Returns
         -------
         str
            Placement layer name.
+
         """
         return self.core.placement_layer.name
 
     @property
     def layer(self) -> StackupLayer:
-        """Placement layern object.
+        """
+        Placement layern object.
 
         Returns
         -------
         :class:`pyedb.grpc.database.layers.stackup_layer.StackupLayer`
            Placement layer.
+
         """
         return StackupLayer(self._pedb, self.core.placement_layer)
 
     @property
     def is_top_mounted(self) -> bool:
-        """Check if a component is mounted on top or bottom of the layout.
+        """
+        Check if a component is mounted on top or bottom of the layout.
 
         Returns
         -------
         bool
             ``True`` component is mounted on top, ``False`` on down.
+
         """
         signal_layers = [lay.name for lay in list(self._pedb.stackup.signal_layers.values())]
         if self.placement_layer in signal_layers[: int(len(signal_layers) / 2)]:
@@ -1223,18 +1326,21 @@ class Component:
 
     @property
     def lower_elevation(self) -> float:
-        """Lower elevation of the placement layer.
+        """
+        Lower elevation of the placement layer.
 
         Returns
         -------
         float
             Placement layer lower elevation.
+
         """
         return self.layer.lower_elevation
 
     @property
     def upper_elevation(self) -> float:
-        """Upper elevation of the placement layer.
+        """
+        Upper elevation of the placement layer.
 
         Returns
         -------
@@ -1246,7 +1352,8 @@ class Component:
 
     @property
     def top_bottom_association(self) -> int:
-        """Top/bottom association of the placement layer.
+        """
+        Top/bottom association of the placement layer.
 
         Returns
         -------
@@ -1258,11 +1365,13 @@ class Component:
             * 2 - Bottom associated
             * 4 - Number of top/bottom associations.
             * -1 - Undefined
+
         """
         return self.layer.core.top_bottom_association.value
 
     def _set_model(self, model):  # pragma: no cover
-        """Set component model
+        """
+        Set component model
 
 
         Returns
@@ -1282,12 +1391,14 @@ class Component:
         return model
 
     def delete(self):
-        """Delete the component from the EDB.
+        """
+        Delete the component from the EDB.
 
         Returns
         -------
         bool
             ``True`` when successful, ``False`` when failed.
+
         """
         self.core.delete()
 
@@ -1298,7 +1409,8 @@ class Component:
         sub_circuit_name: Optional[str] = None,
         terminal_pairs: Optional[list] = None,
     ) -> SpiceModel | bool:
-        """Assign Spice model to this component.
+        """
+        Assign Spice model to this component.
 
         Parameters
         ----------
@@ -1356,7 +1468,8 @@ class Component:
         self,
         netlist,
     ):
-        """Assign Netlist to this component.
+        """
+        Assign Netlist to this component.
 
         Parameters
         ----------
@@ -1373,7 +1486,8 @@ class Component:
         return self._set_model(model)
 
     def assign_s_param_model(self, file_path, name=None, reference_net=None) -> CoreNPortComponentModel | bool:
-        """Assign S-parameter to this component.
+        """
+        Assign S-parameter to this component.
 
         Parameters
         ----------
@@ -1412,7 +1526,8 @@ class Component:
         return self._set_model(model)
 
     def use_s_parameter_model(self, name, reference_net=None) -> bool:
-        """Use S-parameter model on the component.
+        """
+        Use S-parameter model on the component.
 
         Parameters
         ----------
@@ -1431,6 +1546,7 @@ class Component:
         >>>comp_def = edbapp.definitions.components["CAPC3216X180X55ML20T25"]
         >>>comp_def.add_n_port_model("c:GRM32_DC0V_25degC_series.s2p", "GRM32_DC0V_25degC_series")
         >>>edbapp.components["C200"].use_s_parameter_model("GRM32_DC0V_25degC_series")
+
         """
         from ansys.edb.core.definition.component_model import (
             ComponentModel as GrpcComponentModel,
@@ -1445,7 +1561,8 @@ class Component:
         return False
 
     def assign_rlc_model(self, res=None, ind=None, cap=None, is_parallel=False) -> PinPairModel | bool:
-        """Assign RLC to this component.
+        """
+        Assign RLC to this component.
 
         Parameters
         ----------
@@ -1490,7 +1607,8 @@ class Component:
         return self._set_model(model)
 
     def create_clearance_on_component(self, extra_soldermask_clearance=1e-4) -> bool:
-        """Create a Clearance on Soldermask layer by drawing a rectangle.
+        """
+        Create a Clearance on Soldermask layer by drawing a rectangle.
 
         Parameters
         ----------
@@ -1500,6 +1618,7 @@ class Component:
         Returns
         -------
             bool
+
         """
         bounding_box = self.bounding_box
         opening = [bounding_box[0] - extra_soldermask_clearance]
@@ -1539,7 +1658,8 @@ class ICDieProperty:
 
     @property
     def die_orientation(self) -> str:
-        """Die orientation.
+        """
+        Die orientation.
 
         Returns
         -------
@@ -1564,7 +1684,8 @@ class ICDieProperty:
 
     @property
     def die_type(self) -> str:
-        """Die type.
+        """
+        Die type.
 
         Returns
         -------
@@ -1591,7 +1712,8 @@ class ICDieProperty:
 
     @property
     def height(self) -> float:
-        """Die height.
+        """
+        Die height.
 
         Returns
         -------
@@ -1611,7 +1733,8 @@ class ICDieProperty:
 
     @property
     def is_null(self) -> bool:
-        """Test is die is null.
+        """
+        Test is die is null.
 
         Returns
         -------
