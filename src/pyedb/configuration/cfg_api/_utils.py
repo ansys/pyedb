@@ -25,7 +25,6 @@ from __future__ import annotations
 
 
 class _DictProxy:
-
     """Wrap a raw dictionary with a ``to_dict`` method.
 
     Some builder collections store either rich builder objects or already

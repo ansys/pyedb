@@ -36,7 +36,6 @@ from pyedb.configuration.cfg_padstacks import (
 
 
 class PadstackDefinitionConfig:
-
     """Fluent builder for a padstack definition.
 
     Wraps :class:`~pyedb.configuration.cfg_padstacks.CfgPadstackDefinition`.
@@ -75,7 +74,6 @@ class PadstackDefinitionConfig:
 
 
 class PadstackInstanceConfig:
-
     """Fluent builder for a padstack instance.
 
     Wraps :class:`~pyedb.configuration.cfg_padstacks.CfgPadstackInstance`.
@@ -140,7 +138,6 @@ class PadstackInstanceConfig:
 
 
 class PadstacksConfig:
-
     """Fluent builder for the ``padstacks`` configuration section."""
 
     def __init__(self):

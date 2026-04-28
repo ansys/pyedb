@@ -22,7 +22,6 @@
 
 
 class CfgNets:
-
     """Manage configuration net class."""
 
     def set_parameter_to_edb(self):

@@ -34,7 +34,6 @@ from pyedb.configuration.cfg_common import CfgVariables
 
 
 class VariablesConfig:
-
     """Fluent builder for the ``variables`` configuration section.
 
     Wraps :class:`~pyedb.configuration.cfg_common.CfgVariables`.

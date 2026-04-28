@@ -41,7 +41,6 @@ from pyedb.configuration.cfg_stackup import (
 
 
 class MaterialConfig:
-
     """Fluent builder for a single stackup material.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgMaterial`.
@@ -74,7 +73,6 @@ class MaterialConfig:
 
 
 class LayerConfig:
-
     """Fluent builder for a single stackup layer.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgLayer`.
@@ -204,7 +202,6 @@ class LayerConfig:
 
 
 class StackupConfig:
-
     """Fluent builder for the ``stackup`` configuration section.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgStackup`.

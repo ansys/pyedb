@@ -33,7 +33,6 @@ from typing import List
 
 
 class NetsConfig:
-
     """Fluent builder for the ``nets`` configuration section.
 
     The dict produced by :meth:`to_dict` is consumed by

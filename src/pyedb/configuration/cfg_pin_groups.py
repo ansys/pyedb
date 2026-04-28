@@ -24,7 +24,6 @@ from pyedb.configuration.cfg_common import CfgBase
 
 
 class CfgPinGroups:
-
     """Manage configuration pin group class."""
 
     def set_pingroup_to_edb(self):

@@ -77,7 +77,6 @@ def set_padstack_instance(inst, inst_obj):
 
 
 class Configuration:
-
     """Enables export and import of a JSON configuration file that can be applied to a new or existing design."""
 
     def __init__(self, pedb: Edb):

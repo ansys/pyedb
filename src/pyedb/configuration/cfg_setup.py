@@ -123,7 +123,6 @@ class CfgHFSSSetup(CfgSetupAC):
             self.adapt_frequencies.append(adapt_freq)
 
     class CfgLengthMeshOperation(CfgBaseModel):
-
         """Mesh operation export/import payload."""
 
         mesh_operation_type: str = Field(
