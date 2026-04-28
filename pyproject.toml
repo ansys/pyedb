@@ -25,6 +25,7 @@ classifiers = [
 ]
 
 dependencies = [
+    "protobuf==4.25.8",
     # .NET interface dependencies
     "cffi>=1.16.0,<2.1; platform_system=='Linux'",
     "pywin32>=304;platform_system=='Windows'",
@@ -33,7 +34,7 @@ dependencies = [
     "numpy>=1.20.0,<3",
     "pydantic>=2.6.4,<2.14",
     "toml==0.10.2",
-    "ansys-edb-core==0.3.1",
+    "ansys-edb-core@git+https://github.com/ansys/pyedb-core.git@main",
     "psutil",
     "defusedxml>=0.7,<8.0",
     "xmltodict"
