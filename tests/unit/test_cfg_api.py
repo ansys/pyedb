@@ -1457,9 +1457,9 @@ class TestEdbConfigBuilder:
 
     def test_modeler_primitives_to_delete(self):
         d = self._full_builder().to_dict()
-        ptd = d["modeler"]["primitives_to_delete"]
-        assert "old_layer" in ptd["layer_name"]
-        assert "old_net" in ptd["net_name"]
+        prim = d["modeler"]["primitives_to_delete"]
+        assert "old_layer" in prim["layer_name"]
+        assert "old_net" in prim["net_name"]
 
 
 class TestEdbConfigBuilderJson:
