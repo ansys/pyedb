@@ -1,6 +1,8 @@
-import subprocess, sys, re
 from collections import Counter
 from pathlib import Path
+import re
+import subprocess
+import sys
 
 results = {}
 for label, args in [
@@ -10,11 +12,13 @@ for label, args in [
 ]:
     r = subprocess.run(
         [sys.executable, "-m", "pydocstyle"] + args + ["src/pyedb/"],
-        capture_output=True, text=True, cwd=r"C:\Users\svandenb\PycharmProjects\pyedb"
+        capture_output=True,
+        text=True,
+        cwd=r"C:\Users\svandenb\PycharmProjects\pyedb",
     )
     out = r.stdout + r.stderr
-    violations = [l for l in out.split("\n") if re.match(r'\s+D\d+', l)]
-    rules = re.findall(r'\bD\d{3}\b', out)
+    violations = [l for l in out.split("\n") if re.match(r"\s+D\d+", l)]
+    rules = re.findall(r"\bD\d{3}\b", out)
     counts = Counter(rules)
     line = f"\n=== {label} ===\nViolations: {len(violations)}"
     for rule, c in counts.most_common():
