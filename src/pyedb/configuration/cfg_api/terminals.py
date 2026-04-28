@@ -19,7 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Terminal builder API."""
+"""Build low-level terminal configuration entries.
+
+This module provides explicit terminal builders plus factory helpers for the
+terminal-specifier dictionaries accepted by ports, sources, and probes.
+"""
 
 from __future__ import annotations
 
@@ -27,7 +31,7 @@ from typing import List, Optional, Union
 
 
 class PadstackInstanceTerminal:
-    """Padstack-instance terminal."""
+    """Represent a terminal attached to a padstack instance."""
 
     def __init__(
         self,
@@ -59,6 +63,13 @@ class PadstackInstanceTerminal:
         self.padstack_instance_id = padstack_instance_id
 
     def to_dict(self) -> dict:
+        """Serialize the padstack-instance terminal.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``terminals`` list.
+        """
         d = {
             "terminal_type": self.terminal_type,
             "name": self.name,
@@ -82,7 +93,7 @@ class PadstackInstanceTerminal:
 
 
 class PinGroupTerminal:
-    """Pin-group terminal."""
+    """Represent a terminal attached to a pin group."""
 
     def __init__(
         self,
@@ -107,6 +118,13 @@ class PinGroupTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
+        """Serialize the pin-group terminal.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``terminals`` list.
+        """
         d = {
             "terminal_type": self.terminal_type,
             "name": self.name,
@@ -124,7 +142,7 @@ class PinGroupTerminal:
 
 
 class PointTerminal:
-    """Point (coordinate) terminal."""
+    """Represent a point terminal defined by coordinates."""
 
     def __init__(
         self,
@@ -155,6 +173,13 @@ class PointTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
+        """Serialize the point terminal.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``terminals`` list.
+        """
         d = {
             "terminal_type": self.terminal_type,
             "name": self.name,
@@ -175,7 +200,7 @@ class PointTerminal:
 
 
 class EdgeTerminal:
-    """Edge (wave/gap port) terminal."""
+    """Represent an edge terminal for wave or gap boundaries."""
 
     def __init__(
         self,
@@ -213,6 +238,13 @@ class EdgeTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
+        """Serialize the edge terminal.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``terminals`` list.
+        """
         d = {
             "terminal_type": self.terminal_type,
             "name": self.name,
@@ -236,7 +268,7 @@ class EdgeTerminal:
 
 
 class BundleTerminal:
-    """Bundle terminal (differential group)."""
+    """Represent a terminal bundle such as a differential pair."""
 
     def __init__(self, name: str, terminals: List[str]):
         self.terminal_type = "bundle"
@@ -244,14 +276,22 @@ class BundleTerminal:
         self.terminals = terminals
 
     def to_dict(self) -> dict:
+        """Serialize the bundle terminal.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``terminals`` list.
+        """
         return {"terminal_type": self.terminal_type, "name": self.name, "terminals": self.terminals}
 
 
 class TerminalInfo:
-    """Factory helpers for terminal specifier dicts."""
+    """Create terminal-specifier dictionaries for higher-level builders."""
 
     @staticmethod
     def pin(pin_name: str, reference_designator: Optional[str] = None) -> dict:
+        """Build a pin terminal specifier."""
         d: dict = {"pin": pin_name}
         if reference_designator:
             d["reference_designator"] = reference_designator
@@ -259,6 +299,7 @@ class TerminalInfo:
 
     @staticmethod
     def net(net_name: str, reference_designator: Optional[str] = None) -> dict:
+        """Build a net terminal specifier."""
         d: dict = {"net": net_name}
         if reference_designator:
             d["reference_designator"] = reference_designator
@@ -266,18 +307,22 @@ class TerminalInfo:
 
     @staticmethod
     def pin_group(pin_group_name: str) -> dict:
+        """Build a pin-group terminal specifier."""
         return {"pin_group": pin_group_name}
 
     @staticmethod
     def padstack(padstack_instance_name: str) -> dict:
+        """Build a padstack terminal specifier."""
         return {"padstack": padstack_instance_name}
 
     @staticmethod
     def coordinates(layer: str, x: Union[float, str], y: Union[float, str], net: str) -> dict:
+        """Build a coordinate-based terminal specifier."""
         return {"coordinates": {"layer": layer, "point": [x, y], "net": net}}
 
     @staticmethod
     def nearest_pin(reference_net: str, search_radius: Union[str, float] = "5mm") -> dict:
+        """Build a nearest-pin terminal specifier."""
         return {"nearest_pin": {"reference_net": reference_net, "search_radius": search_radius}}
 
 
@@ -287,32 +332,108 @@ class TerminalsConfig:
     def __init__(self):
         self._terminals: List = []
 
-    def add_padstack_instance_terminal(self, name, padstack_instance, impedance, boundary_type, hfss_type, **kwargs) -> PadstackInstanceTerminal:
-        t = PadstackInstanceTerminal(name=name, padstack_instance=padstack_instance, impedance=impedance, boundary_type=boundary_type, hfss_type=hfss_type, **kwargs)
+    def add_padstack_instance_terminal(
+        self,
+        name,
+        padstack_instance,
+        impedance,
+        boundary_type,
+        hfss_type,
+        **kwargs,
+    ) -> PadstackInstanceTerminal:
+        """Add a padstack-instance terminal."""
+        t = PadstackInstanceTerminal(
+            name=name,
+            padstack_instance=padstack_instance,
+            impedance=impedance,
+            boundary_type=boundary_type,
+            hfss_type=hfss_type,
+            **kwargs,
+        )
         self._terminals.append(t)
         return t
 
-    def add_pin_group_terminal(self, name, pin_group, impedance, boundary_type, **kwargs) -> PinGroupTerminal:
-        t = PinGroupTerminal(name=name, pin_group=pin_group, impedance=impedance, boundary_type=boundary_type, **kwargs)
+    def add_pin_group_terminal(
+        self,
+        name,
+        pin_group,
+        impedance,
+        boundary_type,
+        **kwargs,
+    ) -> PinGroupTerminal:
+        """Add a pin-group terminal."""
+        t = PinGroupTerminal(
+            name=name,
+            pin_group=pin_group,
+            impedance=impedance,
+            boundary_type=boundary_type,
+            **kwargs,
+        )
         self._terminals.append(t)
         return t
 
-    def add_point_terminal(self, name, x, y, layer, net, impedance, boundary_type, **kwargs) -> PointTerminal:
-        t = PointTerminal(name=name, x=x, y=y, layer=layer, net=net, impedance=impedance, boundary_type=boundary_type, **kwargs)
+    def add_point_terminal(
+        self,
+        name,
+        x,
+        y,
+        layer,
+        net,
+        impedance,
+        boundary_type,
+        **kwargs,
+    ) -> PointTerminal:
+        """Add a coordinate-defined point terminal."""
+        t = PointTerminal(
+            name=name,
+            x=x,
+            y=y,
+            layer=layer,
+            net=net,
+            impedance=impedance,
+            boundary_type=boundary_type,
+            **kwargs,
+        )
         self._terminals.append(t)
         return t
 
-    def add_edge_terminal(self, name, primitive, point_on_edge_x, point_on_edge_y, impedance, boundary_type, **kwargs) -> EdgeTerminal:
-        t = EdgeTerminal(name=name, primitive=primitive, point_on_edge_x=point_on_edge_x, point_on_edge_y=point_on_edge_y, impedance=impedance, boundary_type=boundary_type, **kwargs)
+    def add_edge_terminal(
+        self,
+        name,
+        primitive,
+        point_on_edge_x,
+        point_on_edge_y,
+        impedance,
+        boundary_type,
+        **kwargs,
+    ) -> EdgeTerminal:
+        """Add an edge terminal."""
+        t = EdgeTerminal(
+            name=name,
+            primitive=primitive,
+            point_on_edge_x=point_on_edge_x,
+            point_on_edge_y=point_on_edge_y,
+            impedance=impedance,
+            boundary_type=boundary_type,
+            **kwargs,
+        )
         self._terminals.append(t)
         return t
 
     def add_bundle_terminal(self, name: str, terminals: List[str]) -> BundleTerminal:
+        """Add a bundle terminal."""
         t = BundleTerminal(name=name, terminals=terminals)
         self._terminals.append(t)
         return t
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured terminals.
+
+        Returns
+        -------
+        list[dict]
+            Terminal definitions in insertion order.
+        """
         result = []
         for t in self._terminals:
             if hasattr(t, "to_dict"):

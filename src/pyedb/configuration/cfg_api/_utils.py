@@ -19,22 +19,32 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Internal utilities."""
+"""Internal helpers shared by the ``cfg_api`` package."""
 
 from __future__ import annotations
 
 from typing import Any, Dict, List, Literal, Optional, Union
 
 
-
 class _DictProxy:
-    """Thin wrapper so that raw dicts stored inside list attributes
-    are still serialised via ``to_dict()`` by the parent builder."""
+    """Wrap a raw dictionary with a ``to_dict`` method.
+
+    Some builder collections store either rich builder objects or already
+    materialized dictionaries. This wrapper gives the latter the same
+    ``to_dict`` surface so parent serializers can treat both cases uniformly.
+    """
 
     def __init__(self, data: dict):
         self._data = data
 
     def to_dict(self) -> dict:
+        """Return the wrapped dictionary unchanged.
+
+        Returns
+        -------
+        dict
+            Original dictionary payload.
+        """
         return self._data
 
 

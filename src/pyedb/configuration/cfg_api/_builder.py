@@ -19,7 +19,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Top-level EdbConfigBuilder."""
+"""Provide the top-level programmatic configuration builder.
+
+This module gathers the section-specific builders exposed by ``cfg_api`` into a
+single entry point that can serialize configuration data to dictionaries, JSON,
+or TOML files.
+"""
 
 from __future__ import annotations
 
@@ -33,6 +38,7 @@ try:
 except ImportError:
     _TOML_AVAILABLE = False
 
+from pyedb.configuration.cfg_api._utils import _DictProxy
 from pyedb.configuration.cfg_api.boundaries import BoundariesConfig
 from pyedb.configuration.cfg_api.components import ComponentsConfig
 from pyedb.configuration.cfg_api.general import GeneralConfig
@@ -45,14 +51,18 @@ from pyedb.configuration.cfg_api.pin_groups import PinGroupsConfig
 from pyedb.configuration.cfg_api.ports import PortsConfig
 from pyedb.configuration.cfg_api.probes import ProbesConfig
 from pyedb.configuration.cfg_api.s_parameters import SParameterModelsConfig
-from pyedb.configuration.cfg_api.setups import FrequencySweepConfig, HfssSetupConfig, SIwaveACSetupConfig, SIwaveDCSetupConfig, SetupsConfig
+from pyedb.configuration.cfg_api.setups import (
+    FrequencySweepConfig,
+    HfssSetupConfig,
+    SetupsConfig,
+    SIwaveACSetupConfig,
+    SIwaveDCSetupConfig,
+)
 from pyedb.configuration.cfg_api.sources import SourcesConfig
 from pyedb.configuration.cfg_api.spice_models import SpiceModelsConfig
 from pyedb.configuration.cfg_api.stackup import StackupConfig
 from pyedb.configuration.cfg_api.terminals import TerminalInfo, TerminalsConfig
 from pyedb.configuration.cfg_api.variables import VariablesConfig
-from pyedb.configuration.cfg_api._utils import _DictProxy
-
 
 
 class EdbConfigBuilder:
@@ -152,6 +162,7 @@ class EdbConfigBuilder:
     """
 
     def __init__(self):
+        """Initialize all section builders with empty state."""
         self.general = GeneralConfig()
         self.stackup = StackupConfig()
         self.nets = NetsConfig()
@@ -266,7 +277,9 @@ class EdbConfigBuilder:
         Parameters
         ----------
         file_path : str or Path
+            Destination path.
         indent : int
+            JSON indentation level.
 
         Returns
         -------
@@ -285,10 +298,12 @@ class EdbConfigBuilder:
         Parameters
         ----------
         file_path : str or Path
+            Destination path.
 
         Returns
         -------
         Path
+            Resolved path of the written file.
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to write TOML files. Install it with: pip install toml")
@@ -308,10 +323,12 @@ class EdbConfigBuilder:
         Parameters
         ----------
         data : dict
+            Existing configuration dictionary.
 
         Returns
         -------
         EdbConfigBuilder
+            Builder populated from ``data``.
         """
         builder = cls()
 
@@ -393,13 +410,19 @@ class EdbConfigBuilder:
                 if stp.get("multi_frequency_adaptive_solution"):
                     mf = stp["multi_frequency_adaptive_solution"].get("adapt_frequencies", [])
                     h.multi_frequency_adaptive_solution.adapt_frequencies = [
-                        HfssSetupConfig.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(**f) if isinstance(f, dict) else f
+                        (
+                            HfssSetupConfig.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(**f)
+                            if isinstance(f, dict)
+                            else f
+                        )
                         for f in mf
                     ]
                 if stp.get("auto_mesh_operation"):
                     h.auto_mesh_operation = HfssSetupConfig.CfgAutoMeshOperation(**stp["auto_mesh_operation"])
                 for mo in stp.get("mesh_operations", []):
-                    h.mesh_operations.append(HfssSetupConfig.CfgLengthMeshOperation(**mo) if isinstance(mo, dict) else mo)
+                    h.mesh_operations.append(
+                        HfssSetupConfig.CfgLengthMeshOperation(**mo) if isinstance(mo, dict) else mo
+                    )
                 for sw in stp.get("freq_sweep", []):
                     sweep = h.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
                     sweep.enforce_causality = sw.get("enforce_causality", False)
@@ -407,15 +430,31 @@ class EdbConfigBuilder:
                     sweep.use_q3d_for_dc = sw.get("use_q3d_for_dc", False)
                     sweep.compute_dc_point = sw.get("compute_dc_point", False)
                     from pyedb.configuration.cfg_setup import CfgFrequencies
-                    sweep.frequencies = [CfgFrequencies(**f) if isinstance(f, dict) else f for f in sw.get("frequencies", [])]
+                    sweep.frequencies = [
+                        CfgFrequencies(**f) if isinstance(f, dict) else f
+                        for f in sw.get("frequencies", [])
+                    ]
             elif stp_type in ("siwave_ac", "siwave_syz"):
-                s = builder.setups.add_siwave_ac_setup(stp["name"], si_slider_position=stp.get("si_slider_position", 1), pi_slider_position=stp.get("pi_slider_position", 1))
+                s = builder.setups.add_siwave_ac_setup(
+                    stp["name"],
+                    si_slider_position=stp.get("si_slider_position", 1),
+                    pi_slider_position=stp.get("pi_slider_position", 1),
+                )
                 for sw in stp.get("freq_sweep", []):
                     sweep = s.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
                     from pyedb.configuration.cfg_setup import CfgFrequencies
-                    sweep.frequencies = [CfgFrequencies(**f) if isinstance(f, dict) else f for f in sw.get("frequencies", [])]
+                    sweep.frequencies = [
+                        CfgFrequencies(**f) if isinstance(f, dict) else f
+                        for f in sw.get("frequencies", [])
+                    ]
             elif stp_type == "siwave_dc":
-                builder.setups.add_siwave_dc_setup(stp["name"], dc_slider_position=stp.get("dc_slider_position", 1), export_dc_thermal_data=stp.get("dc_ir_settings", {}).get("export_dc_thermal_data", False))
+                builder.setups.add_siwave_dc_setup(
+                    stp["name"],
+                    dc_slider_position=stp.get("dc_slider_position", 1),
+                    export_dc_thermal_data=stp.get("dc_ir_settings", {}).get(
+                        "export_dc_thermal_data", False
+                    ),
+                )
 
         # boundaries
         for k, v in data.get("boundaries", {}).items():
@@ -482,10 +521,12 @@ class EdbConfigBuilder:
         Parameters
         ----------
         file_path : str or Path
+            Path to a JSON configuration file.
 
         Returns
         -------
         EdbConfigBuilder
+            Builder populated from the JSON file.
         """
         with open(file_path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
@@ -498,10 +539,12 @@ class EdbConfigBuilder:
         Parameters
         ----------
         file_path : str or Path
+            Path to a TOML configuration file.
 
         Returns
         -------
         EdbConfigBuilder
+            Builder populated from the TOML file.
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to read TOML files. Install it with: pip install toml")

@@ -19,9 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Net classification builder API.
+"""Build the ``nets`` configuration section.
 
-Data model: :class:`~pyedb.configuration.cfg_nets.CfgNets`.
+This module provides a simple fluent API for classifying nets into signal and
+power-ground groups before serializing them into the structure expected by
+:class:`pyedb.configuration.cfg_nets.CfgNets`.
 """
 
 from __future__ import annotations
@@ -51,6 +53,7 @@ class NetsConfig:
         Parameters
         ----------
         nets : list of str
+            Net names to classify as signal nets.
         """
         self._signal_nets.extend(nets)
 
@@ -60,11 +63,19 @@ class NetsConfig:
         Parameters
         ----------
         nets : list of str
+            Net names to classify as power or ground nets.
         """
         self._power_ground_nets.extend(nets)
 
     def to_dict(self) -> dict:
-        """Return dict matching ``CfgNets`` expected keys."""
+        """Serialize the configured net classification lists.
+
+        Returns
+        -------
+        dict
+            Dictionary containing ``signal_nets`` and/or
+            ``power_ground_nets`` when those lists are non-empty.
+        """
         data: dict = {}
         if self._signal_nets:
             data["signal_nets"] = list(self._signal_nets)

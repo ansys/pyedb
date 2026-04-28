@@ -19,16 +19,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Stackup builder API.
+"""Build the ``stackup`` configuration section.
 
-Data models:
-  :class:`~pyedb.configuration.cfg_stackup.CfgMaterial`
-  :class:`~pyedb.configuration.cfg_stackup.CfgLayer`
-  :class:`~pyedb.configuration.cfg_stackup.CfgStackup`
-  :class:`~pyedb.configuration.cfg_stackup.CfgHurayRoughnessModel`
-  :class:`~pyedb.configuration.cfg_stackup.CfgGroisseRoughnessModel`
-  :class:`~pyedb.configuration.cfg_stackup.CfgRoughnessModel`
-  :class:`~pyedb.configuration.cfg_stackup.EtchingModel`
+This module wraps the stackup-related configuration models with fluent builders
+for materials, layers, roughness, and etching definitions.
 """
 
 from __future__ import annotations
@@ -116,7 +110,21 @@ class LayerConfig:
         bottom: bool = True,
         side: bool = True,
     ):
-        """Configure Groisse roughness on selected surfaces."""
+        """Configure Groisse roughness on selected surfaces.
+
+        Parameters
+        ----------
+        roughness_value : str or float
+            Groisse roughness value.
+        enabled : bool, default: True
+            Whether the roughness model is enabled.
+        top : bool, default: True
+            Apply the model to the top surface.
+        bottom : bool, default: True
+            Apply the model to the bottom surface.
+        side : bool, default: True
+            Apply the model to side walls.
+        """
         groisse = CfgGroisseRoughnessModel(roughness=roughness_value)
         self._model.roughness = CfgRoughnessModel(
             enabled=enabled,
@@ -131,7 +139,17 @@ class LayerConfig:
         etch_power_ground_nets: bool = False,
         enabled: bool = True,
     ):
-        """Configure the etching model."""
+        """Configure the etching model.
+
+        Parameters
+        ----------
+        factor : float or str, default: 0.5
+            Etching factor.
+        etch_power_ground_nets : bool, default: False
+            Whether power and ground nets are also etched.
+        enabled : bool, default: True
+            Whether the etching model is enabled.
+        """
         self._model.etching = EtchingModel(
             factor=factor,
             etch_power_ground_nets=etch_power_ground_nets,
@@ -139,6 +157,13 @@ class LayerConfig:
         )
 
     def to_dict(self) -> dict:
+        """Serialize the layer definition.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only populated layer properties.
+        """
         return self._model.model_dump(exclude_none=True)
 
 
@@ -192,7 +217,13 @@ class StackupConfig:
         fill_material: str = "FR4_epoxy",
         thickness: Union[str, float] = "35um",
     ) -> LayerConfig:
-        """Convenience: add a signal layer."""
+        """Add a signal layer with common defaults.
+
+        Returns
+        -------
+        LayerConfig
+            Newly created layer builder.
+        """
         return self.add_layer(name, type="signal", material=material, fill_material=fill_material, thickness=thickness)
 
     def add_dielectric_layer(
@@ -201,10 +232,23 @@ class StackupConfig:
         material: str = "FR4_epoxy",
         thickness: Union[str, float] = "100um",
     ) -> LayerConfig:
-        """Convenience: add a dielectric layer."""
+        """Add a dielectric layer with common defaults.
+
+        Returns
+        -------
+        LayerConfig
+            Newly created layer builder.
+        """
         return self.add_layer(name, type="dielectric", material=material, thickness=thickness)
 
     def to_dict(self) -> dict:
+        """Serialize the configured stackup.
+
+        Returns
+        -------
+        dict
+            Stackup dictionary with empty lists omitted.
+        """
         d = self._model.model_dump(exclude_none=True)
         # exclude empty lists from the output (matches previous behaviour)
         return {k: v for k, v in d.items() if v != []}

@@ -19,9 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""General EDB settings – builder API.
+"""Build the ``general`` configuration section.
 
-Data model: :class:`pyedb.configuration.cfg_general.CfgGeneral`.
+The builders in this module produce the plain dictionary structure consumed by
+:class:`pyedb.configuration.cfg_general.CfgGeneral` for design-wide library
+paths and pad-handling options.
 """
 
 from __future__ import annotations
@@ -54,7 +56,14 @@ class GeneralConfig:
         self.suppress_pads: Optional[bool] = None
 
     def to_dict(self) -> dict:
-        """Serialise to a dict consumable by :class:`~pyedb.configuration.cfg_general.CfgGeneral`."""
+        """Serialize configured general settings.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only explicitly configured values for the
+            ``general`` section.
+        """
         data = {}
         if self.spice_model_library:
             data["spice_model_library"] = self.spice_model_library

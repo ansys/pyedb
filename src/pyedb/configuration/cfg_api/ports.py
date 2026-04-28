@@ -19,12 +19,15 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Port configuration (circuit, coax, wave, gap, differential wave)."""
+"""Build port configuration entries.
+
+This module defines builders for circuit, coaxial, wave, gap, and differential
+wave ports used in the ``ports`` configuration list.
+"""
 
 from __future__ import annotations
 
 from typing import Any, Dict, List, Literal, Optional, Union
-
 
 
 class PortConfig:
@@ -63,6 +66,13 @@ class PortConfig:
         self.distributed = distributed
 
     def to_dict(self) -> dict:
+        """Serialize the port definition.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``ports`` configuration list.
+        """
         data: dict = {"name": self.name, "type": self.type, "positive_terminal": self.positive_terminal}
         if self.negative_terminal:
             data["negative_terminal"] = self.negative_terminal
@@ -112,6 +122,13 @@ class EdgePortConfig:
         self.pec_launch_width = pec_launch_width
 
     def to_dict(self) -> dict:
+        """Serialize the edge-port definition.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``ports`` configuration list.
+        """
         return {
             "name": self.name,
             "type": self.type,
@@ -156,6 +173,13 @@ class DiffWavePortConfig:
         self.pec_launch_width = pec_launch_width
 
     def to_dict(self) -> dict:
+        """Serialize the differential wave-port definition.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``ports`` configuration list.
+        """
         return {
             "name": self.name,
             "type": "diff_wave_port",
@@ -169,7 +193,7 @@ class DiffWavePortConfig:
 
 
 class PortsConfig:
-    """Ports configuration API."""
+    """Collect port definitions for serialization."""
 
     def __init__(self):
         self._ports: List[Any] = []
@@ -188,11 +212,17 @@ class PortsConfig:
         Parameters
         ----------
         name : str
+            Port name.
         positive_terminal : dict
+            Positive terminal specifier.
         negative_terminal : dict, optional
+            Negative terminal specifier.
         reference_designator : str, optional
+            Component reference designator used to disambiguate the terminal.
         impedance : float or str, optional
+            Port impedance.
         distributed : bool
+            Whether the port is distributed.
 
         Returns
         -------
@@ -217,7 +247,24 @@ class PortsConfig:
         reference_designator: Optional[str] = None,
         impedance: Optional[Union[float, str]] = None,
     ) -> PortConfig:
-        """Add a coax port."""
+        """Add a coaxial port.
+
+        Parameters
+        ----------
+        name : str
+            Port name.
+        positive_terminal : dict
+            Positive terminal specifier.
+        reference_designator : str, optional
+            Component reference designator used to disambiguate the terminal.
+        impedance : float or str, optional
+            Port impedance.
+
+        Returns
+        -------
+        PortConfig
+            Newly created coaxial port entry.
+        """
         port = PortConfig(
             name=name,
             port_type="coax",
@@ -242,11 +289,17 @@ class PortsConfig:
         Parameters
         ----------
         name : str
+            Port name.
         primitive_name : str
+            Primitive on which to create the port.
         point_on_edge : list of float
+            ``[x, y]`` point used to locate the edge.
         horizontal_extent_factor : float
+            Horizontal extent factor.
         vertical_extent_factor : float
+            Vertical extent factor.
         pec_launch_width : str
+            PEC launch width.
 
         Returns
         -------
@@ -273,7 +326,28 @@ class PortsConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ) -> EdgePortConfig:
-        """Add a gap port."""
+        """Add a gap port.
+
+        Parameters
+        ----------
+        name : str
+            Port name.
+        primitive_name : str
+            Primitive on which to create the port.
+        point_on_edge : list of float
+            ``[x, y]`` point used to locate the edge.
+        horizontal_extent_factor : float, default: 5
+            Horizontal extent factor.
+        vertical_extent_factor : float, default: 3
+            Vertical extent factor.
+        pec_launch_width : str, default: "0.01mm"
+            PEC launch width.
+
+        Returns
+        -------
+        EdgePortConfig
+            Newly created gap-port entry.
+        """
         port = EdgePortConfig(
             name=name,
             port_type="gap_port",
@@ -295,7 +369,28 @@ class PortsConfig:
         vertical_extent_factor: float = 3,
         pec_launch_width: str = "0.01mm",
     ) -> DiffWavePortConfig:
-        """Add a differential wave port."""
+        """Add a differential wave port.
+
+        Parameters
+        ----------
+        name : str
+            Port name.
+        positive_terminal : dict
+            Positive edge-terminal specifier.
+        negative_terminal : dict
+            Negative edge-terminal specifier.
+        horizontal_extent_factor : float, default: 5
+            Horizontal extent factor.
+        vertical_extent_factor : float, default: 3
+            Vertical extent factor.
+        pec_launch_width : str, default: "0.01mm"
+            PEC launch width.
+
+        Returns
+        -------
+        DiffWavePortConfig
+            Newly created differential wave-port entry.
+        """
         port = DiffWavePortConfig(
             name=name,
             positive_terminal=positive_terminal,
@@ -308,6 +403,13 @@ class PortsConfig:
         return port
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured ports.
+
+        Returns
+        -------
+        list[dict]
+            Port definitions in insertion order.
+        """
         return [p.to_dict() for p in self._ports]
 
 

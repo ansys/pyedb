@@ -19,12 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Current and voltage source configuration."""
+"""Build current and voltage source configuration entries."""
 
 from __future__ import annotations
 
 from typing import Any, Dict, List, Literal, Optional, Union
-
 
 
 class SourceConfig:
@@ -64,6 +63,14 @@ class SourceConfig:
         self.distributed = distributed
 
     def to_dict(self) -> dict:
+        """Serialize the source definition.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in the ``sources`` configuration
+            list.
+        """
         data: dict = {
             "name": self.name,
             "type": self.type,
@@ -82,7 +89,7 @@ class SourceConfig:
 
 
 class SourcesConfig:
-    """Sources configuration API."""
+    """Collect source definitions for serialization."""
 
     def __init__(self):
         self._sources: List[SourceConfig] = []
@@ -102,12 +109,19 @@ class SourcesConfig:
         Parameters
         ----------
         name : str
+            Source name.
         positive_terminal : dict
+            Positive terminal specifier.
         negative_terminal : dict
+            Negative terminal specifier.
         magnitude : float
+            Source magnitude.
         impedance : float or str, optional
+            Source impedance.
         reference_designator : str, optional
+            Component reference designator used to disambiguate the terminal.
         distributed : bool
+            Whether the source is distributed.
 
         Returns
         -------
@@ -136,7 +150,30 @@ class SourcesConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ) -> SourceConfig:
-        """Add a voltage source."""
+        """Add a voltage source.
+
+        Parameters
+        ----------
+        name : str
+            Source name.
+        positive_terminal : dict
+            Positive terminal specifier.
+        negative_terminal : dict
+            Negative terminal specifier.
+        magnitude : float, default: 1.0
+            Source magnitude.
+        impedance : float or str, optional
+            Source impedance.
+        reference_designator : str, optional
+            Component reference designator used to disambiguate the terminal.
+        distributed : bool, default: False
+            Whether the source is distributed.
+
+        Returns
+        -------
+        SourceConfig
+            Newly created source entry.
+        """
         src = SourceConfig(
             name=name,
             source_type="voltage",
@@ -151,6 +188,13 @@ class SourcesConfig:
         return src
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured sources.
+
+        Returns
+        -------
+        list[dict]
+            Source definitions in insertion order.
+        """
         return [s.to_dict() for s in self._sources]
 
 

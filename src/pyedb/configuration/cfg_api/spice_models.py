@@ -19,7 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""SPICE models builder API."""
+"""Build ``spice_models`` configuration entries.
+
+The builders in this module describe how SPICE subcircuits are assigned to
+component definitions.
+"""
 
 from __future__ import annotations
 
@@ -27,7 +31,7 @@ from typing import List, Optional
 
 
 class SpiceModelConfig:
-    """Single SPICE model entry."""
+    """Represent one SPICE model assignment."""
 
     def __init__(
         self,
@@ -48,6 +52,13 @@ class SpiceModelConfig:
         self.terminal_pairs = terminal_pairs
 
     def to_dict(self) -> dict:
+        """Serialize the SPICE model assignment.
+
+        Returns
+        -------
+        dict
+            Dictionary matching the ``spice_models`` configuration schema.
+        """
         data = {
             "name": self.name,
             "component_definition": self.component_definition,
@@ -77,6 +88,31 @@ class SpiceModelsConfig:
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
     ) -> SpiceModelConfig:
+        """Add a SPICE model assignment.
+
+        Parameters
+        ----------
+        name : str
+            Configuration entry name.
+        component_definition : str
+            Component definition to bind the model to.
+        file_path : str
+            Path to the SPICE model file.
+        sub_circuit_name : str, default: ""
+            Subcircuit name inside the model file.
+        apply_to_all : bool, default: True
+            Whether the model applies to all matching components.
+        components : list[str], optional
+            Explicit component instances to target when ``apply_to_all`` is
+            disabled.
+        terminal_pairs : list, optional
+            Optional terminal-pair remapping information.
+
+        Returns
+        -------
+        SpiceModelConfig
+            Newly created model assignment.
+        """
         m = SpiceModelConfig(
             name=name,
             component_definition=component_definition,
@@ -90,4 +126,11 @@ class SpiceModelsConfig:
         return m
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured SPICE model assignments.
+
+        Returns
+        -------
+        list[dict]
+            Model definitions in insertion order.
+        """
         return [m.to_dict() for m in self._models]

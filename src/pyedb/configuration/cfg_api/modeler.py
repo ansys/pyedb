@@ -19,7 +19,12 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Modeler configuration builder API."""
+"""Build the ``modeler`` configuration section.
+
+The builders in this module define primitive geometry, padstack content,
+component instances, and cleanup requests for geometry-driven configuration
+workflows.
+"""
 
 from __future__ import annotations
 
@@ -30,7 +35,7 @@ if TYPE_CHECKING:
 
 
 class ModelerConfig:
-    """Fluent builder for the ``modeler`` configuration section."""
+    """Collect geometry and modeler operations for serialization."""
 
     def __init__(self):
         self._traces: List[dict] = []
@@ -52,6 +57,13 @@ class ModelerConfig:
         end_cap_style: str = "round",
         corner_style: str = "sharp",
     ) -> dict:
+        """Add a trace primitive.
+
+        Returns
+        -------
+        dict
+            Stored trace dictionary.
+        """
         t = {
             "name": name, "layer": layer, "width": width, "net_name": net_name,
             "path": path or [], "incremental_path": incremental_path or [],
@@ -72,6 +84,13 @@ class ModelerConfig:
         rotation: Union[float, str] = 0,
         voids: Optional[List] = None,
     ) -> dict:
+        """Add a rectangular plane primitive.
+
+        Returns
+        -------
+        dict
+            Stored plane dictionary.
+        """
         p = {
             "type": "rectangle", "name": name, "layer": layer, "net_name": net_name,
             "lower_left_point": lower_left_point or [], "upper_right_point": upper_right_point or [],
@@ -89,6 +108,13 @@ class ModelerConfig:
         position: Optional[List[float]] = None,
         voids: Optional[List] = None,
     ) -> dict:
+        """Add a circular plane primitive.
+
+        Returns
+        -------
+        dict
+            Stored plane dictionary.
+        """
         p = {
             "type": "circle", "name": name, "layer": layer, "net_name": net_name,
             "radius": radius, "position": position or [0, 0], "voids": voids or [],
@@ -104,6 +130,13 @@ class ModelerConfig:
         points: Optional[List[List[float]]] = None,
         voids: Optional[List] = None,
     ) -> dict:
+        """Add a polygon plane primitive.
+
+        Returns
+        -------
+        dict
+            Stored plane dictionary.
+        """
         p = {
             "type": "polygon", "name": name, "layer": layer, "net_name": net_name,
             "points": points or [], "voids": voids or [],
@@ -112,11 +145,27 @@ class ModelerConfig:
         return p
 
     def add_padstack_definition(self, name: str, **kwargs):
+        """Add a modeler padstack definition.
+
+        Parameters
+        ----------
+        name : str
+            Padstack definition name.
+        **kwargs
+            Additional padstack definition fields.
+        """
         data = {"name": name}
         data.update(kwargs)
         self._padstack_definitions.append(data)
 
     def add_padstack_instance(self, **kwargs):
+        """Add a modeler padstack instance.
+
+        Parameters
+        ----------
+        **kwargs
+            Padstack instance fields.
+        """
         self._padstack_instances.append(kwargs)
 
     def add_component(
@@ -127,6 +176,13 @@ class ModelerConfig:
         definition: Optional[str] = None,
         placement_layer: Optional[str] = None,
     ) -> "ComponentConfig":
+        """Add a component instance to the modeler section.
+
+        Returns
+        -------
+        ComponentConfig
+            Newly created component builder.
+        """
         from pyedb.configuration.cfg_api.components import ComponentConfig
         comp = ComponentConfig(
             reference_designator=reference_designator,
@@ -139,15 +195,25 @@ class ModelerConfig:
         return comp
 
     def delete_primitives_by_layer(self, layer_names: List[str]):
+        """Schedule primitives on the given layers for deletion."""
         self._primitives_to_delete["layer_name"].extend(layer_names)
 
     def delete_primitives_by_name(self, primitive_names: List[str]):
+        """Schedule primitives with the given names for deletion."""
         self._primitives_to_delete["name"].extend(primitive_names)
 
     def delete_primitives_by_net(self, net_names: List[str]):
+        """Schedule primitives on the given nets for deletion."""
         self._primitives_to_delete["net_name"].extend(net_names)
 
     def to_dict(self) -> dict:
+        """Serialize the modeler configuration.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only populated modeler subsections.
+        """
         data: dict = {}
         if self._traces:
             data["traces"] = self._traces

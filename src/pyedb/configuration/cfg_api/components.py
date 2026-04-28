@@ -19,10 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Components builder API.
+"""Build ``components`` configuration entries.
 
-``CfgComponent`` (root module) requires live EDB/gRPC imports so we define
-pure-data pydantic models here and build ``ComponentConfig`` on top of them.
+``CfgComponent`` relies on runtime EDB or gRPC objects, so this module defines
+pure-data models and lightweight builders that can be used offline and then
+serialized into configuration files.
 """
 
 from __future__ import annotations
@@ -33,12 +34,11 @@ from pydantic import BaseModel, Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
 
-
 # ── sub-structure pydantic models ─────────────────────────────────────────────
 
 
 class PinPairModel(CfgBaseModel):
-    """Single pin-pair RLC entry."""
+    """Represent one pin-pair RLC model entry."""
 
     first_pin: str
     second_pin: str
@@ -56,6 +56,13 @@ class PinPairModel(CfgBaseModel):
         super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
 
     def to_dict(self) -> dict:
+        """Serialize the pin-pair model.
+
+        Returns
+        -------
+        dict
+            Dictionary ready for inclusion in ``pin_pair_model``.
+        """
         return self.model_dump()
 
 
@@ -153,7 +160,29 @@ class ComponentConfig(_CfgComponentData):
         inductance_enabled: bool = False,
         capacitance_enabled: bool = False,
     ):
-        """Append a pin-pair RLC model entry."""
+        """Append a pin-pair RLC model entry.
+
+        Parameters
+        ----------
+        first_pin : str
+            First pin name.
+        second_pin : str
+            Second pin name.
+        resistance : str or float, optional
+            Series or parallel resistance value.
+        inductance : str or float, optional
+            Series or parallel inductance value.
+        capacitance : str or float, optional
+            Series or parallel capacitance value.
+        is_parallel : bool, default: False
+            Whether the values define a parallel RLC instead of a series RLC.
+        resistance_enabled : bool, default: False
+            Whether resistance is enabled.
+        inductance_enabled : bool, default: False
+            Whether inductance is enabled.
+        capacitance_enabled : bool, default: False
+            Whether capacitance is enabled.
+        """
         self.pin_pair_model.append(
             PinPairModel(
                 first_pin=first_pin,
@@ -169,17 +198,48 @@ class ComponentConfig(_CfgComponentData):
         )
 
     def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
+        """Assign an S-parameter model to the component.
+
+        Parameters
+        ----------
+        model_name : str
+            Display name of the model.
+        model_path : str
+            Path to the model file.
+        reference_net : str
+            Reference net used by the model.
+        """
         self.s_parameter_model = _SParameterModelData(
             model_name=model_name, model_path=model_path, reference_net=reference_net
         )
 
     def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
+        """Assign a SPICE model to the component.
+
+        Parameters
+        ----------
+        model_name : str
+            Display name of the model.
+        model_path : str
+            Path to the model file.
+        sub_circuit : str, default: ""
+            Optional subcircuit name inside the model file.
+        terminal_pairs : list, optional
+            Optional terminal mapping information.
+        """
         self.spice_model = _SpiceModelData(
             model_name=model_name, model_path=model_path,
             sub_circuit=sub_circuit, terminal_pairs=terminal_pairs or []
         )
 
     def set_netlist_model(self, netlist: str):
+        """Assign a raw netlist model to the component.
+
+        Parameters
+        ----------
+        netlist : str
+            Netlist text to store with the component configuration.
+        """
         self.netlist_model = _NetlistModelData(netlist=netlist)
 
     def set_ic_die_properties(
@@ -188,6 +248,17 @@ class ComponentConfig(_CfgComponentData):
         orientation: Literal["chip_up", "chip_down"] = "chip_up",
         height: Optional[str] = None,
     ):
+        """Configure IC die properties.
+
+        Parameters
+        ----------
+        die_type : {"flip_chip", "wire_bond", "no_die"}, default: "no_die"
+            Die implementation type.
+        orientation : {"chip_up", "chip_down"}, default: "chip_up"
+            Die orientation when relevant.
+        height : str, optional
+            Wire-bond die height.
+        """
         data: dict = {"type": die_type}
         if die_type != "no_die":
             data["orientation"] = orientation
@@ -203,6 +274,21 @@ class ComponentConfig(_CfgComponentData):
         material: str = "solder",
         mid_diameter: Optional[str] = None,
     ):
+        """Configure solder-ball properties.
+
+        Parameters
+        ----------
+        shape : {"cylinder", "spheroid", "no_solder_ball"}, default: "cylinder"
+            Solder-ball geometry.
+        diameter : str, default: "150um"
+            Ball diameter.
+        height : str, default: "100um"
+            Ball height.
+        material : str, default: "solder"
+            Material name.
+        mid_diameter : str, optional
+            Mid-body diameter for spheroidal balls.
+        """
         data: dict = {"shape": shape, "diameter": diameter, "height": height, "material": material}
         if shape == "spheroid":
             data["mid_diameter"] = mid_diameter or diameter
@@ -215,6 +301,19 @@ class ComponentConfig(_CfgComponentData):
         reference_size_x: str = "0",
         reference_size_y: str = "0",
     ):
+        """Configure port reference geometry properties.
+
+        Parameters
+        ----------
+        reference_height : str, default: "0"
+            Reference height.
+        reference_size_auto : bool, default: True
+            Whether reference size is computed automatically.
+        reference_size_x : str, default: "0"
+            Explicit reference size in the X direction.
+        reference_size_y : str, default: "0"
+            Explicit reference size in the Y direction.
+        """
         self.port_properties = _PortProperties(
             reference_height=reference_height,
             reference_size_auto=reference_size_auto,
@@ -223,6 +322,13 @@ class ComponentConfig(_CfgComponentData):
         )
 
     def to_dict(self) -> dict:
+        """Serialize the component configuration.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only populated component properties.
+        """
         data: dict = {"reference_designator": self.reference_designator}
         for key in ("part_type", "enabled", "definition", "placement_layer"):
             val = getattr(self, key)
@@ -257,6 +363,26 @@ class ComponentsConfig:
         definition: Optional[str] = None,
         placement_layer: Optional[str] = None,
     ) -> ComponentConfig:
+        """Add a component configuration entry.
+
+        Parameters
+        ----------
+        reference_designator : str
+            Component instance reference designator.
+        part_type : str, optional
+            Component part type.
+        enabled : bool, optional
+            Whether the component entry is enabled.
+        definition : str, optional
+            Component definition name.
+        placement_layer : str, optional
+            Layer on which the component is placed.
+
+        Returns
+        -------
+        ComponentConfig
+            Newly created component builder.
+        """
         comp = ComponentConfig(
             reference_designator=reference_designator,
             part_type=part_type,
@@ -268,5 +394,12 @@ class ComponentsConfig:
         return comp
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured components.
+
+        Returns
+        -------
+        list[dict]
+            Component definitions in insertion order.
+        """
         return [c.to_dict() for c in self._components]
 

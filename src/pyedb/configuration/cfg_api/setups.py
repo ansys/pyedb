@@ -19,7 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Simulation setups builder API."""
+"""Build simulation setup configuration entries.
+
+This module wraps HFSS, SIwave AC, and SIwave DC setup models with fluent
+helpers for common adaptive and sweep configurations.
+"""
 
 from __future__ import annotations
 
@@ -46,21 +50,33 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         super().__init__(name=name, type=sweep_type, **kwargs)
 
     def add_linear_count_frequencies(self, start, stop, count):
+        """Append a linear-count frequency range to the sweep."""
         self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count"))
 
     def add_log_count_frequencies(self, start, stop, count):
+        """Append a logarithmic-count frequency range to the sweep."""
         self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="log_count"))
 
     def add_linear_scale_frequencies(self, start, stop, step):
+        """Append a linear-step frequency range to the sweep."""
         self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="linear_scale"))
 
     def add_log_scale_frequencies(self, start, stop, step):
+        """Append a logarithmic-step frequency range to the sweep."""
         self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="log_scale"))
 
     def add_single_frequency(self, freq):
+        """Append a single-frequency point to the sweep."""
         self.frequencies.append(CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single"))
 
     def to_dict(self) -> dict:
+        """Serialize the frequency sweep.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the configured sweep settings.
+        """
         return self.model_dump(exclude_none=True)
 
 
@@ -78,18 +94,21 @@ class HfssSetupConfig(CfgHFSSSetup):
         self.multi_frequency_adaptive_solution.adapt_frequencies = []
 
     def set_single_frequency_adaptive(self, freq, max_passes: int = 20, max_delta=0.02):
+        """Configure single-frequency adaptive refinement."""
         self.adapt_type = "single"
         self.single_frequency_adaptive_solution = CfgHFSSSetup.CfgSingleFrequencyAdaptiveSolution(
             adaptive_frequency=freq, max_passes=max_passes, max_delta=max_delta
         )
 
     def set_broadband_adaptive(self, low_freq, high_freq, max_passes: int = 20, max_delta=0.02):
+        """Configure broadband adaptive refinement."""
         self.adapt_type = "broadband"
         self.broadband_adaptive_solution = CfgHFSSSetup.CfgBroadbandAdaptiveSolution(
             low_frequency=low_freq, high_frequency=high_freq, max_passes=max_passes, max_delta=max_delta
         )
 
     def add_multi_frequency_adaptive(self, freq, max_passes: int = 20, max_delta=0.02):
+        """Append one adaptive point to a multi-frequency refinement setup."""
         self.adapt_type = "multi_frequencies"
         self.multi_frequency_adaptive_solution.adapt_frequencies.append(
             CfgHFSSSetup.CfgMultiFrequencyAdaptiveSolution.CfgAdaptFrequency(
@@ -97,12 +116,27 @@ class HfssSetupConfig(CfgHFSSSetup):
             )
         )
 
-    def set_auto_mesh_operation(self, enabled: bool = True, trace_ratio_seeding: float = 3, signal_via_side_number: int = 12):
+    def set_auto_mesh_operation(
+        self,
+        enabled: bool = True,
+        trace_ratio_seeding: float = 3,
+        signal_via_side_number: int = 12,
+    ):
+        """Configure automatic mesh settings for the HFSS setup."""
         self.auto_mesh_operation = CfgHFSSSetup.CfgAutoMeshOperation(
             enabled=enabled, trace_ratio_seeding=trace_ratio_seeding, signal_via_side_number=signal_via_side_number
         )
 
-    def add_length_mesh_operation(self, name: str, nets_layers_list: dict, max_length=None, max_elements=None, restrict_length: bool = True, refine_inside: bool = False):
+    def add_length_mesh_operation(
+        self,
+        name: str,
+        nets_layers_list: dict,
+        max_length=None,
+        max_elements=None,
+        restrict_length: bool = True,
+        refine_inside: bool = False,
+    ):
+        """Append a length-based mesh operation to the HFSS setup."""
         mo = CfgHFSSSetup.CfgLengthMeshOperation(
             name=name,
             nets_layers_list=nets_layers_list,
@@ -115,12 +149,31 @@ class HfssSetupConfig(CfgHFSSSetup):
             mo.max_elements = max_elements
         self.mesh_operations.append(mo)
 
-    def add_frequency_sweep(self, name: str, sweep_type: str = "interpolation", **kwargs) -> FrequencySweepConfig:
+    def add_frequency_sweep(
+        self,
+        name: str,
+        sweep_type: str = "interpolation",
+        **kwargs,
+    ) -> FrequencySweepConfig:
+        """Add a frequency sweep to the HFSS setup.
+
+        Returns
+        -------
+        FrequencySweepConfig
+            Newly created sweep configuration.
+        """
         sw = FrequencySweepConfig(name=name, sweep_type=sweep_type, **kwargs)
         self.freq_sweep.append(sw)
         return sw
 
     def to_dict(self) -> dict:
+        """Serialize the HFSS setup.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the configured HFSS setup settings.
+        """
         d = self.model_dump(exclude_none=True)
         # omit mesh_operations key when empty
         if not self.mesh_operations:
@@ -139,12 +192,31 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
     def __init__(self, name: str, **kwargs):
         super().__init__(name=name, **kwargs)
 
-    def add_frequency_sweep(self, name: str, sweep_type: str = "interpolation", **kwargs) -> FrequencySweepConfig:
+    def add_frequency_sweep(
+        self,
+        name: str,
+        sweep_type: str = "interpolation",
+        **kwargs,
+    ) -> FrequencySweepConfig:
+        """Add a frequency sweep to the SIwave AC setup.
+
+        Returns
+        -------
+        FrequencySweepConfig
+            Newly created sweep configuration.
+        """
         sw = FrequencySweepConfig(name=name, sweep_type=sweep_type, **kwargs)
         self.freq_sweep.append(sw)
         return sw
 
     def to_dict(self) -> dict:
+        """Serialize the SIwave AC setup.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the configured SIwave AC setup settings.
+        """
         return self.model_dump(exclude_none=True)
 
 
@@ -156,11 +228,24 @@ class SIwaveDCSetupConfig(CfgSIwaveDCSetup):
 
     model_config = {"populate_by_name": True, "extra": "allow"}
 
-    def __init__(self, name: str, dc_slider_position: Union[int, str] = 1, export_dc_thermal_data: bool = False, **kwargs):
+    def __init__(
+        self,
+        name: str,
+        dc_slider_position: Union[int, str] = 1,
+        export_dc_thermal_data: bool = False,
+        **kwargs,
+    ):
         dc_ir = CfgSIwaveDCSetup.CfgDCIRSettings(export_dc_thermal_data=export_dc_thermal_data)
         super().__init__(name=name, dc_slider_position=dc_slider_position, dc_ir_settings=dc_ir, **kwargs)
 
     def to_dict(self) -> dict:
+        """Serialize the SIwave DC setup.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the configured SIwave DC setup settings.
+        """
         return self.model_dump(exclude_none=True)
 
 
@@ -171,21 +256,49 @@ class SetupsConfig:
         self._setups: List = []
 
     def add_hfss_setup(self, name: str, **kwargs) -> HfssSetupConfig:
+        """Add an HFSS setup.
+
+        Returns
+        -------
+        HfssSetupConfig
+            Newly created HFSS setup.
+        """
         setup = HfssSetupConfig(name=name, **kwargs)
         self._setups.append(setup)
         return setup
 
     def add_siwave_ac_setup(self, name: str, **kwargs) -> SIwaveACSetupConfig:
+        """Add a SIwave AC setup.
+
+        Returns
+        -------
+        SIwaveACSetupConfig
+            Newly created SIwave AC setup.
+        """
         setup = SIwaveACSetupConfig(name=name, **kwargs)
         self._setups.append(setup)
         return setup
 
     def add_siwave_dc_setup(self, name: str, **kwargs) -> SIwaveDCSetupConfig:
+        """Add a SIwave DC setup.
+
+        Returns
+        -------
+        SIwaveDCSetupConfig
+            Newly created SIwave DC setup.
+        """
         setup = SIwaveDCSetupConfig(name=name, **kwargs)
         self._setups.append(setup)
         return setup
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured setups.
+
+        Returns
+        -------
+        list[dict]
+            Setup definitions in insertion order.
+        """
         result = []
         for s in self._setups:
             if hasattr(s, "to_dict"):

@@ -19,12 +19,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Padstacks builder API.
+"""Build the ``padstacks`` configuration section.
 
-Data models:
-  :class:`~pyedb.configuration.cfg_padstacks.CfgPadstackDefinition`
-  :class:`~pyedb.configuration.cfg_padstacks.CfgPadstackInstance`
-  :class:`~pyedb.configuration.cfg_padstacks.CfgBackdrillParameters`
+This module wraps the padstack-related configuration models with small builder
+classes for definitions, placed instances, and optional backdrill settings.
 """
 
 from __future__ import annotations
@@ -54,6 +52,13 @@ class PadstackDefinitionConfig:
         self._model = CfgPadstackDefinition(name=name, **kwargs)
 
     def to_dict(self) -> dict:
+        """Serialize the padstack definition.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only explicitly configured definition fields.
+        """
         return self._model.model_dump(exclude_none=True)
 
 
@@ -96,6 +101,13 @@ class PadstackInstanceConfig:
         )
 
     def to_dict(self) -> dict:
+        """Serialize the padstack instance.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only explicitly configured instance fields.
+        """
         return self._model.model_dump(exclude_none=True, by_alias=False)
 
 
@@ -129,6 +141,14 @@ class PadstacksConfig:
         return inst
 
     def to_dict(self) -> dict:
+        """Serialize all configured padstack definitions and instances.
+
+        Returns
+        -------
+        dict
+            Dictionary containing ``definitions`` and/or ``instances`` when
+            present.
+        """
         data: dict = {}
         if self._definitions:
             data["definitions"] = [d.to_dict() for d in self._definitions]

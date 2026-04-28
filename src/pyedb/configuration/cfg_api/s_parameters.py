@@ -19,7 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""S-parameter models builder API."""
+"""Build ``s_parameters`` configuration entries.
+
+This module defines lightweight builders for assigning Touchstone models to
+component definitions.
+"""
 
 from __future__ import annotations
 
@@ -27,7 +31,7 @@ from typing import Dict, List, Optional
 
 
 class SParameterModelConfig:
-    """Single S-parameter model entry."""
+    """Represent one S-parameter model assignment."""
 
     def __init__(
         self,
@@ -50,6 +54,14 @@ class SParameterModelConfig:
         self.pin_order = pin_order
 
     def to_dict(self) -> dict:
+        """Serialize the S-parameter model assignment.
+
+        Returns
+        -------
+        dict
+            Dictionary matching the schema used by the ``s_parameters``
+            configuration list.
+        """
         data = {
             "name": self.name,
             "component_definition": self.component_definition,
@@ -82,6 +94,33 @@ class SParametersConfig:
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
     ) -> SParameterModelConfig:
+        """Add an S-parameter model assignment.
+
+        Parameters
+        ----------
+        name : str
+            Configuration entry name.
+        component_definition : str
+            Component definition to bind the model to.
+        file_path : str
+            Path to the Touchstone model.
+        reference_net : str, default: ""
+            Global reference net for the model.
+        apply_to_all : bool, default: True
+            Whether the model applies to all matching components.
+        components : list[str], optional
+            Explicit component instances to target when ``apply_to_all`` is
+            disabled.
+        reference_net_per_component : dict[str, str], optional
+            Per-component reference-net overrides.
+        pin_order : list, optional
+            Optional explicit pin order mapping.
+
+        Returns
+        -------
+        SParameterModelConfig
+            Newly created assignment.
+        """
         m = SParameterModelConfig(
             name=name,
             component_definition=component_definition,
@@ -96,6 +135,13 @@ class SParametersConfig:
         return m
 
     def to_list(self) -> List[dict]:
+        """Serialize all configured S-parameter model assignments.
+
+        Returns
+        -------
+        list[dict]
+            Model definitions in insertion order.
+        """
         return [m.to_dict() for m in self._models]
 
 

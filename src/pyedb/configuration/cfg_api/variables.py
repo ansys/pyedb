@@ -19,11 +19,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Variables builder API.
+"""Build the ``variables`` configuration section.
 
-Data models:
-  :class:`~pyedb.configuration.cfg_common.CfgVar`
-  :class:`~pyedb.configuration.cfg_common.CfgVariables`
+The builder in this module wraps
+:class:`pyedb.configuration.cfg_common.CfgVariables` and serializes design
+variables into the list-based format expected by configuration files.
 """
 
 from __future__ import annotations
@@ -52,10 +52,20 @@ class VariablesConfig:
         Parameters
         ----------
         name : str
+            Variable name.
         value : str, int, or float
+            Variable value or expression.
         description : str, optional
+            Optional free-form description stored with the variable.
         """
         self._model.add_variable(name=name, value=value, description=description)
 
     def to_list(self) -> List[dict]:
+        """Serialize configured design variables.
+
+        Returns
+        -------
+        list[dict]
+            Variables in the order they were added.
+        """
         return [v.model_dump() for v in self._model.variables]
