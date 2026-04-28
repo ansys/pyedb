@@ -82,7 +82,7 @@ class SimSetupInfo:
 
     @property
     def sim_setup_type(self):
-        """"kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
+        """ "kHFSS": self._pedb.simsetupdata.HFSSSimulationSettings,
         "kPEM": None,
         "kSIwave": self._pedb.simsetupdata.SIwave.SIWSimulationSettings,
         "kLNA": None,

@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains these classes: `EdbLayout` and `Shape`.
-"""
+"""This module contains these classes: `EdbLayout` and `Shape`."""
 
 from typing import TypeVar
 

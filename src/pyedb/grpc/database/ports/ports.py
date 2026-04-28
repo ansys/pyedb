@@ -209,7 +209,7 @@ class BundleWavePort(BundleTerminal):
 
     @property
     def _wave_port(self) -> WavePort:
-        """"Wave port.
+        """ "Wave port.
 
 
         Returns

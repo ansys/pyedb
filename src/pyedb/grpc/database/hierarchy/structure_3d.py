@@ -68,7 +68,7 @@ class Structure3D:
 
     @property
     def location(self) -> tuple[float, float]:
-        """"Return structure 3D component.
+        """ "Return structure 3D component.
 
         Returns
         -------
@@ -84,7 +84,7 @@ class Structure3D:
 
     @property
     def name(self) -> str:
-        """"Return structure 3D component.
+        """ "Return structure 3D component.
 
         Returns
         -------
@@ -100,7 +100,7 @@ class Structure3D:
 
     @property
     def material(self) -> str:
-        """"Return structure 3D component.
+        """ "Return structure 3D component.
 
         str
             The structure 3D component material.
@@ -113,7 +113,7 @@ class Structure3D:
 
     @property
     def net(self) -> str:
-        """"Return structure 3D component net name
+        """ "Return structure 3D component net name
 
         Returns
         -------

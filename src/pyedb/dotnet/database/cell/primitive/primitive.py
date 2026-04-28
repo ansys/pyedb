@@ -190,8 +190,7 @@ class Primitive(Connectable):
         self.core.SetIsNegative(value)
 
     def _get_points_for_plot(self, my_net_points, num):
-        """Get the points to be plotted.
-        """
+        """Get the points to be plotted."""
         # fmt: off
         x = []
         y = []

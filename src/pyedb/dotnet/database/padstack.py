@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the `EdbPadstacks` class.
-"""
+"""This module contains the `EdbPadstacks` class."""
 
 from collections import defaultdict
 import math

@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the array building feature from unit cell.
-"""
+"""This module contains the array building feature from unit cell."""
 
 import itertools
 from typing import Optional, Union

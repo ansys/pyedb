@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains these classes: `EdbLayout` and `Shape`.
-"""
+"""This module contains these classes: `EdbLayout` and `Shape`."""
 
 import math
 from typing import Any, Iterable, List, Optional, Union
@@ -47,8 +46,7 @@ from pyedb.misc.decorators import deprecate_argument_name, deprecated, deprecate
 
 
 def normalize_pairs(points: Iterable[float]) -> List[List[float]]:
-    """Convert any reasonable point description into [[x1, y1], [x2, y2], …]
-    """
+    """Convert any reasonable point description into [[x1, y1], [x2, y2], …]"""
     pts = list(points)
     if not pts:  # empty input
         return []

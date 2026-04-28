@@ -189,7 +189,7 @@ class EdbLogger(object):
             return None  # pragma: no cover
 
     def reset_timer(self, time_val=None):
-        """"Reset actual timer to  actual time or specified time.
+        """ "Reset actual timer to  actual time or specified time.
 
         Parameters
         ----------

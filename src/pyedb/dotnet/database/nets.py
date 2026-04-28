@@ -346,8 +346,7 @@ class EdbNets(CommonNets):
         return _extended_nets
 
     def _get_points_for_plot(self, my_net_points):
-        """Get the points to be plot
-        """
+        """Get the points to be plot"""
         # fmt: off
         x = []
         y = []

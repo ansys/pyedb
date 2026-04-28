@@ -20,8 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the ``EdbHfss`` class.
-"""
+"""This module contains the ``EdbHfss`` class."""
 
 import math
 from typing import Dict, Optional, Union

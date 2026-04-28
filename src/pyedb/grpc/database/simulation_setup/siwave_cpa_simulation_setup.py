@@ -56,8 +56,7 @@ class ChannelSetup:
             self._apply_cfg_object(cfg_channel_setup)
 
     def __init_values(self):
-        """Initializes default values for the channel setup attributes.
-        """
+        """Initializes default values for the channel setup attributes."""
         self.die_name = ""
         self.pin_grouping_mode = "perpin"
         self.channel_component_exposure = {}
@@ -795,8 +794,7 @@ class SIWaveCPASimulationSetup:
             self._pedb.active_cell.set_product_property(CoreProductIdType.SIWAVE, SIwaveProperties.CPA_SIM_NAME, name)
 
     def __init_values(self):
-        """Initializes default values for the simulation setup attributes.
-        """
+        """Initializes default values for the simulation setup attributes."""
         self.mode = "channel"
         self.model_type = "rlcg"
         self.use_q3d_solver = False

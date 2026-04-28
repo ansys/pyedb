@@ -280,8 +280,7 @@ class PrimitiveDotNet:
         self.prim_obj.MakeZonePrimitive(zone_id)
 
     def _get_points_for_plot(self, my_net_points, n=6, tol=1e-12):
-        """Get the points to be plot
-        """
+        """Get the points to be plot"""
         x = []
         y = []
         for i, point in enumerate(my_net_points):

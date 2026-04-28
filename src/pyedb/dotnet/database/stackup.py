@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains the `EdbStackup` class.
-
-"""
+"""This module contains the `EdbStackup` class."""
 
 from __future__ import absolute_import  # noreorder
 

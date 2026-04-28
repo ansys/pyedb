@@ -20,9 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""This module contains EDB general methods and related methods.
-
-"""
+"""This module contains EDB general methods and related methods."""
 
 from __future__ import absolute_import  # noreorder
 

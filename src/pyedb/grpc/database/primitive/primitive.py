@@ -326,8 +326,7 @@ class Primitive:
         return area
 
     def _get_points_for_plot(self, my_net_points, num) -> tuple[list[float], list[float]]:
-        """Get the points to be plotted.
-        """
+        """Get the points to be plotted."""
         # fmt: off
         x = []
         y = []
