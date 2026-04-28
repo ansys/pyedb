@@ -193,7 +193,7 @@ class PortsConfig:
     """Collect port definitions for serialization."""
 
     def __init__(self):
-        self._ports: List[Any] = []
+        self._ports: List[Union[PortConfig, EdgePortConfig, dict]] = []
 
     def add_circuit_port(
         self,

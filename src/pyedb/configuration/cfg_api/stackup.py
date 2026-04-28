@@ -27,6 +27,8 @@ for materials, layers, roughness, and etching definitions.
 
 from __future__ import annotations
 
+from typing import Union
+
 from pyedb.configuration.cfg_stackup import (
     CfgGroisseRoughnessModel,
     CfgHurayRoughnessModel,
