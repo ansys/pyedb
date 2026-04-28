@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build ``pin_groups`` configuration entries.
+"""
+Build ``pin_groups`` configuration entries.
 
 ``CfgPinGroup`` depends on a live EDB object for creation, so this module uses
 plain Python builders that serialize into the schema expected by the
@@ -32,7 +33,9 @@ from typing import List, Optional, Union
 
 
 class PinGroupConfig:
-    """Fluent builder for a single pin group.
+
+    """
+    Fluent builder for a single pin group.
 
     Parameters
     ----------
@@ -42,6 +45,7 @@ class PinGroupConfig:
         Explicit pin names.
     net : str or list of str, optional
         Net name(s) – all component pins on those nets are included.
+
     """
 
     def __init__(
@@ -51,12 +55,15 @@ class PinGroupConfig:
         pins: Optional[List[str]] = None,
         net: Optional[Union[str, List[str]]] = None,
     ):
-        """Initialize a pin group configuration.
+        """
+        Initialize a pin group configuration.
 
         Parameters
         ----------
         name : str
+            Pin group name.
         reference_designator : str
+            Reference designator of the owning component.
         pins : list of str, optional
             Explicit pin names.
         net : str or list of str, optional
@@ -69,13 +76,15 @@ class PinGroupConfig:
         self.net = net
 
     def to_dict(self) -> dict:
-        """Serialize the pin-group definition.
+        """
+        Serialize the pin-group definition.
 
         Returns
         -------
         dict
             Dictionary containing the pin-group name, owner component, and
             either explicit pin names or a net selector.
+
         """
         data: dict = {"name": self.name, "reference_designator": self.reference_designator}
         if self.pins:
@@ -86,6 +95,7 @@ class PinGroupConfig:
 
 
 class PinGroupsConfig:
+
     """Fluent builder for the ``pin_groups`` configuration list."""
 
     def __init__(self):
@@ -99,14 +109,19 @@ class PinGroupsConfig:
         pins: Optional[List[str]] = None,
         net: Optional[Union[str, List[str]]] = None,
     ) -> PinGroupConfig:
-        """Add a pin group.
+        """
+        Add a pin group.
 
         Parameters
         ----------
         name : str
+            Pin group name.
         reference_designator : str
+            Reference designator of the owning component.
         pins : list of str, optional
+            Explicit pin names to include.
         net : str or list of str, optional
+            Net name(s) – all component pins on those nets are included.
 
         Returns
         -------
@@ -118,7 +133,8 @@ class PinGroupsConfig:
         return pg
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured pin groups.
+        """
+        Serialize all configured pin groups.
 
         Returns
         -------

@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build low-level terminal configuration entries.
+"""
+Build low-level terminal configuration entries.
 
 This module provides explicit terminal builders plus factory helpers for the
 terminal-specifier dictionaries accepted by ports, sources, and probes.
@@ -31,6 +32,7 @@ from typing import List, Optional, Union
 
 
 class PadstackInstanceTerminal:
+
     """Represent a terminal attached to a padstack instance."""
 
     def __init__(
@@ -48,22 +50,35 @@ class PadstackInstanceTerminal:
         layer: Optional[str] = None,
         padstack_instance_id: Optional[int] = None,
     ):
-        """Initialize a padstack instance terminal.
+        """
+        Initialize a padstack instance terminal.
 
         Parameters
         ----------
         name : str
+            Terminal name.
         padstack_instance : str
+            Name of the padstack instance to attach to.
         impedance : float or str
+            Terminal impedance.
         boundary_type : str
+            Boundary type (e.g. ``"port"``).
         hfss_type : str, optional
-        is_circuit_port : bool
+            HFSS-specific port type.
+        is_circuit_port : bool, default: False
+            Whether this is a circuit port.
         reference_terminal : str, optional
-        amplitude : float or str
-        phase : float or str
-        terminal_to_ground : str
+            Name of an optional reference terminal.
+        amplitude : float or str, default: 1
+            Source amplitude.
+        phase : float or str, default: 0
+            Source phase in degrees.
+        terminal_to_ground : str, default: "kNoGround"
+            Ground reference mode.
         layer : str, optional
+            Layer override for the terminal.
         padstack_instance_id : int, optional
+            Numeric padstack instance ID override.
 
         """
         self.terminal_type = "padstack_instance"
@@ -81,12 +96,14 @@ class PadstackInstanceTerminal:
         self.padstack_instance_id = padstack_instance_id
 
     def to_dict(self) -> dict:
-        """Serialize the padstack-instance terminal.
+        """
+        Serialize the padstack-instance terminal.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the ``terminals`` list.
+
         """
         d = {
             "terminal_type": self.terminal_type,
@@ -111,6 +128,7 @@ class PadstackInstanceTerminal:
 
 
 class PinGroupTerminal:
+
     """Represent a terminal attached to a pin group."""
 
     def __init__(
@@ -124,6 +142,29 @@ class PinGroupTerminal:
         phase: Union[float, str] = 0,
         terminal_to_ground: str = "kNoGround",
     ):
+        """
+        Initialize a pin-group terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        pin_group : str
+            Name of the pin group to attach to.
+        impedance : float or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type (e.g. ``"port"``).
+        reference_terminal : str, optional
+            Name of an optional reference terminal.
+        amplitude : float or str, default: 1
+            Source amplitude.
+        phase : float or str, default: 0
+            Source phase in degrees.
+        terminal_to_ground : str, default: "kNoGround"
+            Ground reference mode.
+
+        """
         self.terminal_type = "pin_group"
         self.name = name
         self.pin_group = pin_group
@@ -136,12 +177,14 @@ class PinGroupTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
-        """Serialize the pin-group terminal.
+        """
+        Serialize the pin-group terminal.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the ``terminals`` list.
+
         """
         d = {
             "terminal_type": self.terminal_type,
@@ -160,6 +203,7 @@ class PinGroupTerminal:
 
 
 class PointTerminal:
+
     """Represent a point terminal defined by coordinates."""
 
     def __init__(
@@ -176,6 +220,35 @@ class PointTerminal:
         phase: Union[float, str] = 0,
         terminal_to_ground: str = "kNoGround",
     ):
+        """
+        Initialize a point terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        x : float or str
+            X coordinate.
+        y : float or str
+            Y coordinate.
+        layer : str
+            Layer name.
+        net : str
+            Net name.
+        impedance : float or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type (e.g. ``"port"``).
+        reference_terminal : str, optional
+            Name of an optional reference terminal.
+        amplitude : float or str, default: 1
+            Source amplitude.
+        phase : float or str, default: 0
+            Source phase in degrees.
+        terminal_to_ground : str, default: "kNoGround"
+            Ground reference mode.
+
+        """
         self.terminal_type = "point"
         self.name = name
         self.x = x
@@ -191,12 +264,14 @@ class PointTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
-        """Serialize the point terminal.
+        """
+        Serialize the point terminal.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the ``terminals`` list.
+
         """
         d = {
             "terminal_type": self.terminal_type,
@@ -218,6 +293,7 @@ class PointTerminal:
 
 
 class EdgeTerminal:
+
     """Represent an edge terminal for wave or gap boundaries."""
 
     def __init__(
@@ -238,6 +314,43 @@ class EdgeTerminal:
         phase: Union[float, str] = 0,
         terminal_to_ground: str = "kNoGround",
     ):
+        """
+        Initialize an edge terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        primitive : str
+            Name of the primitive this edge terminal is placed on.
+        point_on_edge_x : float or str
+            X coordinate of a point on the target edge.
+        point_on_edge_y : float or str
+            Y coordinate of a point on the target edge.
+        impedance : float or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type (e.g. ``"port"``).
+        hfss_type : str, default: "Wave"
+            HFSS port type (``"Wave"`` or ``"Gap"``).
+        horizontal_extent_factor : int or str, default: 6
+            Horizontal extent factor for the port cross-section.
+        vertical_extent_factor : int or str, default: 8
+            Vertical extent factor for the port cross-section.
+        pec_launch_width : str, default: "0.02mm"
+            PEC launch width.
+        is_circuit_port : bool, default: False
+            Whether this is a circuit port.
+        reference_terminal : str, optional
+            Name of an optional reference terminal.
+        amplitude : float or str, default: 1
+            Source amplitude.
+        phase : float or str, default: 0
+            Source phase in degrees.
+        terminal_to_ground : str, default: "kNoGround"
+            Ground reference mode.
+
+        """
         self.terminal_type = "edge"
         self.name = name
         self.primitive = primitive
@@ -256,12 +369,14 @@ class EdgeTerminal:
         self.terminal_to_ground = terminal_to_ground
 
     def to_dict(self) -> dict:
-        """Serialize the edge terminal.
+        """
+        Serialize the edge terminal.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the ``terminals`` list.
+
         """
         d = {
             "terminal_type": self.terminal_type,
@@ -286,25 +401,40 @@ class EdgeTerminal:
 
 
 class BundleTerminal:
+
     """Represent a terminal bundle such as a differential pair."""
 
     def __init__(self, name: str, terminals: List[str]):
+        """
+        Initialize a bundle terminal.
+
+        Parameters
+        ----------
+        name : str
+            Bundle terminal name.
+        terminals : list of str
+            Names of the terminals forming the bundle.
+
+        """
         self.terminal_type = "bundle"
         self.name = name
         self.terminals = terminals
 
     def to_dict(self) -> dict:
-        """Serialize the bundle terminal.
+        """
+        Serialize the bundle terminal.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the ``terminals`` list.
+
         """
         return {"terminal_type": self.terminal_type, "name": self.name, "terminals": self.terminals}
 
 
 class TerminalInfo:
+
     """Create terminal-specifier dictionaries for higher-level builders."""
 
     @staticmethod
@@ -345,9 +475,11 @@ class TerminalInfo:
 
 
 class TerminalsConfig:
+
     """Fluent builder for the ``terminals`` configuration list."""
 
     def __init__(self):
+        """Initialize the terminals configuration."""
         self._terminals: List = []
 
     def add_padstack_instance_terminal(
@@ -445,12 +577,14 @@ class TerminalsConfig:
         return t
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured terminals.
+        """
+        Serialize all configured terminals.
 
         Returns
         -------
         list[dict]
             Terminal definitions in insertion order.
+
         """
         result = []
         for t in self._terminals:

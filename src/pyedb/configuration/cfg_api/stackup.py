@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build the ``stackup`` configuration section.
+"""
+Build the ``stackup`` configuration section.
 
 This module wraps the stackup-related configuration models with fluent builders
 for materials, layers, roughness, and etching definitions.
@@ -41,7 +42,9 @@ from pyedb.configuration.cfg_stackup import (
 
 
 class MaterialConfig:
-    """Fluent builder for a single stackup material.
+
+    """
+    Fluent builder for a single stackup material.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgMaterial`.
 
@@ -51,9 +54,21 @@ class MaterialConfig:
     **kwargs
         Any field accepted by :class:`~pyedb.configuration.cfg_stackup.CfgMaterial`
         (conductivity, permittivity, dielectric_loss_tangent, …).
+
     """
 
     def __init__(self, name: str, **kwargs):
+        """
+        Initialize a material configuration.
+
+        Parameters
+        ----------
+        name : str
+            Material name.
+        **kwargs
+            Any field accepted by :class:`~pyedb.configuration.cfg_stackup.CfgMaterial`.
+
+        """
         self._model = CfgMaterial(name=name, **kwargs)
 
     def to_dict(self) -> dict:
@@ -62,7 +77,9 @@ class MaterialConfig:
 
 
 class LayerConfig:
-    """Fluent builder for a single stackup layer.
+
+    """
+    Fluent builder for a single stackup layer.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgLayer`.
 
@@ -71,9 +88,21 @@ class LayerConfig:
     name : str
     **kwargs
         Any field accepted by :class:`~pyedb.configuration.cfg_stackup.CfgLayer`.
+
     """
 
     def __init__(self, name: str, **kwargs):
+        """
+        Initialize a layer configuration.
+
+        Parameters
+        ----------
+        name : str
+            Layer name.
+        **kwargs
+            Any field accepted by :class:`~pyedb.configuration.cfg_stackup.CfgLayer`.
+
+        """
         self._model = CfgLayer(name=name, **kwargs)
 
     def set_huray_roughness(
@@ -85,7 +114,8 @@ class LayerConfig:
         bottom: bool = True,
         side: bool = True,
     ):
-        """Configure Huray roughness on selected surfaces.
+        """
+        Configure Huray roughness on selected surfaces.
 
         Parameters
         ----------
@@ -119,7 +149,8 @@ class LayerConfig:
         bottom: bool = True,
         side: bool = True,
     ):
-        """Configure Groisse roughness on selected surfaces.
+        """
+        Configure Groisse roughness on selected surfaces.
 
         Parameters
         ----------
@@ -133,6 +164,7 @@ class LayerConfig:
             Apply the model to the bottom surface.
         side : bool, default: True
             Apply the model to side walls.
+
         """
         groisse = CfgGroisseRoughnessModel(roughness=roughness_value)
         self._model.roughness = CfgRoughnessModel(
@@ -148,7 +180,8 @@ class LayerConfig:
         etch_power_ground_nets: bool = False,
         enabled: bool = True,
     ):
-        """Configure the etching model.
+        """
+        Configure the etching model.
 
         Parameters
         ----------
@@ -158,6 +191,7 @@ class LayerConfig:
             Whether power and ground nets are also etched.
         enabled : bool, default: True
             Whether the etching model is enabled.
+
         """
         self._model.etching = EtchingModel(
             factor=factor,
@@ -166,54 +200,65 @@ class LayerConfig:
         )
 
     def to_dict(self) -> dict:
-        """Serialize the layer definition.
+        """
+        Serialize the layer definition.
 
         Returns
         -------
         dict
             Dictionary containing only populated layer properties.
+
         """
         return self._model.model_dump(exclude_none=True)
 
 
 class StackupConfig:
-    """Fluent builder for the ``stackup`` configuration section.
+
+    """
+    Fluent builder for the ``stackup`` configuration section.
 
     Wraps :class:`~pyedb.configuration.cfg_stackup.CfgStackup`.
     """
 
     def __init__(self):
+        """Initialize the stackup configuration."""
         self._model = CfgStackup()
 
     def add_material(self, name: str, **kwargs) -> MaterialConfig:
-        """Add a material definition.
+        """
+        Add a material definition.
 
         Parameters
         ----------
         name : str
+            Material name.
         **kwargs
             Material properties (conductivity, permittivity, etc.)
 
         Returns
         -------
         MaterialConfig
+
         """
         cfg = MaterialConfig(name, **kwargs)
         self._model.materials.append(cfg._model)
         return cfg
 
     def add_layer(self, name: str, **kwargs) -> LayerConfig:
-        """Append a layer.
+        """
+        Append a layer.
 
         Parameters
         ----------
         name : str
+            Layer name.
         **kwargs
             Layer attributes (type, material, fill_material, thickness, …)
 
         Returns
         -------
         LayerConfig
+
         """
         cfg = LayerConfig(name, **kwargs)
         self._model.layers.append(cfg._model)
@@ -226,12 +271,14 @@ class StackupConfig:
         fill_material: str = "FR4_epoxy",
         thickness: Union[str, float] = "35um",
     ) -> LayerConfig:
-        """Add a signal layer with common defaults.
+        """
+        Add a signal layer with common defaults.
 
         Returns
         -------
         LayerConfig
             Newly created layer builder.
+
         """
         return self.add_layer(name, type="signal", material=material, fill_material=fill_material, thickness=thickness)
 
@@ -241,22 +288,26 @@ class StackupConfig:
         material: str = "FR4_epoxy",
         thickness: Union[str, float] = "100um",
     ) -> LayerConfig:
-        """Add a dielectric layer with common defaults.
+        """
+        Add a dielectric layer with common defaults.
 
         Returns
         -------
         LayerConfig
             Newly created layer builder.
+
         """
         return self.add_layer(name, type="dielectric", material=material, thickness=thickness)
 
     def to_dict(self) -> dict:
-        """Serialize the configured stackup.
+        """
+        Serialize the configured stackup.
 
         Returns
         -------
         dict
             Stackup dictionary with empty lists omitted.
+
         """
         d = self._model.model_dump(exclude_none=True)
         # exclude empty lists from the output (matches previous behaviour)

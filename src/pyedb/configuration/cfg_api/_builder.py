@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Provide the top-level programmatic configuration builder.
+"""
+Provide the top-level programmatic configuration builder.
 
 This module gathers the section-specific builders exposed by ``cfg_api`` into a
 single entry point that can serialize configuration data to dictionaries, JSON,
@@ -30,7 +31,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Dict, List, Literal, Optional, Union
+from typing import Union
 
 try:
     import toml
@@ -64,7 +65,9 @@ from pyedb.configuration.cfg_api.variables import VariablesConfig
 
 
 class EdbConfigBuilder:
-    """Top-level programmatic builder for a pyedb configuration.
+
+    """
+    Top-level programmatic builder for a pyedb configuration.
 
     Instantiate this class, populate its sub-objects, and then either:
 
@@ -186,12 +189,14 @@ class EdbConfigBuilder:
         return f"EdbConfigBuilder(sections=[{sections}])"
 
     def to_dict(self) -> dict:
-        """Serialise the configuration to a plain Python dictionary.
+        """
+        Serialise the configuration to a plain Python dictionary.
 
         Returns
         -------
         dict
             Dictionary that can be passed directly to ``Configuration.load()``.
+
         """
         data: dict = {}
 
@@ -270,7 +275,8 @@ class EdbConfigBuilder:
         return data
 
     def to_json(self, file_path: Union[str, Path], indent: int = 4) -> Path:
-        """Write the configuration to a JSON file.
+        """
+        Write the configuration to a JSON file.
 
         Parameters
         ----------
@@ -283,6 +289,7 @@ class EdbConfigBuilder:
         -------
         Path
             Resolved path of the written file.
+
         """
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
@@ -291,7 +298,8 @@ class EdbConfigBuilder:
         return file_path
 
     def to_toml(self, file_path: Union[str, Path]) -> Path:
-        """Write the configuration to a TOML file.
+        """
+        Write the configuration to a TOML file.
 
         Parameters
         ----------
@@ -302,6 +310,7 @@ class EdbConfigBuilder:
         -------
         Path
             Resolved path of the written file.
+
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to write TOML files. Install it with: pip install toml")
@@ -313,7 +322,8 @@ class EdbConfigBuilder:
 
     @classmethod
     def from_dict(cls, data: dict) -> "EdbConfigBuilder":
-        """Create an :class:`EdbConfigBuilder` from an existing config dictionary.
+        """
+        Create an :class:`EdbConfigBuilder` from an existing config dictionary.
 
         This is primarily useful for reading an exported JSON/TOML config back
         into the programmatic API so it can be modified and re-exported.
@@ -327,6 +337,7 @@ class EdbConfigBuilder:
         -------
         EdbConfigBuilder
             Builder populated from ``data``.
+
         """
         builder = cls()
 
@@ -528,7 +539,8 @@ class EdbConfigBuilder:
 
     @classmethod
     def from_json(cls, file_path: Union[str, Path]) -> "EdbConfigBuilder":
-        """Load from a JSON file.
+        """
+        Load from a JSON file.
 
         Parameters
         ----------
@@ -539,6 +551,7 @@ class EdbConfigBuilder:
         -------
         EdbConfigBuilder
             Builder populated from the JSON file.
+
         """
         with open(file_path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
@@ -546,7 +559,8 @@ class EdbConfigBuilder:
 
     @classmethod
     def from_toml(cls, file_path: Union[str, Path]) -> "EdbConfigBuilder":
-        """Load from a TOML file.
+        """
+        Load from a TOML file.
 
         Parameters
         ----------
@@ -557,6 +571,7 @@ class EdbConfigBuilder:
         -------
         EdbConfigBuilder
             Builder populated from the TOML file.
+
         """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to read TOML files. Install it with: pip install toml")

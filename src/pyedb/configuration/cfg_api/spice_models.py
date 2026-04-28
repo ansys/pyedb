@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build ``spice_models`` configuration entries.
+"""
+Build ``spice_models`` configuration entries.
 
 The builders in this module describe how SPICE subcircuits are assigned to
 component definitions.
@@ -31,6 +32,7 @@ from typing import List, Optional
 
 
 class SpiceModelConfig:
+
     """Represent one SPICE model assignment."""
 
     def __init__(
@@ -43,17 +45,25 @@ class SpiceModelConfig:
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
     ):
-        """Initialize a SPICE model assignment.
+        """
+        Initialize a SPICE model assignment.
 
         Parameters
         ----------
         name : str
+            Model assignment name.
         component_definition : str
+            Component definition this model is assigned to.
         file_path : str
+            Path to the SPICE model file.
         sub_circuit_name : str, optional
-        apply_to_all : bool
+            Subcircuit name inside the model file.
+        apply_to_all : bool, default: True
+            Whether to apply the model to all matching components.
         components : list of str, optional
+            Explicit list of component reference designators to apply to.
         terminal_pairs : list, optional
+            Terminal pair mapping information.
 
         """
         self.name = name
@@ -65,12 +75,14 @@ class SpiceModelConfig:
         self.terminal_pairs = terminal_pairs
 
     def to_dict(self) -> dict:
-        """Serialize the SPICE model assignment.
+        """
+        Serialize the SPICE model assignment.
 
         Returns
         -------
         dict
             Dictionary matching the ``spice_models`` configuration schema.
+
         """
         data = {
             "name": self.name,
@@ -86,9 +98,11 @@ class SpiceModelConfig:
 
 
 class SpiceModelsConfig:
+
     """Fluent builder for the ``spice_models`` configuration list."""
 
     def __init__(self):
+        """Initialize the SPICE models configuration."""
         self._models: List[SpiceModelConfig] = []
 
     def add(
@@ -101,7 +115,8 @@ class SpiceModelsConfig:
         components: Optional[List[str]] = None,
         terminal_pairs: Optional[List] = None,
     ) -> SpiceModelConfig:
-        """Add a SPICE model assignment.
+        """
+        Add a SPICE model assignment.
 
         Parameters
         ----------
@@ -140,7 +155,8 @@ class SpiceModelsConfig:
         return m
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured SPICE model assignments.
+        """
+        Serialize all configured SPICE model assignments.
 
         Returns
         -------

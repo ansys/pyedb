@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build the ``nets`` configuration section.
+"""
+Build the ``nets`` configuration section.
 
 This module provides a simple fluent API for classifying nets into signal and
 power-ground groups before serializing them into the structure expected by
@@ -33,7 +34,9 @@ from typing import List
 
 
 class NetsConfig:
-    """Fluent builder for the ``nets`` configuration section.
+
+    """
+    Fluent builder for the ``nets`` configuration section.
 
     The dict produced by :meth:`to_dict` is consumed by
     :class:`~pyedb.configuration.cfg_nets.CfgNets`.
@@ -51,17 +54,20 @@ class NetsConfig:
         self._power_ground_nets: List[str] = []
 
     def add_signal_nets(self, nets: List[str]):
-        """Append signal net names.
+        """
+        Append signal net names.
 
         Parameters
         ----------
         nets : list of str
             Net names to classify as signal nets.
+
         """
         self._signal_nets.extend(nets)
 
     def add_power_ground_nets(self, nets: List[str]):
-        """Append power/ground net names.
+        """
+        Append power/ground net names.
 
         Parameters
         ----------
@@ -72,13 +78,15 @@ class NetsConfig:
         self._power_ground_nets.extend(nets)
 
     def to_dict(self) -> dict:
-        """Serialize the configured net classification lists.
+        """
+        Serialize the configured net classification lists.
 
         Returns
         -------
         dict
             Dictionary containing ``signal_nets`` and/or
             ``power_ground_nets`` when those lists are non-empty.
+
         """
         data: dict = {}
         if self._signal_nets:

@@ -27,6 +27,7 @@ from typing import List, Optional, Union
 
 
 class HeatSinkConfig:
+
     """Store heat-sink properties for a package definition."""
 
     def __init__(
@@ -37,15 +38,21 @@ class HeatSinkConfig:
         fin_spacing: Optional[Union[str, float]] = None,
         fin_thickness: Optional[Union[str, float]] = None,
     ):
-        """Initialize heat-sink configuration.
+        """
+        Initialize heat-sink configuration.
 
         Parameters
         ----------
         fin_base_height : str or float, optional
+            Height of the fin base.
         fin_height : str or float, optional
+            Height of the fins.
         fin_orientation : str, optional
+            Fin orientation (e.g. ``"x_oriented"``).
         fin_spacing : str or float, optional
+            Spacing between fins.
         fin_thickness : str or float, optional
+            Thickness of each fin.
 
         """
         self.fin_base_height = fin_base_height
@@ -55,17 +62,20 @@ class HeatSinkConfig:
         self.fin_thickness = fin_thickness
 
     def to_dict(self) -> dict:
-        """Serialize non-null heat-sink properties.
+        """
+        Serialize non-null heat-sink properties.
 
         Returns
         -------
         dict
             Heat-sink settings suitable for the ``heatsink`` sub-section.
+
         """
         return {k: v for k, v in self.__dict__.items() if v is not None}
 
 
 class PackageDefinitionConfig:
+
     """Represent one thermal package definition entry."""
 
     def __init__(
@@ -82,6 +92,35 @@ class PackageDefinitionConfig:
         extent_bounding_box=None,
         heatsink: Optional[HeatSinkConfig] = None,
     ):
+        """
+        Initialize a package definition configuration.
+
+        Parameters
+        ----------
+        name : str
+            Package definition name.
+        component_definition : str
+            Component definition this package is assigned to.
+        apply_to_all : bool, optional
+            Whether to apply to all matching components.
+        components : list of str, optional
+            Explicit list of component reference designators to apply to.
+        maximum_power : str or float, optional
+            Maximum power dissipation.
+        thermal_conductivity : str or float, optional
+            Thermal conductivity value.
+        theta_jb : str or float, optional
+            Junction-to-board thermal resistance.
+        theta_jc : str or float, optional
+            Junction-to-case thermal resistance.
+        height : str or float, optional
+            Package height.
+        extent_bounding_box : optional
+            Bounding box extent definition.
+        heatsink : HeatSinkConfig, optional
+            Heat-sink configuration.
+
+        """
         self.name = name
         self.component_definition = component_definition
         self.apply_to_all = apply_to_all
@@ -102,12 +141,14 @@ class PackageDefinitionConfig:
         fin_spacing=None,
         fin_thickness=None,
     ) -> HeatSinkConfig:
-        """Attach heat-sink properties to the package definition.
+        """
+        Attach heat-sink properties to the package definition.
 
         Returns
         -------
         HeatSinkConfig
             Newly created heat-sink configuration object.
+
         """
         self.heatsink = HeatSinkConfig(
             fin_base_height=fin_base_height,
@@ -119,13 +160,15 @@ class PackageDefinitionConfig:
         return self.heatsink
 
     def to_dict(self) -> dict:
-        """Serialize the package definition.
+        """
+        Serialize the package definition.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the
             ``package_definitions`` configuration list.
+
         """
         data: dict = {"name": self.name, "component_definition": self.component_definition}
         for k in (
@@ -150,9 +193,11 @@ class PackageDefinitionConfig:
 
 
 class PackageDefinitionsConfig:
+
     """Fluent builder for the ``package_definitions`` configuration list."""
 
     def __init__(self):
+        """Initialize the package definitions configuration."""
         self._packages: List[PackageDefinitionConfig] = []
 
     def add(
@@ -163,7 +208,8 @@ class PackageDefinitionsConfig:
         components: Optional[List[str]] = None,
         **kwargs,
     ) -> PackageDefinitionConfig:
-        """Add a package definition entry.
+        """
+        Add a package definition entry.
 
         Parameters
         ----------
@@ -183,6 +229,7 @@ class PackageDefinitionsConfig:
         -------
         PackageDefinitionConfig
             Newly created package definition.
+
         """
         pkg = PackageDefinitionConfig(
             name=name,
@@ -195,11 +242,13 @@ class PackageDefinitionsConfig:
         return pkg
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured package definitions.
+        """
+        Serialize all configured package definitions.
 
         Returns
         -------
         list[dict]
             Package definitions in insertion order.
+
         """
         return [p.to_dict() for p in self._packages]

@@ -27,7 +27,9 @@ from typing import List, Optional, Union
 
 
 class SourceConfig:
-    """Current or voltage source definition.
+
+    """
+    Current or voltage source definition.
 
     Parameters
     ----------
@@ -40,6 +42,7 @@ class SourceConfig:
     impedance : float or str, optional
     reference_designator : str, optional
     distributed : bool
+
     """
 
     def __init__(
@@ -53,6 +56,29 @@ class SourceConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ):
+        """
+        Initialize a source configuration.
+
+        Parameters
+        ----------
+        name : str
+            Source name.
+        source_type : str
+            ``"current"`` or ``"voltage"``.
+        positive_terminal : dict
+            Positive terminal specifier.
+        negative_terminal : dict
+            Negative terminal specifier.
+        magnitude : float, default: 0.001
+            Source magnitude.
+        impedance : float or str, optional
+            Source impedance.
+        reference_designator : str, optional
+            Component reference designator used to disambiguate the terminal.
+        distributed : bool, default: False
+            Whether the source is distributed.
+
+        """
         self.name = name
         self.type = source_type
         self.positive_terminal = positive_terminal
@@ -63,13 +89,15 @@ class SourceConfig:
         self.distributed = distributed
 
     def to_dict(self) -> dict:
-        """Serialize the source definition.
+        """
+        Serialize the source definition.
 
         Returns
         -------
         dict
             Dictionary ready for inclusion in the ``sources`` configuration
             list.
+
         """
         data: dict = {
             "name": self.name,
@@ -88,9 +116,11 @@ class SourceConfig:
 
 
 class SourcesConfig:
+
     """Collect source definitions for serialization."""
 
     def __init__(self):
+        """Initialize the sources configuration."""
         self._sources: List[SourceConfig] = []
 
     def add_current_source(
@@ -103,7 +133,8 @@ class SourcesConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ) -> SourceConfig:
-        """Add a current source.
+        """
+        Add a current source.
 
         Parameters
         ----------
@@ -125,6 +156,7 @@ class SourcesConfig:
         Returns
         -------
         SourceConfig
+
         """
         src = SourceConfig(
             name=name,
@@ -149,7 +181,8 @@ class SourcesConfig:
         reference_designator: Optional[str] = None,
         distributed: bool = False,
     ) -> SourceConfig:
-        """Add a voltage source.
+        """
+        Add a voltage source.
 
         Parameters
         ----------
@@ -172,6 +205,7 @@ class SourcesConfig:
         -------
         SourceConfig
             Newly created source entry.
+
         """
         src = SourceConfig(
             name=name,
@@ -187,11 +221,13 @@ class SourcesConfig:
         return src
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured sources.
+        """
+        Serialize all configured sources.
 
         Returns
         -------
         list[dict]
             Source definitions in insertion order.
+
         """
         return [s.to_dict() for s in self._sources]

@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build the ``general`` configuration section.
+"""
+Build the ``general`` configuration section.
 
 The builders in this module produce the plain dictionary structure consumed by
 :class:`pyedb.configuration.cfg_general.CfgGeneral` for design-wide library
@@ -32,7 +33,9 @@ from typing import Optional
 
 
 class GeneralConfig:
-    """Fluent builder for the ``general`` configuration section.
+
+    """
+    Fluent builder for the ``general`` configuration section.
 
     Wraps the attribute names expected by
     :class:`~pyedb.configuration.cfg_general.CfgGeneral`.
@@ -51,13 +54,15 @@ class GeneralConfig:
     """
 
     def __init__(self):
+        """Initialize the general configuration with default empty values."""
         self.spice_model_library: str = ""
         self.s_parameter_library: str = ""
         self.anti_pads_always_on: Optional[bool] = None
         self.suppress_pads: Optional[bool] = None
 
     def to_dict(self) -> dict:
-        """Serialize configured general settings.
+        """
+        Serialize configured general settings.
 
         Returns
         -------

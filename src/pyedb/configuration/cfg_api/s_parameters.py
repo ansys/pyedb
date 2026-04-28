@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build ``s_parameters`` configuration entries.
+"""
+Build ``s_parameters`` configuration entries.
 
 This module defines lightweight builders for assigning Touchstone models to
 component definitions.
@@ -31,6 +32,7 @@ from typing import Dict, List, Optional
 
 
 class SParameterModelConfig:
+
     """Represent one S-parameter model assignment."""
 
     def __init__(
@@ -44,6 +46,29 @@ class SParameterModelConfig:
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
     ):
+        """
+        Initialize an S-parameter model assignment.
+
+        Parameters
+        ----------
+        name : str
+            Model assignment name.
+        component_definition : str
+            Component definition this model is assigned to.
+        file_path : str
+            Path to the S-parameter file.
+        reference_net : str, optional
+            Reference net used by the model.
+        apply_to_all : bool, default: True
+            Whether to apply the model to all matching components.
+        components : list of str, optional
+            Explicit list of component reference designators to apply to.
+        reference_net_per_component : dict, optional
+            Per-component reference net overrides.
+        pin_order : list, optional
+            Pin ordering for port mapping.
+
+        """
         self.name = name
         self.component_definition = component_definition
         self.file_path = file_path
@@ -54,13 +79,15 @@ class SParameterModelConfig:
         self.pin_order = pin_order
 
     def to_dict(self) -> dict:
-        """Serialize the S-parameter model assignment.
+        """
+        Serialize the S-parameter model assignment.
 
         Returns
         -------
         dict
             Dictionary matching the schema used by the ``s_parameters``
             configuration list.
+
         """
         data = {
             "name": self.name,
@@ -78,9 +105,11 @@ class SParameterModelConfig:
 
 
 class SParametersConfig:
+
     """Fluent builder for the ``s_parameters`` configuration list."""
 
     def __init__(self):
+        """Initialize the S-parameters configuration."""
         self._models: List[SParameterModelConfig] = []
 
     def add(
@@ -94,7 +123,8 @@ class SParametersConfig:
         reference_net_per_component: Optional[Dict[str, str]] = None,
         pin_order: Optional[List] = None,
     ) -> SParameterModelConfig:
-        """Add an S-parameter model assignment.
+        """
+        Add an S-parameter model assignment.
 
         Parameters
         ----------
@@ -136,12 +166,14 @@ class SParametersConfig:
         return m
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured S-parameter model assignments.
+        """
+        Serialize all configured S-parameter model assignments.
 
         Returns
         -------
         list[dict]
             Model definitions in insertion order.
+
         """
         return [m.to_dict() for m in self._models]
 

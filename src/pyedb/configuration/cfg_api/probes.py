@@ -19,7 +19,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-"""Build voltage-probe configuration entries.
+"""
+Build voltage-probe configuration entries.
 
 The classes in this module create serializable probe definitions for the
 ``probes`` configuration list.
@@ -31,6 +32,7 @@ from typing import List, Optional
 
 
 class ProbeConfig:
+
     """Represent a single voltage probe entry."""
 
     def __init__(
@@ -40,14 +42,20 @@ class ProbeConfig:
         negative_terminal: dict,
         reference_designator: Optional[str] = None,
     ):
-        """Initialize a probe configuration.
+        """
+        Initialize a probe configuration.
 
         Parameters
         ----------
         name : str
+            Probe name.
         positive_terminal : dict
+            Positive terminal specifier.
         negative_terminal : dict
+            Negative terminal specifier.
         reference_designator : str, optional
+            Component reference designator used to disambiguate the terminal.
+
         """
         self.name = name
         self.type = "probe"
@@ -56,7 +64,8 @@ class ProbeConfig:
         self.reference_designator = reference_designator
 
     def to_dict(self) -> dict:
-        """Serialize the probe definition.
+        """
+        Serialize the probe definition.
 
         Returns
         -------
@@ -77,9 +86,11 @@ class ProbeConfig:
 
 
 class ProbesConfig:
+
     """Collect voltage probe definitions for serialization."""
 
     def __init__(self):
+        """Initialize the probes configuration."""
         self._probes: List[ProbeConfig] = []
 
     def add(
@@ -89,7 +100,8 @@ class ProbesConfig:
         negative_terminal: dict,
         reference_designator: Optional[str] = None,
     ) -> ProbeConfig:
-        """Add a voltage probe.
+        """
+        Add a voltage probe.
 
         Parameters
         ----------
@@ -107,6 +119,7 @@ class ProbesConfig:
         -------
         ProbeConfig
             Newly created probe entry.
+
         """
         probe = ProbeConfig(
             name=name,
@@ -118,11 +131,13 @@ class ProbesConfig:
         return probe
 
     def to_list(self) -> List[dict]:
-        """Serialize all configured probes.
+        """
+        Serialize all configured probes.
 
         Returns
         -------
         list[dict]
             Probe definitions in insertion order.
+
         """
         return [p.to_dict() for p in self._probes]
