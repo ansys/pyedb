@@ -31,7 +31,6 @@ from typing import Dict, List, Optional
 
 
 class SParameterModelConfig:
-
     """Represent one S-parameter model assignment."""
 
     def __init__(
@@ -102,7 +101,6 @@ class SParameterModelConfig:
 
 
 class SParametersConfig:
-
     """Fluent builder for the ``s_parameters`` configuration list."""
 
     def __init__(self):
