@@ -325,11 +325,6 @@ class TestPinPairModel:
         assert d["inductance_enabled"] is False
 
 
-# ---------------------------------------------------------------------------
-# ComponentConfig
-# ---------------------------------------------------------------------------
-
-
 class TestComponentConfig:
     def test_minimal(self):
         c = ComponentConfig("U1")
@@ -416,11 +411,6 @@ class TestComponentConfig:
         assert d["port_properties"]["reference_size_auto"] is False
 
 
-# ---------------------------------------------------------------------------
-# ComponentsConfig
-# ---------------------------------------------------------------------------
-
-
 class TestComponentsConfig:
     def test_add_returns_component_config(self):
         cc = ComponentsConfig()
@@ -439,10 +429,6 @@ class TestComponentsConfig:
         assert ComponentsConfig().to_list() == []
 
 
-# ---------------------------------------------------------------------------
-# PadstackDefinitionConfig
-# ---------------------------------------------------------------------------
-
 
 class TestPadstackDefinitionConfig:
     def test_minimal(self):
@@ -456,10 +442,6 @@ class TestPadstackDefinitionConfig:
         assert d["hole_plating_thickness"] == "25um"
         assert d["material"] == "copper"
 
-
-# ---------------------------------------------------------------------------
-# PadstackInstanceConfig
-# ---------------------------------------------------------------------------
 
 
 class TestPadstackInstanceConfig:
@@ -488,11 +470,6 @@ class TestPadstackInstanceConfig:
         assert d["backdrill_parameters"]["from_top"]["stub_length"] == "0.05mm"
 
 
-# ---------------------------------------------------------------------------
-# PadstacksConfig
-# ---------------------------------------------------------------------------
-
-
 class TestPadstacksConfig:
     def test_empty(self):
         assert PadstacksConfig().to_dict() == {}
@@ -510,11 +487,6 @@ class TestPadstacksConfig:
         assert isinstance(inst, PadstackInstanceConfig)
         d = ps.to_dict()
         assert d["instances"][0]["name"] == "v1"
-
-
-# ---------------------------------------------------------------------------
-# PinGroupConfig / PinGroupsConfig
-# ---------------------------------------------------------------------------
 
 
 class TestPinGroupConfig:
@@ -548,11 +520,6 @@ class TestPinGroupsConfig:
         pgs.add("pg1", "U1", pins=["A1"])
         pgs.add("pg2", "U2", net="GND")
         assert len(pgs.to_list()) == 2
-
-
-# ---------------------------------------------------------------------------
-# PortConfig / EdgePortConfig / DiffWavePortConfig
-# ---------------------------------------------------------------------------
 
 
 class TestPortConfig:
@@ -604,11 +571,6 @@ class TestDiffWavePortConfig:
         assert d["positive_terminal"]["primitive_name"] == "trace_p"
 
 
-# ---------------------------------------------------------------------------
-# PortsConfig
-# ---------------------------------------------------------------------------
-
-
 class TestPortsConfig:
     def test_empty(self):
         assert PortsConfig().to_list() == []
@@ -652,10 +614,6 @@ class TestPortsConfig:
         assert len(pc.to_list()) == 3
 
 
-# ---------------------------------------------------------------------------
-# SourceConfig / SourcesConfig
-# ---------------------------------------------------------------------------
-
 
 class TestSourceConfig:
     def test_current_source(self):
@@ -696,10 +654,6 @@ class TestSourcesConfig:
         assert len(sc.to_list()) == 2
 
 
-# ---------------------------------------------------------------------------
-# ProbeConfig / ProbesConfig
-# ---------------------------------------------------------------------------
-
 
 class TestProbeConfig:
     def test_probe(self):
@@ -724,10 +678,6 @@ class TestProbesConfig:
         assert isinstance(probe, ProbeConfig)
         assert pc.to_list()[0]["name"] == "pr1"
 
-
-# ---------------------------------------------------------------------------
-# FrequencySweepConfig
-# ---------------------------------------------------------------------------
 
 
 class TestFrequencySweepConfig:
@@ -789,10 +739,6 @@ class TestFrequencySweepConfig:
         assert d["use_q3d_for_dc"] is True
         assert d["compute_dc_point"] is True
 
-
-# ---------------------------------------------------------------------------
-# HfssSetupConfig
-# ---------------------------------------------------------------------------
 
 
 class TestHfssSetupConfig:
@@ -868,10 +814,6 @@ class TestHfssSetupConfig:
         assert "mesh_operations" not in d
 
 
-# ---------------------------------------------------------------------------
-# SIwaveACSetupConfig
-# ---------------------------------------------------------------------------
-
 
 class TestSIwaveACSetupConfig:
     def test_defaults(self):
@@ -895,10 +837,6 @@ class TestSIwaveACSetupConfig:
         assert s.to_dict()["freq_sweep"][0]["name"] == "sw1"
 
 
-# ---------------------------------------------------------------------------
-# SIwaveDCSetupConfig
-# ---------------------------------------------------------------------------
-
 
 class TestSIwaveDCSetupConfig:
     def test_defaults(self):
@@ -914,10 +852,6 @@ class TestSIwaveDCSetupConfig:
         assert d["dc_slider_position"] == 2
         assert d["dc_ir_settings"]["export_dc_thermal_data"] is True
 
-
-# ---------------------------------------------------------------------------
-# SetupsConfig
-# ---------------------------------------------------------------------------
 
 
 class TestSetupsConfig:
@@ -950,10 +884,6 @@ class TestSetupsConfig:
         types = [s["type"] for s in sc.to_list()]
         assert types == ["hfss", "siwave_ac", "siwave_dc"]
 
-
-# ---------------------------------------------------------------------------
-# BoundariesConfig
-# ---------------------------------------------------------------------------
 
 
 class TestBoundariesConfig:
@@ -1010,10 +940,6 @@ class TestBoundariesConfig:
         assert "honor_user_dielectric" not in b.to_dict()
 
 
-# ---------------------------------------------------------------------------
-# CutoutConfig / OperationsConfig
-# ---------------------------------------------------------------------------
-
 
 class TestCutoutConfig:
     def test_defaults(self):
@@ -1052,11 +978,6 @@ class TestOperationsConfig:
         ops.generate_auto_hfss_regions = True
         d = ops.to_dict()
         assert d["generate_auto_hfss_regions"] is True
-
-
-# ---------------------------------------------------------------------------
-# SParameterModelConfig / SParameterModelsConfig
-# ---------------------------------------------------------------------------
 
 
 class TestSParameterModelConfig:
@@ -1099,11 +1020,6 @@ class TestSParameterModelsConfig:
         assert sc.to_list()[0]["name"] == "model1"
 
 
-# ---------------------------------------------------------------------------
-# SpiceModelConfig / SpiceModelsConfig
-# ---------------------------------------------------------------------------
-
-
 class TestSpiceModelConfig:
     def test_basic(self):
         s = SpiceModelConfig("ic_spice", "IC_U1", "/ic.sp")
@@ -1138,11 +1054,6 @@ class TestSpiceModelsConfig:
         assert sc.to_list()[0]["name"] == "sp1"
 
 
-# ---------------------------------------------------------------------------
-# VariablesConfig
-# ---------------------------------------------------------------------------
-
-
 class TestVariablesConfig:
     def test_empty(self):
         assert VariablesConfig().to_list() == []
@@ -1163,11 +1074,6 @@ class TestVariablesConfig:
         v.add("a", 1)
         v.add("b", 2)
         assert len(v.to_list()) == 2
-
-
-# ---------------------------------------------------------------------------
-# ModelerConfig
-# ---------------------------------------------------------------------------
 
 
 class TestModelerConfig:
@@ -1234,11 +1140,6 @@ class TestModelerConfig:
         m = ModelerConfig()
         m.delete_primitives_by_net(["old_net"])
         assert m.to_dict()["primitives_to_delete"]["net_name"] == ["old_net"]
-
-
-# ---------------------------------------------------------------------------
-# EdbConfigBuilder – integration / round-trip
-# ---------------------------------------------------------------------------
 
 
 class TestEdbConfigBuilder:
@@ -1559,11 +1460,6 @@ class TestEdbConfigBuilder:
         assert "old_net" in ptd["net_name"]
 
 
-# ---------------------------------------------------------------------------
-# EdbConfigBuilder – JSON serialisation
-# ---------------------------------------------------------------------------
-
-
 class TestEdbConfigBuilderJson:
     def _simple_builder(self) -> EdbConfigBuilder:
         cfg = EdbConfigBuilder()
@@ -1612,11 +1508,6 @@ class TestEdbConfigBuilderJson:
         assert output.exists()
 
 
-# ---------------------------------------------------------------------------
-# EdbConfigBuilder – empty builder produces empty dict
-# ---------------------------------------------------------------------------
-
-
 class TestEdbConfigBuilderEmpty:
     def test_empty_builder_produces_empty_dict(self):
         cfg = EdbConfigBuilder()
@@ -1627,11 +1518,6 @@ class TestEdbConfigBuilderEmpty:
         cfg.nets.add_signal_nets(["SIG1"])
         d = cfg.to_dict()
         assert list(d.keys()) == ["nets"]
-
-
-# ---------------------------------------------------------------------------
-# TerminalInfo helpers
-# ---------------------------------------------------------------------------
 
 
 class TestTerminalInfo:
@@ -1670,11 +1556,6 @@ class TestTerminalInfo:
     def test_nearest_pin_default_radius(self):
         t = TerminalInfo.nearest_pin("GND")
         assert t["nearest_pin"]["search_radius"] == "5mm"
-
-
-# ---------------------------------------------------------------------------
-# TerminalsConfig + terminal types
-# ---------------------------------------------------------------------------
 
 
 class TestPadstackInstanceTerminal:
@@ -1811,11 +1692,6 @@ class TestTerminalsConfig:
         assert cfg.to_dict() == cfg2.to_dict()
 
 
-# ---------------------------------------------------------------------------
-# HeatSinkConfig / PackageDefinitionConfig / PackageDefinitionsConfig
-# ---------------------------------------------------------------------------
-
-
 class TestHeatSinkConfig:
     def test_empty(self):
         hs = HeatSinkConfig()
@@ -1913,11 +1789,6 @@ class TestPackageDefinitionsConfig:
         assert cfg.to_dict() == cfg2.to_dict()
 
 
-# ---------------------------------------------------------------------------
-# BoundariesConfig – new helpers (set_extent, set_dielectric_extent)
-# ---------------------------------------------------------------------------
-
-
 class TestBoundariesConfigExtras:
     def test_set_extent(self):
         b = BoundariesConfig()
@@ -1951,11 +1822,6 @@ class TestBoundariesConfigExtras:
         assert b.to_dict()["dielectric_base_polygon"] == "diel_poly"
 
 
-# ---------------------------------------------------------------------------
-# ModelerConfig – add_component
-# ---------------------------------------------------------------------------
-
-
 class TestModelerConfigComponent:
     def test_add_component(self):
         m = ModelerConfig()
@@ -1980,11 +1846,6 @@ class TestModelerConfigComponent:
         cfg.to_json(str(path))
         cfg2 = EdbConfigBuilder.from_json(str(path))
         assert cfg.to_dict() == cfg2.to_dict()
-
-
-# ---------------------------------------------------------------------------
-# EdbConfigBuilder – package_definitions and terminals in full integration
-# ---------------------------------------------------------------------------
 
 
 class TestEdbConfigBuilderFull:
@@ -2042,11 +1903,6 @@ class TestEdbConfigBuilderFull:
         pos = d["sources"][0]["positive_terminal"]
         assert pos["coordinates"]["layer"] == "top"
         assert pos["coordinates"]["point"] == [0.001, 0.002]
-
-
-# ---------------------------------------------------------------------------
-# Configuration.load / run / create_config_builder bridge tests
-# ---------------------------------------------------------------------------
 
 
 @pytest.fixture
