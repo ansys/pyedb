@@ -429,7 +429,6 @@ class TestComponentsConfig:
         assert ComponentsConfig().to_list() == []
 
 
-
 class TestPadstackDefinitionConfig:
     def test_minimal(self):
         p = PadstackDefinitionConfig("via_0.2")
@@ -441,7 +440,6 @@ class TestPadstackDefinitionConfig:
         d = p.to_dict()
         assert d["hole_plating_thickness"] == "25um"
         assert d["material"] == "copper"
-
 
 
 class TestPadstackInstanceConfig:
@@ -614,7 +612,6 @@ class TestPortsConfig:
         assert len(pc.to_list()) == 3
 
 
-
 class TestSourceConfig:
     def test_current_source(self):
         s = SourceConfig("isrc1", "current", {"pin": "A1"}, {"net": "GND"}, magnitude=0.001)
@@ -654,7 +651,6 @@ class TestSourcesConfig:
         assert len(sc.to_list()) == 2
 
 
-
 class TestProbeConfig:
     def test_probe(self):
         p = ProbeConfig("probe1", {"net": "SIG"}, {"net": "GND"})
@@ -677,7 +673,6 @@ class TestProbesConfig:
         probe = pc.add("pr1", {"net": "SIG"}, {"net": "GND"})
         assert isinstance(probe, ProbeConfig)
         assert pc.to_list()[0]["name"] == "pr1"
-
 
 
 class TestFrequencySweepConfig:
@@ -738,7 +733,6 @@ class TestFrequencySweepConfig:
         assert d["enforce_passivity"] is False
         assert d["use_q3d_for_dc"] is True
         assert d["compute_dc_point"] is True
-
 
 
 class TestHfssSetupConfig:
@@ -814,7 +808,6 @@ class TestHfssSetupConfig:
         assert "mesh_operations" not in d
 
 
-
 class TestSIwaveACSetupConfig:
     def test_defaults(self):
         s = SIwaveACSetupConfig("sw_ac")
@@ -837,7 +830,6 @@ class TestSIwaveACSetupConfig:
         assert s.to_dict()["freq_sweep"][0]["name"] == "sw1"
 
 
-
 class TestSIwaveDCSetupConfig:
     def test_defaults(self):
         s = SIwaveDCSetupConfig("sw_dc")
@@ -851,7 +843,6 @@ class TestSIwaveDCSetupConfig:
         d = s.to_dict()
         assert d["dc_slider_position"] == 2
         assert d["dc_ir_settings"]["export_dc_thermal_data"] is True
-
 
 
 class TestSetupsConfig:
@@ -883,7 +874,6 @@ class TestSetupsConfig:
         sc.add_siwave_dc_setup("dc1")
         types = [s["type"] for s in sc.to_list()]
         assert types == ["hfss", "siwave_ac", "siwave_dc"]
-
 
 
 class TestBoundariesConfig:
@@ -938,7 +928,6 @@ class TestBoundariesConfig:
         b = BoundariesConfig()
         # Default is False → should not appear in the serialised dict
         assert "honor_user_dielectric" not in b.to_dict()
-
 
 
 class TestCutoutConfig:
