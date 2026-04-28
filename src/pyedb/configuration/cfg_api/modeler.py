@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -65,9 +65,14 @@ class ModelerConfig:
             Stored trace dictionary.
         """
         t = {
-            "name": name, "layer": layer, "width": width, "net_name": net_name,
-            "path": path or [], "incremental_path": incremental_path or [],
-            "start_cap_style": start_cap_style, "end_cap_style": end_cap_style,
+            "name": name,
+            "layer": layer,
+            "width": width,
+            "net_name": net_name,
+            "path": path or [],
+            "incremental_path": incremental_path or [],
+            "start_cap_style": start_cap_style,
+            "end_cap_style": end_cap_style,
             "corner_style": corner_style,
         }
         self._traces.append(t)
@@ -92,9 +97,15 @@ class ModelerConfig:
             Stored plane dictionary.
         """
         p = {
-            "type": "rectangle", "name": name, "layer": layer, "net_name": net_name,
-            "lower_left_point": lower_left_point or [], "upper_right_point": upper_right_point or [],
-            "corner_radius": corner_radius, "rotation": rotation, "voids": voids or [],
+            "type": "rectangle",
+            "name": name,
+            "layer": layer,
+            "net_name": net_name,
+            "lower_left_point": lower_left_point or [],
+            "upper_right_point": upper_right_point or [],
+            "corner_radius": corner_radius,
+            "rotation": rotation,
+            "voids": voids or [],
         }
         self._planes.append(p)
         return p
@@ -116,8 +127,13 @@ class ModelerConfig:
             Stored plane dictionary.
         """
         p = {
-            "type": "circle", "name": name, "layer": layer, "net_name": net_name,
-            "radius": radius, "position": position or [0, 0], "voids": voids or [],
+            "type": "circle",
+            "name": name,
+            "layer": layer,
+            "net_name": net_name,
+            "radius": radius,
+            "position": position or [0, 0],
+            "voids": voids or [],
         }
         self._planes.append(p)
         return p
@@ -138,8 +154,12 @@ class ModelerConfig:
             Stored plane dictionary.
         """
         p = {
-            "type": "polygon", "name": name, "layer": layer, "net_name": net_name,
-            "points": points or [], "voids": voids or [],
+            "type": "polygon",
+            "name": name,
+            "layer": layer,
+            "net_name": net_name,
+            "points": points or [],
+            "voids": voids or [],
         }
         self._planes.append(p)
         return p
@@ -184,6 +204,7 @@ class ModelerConfig:
             Newly created component builder.
         """
         from pyedb.configuration.cfg_api.components import ComponentConfig
+
         comp = ComponentConfig(
             reference_designator=reference_designator,
             part_type=part_type,
@@ -228,4 +249,3 @@ class ModelerConfig:
         if any(v for v in self._primitives_to_delete.values()):
             data["primitives_to_delete"] = self._primitives_to_delete
         return data
-

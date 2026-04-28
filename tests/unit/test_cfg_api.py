@@ -53,21 +53,21 @@ from pyedb.configuration.cfg_api import (
     PadstackInstanceTerminal,
     PadstacksConfig,
     PinGroupConfig,
-    PinGroupTerminal,
     PinGroupsConfig,
+    PinGroupTerminal,
     PinPairModel,
     PointTerminal,
     PortConfig,
     PortsConfig,
     ProbeConfig,
     ProbesConfig,
+    SetupsConfig,
     SIwaveACSetupConfig,
     SIwaveDCSetupConfig,
-    SParameterModelConfig,
-    SParameterModelsConfig,
-    SetupsConfig,
     SourceConfig,
     SourcesConfig,
+    SParameterModelConfig,
+    SParameterModelsConfig,
     SpiceModelConfig,
     SpiceModelsConfig,
     StackupConfig,
@@ -1187,7 +1187,9 @@ class TestModelerConfig:
 
     def test_add_rectangular_plane(self):
         m = ModelerConfig()
-        m.add_rectangular_plane("GND_L", "gnd_rect", "GND", lower_left_point=[-0.05, -0.05], upper_right_point=[0.05, 0.05])
+        m.add_rectangular_plane(
+            "GND_L", "gnd_rect", "GND", lower_left_point=[-0.05, -0.05], upper_right_point=[0.05, 0.05]
+        )
         d = m.to_dict()
         plane = d["planes"][0]
         assert plane["type"] == "rectangle"
@@ -1341,8 +1343,7 @@ class TestEdbConfigBuilder:
         # s-parameters
         cfg.s_parameters.add("cap_model", "CAP_100nF", "/snp/cap.s2p", reference_net="GND")
         cfg.s_parameters.add(
-            "res_model", "RES_100OHM", "/snp/res.s2p",
-            apply_to_all=False, components=["R1"], reference_net="GND"
+            "res_model", "RES_100OHM", "/snp/res.s2p", apply_to_all=False, components=["R1"], reference_net="GND"
         )
 
         # spice models
@@ -1354,11 +1355,11 @@ class TestEdbConfigBuilder:
 
         # modeler
         cfg.modeler.add_trace("trace1", "top", "0.15mm", net_name="DDR4_DQ0", path=[[0, 0], [0.01, 0]])
-        cfg.modeler.add_rectangular_plane("bot", "gnd_plane", "GND",
-                                          lower_left_point=[-0.05, -0.05], upper_right_point=[0.05, 0.05])
+        cfg.modeler.add_rectangular_plane(
+            "bot", "gnd_plane", "GND", lower_left_point=[-0.05, -0.05], upper_right_point=[0.05, 0.05]
+        )
         cfg.modeler.add_circular_plane("top", "via_plane", "VDD", radius="0.5mm", position=[0, 0])
-        cfg.modeler.add_polygon_plane("bot", "poly1", "VCC",
-                                      points=[[0, 0], [0.01, 0], [0.01, 0.01], [0, 0.01]])
+        cfg.modeler.add_polygon_plane("bot", "poly1", "VCC", points=[[0, 0], [0.01, 0], [0.01, 0.01], [0, 0.01]])
         cfg.modeler.delete_primitives_by_layer(["old_layer"])
         cfg.modeler.delete_primitives_by_net(["old_net"])
 
@@ -1369,10 +1370,22 @@ class TestEdbConfigBuilder:
         cfg = self._full_builder()
         d = cfg.to_dict()
         expected = {
-            "general", "stackup", "nets", "components", "padstacks",
-            "pin_groups", "ports", "sources", "probes", "setups",
-            "boundaries", "operations", "s_parameters", "spice_models",
-            "variables", "modeler",
+            "general",
+            "stackup",
+            "nets",
+            "components",
+            "padstacks",
+            "pin_groups",
+            "ports",
+            "sources",
+            "probes",
+            "setups",
+            "boundaries",
+            "operations",
+            "s_parameters",
+            "spice_models",
+            "variables",
+            "modeler",
         }
         assert expected == set(d.keys())
 
@@ -1689,9 +1702,15 @@ class TestPadstackInstanceTerminal:
 
     def test_optional_fields(self):
         t = PadstackInstanceTerminal(
-            "t1", "via_1", 50, "port", "Wave",
-            is_circuit_port=True, reference_terminal="ref_t",
-            layer="top", padstack_instance_id=42,
+            "t1",
+            "via_1",
+            50,
+            "port",
+            "Wave",
+            is_circuit_port=True,
+            reference_terminal="ref_t",
+            layer="top",
+            padstack_instance_id=42,
         )
         d = t.to_dict()
         assert d["hfss_type"] == "Wave"
@@ -2012,10 +2031,24 @@ class TestEdbConfigBuilderFull:
 
         d = cfg.to_dict()
         expected_keys = {
-            "general", "stackup", "nets", "components", "padstacks",
-            "pin_groups", "terminals", "ports", "sources", "probes",
-            "setups", "boundaries", "operations", "s_parameters",
-            "spice_models", "package_definitions", "variables", "modeler",
+            "general",
+            "stackup",
+            "nets",
+            "components",
+            "padstacks",
+            "pin_groups",
+            "terminals",
+            "ports",
+            "sources",
+            "probes",
+            "setups",
+            "boundaries",
+            "operations",
+            "s_parameters",
+            "spice_models",
+            "package_definitions",
+            "variables",
+            "modeler",
         }
         assert expected_keys == set(d.keys())
 
@@ -2198,5 +2231,3 @@ class TestConfigurationBridgeMethods:
         assert "pin_groups" in d
         assert "variables" in d
         assert "setups" in d
-
-

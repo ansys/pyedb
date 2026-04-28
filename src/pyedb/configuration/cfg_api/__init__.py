@@ -35,6 +35,7 @@ Examples
 ...     negative_terminal=TerminalInfo.nearest_pin("GND"),
 ... )
 """
+
 from __future__ import annotations
 
 from pyedb.configuration.cfg_api._builder import EdbConfigBuilder  # noqa: F401

@@ -87,7 +87,6 @@ class SourceConfig:
         return data
 
 
-
 class SourcesConfig:
     """Collect source definitions for serialization."""
 
@@ -196,5 +195,3 @@ class SourcesConfig:
             Source definitions in insertion order.
         """
         return [s.to_dict() for s in self._sources]
-
-

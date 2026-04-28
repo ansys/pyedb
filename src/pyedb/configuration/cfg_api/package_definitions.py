@@ -1,4 +1,4 @@
-﻿# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
+# Copyright (C) 2023 - 2026 ANSYS, Inc. and/or its affiliates.
 # SPDX-License-Identifier: MIT
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -117,8 +117,15 @@ class PackageDefinitionConfig:
             ``package_definitions`` configuration list.
         """
         data: dict = {"name": self.name, "component_definition": self.component_definition}
-        for k in ("apply_to_all", "maximum_power", "thermal_conductivity", "theta_jb",
-                  "theta_jc", "height", "extent_bounding_box"):
+        for k in (
+            "apply_to_all",
+            "maximum_power",
+            "thermal_conductivity",
+            "theta_jb",
+            "theta_jc",
+            "height",
+            "extent_bounding_box",
+        ):
             val = getattr(self, k)
             if val is not None:
                 data[k] = val

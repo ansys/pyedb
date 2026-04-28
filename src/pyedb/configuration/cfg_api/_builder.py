@@ -34,6 +34,7 @@ from typing import Any, Dict, List, Literal, Optional, Union
 
 try:
     import toml
+
     _TOML_AVAILABLE = True
 except ImportError:
     _TOML_AVAILABLE = False
@@ -149,9 +150,9 @@ class EdbConfigBuilder:
     >>> cfg.nets.add_signal_nets(["SIG1", "SIG2"])
     >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
     >>> cfg.pin_groups.add("pg_VDD", "U1", net="VDD")
-    >>> cfg.ports.add_circuit_port("p1",
-    ...     positive_terminal=TerminalInfo.pin_group("pg_VDD"),
-    ...     negative_terminal=TerminalInfo.nearest_pin("GND"))
+    >>> cfg.ports.add_circuit_port(
+    ...     "p1", positive_terminal=TerminalInfo.pin_group("pg_VDD"), negative_terminal=TerminalInfo.nearest_pin("GND")
+    ... )
     >>> hfss = cfg.setups.add_hfss_setup("my_hfss")
     >>> hfss.set_broadband_adaptive("1GHz", "10GHz")
     >>> sweep = hfss.add_frequency_sweep("sweep1")
@@ -358,11 +359,19 @@ class EdbConfigBuilder:
         for comp in data.get("components", []):
             comp = dict(comp)
             refdes = comp.pop("reference_designator")
-            c = builder.components.add(refdes, **{k: v for k, v in comp.items() if k in (
-                "part_type", "enabled", "definition", "placement_layer"
-            )})
-            for key in ("pin_pair_model", "s_parameter_model", "spice_model", "netlist_model",
-                        "port_properties", "solder_ball_properties", "ic_die_properties"):
+            c = builder.components.add(
+                refdes,
+                **{k: v for k, v in comp.items() if k in ("part_type", "enabled", "definition", "placement_layer")},
+            )
+            for key in (
+                "pin_pair_model",
+                "s_parameter_model",
+                "spice_model",
+                "netlist_model",
+                "port_properties",
+                "solder_ball_properties",
+                "ic_die_properties",
+            ):
                 if comp.get(key):
                     setattr(c, key, comp[key])
 
@@ -430,9 +439,9 @@ class EdbConfigBuilder:
                     sweep.use_q3d_for_dc = sw.get("use_q3d_for_dc", False)
                     sweep.compute_dc_point = sw.get("compute_dc_point", False)
                     from pyedb.configuration.cfg_setup import CfgFrequencies
+
                     sweep.frequencies = [
-                        CfgFrequencies(**f) if isinstance(f, dict) else f
-                        for f in sw.get("frequencies", [])
+                        CfgFrequencies(**f) if isinstance(f, dict) else f for f in sw.get("frequencies", [])
                     ]
             elif stp_type in ("siwave_ac", "siwave_syz"):
                 s = builder.setups.add_siwave_ac_setup(
@@ -443,17 +452,15 @@ class EdbConfigBuilder:
                 for sw in stp.get("freq_sweep", []):
                     sweep = s.add_frequency_sweep(sw["name"], sweep_type=sw.get("type", "interpolation"))
                     from pyedb.configuration.cfg_setup import CfgFrequencies
+
                     sweep.frequencies = [
-                        CfgFrequencies(**f) if isinstance(f, dict) else f
-                        for f in sw.get("frequencies", [])
+                        CfgFrequencies(**f) if isinstance(f, dict) else f for f in sw.get("frequencies", [])
                     ]
             elif stp_type == "siwave_dc":
                 builder.setups.add_siwave_dc_setup(
                     stp["name"],
                     dc_slider_position=stp.get("dc_slider_position", 1),
-                    export_dc_thermal_data=stp.get("dc_ir_settings", {}).get(
-                        "export_dc_thermal_data", False
-                    ),
+                    export_dc_thermal_data=stp.get("dc_ir_settings", {}).get("export_dc_thermal_data", False),
                 )
 
         # boundaries
@@ -497,11 +504,19 @@ class EdbConfigBuilder:
         for comp in modeler_data.get("components", []):
             comp = dict(comp)
             refdes = comp.pop("reference_designator")
-            c = builder.modeler.add_component(refdes, **{k: v for k, v in comp.items() if k in (
-                "part_type", "enabled", "definition", "placement_layer"
-            )})
-            for key in ("pin_pair_model", "s_parameter_model", "spice_model", "netlist_model",
-                        "port_properties", "solder_ball_properties", "ic_die_properties"):
+            c = builder.modeler.add_component(
+                refdes,
+                **{k: v for k, v in comp.items() if k in ("part_type", "enabled", "definition", "placement_layer")},
+            )
+            for key in (
+                "pin_pair_model",
+                "s_parameter_model",
+                "spice_model",
+                "netlist_model",
+                "port_properties",
+                "solder_ball_properties",
+                "ic_die_properties",
+            ):
                 if comp.get(key):
                     setattr(c, key, comp[key])
         ptd = modeler_data.get("primitives_to_delete", {})
@@ -551,5 +566,3 @@ class EdbConfigBuilder:
         with open(file_path, "r", encoding="utf-8") as fh:
             data = toml.load(fh)
         return cls.from_dict(data)
-
-

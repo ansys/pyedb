@@ -113,6 +113,7 @@ class Configuration:
         >>> edb.configuration.run(cfg)
         """
         from pyedb.configuration.cfg_api import EdbConfigBuilder  # local import avoids circular refs
+
         return EdbConfigBuilder()
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
@@ -153,6 +154,7 @@ class Configuration:
         """
         # Accept EdbConfigBuilder directly – convert to dict transparently.
         from pyedb.configuration.cfg_api import EdbConfigBuilder as _Builder  # local import avoids circular refs
+
         if isinstance(config_file, _Builder):
             config_file = config_file.to_dict()
 

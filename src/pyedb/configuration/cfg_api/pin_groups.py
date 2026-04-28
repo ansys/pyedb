@@ -73,7 +73,6 @@ class PinGroupConfig:
         return data
 
 
-
 class PinGroupsConfig:
     """Fluent builder for the ``pin_groups`` configuration list."""
 

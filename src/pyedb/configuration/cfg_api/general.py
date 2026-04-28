@@ -74,4 +74,3 @@ class GeneralConfig:
         if self.suppress_pads is not None:
             data["suppress_pads"] = self.suppress_pads
         return data
-

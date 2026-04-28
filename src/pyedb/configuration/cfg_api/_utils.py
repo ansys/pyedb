@@ -46,5 +46,3 @@ class _DictProxy:
             Original dictionary payload.
         """
         return self._data
-
-
