@@ -35,7 +35,7 @@ Two ways to configure a design
 .. tip::
 
    ``edb.configuration.run()`` accepts a file path, a plain dictionary, **or**
-   an :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` instance. You can
+   an ``EdbConfigBuilder`` instance. You can
    mix and match approaches in the same script.
 
 How a configuration file is consumed

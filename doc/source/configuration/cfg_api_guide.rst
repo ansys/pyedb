@@ -92,8 +92,8 @@ Core objects
      - Factory method
      - Returns a fresh ``EdbConfigBuilder``
        tied to the current session namespace.
-   * - :class:`pyedb.configuration.cfg_api.EdbConfigBuilder`
-     - Root builder
+   * - ``EdbConfigBuilder``
+      - Root builder
      - Owns every configuration section and serializes the final payload.
    * - ``cfg.general``
      - Section builder
@@ -140,8 +140,8 @@ Core objects
    * - ``cfg.modeler``
      - Section builder
      - Geometry-driven creation and cleanup.
-   * - :class:`pyedb.configuration.cfg_api.TerminalInfo`
-     - Helper factory
+   * - ``TerminalInfo``
+      - Helper factory
      - Creates terminal-specifier dictionaries for ports, sources, and probes.
 
 Applying a configuration
