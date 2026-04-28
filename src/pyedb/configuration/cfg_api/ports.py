@@ -85,7 +85,6 @@ class PortConfig:
         return data
 
 
-
 class EdgePortConfig:
     """Edge (wave/gap) port definition.
 
@@ -140,7 +139,6 @@ class EdgePortConfig:
         }
 
 
-
 class DiffWavePortConfig:
     """Differential wave port.
 
@@ -189,7 +187,6 @@ class DiffWavePortConfig:
             "vertical_extent_factor": self.vertical_extent_factor,
             "pec_launch_width": self.pec_launch_width,
         }
-
 
 
 class PortsConfig:
@@ -411,5 +408,3 @@ class PortsConfig:
             Port definitions in insertion order.
         """
         return [p.to_dict() for p in self._ports]
-
-

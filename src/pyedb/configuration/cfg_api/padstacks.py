@@ -155,4 +155,3 @@ class PadstacksConfig:
         if self._instances:
             data["instances"] = [i.to_dict() for i in self._instances]
         return data
-

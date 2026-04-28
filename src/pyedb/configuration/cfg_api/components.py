@@ -228,8 +228,7 @@ class ComponentConfig(_CfgComponentData):
             Optional terminal mapping information.
         """
         self.spice_model = _SpiceModelData(
-            model_name=model_name, model_path=model_path,
-            sub_circuit=sub_circuit, terminal_pairs=terminal_pairs or []
+            model_name=model_name, model_path=model_path, sub_circuit=sub_circuit, terminal_pairs=terminal_pairs or []
         )
 
     def set_netlist_model(self, netlist: str):
@@ -402,4 +401,3 @@ class ComponentsConfig:
             Component definitions in insertion order.
         """
         return [c.to_dict() for c in self._components]
-

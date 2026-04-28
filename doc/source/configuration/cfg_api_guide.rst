@@ -60,7 +60,7 @@ There are two equivalent ways to start a programmatic configuration:
    cfg = edb.configuration.create_config_builder()
    cfg.general.anti_pads_always_on = False
    cfg.nets.add_signal_nets(["SIG1", "CLK"])
-   edb.configuration.run(cfg)     # load + apply in one call
+   edb.configuration.run(cfg)  # load + apply in one call
 
 **2. Standalone (scripts, templates, CI)**
 
@@ -336,9 +336,13 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    cfg.stackup.add_material("copper", conductivity=5.8e7)
    cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
-   cfg.stackup.add_signal_layer("top", material="copper", fill_material="fr4", thickness="35um")
+   cfg.stackup.add_signal_layer(
+       "top", material="copper", fill_material="fr4", thickness="35um"
+   )
    cfg.stackup.add_dielectric_layer("diel1", material="fr4", thickness="100um")
-   cfg.stackup.add_signal_layer("bot", material="copper", fill_material="fr4", thickness="35um")
+   cfg.stackup.add_signal_layer(
+       "bot", material="copper", fill_material="fr4", thickness="35um"
+   )
 
    # ----------------------------------------------------------------
    # Nets
@@ -363,7 +367,9 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    # Padstacks
    # ----------------------------------------------------------------
-   cfg.padstacks.add_definition("via_0.2", material="copper", hole_plating_thickness="25um")
+   cfg.padstacks.add_definition(
+       "via_0.2", material="copper", hole_plating_thickness="25um"
+   )
    via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["top", "bot"])
    via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
 
@@ -377,7 +383,9 @@ applies the configuration with a single ``run()`` call.
    # Explicit low-level terminals (optional — most users use ports/sources)
    # ----------------------------------------------------------------
    cfg.terminals.add_pin_group_terminal("t_vdd", "pg_VDD", 50, "port")
-   cfg.terminals.add_pin_group_terminal("t_gnd", "pg_GND", 50, "port", reference_terminal="t_vdd")
+   cfg.terminals.add_pin_group_terminal(
+       "t_gnd", "pg_GND", 50, "port", reference_terminal="t_vdd"
+   )
    cfg.terminals.add_bundle_terminal("bundle_demo", ["t_vdd", "t_gnd"])
 
    # ----------------------------------------------------------------
@@ -429,17 +437,23 @@ applies the configuration with a single ``run()`` call.
    sweep.add_linear_count_frequencies("1GHz", "20GHz", 100)
    sweep.add_single_frequency("5GHz")
 
-   siwave_ac = cfg.setups.add_siwave_ac_setup("siw_ac", si_slider_position=2, pi_slider_position=1)
+   siwave_ac = cfg.setups.add_siwave_ac_setup(
+       "siw_ac", si_slider_position=2, pi_slider_position=1
+   )
    siwave_ac.add_frequency_sweep("siw_sw1").add_log_count_frequencies("1kHz", "1GHz", 100)
 
-   cfg.setups.add_siwave_dc_setup("siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
+   cfg.setups.add_siwave_dc_setup(
+       "siw_dc", dc_slider_position=1, export_dc_thermal_data=True
+   )
 
    # ----------------------------------------------------------------
    # Boundaries
    # ----------------------------------------------------------------
    cfg.boundaries.set_radiation_boundary()
    cfg.boundaries.set_air_box_extents(0.15, truncate_at_ground=True)
-   cfg.boundaries.set_dielectric_extent("BoundingBox", expansion_size=0.001, honor_user_dielectric=True)
+   cfg.boundaries.set_dielectric_extent(
+       "BoundingBox", expansion_size=0.001, honor_user_dielectric=True
+   )
 
    # ----------------------------------------------------------------
    # Operations (cutout)
@@ -456,20 +470,38 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    # Model assignments
    # ----------------------------------------------------------------
-   cfg.s_parameters.add("cap_model", component_definition="CAP_100nF",
-                        file_path="/snp/cap.s2p", reference_net="GND")
-   cfg.spice_models.add("ic_spice", component_definition="IC_U1",
-                        file_path="/spice/ic.sp", sub_circuit_name="IC_TOP")
+   cfg.s_parameters.add(
+       "cap_model",
+       component_definition="CAP_100nF",
+       file_path="/snp/cap.s2p",
+       reference_net="GND",
+   )
+   cfg.spice_models.add(
+       "ic_spice",
+       component_definition="IC_U1",
+       file_path="/spice/ic.sp",
+       sub_circuit_name="IC_TOP",
+   )
 
    # ----------------------------------------------------------------
    # Thermal package definitions
    # ----------------------------------------------------------------
    pkg = cfg.package_definitions.add(
-       "PKG_U1", component_definition="IC_U1", apply_to_all=True,
-       maximum_power="5W", theta_jb="10C/W", theta_jc="5C/W", height="1mm",
+       "PKG_U1",
+       component_definition="IC_U1",
+       apply_to_all=True,
+       maximum_power="5W",
+       theta_jb="10C/W",
+       theta_jc="5C/W",
+       height="1mm",
    )
-   pkg.set_heatsink(fin_base_height="0.5mm", fin_height="3mm",
-                    fin_orientation="x_oriented", fin_spacing="1mm", fin_thickness="0.2mm")
+   pkg.set_heatsink(
+       fin_base_height="0.5mm",
+       fin_height="3mm",
+       fin_orientation="x_oriented",
+       fin_spacing="1mm",
+       fin_thickness="0.2mm",
+   )
 
    # ----------------------------------------------------------------
    # Variables
@@ -480,11 +512,16 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    # Modeler geometry
    # ----------------------------------------------------------------
-   cfg.modeler.add_trace("trace1", "top", "0.15mm",
-                         net_name="DDR4_DQ0", path=[[0.0, 0.0], [0.01, 0.0]])
-   cfg.modeler.add_rectangular_plane("bot", "gnd_plane", "GND",
-                                     lower_left_point=[-0.05, -0.05],
-                                     upper_right_point=[0.05, 0.05])
+   cfg.modeler.add_trace(
+       "trace1", "top", "0.15mm", net_name="DDR4_DQ0", path=[[0.0, 0.0], [0.01, 0.0]]
+   )
+   cfg.modeler.add_rectangular_plane(
+       "bot",
+       "gnd_plane",
+       "GND",
+       lower_left_point=[-0.05, -0.05],
+       upper_right_point=[0.05, 0.05],
+   )
    cfg.modeler.delete_primitives_by_layer(["old_layer"])
 
    # ----------------------------------------------------------------

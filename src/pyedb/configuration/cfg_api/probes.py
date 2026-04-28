@@ -66,7 +66,6 @@ class ProbeConfig:
         return data
 
 
-
 class ProbesConfig:
     """Collect voltage probe definitions for serialization."""
 
@@ -117,5 +116,3 @@ class ProbesConfig:
             Probe definitions in insertion order.
         """
         return [p.to_dict() for p in self._probes]
-
-

@@ -82,4 +82,3 @@ class NetsConfig:
         if self._power_ground_nets:
             data["power_ground_nets"] = list(self._power_ground_nets)
         return data
-
