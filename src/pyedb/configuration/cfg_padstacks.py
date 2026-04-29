@@ -235,7 +235,6 @@ class CfgPadstackDefinition(CfgBase):
         CfgPadstackDefinition
         """
         return cls(**kwargs)
-        return self.model_dump(exclude_none=True)
 
 
 class CfgPadstacks(CfgBase):

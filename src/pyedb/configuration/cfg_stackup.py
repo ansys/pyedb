@@ -161,17 +161,20 @@ class CfgLayer(BaseModel):
     """Represent one signal or dielectric layer entry."""
 
     name: Optional[str] = None
-    type: Optional[str] = None
+    layer_type: Optional[str] = Field(None, alias="type")
     material: Optional[str] = None
     fill_material: Optional[str] = None
     thickness: Optional[Union[float, str]] = None
     roughness: Optional[CfgRoughnessModel] = None
     etching: Optional[EtchingModel] = None
 
+    model_config = {"populate_by_name": True}
+
     def __init__(
         self,
         name: str | None = None,
-        type: Optional[str] = None,
+        layer_type: Optional[str] = None,
+        type: Optional[str] = None,  # noqa: A002 – accepted as alias for back-compat
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
         thickness: Optional[Union[str, float]] = None,
@@ -179,9 +182,11 @@ class CfgLayer(BaseModel):
         etching: Optional[EtchingModel] = None,
         **kwargs,
     ):
+        # Accept both spellings; explicit layer_type wins.
+        resolved_type = layer_type or type
         super().__init__(
             name=name,
-            type=type,
+            layer_type=resolved_type,
             material=material,
             fill_material=fill_material,
             thickness=thickness,
@@ -306,7 +311,7 @@ class CfgLayer(BaseModel):
 
     def to_dict(self) -> dict:
         """Serialize the layer definition."""
-        return self.model_dump(exclude_none=True)
+        return self.model_dump(exclude_none=True, by_alias=True)
 
 
 class CfgStackup(BaseModel):
@@ -450,7 +455,7 @@ class CfgStackup(BaseModel):
     def add_layer(
         self,
         name,
-        type: Optional[str] = None,
+        layer_type: Optional[str] = None,
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
         thickness: Optional[Union[str, float]] = None,
@@ -458,7 +463,7 @@ class CfgStackup(BaseModel):
         """Append a layer definition."""
         return self.add_layer_at_bottom(
             name,
-            type=type,
+            layer_type=layer_type,
             material=material,
             fill_material=fill_material,
             thickness=thickness,
@@ -473,7 +478,7 @@ class CfgStackup(BaseModel):
             Layer name.
         **kwargs
             Optional layer properties forwarded to :class:`CfgLayer`
-            (``type``, ``material``, ``fill_material``, ``thickness``).
+            (``layer_type``, ``material``, ``fill_material``, ``thickness``).
 
         Returns
         -------
@@ -492,7 +497,7 @@ class CfgStackup(BaseModel):
         thickness: Union[str, float] = "35um",
     ):
         """Add a signal layer with conductor defaults."""
-        return self.add_layer(name, type="signal", material=material, fill_material=fill_material, thickness=thickness)
+        return self.add_layer(name, layer_type="signal", material=material, fill_material=fill_material, thickness=thickness)
 
     def add_dielectric_layer(
         self,
@@ -501,9 +506,9 @@ class CfgStackup(BaseModel):
         thickness: Union[str, float] = "100um",
     ):
         """Add a dielectric layer with common defaults."""
-        return self.add_layer(name, type="dielectric", material=material, thickness=thickness)
+        return self.add_layer(name, layer_type="dielectric", material=material, thickness=thickness)
 
     def to_dict(self) -> dict:
         """Serialize the configured stackup."""
-        d = self.model_dump(exclude_none=True)
+        d = self.model_dump(exclude_none=True, by_alias=True)
         return {k: v for k, v in d.items() if v != []}
