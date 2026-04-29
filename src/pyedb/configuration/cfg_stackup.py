@@ -174,7 +174,6 @@ class CfgLayer(BaseModel):
         self,
         name: str | None = None,
         layer_type: Optional[str] = None,
-        type: Optional[str] = None,  # noqa: A002 – accepted as alias for back-compat
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
         thickness: Optional[Union[str, float]] = None,
@@ -182,8 +181,8 @@ class CfgLayer(BaseModel):
         etching: Optional[EtchingModel] = None,
         **kwargs,
     ):
-        # Accept both spellings; explicit layer_type wins.
-        resolved_type = layer_type or type
+        # Accept ``type`` as a back-compat alias passed via **kwargs.
+        resolved_type = layer_type or kwargs.pop("type", None)
         super().__init__(
             name=name,
             layer_type=resolved_type,
