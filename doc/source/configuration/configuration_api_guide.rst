@@ -635,7 +635,7 @@ Use ``cfg.setups.get(name)`` to retrieve a previously registered setup by name
 (useful when a setup is added in a helper function and you want to append
 sweeps later without keeping an explicit reference).
 
-**HFSS setup**—``cfg.setups.add_hfss_setup(name, adapt_type="single")``
+**HFSS setup:** ``cfg.setups.add_hfss_setup(name, adapt_type="single")``
 
 .. list-table::
    :header-rows: 1
@@ -667,7 +667,7 @@ sweeps later without keeping an explicit reference).
      - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
 
-**SIwave AC setup**—``cfg.setups.add_siwave_ac_setup(name, …)``
+**SIwave AC setup:** ``cfg.setups.add_siwave_ac_setup(name, …)``
 
 .. list-table::
    :header-rows: 1
@@ -689,7 +689,7 @@ sweeps later without keeping an explicit reference).
      - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
 
-**SIwave DC setup**—``cfg.setups.add_siwave_dc_setup(name, …)``
+**SIwave DC setup:** ``cfg.setups.add_siwave_dc_setup(name, …)``
 
 .. list-table::
    :header-rows: 1
@@ -705,7 +705,7 @@ sweeps later without keeping an explicit reference).
      - ``False``
      - Export DC thermal (loss) data after the solve.
 
-**Frequency sweep**—returned by ``add_frequency_sweep(…)``
+**Frequency sweep:** returned by ``add_frequency_sweep(…)``
 
 All sweep types share the same :class:`FrequencySweepConfig` builder.
 
@@ -852,7 +852,7 @@ retrieve *existing* layers or materials from the live EDB session and modify
 them. Use ``add_material`` / ``add_signal_layer`` / ``add_dielectric_layer``
 to define *new* entries.
 
-**Materials**—``cfg.stackup.add_material(name, …)`` / ``cfg.stackup.get_material(name)``
+**Materials:** ``cfg.stackup.add_material(name, …)`` / ``cfg.stackup.get_material(name)``
 
 .. list-table::
    :header-rows: 1
@@ -910,7 +910,7 @@ to define *new* entries.
      - –
      - Permittivity at *dielectric_model_frequency*.
 
-**Layers**—``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
+**Layers:** ``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
 
 .. list-table::
    :header-rows: 1
@@ -945,7 +945,7 @@ Use ``cfg.padstacks.get_definition(name)`` / ``cfg.padstacks.get_instance(name)`
 to retrieve *existing* EDB padstacks. Use ``add_definition`` / ``add_instance``
 to register *new* ones.
 
-**Definitions**—``cfg.padstacks.add_definition(name, …)`` / ``get_definition(name)``
+**Definitions:** ``cfg.padstacks.add_definition(name, …)`` / ``get_definition(name)``
 
 .. list-table::
    :header-rows: 1
@@ -973,7 +973,7 @@ to register *new* ones.
      - –
      - Raw solder-ball parameter dictionary.
 
-**Instances**—``cfg.padstacks.add_instance(…)`` / ``get_instance(name)``
+**Instances:** ``cfg.padstacks.add_instance(…)`` / ``get_instance(name)``
 
 .. list-table::
    :header-rows: 1
@@ -1038,9 +1038,9 @@ components directly without calling ``add`` first:
 designator returns the same object. If the component was already registered
 with :meth:`add`, that entry is returned instead.
 
-**Adding new entries**—``cfg.components.add(reference_designator, …)``
+**Adding new entries:** ``cfg.components.add(reference_designator, …)``
 
-**Retrieving existing entries**—``cfg.components.get(reference_designator)``
+**Retrieving existing entries:** ``cfg.components.get(reference_designator)``
 
 .. list-table::
    :header-rows: 1
