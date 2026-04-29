@@ -235,4 +235,3 @@ class CfgBoundaries(CfgBase):
         if not self.honor_user_dielectric:
             raw.pop("honor_user_dielectric", None)
         return raw
-

@@ -691,9 +691,7 @@ class CfgPorts:
 
         Examples
         --------
-        >>> cfg.ports.add_wave_port(
-        ...     "wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6
-        ... )
+        >>> cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
         """
         port = CfgEdgePort(
             self._pedb,
@@ -1714,4 +1712,3 @@ class CfgDiffWavePort:
             Differential-port payload dictionary.
         """
         return self.export_properties()
-

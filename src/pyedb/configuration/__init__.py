@@ -33,7 +33,10 @@ from pyedb.configuration.cfg_components import (  # noqa: F401
 from pyedb.configuration.cfg_general import CfgGeneral as GeneralConfig  # noqa: F401
 from pyedb.configuration.cfg_modeler import CfgModeler as ModelerConfig  # noqa: F401
 from pyedb.configuration.cfg_nets import CfgNets as NetsConfig  # noqa: F401
-from pyedb.configuration.cfg_operations import CfgCutout as CutoutConfig, CfgOperations as OperationsConfig  # noqa: F401
+from pyedb.configuration.cfg_operations import (  # noqa: F401
+    CfgCutout as CutoutConfig,
+    CfgOperations as OperationsConfig,
+)
 from pyedb.configuration.cfg_package_definition import (  # noqa: F401
     CfgHeatSink as HeatSinkConfig,
     CfgPackage as PackageDefinitionConfig,
@@ -65,8 +68,8 @@ from pyedb.configuration.cfg_s_parameter_models import (  # noqa: F401
 )
 from pyedb.configuration.cfg_setup import (  # noqa: F401
     CfgHFSSSetup as HfssSetupConfig,
-    CfgSetups as SetupsConfig,
     CfgSetupAC,
+    CfgSetups as SetupsConfig,
     CfgSIwaveACSetup as SIwaveACSetupConfig,
     CfgSIwaveDCSetup as SIwaveDCSetupConfig,
 )

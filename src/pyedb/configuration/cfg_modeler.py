@@ -178,7 +178,9 @@ class CfgModeler:
         Examples
         --------
         >>> cfg.modeler.add_rectangular_plane(
-        ...     "bot", "gnd_plane", "GND",
+        ...     "bot",
+        ...     "gnd_plane",
+        ...     "GND",
         ...     lower_left_point=[-0.05, -0.05],
         ...     upper_right_point=[0.05, 0.05],
         ... )
@@ -285,7 +287,9 @@ class CfgModeler:
         Examples
         --------
         >>> cfg.modeler.add_polygon_plane(
-        ...     "top", "sig_poly", "SIG",
+        ...     "top",
+        ...     "sig_poly",
+        ...     "SIG",
         ...     points=[[0, 0], [0.01, 0], [0.01, 0.005], [0, 0.005]],
         ... )
         """
@@ -376,7 +380,9 @@ class CfgModeler:
         if self.padstack_defs:
             data["padstack_definitions"] = [p.model_dump(exclude_none=True) for p in self.padstack_defs]
         if self.padstack_instances:
-            data["padstack_instances"] = [p.model_dump(exclude_none=True, by_alias=False) for p in self.padstack_instances]
+            data["padstack_instances"] = [
+                p.model_dump(exclude_none=True, by_alias=False) for p in self.padstack_instances
+            ]
         if self.components:
             data["components"] = [c.to_dict() for c in self.components]
         if any(v for v in self.primitives_to_delete.values()):

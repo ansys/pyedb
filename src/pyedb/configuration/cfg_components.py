@@ -375,7 +375,12 @@ class CfgComponent(CfgBase):
             self._retrieve_port_properties_from_edb()
 
     def __init__(self, _pedb=None, pedb_object=None, **kwargs):
-        if pedb_object is None and not hasattr(_pedb, "components") and "reference_designator" not in kwargs and _pedb is not None:
+        if (
+            pedb_object is None
+            and not hasattr(_pedb, "components")
+            and "reference_designator" not in kwargs
+            and _pedb is not None
+        ):
             kwargs["reference_designator"] = _pedb
             _pedb = None
         self._pedb = _pedb
@@ -761,4 +766,3 @@ class CfgComponents:
     def to_list(self):
         """Serialize all configured components."""
         return [c.to_dict() for c in self.components]
-
