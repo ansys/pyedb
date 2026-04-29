@@ -52,7 +52,18 @@ class PinPairModel(CfgBaseModel):
 
     model_config = {"populate_by_name": True, "extra": "allow"}
 
-    def __init__(self, first_pin: str, second_pin: str, **kwargs):
+    def __init__(
+        self,
+        first_pin: str,
+        second_pin: str,
+        resistance: Optional[Union[str, float]] = None,
+        inductance: Optional[Union[str, float]] = None,
+        capacitance: Optional[Union[str, float]] = None,
+        is_parallel: bool = False,
+        resistance_enabled: bool = False,
+        inductance_enabled: bool = False,
+        capacitance_enabled: bool = False,
+    ):
         """Initialize a pin-pair RLC model.
 
         Parameters
@@ -61,11 +72,32 @@ class PinPairModel(CfgBaseModel):
             Name of the first pin in the pair.
         second_pin : str
             Name of the second pin in the pair.
-        **kwargs
-            Configuration fields.
-
+        resistance : str or float, optional
+            Resistance value, e.g. ``"100ohm"`` or ``100.0``.
+        inductance : str or float, optional
+            Inductance value, e.g. ``"10nH"`` or ``10e-9``.
+        capacitance : str or float, optional
+            Capacitance value, e.g. ``"100nF"`` or ``100e-9``.
+        is_parallel : bool, default: ``False``
+            ``True`` for a parallel RLC; ``False`` for series.
+        resistance_enabled : bool, default: ``False``
+            Whether the resistance element is active.
+        inductance_enabled : bool, default: ``False``
+            Whether the inductance element is active.
+        capacitance_enabled : bool, default: ``False``
+            Whether the capacitance element is active.
         """
-        super().__init__(first_pin=first_pin, second_pin=second_pin, **kwargs)
+        super().__init__(
+            first_pin=first_pin,
+            second_pin=second_pin,
+            resistance=resistance,
+            inductance=inductance,
+            capacitance=capacitance,
+            is_parallel=is_parallel,
+            resistance_enabled=resistance_enabled,
+            inductance_enabled=inductance_enabled,
+            capacitance_enabled=capacitance_enabled,
+        )
 
     def to_dict(self) -> dict:
         """Serialize the pin-pair model.
@@ -153,22 +185,53 @@ class ComponentConfig(_CfgComponentData):
     """Fluent builder for a single component entry.
 
     Inherits all fields from ``_CfgComponentData``.  Adds convenience setter
-    methods on top — no field redefinition needed.
+    methods on top.
 
+    Parameters
+    ----------
+    reference_designator : str
+        Component instance reference designator, e.g. ``"R1"``.
+    part_type : str, optional
+        Component type: ``"resistor"``, ``"capacitor"``, ``"inductor"``,
+        ``"ic"``, ``"io"``, or ``"other"``.
+    enabled : bool, optional
+        Whether the component is enabled.
+    definition : str, optional
+        Component part/definition name.
+    placement_layer : str, optional
+        Layer on which the component is placed.
     """
 
-    def __init__(self, reference_designator: str, **kwargs):
+    def __init__(
+        self,
+        reference_designator: str,
+        part_type: Optional[str] = None,
+        enabled: Optional[bool] = None,
+        definition: Optional[str] = None,
+        placement_layer: Optional[str] = None,
+    ):
         """Initialize a component configuration.
 
         Parameters
         ----------
         reference_designator : str
             Component instance reference designator.
-        **kwargs
-            Configuration fields.
-
+        part_type : str, optional
+            Component part type (``"resistor"``, ``"capacitor"``, ``"ic"``, …).
+        enabled : bool, optional
+            Whether the component is enabled.
+        definition : str, optional
+            Component definition or part name.
+        placement_layer : str, optional
+            Layer on which the component is placed.
         """
-        super().__init__(reference_designator=reference_designator, **kwargs)
+        super().__init__(
+            reference_designator=reference_designator,
+            part_type=part_type,
+            enabled=enabled,
+            definition=definition,
+            placement_layer=placement_layer,
+        )
 
     # ── model helpers ─────────────────────────────────────────────────────
 

@@ -168,6 +168,26 @@ class TestMaterialConfig:
         for key, val in props.items():
             assert d[key] == val
 
+    def test_explicit_params_no_kwargs(self):
+        """All material properties are explicit — no **kwargs required."""
+        m = MaterialConfig(
+            "silver",
+            conductivity=6.3e7,
+            permittivity=1.0,
+            dielectric_loss_tangent=0.0,
+            magnetic_loss_tangent=0.0,
+            mass_density=10490,
+            permeability=1.0,
+            poisson_ratio=0.37,
+            specific_heat=235,
+            thermal_conductivity=429,
+            youngs_modulus=83e9,
+            thermal_expansion_coefficient=19e-6,
+        )
+        d = m.to_dict()
+        assert d["conductivity"] == 6.3e7
+        assert d["mass_density"] == 10490
+
 
 # ---------------------------------------------------------------------------
 # LayerConfig
@@ -186,6 +206,13 @@ class TestLayerConfig:
         assert d["type"] == "signal"
         assert d["material"] == "copper"
         assert d["thickness"] == "35um"
+
+    def test_explicit_params(self):
+        """All layer params are explicit — no **kwargs required."""
+        layer = LayerConfig("sig", type="signal", material="copper", fill_material="fr4", thickness="18um")
+        d = layer.to_dict()
+        assert d["fill_material"] == "fr4"
+        assert d["thickness"] == "18um"
 
     def test_set_huray_roughness(self):
         layer = LayerConfig("top")
@@ -219,6 +246,15 @@ class TestLayerConfig:
         assert d["etching"]["etch_power_ground_nets"] is True
         assert d["etching"]["enabled"] is True
 
+    def test_method_chaining(self):
+        """set_huray_roughness and set_etching return self for chaining."""
+        layer = LayerConfig("top")
+        result = layer.set_huray_roughness("0.1um", "2.9").set_etching(factor=0.3)
+        assert result is layer
+        d = layer.to_dict()
+        assert "roughness" in d
+        assert "etching" in d
+
 
 # ---------------------------------------------------------------------------
 # StackupConfig
@@ -238,11 +274,32 @@ class TestStackupConfig:
         assert len(d["materials"]) == 1
         assert d["materials"][0]["name"] == "copper"
 
+    def test_add_material_all_props(self):
+        s = StackupConfig()
+        s.add_material(
+            "fr4",
+            permittivity=4.4,
+            dielectric_loss_tangent=0.02,
+            thermal_conductivity=0.3,
+            mass_density=1900,
+        )
+        d = s.to_dict()["materials"][0]
+        assert d["permittivity"] == 4.4
+        assert d["thermal_conductivity"] == 0.3
+        assert d["mass_density"] == 1900
+
     def test_add_layer(self):
         s = StackupConfig()
         s.add_layer("top", type="signal", material="copper", thickness="35um")
         d = s.to_dict()
         assert d["layers"][0]["name"] == "top"
+
+    def test_add_layer_explicit_fill_material(self):
+        s = StackupConfig()
+        s.add_layer("sig", type="signal", material="copper", fill_material="fr4", thickness="18um")
+        d = s.to_dict()["layers"][0]
+        assert d["fill_material"] == "fr4"
+        assert d["thickness"] == "18um"
 
     def test_add_signal_layer_convenience(self):
         s = StackupConfig()
@@ -273,6 +330,18 @@ class TestStackupConfig:
         d = s.to_dict()
         assert len(d["materials"]) == 2
 
+    def test_add_signal_layer_returns_layer_config(self):
+        s = StackupConfig()
+        lyr = s.add_signal_layer("top")
+        assert isinstance(lyr, LayerConfig)
+
+    def test_layer_roughness_via_stackup(self):
+        s = StackupConfig()
+        lyr = s.add_signal_layer("top")
+        lyr.set_huray_roughness("0.1um", "2.9")
+        d = s.to_dict()["layers"][0]
+        assert d["roughness"]["top"]["model"] == "huray"
+
 
 # ---------------------------------------------------------------------------
 # NetsConfig
@@ -302,6 +371,40 @@ class TestNetsConfig:
         n.add_signal_nets(["A"])
         n.add_signal_nets(["B", "C"])
         assert n.to_dict()["signal_nets"] == ["A", "B", "C"]
+
+    def test_add_reference_nets(self):
+        n = NetsConfig()
+        n.add_reference_nets(["GND", "AGND"])
+        # reference_nets are NOT serialized in to_dict (only used for cutout forwarding)
+        assert "reference_nets" not in n.to_dict()
+        assert n.reference_nets == ["GND", "AGND"]
+
+    def test_reference_nets_property(self):
+        n = NetsConfig()
+        n.add_reference_nets(["GND"])
+        assert n.reference_nets == ["GND"]
+
+    def test_signal_nets_property(self):
+        n = NetsConfig()
+        n.add_signal_nets(["CLK", "DATA"])
+        assert n.signal_nets == ["CLK", "DATA"]
+
+    def test_power_ground_nets_property(self):
+        n = NetsConfig()
+        n.add_power_ground_nets(["VDD"])
+        assert n.power_ground_nets == ["VDD"]
+
+    def test_reference_nets_usable_in_cutout(self):
+        """Verify the reference_nets property can be passed directly to add_cutout."""
+        from pyedb.configuration.cfg_api.operations import OperationsConfig
+        n = NetsConfig()
+        n.add_signal_nets(["SIG"])
+        n.add_reference_nets(["GND"])
+        ops = OperationsConfig()
+        c = ops.add_cutout(signal_nets=n.signal_nets, reference_nets=n.reference_nets)
+        d = ops.to_dict()
+        assert d["cutout"]["signal_list"] == ["SIG"]
+        assert d["cutout"]["reference_list"] == ["GND"]
 
 
 # ---------------------------------------------------------------------------
@@ -441,6 +544,22 @@ class TestPadstackDefinitionConfig:
         assert d["hole_plating_thickness"] == "25um"
         assert d["material"] == "copper"
 
+    def test_all_explicit_params(self):
+        """All CfgPadstackDefinition fields are explicit — no **kwargs."""
+        p = PadstackDefinitionConfig(
+            "via_full",
+            hole_plating_thickness="25um",
+            material="copper",
+            hole_range="upper_pad_to_lower_pad",
+            pad_parameters={"pad_type": "circle"},
+            hole_parameters={"shape": "circle"},
+            solder_ball_parameters={"diameter": "150um"},
+        )
+        d = p.to_dict()
+        assert d["hole_range"] == "upper_pad_to_lower_pad"
+        assert d["pad_parameters"]["pad_type"] == "circle"
+        assert d["solder_ball_parameters"]["diameter"] == "150um"
+
 
 class TestPadstackInstanceConfig:
     def test_minimal(self):
@@ -453,6 +572,26 @@ class TestPadstackInstanceConfig:
         inst = PadstackInstanceConfig(layer_range=["top", "bot"])
         d = inst.to_dict()
         assert d["layer_range"] == ["top", "bot"]
+
+    def test_all_explicit_params(self):
+        """All CfgPadstackInstance fields are explicit — no **kwargs."""
+        inst = PadstackInstanceConfig(
+            name="v2",
+            net_name="SIG",
+            definition="via_0.2",
+            layer_range=["top", "L2"],
+            position=[0.001, 0.002],
+            rotation=45,
+            is_pin=False,
+            hole_override_enabled=True,
+            hole_override_diameter="0.22mm",
+            solder_ball_layer="top",
+        )
+        d = inst.to_dict()
+        assert d["definition"] == "via_0.2"
+        assert d["hole_override_enabled"] is True
+        assert d["hole_override_diameter"] == "0.22mm"
+        assert d["solder_ball_layer"] == "top"
 
     def test_backdrill(self):
         inst = PadstackInstanceConfig(name="via_bd")
@@ -467,6 +606,12 @@ class TestPadstackInstanceConfig:
         assert "from_top" in d["backdrill_parameters"]
         assert d["backdrill_parameters"]["from_top"]["stub_length"] == "0.05mm"
 
+    def test_backdrill_chaining(self):
+        """set_backdrill returns self for method chaining."""
+        inst = PadstackInstanceConfig(name="via")
+        result = inst.set_backdrill("L3", "0.25mm")
+        assert result is inst
+
 
 class TestPadstacksConfig:
     def test_empty(self):
@@ -479,12 +624,39 @@ class TestPadstacksConfig:
         d = ps.to_dict()
         assert d["definitions"][0]["name"] == "via"
 
+    def test_add_definition_all_params(self):
+        ps = PadstacksConfig()
+        ps.add_definition(
+            "via_full",
+            hole_plating_thickness="25um",
+            material="copper",
+            hole_range="upper_pad_to_lower_pad",
+        )
+        d = ps.to_dict()["definitions"][0]
+        assert d["hole_range"] == "upper_pad_to_lower_pad"
+
     def test_add_instance(self):
         ps = PadstacksConfig()
         inst = ps.add_instance(name="v1", net_name="SIG1")
         assert isinstance(inst, PadstackInstanceConfig)
         d = ps.to_dict()
         assert d["instances"][0]["name"] == "v1"
+
+    def test_add_instance_all_params(self):
+        ps = PadstacksConfig()
+        inst = ps.add_instance(
+            name="v2",
+            net_name="GND",
+            definition="via_0.2",
+            layer_range=["top", "bot"],
+            position=[0.001, 0.002],
+            rotation=0,
+            is_pin=False,
+            hole_override_enabled=False,
+        )
+        d = ps.to_dict()["instances"][0]
+        assert d["definition"] == "via_0.2"
+        assert d["layer_range"] == ["top", "bot"]
 
 
 class TestPinGroupConfig:
@@ -949,6 +1121,42 @@ class TestCutoutConfig:
         assert d["auto_identify_nets"]["enabled"] is True
         assert d["auto_identify_nets"]["resistor_below"] == 200
 
+    def test_extent_type_convexhull(self):
+        c = CutoutConfig(extent_type="ConvexHull")
+        assert c.to_dict()["extent_type"] == "ConvexHull"
+
+    def test_extent_type_bounding_box(self):
+        c = CutoutConfig(extent_type="BoundingBox")
+        assert c.to_dict()["extent_type"] == "BoundingBox"
+
+    def test_extent_type_conformal(self):
+        c = CutoutConfig(extent_type="Conformal")
+        assert c.to_dict()["extent_type"] == "Conformal"
+
+    def test_extent_type_case_insensitive_lower(self):
+        c = CutoutConfig(extent_type="convexhull")
+        assert c.to_dict()["extent_type"] == "ConvexHull"
+
+    def test_extent_type_case_insensitive_upper(self):
+        c = CutoutConfig(extent_type="CONVEXHULL")
+        assert c.to_dict()["extent_type"] == "ConvexHull"
+
+    def test_extent_type_case_insensitive_boundingbox(self):
+        c = CutoutConfig(extent_type="boundingbox")
+        assert c.to_dict()["extent_type"] == "BoundingBox"
+
+    def test_extent_type_case_insensitive_conformal(self):
+        c = CutoutConfig(extent_type="CONFORMAL")
+        assert c.to_dict()["extent_type"] == "Conformal"
+
+    def test_expansion_size(self):
+        c = CutoutConfig(expansion_size=0.005)
+        assert c.to_dict()["expansion_size"] == 0.005
+
+    def test_expansion_factor(self):
+        c = CutoutConfig(expansion_factor=0.1)
+        assert c.to_dict()["expansion_factor"] == 0.1
+
 
 class TestOperationsConfig:
     def test_empty(self):
@@ -961,6 +1169,26 @@ class TestOperationsConfig:
         d = ops.to_dict()
         assert "cutout" in d
         assert d["cutout"]["signal_list"] == ["SIG1"]
+
+    def test_add_cutout_extent_type_convexhull(self):
+        ops = OperationsConfig()
+        ops.add_cutout(["SIG"], ["GND"], extent_type="ConvexHull")
+        assert ops.to_dict()["cutout"]["extent_type"] == "ConvexHull"
+
+    def test_add_cutout_extent_type_case_insensitive(self):
+        ops = OperationsConfig()
+        ops.add_cutout(["SIG"], ["GND"], extent_type="convexhull")
+        assert ops.to_dict()["cutout"]["extent_type"] == "ConvexHull"
+
+    def test_add_cutout_extent_type_boundingbox_case_insensitive(self):
+        ops = OperationsConfig()
+        ops.add_cutout(["SIG"], ["GND"], extent_type="BOUNDINGBOX")
+        assert ops.to_dict()["cutout"]["extent_type"] == "BoundingBox"
+
+    def test_add_cutout_expansion_size(self):
+        ops = OperationsConfig()
+        ops.add_cutout(["SIG"], ["GND"], expansion_size=0.003)
+        assert ops.to_dict()["cutout"]["expansion_size"] == 0.003
 
     def test_generate_auto_hfss_regions(self):
         ops = OperationsConfig()
@@ -1110,11 +1338,47 @@ class TestModelerConfig:
         d = m.to_dict()
         assert d["padstack_definitions"][0]["name"] == "via_0.2"
 
+    def test_padstack_definition_all_params(self):
+        """add_padstack_definition exposes all fields explicitly."""
+        m = ModelerConfig()
+        m.add_padstack_definition(
+            "via_full",
+            hole_plating_thickness="25um",
+            material="copper",
+            hole_range="upper_pad_to_lower_pad",
+            pad_parameters={"shape": "circle"},
+            hole_parameters={"diam": "0.2mm"},
+            solder_ball_parameters={"diam": "150um"},
+        )
+        d = m.to_dict()["padstack_definitions"][0]
+        assert d["hole_range"] == "upper_pad_to_lower_pad"
+        assert d["pad_parameters"]["shape"] == "circle"
+
     def test_padstack_instance(self):
         m = ModelerConfig()
         m.add_padstack_instance(name="v1", net_name="GND")
         d = m.to_dict()
         assert d["padstack_instances"][0]["name"] == "v1"
+
+    def test_padstack_instance_all_params(self):
+        """add_padstack_instance exposes all fields explicitly."""
+        m = ModelerConfig()
+        m.add_padstack_instance(
+            name="v2",
+            net_name="SIG",
+            definition="via_0.2",
+            layer_range=["top", "bot"],
+            position=[0.001, 0.002],
+            rotation=0,
+            is_pin=False,
+            hole_override_enabled=True,
+            hole_override_diameter="0.22mm",
+            solder_ball_layer="top",
+        )
+        d = m.to_dict()["padstack_instances"][0]
+        assert d["definition"] == "via_0.2"
+        assert d["hole_override_diameter"] == "0.22mm"
+        assert d["solder_ball_layer"] == "top"
 
     def test_delete_primitives_by_layer(self):
         m = ModelerConfig()
@@ -1652,11 +1916,56 @@ class TestTerminalsConfig:
         assert isinstance(t, PadstackInstanceTerminal)
         assert tc.to_list()[0]["name"] == "t1"
 
+    def test_add_padstack_instance_terminal_all_params(self):
+        """All optional params of add_padstack_instance_terminal are explicit."""
+        tc = TerminalsConfig()
+        t = tc.add_padstack_instance_terminal(
+            name="t1",
+            padstack_instance="via_1",
+            impedance=50,
+            boundary_type="port",
+            hfss_type="Wave",
+            is_circuit_port=True,
+            reference_terminal="ref_t",
+            amplitude=2,
+            phase=90,
+            terminal_to_ground="kNegativeNode",
+            layer="top",
+            padstack_instance_id=42,
+        )
+        d = t.to_dict()
+        assert d["hfss_type"] == "Wave"
+        assert d["is_circuit_port"] is True
+        assert d["reference_terminal"] == "ref_t"
+        assert d["amplitude"] == 2
+        assert d["phase"] == 90
+        assert d["terminal_to_ground"] == "kNegativeNode"
+        assert d["layer"] == "top"
+        assert d["padstack_instance_id"] == 42
+
     def test_add_pin_group_terminal(self):
         tc = TerminalsConfig()
         t = tc.add_pin_group_terminal("t2", "pg1", 50, "port")
         assert isinstance(t, PinGroupTerminal)
         assert tc.to_list()[0]["pin_group"] == "pg1"
+
+    def test_add_pin_group_terminal_all_params(self):
+        """All optional params of add_pin_group_terminal are explicit."""
+        tc = TerminalsConfig()
+        t = tc.add_pin_group_terminal(
+            name="t2",
+            pin_group="pg1",
+            impedance=50,
+            boundary_type="port",
+            reference_terminal="ref_t",
+            amplitude=1.5,
+            phase=45,
+            terminal_to_ground="kNegativeNode",
+        )
+        d = t.to_dict()
+        assert d["reference_terminal"] == "ref_t"
+        assert d["amplitude"] == 1.5
+        assert d["phase"] == 45
 
     def test_add_point_terminal(self):
         tc = TerminalsConfig()
@@ -1664,11 +1973,58 @@ class TestTerminalsConfig:
         assert isinstance(t, PointTerminal)
         assert tc.to_list()[0]["x"] == 0.001
 
+    def test_add_point_terminal_all_params(self):
+        """All optional params of add_point_terminal are explicit."""
+        tc = TerminalsConfig()
+        t = tc.add_point_terminal(
+            name="t3",
+            x=0.001,
+            y=0.002,
+            layer="top",
+            net="SIG",
+            impedance=50,
+            boundary_type="port",
+            reference_terminal="ref_t",
+            amplitude=1,
+            phase=0,
+            terminal_to_ground="kNoGround",
+        )
+        d = t.to_dict()
+        assert d["reference_terminal"] == "ref_t"
+        assert d["terminal_to_ground"] == "kNoGround"
+
     def test_add_edge_terminal(self):
         tc = TerminalsConfig()
         t = tc.add_edge_terminal("t4", "prim1", 0, 0, 50, "port")
         assert isinstance(t, EdgeTerminal)
         assert tc.to_list()[0]["terminal_type"] == "edge"
+
+    def test_add_edge_terminal_all_params(self):
+        """All optional params of add_edge_terminal are explicit."""
+        tc = TerminalsConfig()
+        t = tc.add_edge_terminal(
+            name="t4",
+            primitive="prim1",
+            point_on_edge_x=0.001,
+            point_on_edge_y=0.002,
+            impedance=50,
+            boundary_type="port",
+            hfss_type="Gap",
+            horizontal_extent_factor=8,
+            vertical_extent_factor=10,
+            pec_launch_width="0.05mm",
+            is_circuit_port=True,
+            reference_terminal="ref_t",
+            amplitude=2,
+            phase=30,
+            terminal_to_ground="kNegativeNode",
+        )
+        d = t.to_dict()
+        assert d["hfss_type"] == "Gap"
+        assert d["horizontal_extent_factor"] == 8
+        assert d["vertical_extent_factor"] == 10
+        assert d["pec_launch_width"] == "0.05mm"
+        assert d["is_circuit_port"] is True
 
     def test_add_bundle_terminal(self):
         tc = TerminalsConfig()
@@ -1771,6 +2127,26 @@ class TestPackageDefinitionsConfig:
         lst = pc.to_list()
         assert len(lst) == 1
         assert lst[0]["name"] == "PKG1"
+
+    def test_add_all_explicit_params(self):
+        """PackageDefinitionsConfig.add exposes all thermal fields explicitly."""
+        pc = PackageDefinitionsConfig()
+        pkg = pc.add(
+            name="PKG1",
+            component_definition="BGA_256",
+            apply_to_all=True,
+            maximum_power="5W",
+            thermal_conductivity="0.3W/mK",
+            theta_jb="10C/W",
+            theta_jc="5C/W",
+            height="1mm",
+        )
+        d = pkg.to_dict()
+        assert d["maximum_power"] == "5W"
+        assert d["thermal_conductivity"] == "0.3W/mK"
+        assert d["theta_jb"] == "10C/W"
+        assert d["theta_jc"] == "5C/W"
+        assert d["height"] == "1mm"
 
     def test_multiple(self):
         pc = PackageDefinitionsConfig()

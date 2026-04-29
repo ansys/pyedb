@@ -22,9 +22,7 @@
 
 from typing import Any, List, Optional, Union
 
-from pydantic import BaseModel, Field
-
-# from pyedb.configuration.cfg_common import CfgBase
+from pydantic import BaseModel, Field, field_validator
 
 
 class CfgAutoIdentifyNets(BaseModel):
@@ -52,6 +50,30 @@ class CfgCutout(BaseModel):
     expansion_factor: Optional[float] = 0
 
     model_config = dict(populate_by_name=True)
+
+    # Accepted extent_type values and their canonical form
+    _EXTENT_TYPE_MAP: dict = {
+        "convexhull": "ConvexHull",
+        "convex_hull": "ConvexHull",
+        "conforming": "Conforming",
+        "conformal": "Conforming",
+        "bounding": "Bounding",
+        "boundingbox": "Bounding",
+        "bounding_box": "Bounding",
+    }
+
+    @field_validator("extent_type", mode="before")
+    @classmethod
+    def _normalise_extent_type(cls, v):
+        if v is None:
+            return v
+        key = str(v).lower().replace(" ", "")
+        normalised = cls._EXTENT_TYPE_MAP.get(key)
+        if normalised is None:
+            # fall back to the original value unchanged so unknown values
+            # surface as a runtime error from the underlying cutout method
+            return v
+        return normalised
 
 
 class CfgOperations(BaseModel):

@@ -42,6 +42,7 @@ class NetsConfig:
     --------
     >>> cfg.nets.add_signal_nets(["SIG1", "SIG2"])
     >>> cfg.nets.add_power_ground_nets(["VDD", "GND"])
+    >>> cfg.nets.add_reference_nets(["GND"])
 
     """
 
@@ -49,6 +50,22 @@ class NetsConfig:
         """Initialize the nets configuration."""
         self._signal_nets: List[str] = []
         self._power_ground_nets: List[str] = []
+        self._reference_nets: List[str] = []
+
+    @property
+    def signal_nets(self) -> List[str]:
+        """List of configured signal net names."""
+        return list(self._signal_nets)
+
+    @property
+    def power_ground_nets(self) -> List[str]:
+        """List of configured power/ground net names."""
+        return list(self._power_ground_nets)
+
+    @property
+    def reference_nets(self) -> List[str]:
+        """List of configured reference net names."""
+        return list(self._reference_nets)
 
     def add_signal_nets(self, nets: List[str]):
         """Append signal net names.
@@ -57,7 +74,6 @@ class NetsConfig:
         ----------
         nets : list of str
             Net names to classify as signal nets.
-
         """
         self._signal_nets.extend(nets)
 
@@ -68,9 +84,22 @@ class NetsConfig:
         ----------
         nets : list of str
             Net names to classify as power or ground nets.
-
         """
         self._power_ground_nets.extend(nets)
+
+    def add_reference_nets(self, nets: List[str]):
+        """Append reference (ground) net names.
+
+        These are the same nets passed to ``add_cutout(reference_nets=…)``.
+        Storing them here allows the cutout configuration to reference
+        ``cfg.nets.reference_nets`` directly without duplicating the list.
+
+        Parameters
+        ----------
+        nets : list of str
+            Net names to use as reference / ground nets.
+        """
+        self._reference_nets.extend(nets)
 
     def to_dict(self) -> dict:
         """Serialize the configured net classification lists.
@@ -80,7 +109,8 @@ class NetsConfig:
         dict
             Dictionary containing ``signal_nets`` and/or
             ``power_ground_nets`` when those lists are non-empty.
-
+            ``reference_nets`` is **not** serialized here; it is passed
+            directly to the ``operations.cutout`` configuration.
         """
         data: dict = {}
         if self._signal_nets:

@@ -429,21 +429,72 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    # Simulation setups
    # ----------------------------------------------------------------
-   hfss = cfg.setups.add_hfss_setup("hfss_bb")
-   hfss.set_broadband_adaptive("1GHz", "20GHz", max_passes=20, max_delta=0.02)
-   hfss.set_auto_mesh_operation(enabled=True)
-   hfss.add_length_mesh_operation("mesh1", {"DDR4_DQ0": ["top"]}, max_length="0.5mm")
-   sweep = hfss.add_frequency_sweep("sweep1")
+   # ----- HFSS setup -----
+   hfss = cfg.setups.add_hfss_setup(
+       "hfss_bb",
+       adapt_type="broadband",          # "single" | "broadband" | "multi_frequencies"
+   )
+
+   # Adaptive refinement – only one of these three is active at a time:
+   hfss.set_broadband_adaptive(
+       low_freq="1GHz",
+       high_freq="20GHz",
+       max_passes=20,
+       max_delta=0.02,
+   )
+   # hfss.set_single_frequency_adaptive(freq="5GHz", max_passes=20, max_delta=0.02)
+   # hfss.add_multi_frequency_adaptive("5GHz", max_passes=20, max_delta=0.02)
+   # hfss.add_multi_frequency_adaptive("10GHz")
+
+   # Automatic mesh seeding
+   hfss.set_auto_mesh_operation(
+       enabled=True,
+       trace_ratio_seeding=3.0,
+       signal_via_side_number=12,
+   )
+
+   # Length-based mesh operation
+   hfss.add_length_mesh_operation(
+       name="mesh1",
+       nets_layers_list={"DDR4_DQ0": ["top"]},
+       max_length="0.5mm",
+       max_elements=1000,
+       restrict_length=True,
+       refine_inside=False,
+   )
+
+   # Frequency sweep (method-chaining supported)
+   sweep = hfss.add_frequency_sweep(
+       "sweep1",
+       sweep_type="interpolation",      # "interpolation" | "discrete"
+       use_q3d_for_dc=False,
+       compute_dc_point=False,
+       enforce_causality=False,
+       enforce_passivity=True,
+       adv_dc_extrapolation=False,
+   )
    sweep.add_linear_count_frequencies("1GHz", "20GHz", 100)
    sweep.add_single_frequency("5GHz")
 
+   # ----- SIwave AC setup -----
    siwave_ac = cfg.setups.add_siwave_ac_setup(
-       "siw_ac", si_slider_position=2, pi_slider_position=1
+       "siw_ac",
+       si_slider_position=2,            # 0=Speed | 1=Balanced | 2=Accuracy
+       pi_slider_position=1,
+       use_si_settings=True,
    )
-   siwave_ac.add_frequency_sweep("siw_sw1").add_log_count_frequencies("1kHz", "1GHz", 100)
+   siwave_ac.add_frequency_sweep(
+       "siw_sw1",
+       sweep_type="interpolation",
+       compute_dc_point=False,
+       enforce_passivity=True,
+   ).add_log_count_frequencies("1kHz", "1GHz", 100)
 
+   # ----- SIwave DC setup -----
    cfg.setups.add_siwave_dc_setup(
-       "siw_dc", dc_slider_position=1, export_dc_thermal_data=True
+       "siw_dc",
+       dc_slider_position=1,            # 0=Speed | 1=Balanced | 2=Accuracy
+       export_dc_thermal_data=True,
    )
 
    # ----------------------------------------------------------------
@@ -567,6 +618,527 @@ re-exporting.
    # Load from a dict
    cfg2 = EdbConfigBuilder.from_dict({"nets": {"signal_nets": ["CLK"]}})
    cfg2.to_toml("nets_only.toml")
+
+Setups
+------
+
+Three setup types are available via ``cfg.setups``.  Each ``add_*`` method
+returns a typed builder so that IDEs provide full autocomplete.
+
+**HFSS setup** — ``cfg.setups.add_hfss_setup(name, adapt_type="single")``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Method / parameter
+     - Default
+     - Description
+   * - ``add_hfss_setup(name, adapt_type)``
+     - –
+     - Create setup. ``adapt_type``: ``"single"`` \| ``"broadband"`` \|
+       ``"multi_frequencies"``.
+   * - ``.set_single_frequency_adaptive(freq, max_passes, max_delta)``
+     - ``"5GHz"``, ``20``, ``0.02``
+     - Refine at one adaptive frequency.
+   * - ``.set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
+     - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
+     - Refine across a low/high frequency pair.
+   * - ``.add_multi_frequency_adaptive(freq, max_passes, max_delta)``
+     - –, ``20``, ``0.02``
+     - Append one adaptive point (call multiple times).
+   * - ``.set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
+     - ``True``, ``3.0``, ``12``
+     - Configure automatic mesh seeding.
+   * - ``.add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
+     - –, –, ``"1mm"``, ``1000``, ``True``, ``False``
+     - Append a length-based mesh operation.
+   * - ``.add_frequency_sweep(name, sweep_type, …)``
+     - –, ``"interpolation"``
+     - Add a sweep; returns :class:`FrequencySweepConfig`.
+
+**SIwave AC setup** — ``cfg.setups.add_siwave_ac_setup(name, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter
+     - Default
+     - Description
+   * - ``si_slider_position``
+     - ``1``
+     - SI accuracy slider: 0 = Speed, 1 = Balanced, 2 = Accuracy.
+   * - ``pi_slider_position``
+     - ``1``
+     - PI accuracy slider (same scale).
+   * - ``use_si_settings``
+     - ``True``
+     - ``True`` = SI slider active; ``False`` = PI slider active.
+   * - ``.add_frequency_sweep(name, sweep_type, …)``
+     - –, ``"interpolation"``
+     - Add a sweep; returns :class:`FrequencySweepConfig`.
+
+**SIwave DC setup** — ``cfg.setups.add_siwave_dc_setup(name, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter
+     - Default
+     - Description
+   * - ``dc_slider_position``
+     - ``1``
+     - DC accuracy slider: 0 = Speed, 1 = Balanced, 2 = Accuracy.
+   * - ``export_dc_thermal_data``
+     - ``False``
+     - Export DC thermal (loss) data after the solve.
+
+**Frequency sweep** — returned by ``add_frequency_sweep(…)``
+
+All sweep types share the same :class:`FrequencySweepConfig` builder.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter / method
+     - Default
+     - Description
+   * - ``sweep_type``
+     - ``"interpolation"``
+     - ``"interpolation"`` or ``"discrete"``.
+   * - ``use_q3d_for_dc``
+     - ``False``
+     - Use Q3D solver for DC point (HFSS only).
+   * - ``compute_dc_point``
+     - ``False``
+     - Enable AC/DC merge.
+   * - ``enforce_causality``
+     - ``False``
+     - Enforce causality.
+   * - ``enforce_passivity``
+     - ``True``
+     - Enforce passivity.
+   * - ``adv_dc_extrapolation``
+     - ``False``
+     - Enable advanced DC extrapolation.
+   * - ``use_hfss_solver_regions``
+     - ``False``
+     - Solve using HFSS solver regions.
+   * - ``hfss_solver_region_setup_name``
+     - ``"<default>"``
+     - HFSS solver-region setup name.
+   * - ``hfss_solver_region_sweep_name``
+     - ``"<default>"``
+     - HFSS solver-region sweep name.
+   * - ``.add_linear_count_frequencies(start, stop, count)``
+     - –
+     - Linear distribution with explicit point count.
+   * - ``.add_log_count_frequencies(start, stop, count)``
+     - –
+     - Logarithmic distribution with explicit point count.
+   * - ``.add_linear_scale_frequencies(start, stop, step)``
+     - –
+     - Linear distribution with explicit step size.
+   * - ``.add_log_scale_frequencies(start, stop, step)``
+     - –
+     - Logarithmic distribution with explicit step.
+   * - ``.add_single_frequency(freq)``
+     - –
+     - Single discrete frequency point.
+
+Stackup
+-------
+
+**Materials** — ``cfg.stackup.add_material(name, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter
+     - Default
+     - Description
+   * - ``conductivity``
+     - –
+     - Electrical conductivity in S/m (e.g. ``5.8e7`` for copper).
+   * - ``permittivity``
+     - –
+     - Relative permittivity.
+   * - ``dielectric_loss_tangent``
+     - –
+     - Dielectric loss tangent.
+   * - ``magnetic_loss_tangent``
+     - –
+     - Magnetic loss tangent.
+   * - ``mass_density``
+     - –
+     - Mass density in kg/m³.
+   * - ``permeability``
+     - –
+     - Relative permeability.
+   * - ``poisson_ratio``
+     - –
+     - Poisson's ratio.
+   * - ``specific_heat``
+     - –
+     - Specific heat in J/(kg·K).
+   * - ``thermal_conductivity``
+     - –
+     - Thermal conductivity in W/(m·K).
+   * - ``youngs_modulus``
+     - –
+     - Young's modulus in Pa.
+   * - ``thermal_expansion_coefficient``
+     - –
+     - CTE in 1/K.
+   * - ``dc_conductivity``
+     - –
+     - DC conductivity override.
+   * - ``dc_permittivity``
+     - –
+     - DC permittivity override.
+   * - ``dielectric_model_frequency``
+     - –
+     - Reference frequency for frequency-dependent model.
+   * - ``loss_tangent_at_frequency``
+     - –
+     - Loss tangent at *dielectric_model_frequency*.
+   * - ``permittivity_at_frequency``
+     - –
+     - Permittivity at *dielectric_model_frequency*.
+
+**Layers** — ``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter / method
+     - Default
+     - Description
+   * - ``material``
+     - ``"copper"`` / ``"FR4_epoxy"``
+     - Conductor or dielectric material name.
+   * - ``fill_material``
+     - ``"FR4_epoxy"``
+     - Fill material for signal layers.
+   * - ``thickness``
+     - ``"35um"`` / ``"100um"``
+     - Layer thickness.
+   * - ``.set_huray_roughness(nodule_radius, surface_ratio, enabled, top, bottom, side)``
+     - –, –, ``True``, ``True``, ``True``, ``True``
+     - Huray roughness model.
+   * - ``.set_groisse_roughness(roughness_value, enabled, top, bottom, side)``
+     - –, ``True``, ``True``, ``True``, ``True``
+     - Groisse roughness model.
+   * - ``.set_etching(factor, etch_power_ground_nets, enabled)``
+     - ``0.5``, ``False``, ``True``
+     - Trapezoidal etching model.
+
+Padstacks
+---------
+
+**Definitions** — ``cfg.padstacks.add_definition(name, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter
+     - Default
+     - Description
+   * - ``hole_plating_thickness``
+     - –
+     - Plating thickness, e.g. ``"25um"``.
+   * - ``material``
+     - –
+     - Hole conductor material name.
+   * - ``hole_range``
+     - –
+     - Layer range the hole spans.
+   * - ``pad_parameters``
+     - –
+     - Raw pad-parameter dictionary.
+   * - ``hole_parameters``
+     - –
+     - Raw hole-parameter dictionary.
+   * - ``solder_ball_parameters``
+     - –
+     - Raw solder-ball parameter dictionary.
+
+**Instances** — ``cfg.padstacks.add_instance(…)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter / method
+     - Default
+     - Description
+   * - ``name``
+     - –
+     - Instance AEDT name.
+   * - ``net_name``
+     - –
+     - Net name.
+   * - ``definition``
+     - –
+     - Padstack definition name.
+   * - ``layer_range``
+     - –
+     - ``[start_layer, stop_layer]``.
+   * - ``position``
+     - –
+     - ``[x, y]`` in metres.
+   * - ``rotation``
+     - –
+     - Rotation in degrees.
+   * - ``is_pin``
+     - ``False``
+     - Whether the instance is a component pin.
+   * - ``hole_override_enabled``
+     - –
+     - Enable hole-size override.
+   * - ``hole_override_diameter``
+     - –
+     - Override drill diameter.
+   * - ``solder_ball_layer``
+     - –
+     - Layer on which the solder ball sits.
+   * - ``.set_backdrill(drill_to_layer, diameter, stub_length, drill_from_bottom)``
+     - –, –, ``None``, ``True``
+     - Configure backdrill.
+
+Components
+----------
+
+**Adding** — ``cfg.components.add(reference_designator, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter
+     - Default
+     - Description
+   * - ``part_type``
+     - –
+     - ``"resistor"``, ``"capacitor"``, ``"inductor"``, ``"ic"``, ``"io"``, ``"other"``.
+   * - ``enabled``
+     - –
+     - Whether the component is enabled.
+   * - ``definition``
+     - –
+     - Component part / definition name.
+   * - ``placement_layer``
+     - –
+     - Layer on which the component is placed.
+
+**Model helpers** on the returned :class:`ComponentConfig`:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Description
+   * - ``.add_pin_pair_rlc(first_pin, second_pin, resistance, inductance, capacitance, is_parallel, *_enabled)``
+     - Append a series/parallel RLC model between two pins.
+   * - ``.set_s_parameter_model(model_name, model_path, reference_net)``
+     - Assign a Touchstone model.
+   * - ``.set_spice_model(model_name, model_path, sub_circuit, terminal_pairs)``
+     - Assign a SPICE subcircuit model.
+   * - ``.set_netlist_model(netlist)``
+     - Assign a raw netlist.
+   * - ``.set_ic_die_properties(die_type, orientation, height)``
+     - Set die type (``"flip_chip"``, ``"wire_bond"``, ``"no_die"``).
+   * - ``.set_solder_ball_properties(shape, diameter, height, material, mid_diameter)``
+     - Configure solder-ball geometry.
+   * - ``.set_port_properties(reference_height, reference_size_auto, reference_size_x, reference_size_y)``
+     - Configure port reference geometry.
+
+Pin groups
+----------
+
+``cfg.pin_groups.add(name, reference_designator, pins=None, net=None)``
+
+Provide either *pins* (explicit list) **or** *net* (all pins on that net).
+
+Terminals (low-level)
+---------------------
+
+Most users use ``ports`` / ``sources`` instead.  Use the terminal builders
+only when fine-grained control over individual terminal objects is required.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Type created
+   * - ``.add_padstack_instance_terminal(name, padstack_instance, impedance, boundary_type, hfss_type, …)``
+     - :class:`PadstackInstanceTerminal`
+   * - ``.add_pin_group_terminal(name, pin_group, impedance, boundary_type, …)``
+     - :class:`PinGroupTerminal`
+   * - ``.add_point_terminal(name, x, y, layer, net, impedance, boundary_type, …)``
+     - :class:`PointTerminal`
+   * - ``.add_edge_terminal(name, primitive, point_on_edge_x, point_on_edge_y, impedance, boundary_type, …)``
+     - :class:`EdgeTerminal`
+   * - ``.add_bundle_terminal(name, terminals)``
+     - :class:`BundleTerminal`
+
+Ports
+-----
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Description
+   * - ``.add_circuit_port(name, positive_terminal, negative_terminal, reference_designator, impedance, distributed)``
+     - Lumped circuit port.
+   * - ``.add_coax_port(name, positive_terminal, reference_designator, impedance)``
+     - Coaxial (via) port.
+   * - ``.add_wave_port(name, primitive_name, point_on_edge, horizontal_extent_factor, vertical_extent_factor, pec_launch_width)``
+     - Wave port on a trace edge.
+   * - ``.add_gap_port(name, primitive_name, point_on_edge, …)``
+     - Gap port on a trace edge.
+   * - ``.add_diff_wave_port(name, positive_terminal, negative_terminal, …)``
+     - Differential wave port.
+
+Sources
+-------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Description
+   * - ``.add_current_source(name, positive_terminal, negative_terminal, magnitude, impedance, …)``
+     - Current source (default magnitude ``0.001`` A).
+   * - ``.add_voltage_source(name, positive_terminal, negative_terminal, magnitude, impedance, …)``
+     - Voltage source (default magnitude ``1.0`` V).
+
+Boundaries
+----------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Description
+   * - ``.set_radiation_boundary(use_open_region=True)``
+     - Enable radiation open-region boundary.
+   * - ``.set_pml_boundary(operating_freq, radiation_level, is_pml_visible)``
+     - Enable PML open-region boundary.
+   * - ``.set_air_box_extents(horizontal_size, horizontal_is_multiple, positive_vertical_size, …)``
+     - Set air-box padding on all sides.
+   * - ``.set_extent(extent_type, base_polygon, truncate_air_box_at_ground)``
+     - Set the layout extent shape.
+   * - ``.set_dielectric_extent(extent_type, expansion_size, is_multiple, base_polygon, honor_user_dielectric)``
+     - Configure the dielectric envelope.
+
+Operations
+----------
+
+``cfg.operations.add_cutout(signal_nets, reference_nets, extent_type, expansion_size, expansion_factor, …)``
+
+.. list-table::
+   :header-rows: 1
+   :widths: 35 15 50
+
+   * - Parameter
+     - Default
+     - Description
+   * - ``signal_nets``
+     - –
+     - Signal nets to retain inside the cutout.
+   * - ``reference_nets``
+     - –
+     - Reference (ground) nets.
+   * - ``extent_type``
+     - ``"ConvexHull"``
+     - ``"BoundingBox"`` \| ``"Conformal"`` \| ``"ConvexHull"`` (case-insensitive).
+   * - ``expansion_size``
+     - ``0.002``
+     - Absolute boundary expansion in metres.
+   * - ``expansion_factor``
+     - ``0``
+     - Relative expansion factor (takes precedence when > 0).
+   * - ``auto_identify_nets_enabled``
+     - ``False``
+     - Auto-populate signal nets from passive thresholds.
+   * - ``resistor_below``
+     - ``100``
+     - Resistance threshold for auto-identification (Ω).
+   * - ``inductor_below``
+     - ``1``
+     - Inductance threshold for auto-identification (H).
+   * - ``capacitor_above``
+     - ``"10nF"``
+     - Capacitance threshold for auto-identification.
+
+``cfg.operations.generate_auto_hfss_regions = True``  to generate automatic HFSS solver regions.
+
+S-parameters
+------------
+
+``cfg.s_parameters.add(name, component_definition, file_path, reference_net, apply_to_all, components, reference_net_per_component, pin_order)``
+
+SPICE models
+------------
+
+``cfg.spice_models.add(name, component_definition, file_path, sub_circuit_name, apply_to_all, components, terminal_pairs)``
+
+Package definitions
+-------------------
+
+``cfg.package_definitions.add(name, component_definition, apply_to_all, components, maximum_power, thermal_conductivity, theta_jb, theta_jc, height, extent_bounding_box)``
+
+Call ``.set_heatsink(fin_base_height, fin_height, fin_orientation, fin_spacing, fin_thickness)`` on the returned object to add heat-sink fin geometry.
+
+Variables
+---------
+
+``cfg.variables.add(name, value, description="")``
+
+Prefix *name* with ``$`` for project-scope variables; no prefix for design-scope.
+
+Modeler
+-------
+
+.. list-table::
+   :header-rows: 1
+   :widths: 50 50
+
+   * - Method
+     - Description
+   * - ``.add_trace(name, layer, width, net_name, path, incremental_path, start_cap_style, end_cap_style, corner_style)``
+     - Create a trace.
+   * - ``.add_rectangular_plane(layer, name, net_name, lower_left_point, upper_right_point, corner_radius, rotation, voids)``
+     - Create a rectangle.
+   * - ``.add_circular_plane(layer, name, net_name, radius, position, voids)``
+     - Create a circle.
+   * - ``.add_polygon_plane(layer, name, net_name, points, voids)``
+     - Create a polygon.
+   * - ``.add_padstack_definition(name, hole_plating_thickness, material, hole_range, …)``
+     - Add a padstack definition in the modeler section.
+   * - ``.add_padstack_instance(name, net_name, definition, layer_range, position, rotation, …)``
+     - Place a padstack instance.
+   * - ``.add_component(reference_designator, part_type, enabled, definition, placement_layer, pins)``
+     - Add a component created from padstack instances.
+   * - ``.delete_primitives_by_layer(layer_names)``
+     - Schedule all primitives on listed layers for deletion.
+   * - ``.delete_primitives_by_name(primitive_names)``
+     - Schedule named primitives for deletion.
+   * - ``.delete_primitives_by_net(net_names)``
+     - Schedule all primitives on listed nets for deletion.
 
 Practical recommendations
 -------------------------

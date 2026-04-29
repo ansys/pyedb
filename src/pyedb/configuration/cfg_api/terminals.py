@@ -466,56 +466,163 @@ class TerminalsConfig:
 
     def add_padstack_instance_terminal(
         self,
-        name,
-        padstack_instance,
-        impedance,
-        boundary_type,
-        hfss_type,
-        **kwargs,
+        name: str,
+        padstack_instance: str,
+        impedance: Union[float, str],
+        boundary_type: str,
+        hfss_type: Optional[str] = None,
+        is_circuit_port: bool = False,
+        reference_terminal: Optional[str] = None,
+        amplitude: Union[float, str] = 1,
+        phase: Union[float, str] = 0,
+        terminal_to_ground: str = "kNoGround",
+        layer: Optional[str] = None,
+        padstack_instance_id: Optional[int] = None,
     ) -> PadstackInstanceTerminal:
-        """Add a padstack-instance terminal."""
+        """Add a padstack-instance terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        padstack_instance : str
+            Name of the padstack instance to attach to.
+        impedance : float or str
+            Terminal impedance, e.g. ``50`` or ``"50ohm"``.
+        boundary_type : str
+            Boundary type, e.g. ``"port"`` or ``"source"``.
+        hfss_type : str, optional
+            HFSS-specific port type (``"Wave"``, ``"Gap"``, …).
+        is_circuit_port : bool, default: ``False``
+            Whether this is a circuit port.
+        reference_terminal : str, optional
+            Name of the reference terminal.
+        amplitude : float or str, default: ``1``
+            Source amplitude.
+        phase : float or str, default: ``0``
+            Source phase in degrees.
+        terminal_to_ground : str, default: ``"kNoGround"``
+            Ground reference mode.
+        layer : str, optional
+            Layer override for the terminal.
+        padstack_instance_id : int, optional
+            Numeric padstack instance ID override.
+
+        Returns
+        -------
+        PadstackInstanceTerminal
+        """
         t = PadstackInstanceTerminal(
             name=name,
             padstack_instance=padstack_instance,
             impedance=impedance,
             boundary_type=boundary_type,
             hfss_type=hfss_type,
-            **kwargs,
+            is_circuit_port=is_circuit_port,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
+            layer=layer,
+            padstack_instance_id=padstack_instance_id,
         )
         self._terminals.append(t)
         return t
 
     def add_pin_group_terminal(
         self,
-        name,
-        pin_group,
-        impedance,
-        boundary_type,
-        **kwargs,
+        name: str,
+        pin_group: str,
+        impedance: Union[float, str],
+        boundary_type: str,
+        reference_terminal: Optional[str] = None,
+        amplitude: Union[float, str] = 1,
+        phase: Union[float, str] = 0,
+        terminal_to_ground: str = "kNoGround",
     ) -> PinGroupTerminal:
-        """Add a pin-group terminal."""
+        """Add a pin-group terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        pin_group : str
+            Name of the pin group to attach to.
+        impedance : float or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type, e.g. ``"port"``.
+        reference_terminal : str, optional
+            Name of the reference terminal.
+        amplitude : float or str, default: ``1``
+            Source amplitude.
+        phase : float or str, default: ``0``
+            Source phase in degrees.
+        terminal_to_ground : str, default: ``"kNoGround"``
+            Ground reference mode.
+
+        Returns
+        -------
+        PinGroupTerminal
+        """
         t = PinGroupTerminal(
             name=name,
             pin_group=pin_group,
             impedance=impedance,
             boundary_type=boundary_type,
-            **kwargs,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
         )
         self._terminals.append(t)
         return t
 
     def add_point_terminal(
         self,
-        name,
-        x,
-        y,
-        layer,
-        net,
-        impedance,
-        boundary_type,
-        **kwargs,
+        name: str,
+        x: Union[float, str],
+        y: Union[float, str],
+        layer: str,
+        net: str,
+        impedance: Union[float, str],
+        boundary_type: str,
+        reference_terminal: Optional[str] = None,
+        amplitude: Union[float, str] = 1,
+        phase: Union[float, str] = 0,
+        terminal_to_ground: str = "kNoGround",
     ) -> PointTerminal:
-        """Add a coordinate-defined point terminal."""
+        """Add a coordinate-defined point terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        x : float or str
+            X coordinate in metres.
+        y : float or str
+            Y coordinate in metres.
+        layer : str
+            Layer name.
+        net : str
+            Net name.
+        impedance : float or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type, e.g. ``"port"``.
+        reference_terminal : str, optional
+            Name of the reference terminal.
+        amplitude : float or str, default: ``1``
+            Source amplitude.
+        phase : float or str, default: ``0``
+            Source phase in degrees.
+        terminal_to_ground : str, default: ``"kNoGround"``
+            Ground reference mode.
+
+        Returns
+        -------
+        PointTerminal
+        """
         t = PointTerminal(
             name=name,
             x=x,
@@ -524,22 +631,71 @@ class TerminalsConfig:
             net=net,
             impedance=impedance,
             boundary_type=boundary_type,
-            **kwargs,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
         )
         self._terminals.append(t)
         return t
 
     def add_edge_terminal(
         self,
-        name,
-        primitive,
-        point_on_edge_x,
-        point_on_edge_y,
-        impedance,
-        boundary_type,
-        **kwargs,
+        name: str,
+        primitive: str,
+        point_on_edge_x: Union[float, str],
+        point_on_edge_y: Union[float, str],
+        impedance: Union[float, str],
+        boundary_type: str,
+        hfss_type: str = "Wave",
+        horizontal_extent_factor: Union[int, str] = 6,
+        vertical_extent_factor: Union[int, str] = 8,
+        pec_launch_width: str = "0.02mm",
+        is_circuit_port: bool = False,
+        reference_terminal: Optional[str] = None,
+        amplitude: Union[float, str] = 1,
+        phase: Union[float, str] = 0,
+        terminal_to_ground: str = "kNoGround",
     ) -> EdgeTerminal:
-        """Add an edge terminal."""
+        """Add an edge terminal.
+
+        Parameters
+        ----------
+        name : str
+            Terminal name.
+        primitive : str
+            Name of the primitive this edge terminal is placed on.
+        point_on_edge_x : float or str
+            X coordinate of a point on the target edge.
+        point_on_edge_y : float or str
+            Y coordinate of a point on the target edge.
+        impedance : float or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type, e.g. ``"port"``.
+        hfss_type : str, default: ``"Wave"``
+            HFSS port type (``"Wave"`` or ``"Gap"``).
+        horizontal_extent_factor : int or str, default: ``6``
+            Horizontal extent factor for the port cross-section.
+        vertical_extent_factor : int or str, default: ``8``
+            Vertical extent factor for the port cross-section.
+        pec_launch_width : str, default: ``"0.02mm"``
+            PEC launch width.
+        is_circuit_port : bool, default: ``False``
+            Whether this is a circuit port.
+        reference_terminal : str, optional
+            Name of the reference terminal.
+        amplitude : float or str, default: ``1``
+            Source amplitude.
+        phase : float or str, default: ``0``
+            Source phase in degrees.
+        terminal_to_ground : str, default: ``"kNoGround"``
+            Ground reference mode.
+
+        Returns
+        -------
+        EdgeTerminal
+        """
         t = EdgeTerminal(
             name=name,
             primitive=primitive,
@@ -547,7 +703,15 @@ class TerminalsConfig:
             point_on_edge_y=point_on_edge_y,
             impedance=impedance,
             boundary_type=boundary_type,
-            **kwargs,
+            hfss_type=hfss_type,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+            is_circuit_port=is_circuit_port,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
         )
         self._terminals.append(t)
         return t

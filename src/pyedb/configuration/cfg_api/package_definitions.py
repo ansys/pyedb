@@ -198,36 +198,76 @@ class PackageDefinitionsConfig:
         component_definition: str,
         apply_to_all: Optional[bool] = None,
         components: Optional[List[str]] = None,
-        **kwargs,
+        maximum_power: Optional[Union[str, float]] = None,
+        thermal_conductivity: Optional[Union[str, float]] = None,
+        theta_jb: Optional[Union[str, float]] = None,
+        theta_jc: Optional[Union[str, float]] = None,
+        height: Optional[Union[str, float]] = None,
+        extent_bounding_box=None,
     ) -> PackageDefinitionConfig:
-        """Add a package definition entry.
+        """Add a thermal package definition entry.
 
         Parameters
         ----------
         name : str
             Package definition name.
         component_definition : str
-            Target component definition.
+            Target component definition to bind the package to.
         apply_to_all : bool, optional
             Whether the package applies to all matching components.
         components : list[str], optional
-            Explicit component instances to target.
-        **kwargs
-            Additional thermal properties forwarded to
-            :class:`PackageDefinitionConfig`.
+            Explicit component reference designators to target when
+            *apply_to_all* is ``False``.
+        maximum_power : str or float, optional
+            Maximum power dissipation, e.g. ``"5W"`` or ``5.0``.
+        thermal_conductivity : str or float, optional
+            Thermal conductivity in W/(m·K).
+        theta_jb : str or float, optional
+            Junction-to-board thermal resistance, e.g. ``"10C/W"``.
+        theta_jc : str or float, optional
+            Junction-to-case thermal resistance, e.g. ``"5C/W"``.
+        height : str or float, optional
+            Package height, e.g. ``"1mm"``.
+        extent_bounding_box : optional
+            Bounding-box extent definition (advanced, rarely needed).
 
         Returns
         -------
         PackageDefinitionConfig
-            Newly created package definition.
+            Newly created package definition builder.  Call
+            :meth:`~PackageDefinitionConfig.set_heatsink` on the returned
+            object to attach heat-sink fin geometry.
 
+        Examples
+        --------
+        >>> pkg = cfg.package_definitions.add(
+        ...     "PKG_U1",
+        ...     component_definition="IC_U1",
+        ...     apply_to_all=True,
+        ...     maximum_power="5W",
+        ...     theta_jb="10C/W",
+        ...     theta_jc="5C/W",
+        ...     height="1mm",
+        ... )
+        >>> pkg.set_heatsink(
+        ...     fin_base_height="0.5mm",
+        ...     fin_height="3mm",
+        ...     fin_orientation="x_oriented",
+        ...     fin_spacing="1mm",
+        ...     fin_thickness="0.2mm",
+        ... )
         """
         pkg = PackageDefinitionConfig(
             name=name,
             component_definition=component_definition,
             apply_to_all=apply_to_all,
             components=components,
-            **kwargs,
+            maximum_power=maximum_power,
+            thermal_conductivity=thermal_conductivity,
+            theta_jb=theta_jb,
+            theta_jc=theta_jc,
+            height=height,
+            extent_bounding_box=extent_bounding_box,
         )
         self._packages.append(pkg)
         return pkg
