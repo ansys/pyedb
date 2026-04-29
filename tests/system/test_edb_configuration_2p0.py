@@ -1570,7 +1570,6 @@ class TestClassPadstacks(BaseTestClass):
         assert data_from_db["padstacks"]["instances"]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP2 fix in backend")
     def test_13_stackup_layers(self):
         data = {
             "stackup": {
