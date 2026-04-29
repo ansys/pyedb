@@ -856,6 +856,31 @@ class TestFrequencySweepConfig:
         assert d["enforce_passivity"] is True
         assert d["frequencies"] == []
 
+    def test_all_params_explicit(self):
+        """Every FrequencySweepConfig constructor param is explicit — no **kwargs."""
+        fs = FrequencySweepConfig(
+            "sw",
+            sweep_type="discrete",
+            use_q3d_for_dc=True,
+            compute_dc_point=True,
+            enforce_causality=True,
+            enforce_passivity=False,
+            adv_dc_extrapolation=True,
+            use_hfss_solver_regions=True,
+            hfss_solver_region_setup_name="setup_a",
+            hfss_solver_region_sweep_name="sweep_a",
+        )
+        d = fs.to_dict()
+        assert d["type"] == "discrete"
+        assert d["use_q3d_for_dc"] is True
+        assert d["compute_dc_point"] is True
+        assert d["enforce_causality"] is True
+        assert d["enforce_passivity"] is False
+        assert d["adv_dc_extrapolation"] is True
+        assert d["use_hfss_solver_regions"] is True
+        assert d["hfss_solver_region_setup_name"] == "setup_a"
+        assert d["hfss_solver_region_sweep_name"] == "sweep_a"
+
     def test_linear_count(self):
         fs = FrequencySweepConfig("sweep1")
         fs.add_linear_count_frequencies("1GHz", "10GHz", 100)
@@ -891,6 +916,18 @@ class TestFrequencySweepConfig:
         fs.add_linear_count_frequencies("1GHz", "5GHz", 50)
         fs.add_log_count_frequencies("5GHz", "20GHz", 50)
         assert len(fs.to_dict()["frequencies"]) == 2
+
+    def test_method_chaining(self):
+        """All add_*_frequencies methods return self for chaining."""
+        fs = FrequencySweepConfig("sw")
+        result = (
+            fs
+            .add_linear_count_frequencies("1GHz", "5GHz", 50)
+            .add_log_count_frequencies("5GHz", "20GHz", 50)
+            .add_single_frequency("0Hz")
+        )
+        assert result is fs
+        assert len(fs.to_dict()["frequencies"]) == 3
 
     def test_flags(self):
         fs = FrequencySweepConfig(
@@ -945,6 +982,12 @@ class TestHfssSetupConfig:
         assert len(adapt) == 2
         assert adapt[0]["adaptive_frequency"] == "1GHz"
 
+    def test_adaptive_method_chaining(self):
+        """set_broadband_adaptive, set_auto_mesh_operation return self."""
+        h = HfssSetupConfig("setup1")
+        result = h.set_broadband_adaptive("1GHz", "20GHz").set_auto_mesh_operation(enabled=True)
+        assert result is h
+
     def test_set_auto_mesh_operation(self):
         h = HfssSetupConfig("setup1")
         h.set_auto_mesh_operation(enabled=True, trace_ratio_seeding=4)
@@ -960,6 +1003,21 @@ class TestHfssSetupConfig:
         assert d["mesh_operations"][0]["name"] == "mesh1"
         assert d["mesh_operations"][0]["max_length"] == "0.5mm"
 
+    def test_add_length_mesh_operation_all_params(self):
+        h = HfssSetupConfig("setup1")
+        h.add_length_mesh_operation(
+            "mesh2",
+            {"CLK": ["top", "L2"]},
+            max_length="0.3mm",
+            max_elements=500,
+            restrict_length=False,
+            refine_inside=True,
+        )
+        mo = h.to_dict()["mesh_operations"][0]
+        assert mo["max_elements"] == 500
+        assert mo["restrict_length"] is False
+        assert mo["refine_inside"] is True
+
     def test_add_frequency_sweep(self):
         h = HfssSetupConfig("setup1")
         sweep = h.add_frequency_sweep("sweep1")
@@ -967,6 +1025,96 @@ class TestHfssSetupConfig:
         d = h.to_dict()
         assert len(d["freq_sweep"]) == 1
         assert d["freq_sweep"][0]["name"] == "sweep1"
+
+    def test_add_frequency_sweep_inline_linear_count(self):
+        h = HfssSetupConfig("setup1")
+        sweep = h.add_frequency_sweep(
+            "sweep1",
+            start="1GHz", stop="20GHz", step_or_count=200,
+            distribution="linear_count",
+        )
+        freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
+        assert len(freqs) == 1
+        assert freqs[0]["distribution"] == "linear_count"
+        assert freqs[0]["start"] == "1GHz"
+        assert freqs[0]["stop"] == "20GHz"
+        assert freqs[0]["increment"] == 200
+
+    def test_add_frequency_sweep_inline_log_count(self):
+        h = HfssSetupConfig("setup1")
+        h.add_frequency_sweep(
+            "sweep2",
+            start="1MHz", stop="10GHz", step_or_count=100,
+            distribution="log_count",
+        )
+        freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "log_count"
+
+    def test_add_frequency_sweep_inline_linear_scale(self):
+        h = HfssSetupConfig("setup1")
+        h.add_frequency_sweep(
+            "sweep3",
+            start="0Hz", stop="1GHz", step_or_count="10MHz",
+            distribution="linear_scale",
+        )
+        freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "linear_scale"
+        assert freqs[0]["increment"] == "10MHz"
+
+    def test_add_frequency_sweep_inline_log_scale(self):
+        h = HfssSetupConfig("setup1")
+        h.add_frequency_sweep(
+            "sweep4",
+            start="1kHz", stop="1GHz", step_or_count=1,
+            distribution="log_scale",
+        )
+        assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_scale"
+
+    def test_add_frequency_sweep_inline_single(self):
+        """distribution='single' uses start as the single frequency point."""
+        h = HfssSetupConfig("setup1")
+        h.add_frequency_sweep("sw", start="5GHz", distribution="single")
+        freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "single"
+        assert freqs[0]["start"] == "5GHz"
+
+    def test_add_frequency_sweep_inline_distribution_alias(self):
+        """Distribution aliases are normalised (e.g. 'logcount' → 'log_count')."""
+        h = HfssSetupConfig("setup1")
+        h.add_frequency_sweep("sw", start="1GHz", stop="10GHz", step_or_count=50, distribution="logcount")
+        assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_count"
+
+    def test_add_frequency_sweep_inline_distribution_alias_spaces(self):
+        h = HfssSetupConfig("setup1")
+        h.add_frequency_sweep("sw", start="1GHz", stop="10GHz", step_or_count=50, distribution="log count")
+        assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_count"
+
+    def test_add_frequency_sweep_no_inline_when_start_none(self):
+        h = HfssSetupConfig("setup1")
+        sweep = h.add_frequency_sweep("sweep5")
+        # no inline range added → frequencies list is empty
+        assert h.to_dict()["freq_sweep"][0]["frequencies"] == []
+
+    def test_add_frequency_sweep_with_all_flags(self):
+        """All sweep flags passed inline."""
+        h = HfssSetupConfig("setup1")
+        sw = h.add_frequency_sweep(
+            "sw",
+            sweep_type="discrete",
+            start="1GHz", stop="10GHz", step_or_count=100,
+            use_q3d_for_dc=True,
+            compute_dc_point=True,
+            enforce_causality=True,
+            enforce_passivity=False,
+            adv_dc_extrapolation=True,
+            use_hfss_solver_regions=True,
+            hfss_solver_region_setup_name="hfss_s",
+            hfss_solver_region_sweep_name="hfss_sw",
+        )
+        d = sw.to_dict()
+        assert d["type"] == "discrete"
+        assert d["use_q3d_for_dc"] is True
+        assert d["hfss_solver_region_setup_name"] == "hfss_s"
 
     def test_multiple_sweeps(self):
         h = HfssSetupConfig("setup1")
@@ -995,11 +1143,62 @@ class TestSIwaveACSetupConfig:
         assert d["si_slider_position"] == 2
         assert d["pi_slider_position"] == 0
 
+    def test_use_pi_settings(self):
+        s = SIwaveACSetupConfig("sw_ac", use_si_settings=False)
+        assert s.to_dict()["use_si_settings"] is False
+
     def test_add_frequency_sweep(self):
         s = SIwaveACSetupConfig("sw_ac")
         sw = s.add_frequency_sweep("sw1")
         assert isinstance(sw, FrequencySweepConfig)
         assert s.to_dict()["freq_sweep"][0]["name"] == "sw1"
+
+    def test_add_frequency_sweep_inline(self):
+        s = SIwaveACSetupConfig("sw_ac")
+        s.add_frequency_sweep(
+            "sw2",
+            start="1kHz", stop="1GHz", step_or_count=100,
+            distribution="log_count",
+        )
+        freqs = s.to_dict()["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "log_count"
+        assert freqs[0]["increment"] == 100
+
+    def test_add_frequency_sweep_inline_linear_scale(self):
+        s = SIwaveACSetupConfig("sw_ac")
+        s.add_frequency_sweep(
+            "sw3",
+            start="100kHz", stop="1GHz", step_or_count="100kHz",
+            distribution="linear_scale",
+        )
+        freqs = s.to_dict()["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "linear_scale"
+
+    def test_add_frequency_sweep_inline_distribution_alias(self):
+        """Distribution aliases work in SIwave AC sweeps too."""
+        s = SIwaveACSetupConfig("sw_ac")
+        s.add_frequency_sweep("sw", start="1kHz", stop="1GHz", step_or_count=100, distribution="logcount")
+        assert s.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_count"
+
+    def test_add_frequency_sweep_with_flags(self):
+        s = SIwaveACSetupConfig("sw_ac")
+        sw = s.add_frequency_sweep(
+            "sw4",
+            start="1kHz", stop="1GHz", step_or_count=50,
+            distribution="log_count",
+            compute_dc_point=True,
+            enforce_passivity=False,
+            adv_dc_extrapolation=True,
+        )
+        d = sw.to_dict()
+        assert d["compute_dc_point"] is True
+        assert d["enforce_passivity"] is False
+        assert d["adv_dc_extrapolation"] is True
+
+    def test_add_frequency_sweep_no_inline_empty_frequencies(self):
+        s = SIwaveACSetupConfig("sw_ac")
+        sw = s.add_frequency_sweep("sw5")
+        assert sw.to_dict()["frequencies"] == []
 
 
 class TestSIwaveDCSetupConfig:
@@ -1027,17 +1226,37 @@ class TestSetupsConfig:
         assert isinstance(h, HfssSetupConfig)
         assert sc.to_list()[0]["type"] == "hfss"
 
+    def test_add_hfss_setup_adapt_type(self):
+        sc = SetupsConfig()
+        h = sc.add_hfss_setup("h1", adapt_type="broadband")
+        assert h.to_dict()["adapt_type"] == "broadband"
+
     def test_add_siwave_ac(self):
         sc = SetupsConfig()
         s = sc.add_siwave_ac_setup("sw_ac")
         assert isinstance(s, SIwaveACSetupConfig)
         assert sc.to_list()[0]["type"] == "siwave_ac"
 
+    def test_add_siwave_ac_all_params(self):
+        sc = SetupsConfig()
+        s = sc.add_siwave_ac_setup("sw_ac", si_slider_position=2, pi_slider_position=0, use_si_settings=False)
+        d = s.to_dict()
+        assert d["si_slider_position"] == 2
+        assert d["pi_slider_position"] == 0
+        assert d["use_si_settings"] is False
+
     def test_add_siwave_dc(self):
         sc = SetupsConfig()
         s = sc.add_siwave_dc_setup("sw_dc")
         assert isinstance(s, SIwaveDCSetupConfig)
         assert sc.to_list()[0]["type"] == "siwave_dc"
+
+    def test_add_siwave_dc_all_params(self):
+        sc = SetupsConfig()
+        s = sc.add_siwave_dc_setup("sw_dc", dc_slider_position=2, export_dc_thermal_data=True)
+        d = s.to_dict()
+        assert d["dc_slider_position"] == 2
+        assert d["dc_ir_settings"]["export_dc_thermal_data"] is True
 
     def test_mixed_setups(self):
         sc = SetupsConfig()
@@ -1046,6 +1265,20 @@ class TestSetupsConfig:
         sc.add_siwave_dc_setup("dc1")
         types = [s["type"] for s in sc.to_list()]
         assert types == ["hfss", "siwave_ac", "siwave_dc"]
+
+    def test_inline_sweep_in_full_setup(self):
+        """End-to-end: one-call add_frequency_sweep with inline range in SetupsConfig."""
+        sc = SetupsConfig()
+        hfss = sc.add_hfss_setup("hfss1")
+        hfss.set_broadband_adaptive("1GHz", "20GHz")
+        hfss.add_frequency_sweep(
+            "sweep1",
+            start="1GHz", stop="20GHz", step_or_count=200,
+            distribution="linear_count",
+        )
+        d = sc.to_list()[0]
+        assert d["freq_sweep"][0]["frequencies"][0]["distribution"] == "linear_count"
+        assert d["freq_sweep"][0]["frequencies"][0]["increment"] == 200
 
 
 class TestBoundariesConfig:
@@ -1454,12 +1687,19 @@ class TestEdbConfigBuilder:
         # probes
         cfg.probes.add("probe1", {"net": "DDR4_DQ0"}, {"net": "GND"})
 
-        # setups – HFSS broadband
+        # setups – HFSS broadband (inline sweep syntax)
         hfss = cfg.setups.add_hfss_setup("hfss_bb")
         hfss.set_broadband_adaptive("1GHz", "20GHz", max_passes=20, max_delta=0.02)
         hfss.set_auto_mesh_operation(enabled=True)
         hfss.add_length_mesh_operation("mesh1", {"DDR4_DQ0": ["top"]}, max_length="0.5mm")
-        s1 = hfss.add_frequency_sweep("sweep1")
+        # inline: start/stop/step_or_count/distribution instead of chaining
+        hfss.add_frequency_sweep(
+            "sweep1",
+            start="1GHz", stop="20GHz", step_or_count=100,
+            distribution="linear_count",
+        )
+        # chained (still works): add second range on same sweep
+        s1 = hfss.add_frequency_sweep("sweep1b")
         s1.add_linear_count_frequencies("1GHz", "20GHz", 100)
         s1.add_single_frequency("5GHz")
 
@@ -1472,10 +1712,13 @@ class TestEdbConfigBuilder:
         hfss3.add_multi_frequency_adaptive("2GHz")
         hfss3.add_multi_frequency_adaptive("10GHz")
 
-        # setups – SIwave AC
+        # setups – SIwave AC (inline sweep syntax)
         siw = cfg.setups.add_siwave_ac_setup("siw_ac", si_slider_position=2, pi_slider_position=1)
-        sw = siw.add_frequency_sweep("siw_sw1")
-        sw.add_log_count_frequencies("1kHz", "1GHz", 100)
+        siw.add_frequency_sweep(
+            "siw_sw1",
+            start="1kHz", stop="1GHz", step_or_count=100,
+            distribution="log_count",
+        )
 
         # setups – SIwave DC
         cfg.setups.add_siwave_dc_setup("siw_dc", dc_slider_position=1, export_dc_thermal_data=True)
@@ -1658,8 +1901,12 @@ class TestEdbConfigBuilder:
     def test_hfss_frequency_sweep(self):
         d = self._full_builder().to_dict()
         bb = next(s for s in d["setups"] if s["name"] == "hfss_bb")
-        assert len(bb["freq_sweep"]) == 1
-        assert len(bb["freq_sweep"][0]["frequencies"]) == 2
+        # hfss_bb now has two sweeps: "sweep1" (inline) and "sweep1b" (chained)
+        assert len(bb["freq_sweep"]) == 2
+        # inline sweep has the single linear_count range
+        inline_sw = next(sw for sw in bb["freq_sweep"] if sw["name"] == "sweep1")
+        assert inline_sw["frequencies"][0]["distribution"] == "linear_count"
+        assert inline_sw["frequencies"][0]["increment"] == 100
 
     def test_hfss_multi_freq(self):
         d = self._full_builder().to_dict()
@@ -1724,6 +1971,42 @@ class TestEdbConfigBuilder:
         prim = d["modeler"]["primitives_to_delete"]
         assert "old_layer" in prim["layer_name"]
         assert "old_net" in prim["net_name"]
+
+    def test_inline_sweep_round_trip(self, tmp_path):
+        """Inline add_frequency_sweep survives JSON round-trip correctly."""
+        cfg = EdbConfigBuilder()
+        hfss = cfg.setups.add_hfss_setup("h1")
+        hfss.set_broadband_adaptive("1GHz", "20GHz")
+        hfss.add_frequency_sweep(
+            "sweep1",
+            start="1GHz", stop="20GHz", step_or_count=200,
+            distribution="linear_count",
+            enforce_passivity=False,
+            use_q3d_for_dc=True,
+        )
+        path = tmp_path / "inline_sweep.json"
+        cfg.to_json(str(path))
+        cfg2 = EdbConfigBuilder.from_json(str(path))
+        d = cfg2.to_dict()
+        freqs = d["setups"][0]["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "linear_count"
+        assert freqs[0]["increment"] == 200
+
+    def test_inline_sweep_siwave_round_trip(self, tmp_path):
+        """SIwave AC inline sweep round-trip."""
+        cfg = EdbConfigBuilder()
+        siw = cfg.setups.add_siwave_ac_setup("siw1", si_slider_position=2)
+        siw.add_frequency_sweep(
+            "sw1",
+            start="1kHz", stop="1GHz", step_or_count=50,
+            distribution="log_count",
+        )
+        path = tmp_path / "siw_sweep.json"
+        cfg.to_json(str(path))
+        cfg2 = EdbConfigBuilder.from_json(str(path))
+        freqs = cfg2.to_dict()["setups"][0]["freq_sweep"][0]["frequencies"]
+        assert freqs[0]["distribution"] == "log_count"
+        assert freqs[0]["increment"] == 50
 
 
 class TestEdbConfigBuilderJson:

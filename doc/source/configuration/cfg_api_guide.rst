@@ -349,6 +349,8 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    cfg.nets.add_signal_nets(["DDR4_DQ0", "DDR4_DQ1", "CLK"])
    cfg.nets.add_power_ground_nets(["VDD", "VCC", "GND"])
+   # Optional: store reference nets so they can be forwarded to add_cutout
+   cfg.nets.add_reference_nets(["GND"])
 
    # ----------------------------------------------------------------
    # Components
@@ -463,18 +465,27 @@ applies the configuration with a single ``run()`` call.
        refine_inside=False,
    )
 
-   # Frequency sweep (method-chaining supported)
-   sweep = hfss.add_frequency_sweep(
+   # Frequency sweep – Option A: inline (start/stop/step_or_count in one call)
+   hfss.add_frequency_sweep(
        "sweep1",
-       sweep_type="interpolation",      # "interpolation" | "discrete"
+       start="1GHz", stop="20GHz", step_or_count=100,
+       distribution="linear_count",     # or "log_count" | "linear_scale" | "log_scale" | "single"
+       sweep_type="interpolation",
+       enforce_passivity=True,
+   )
+
+   # Frequency sweep – Option B: chained (add multiple ranges on one sweep)
+   sweep2 = hfss.add_frequency_sweep(
+       "sweep2",
+       sweep_type="interpolation",
        use_q3d_for_dc=False,
        compute_dc_point=False,
        enforce_causality=False,
        enforce_passivity=True,
        adv_dc_extrapolation=False,
    )
-   sweep.add_linear_count_frequencies("1GHz", "20GHz", 100)
-   sweep.add_single_frequency("5GHz")
+   sweep2.add_linear_count_frequencies("1GHz", "20GHz", 100)
+   sweep2.add_single_frequency("5GHz")
 
    # ----- SIwave AC setup -----
    siwave_ac = cfg.setups.add_siwave_ac_setup(
@@ -483,12 +494,14 @@ applies the configuration with a single ``run()`` call.
        pi_slider_position=1,
        use_si_settings=True,
    )
+   # Inline sweep (start/stop/step_or_count) – no separate chaining call needed
    siwave_ac.add_frequency_sweep(
        "siw_sw1",
-       sweep_type="interpolation",
+       start="1kHz", stop="1GHz", step_or_count=100,
+       distribution="log_count",
        compute_dc_point=False,
        enforce_passivity=True,
-   ).add_log_count_frequencies("1kHz", "1GHz", 100)
+   )
 
    # ----- SIwave DC setup -----
    cfg.setups.add_siwave_dc_setup(
@@ -509,12 +522,19 @@ applies the configuration with a single ``run()`` call.
    # ----------------------------------------------------------------
    # Operations (cutout)
    # ----------------------------------------------------------------
+   # Option A: explicit lists
    cfg.operations.add_cutout(
        signal_nets=["DDR4_DQ0", "CLK"],
        reference_nets=["GND"],
-       extent_type="ConvexHull",
+       extent_type="ConvexHull",        # case-insensitive
        expansion_size=0.002,
        auto_identify_nets_enabled=True,
+   )
+   # Option B: reuse previously stored net lists (no duplication)
+   cfg.operations.add_cutout(
+       signal_nets=cfg.nets.signal_nets,
+       reference_nets=cfg.nets.reference_nets,
+       extent_type="ConvexHull",
    )
    cfg.operations.generate_auto_hfss_regions = True
 
@@ -640,21 +660,21 @@ returns a typed builder so that IDEs provide full autocomplete.
        ``"multi_frequencies"``.
    * - ``.set_single_frequency_adaptive(freq, max_passes, max_delta)``
      - ``"5GHz"``, ``20``, ``0.02``
-     - Refine at one adaptive frequency.
+     - Refine at one adaptive frequency.  Returns *self* for chaining.
    * - ``.set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
      - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
-     - Refine across a low/high frequency pair.
+     - Refine across a low/high frequency pair.  Returns *self* for chaining.
    * - ``.add_multi_frequency_adaptive(freq, max_passes, max_delta)``
      - –, ``20``, ``0.02``
-     - Append one adaptive point (call multiple times).
+     - Append one adaptive point (call multiple times).  Returns *self*.
    * - ``.set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
      - ``True``, ``3.0``, ``12``
-     - Configure automatic mesh seeding.
+     - Configure automatic mesh seeding.  Returns *self* for chaining.
    * - ``.add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
      - –, –, ``"1mm"``, ``1000``, ``True``, ``False``
-     - Append a length-based mesh operation.
-   * - ``.add_frequency_sweep(name, sweep_type, …)``
-     - –, ``"interpolation"``
+     - Append a length-based mesh operation.  Returns *self* for chaining.
+   * - ``.add_frequency_sweep(name, sweep_type, start, stop, step_or_count, distribution, …)``
+     - –, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
 
 **SIwave AC setup** — ``cfg.setups.add_siwave_ac_setup(name, …)``
@@ -675,8 +695,8 @@ returns a typed builder so that IDEs provide full autocomplete.
    * - ``use_si_settings``
      - ``True``
      - ``True`` = SI slider active; ``False`` = PI slider active.
-   * - ``.add_frequency_sweep(name, sweep_type, …)``
-     - –, ``"interpolation"``
+   * - ``.add_frequency_sweep(name, sweep_type, start, stop, step_or_count, distribution, …)``
+     - –, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
 
 **SIwave DC setup** — ``cfg.setups.add_siwave_dc_setup(name, …)``
@@ -699,6 +719,26 @@ returns a typed builder so that IDEs provide full autocomplete.
 
 All sweep types share the same :class:`FrequencySweepConfig` builder.
 
+``add_frequency_sweep`` now accepts optional *inline range* parameters
+(``start``, ``stop``, ``step_or_count``, ``distribution``) so that a single
+frequency range can be fully described in the call itself — no subsequent
+``add_*_frequencies`` call is required.  For multiple ranges use the chained
+``add_*_frequencies`` helpers on the returned builder.
+
+.. code-block:: python
+
+   # Inline (one call — most concise)
+   hfss.add_frequency_sweep(
+       "sweep1",
+       start="1GHz", stop="20GHz", step_or_count=100,
+       distribution="linear_count",
+   )
+
+   # Chained (for multiple ranges on the same sweep)
+   sw = hfss.add_frequency_sweep("sweep2")
+   sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
+   sw.add_single_frequency("0Hz")
+
 .. list-table::
    :header-rows: 1
    :widths: 35 15 50
@@ -709,6 +749,27 @@ All sweep types share the same :class:`FrequencySweepConfig` builder.
    * - ``sweep_type``
      - ``"interpolation"``
      - ``"interpolation"`` or ``"discrete"``.
+   * - ``start``
+     - ``None``
+     - Start frequency of an inline range, e.g. ``"1GHz"``.  When supplied
+       *stop* and *step_or_count* are also required.
+   * - ``stop``
+     - ``None``
+     - Stop frequency of the inline range.
+   * - ``step_or_count``
+     - ``None``
+     - Point count (``"linear_count"``, ``"log_count"``) or step size
+       (``"linear_scale"``, ``"log_scale"``).
+   * - ``distribution``
+     - ``"linear_count"``
+     - Frequency distribution for the inline range.  Accepted values and
+       aliases:
+
+       * ``"linear_count"`` / ``"linearcount"`` / ``"linear count"``
+       * ``"log_count"`` / ``"logcount"`` / ``"log count"``
+       * ``"linear_scale"`` / ``"linearscale"`` / ``"linear scale"``
+       * ``"log_scale"`` / ``"logscale"`` / ``"log scale"``
+       * ``"single"``
    * - ``use_q3d_for_dc``
      - ``False``
      - Use Q3D solver for DC point (HFSS only).
@@ -735,19 +796,56 @@ All sweep types share the same :class:`FrequencySweepConfig` builder.
      - HFSS solver-region sweep name.
    * - ``.add_linear_count_frequencies(start, stop, count)``
      - –
-     - Linear distribution with explicit point count.
+     - Linear distribution with explicit point count.  Returns *self*.
    * - ``.add_log_count_frequencies(start, stop, count)``
      - –
-     - Logarithmic distribution with explicit point count.
+     - Logarithmic distribution with explicit point count.  Returns *self*.
    * - ``.add_linear_scale_frequencies(start, stop, step)``
      - –
-     - Linear distribution with explicit step size.
+     - Linear distribution with explicit step size.  Returns *self*.
    * - ``.add_log_scale_frequencies(start, stop, step)``
      - –
-     - Logarithmic distribution with explicit step.
+     - Logarithmic distribution with explicit step.  Returns *self*.
    * - ``.add_single_frequency(freq)``
      - –
-     - Single discrete frequency point.
+     - Single discrete frequency point.  Returns *self*.
+
+Nets
+----
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 60
+
+   * - Method / property
+     - Description
+   * - ``.add_signal_nets(nets)``
+     - Classify net names as signal nets.
+   * - ``.add_power_ground_nets(nets)``
+     - Classify net names as power or ground nets.
+   * - ``.add_reference_nets(nets)``
+     - Store reference (ground) net names.  These are **not** serialized in
+       ``to_dict()``; they are accessed via the ``reference_nets`` property
+       and forwarded to ``add_cutout(reference_nets=…)`` without duplication.
+   * - ``.signal_nets`` *(property)*
+     - Read-only list of configured signal net names.
+   * - ``.power_ground_nets`` *(property)*
+     - Read-only list of configured power/ground net names.
+   * - ``.reference_nets`` *(property)*
+     - Read-only list of configured reference net names.
+
+Example – forward net lists directly to the cutout:
+
+.. code-block:: python
+
+   cfg.nets.add_signal_nets(["PCIe_RX0_P", "PCIe_RX0_N"])
+   cfg.nets.add_reference_nets(["GND"])
+
+   cfg.operations.add_cutout(
+       signal_nets=cfg.nets.signal_nets,
+       reference_nets=cfg.nets.reference_nets,
+       extent_type="ConvexHull",
+   )
 
 Stackup
 -------

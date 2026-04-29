@@ -48,6 +48,45 @@ from pyedb.configuration.cfg_setup import (
     CfgSIwaveDCSetup,
 )
 
+# ---------------------------------------------------------------------------
+# Internal helper
+# ---------------------------------------------------------------------------
+
+_DISTRIBUTION_ALIASES: Dict[str, str] = {
+    "linear_count": "linear_count",
+    "linearcount": "linear_count",
+    "linear count": "linear_count",
+    "log_count": "log_count",
+    "logcount": "log_count",
+    "log count": "log_count",
+    "linear_scale": "linear_scale",
+    "linearscale": "linear_scale",
+    "linear scale": "linear_scale",
+    "log_scale": "log_scale",
+    "logscale": "log_scale",
+    "log scale": "log_scale",
+    "single": "single",
+}
+
+
+def _add_inline_range(
+    sweep: "FrequencySweepConfig",
+    start,
+    stop,
+    step_or_count,
+    distribution: str,
+) -> None:
+    """Append one frequency range to *sweep* using normalised *distribution*."""
+    dist = _DISTRIBUTION_ALIASES.get(distribution.lower().replace("-", "_"), distribution)
+    if dist == "single":
+        sweep.frequencies.append(
+            CfgFrequencies(start=start, stop=start, increment=1, distribution="single")
+        )
+    else:
+        sweep.frequencies.append(
+            CfgFrequencies(start=start, stop=stop, increment=step_or_count, distribution=dist)
+        )
+
 
 class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
     """Fluent builder for a frequency sweep.
@@ -449,6 +488,12 @@ class HfssSetupConfig(CfgHFSSSetup):
         self,
         name: str,
         sweep_type: str = "interpolation",
+        # ── inline frequency range (optional convenience shortcut) ──────────
+        start: Optional[Union[float, str]] = None,
+        stop: Optional[Union[float, str]] = None,
+        step_or_count: Optional[Union[float, str, int]] = None,
+        distribution: str = "linear_count",
+        # ── sweep flags ────────────────────────────────────────────────────
         use_q3d_for_dc: bool = False,
         compute_dc_point: bool = False,
         enforce_causality: bool = False,
@@ -460,12 +505,35 @@ class HfssSetupConfig(CfgHFSSSetup):
     ) -> FrequencySweepConfig:
         """Add a frequency sweep to the HFSS setup.
 
+        A single frequency range can be defined inline via *start* / *stop* /
+        *step_or_count* / *distribution*.  For multiple ranges call the
+        ``add_*_frequencies`` methods on the returned builder.
+
         Parameters
         ----------
         name : str
             Sweep name, unique within this setup.
         sweep_type : str, default: ``"interpolation"``
             Sweep type: ``"interpolation"`` or ``"discrete"``.
+        start : float or str, optional
+            Start frequency of the inline range, e.g. ``"1GHz"`` or ``1e9``.
+            When supplied, *stop* and *step_or_count* are also required.
+        stop : float or str, optional
+            Stop frequency of the inline range.
+        step_or_count : float, str, or int, optional
+            For ``"linear_count"`` and ``"log_count"`` distributions: number
+            of points.  For ``"linear_scale"`` and ``"log_scale"``: step size.
+            For ``"single"``: ignored (pass ``None`` or omit).
+        distribution : str, default: ``"linear_count"``
+            Frequency distribution type for the inline range.  Accepted
+            values:
+
+            * ``"linear_count"``  – linear spacing, explicit point count.
+            * ``"log_count"``     – logarithmic spacing, explicit point count.
+            * ``"linear_scale"``  – linear spacing, explicit step size.
+            * ``"log_scale"``     – logarithmic spacing, explicit step.
+            * ``"single"``        – single frequency point (*stop* and
+              *step_or_count* are ignored).
         use_q3d_for_dc : bool, default: ``False``
             Use Q3D solver for the DC point.
         compute_dc_point : bool, default: ``False``
@@ -486,8 +554,32 @@ class HfssSetupConfig(CfgHFSSSetup):
         Returns
         -------
         FrequencySweepConfig
-            Newly created sweep builder (supports method chaining for adding
-            frequency ranges).
+            Newly created sweep builder.  Call ``add_*_frequencies`` on it
+            to append additional frequency ranges.
+
+        Examples
+        --------
+        Inline range (single call, no chaining needed):
+
+        >>> sweep = hfss.add_frequency_sweep(
+        ...     "sweep1",
+        ...     start="1GHz", stop="20GHz", step_or_count=200,
+        ...     distribution="linear_count",
+        ... )
+
+        Log-scale range inline:
+
+        >>> sweep = hfss.add_frequency_sweep(
+        ...     "sweep2",
+        ...     start="1MHz", stop="10GHz", step_or_count=100,
+        ...     distribution="log_count",
+        ... )
+
+        Multiple ranges via chaining:
+
+        >>> sweep = hfss.add_frequency_sweep("sweep3")
+        >>> sweep.add_linear_count_frequencies("1GHz", "10GHz", 100)
+        >>> sweep.add_single_frequency("0Hz")
         """
         sw = FrequencySweepConfig(
             name=name,
@@ -501,6 +593,8 @@ class HfssSetupConfig(CfgHFSSSetup):
             hfss_solver_region_setup_name=hfss_solver_region_setup_name,
             hfss_solver_region_sweep_name=hfss_solver_region_sweep_name,
         )
+        if start is not None:
+            _add_inline_range(sw, start, stop, step_or_count, distribution)
         self.freq_sweep.append(sw)
         return sw
 
@@ -574,6 +668,12 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
         self,
         name: str,
         sweep_type: str = "interpolation",
+        # ── inline frequency range (optional convenience shortcut) ──────────
+        start: Optional[Union[float, str]] = None,
+        stop: Optional[Union[float, str]] = None,
+        step_or_count: Optional[Union[float, str, int]] = None,
+        distribution: str = "linear_count",
+        # ── sweep flags ────────────────────────────────────────────────────
         use_q3d_for_dc: bool = False,
         compute_dc_point: bool = False,
         enforce_causality: bool = False,
@@ -585,12 +685,27 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
     ) -> FrequencySweepConfig:
         """Add a frequency sweep to the SIwave AC setup.
 
+        A single frequency range can be defined inline via *start* / *stop* /
+        *step_or_count* / *distribution*.  For multiple ranges call the
+        ``add_*_frequencies`` methods on the returned builder.
+
         Parameters
         ----------
         name : str
             Sweep name, unique within this setup.
         sweep_type : str, default: ``"interpolation"``
             Sweep type: ``"interpolation"`` or ``"discrete"``.
+        start : float or str, optional
+            Start frequency of the inline range, e.g. ``"1kHz"`` or ``1e3``.
+            When supplied, *stop* and *step_or_count* are also required.
+        stop : float or str, optional
+            Stop frequency of the inline range.
+        step_or_count : float, str, or int, optional
+            Number of points (``"linear_count"``, ``"log_count"``) or step
+            size (``"linear_scale"``, ``"log_scale"``).
+        distribution : str, default: ``"linear_count"``
+            Frequency distribution type: ``"linear_count"``, ``"log_count"``,
+            ``"linear_scale"``, ``"log_scale"``, or ``"single"``.
         use_q3d_for_dc : bool, default: ``False``
             Use Q3D solver for the DC point.
         compute_dc_point : bool, default: ``False``
@@ -611,8 +726,15 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
         Returns
         -------
         FrequencySweepConfig
-            Newly created sweep builder (supports method chaining for adding
-            frequency ranges).
+            Newly created sweep builder.
+
+        Examples
+        --------
+        >>> siw.add_frequency_sweep(
+        ...     "sw1",
+        ...     start="1kHz", stop="1GHz", step_or_count=100,
+        ...     distribution="log_count",
+        ... )
         """
         sw = FrequencySweepConfig(
             name=name,
@@ -626,6 +748,8 @@ class SIwaveACSetupConfig(CfgSIwaveACSetup):
             hfss_solver_region_setup_name=hfss_solver_region_setup_name,
             hfss_solver_region_sweep_name=hfss_solver_region_sweep_name,
         )
+        if start is not None:
+            _add_inline_range(sw, start, stop, step_or_count, distribution)
         self.freq_sweep.append(sw)
         return sw
 
