@@ -758,6 +758,44 @@ class TestPortsConfig:
         pc.add_coax_port("coax1", {"padstack": "v1"})
         assert pc.to_list()[0]["type"] == "coax"
 
+    def test_add_coax_port_padstack_shortcut(self):
+        pc = PortsConfig()
+        pc.add_coax_port("coax1", padstack="via_A1")
+        d = pc.to_list()[0]
+        assert d["type"] == "coax"
+        assert d["positive_terminal"] == {"padstack": "via_A1"}
+
+    def test_add_coax_port_net_shortcut(self):
+        pc = PortsConfig()
+        pc.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
+        d = pc.to_list()[0]
+        assert d["positive_terminal"] == {"net": "VDD", "reference_designator": "U1"}
+
+    def test_add_coax_port_pin_shortcut(self):
+        pc = PortsConfig()
+        pc.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
+        d = pc.to_list()[0]
+        assert d["positive_terminal"] == {"pin": "A1", "reference_designator": "U1"}
+        assert d["impedance"] == 50
+
+    def test_add_coax_port_net_missing_refdes_raises(self):
+        import pytest
+        pc = PortsConfig()
+        with pytest.raises(ValueError, match="reference_designator"):
+            pc.add_coax_port("coax_vdd", net="VDD")
+
+    def test_add_coax_port_pin_missing_refdes_raises(self):
+        import pytest
+        pc = PortsConfig()
+        with pytest.raises(ValueError, match="reference_designator"):
+            pc.add_coax_port("coax_a1", pin="A1")
+
+    def test_add_coax_port_no_terminal_raises(self):
+        import pytest
+        pc = PortsConfig()
+        with pytest.raises(ValueError):
+            pc.add_coax_port("coax_bad")
+
     def test_add_wave_port(self):
         pc = PortsConfig()
         pc.add_wave_port("wp1", "prim1", [0.001, 0.002])
@@ -1674,7 +1712,7 @@ class TestEdbConfigBuilder:
         # ports
         cfg.ports.add_circuit_port("port_U1", {"pin_group": "pg_VDD"}, {"pin_group": "pg_GND"}, impedance=50)
         cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
-        cfg.ports.add_coax_port("coax1", {"padstack": "v1"})
+        cfg.ports.add_coax_port("coax1", padstack="v1")  # padstack shortcut
         cfg.ports.add_diff_wave_port(
             "diff1",
             {"primitive_name": "tp", "point_on_edge": [0, 0]},

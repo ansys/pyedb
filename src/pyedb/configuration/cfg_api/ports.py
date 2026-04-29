@@ -306,29 +306,134 @@ class PortsConfig:
     def add_coax_port(
         self,
         name: str,
-        positive_terminal: dict,
+        positive_terminal: Optional[dict] = None,
         reference_designator: Optional[str] = None,
         impedance: Optional[Union[float, str]] = None,
+        # ── convenience shortcuts ──────────────────────────────────────────
+        padstack: Optional[str] = None,
+        net: Optional[str] = None,
+        pin: Optional[str] = None,
     ) -> PortConfig:
-        """Add a coaxial port.
+        """Add a coaxial (via) port.
+
+        The positive terminal can be specified either via the generic
+        *positive_terminal* dict **or** through one of the three convenience
+        shortcuts (*padstack*, *net*, *pin*).  Exactly one of the four
+        approaches must be supplied.
+
+        Terminal types and their behaviour
+        -----------------------------------
+        ``padstack`` *(str)*
+            Name of a single padstack instance.  Creates one coax port on
+            that via.
+
+            >>> cfg.ports.add_coax_port("p1", padstack="via_A1")
+
+        ``net`` *(str)* + ``reference_designator`` *(str)*
+            All pins of *net* on component *reference_designator*.  When the
+            component has more than one matching pin the port is created as
+            **distributed** (one coax port per pin, named
+            ``<name>_<pin_name>``).
+
+            >>> cfg.ports.add_coax_port(
+            ...     "p_vdd", net="VDD", reference_designator="U1"
+            ... )
+
+        ``pin`` *(str)* + ``reference_designator`` *(str)*
+            A single named pin on component *reference_designator*.
+
+            >>> cfg.ports.add_coax_port(
+            ...     "p_a1", pin="A1", reference_designator="U1"
+            ... )
+
+        ``positive_terminal`` *(dict)*
+            Raw terminal specifier dict — use :class:`TerminalInfo` helpers to
+            build it:
+
+            * ``TerminalInfo.padstack("via_A1")``
+            * ``TerminalInfo.net("VDD", reference_designator="U1")``
+            * ``TerminalInfo.pin("A1", reference_designator="U1")``
+
+        .. note::
+           **Solder-ball geometry** (height, diameter, shape) is a
+           *component* property, not a port property.  Configure it via
+           ``cfg.components.add(refdes).set_solder_ball_properties(…)`` or
+           the component section of the configuration file.
 
         Parameters
         ----------
         name : str
             Port name.
-        positive_terminal : dict
-            Positive terminal specifier.
+        positive_terminal : dict, optional
+            Raw terminal specifier.  Ignored when *padstack*, *net*, or *pin*
+            is supplied.
         reference_designator : str, optional
-            Component reference designator used to disambiguate the terminal.
+            Component reference designator.  Required when *net* or *pin* is
+            used.
         impedance : float or str, optional
-            Port impedance.
+            Port impedance (default solver value when omitted).
+        padstack : str, optional
+            Padstack instance name shortcut.
+        net : str, optional
+            Net-name shortcut.  Requires *reference_designator*.
+        pin : str, optional
+            Pin-name shortcut.  Requires *reference_designator*.
 
         Returns
         -------
         PortConfig
             Newly created coaxial port entry.
 
+        Raises
+        ------
+        ValueError
+            When none of *positive_terminal*, *padstack*, *net*, or *pin* is
+            supplied, or when *net* / *pin* is used without
+            *reference_designator*.
+
+        Examples
+        --------
+        Via padstack name:
+
+        >>> cfg.ports.add_coax_port("coax_via", padstack="via_A1")
+
+        All VDD pins on U1 (distributed):
+
+        >>> cfg.ports.add_coax_port(
+        ...     "coax_vdd", net="VDD", reference_designator="U1"
+        ... )
+
+        Single pin A1 on U1:
+
+        >>> cfg.ports.add_coax_port(
+        ...     "coax_a1", pin="A1", reference_designator="U1", impedance=50
+        ... )
+
+        Using TerminalInfo:
+
+        >>> from pyedb.configuration.cfg_api import TerminalInfo
+        >>> cfg.ports.add_coax_port(
+        ...     "coax_pg",
+        ...     positive_terminal=TerminalInfo.net("SIG", reference_designator="U1"),
+        ... )
+
         """
+        # Build positive_terminal from convenience shortcuts
+        if padstack is not None:
+            positive_terminal = {"padstack": padstack}
+        elif net is not None:
+            if not reference_designator:
+                raise ValueError("'reference_designator' is required when 'net' is supplied.")
+            positive_terminal = {"net": net, "reference_designator": reference_designator}
+        elif pin is not None:
+            if not reference_designator:
+                raise ValueError("'reference_designator' is required when 'pin' is supplied.")
+            positive_terminal = {"pin": pin, "reference_designator": reference_designator}
+        elif positive_terminal is None:
+            raise ValueError(
+                "Provide one of: positive_terminal, padstack, net, or pin."
+            )
+
         port = PortConfig(
             name=name,
             port_type="coax",

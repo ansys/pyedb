@@ -405,7 +405,12 @@ applies the configuration with a single ``run()`` call.
        point_on_edge=[0.001, 0.002],
        horizontal_extent_factor=6,
    )
-   cfg.ports.add_coax_port("coax1", positive_terminal=TerminalInfo.padstack("v1"))
+   # Coax port – padstack shortcut (most common)
+   cfg.ports.add_coax_port("coax1", padstack="v1")
+   # Coax port – net shortcut (distributed if >1 matching pin)
+   cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
+   # Coax port – pin shortcut
+   cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
 
    # ----------------------------------------------------------------
    # Sources and probes
@@ -1099,14 +1104,62 @@ Ports
      - Description
    * - ``.add_circuit_port(name, positive_terminal, negative_terminal, reference_designator, impedance, distributed)``
      - Lumped circuit port.
-   * - ``.add_coax_port(name, positive_terminal, reference_designator, impedance)``
-     - Coaxial (via) port.
+   * - ``.add_coax_port(name, positive_terminal, reference_designator, impedance, padstack, net, pin)``
+     - Coaxial (via) port.  Accepts a raw *positive_terminal* dict **or** one
+       of the convenience shortcuts *padstack*, *net*, *pin* (see below).
    * - ``.add_wave_port(name, primitive_name, point_on_edge, horizontal_extent_factor, vertical_extent_factor, pec_launch_width)``
      - Wave port on a trace edge.
    * - ``.add_gap_port(name, primitive_name, point_on_edge, …)``
      - Gap port on a trace edge.
    * - ``.add_diff_wave_port(name, positive_terminal, negative_terminal, …)``
      - Differential wave port.
+
+**Coaxial port terminal shortcuts**
+
+``add_coax_port`` supports three mutually exclusive shortcuts so you never
+need to build the terminal dict by hand:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 30 20 50
+
+   * - Shortcut parameter
+     - Also requires
+     - Behaviour
+   * - ``padstack="via_A1"``
+     - –
+     - Single named padstack instance → one coax port.
+   * - ``net="VDD"``
+     - ``reference_designator="U1"``
+     - All pins of *VDD* on *U1*.  When more than one pin matches the port is
+       created as **distributed** (one coax port per pin).
+   * - ``pin="A1"``
+     - ``reference_designator="U1"``
+     - Single named pin on the component.
+
+.. code-block:: python
+
+   # Via padstack name
+   cfg.ports.add_coax_port("coax_via", padstack="via_A1")
+
+   # All VDD pins on U1 (distributed when >1 pin)
+   cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
+
+   # Single pin
+   cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
+
+   # Using TerminalInfo (raw dict style still works)
+   cfg.ports.add_coax_port(
+       "coax_pg",
+       positive_terminal=TerminalInfo.net("SIG", reference_designator="U1"),
+   )
+
+.. note::
+
+   **Solder-ball geometry** (diameter, height, shape) is a *component*
+   property, not a port property.  Configure it via
+   ``cfg.components.add(refdes).set_solder_ball_properties(shape, diameter, height)``
+   or through the ``components`` section of the JSON/TOML configuration file.
 
 Sources
 -------
