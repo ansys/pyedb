@@ -1157,6 +1157,99 @@ class Configuration:
             else:  # pragma: no cover
                 raise RuntimeError(f"Terminal type {i.terminal_type} not supported.")
 
+    def get_data_from_db(self, **kwargs):
+        """Get configuration data from layout.
+
+        Parameters
+        ----------
+        stackup : bool, optional
+            Whether to retrieve stackup data.
+        package_definitions : bool, optional
+            Whether to retrieve package definitions.
+        setups : bool, optional
+            Whether to retrieve setups.
+        sources : bool, optional
+            Whether to retrieve sources.
+        ports : bool, optional
+            Whether to retrieve ports.
+        nets : bool, optional
+            Whether to retrieve nets.
+        pin_groups : bool, optional
+            Whether to retrieve pin groups.
+        operations : bool, optional
+            Whether to retrieve operations.
+        components : bool, optional
+            Whether to retrieve components.
+        boundaries : bool, optional
+            Whether to retrieve boundaries.
+        s_parameters : bool, optional
+            Whether to retrieve s-parameters.
+        padstacks : bool, optional
+            Whether to retrieve padstacks.
+        general : bool, optional
+            Whether to retrieve general information.
+        variables : bool, optional
+            Whether to retrieve variables.
+        terminals : bool, optional
+            Whether to retrieve terminals.
+
+        Returns
+        -------
+        dict
+            Dictionary with requested configuration data.
+        """
+        self._pedb.logger.info("Getting data from layout database.")
+
+        self.get_materials()
+
+        data = {}
+        if kwargs.get("general", False):
+            data["general"] = self.cfg_data.general.get_data_from_db()
+        if kwargs.get("variables", False):
+            self.get_variables()
+            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
+        if kwargs.get("stackup", False):
+            self.get_stackup()
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
+        if kwargs.get("package_definitions", False):
+            data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
+        if kwargs.get("setups", False):
+            self.get_setups()
+            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
+        if kwargs.get("terminals", False):
+            self.get_terminals()
+            data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
+        if kwargs.get("sources", False):
+            data["sources"] = self.cfg_data.sources.get_data_from_db()
+        if kwargs.get("ports", False):
+            data["ports"] = self.cfg_data.ports.get_data_from_db()
+        if kwargs.get("components", False) or kwargs.get("s_parameters", False):
+            self.cfg_data.components.retrieve_parameters_from_edb()
+            components = []
+            for i in self.cfg_data.components.components:
+                if i.type == "io":
+                    components.append(i.get_attributes())
+                components.append(i.get_attributes())
+
+            if kwargs.get("components", False):
+                data["components"] = components
+            elif kwargs.get("s_parameters", False):
+                data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
+        if kwargs.get("nets", False):
+            data["nets"] = self.cfg_data.nets.get_data_from_db()
+        if kwargs.get("pin_groups", False):
+            data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
+        if kwargs.get("operations", False):
+            self.get_operations()
+            data["operations"] = self.cfg_data.operations.model_dump()
+        if kwargs.get("padstacks", False):
+            self.get_padstacks()
+            data["padstacks"] = self.cfg_data.padstacks.model_dump(exclude_none=True)
+        if kwargs.get("boundaries", False):
+            self.get_boundaries()
+            data["boundaries"] = self.cfg_data.boundaries.model_dump(exclude_none=True)
+        return data
+
     def export(
         self,
         file_path,
