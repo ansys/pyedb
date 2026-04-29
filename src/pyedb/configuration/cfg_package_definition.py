@@ -232,4 +232,3 @@ class CfgPackageDefinitions:
     def to_list(self):
         """Serialize all configured package definitions."""
         return [p.to_dict() for p in self.packages]
-

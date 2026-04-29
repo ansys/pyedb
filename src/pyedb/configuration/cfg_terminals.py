@@ -34,18 +34,19 @@ class CfgTerminal(CfgBaseModel):
     reference_terminal: Optional[str] = None
     amplitude: Optional[Union[float, int, str]] = 1
     phase: Optional[Union[float, int, str]] = 0
-    terminal_to_ground: Literal[
-        "kNoGround",
-        "kNegative",
-        "kNegativeNode",
-        "kPositive",
-        "kPositiveNode",
-        "no_ground",
-        "negative",
-        "positive",
-    ] | None = (
-        "kNoGround"
-    )
+    terminal_to_ground: (
+        Literal[
+            "kNoGround",
+            "kNegative",
+            "kNegativeNode",
+            "kPositive",
+            "kPositiveNode",
+            "no_ground",
+            "negative",
+            "positive",
+        ]
+        | None
+    ) = "kNoGround"
     boundary_type: Literal[
         "PortBoundary",
         "PecBoundary",
@@ -426,4 +427,3 @@ class CfgTerminals(CfgBaseModel):
     def to_list(self):
         """Serialize all configured terminals."""
         return [t.to_dict() if hasattr(t, "to_dict") else t for t in self.terminals]
-

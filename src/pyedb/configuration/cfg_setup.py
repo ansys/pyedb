@@ -25,7 +25,6 @@ from pydantic import AliasChoices, Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
 
-
 _DISTRIBUTION_ALIASES = {
     "linear_count": "linear_count",
     "linearcount": "linear_count",
@@ -117,7 +116,9 @@ class CfgSetupAC(CfgSetupDC):
             self.frequencies.append(freq)
 
         def add_linear_count_frequencies(self, start, stop, count):
-            self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count"))
+            self.frequencies.append(
+                CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count")
+            )
             return self
 
         def add_log_count_frequencies(self, start, stop, count):
@@ -287,7 +288,9 @@ class CfgHFSSSetup(CfgSetupAC):
     def __init__(self, name: str, adapt_type: Literal["broadband", "single", "multi_frequencies"] = "single", **kwargs):
         super().__init__(name=name, adapt_type=adapt_type, **kwargs)
 
-    def set_single_frequency_adaptive(self, freq: float | str = "5GHz", max_passes: int = 20, max_delta: float | str = 0.02):
+    def set_single_frequency_adaptive(
+        self, freq: float | str = "5GHz", max_passes: int = 20, max_delta: float | str = 0.02
+    ):
         self.adapt_type = "single"
         self.single_frequency_adaptive_solution = self.CfgSingleFrequencyAdaptiveSolution(
             adaptive_frequency=freq,
@@ -466,4 +469,3 @@ class CfgSetups(CfgBaseModel):
             else:
                 result.append(setup.model_dump(exclude_none=True))
         return result
-

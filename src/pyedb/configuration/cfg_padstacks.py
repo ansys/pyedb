@@ -244,4 +244,3 @@ class CfgPadstacks(CfgBase):
         if self.instances:
             data["instances"] = [i.to_dict() for i in self.instances]
         return data
-

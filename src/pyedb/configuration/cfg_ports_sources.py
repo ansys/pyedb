@@ -1133,4 +1133,3 @@ class CfgDiffWavePort:
 
     def to_dict(self):
         return self.export_properties()
-

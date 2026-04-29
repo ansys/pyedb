@@ -439,7 +439,7 @@ applies the configuration with a single ``run()`` call.
    # ----- HFSS setup -----
    hfss = cfg.setups.add_hfss_setup(
        "hfss_bb",
-       adapt_type="broadband",          # "single" | "broadband" | "multi_frequencies"
+       adapt_type="broadband",  # "single" | "broadband" | "multi_frequencies"
    )
 
    # Adaptive refinement – only one of these three is active at a time:
@@ -473,8 +473,10 @@ applies the configuration with a single ``run()`` call.
    # Frequency sweep – Option A: inline (start/stop/step_or_count in one call)
    hfss.add_frequency_sweep(
        "sweep1",
-       start="1GHz", stop="20GHz", step_or_count=100,
-       distribution="linear_count",     # or "log_count" | "linear_scale" | "log_scale" | "single"
+       start="1GHz",
+       stop="20GHz",
+       step_or_count=100,
+       distribution="linear_count",  # or "log_count" | "linear_scale" | "log_scale" | "single"
        sweep_type="interpolation",
        enforce_passivity=True,
    )
@@ -495,14 +497,16 @@ applies the configuration with a single ``run()`` call.
    # ----- SIwave AC setup -----
    siwave_ac = cfg.setups.add_siwave_ac_setup(
        "siw_ac",
-       si_slider_position=2,            # 0=Speed | 1=Balanced | 2=Accuracy
+       si_slider_position=2,  # 0=Speed | 1=Balanced | 2=Accuracy
        pi_slider_position=1,
        use_si_settings=True,
    )
    # Inline sweep (start/stop/step_or_count) – no separate chaining call needed
    siwave_ac.add_frequency_sweep(
        "siw_sw1",
-       start="1kHz", stop="1GHz", step_or_count=100,
+       start="1kHz",
+       stop="1GHz",
+       step_or_count=100,
        distribution="log_count",
        compute_dc_point=False,
        enforce_passivity=True,
@@ -511,7 +515,7 @@ applies the configuration with a single ``run()`` call.
    # ----- SIwave DC setup -----
    cfg.setups.add_siwave_dc_setup(
        "siw_dc",
-       dc_slider_position=1,            # 0=Speed | 1=Balanced | 2=Accuracy
+       dc_slider_position=1,  # 0=Speed | 1=Balanced | 2=Accuracy
        export_dc_thermal_data=True,
    )
 
@@ -531,7 +535,7 @@ applies the configuration with a single ``run()`` call.
    cfg.operations.add_cutout(
        signal_nets=["DDR4_DQ0", "CLK"],
        reference_nets=["GND"],
-       extent_type="ConvexHull",        # case-insensitive
+       extent_type="ConvexHull",  # case-insensitive
        expansion_size=0.002,
        auto_identify_nets_enabled=True,
    )
@@ -735,7 +739,9 @@ frequency range can be fully described in the call itself — no subsequent
    # Inline (one call — most concise)
    hfss.add_frequency_sweep(
        "sweep1",
-       start="1GHz", stop="20GHz", step_or_count=100,
+       start="1GHz",
+       stop="20GHz",
+       step_or_count=100,
        distribution="linear_count",
    )
 

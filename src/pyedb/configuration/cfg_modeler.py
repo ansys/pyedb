@@ -277,7 +277,9 @@ class CfgModeler:
         if self.padstack_defs:
             data["padstack_definitions"] = [p.model_dump(exclude_none=True) for p in self.padstack_defs]
         if self.padstack_instances:
-            data["padstack_instances"] = [p.model_dump(exclude_none=True, by_alias=False) for p in self.padstack_instances]
+            data["padstack_instances"] = [
+                p.model_dump(exclude_none=True, by_alias=False) for p in self.padstack_instances
+            ]
         if self.components:
             data["components"] = [c.to_dict() for c in self.components]
         if any(v for v in self.primitives_to_delete.values()):

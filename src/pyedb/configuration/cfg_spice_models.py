@@ -151,4 +151,3 @@ class CfgSpiceModels:
     def to_list(self):
         """Serialize all configured SPICE model assignments."""
         return [model.to_dict() for model in self.models]
-
