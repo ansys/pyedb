@@ -19,29 +19,74 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Build the ``general`` configuration section.
+
+The existing :class:`CfgGeneral` class is used both by the runtime
+configuration loader and by the programmatic builder API.
+"""
 
 
 class CfgGeneral:
-    """Manage configuration general settings."""
+    """Fluent builder for the ``general`` configuration section.
+
+    Wraps the attribute names expected by the configuration runtime.
+
+    Attributes
+    ----------
+    spice_model_library : str
+        Root path used to resolve relative SPICE model file paths.
+    s_parameter_library : str
+        Root path used to resolve relative S-parameter file paths.
+    anti_pads_always_on : bool or None
+        Design-level anti-pads always-on flag.
+    suppress_pads : bool or None
+        Design-level suppress-pads flag.
+    """
 
     def set_parameters_to_edb(self):
+        if self.pedb is None:
+            return
         if self.anti_pads_always_on is not None:
             self.pedb.design_options.anti_pads_always_on = self.anti_pads_always_on
         if self.suppress_pads is not None:
             self.pedb.design_options.suppress_pads = self.suppress_pads
 
     def get_parameters_from_edb(self):
+        if self.pedb is None:
+            return self.to_dict()
         anti_pads_always_on = self.pedb.design_options.anti_pads_always_on
         suppress_pads = self.pedb.design_options.suppress_pads
         data = {"anti_pads_always_on": anti_pads_always_on, "suppress_pads": suppress_pads}
         return data
 
-    def __init__(self, pedb, data):
+    def __init__(self, pedb=None, data=None):
+        """Initialize the general configuration with default empty values."""
+        data = data or {}
         self.pedb = pedb
         self.spice_model_library = data.get("spice_model_library", "")
         self.s_parameter_library = data.get("s_parameter_library", "")
         self.anti_pads_always_on = data.get("anti_pads_always_on", None)
         self.suppress_pads = data.get("suppress_pads", None)
+
+    def to_dict(self) -> dict:
+        """Serialize configured general settings.
+
+        Returns
+        -------
+        dict
+            Dictionary containing only explicitly configured values for the
+            ``general`` section.
+        """
+        data = {}
+        if self.spice_model_library:
+            data["spice_model_library"] = self.spice_model_library
+        if self.s_parameter_library:
+            data["s_parameter_library"] = self.s_parameter_library
+        if self.anti_pads_always_on is not None:
+            data["anti_pads_always_on"] = self.anti_pads_always_on
+        if self.suppress_pads is not None:
+            data["suppress_pads"] = self.suppress_pads
+        return data
 
     def apply(self):
         self.set_parameters_to_edb()

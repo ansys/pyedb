@@ -57,6 +57,14 @@ class CfgVariables(BaseModel):
     def add_variable(self, name, value, description=""):
         self.variables.append(CfgVar(name=name, value=value, description=description))
 
+    def add(self, name, value, description=""):
+        """Add a design variable."""
+        self.add_variable(name=name, value=value, description=description)
+
+    def to_list(self) -> List[dict]:
+        """Serialize configured design variables."""
+        return [v.model_dump(exclude_none=True) for v in self.variables]
+
 
 class CfgBaseModel(BaseModel):
     model_config = {

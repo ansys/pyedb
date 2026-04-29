@@ -32,6 +32,8 @@ class CfgPinGroups:
 
     def get_data_from_edb(self):
         self.pin_groups = []
+        if self._pedb is None:
+            return self.export_properties()
         layout_pin_groups = self._pedb.siwave.pin_groups
         for pg_name, pg_obj in layout_pin_groups.items():
             pins = list(pg_obj.pins.keys())
@@ -47,9 +49,15 @@ class CfgPinGroups:
             self.pin_groups.append(cfg_pg)
         return self.export_properties()
 
-    def __init__(self, pedb, pingroup_data):
+    def __init__(self, pedb=None, pingroup_data=None):
         self._pedb = pedb
-        self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in pingroup_data]
+        self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in (pingroup_data or [])]
+
+    def add(self, name, reference_designator, pins=None, net=None):
+        """Add a pin group."""
+        pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, pins=pins, net=net)
+        self.pin_groups.append(pg)
+        return pg
 
     def apply(self):
         self.set_pingroup_to_edb()
@@ -63,9 +71,15 @@ class CfgPinGroups:
             pin_groups.append(pg.export_properties())
         return pin_groups
 
+    def to_list(self):
+        """Serialize all configured pin groups."""
+        return self.export_properties()
+
 
 class CfgPinGroup(CfgBase):
     def create(self):
+        if self._pedb is None:
+            return self.export_properties()
         if self.pins:
             pins = self.pins if isinstance(self.pins, list) else [self.pins]
             self._pedb.siwave.create_pin_group(self.reference_designator, pins, self.name)
@@ -78,12 +92,24 @@ class CfgPinGroup(CfgBase):
         else:
             raise RuntimeError(f"No net and pins defined for defining pin group {self.name}")
 
-    def __init__(self, pedb, **kwargs):
+    def __init__(self, pedb=None, name=None, reference_designator=None, pins=None, net=None, **kwargs):
+        if name is None and kwargs.get("name") is not None:
+            name = kwargs.get("name")
+        if reference_designator is None and kwargs.get("reference_designator") is not None:
+            reference_designator = kwargs.get("reference_designator")
+        if pins is None and "pins" in kwargs:
+            pins = kwargs.get("pins")
+        if net is None and "net" in kwargs:
+            net = kwargs.get("net")
         self._pedb = pedb
-        self.name = kwargs["name"]
-        self.reference_designator = kwargs.get("reference_designator")
-        self.pins = kwargs.get("pins")
-        self.net = kwargs.get("net")
+        self.name = name
+        self.reference_designator = reference_designator
+        self.pins = pins
+        self.net = net
+
+    def to_dict(self) -> dict:
+        """Serialize the pin-group definition."""
+        return self.export_properties()
 
     def export_properties(self):
         if self.pins:

@@ -30,18 +30,39 @@ class CfgPackage(CfgBase):
     # Attributes cannot be set to package definition class or don't exist in package definition class.
     protected_attributes = ["name", "apply_to_all", "components", "extent_bounding_box", "component_definition"]
 
-    def __init__(self, **kwargs):
-        self.name = kwargs.get("name", None)
-        self.component_definition = kwargs.get("component_definition", None)
-        self.maximum_power = kwargs.get("maximum_power", None)
-        self.thermal_conductivity = kwargs.get("thermal_conductivity", None)
-        self.theta_jb = kwargs.get("theta_jb", None)
-        self.theta_jc = kwargs.get("theta_jc", None)
-        self.height = kwargs.get("height", None)
-        self.apply_to_all = kwargs.get("apply_to_all", None)
-        self.components = kwargs.get("components", [])
-        self.extent_bounding_box = kwargs.get("extent_bounding_box", None)
-        self._heatsink = CfgHeatSink(**kwargs["heatsink"]) if "heatsink" in kwargs else None
+    def __init__(
+        self,
+        name=None,
+        component_definition=None,
+        apply_to_all=None,
+        components=None,
+        maximum_power=None,
+        thermal_conductivity=None,
+        theta_jb=None,
+        theta_jc=None,
+        height=None,
+        extent_bounding_box=None,
+        heatsink=None,
+        **kwargs,
+    ):
+        self.name = name if name is not None else kwargs.get("name", None)
+        self.component_definition = (
+            component_definition if component_definition is not None else kwargs.get("component_definition", None)
+        )
+        self.maximum_power = maximum_power if maximum_power is not None else kwargs.get("maximum_power", None)
+        self.thermal_conductivity = (
+            thermal_conductivity if thermal_conductivity is not None else kwargs.get("thermal_conductivity", None)
+        )
+        self.theta_jb = theta_jb if theta_jb is not None else kwargs.get("theta_jb", None)
+        self.theta_jc = theta_jc if theta_jc is not None else kwargs.get("theta_jc", None)
+        self.height = height if height is not None else kwargs.get("height", None)
+        self.apply_to_all = apply_to_all if apply_to_all is not None else kwargs.get("apply_to_all", None)
+        self.components = components if components is not None else kwargs.get("components", [])
+        self.extent_bounding_box = (
+            extent_bounding_box if extent_bounding_box is not None else kwargs.get("extent_bounding_box", None)
+        )
+        heatsink_data = heatsink if heatsink is not None else kwargs.get("heatsink")
+        self._heatsink = CfgHeatSink(**heatsink_data) if isinstance(heatsink_data, dict) and heatsink_data else None
 
     @property
     def heatsink(self):
@@ -50,6 +71,50 @@ class CfgPackage(CfgBase):
     @heatsink.setter
     def heatsink(self, value):
         self._heatsink = value
+
+    def set_heatsink(
+        self,
+        fin_base_height=None,
+        fin_height=None,
+        fin_orientation=None,
+        fin_spacing=None,
+        fin_thickness=None,
+    ):
+        """Attach heat-sink properties to the package definition."""
+        self.heatsink = CfgHeatSink(
+            fin_base_height=fin_base_height,
+            fin_height=fin_height,
+            fin_orientation=fin_orientation,
+            fin_spacing=fin_spacing,
+            fin_thickness=fin_thickness,
+        )
+        return self.heatsink
+
+    def to_dict(self) -> dict:
+        """Serialize the package definition."""
+        data = {
+            "name": self.name,
+            "component_definition": self.component_definition,
+        }
+        for key in (
+            "apply_to_all",
+            "maximum_power",
+            "thermal_conductivity",
+            "theta_jb",
+            "theta_jc",
+            "height",
+            "extent_bounding_box",
+        ):
+            value = getattr(self, key)
+            if value not in [None, [], {}]:
+                data[key] = value
+        if self.components:
+            data["components"] = self.components
+        if self.heatsink is not None:
+            hs = self.heatsink.to_dict()
+            if hs:
+                data["heatsink"] = hs
+        return data
 
 
 class CfgHeatSink(CfgBase):
@@ -61,6 +126,10 @@ class CfgHeatSink(CfgBase):
         self.fin_orientation = kwargs.get("fin_orientation", None)
         self.fin_spacing = kwargs.get("fin_spacing", None)
         self.fin_thickness = kwargs.get("fin_thickness", None)
+
+    def to_dict(self) -> dict:
+        """Serialize non-null heat-sink properties."""
+        return self.get_attributes()
 
 
 class CfgPackageDefinitions:
@@ -121,12 +190,46 @@ class CfgPackageDefinitions:
             for _, i in comp_list.items():
                 i.package_def = pkg.name
 
-    def __init__(self, pedb, data):
+    def __init__(self, pedb=None, data=None):
         self._pedb = pedb
-        self.packages = [CfgPackage(**package) for package in data]
+        self.packages = [CfgPackage(**package) for package in (data or [])]
+
+    def add(
+        self,
+        name,
+        component_definition,
+        apply_to_all=None,
+        components=None,
+        maximum_power=None,
+        thermal_conductivity=None,
+        theta_jb=None,
+        theta_jc=None,
+        height=None,
+        extent_bounding_box=None,
+    ):
+        """Add a thermal package definition entry."""
+        pkg = CfgPackage(
+            name=name,
+            component_definition=component_definition,
+            apply_to_all=apply_to_all,
+            components=components or [],
+            maximum_power=maximum_power,
+            thermal_conductivity=thermal_conductivity,
+            theta_jb=theta_jb,
+            theta_jc=theta_jc,
+            height=height,
+            extent_bounding_box=extent_bounding_box,
+        )
+        self.packages.append(pkg)
+        return pkg
 
     def apply(self):
         self.set_parameter_to_edb()
 
     def get_data_from_db(self):
         return self.get_parameter_from_edb()
+
+    def to_list(self):
+        """Serialize all configured package definitions."""
+        return [p.to_dict() for p in self.packages]
+

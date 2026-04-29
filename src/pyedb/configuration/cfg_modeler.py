@@ -59,7 +59,7 @@ class CfgPlane:
 
     # circle
     radius: Union[float, str] = 0
-    position: List[float] = field(default_factory=lambda: [0, 0])
+    position: List[Union[float, str]] = field(default_factory=lambda: [0, 0])
 
 
 class PrimitivesToDeleteDict(TypedDict, total=False):
@@ -70,12 +70,13 @@ class PrimitivesToDeleteDict(TypedDict, total=False):
 
 @dataclass
 class CfgModeler:
-    """Manage configuration general settings."""
+    """Collect geometry and modeler operations for serialization."""
 
     traces: List[CfgTrace] = field(default_factory=list)
     planes: List[CfgPlane] = field(default_factory=list)
 
-    def __init__(self, pedb, data: Dict):
+    def __init__(self, pedb=None, data: Dict | None = None):
+        data = data or {}
         self._pedb = pedb
         self.traces = []
         self.planes = []
@@ -103,9 +104,9 @@ class CfgModeler:
 
     def add_trace(
         self,
+        name: str,
         layer: str,
         width: str,
-        name: str,
         net_name: str = "",
         start_cap_style: str = "round",
         end_cap_style: str = "round",
@@ -118,41 +119,41 @@ class CfgModeler:
         trace_obj = CfgTrace(
             name,
             layer,
-            path,
+            path or [],
             width,
             net_name,
             start_cap_style,
             end_cap_style,
             corner_style,
-            incremental_path,
+            incremental_path or [],
         )
         self.traces.append(trace_obj)
-        return name
+        return trace_obj
 
     def add_rectangular_plane(
         self,
         layer: str,
         name: str = "",
         net_name: str = "",
-        lower_left_point: List[float] = "",
-        upper_right_point: List[float] = "",
+        lower_left_point: Optional[List[float]] = None,
+        upper_right_point: Optional[List[float]] = None,
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = "",
+        voids: Optional[List[Any]] = None,
     ):
         plane_obj = CfgPlane(
             name=name,
             layer=layer,
             net_name=net_name,
             type="rectangle",
-            lower_left_point=lower_left_point,
-            upper_right_point=upper_right_point,
+            lower_left_point=lower_left_point or [],
+            upper_right_point=upper_right_point or [],
             corner_radius=corner_radius,
             rotation=rotation,
-            voids=voids,
+            voids=voids or [],
         )
         self.planes.append(plane_obj)
-        return name
+        return plane_obj
 
     def add_circular_plane(
         self,
@@ -161,9 +162,9 @@ class CfgModeler:
         net_name: str = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = "",
+        voids: Optional[List[Any]] = None,
         radius: Union[float, str] = 0,
-        position: List[Union[float, str]] = "",
+        position: Optional[List[Union[float, str]]] = None,
     ):
         plane_obj = CfgPlane(
             name=name,
@@ -172,12 +173,12 @@ class CfgModeler:
             type="circle",
             corner_radius=corner_radius,
             rotation=rotation,
-            voids=voids,
+            voids=voids or [],
             radius=radius,
-            position=position,
+            position=position or [0, 0],
         )
         self.planes.append(plane_obj)
-        return name
+        return plane_obj
 
     def add_polygon_plane(
         self,
@@ -186,8 +187,8 @@ class CfgModeler:
         net_name: str = "",
         corner_radius: float = 0,
         rotation: float = 0,
-        voids: Optional[List[Any]] = "",
-        points: List[List[float]] = "",
+        voids: Optional[List[Any]] = None,
+        points: Optional[List[List[float]]] = None,
     ):
         plane_obj = CfgPlane(
             name=name,
@@ -196,8 +197,89 @@ class CfgModeler:
             type="polygon",
             corner_radius=corner_radius,
             rotation=rotation,
-            voids=voids,
-            points=points,
+            voids=voids or [],
+            points=points or [],
         )
         self.planes.append(plane_obj)
-        return name
+        return plane_obj
+
+    def add_padstack_definition(
+        self,
+        name: str,
+        hole_plating_thickness=None,
+        material=None,
+        hole_range=None,
+        pad_parameters=None,
+        hole_parameters=None,
+        solder_ball_parameters=None,
+    ):
+        """Add a modeler padstack definition."""
+        obj = CfgPadstackDefinition.create(
+            name=name,
+            hole_plating_thickness=hole_plating_thickness,
+            hole_material=material,
+            hole_range=hole_range,
+            pad_parameters=pad_parameters,
+            hole_parameters=hole_parameters,
+            solder_ball_parameters=solder_ball_parameters,
+        )
+        self.padstack_defs.append(obj)
+        return obj
+
+    def add_padstack_instance(self, **kwargs):
+        """Add a modeler padstack instance."""
+        obj = CfgPadstackInstance.create(**kwargs)
+        self.padstack_instances.append(obj)
+        return obj
+
+    def add_component(
+        self,
+        reference_designator: str,
+        part_type: Optional[str] = None,
+        enabled: Optional[bool] = None,
+        definition: Optional[str] = None,
+        placement_layer: Optional[str] = None,
+        pins: Optional[List[str]] = None,
+    ):
+        """Add a component instance to the modeler section."""
+        comp = CfgComponent(
+            self._pedb,
+            None,
+            reference_designator=reference_designator,
+            part_type=part_type,
+            enabled=enabled,
+            definition=definition,
+            placement_layer=placement_layer,
+            pins=pins or [],
+        )
+        self.components.append(comp)
+        return comp
+
+    def delete_primitives_by_layer(self, layer_names: List[str]):
+        """Schedule all primitives on the given layers for deletion."""
+        self.primitives_to_delete.setdefault("layer_name", []).extend(layer_names)
+
+    def delete_primitives_by_name(self, primitive_names: List[str]):
+        """Schedule primitives with the given names for deletion."""
+        self.primitives_to_delete.setdefault("name", []).extend(primitive_names)
+
+    def delete_primitives_by_net(self, net_names: List[str]):
+        """Schedule all primitives on the given nets for deletion."""
+        self.primitives_to_delete.setdefault("net_name", []).extend(net_names)
+
+    def to_dict(self) -> dict:
+        """Serialize the modeler configuration."""
+        data: dict = {}
+        if self.traces:
+            data["traces"] = [vars(t) for t in self.traces]
+        if self.planes:
+            data["planes"] = [vars(p) for p in self.planes]
+        if self.padstack_defs:
+            data["padstack_definitions"] = [p.model_dump(exclude_none=True) for p in self.padstack_defs]
+        if self.padstack_instances:
+            data["padstack_instances"] = [p.model_dump(exclude_none=True, by_alias=False) for p in self.padstack_instances]
+        if self.components:
+            data["components"] = [c.to_dict() for c in self.components]
+        if any(v for v in self.primitives_to_delete.values()):
+            data["primitives_to_delete"] = self.primitives_to_delete
+        return data

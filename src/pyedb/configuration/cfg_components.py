@@ -22,6 +22,7 @@
 
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
+from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
 
@@ -52,7 +53,52 @@ _die_orientation_mapping = {
 }
 
 
+class CfgPinPairModel(BaseModel):
+    """Represent one pin-pair RLC model entry."""
+
+    first_pin: str
+    second_pin: str
+    resistance: str | float | None = None
+    inductance: str | float | None = None
+    capacitance: str | float | None = None
+    is_parallel: bool = False
+    resistance_enabled: bool = False
+    inductance_enabled: bool = False
+    capacitance_enabled: bool = False
+
+    def __init__(
+        self,
+        first_pin: str,
+        second_pin: str,
+        resistance: str | float | None = None,
+        inductance: str | float | None = None,
+        capacitance: str | float | None = None,
+        is_parallel: bool = False,
+        resistance_enabled: bool = False,
+        inductance_enabled: bool = False,
+        capacitance_enabled: bool = False,
+        **kwargs,
+    ):
+        super().__init__(
+            first_pin=first_pin,
+            second_pin=second_pin,
+            resistance=resistance,
+            inductance=inductance,
+            capacitance=capacitance,
+            is_parallel=is_parallel,
+            resistance_enabled=resistance_enabled,
+            inductance_enabled=inductance_enabled,
+            capacitance_enabled=capacitance_enabled,
+            **kwargs,
+        )
+
+    def to_dict(self) -> dict:
+        return self.model_dump()
+
+
 class CfgComponent(CfgBase):
+    """Fluent builder for a single component entry."""
+
     def retrieve_model_properties_from_edb(self):
         c_p = self.pyedb_obj
 
@@ -101,6 +147,8 @@ class CfgComponent(CfgBase):
             self.spice_model["terminal_pairs"] = c_p.model.pin_pairs
 
     def _set_ic_die_properties_to_edb(self):
+        if not self.ic_die_properties:
+            return
         if hasattr(self.pyedb_obj.component_property, "core"):
             cp = self.pyedb_obj.component_property.core
         else:
@@ -293,6 +341,8 @@ class CfgComponent(CfgBase):
             self.port_properties = temp
 
     def set_parameters_to_edb(self):
+        if self.pyedb_obj is None:
+            return self.to_dict()
         if self.type:
             self.pyedb_obj.type = self.type
         if self.enabled is not None:
@@ -308,6 +358,8 @@ class CfgComponent(CfgBase):
             self._set_port_properties_to_edb()
 
     def retrieve_parameters_from_edb(self):
+        if self.pyedb_obj is None:
+            return self.to_dict()
         self.type = self.pyedb_obj.type
         self.definition = self.pyedb_obj.part_name
         self.reference_designator = self.pyedb_obj.name
@@ -320,7 +372,10 @@ class CfgComponent(CfgBase):
             self._retrieve_solder_ball_properties_from_edb()
             self._retrieve_port_properties_from_edb()
 
-    def __init__(self, _pedb, pedb_object, **kwargs):
+    def __init__(self, _pedb=None, pedb_object=None, **kwargs):
+        if pedb_object is None and not hasattr(_pedb, "components") and "reference_designator" not in kwargs and _pedb is not None:
+            kwargs["reference_designator"] = _pedb
+            _pedb = None
         self._pedb = _pedb
         self.pyedb_obj = pedb_object
 
@@ -333,22 +388,158 @@ class CfgComponent(CfgBase):
 
         self.port_properties = kwargs.get("port_properties", {})
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
-        self.ic_die_properties = kwargs.get("ic_die_properties", {"type": "no_die"})
+        self.ic_die_properties = kwargs.get("ic_die_properties", {})
         self.pin_pair_model = kwargs.get("pin_pair_model", [])
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
         self.netlist_model = kwargs.get("netlist_model", {})
 
+    def add_pin_pair_rlc(
+        self,
+        first_pin: str,
+        second_pin: str,
+        resistance=None,
+        inductance=None,
+        capacitance=None,
+        is_parallel: bool = False,
+        resistance_enabled: bool = False,
+        inductance_enabled: bool = False,
+        capacitance_enabled: bool = False,
+    ):
+        """Append a pin-pair RLC model entry."""
+        self.pin_pair_model.append(
+            CfgPinPairModel(
+                first_pin=first_pin,
+                second_pin=second_pin,
+                resistance=resistance,
+                inductance=inductance,
+                capacitance=capacitance,
+                is_parallel=is_parallel,
+                resistance_enabled=resistance_enabled,
+                inductance_enabled=inductance_enabled,
+                capacitance_enabled=capacitance_enabled,
+            ).to_dict()
+        )
+
+    def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
+        """Assign an S-parameter model to the component."""
+        self.s_parameter_model = {
+            "model_name": model_name,
+            "model_path": model_path,
+            "reference_net": reference_net,
+        }
+
+    def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
+        """Assign a SPICE model to the component."""
+        self.spice_model = {
+            "model_name": model_name,
+            "model_path": model_path,
+            "sub_circuit": sub_circuit,
+            "terminal_pairs": terminal_pairs or [],
+        }
+
+    def set_netlist_model(self, netlist: str):
+        """Assign a raw netlist model to the component."""
+        self.netlist_model = {"netlist": netlist}
+
+    def set_ic_die_properties(self, die_type: str = "no_die", orientation: str = "chip_up", height=None):
+        """Configure IC die properties."""
+        data = {"type": die_type}
+        if die_type != "no_die":
+            data["orientation"] = orientation
+            if die_type == "wire_bond" and height:
+                data["height"] = height
+        self.ic_die_properties = data
+
+    def set_solder_ball_properties(
+        self,
+        shape: str = "cylinder",
+        diameter: str = "150um",
+        height: str = "100um",
+        material: str = "solder",
+        mid_diameter=None,
+    ):
+        """Configure solder-ball properties."""
+        data = {"shape": shape, "diameter": diameter, "height": height, "material": material}
+        if shape == "spheroid":
+            data["mid_diameter"] = mid_diameter or diameter
+        self.solder_ball_properties = data
+
+    def set_port_properties(
+        self,
+        reference_height: str = "0",
+        reference_size_auto: bool = True,
+        reference_size_x: str = "0",
+        reference_size_y: str = "0",
+    ):
+        """Configure port reference geometry properties."""
+        self.port_properties = {
+            "reference_height": reference_height,
+            "reference_size_auto": reference_size_auto,
+            "reference_size_x": reference_size_x,
+            "reference_size_y": reference_size_y,
+        }
+
+    def to_dict(self) -> dict:
+        """Serialize the component configuration."""
+        data: dict = {"reference_designator": self.reference_designator}
+        part_type = self.type
+        if part_type is not None:
+            data["part_type"] = part_type
+        for key in ("enabled", "definition", "placement_layer"):
+            val = getattr(self, key)
+            if val is not None:
+                data[key] = val
+        if self.pins:
+            data["pins"] = self.pins
+        if self.pin_pair_model:
+            data["pin_pair_model"] = self.pin_pair_model
+        for key in (
+            "s_parameter_model",
+            "spice_model",
+            "netlist_model",
+            "ic_die_properties",
+            "solder_ball_properties",
+            "port_properties",
+        ):
+            val = getattr(self, key)
+            if val not in [None, {}, []]:
+                data[key] = val
+        return data
+
 
 class CfgComponents:
-    def __init__(self, pedb, components_data):
+    """Fluent builder for the ``components`` configuration list."""
+
+    def __init__(self, pedb=None, components_data=None):
         self._pedb = pedb
         self.components = []
 
         if components_data:
             for comp in components_data:
-                obj = self._pedb.components.instances[comp["reference_designator"]]
+                obj = self._pedb.components.instances[comp["reference_designator"]] if self._pedb else None
                 self.components.append(CfgComponent(self._pedb, obj, **comp))
+
+    def add(
+        self,
+        reference_designator: str,
+        part_type=None,
+        enabled=None,
+        definition=None,
+        placement_layer=None,
+    ):
+        """Add a component configuration entry."""
+        comp = CfgComponent(
+            self._pedb,
+            None,
+            reference_designator=reference_designator,
+            part_type=part_type,
+            enabled=enabled,
+            definition=definition,
+            placement_layer=placement_layer,
+        )
+        self.components.append(comp)
+        return comp
 
     def clean(self):
         self.components = []
@@ -359,8 +550,15 @@ class CfgComponents:
 
     def retrieve_parameters_from_edb(self):
         self.clean()
+        if self._pedb is None:
+            return self.to_list()
         comps_in_db = self._pedb.components
         for _, comp in comps_in_db.instances.items():
             cfg_comp = CfgComponent(self._pedb, comp)
             cfg_comp.retrieve_parameters_from_edb()
             self.components.append(cfg_comp)
+
+    def to_list(self):
+        """Serialize all configured components."""
+        return [c.to_dict() for c in self.components]
+
