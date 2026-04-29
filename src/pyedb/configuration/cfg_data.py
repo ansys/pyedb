@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Aggregate configuration section objects into one runtime data container."""
+
 
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_common import CfgVariables

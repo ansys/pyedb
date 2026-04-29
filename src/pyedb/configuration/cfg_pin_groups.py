@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build named pin-group configuration entries."""
+
 from pyedb.configuration.cfg_common import CfgBase
 
 
@@ -27,10 +29,18 @@ class CfgPinGroups:
     """Manage configuration pin group class."""
 
     def set_pingroup_to_edb(self):
+        """Write all configured pin groups into the open EDB design."""
         for pg in self.pin_groups:
             pg.create()
 
     def get_data_from_edb(self):
+        """Read existing pin groups from the open EDB design.
+
+        Returns
+        -------
+        list of dict
+            Serialized pin-group payloads.
+        """
         self.pin_groups = []
         if self._pedb is None:
             return self.export_properties()
@@ -54,18 +64,56 @@ class CfgPinGroups:
         self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in (pingroup_data or [])]
 
     def add(self, name, reference_designator, pins=None, net=None):
-        """Add a pin group."""
+        """Add a pin group to this configuration.
+
+        Provide either *pins* (explicit list) **or** *net* (all pins on that
+        net), not both.
+
+        Parameters
+        ----------
+        name : str
+            Unique pin-group name, e.g. ``"pg_VDD"``.
+        reference_designator : str
+            Reference designator of the owning component, e.g. ``"U1"``.
+        pins : list of str, optional
+            Explicit list of pin names, e.g. ``["A1", "A2", "B1"]``.
+        net : str, optional
+            Net name.  All component pins on this net are included.
+
+        Returns
+        -------
+        CfgPinGroup
+            The newly created pin-group object.
+
+        Examples
+        --------
+        >>> cfg.pin_groups.add("pg_VDD", "U1", net="VDD")
+        >>> cfg.pin_groups.add("pg_GND", "U1", pins=["A1", "A2", "B1"])
+        """
         pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, pins=pins, net=net)
         self.pin_groups.append(pg)
         return pg
 
     def apply(self):
+        """Write all configured pin groups into the open EDB design."""
         self.set_pingroup_to_edb()
 
     def get_data_from_db(self):
+        """Read pin groups from the EDB design (alias for :meth:`get_data_from_edb`).
+
+        Returns
+        -------
+        list of dict
+        """
         return self.get_data_from_edb()
 
     def export_properties(self):
+        """Serialize all pin groups to a list of plain dictionaries.
+
+        Returns
+        -------
+        list of dict
+        """
         pin_groups = []
         for pg in self.pin_groups:
             pin_groups.append(pg.export_properties())
@@ -77,7 +125,16 @@ class CfgPinGroups:
 
 
 class CfgPinGroup(CfgBase):
+    """Represent one pin-group definition bound to a component."""
+
     def create(self):
+        """Write this pin group into the open EDB design.
+
+        Raises
+        ------
+        RuntimeError
+            If no pins and no net are configured, or if EDB creation fails.
+        """
         if self._pedb is None:
             return self.export_properties()
         if self.pins:
@@ -112,6 +169,14 @@ class CfgPinGroup(CfgBase):
         return self.export_properties()
 
     def export_properties(self):
+        """Serialize this pin group to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``name``, ``reference_designator``, and either
+            ``pins`` or ``net``.
+        """
         if self.pins:
             return {
                 "name": self.name,

@@ -30,7 +30,7 @@ Use this section to choose the view that best matches how you work:
 
 .. toctree::
     :hidden:
-    :maxdepth: 1
+    :maxdepth: 2
 
     file_architecture
     configuration_api_guide

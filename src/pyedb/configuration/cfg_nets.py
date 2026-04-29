@@ -32,13 +32,22 @@ class CfgNets:
 
     @property
     def power_ground_nets(self):
+        """list of str: Power and ground net names (alias for ``power_nets``)."""
         return self.power_nets
 
     @power_ground_nets.setter
     def power_ground_nets(self, value):
+        """Set power/ground net names.
+
+        Parameters
+        ----------
+        value : list of str
+            Replacement list of net names.
+        """
         self.power_nets = list(value or [])
 
     def set_parameter_to_edb(self):
+        """Write signal / power-ground net classifications into the open EDB design."""
         if self._pedb is None:
             return
         for signal_net in self.signal_nets:

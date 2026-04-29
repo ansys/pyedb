@@ -8,6 +8,33 @@ Instead of manually authoring JSON, you populate an
 to ``Configuration.run`` with no
 serialization step required.
 
+.. contents:: On this page
+   :local:
+   :depth: 2
+
+.. toctree::
+   :hidden:
+   :maxdepth: 1
+   :caption: Configuration API reference
+
+   Package overview <../autoapi/pyedb/configuration/index>
+   Runtime loader and apply API <../autoapi/pyedb/configuration/configuration/index>
+   General section <../autoapi/pyedb/configuration/cfg_general/index>
+   Stackup section <../autoapi/pyedb/configuration/cfg_stackup/index>
+   Nets section <../autoapi/pyedb/configuration/cfg_nets/index>
+   Components section <../autoapi/pyedb/configuration/cfg_components/index>
+   Padstacks section <../autoapi/pyedb/configuration/cfg_padstacks/index>
+   Pin groups section <../autoapi/pyedb/configuration/cfg_pin_groups/index>
+   Terminals section <../autoapi/pyedb/configuration/cfg_terminals/index>
+   Ports, sources, and probes <../autoapi/pyedb/configuration/cfg_ports_sources/index>
+   Setups section <../autoapi/pyedb/configuration/cfg_setup/index>
+   Boundaries section <../autoapi/pyedb/configuration/cfg_boundaries/index>
+   Operations section <../autoapi/pyedb/configuration/cfg_operations/index>
+   S-parameter models <../autoapi/pyedb/configuration/cfg_s_parameter_models/index>
+   SPICE models <../autoapi/pyedb/configuration/cfg_spice_models/index>
+   Variables and common models <../autoapi/pyedb/configuration/cfg_common/index>
+   Modeler section <../autoapi/pyedb/configuration/cfg_modeler/index>
+
 .. tip::
 
    The easiest way to obtain a builder when you already have an open EDB session
@@ -143,6 +170,38 @@ Core objects
    * - ``TerminalInfo`` helper
      - Helper factory
      - Creates terminal-specifier dictionaries for ports, sources, and probes.
+
+Generated API reference
+-----------------------
+
+Use the generated AutoAPI pages when you want full class signatures, member
+lists, or direct links to a specific configuration builder implementation.
+
+.. list-table:: Key AutoAPI links
+   :header-rows: 1
+   :widths: 38 62
+
+   * - Page
+     - When to use it
+   * - :doc:`Configuration package overview <../autoapi/pyedb/configuration/index>`
+     - Browse every configuration submodule from one landing page.
+   * - :doc:`Configuration runtime <../autoapi/pyedb/configuration/configuration/index>`
+     - Review ``Configuration.load()``, ``Configuration.run()``, and runtime helpers.
+   * - :doc:`Setup builders <../autoapi/pyedb/configuration/cfg_setup/index>`
+     - Inspect HFSS and SIwave setup classes including sweep helpers.
+   * - :doc:`Ports, sources, and probes <../autoapi/pyedb/configuration/cfg_ports_sources/index>`
+     - Inspect ``TerminalInfo`` and excitation builders.
+   * - :doc:`Terminal builders <../autoapi/pyedb/configuration/cfg_terminals/index>`
+     - Review explicit low-level terminal payload classes.
+   * - :doc:`Stackup builders <../autoapi/pyedb/configuration/cfg_stackup/index>`
+     - Inspect material, roughness, etching, and layer builders.
+   * - :doc:`Component builders <../autoapi/pyedb/configuration/cfg_components/index>`
+     - Review component, package, and model-assignment helpers.
+   * - :doc:`Padstack builders <../autoapi/pyedb/configuration/cfg_padstacks/index>`
+     - Inspect padstack definitions, instances, and backdrill payloads.
+   * - :doc:`Boundaries and operations <../autoapi/pyedb/configuration/cfg_boundaries/index>` /
+       :doc:`operations <../autoapi/pyedb/configuration/cfg_operations/index>`
+     - Review air-box, dielectric extent, and cutout configuration classes.
 
 Applying a configuration
 ------------------------

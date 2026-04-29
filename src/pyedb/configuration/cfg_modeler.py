@@ -19,6 +19,8 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Build geometry-creation and cleanup entries for the ``modeler`` section."""
+
 from copy import deepcopy as copy
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, TypedDict, Union
@@ -29,6 +31,8 @@ from pyedb.configuration.cfg_padstacks import CfgPadstackDefinition, CfgPadstack
 
 @dataclass
 class CfgTrace:
+    """Represent one trace primitive scheduled for creation."""
+
     name: str
     layer: str
     path: List[List[Union[float, str]]]
@@ -42,6 +46,8 @@ class CfgTrace:
 
 @dataclass
 class CfgPlane:
+    """Represent one plane primitive scheduled for creation."""
+
     name: str = ""
     layer: str = ""
     net_name: str = ""
@@ -63,6 +69,8 @@ class CfgPlane:
 
 
 class PrimitivesToDeleteDict(TypedDict, total=False):
+    """Typed mapping of primitives queued for deletion by selector."""
+
     layer_name: List[str]
     name: List[str]
     net_name: List[str]
@@ -141,6 +149,40 @@ class CfgModeler:
         rotation: float = 0,
         voids: Optional[List[Any]] = None,
     ):
+        """Add a rectangular copper plane.
+
+        Parameters
+        ----------
+        layer : str
+            Layer name on which to create the rectangle.
+        name : str, optional
+            Primitive AEDT name.
+        net_name : str, optional
+            Net name for the plane.
+        lower_left_point : list of float, optional
+            ``[x, y]`` lower-left corner in metres.
+        upper_right_point : list of float, optional
+            ``[x, y]`` upper-right corner in metres.
+        corner_radius : float, optional
+            Corner rounding radius.  Default is ``0``.
+        rotation : float, optional
+            Rotation in degrees.  Default is ``0``.
+        voids : list, optional
+            Void cutout descriptors.
+
+        Returns
+        -------
+        CfgPlane
+            The newly created plane object.
+
+        Examples
+        --------
+        >>> cfg.modeler.add_rectangular_plane(
+        ...     "bot", "gnd_plane", "GND",
+        ...     lower_left_point=[-0.05, -0.05],
+        ...     upper_right_point=[0.05, 0.05],
+        ... )
+        """
         plane_obj = CfgPlane(
             name=name,
             layer=layer,
@@ -166,6 +208,32 @@ class CfgModeler:
         radius: Union[float, str] = 0,
         position: Optional[List[Union[float, str]]] = None,
     ):
+        """Add a circular copper plane.
+
+        Parameters
+        ----------
+        layer : str
+            Layer on which to place the circle.
+        name : str, optional
+            Primitive AEDT name.
+        net_name : str, optional
+            Net name.
+        corner_radius : float, optional
+            Unused for circles; kept for API symmetry.  Default is ``0``.
+        rotation : float, optional
+            Rotation in degrees.  Default is ``0``.
+        voids : list, optional
+            Void cutout descriptors.
+        radius : float or str, optional
+            Circle radius, e.g. ``"1mm"``.  Default is ``0``.
+        position : list of float, optional
+            ``[x, y]`` centre position in metres.  Default is ``[0, 0]``.
+
+        Returns
+        -------
+        CfgPlane
+            The newly created plane object.
+        """
         plane_obj = CfgPlane(
             name=name,
             layer=layer,
@@ -190,6 +258,37 @@ class CfgModeler:
         voids: Optional[List[Any]] = None,
         points: Optional[List[List[float]]] = None,
     ):
+        """Add a polygon copper plane.
+
+        Parameters
+        ----------
+        layer : str
+            Layer on which to place the polygon.
+        name : str, optional
+            Primitive AEDT name.
+        net_name : str, optional
+            Net name.
+        corner_radius : float, optional
+            Corner rounding radius.  Default is ``0``.
+        rotation : float, optional
+            Rotation in degrees.  Default is ``0``.
+        voids : list, optional
+            Void cutout descriptors.
+        points : list of list of float, optional
+            Ordered ``[x, y]`` vertex coordinates in metres.
+
+        Returns
+        -------
+        CfgPlane
+            The newly created plane object.
+
+        Examples
+        --------
+        >>> cfg.modeler.add_polygon_plane(
+        ...     "top", "sig_poly", "SIG",
+        ...     points=[[0, 0], [0.01, 0], [0.01, 0.005], [0, 0.005]],
+        ... )
+        """
         plane_obj = CfgPlane(
             name=name,
             layer=layer,

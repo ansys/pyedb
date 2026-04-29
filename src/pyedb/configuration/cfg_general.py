@@ -44,6 +44,7 @@ class CfgGeneral:
     """
 
     def set_parameters_to_edb(self):
+        """Write general design-option settings into the open EDB design."""
         if self.pedb is None:
             return
         if self.anti_pads_always_on is not None:
@@ -52,6 +53,13 @@ class CfgGeneral:
             self.pedb.design_options.suppress_pads = self.suppress_pads
 
     def get_parameters_from_edb(self):
+        """Read general design-option settings from the open EDB design.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``anti_pads_always_on`` and ``suppress_pads`` keys.
+        """
         if self.pedb is None:
             return self.to_dict()
         anti_pads_always_on = self.pedb.design_options.anti_pads_always_on
@@ -89,7 +97,14 @@ class CfgGeneral:
         return data
 
     def apply(self):
+        """Write general configuration into the open EDB design."""
         self.set_parameters_to_edb()
 
     def get_data_from_db(self):
+        """Read general settings from EDB (alias for :meth:`get_parameters_from_edb`).
+
+        Returns
+        -------
+        dict
+        """
         return self.get_parameters_from_edb()

@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build explicit low-level terminal entries for configuration payloads."""
+
 from typing import List, Literal, Optional, Union
 
 from pydantic import Field
@@ -28,6 +30,8 @@ from pyedb.configuration.cfg_common import CfgBaseModel
 
 
 class CfgTerminal(CfgBaseModel):
+    """Base class for explicit terminal definitions."""
+
     name: str
     impedance: Union[float, int, str]
     is_circuit_port: bool
@@ -69,6 +73,8 @@ class CfgTerminal(CfgBaseModel):
 
 
 class CfgPadstackInstanceTerminal(CfgTerminal):
+    """Represent a terminal created from a named padstack instance."""
+
     terminal_type: str = "padstack_instance"
     padstack_instance: str
     padstack_instance_id: Optional[int] = None
@@ -111,6 +117,8 @@ class CfgPadstackInstanceTerminal(CfgTerminal):
 
 
 class CfgPinGroupTerminal(CfgTerminal):
+    """Represent a terminal created from a named pin group."""
+
     terminal_type: str = "pin_group"
     is_circuit_port: bool = True
     pin_group: str
@@ -148,6 +156,8 @@ class CfgPinGroupTerminal(CfgTerminal):
 
 
 class CfgPointTerminal(CfgTerminal):
+    """Represent a terminal placed at explicit XY coordinates."""
+
     terminal_type: str = "point"
     x: Union[float, int, str]
     y: Union[float, int, str]
@@ -193,6 +203,8 @@ class CfgPointTerminal(CfgTerminal):
 
 
 class CfgEdgeTerminal(CfgTerminal):
+    """Represent a terminal attached to a primitive edge."""
+
     terminal_type: str = "edge"
     name: str
     primitive: str
@@ -245,6 +257,8 @@ class CfgEdgeTerminal(CfgTerminal):
 
 
 class CfgBundleTerminal(CfgBaseModel):
+    """Represent a bundle terminal built from other terminal names."""
+
     terminal_type: str = "bundle"
     terminals: List[str]
     name: str
@@ -257,6 +271,8 @@ class CfgBundleTerminal(CfgBaseModel):
 
 
 class CfgTerminals(CfgBaseModel):
+    """Collect low-level terminal definitions for serialization."""
+
     terminals: List[
         Union[
             CfgPadstackInstanceTerminal, CfgPinGroupTerminal, CfgPointTerminal, CfgEdgeTerminal, CfgBundleTerminal, dict
@@ -265,6 +281,24 @@ class CfgTerminals(CfgBaseModel):
 
     @classmethod
     def create(cls, terminals: List[dict]):
+        """Reconstruct a :class:`CfgTerminals` instance from raw dictionaries.
+
+        Parameters
+        ----------
+        terminals : list of dict
+            Terminal payload dictionaries, each containing a ``terminal_type``
+            key and the corresponding field values.
+
+        Returns
+        -------
+        CfgTerminals
+            Populated terminal collection.
+
+        Raises
+        ------
+        ValueError
+            If an unknown ``terminal_type`` value is encountered.
+        """
         manager = cls(terminals=[])
         for i in terminals:
             i = dict(i)
@@ -298,6 +332,40 @@ class CfgTerminals(CfgBaseModel):
         padstack_instance_id=None,
         layer=None,
     ):
+        """Add a terminal created from a named padstack instance.
+
+        Parameters
+        ----------
+        name : str
+            Unique terminal name.
+        padstack_instance : str
+            AEDT name of the padstack instance.
+        impedance : float, int, or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type string (e.g. ``"PortBoundary"``).
+        hfss_type : str, optional
+            HFSS terminal type, e.g. ``"Wave"`` or ``"Gap"``.
+        is_circuit_port : bool, optional
+            Default is ``False``.
+        reference_terminal : str, optional
+            Name of the reference terminal this terminal is paired with.
+        amplitude : float, int, or str, optional
+            Default is ``1``.
+        phase : float, int, or str, optional
+            Default is ``0``.
+        terminal_to_ground : str, optional
+            Default is ``"kNoGround"``.
+        padstack_instance_id : int, optional
+            Internal padstack-instance integer ID.
+        layer : str, optional
+            Layer name override.
+
+        Returns
+        -------
+        CfgPadstackInstanceTerminal
+            The newly created terminal object.
+        """
         terminal = CfgPadstackInstanceTerminal(
             padstack_instance=padstack_instance,
             name=name,
@@ -326,6 +394,36 @@ class CfgTerminals(CfgBaseModel):
         phase=0,
         terminal_to_ground="kNoGround",
     ):
+        """Add a terminal created from a named pin group.
+
+        Parameters
+        ----------
+        name : str
+            Unique terminal name.
+        pin_group : str
+            Pin-group name, e.g. ``"pg_VDD"``.
+        impedance : float, int, or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type string.
+        reference_terminal : str, optional
+            Name of the paired reference terminal.
+        amplitude : float, int, or str, optional
+            Default is ``1``.
+        phase : float, int, or str, optional
+            Default is ``0``.
+        terminal_to_ground : str, optional
+            Default is ``"kNoGround"``.
+
+        Returns
+        -------
+        CfgPinGroupTerminal
+            The newly created terminal object.
+
+        Examples
+        --------
+        >>> cfg.terminals.add_pin_group_terminal("t_vdd", "pg_VDD", 50, "port")
+        """
         terminal = CfgPinGroupTerminal(
             pin_group=pin_group,
             name=name,
@@ -355,6 +453,38 @@ class CfgTerminals(CfgBaseModel):
         phase=0,
         terminal_to_ground="kNoGround",
     ):
+        """Add a terminal placed at exact XY coordinates.
+
+        Parameters
+        ----------
+        name : str
+            Unique terminal name.
+        x : float, int, or str
+            X coordinate in metres.
+        y : float, int, or str
+            Y coordinate in metres.
+        layer : str
+            Layer name on which the terminal is placed.
+        net : str
+            Net name.
+        impedance : float, int, or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type string.
+        reference_terminal : str, optional
+            Paired reference terminal name.
+        amplitude : float, int, or str, optional
+            Default is ``1``.
+        phase : float, int, or str, optional
+            Default is ``0``.
+        terminal_to_ground : str, optional
+            Default is ``"kNoGround"``.
+
+        Returns
+        -------
+        CfgPointTerminal
+            The newly created terminal object.
+        """
         terminal = CfgPointTerminal(
             x=x,
             y=y,
@@ -391,6 +521,46 @@ class CfgTerminals(CfgBaseModel):
         phase=0,
         terminal_to_ground="kNoGround",
     ):
+        """Add a terminal attached to a primitive edge.
+
+        Parameters
+        ----------
+        name : str
+            Unique terminal name.
+        primitive : str
+            AEDT name of the hosting primitive.
+        point_on_edge_x : float, int, or str
+            X coordinate of the point on the edge.
+        point_on_edge_y : float, int, or str
+            Y coordinate of the point on the edge.
+        impedance : float, int, or str
+            Terminal impedance.
+        boundary_type : str
+            Boundary type string.
+        hfss_type : str, optional
+            ``"Wave"`` (default) or ``"Gap"``.
+        horizontal_extent_factor : int or str, optional
+            Default is ``6``.
+        vertical_extent_factor : int or str, optional
+            Default is ``8``.
+        pec_launch_width : str, optional
+            Default is ``"0.02mm"``.
+        is_circuit_port : bool, optional
+            Default is ``False``.
+        reference_terminal : str, optional
+            Paired reference terminal name.
+        amplitude : float, int, or str, optional
+            Default is ``1``.
+        phase : float, int, or str, optional
+            Default is ``0``.
+        terminal_to_ground : str, optional
+            Default is ``"kNoGround"``.
+
+        Returns
+        -------
+        CfgEdgeTerminal
+            The newly created terminal object.
+        """
         terminal = CfgEdgeTerminal(
             name=name,
             impedance=impedance,
@@ -416,6 +586,25 @@ class CfgTerminals(CfgBaseModel):
         name,
         terminals,
     ):
+        """Add a bundle terminal that groups several existing terminals.
+
+        Parameters
+        ----------
+        name : str
+            Unique bundle name.
+        terminals : list of str
+            Names of the terminals to bundle, e.g.
+            ``["t_vdd", "t_gnd"]``.
+
+        Returns
+        -------
+        CfgBundleTerminal
+            The newly created bundle-terminal object.
+
+        Examples
+        --------
+        >>> cfg.terminals.add_bundle_terminal("bundle_demo", ["t_vdd", "t_gnd"])
+        """
         terminal = CfgBundleTerminal(
             name=name,
             terminals=terminals,
@@ -424,6 +613,12 @@ class CfgTerminals(CfgBaseModel):
         return terminal
 
     def to_list(self):
-        """Serialize all configured terminals."""
+        """Serialize all configured terminals.
+
+        Returns
+        -------
+        list of dict
+            Each element is the serialized dictionary for one terminal.
+        """
         return [t.to_dict() if hasattr(t, "to_dict") else t for t in self.terminals]
 

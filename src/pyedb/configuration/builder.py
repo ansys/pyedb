@@ -65,7 +65,71 @@ class _DictProxy:
 
 
 class EdbConfigBuilder:
-    """Top-level programmatic builder for a pyedb configuration."""
+    """Top-level programmatic builder for a pyedb configuration.
+
+    Use this class to construct any part of an EDB configuration payload in
+    Python before writing it to JSON/TOML or passing it directly to
+    :meth:`~pyedb.configuration.configuration.Configuration.run`.
+
+    Each attribute exposes a dedicated section builder with fluent helper
+    methods.  Empty sections are omitted when the payload is serialized via
+    :meth:`to_dict`.
+
+    Examples
+    --------
+    Standalone construction:
+
+    >>> from pyedb.configuration import EdbConfigBuilder
+    >>> cfg = EdbConfigBuilder()
+    >>> cfg.general.anti_pads_always_on = False
+    >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
+    >>> cfg.to_json("my_config.json")
+
+    From an open EDB session (recommended):
+
+    >>> cfg = edb.configuration.create_config_builder()
+    >>> cfg.general.anti_pads_always_on = False
+    >>> edb.configuration.run(cfg)
+
+    Attributes
+    ----------
+    general : GeneralConfig
+        Global library paths and design flags.
+    stackup : StackupConfig
+        Materials and layer definitions.
+    nets : NetsConfig
+        Signal and power/ground net classification.
+    components : ComponentsConfig
+        Component model and package configuration.
+    padstacks : PadstacksConfig
+        Padstack definitions and instances.
+    pin_groups : PinGroupsConfig
+        Named pin-group creation.
+    terminals : TerminalsConfig
+        Explicit low-level terminal objects.
+    ports : PortsConfig
+        Port excitations.
+    sources : SourcesConfig
+        Current and voltage source excitations.
+    probes : ProbesConfig
+        Voltage probes.
+    setups : SetupsConfig
+        HFSS and SIwave simulation setup entries.
+    boundaries : BoundariesConfig
+        Open-region and extent configuration.
+    operations : OperationsConfig
+        Cutout and auto HFSS-region operations.
+    s_parameters : SParameterModelsConfig
+        S-parameter model assignments by component definition.
+    spice_models : SpiceModelsConfig
+        SPICE model assignments.
+    package_definitions : PackageDefinitionsConfig
+        Thermal package definitions.
+    variables : VariablesConfig
+        Design and project variables.
+    modeler : ModelerConfig
+        Geometry creation and cleanup.
+    """
 
     def __init__(self):
         """Initialize all section builders with empty state."""
@@ -94,7 +158,24 @@ class EdbConfigBuilder:
         return f"EdbConfigBuilder(sections=[{sections}])"
 
     def to_dict(self) -> dict:
-        """Serialize the configuration to a plain Python dictionary."""
+        """Serialize the full configuration to a plain Python dictionary.
+
+        Only sections that contain at least one value are included;
+        empty sections (``{}``, ``[]``, ``None``) are silently omitted.
+
+        Returns
+        -------
+        dict
+            Configuration payload keyed by section name
+            (``"general"``, ``"stackup"``, … ).
+
+        Examples
+        --------
+        >>> cfg = EdbConfigBuilder()
+        >>> cfg.nets.add_signal_nets(["SIG"])
+        >>> cfg.to_dict()
+        {'nets': {'signal_nets': ['SIG']}}
+        """
         data: dict = {}
 
         for key, value in (
@@ -122,7 +203,25 @@ class EdbConfigBuilder:
         return data
 
     def to_json(self, file_path: Union[str, Path], indent: int = 4) -> Path:
-        """Write the configuration to a JSON file."""
+        """Write the configuration to a JSON file.
+
+        Parameters
+        ----------
+        file_path : str or Path
+            Destination file path.  The ``.json`` extension is expected;
+            parent directories are created automatically.
+        indent : int, optional
+            JSON indentation level.  Default is ``4``.
+
+        Returns
+        -------
+        Path
+            Resolved path of the written file.
+
+        Examples
+        --------
+        >>> cfg.to_json("my_project_config.json")
+        """
         file_path = Path(file_path)
         file_path.parent.mkdir(parents=True, exist_ok=True)
         with open(file_path, "w", encoding="utf-8") as fh:
@@ -130,7 +229,28 @@ class EdbConfigBuilder:
         return file_path
 
     def to_toml(self, file_path: Union[str, Path]) -> Path:
-        """Write the configuration to a TOML file."""
+        """Write the configuration to a TOML file.
+
+        Parameters
+        ----------
+        file_path : str or Path
+            Destination file path.  Parent directories are created
+            automatically.
+
+        Returns
+        -------
+        Path
+            Resolved path of the written file.
+
+        Raises
+        ------
+        ImportError
+            If the ``toml`` package is not installed.
+
+        Examples
+        --------
+        >>> cfg.to_toml("my_project_config.toml")
+        """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to write TOML files. Install it with: pip install toml")
         file_path = Path(file_path)
@@ -141,7 +261,25 @@ class EdbConfigBuilder:
 
     @classmethod
     def from_dict(cls, data: dict) -> "EdbConfigBuilder":
-        """Create an :class:`EdbConfigBuilder` from an existing config dictionary."""
+        """Create an :class:`EdbConfigBuilder` from an existing config dictionary.
+
+        Parameters
+        ----------
+        data : dict
+            Raw configuration dictionary, typically the result of
+            ``json.load`` or ``toml.load``.  Unknown keys are ignored.
+
+        Returns
+        -------
+        EdbConfigBuilder
+            Populated builder instance.
+
+        Examples
+        --------
+        >>> cfg = EdbConfigBuilder.from_dict({"nets": {"signal_nets": ["CLK"]}})
+        >>> cfg.nets.signal_nets
+        ['CLK']
+        """
         builder = cls()
         builder.general = CfgGeneral(data=data.get("general", {}))
         builder.stackup = CfgStackup(**data.get("stackup", {}))
@@ -168,14 +306,51 @@ class EdbConfigBuilder:
 
     @classmethod
     def from_json(cls, file_path: Union[str, Path]) -> "EdbConfigBuilder":
-        """Load from a JSON file."""
+        """Load an :class:`EdbConfigBuilder` from a JSON file.
+
+        Parameters
+        ----------
+        file_path : str or Path
+            Path to a valid JSON configuration file.
+
+        Returns
+        -------
+        EdbConfigBuilder
+            Populated builder instance.
+
+        Examples
+        --------
+        >>> cfg = EdbConfigBuilder.from_json("base_config.json")
+        >>> cfg.general.suppress_pads = True
+        >>> cfg.to_json("modified_config.json")
+        """
         with open(file_path, "r", encoding="utf-8") as fh:
             data = json.load(fh)
         return cls.from_dict(data)
 
     @classmethod
     def from_toml(cls, file_path: Union[str, Path]) -> "EdbConfigBuilder":
-        """Load from a TOML file."""
+        """Load an :class:`EdbConfigBuilder` from a TOML file.
+
+        Parameters
+        ----------
+        file_path : str or Path
+            Path to a valid TOML configuration file.
+
+        Returns
+        -------
+        EdbConfigBuilder
+            Populated builder instance.
+
+        Raises
+        ------
+        ImportError
+            If the ``toml`` package is not installed.
+
+        Examples
+        --------
+        >>> cfg = EdbConfigBuilder.from_toml("base_config.toml")
+        """
         if not _TOML_AVAILABLE:
             raise ImportError("The 'toml' package is required to read TOML files. Install it with: pip install toml")
         with open(file_path, "r", encoding="utf-8") as fh:

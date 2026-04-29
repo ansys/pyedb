@@ -31,6 +31,8 @@ from pydantic import BaseModel
 
 
 class CfgBase(BaseModel):
+    """Base Pydantic model for boundary-section payloads."""
+
     model_config = {
         "populate_by_name": True,
         "extra": "forbid",
@@ -43,6 +45,8 @@ from pydantic import Field
 
 
 class CfgBoundaries(CfgBase):
+    """Represent the ``boundaries`` section for open-region and extent settings."""
+
     class PaddingData(CfgBase):
         size: Union[float, str]
         is_multiple: bool
@@ -150,7 +154,13 @@ class CfgBoundaries(CfgBase):
     )
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **kwargs) -> "CfgBoundaries":
+        """Create a :class:`CfgBoundaries` instance from keyword arguments.
+
+        Returns
+        -------
+        CfgBoundaries
+        """
         return cls(**kwargs)
 
     def set_radiation_boundary(self, use_open_region: bool = True):

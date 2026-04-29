@@ -20,10 +20,14 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build SPICE model assignment entries for configuration payloads."""
+
 from pathlib import Path
 
 
 class CfgSpiceModel:
+    """Represent one SPICE subcircuit model assignment."""
+
     def __init__(
         self,
         pdata=None,

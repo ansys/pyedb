@@ -20,12 +20,16 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build the ``operations`` configuration section, including cutouts."""
+
 from typing import Any, ClassVar, List, Optional, Union
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class CfgAutoIdentifyNets(BaseModel):
+    """Store threshold settings for automatic cutout net discovery."""
+
     enabled: bool = False
     resistor_below: float | str | int | None = Field(100)
     inductor_below: float | str | int | None = Field(1)
@@ -33,6 +37,8 @@ class CfgAutoIdentifyNets(BaseModel):
 
 
 class CfgCutout(BaseModel):
+    """Represent one cutout operation configuration payload."""
+
     auto_identify_nets: CfgAutoIdentifyNets | None = Field(default_factory=CfgAutoIdentifyNets)
     signal_nets: Optional[List[str]] = Field(
         default=None,
@@ -104,6 +110,8 @@ class CfgCutout(BaseModel):
 
 
 class CfgOperations(BaseModel):
+    """Collect operations to apply after the core design sections."""
+
     cutout: Optional[CfgCutout] = None
     generate_auto_hfss_regions: bool = False
 

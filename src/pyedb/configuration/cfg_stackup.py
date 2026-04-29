@@ -31,6 +31,8 @@ from pydantic import BaseModel, Field
 
 
 class CfgMaterialPropertyThermalModifier(BaseModel):
+    """Represent one thermal modifier applied to a material property."""
+
     property_name: str
     basic_quadratic_c1: float = 0
     basic_quadratic_c2: float = 0
@@ -64,6 +66,8 @@ class MaterialProperties(BaseModel):
 
 
 class CfgMaterial(MaterialProperties):
+    """Represent one material entry in the ``stackup`` section."""
+
     name: Optional[str] = None
     thermal_modifiers: Optional[list[CfgMaterialPropertyThermalModifier]] = None
 
@@ -117,6 +121,8 @@ class CfgMaterial(MaterialProperties):
 
 
 class CfgHurayRoughnessModel(BaseModel):
+    """Represent a Huray surface-roughness model."""
+
     model: str = "huray"
     nodule_radius: Optional[str | float | int] = None  # e.g., '0.1um'
     surface_ratio: Optional[str | float | int] = None  # e.g., '1'
@@ -124,6 +130,8 @@ class CfgHurayRoughnessModel(BaseModel):
 
 
 class CfgGroisseRoughnessModel(BaseModel):
+    """Represent a Groisse surface-roughness model."""
+
     model: str = "groisse"
     roughness: Optional[str | float | int] = None
 
@@ -131,6 +139,8 @@ class CfgGroisseRoughnessModel(BaseModel):
 
 
 class CfgRoughnessModel(BaseModel):
+    """Collect top, bottom, and side roughness models for a layer."""
+
     enabled: Optional[bool] = False
     top: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
     bottom: CfgHurayRoughnessModel | CfgGroisseRoughnessModel | None = None
@@ -140,12 +150,16 @@ class CfgRoughnessModel(BaseModel):
 
 
 class EtchingModel(BaseModel):
+    """Represent trapezoidal etching settings for a conductor layer."""
+
     factor: Optional[Union[float, str]] = 0.5
     etch_power_ground_nets: Optional[bool] = False
     enabled: Optional[bool] = False
 
 
 class CfgLayer(BaseModel):
+    """Represent one signal or dielectric layer entry."""
+
     name: Optional[str] = None
     type: Optional[str] = None
     material: Optional[str] = None
@@ -185,7 +199,32 @@ class CfgLayer(BaseModel):
         bottom: bool = True,
         side: bool = True,
     ) -> "CfgLayer":
-        """Configure Huray roughness on selected surfaces."""
+        """Configure Huray surface roughness on selected surfaces.
+
+        Parameters
+        ----------
+        nodule_radius : str or float
+            Huray nodule radius, e.g. ``"0.1um"``.
+        surface_ratio : str or float
+            Huray surface ratio.
+        enabled : bool, optional
+            Enable roughness on this layer.  Default is ``True``.
+        top : bool, optional
+            Apply roughness to the top surface.  Default is ``True``.
+        bottom : bool, optional
+            Apply roughness to the bottom surface.  Default is ``True``.
+        side : bool, optional
+            Apply roughness to the side surfaces.  Default is ``True``.
+
+        Returns
+        -------
+        CfgLayer
+            *self* — enables method chaining.
+
+        Examples
+        --------
+        >>> layer.set_huray_roughness("0.1um", "2.9", top=True, bottom=False)
+        """
         huray = CfgHurayRoughnessModel(nodule_radius=nodule_radius, surface_ratio=surface_ratio)
         self.roughness = CfgRoughnessModel(
             enabled=enabled,
@@ -203,7 +242,26 @@ class CfgLayer(BaseModel):
         bottom: bool = True,
         side: bool = True,
     ) -> "CfgLayer":
-        """Configure Groisse roughness on selected surfaces."""
+        """Configure Groisse surface roughness on selected surfaces.
+
+        Parameters
+        ----------
+        roughness_value : str or float
+            RMS roughness, e.g. ``0.3e-6`` (in metres).
+        enabled : bool, optional
+            Enable roughness.  Default is ``True``.
+        top : bool, optional
+            Default is ``True``.
+        bottom : bool, optional
+            Default is ``True``.
+        side : bool, optional
+            Default is ``True``.
+
+        Returns
+        -------
+        CfgLayer
+            *self* — enables method chaining.
+        """
         groisse = CfgGroisseRoughnessModel(roughness=roughness_value)
         self.roughness = CfgRoughnessModel(
             enabled=enabled,
@@ -219,7 +277,26 @@ class CfgLayer(BaseModel):
         etch_power_ground_nets: bool = False,
         enabled: bool = True,
     ) -> "CfgLayer":
-        """Configure the etching model."""
+        """Configure trapezoidal etching on this conductor layer.
+
+        Parameters
+        ----------
+        factor : float or str, optional
+            Etch factor (ratio).  Default is ``0.5``.
+        etch_power_ground_nets : bool, optional
+            Apply etching to power/ground nets as well.  Default is ``False``.
+        enabled : bool, optional
+            Enable etching.  Default is ``True``.
+
+        Returns
+        -------
+        CfgLayer
+            *self* — enables method chaining.
+
+        Examples
+        --------
+        >>> layer.set_etching(factor=0.4, etch_power_ground_nets=True)
+        """
         self.etching = EtchingModel(
             factor=factor,
             etch_power_ground_nets=etch_power_ground_nets,
@@ -233,10 +310,38 @@ class CfgLayer(BaseModel):
 
 
 class CfgStackup(BaseModel):
+    """Collect stackup materials and layers for serialization."""
+
     materials: List[CfgMaterial] = Field(default_factory=list)
     layers: List[CfgLayer] = Field(default_factory=list)
 
     def add_material(self, name, **kwargs):
+        """Add a material definition to the stackup.
+
+        Parameters
+        ----------
+        name : str
+            Material name, e.g. ``"copper"`` or ``"FR4_epoxy"``.
+        **kwargs
+            Optional material properties forwarded to :class:`CfgMaterial`.
+            Accepted keys: ``conductivity``, ``permittivity``,
+            ``dielectric_loss_tangent``, ``magnetic_loss_tangent``,
+            ``mass_density``, ``permeability``, ``poisson_ratio``,
+            ``specific_heat``, ``thermal_conductivity``, ``youngs_modulus``,
+            ``thermal_expansion_coefficient``, ``dc_conductivity``,
+            ``dc_permittivity``, ``dielectric_model_frequency``,
+            ``loss_tangent_at_frequency``, ``permittivity_at_frequency``.
+
+        Returns
+        -------
+        CfgMaterial
+            The newly created material object.
+
+        Examples
+        --------
+        >>> cfg.stackup.add_material("copper", conductivity=5.8e7)
+        >>> cfg.stackup.add_material("fr4", permittivity=4.4, dielectric_loss_tangent=0.02)
+        """
         mat = CfgMaterial(name=name, **kwargs)
         self.materials.append(mat)
         return mat
@@ -259,6 +364,21 @@ class CfgStackup(BaseModel):
         )
 
     def add_layer_at_bottom(self, name, **kwargs):
+        """Append a layer to the bottom of the stackup.
+
+        Parameters
+        ----------
+        name : str
+            Layer name.
+        **kwargs
+            Optional layer properties forwarded to :class:`CfgLayer`
+            (``type``, ``material``, ``fill_material``, ``thickness``).
+
+        Returns
+        -------
+        CfgLayer
+            The newly created layer object.
+        """
         layer = CfgLayer(name=name, **kwargs)
         self.layers.append(layer)
         return layer

@@ -19,12 +19,16 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Build padstack definition and instance entries for configuration payloads."""
+
 from typing import Union
 
 from pydantic import BaseModel, Field
 
 
 class CfgBase(BaseModel):
+    """Base Pydantic model for padstack-section payloads."""
+
     model_config = {
         "populate_by_name": True,
         "extra": "forbid",
@@ -32,6 +36,8 @@ class CfgBase(BaseModel):
 
 
 class CfgBackdrillParameters(BaseModel):
+    """Store optional backdrill definitions for a padstack instance."""
+
     class DrillParametersByLayer(CfgBase):
         drill_to_layer: str
         diameter: str
@@ -47,6 +53,19 @@ class CfgBackdrillParameters(BaseModel):
     from_bottom: DrillParameters | DrillParametersByLayer | DrillParametersByLayerWithStub | None = None
 
     def add_backdrill_to_layer(self, drill_to_layer, diameter, stub_length=None, drill_from_bottom=True):
+        """Configure a backdrill stopping at a named layer.
+
+        Parameters
+        ----------
+        drill_to_layer : str
+            Target layer name where the backdrill stops.
+        diameter : str
+            Backdrill diameter, e.g. ``"0.25mm"``.
+        stub_length : str or None, optional
+            Stub length beyond the target layer.  ``None`` means no stub.
+        drill_from_bottom : bool, optional
+            ``True`` (default) drills from the bottom; ``False`` from the top.
+        """
         if stub_length is None:
             drill = self.DrillParametersByLayer(drill_to_layer=drill_to_layer, diameter=diameter)
         else:
@@ -61,6 +80,8 @@ class CfgBackdrillParameters(BaseModel):
 
 
 class CfgPadstackInstance(CfgBase):
+    """Represent one padstack instance entry."""
+
     name: str | None = None
     eid: int | None = Field(None, alias="id")
 
@@ -115,6 +136,12 @@ class CfgPadstackInstance(CfgBase):
 
     @classmethod
     def create(cls, **kwargs):
+        """Create a :class:`CfgPadstackInstance` with an empty backdrill object.
+
+        Returns
+        -------
+        CfgPadstackInstance
+        """
         obj = cls(**kwargs)
         obj.backdrill_parameters = CfgBackdrillParameters()
         return obj
@@ -126,7 +153,28 @@ class CfgPadstackInstance(CfgBase):
         stub_length: str | None = None,
         drill_from_bottom: bool = True,
     ):
-        """Configure backdrill parameters."""
+        """Configure backdrill parameters for this padstack instance.
+
+        Parameters
+        ----------
+        drill_to_layer : str
+            Layer name where the backdrill stops.
+        diameter : str
+            Backdrill bore diameter, e.g. ``"0.25mm"``.
+        stub_length : str or None, optional
+            Stub length beyond the target layer.  ``None`` means no stub.
+        drill_from_bottom : bool, optional
+            ``True`` (default) drills from the bottom side.
+
+        Returns
+        -------
+        CfgPadstackInstance
+            *self* — enables method chaining.
+
+        Examples
+        --------
+        >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        """
         if self.backdrill_parameters is None:
             self.backdrill_parameters = CfgBackdrillParameters()
         self.backdrill_parameters.add_backdrill_to_layer(
@@ -143,6 +191,8 @@ class CfgPadstackInstance(CfgBase):
 
 
 class CfgPadstackDefinition(CfgBase):
+    """Represent one padstack definition entry."""
+
     name: str
 
     hole_plating_thickness: str | float | None = None
@@ -177,27 +227,50 @@ class CfgPadstackDefinition(CfgBase):
         )
 
     @classmethod
-    def create(cls, **kwargs):
-        return cls(**kwargs)
+    def create(cls, **kwargs) -> "CfgPadstackDefinition":
+        """Create a :class:`CfgPadstackDefinition` from keyword arguments.
 
-    def to_dict(self) -> dict:
-        """Serialize the padstack definition."""
+        Returns
+        -------
+        CfgPadstackDefinition
+        """
+        return cls(**kwargs)
         return self.model_dump(exclude_none=True)
 
 
 class CfgPadstacks(CfgBase):
+    """Collect padstack definitions and instances for serialization."""
+
     definitions: list[CfgPadstackDefinition] | None = []
     instances: list[CfgPadstackInstance] | None = []
 
     @classmethod
-    def create(cls, **kwargs):
+    def create(cls, **kwargs) -> "CfgPadstacks":
+        """Create a :class:`CfgPadstacks` from keyword arguments.
+
+        Returns
+        -------
+        CfgPadstacks
+        """
         return cls(**kwargs)
 
     def clean(self):
+        """Reset all padstack definitions and instances to empty lists."""
         self.definitions = []
         self.instances = []
 
     def add_padstack_definition(self, **kwargs):
+        """Add a padstack definition from raw keyword arguments.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments forwarded to :class:`CfgPadstackDefinition`.
+
+        Returns
+        -------
+        CfgPadstackDefinition
+        """
         obj = CfgPadstackDefinition(**kwargs)
         self.definitions.append(obj)
         return obj
@@ -212,7 +285,34 @@ class CfgPadstacks(CfgBase):
         hole_parameters=None,
         solder_ball_parameters=None,
     ):
-        """Add a padstack definition."""
+        """Add a padstack definition with named parameters.
+
+        Parameters
+        ----------
+        name : str
+            Padstack definition name, e.g. ``"via_0.2"``.
+        hole_plating_thickness : str or float, optional
+            Plating thickness, e.g. ``"25um"``.
+        material : str, optional
+            Hole conductor material name.
+        hole_range : str, optional
+            Layer range the hole spans.
+        pad_parameters : dict, optional
+            Raw pad-parameter dictionary.
+        hole_parameters : dict, optional
+            Raw hole-parameter dictionary.
+        solder_ball_parameters : dict, optional
+            Raw solder-ball parameter dictionary.
+
+        Returns
+        -------
+        CfgPadstackDefinition
+            The newly created definition object.
+
+        Examples
+        --------
+        >>> cfg.padstacks.add_definition("via_0.2", material="copper", hole_plating_thickness="25um")
+        """
         kwargs = {
             "name": name,
             "hole_plating_thickness": hole_plating_thickness,
@@ -226,15 +326,45 @@ class CfgPadstacks(CfgBase):
         return self.add_padstack_definition(**kwargs)
 
     def add_padstack_instance(self, **kwargs):
+        """Add a padstack instance from raw keyword arguments.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments forwarded to :class:`CfgPadstackInstance`.
+
+        Returns
+        -------
+        CfgPadstackInstance
+        """
         obj = CfgPadstackInstance(**kwargs)
         self.instances.append(obj)
         return obj
 
     def add_instance(self, **kwargs):
-        """Add a padstack instance."""
+        """Add a padstack instance with named parameters.
+
+        Parameters
+        ----------
+        **kwargs
+            Arguments forwarded to :class:`CfgPadstackInstance`.
+            Common keys: ``name``, ``net_name``, ``definition``,
+            ``layer_range``, ``position``, ``rotation``.
+
+        Returns
+        -------
+        CfgPadstackInstance
+            The newly created instance object (call
+            :meth:`CfgPadstackInstance.set_backdrill` on it to add
+            backdrill geometry).
+
+        Examples
+        --------
+        >>> via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["top", "bot"])
+        >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        """
         if kwargs.get("rotation") is not None:
-            kwargs["rotation"] = str(kwargs["rotation"])
-        return self.add_padstack_instance(**kwargs)
+            return self.add_padstack_instance(**kwargs)
 
     def to_dict(self) -> dict:
         """Serialize all configured padstack definitions and instances."""
