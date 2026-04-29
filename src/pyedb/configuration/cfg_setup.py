@@ -938,6 +938,44 @@ class CfgSetups(CfgBaseModel):
         self.setups.append(siwave_dc_setup)
         return siwave_dc_setup
 
+    def get(self, name: str):
+        """Return an existing registered setup by name.
+
+        Looks through the current :attr:`setups` list and returns the first
+        entry whose ``name`` attribute matches *name*.  This is useful when
+        you want to modify a setup that was registered earlier (e.g. by a
+        template function) without having to keep a reference to the object.
+
+        Parameters
+        ----------
+        name : str
+            Setup name, e.g. ``"hfss_bb"`` or ``"siw_ac"``.
+
+        Returns
+        -------
+        CfgHFSSSetup | CfgSIwaveACSetup | CfgSIwaveDCSetup
+            The matching setup builder object.
+
+        Raises
+        ------
+        KeyError
+            If no registered setup with *name* exists.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> cfg.setups.add_hfss_setup("hfss_bb", adapt_type="broadband")
+        >>> # ... later, retrieve and modify:
+        >>> setup = cfg.setups.get("hfss_bb")
+        >>> setup.add_frequency_sweep("sweep2", start="1GHz", stop="20GHz", step_or_count=100)
+        """
+        for setup in self.setups:
+            if setup.name == name:
+                return setup
+        raise KeyError(
+            f"Setup '{name}' not found. Available setups: {[s.name for s in self.setups]}"
+        )
+
     def to_list(self):
         """Serialize all configured setups to a list of dictionaries.
 

@@ -131,14 +131,36 @@ class EdbConfigBuilder:
         Geometry creation and cleanup.
     """
 
-    def __init__(self):
-        """Initialize all section builders with empty state."""
+    def __init__(self, pedb=None):
+        """Initialize all section builders with empty state.
+
+        Parameters
+        ----------
+        pedb : Edb, optional
+            Active EDB session.  When supplied the following lookup methods
+            can resolve objects directly from the live database:
+
+            * ``components.get(refdes)`` — retrieve an existing component.
+            * ``stackup.get_layer(name)`` — retrieve an existing layer.
+            * ``stackup.get_material(name)`` — retrieve an existing material.
+            * ``nets.get(net_name)`` — retrieve net classification info.
+            * ``padstacks.get_definition(name)`` — retrieve a padstack definition.
+            * ``padstacks.get_instance(name)`` — retrieve a padstack instance.
+            * ``pin_groups.get(name)`` — retrieve an existing pin group.
+            * ``setups.get(name)`` — retrieve a registered setup by name.
+
+            The recommended way to obtain a session-aware builder is
+            ``edb.configuration.create_config_builder()``.
+        """
+        self._pedb = pedb
         self.general = CfgGeneral()
         self.stackup = CfgStackup()
-        self.nets = CfgNets()
-        self.components = CfgComponents()
-        self.padstacks = CfgPadstacks.create()
-        self.pin_groups = CfgPinGroups()
+        if pedb is not None:
+            self.stackup._set_pedb(pedb)
+        self.nets = CfgNets(pedb=pedb)
+        self.components = CfgComponents(pedb=pedb)
+        self.padstacks = CfgPadstacks.create(pedb=pedb)
+        self.pin_groups = CfgPinGroups(pedb=pedb)
         self.terminals = CfgTerminals(terminals=[])
         self.ports = CfgPorts()
         self.sources = CfgSources()

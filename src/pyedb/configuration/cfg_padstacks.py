@@ -244,20 +244,148 @@ class CfgPadstacks(CfgBase):
     definitions: list[CfgPadstackDefinition] | None = []
     instances: list[CfgPadstackInstance] | None = []
 
+    # Not serialized – holds a live EDB reference when built from a session.
+    _pedb: object = None
+
+    model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
+
+    def _set_pedb(self, pedb):
+        """Attach a live EDB session (called by EdbConfigBuilder)."""
+        object.__setattr__(self, "_pedb", pedb)
+
     @classmethod
-    def create(cls, **kwargs) -> "CfgPadstacks":
+    def create(cls, pedb=None, **kwargs) -> "CfgPadstacks":
         """Create a :class:`CfgPadstacks` from keyword arguments.
 
         Returns
         -------
         CfgPadstacks
         """
-        return cls(**kwargs)
+        obj = cls(**kwargs)
+        if pedb is not None:
+            object.__setattr__(obj, "_pedb", pedb)
+        return obj
 
     def clean(self):
         """Reset all padstack definitions and instances to empty lists."""
         self.definitions = []
         self.instances = []
+
+    def get_definition(self, name: str) -> "CfgPadstackDefinition":
+        """Return a :class:`CfgPadstackDefinition` for an existing padstack definition.
+
+        If the definition has already been registered via :meth:`add_definition`
+        the cached entry is returned.  Otherwise the definition is looked up in
+        the live EDB session and a new entry is created from its current properties.
+
+        Parameters
+        ----------
+        name : str
+            Padstack definition name, e.g. ``"via_0.2"``.
+
+        Returns
+        -------
+        CfgPadstackDefinition
+            Definition builder pre-populated with current properties.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached or the definition does not exist.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> via_def = cfg.padstacks.get_definition("via_0.2")
+        >>> via_def.hole_plating_thickness = "30um"
+        >>> edb.configuration.run(cfg)
+        """
+        for d in self.definitions:
+            if d.name == name:
+                return d
+        if self._pedb is None:
+            raise KeyError(
+                f"Padstack definition '{name}' not found in the builder. "
+                "Use edb.configuration.create_config_builder() to auto-load from EDB."
+            )
+        pdefs = self._pedb.padstacks.definitions
+        if name not in pdefs:
+            raise KeyError(f"Padstack definition '{name}' not found in the EDB database.")
+        pdef = pdefs[name]
+        obj = self.add_definition(
+            name=pdef.name,
+            hole_plating_thickness=pdef.hole_plating_thickness,
+            material=pdef.material,
+            hole_range=pdef.hole_range,
+            pad_parameters=pdef.get_pad_parameters(),
+            hole_parameters=pdef.get_hole_parameters(),
+            solder_ball_parameters=pdef.get_solder_parameters(),
+        )
+        return obj
+
+    def get_instance(self, name: str) -> "CfgPadstackInstance":
+        """Return a :class:`CfgPadstackInstance` for an existing padstack instance.
+
+        If the instance has already been registered via :meth:`add_instance`
+        the cached entry is returned.  Otherwise the instance is looked up in
+        the live EDB session and a new entry is created from its current
+        properties.
+
+        Parameters
+        ----------
+        name : str
+            Padstack instance AEDT name, e.g. ``"via_A1"``.
+
+        Returns
+        -------
+        CfgPadstackInstance
+            Instance builder pre-populated with current properties.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached or the instance does not exist.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> via = cfg.padstacks.get_instance("via_A1")
+        >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+        >>> edb.configuration.run(cfg)
+        """
+        for inst in self.instances:
+            if inst.name == name:
+                return inst
+        if self._pedb is None:
+            raise KeyError(
+                f"Padstack instance '{name}' not found in the builder. "
+                "Use edb.configuration.create_config_builder() to auto-load from EDB."
+            )
+        by_name = self._pedb.padstacks.instances_by_name
+        if name not in by_name:
+            raise KeyError(f"Padstack instance '{name}' not found in the EDB layout.")
+        p_inst = by_name[name]
+        result = p_inst.position_and_rotation
+        position = result[:2]
+        rotation = result[-1]
+        hole_override_enabled, hole_override_diameter = p_inst.get_hole_overrides()
+        try:
+            solderball_layer = p_inst.solderball_layer
+        except Exception:
+            solderball_layer = None
+        obj = self.add_padstack_instance(
+            name=p_inst.aedt_name,
+            is_pin=p_inst.is_pin,
+            definition=p_inst.padstack_definition,
+            backdrill_parameters=p_inst.backdrill_parameters,
+            position=[str(position[0]), str(position[1])],
+            rotation=str(rotation),
+            hole_override_enabled=hole_override_enabled,
+            hole_override_diameter=str(hole_override_diameter),
+            solder_ball_layer=solderball_layer,
+            layer_range=[p_inst.start_layer, p_inst.stop_layer],
+        )
+        return obj
 
     def add_padstack_definition(self, **kwargs):
         """Add a padstack definition from raw keyword arguments.

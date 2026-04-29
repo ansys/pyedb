@@ -639,6 +639,61 @@ class CfgComponents:
                 obj = self._pedb.components.instances[comp["reference_designator"]] if self._pedb else None
                 self.components.append(CfgComponent(self._pedb, obj, **comp))
 
+    def get(self, reference_designator: str) -> "CfgComponent":
+        """Return a :class:`CfgComponent` for an *existing* EDB component.
+
+        The component is looked up by *reference_designator* in the live EDB
+        session and its current properties (type, model, die, solder-ball,
+        port) are pre-loaded into the returned builder.  Mutate the returned
+        object and then call ``edb.configuration.run(cfg)`` to push the
+        changes back to the database.
+
+        If the component has already been registered via :meth:`add` or a
+        previous :meth:`get` call, the cached entry is returned instead of
+        creating a duplicate.
+
+        Parameters
+        ----------
+        reference_designator : str
+            Reference designator of the component to retrieve, e.g. ``"U1"``.
+
+        Returns
+        -------
+        CfgComponent
+            Component builder pre-populated with current EDB properties.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached or the component does not exist.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> u1 = cfg.components.get("U1")
+        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        >>> edb.configuration.run(cfg)
+        """
+        # Return cached entry if already present
+        for c in self.components:
+            if c.reference_designator == reference_designator:
+                return c
+
+        if self._pedb is None:
+            raise KeyError(
+                f"No EDB session is attached to this builder. "
+                f"Use edb.configuration.create_config_builder() to get a session-aware builder."
+            )
+        instances = self._pedb.components.instances
+        if reference_designator not in instances:
+            raise KeyError(f"Component '{reference_designator}' not found in the EDB layout.")
+
+        pedb_obj = instances[reference_designator]
+        comp = CfgComponent(self._pedb, pedb_obj, reference_designator=reference_designator, part_type=pedb_obj.type)
+        comp.retrieve_parameters_from_edb()
+        self.components.append(comp)
+        return comp
+
     def add(
         self,
         reference_designator: str,

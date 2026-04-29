@@ -315,6 +315,107 @@ class CfgStackup(BaseModel):
     materials: List[CfgMaterial] = Field(default_factory=list)
     layers: List[CfgLayer] = Field(default_factory=list)
 
+    # Not serialized – holds a live EDB reference when built from a session.
+    _pedb: object = None
+
+    model_config = {"arbitrary_types_allowed": True}
+
+    def _set_pedb(self, pedb):
+        """Attach a live EDB session (called by EdbConfigBuilder)."""
+        object.__setattr__(self, "_pedb", pedb)
+
+    def get_layer(self, name: str) -> "CfgLayer":
+        """Return the :class:`CfgLayer` for *name*, loading it from EDB if needed.
+
+        If the layer has already been registered (via :meth:`add_signal_layer`,
+        :meth:`add_dielectric_layer`, or :meth:`add_layer`) the cached entry is
+        returned.  Otherwise the layer is looked up in the live EDB session and
+        a new :class:`CfgLayer` is created from its current properties.
+
+        Parameters
+        ----------
+        name : str
+            Layer name, e.g. ``"top"`` or ``"diel1"``.
+
+        Returns
+        -------
+        CfgLayer
+            Layer builder pre-populated with current properties.
+
+        Raises
+        ------
+        KeyError
+            If the layer is not found in the builder registry or the EDB layout.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> top = cfg.stackup.get_layer("top")
+        >>> top.set_huray_roughness("0.1um", "2.9")
+        >>> edb.configuration.run(cfg)
+        """
+        for layer in self.layers:
+            if layer.name == name:
+                return layer
+        if self._pedb is None:
+            raise KeyError(
+                f"Layer '{name}' not found in the builder. "
+                f"Attach an EDB session via edb.configuration.create_config_builder() to auto-load layers."
+            )
+        edb_layers = self._pedb.stackup.all_layers
+        if name not in edb_layers:
+            raise KeyError(f"Layer '{name}' not found in the EDB stackup.")
+        props = edb_layers[name].properties
+        layer = CfgLayer(name=name, **{k: v for k, v in props.items() if k != "name"})
+        self.layers.append(layer)
+        return layer
+
+    def get_material(self, name: str) -> "CfgMaterial":
+        """Return the :class:`CfgMaterial` for *name*, loading it from EDB if needed.
+
+        If the material has already been registered via :meth:`add_material`
+        the cached entry is returned.  Otherwise the material is looked up in
+        the live EDB session and a new :class:`CfgMaterial` is created from its
+        current properties.
+
+        Parameters
+        ----------
+        name : str
+            Material name, e.g. ``"copper"`` or ``"FR4_epoxy"``.
+
+        Returns
+        -------
+        CfgMaterial
+            Material builder pre-populated with current properties.
+
+        Raises
+        ------
+        KeyError
+            If the material is not found in the builder registry or the EDB database.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> cu = cfg.stackup.get_material("copper")
+        >>> cu.conductivity = 5.6e7
+        >>> edb.configuration.run(cfg)
+        """
+        for mat in self.materials:
+            if mat.name == name:
+                return mat
+        if self._pedb is None:
+            raise KeyError(
+                f"Material '{name}' not found in the builder. "
+                f"Attach an EDB session via edb.configuration.create_config_builder() to auto-load materials."
+            )
+        edb_mats = self._pedb.materials.materials
+        if name not in edb_mats:
+            raise KeyError(f"Material '{name}' not found in the EDB material library.")
+        mat_props = edb_mats[name].to_dict()
+        mat = CfgMaterial(**mat_props)
+        self.materials.append(mat)
+        return mat
+
     def add_material(self, name, **kwargs):
         """Add a material definition to the stackup.
 

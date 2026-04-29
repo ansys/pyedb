@@ -103,18 +103,37 @@ class Configuration:
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
     def create_config_builder(self) -> "EdbConfigBuilder":
-        """Create and return an empty :class:`~pyedb.configuration.builder.EdbConfigBuilder`.
+        """Create and return an :class:`~pyedb.configuration.builder.EdbConfigBuilder` bound to this EDB session.
 
-        Use the returned builder to populate configuration sections
-        programmatically, then pass it directly to :meth:`run`.
+        Because the builder is initialised with a reference to the live EDB
+        session, you can retrieve *existing* objects directly via ``get``
+        methods instead of registering them manually:
+
+        * ``cfg.components.get(refdes)`` — existing component (pre-loads all properties).
+        * ``cfg.stackup.get_layer(name)`` — existing layer (pre-loads properties).
+        * ``cfg.stackup.get_material(name)`` — existing material (pre-loads properties).
+        * ``cfg.nets.get(net_name)`` — net classification from EDB.
+        * ``cfg.padstacks.get_definition(name)`` — existing padstack definition.
+        * ``cfg.padstacks.get_instance(name)`` — existing padstack instance.
+        * ``cfg.pin_groups.get(name)`` — existing pin group (pre-loads pins).
+        * ``cfg.setups.get(name)`` — a previously registered setup by name.
 
         Returns
         -------
         EdbConfigBuilder
-            A new, empty configuration builder instance.
+            A new, session-aware configuration builder instance.
 
         Examples
         --------
+        Retrieve an existing component and modify its solder-ball geometry:
+
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> u1 = cfg.components.get("U1")          # looks up U1 from EDB
+        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        >>> edb.configuration.run(cfg)
+
+        Traditional workflow (creating new component entries) still works:
+
         >>> cfg = edb.configuration.create_config_builder()
         >>> cfg.general.anti_pads_always_on = False
         >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])
@@ -124,7 +143,7 @@ class Configuration:
         """
         from pyedb.configuration.builder import EdbConfigBuilder  # local import avoids circular refs
 
-        return EdbConfigBuilder()
+        return EdbConfigBuilder(pedb=self._pedb)
 
     def load(self, config_file, append=True, apply_file=False, output_file=None, open_at_the_end=True):
         """Import configuration settings from a configure file.

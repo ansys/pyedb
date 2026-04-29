@@ -76,6 +76,84 @@ There are two equivalent ways to start a programmatic configuration:
    # Or persist to a file for review / source control:
    cfg.to_json("my_config.json")
 
+Session-aware ``get()`` methods
+--------------------------------
+
+When a builder is created via ``edb.configuration.create_config_builder()`` it
+is bound to the live EDB session.  Each section exposes a ``get()`` (or
+``get_layer`` / ``get_material`` / ``get_definition`` / ``get_instance``)
+helper that retrieves an *existing* database object and wraps it in the
+corresponding builder.  This avoids having to re-declare objects that already
+exist in the design.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 45 55
+
+   * - Call
+     - Returns
+   * - ``cfg.components.get("U1")``
+     - :class:`ComponentConfig` pre-loaded with all current EDB properties.
+   * - ``cfg.stackup.get_layer("top")``
+     - :class:`LayerConfig` pre-loaded with current layer properties.
+   * - ``cfg.stackup.get_material("copper")``
+     - :class:`MaterialConfig` pre-loaded with current material properties.
+   * - ``cfg.nets.get("GND")``
+     - ``dict`` with ``name``, ``is_power_ground``, ``classification``.
+   * - ``cfg.padstacks.get_definition("via_0.2")``
+     - :class:`PadstackDefinitionConfig` pre-loaded with current definition.
+   * - ``cfg.padstacks.get_instance("via_A1")``
+     - :class:`PadstackInstanceConfig` pre-loaded with current instance data.
+   * - ``cfg.pin_groups.get("pg_VDD")``
+     - :class:`PinGroupConfig` pre-loaded with current pin membership.
+   * - ``cfg.setups.get("hfss_bb")``
+     - The matching registered setup builder (``HfssSetupConfig``, etc.).
+
+Each ``get()`` call caches the result — calling it twice with the same name
+returns the same object.  If the object was already registered (e.g. via
+``add``), the cached entry is returned instead.
+
+.. code-block:: python
+
+   cfg = edb.configuration.create_config_builder()
+
+   # ── Existing component ──────────────────────────────────────────────────
+   u1 = cfg.components.get("U1")
+   u1.set_solder_ball_properties("cylinder", "150um", "100um")
+   u1.set_ic_die_properties("flip_chip", orientation="chip_down")
+
+   # ── Existing layer ──────────────────────────────────────────────────────
+   top = cfg.stackup.get_layer("top")
+   top.set_huray_roughness("0.1um", "2.9")
+   top.set_etching(factor=0.4)
+
+   # ── Existing material ───────────────────────────────────────────────────
+   cu = cfg.stackup.get_material("copper")
+   cu.conductivity = 5.6e7
+
+   # ── Net classification ──────────────────────────────────────────────────
+   info = cfg.nets.get("GND")   # also adds GND to power_nets if it is one
+   print(info["classification"]) # 'power_ground'
+
+   # ── Existing padstack definition ────────────────────────────────────────
+   via_def = cfg.padstacks.get_definition("via_0.2")
+   via_def.hole_plating_thickness = "30um"
+
+   # ── Existing padstack instance ──────────────────────────────────────────
+   via = cfg.padstacks.get_instance("via_A1")
+   via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
+
+   # ── Existing pin group ──────────────────────────────────────────────────
+   pg = cfg.pin_groups.get("pg_VDD")
+   print(pg.pins)
+
+   # ── Registered setup ────────────────────────────────────────────────────
+   cfg.setups.add_hfss_setup("hfss_bb", adapt_type="broadband")
+   setup = cfg.setups.get("hfss_bb")          # retrieve the same object
+   setup.add_frequency_sweep("sw2", start="1GHz", stop="20GHz", step_or_count=100)
+
+   edb.configuration.run(cfg)
+
 Generated API reference
 -----------------------
 
@@ -549,6 +627,10 @@ Setups
 Three setup types are available via ``cfg.setups``.  Each ``add_*`` method
 returns a typed builder so that IDEs provide full autocomplete.
 
+Use ``cfg.setups.get(name)`` to retrieve a previously registered setup by name
+(useful when a setup is added in a helper function and you want to append
+sweeps later without keeping an explicit reference).
+
 **HFSS setup** — ``cfg.setups.add_hfss_setup(name, adapt_type="single")``
 
 .. list-table::
@@ -717,6 +799,10 @@ frequency range can be fully described in the call itself — no subsequent
 Nets
 ----
 
+Use ``cfg.nets.get(net_name)`` to query whether a net already exists in EDB
+and what its current classification is.  The net is also registered in the
+appropriate list (``signal_nets`` or ``power_nets``) automatically.
+
 .. list-table::
    :header-rows: 1
    :widths: 40 60
@@ -728,9 +814,10 @@ Nets
    * - ``add_power_ground_nets(nets)``
      - Classify net names as power or ground nets.
    * - ``add_reference_nets(nets)``
-     - Store reference (ground) net names.  These are **not** serialized in
-       ``to_dict()``; they are accessed via the ``reference_nets`` property
-       and forwarded to ``add_cutout(reference_nets=…)`` without duplication.
+     - Store reference (ground) net names (not serialized; forwarded to cutout).
+   * - ``get(net_name)``
+     - Return ``{"name", "is_power_ground", "classification"}`` from EDB and
+       auto-register the net. Requires a session-aware builder.
    * - ``signal_nets`` *(property)*
      - Read-only list of configured signal net names.
    * - ``power_ground_nets`` *(property)*
@@ -754,7 +841,12 @@ Example – forward net lists directly to the cutout:
 Stackup
 -------
 
-**Materials** — ``cfg.stackup.add_material(name, …)``
+Use ``cfg.stackup.get_layer(name)`` / ``cfg.stackup.get_material(name)`` to
+retrieve *existing* layers or materials from the live EDB session and modify
+them.  Use ``add_material`` / ``add_signal_layer`` / ``add_dielectric_layer``
+to define *new* entries.
+
+**Materials** — ``cfg.stackup.add_material(name, …)`` / ``cfg.stackup.get_material(name)``
 
 .. list-table::
    :header-rows: 1
@@ -812,7 +904,7 @@ Stackup
      - –
      - Permittivity at *dielectric_model_frequency*.
 
-**Layers** — ``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)``
+**Layers** — ``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
 
 .. list-table::
    :header-rows: 1
@@ -843,7 +935,11 @@ Stackup
 Padstacks
 ---------
 
-**Definitions** — ``cfg.padstacks.add_definition(name, …)``
+Use ``cfg.padstacks.get_definition(name)`` / ``cfg.padstacks.get_instance(name)``
+to retrieve *existing* EDB padstacks.  Use ``add_definition`` / ``add_instance``
+to register *new* ones.
+
+**Definitions** — ``cfg.padstacks.add_definition(name, …)`` / ``get_definition(name)``
 
 .. list-table::
    :header-rows: 1
@@ -871,7 +967,7 @@ Padstacks
      - –
      - Raw solder-ball parameter dictionary.
 
-**Instances** — ``cfg.padstacks.add_instance(…)``
+**Instances** — ``cfg.padstacks.add_instance(…)`` / ``get_instance(name)``
 
 .. list-table::
    :header-rows: 1
@@ -917,7 +1013,28 @@ Padstacks
 Components
 ----------
 
-**Adding** — ``cfg.components.add(reference_designator, …)``
+When the builder is created via ``edb.configuration.create_config_builder()``,
+it is bound to the live EDB session.  This means you can retrieve *existing*
+components directly without calling ``add`` first:
+
+.. code-block:: python
+
+   cfg = edb.configuration.create_config_builder()
+
+   # Retrieve an existing component from the database
+   u1 = cfg.components.get("U1")           # pre-loads all current properties
+   u1.set_solder_ball_properties("cylinder", "150um", "100um")
+   u1.set_ic_die_properties("flip_chip", orientation="chip_down")
+   u1.set_port_properties(reference_height="50um")
+   edb.configuration.run(cfg)
+
+``get()`` caches the component — calling it twice with the same reference
+designator returns the same object.  If the component was already registered
+with :meth:`add`, that entry is returned instead.
+
+**Adding new entries** — ``cfg.components.add(reference_designator, …)``
+
+**Retrieving existing entries** — ``cfg.components.get(reference_designator)``
 
 .. list-table::
    :header-rows: 1
@@ -968,6 +1085,9 @@ Pin groups
 ``cfg.pin_groups.add(name, reference_designator, pins=None, net=None)``
 
 Provide either *pins* (explicit list) **or** *net* (all pins on that net).
+
+``cfg.pin_groups.get(name)`` retrieves an *existing* pin group from EDB (returns a
+:class:`PinGroupConfig` pre-loaded with its current pin membership).
 
 Terminals (low-level)
 ---------------------

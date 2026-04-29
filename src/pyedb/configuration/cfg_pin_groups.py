@@ -63,6 +63,52 @@ class CfgPinGroups:
         self._pedb = pedb
         self.pin_groups = [CfgPinGroup(self._pedb, **pg) for pg in (pingroup_data or [])]
 
+    def get(self, name: str) -> "CfgPinGroup":
+        """Return the :class:`CfgPinGroup` for an existing pin group.
+
+        If the group has already been registered via :meth:`add` the cached
+        entry is returned.  Otherwise the group is looked up in the live EDB
+        session and a new entry is created from its current pin membership.
+
+        Parameters
+        ----------
+        name : str
+            Pin-group name, e.g. ``"pg_VDD"``.
+
+        Returns
+        -------
+        CfgPinGroup
+            Pin-group builder pre-populated with the current pin list.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached or the pin group does not exist.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> pg = cfg.pin_groups.get("pg_VDD")
+        >>> print(pg.pins)
+        """
+        for pg in self.pin_groups:
+            if pg.name == name:
+                return pg
+        if self._pedb is None:
+            raise KeyError(
+                f"Pin group '{name}' not found in the builder. "
+                "Use edb.configuration.create_config_builder() to auto-load from EDB."
+            )
+        layout_pgs = self._pedb.siwave.pin_groups
+        if name not in layout_pgs:
+            raise KeyError(f"Pin group '{name}' not found in the EDB layout.")
+        pg_obj = layout_pgs[name]
+        pins = list(pg_obj.pins.keys())
+        refdes = list(pg_obj.pins.values())[0].component.name if pins else None
+        pg = CfgPinGroup(self._pedb, name=name, reference_designator=refdes, pins=pins)
+        self.pin_groups.append(pg)
+        return pg
+
     def add(self, name, reference_designator, pins=None, net=None):
         """Add a pin group to this configuration.
 

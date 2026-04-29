@@ -77,6 +77,59 @@ class CfgNets:
         self.power_nets = list(power_nets or [])
         self.reference_nets = list(reference_nets or [])
 
+    def get(self, net_name: str) -> dict:
+        """Return classification and EDB metadata for an existing net.
+
+        Looks up *net_name* in the live EDB session and returns a plain
+        dictionary describing whether the net is a signal or power/ground net,
+        plus its current ``is_power_ground`` flag.
+
+        If the net is not yet classified in the builder it is also added to the
+        appropriate list (``signal_nets`` or ``power_nets``) so that it will be
+        included when the configuration is applied.
+
+        Parameters
+        ----------
+        net_name : str
+            Net name to look up, e.g. ``"GND"`` or ``"CLK"``.
+
+        Returns
+        -------
+        dict
+            ``{"name": str, "is_power_ground": bool, "classification": str}``
+            where ``classification`` is ``"signal"`` or ``"power_ground"``.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached or the net does not exist.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> info = cfg.nets.get("GND")
+        >>> print(info["classification"])   # 'power_ground'
+        """
+        if self._pedb is None:
+            raise KeyError(
+                "No EDB session is attached. "
+                "Use edb.configuration.create_config_builder() to get a session-aware builder."
+            )
+        edb_nets = self._pedb.nets.nets
+        if net_name not in edb_nets:
+            raise KeyError(f"Net '{net_name}' not found in the EDB layout.")
+        net_obj = edb_nets[net_name]
+        is_pg = net_obj.is_power_ground
+        classification = "power_ground" if is_pg else "signal"
+        # Ensure it is registered in the appropriate list
+        if is_pg:
+            if net_name not in self.power_nets:
+                self.power_nets.append(net_name)
+        else:
+            if net_name not in self.signal_nets:
+                self.signal_nets.append(net_name)
+        return {"name": net_name, "is_power_ground": is_pg, "classification": classification}
+
     def add_signal_nets(self, nets):
         """Append signal net names."""
         self.signal_nets.extend(nets)
