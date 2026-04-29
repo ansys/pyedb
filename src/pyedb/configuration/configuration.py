@@ -19,12 +19,18 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+from __future__ import annotations
+
 from copy import deepcopy
 from datetime import datetime
 import json
 import os
 from pathlib import Path
+from typing import TYPE_CHECKING
 import warnings
+
+if TYPE_CHECKING:
+    from pyedb.configuration.cfg_api import EdbConfigBuilder
 
 import toml
 
@@ -93,7 +99,7 @@ class Configuration:
         func()
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
-    def create_config_builder(self):
+    def create_config_builder(self) -> "EdbConfigBuilder":
         """Create and return an empty :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`.
 
         Use the returned builder to populate configuration sections
