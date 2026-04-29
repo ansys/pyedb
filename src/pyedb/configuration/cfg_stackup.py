@@ -521,7 +521,9 @@ class CfgStackup(BaseModel):
         thickness: Union[str, float] = "35um",
     ):
         """Add a signal layer with conductor defaults."""
-        return self.add_layer(name, layer_type="signal", material=material, fill_material=fill_material, thickness=thickness)
+        return self.add_layer(
+            name, layer_type="signal", material=material, fill_material=fill_material, thickness=thickness
+        )
 
     def add_dielectric_layer(
         self,
