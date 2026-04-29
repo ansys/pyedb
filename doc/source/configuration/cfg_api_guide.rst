@@ -432,7 +432,7 @@ applies the configuration with a single ``run()`` call.
    # ----- HFSS setup -----
    hfss = cfg.setups.add_hfss_setup(
        "hfss_bb",
-       adapt_type="broadband",          # "single" | "broadband" | "multi_frequencies"
+       adapt_type="broadband",  # "single" | "broadband" | "multi_frequencies"
    )
 
    # Adaptive refinement – only one of these three is active at a time:
@@ -466,7 +466,7 @@ applies the configuration with a single ``run()`` call.
    # Frequency sweep (method-chaining supported)
    sweep = hfss.add_frequency_sweep(
        "sweep1",
-       sweep_type="interpolation",      # "interpolation" | "discrete"
+       sweep_type="interpolation",  # "interpolation" | "discrete"
        use_q3d_for_dc=False,
        compute_dc_point=False,
        enforce_causality=False,
@@ -479,7 +479,7 @@ applies the configuration with a single ``run()`` call.
    # ----- SIwave AC setup -----
    siwave_ac = cfg.setups.add_siwave_ac_setup(
        "siw_ac",
-       si_slider_position=2,            # 0=Speed | 1=Balanced | 2=Accuracy
+       si_slider_position=2,  # 0=Speed | 1=Balanced | 2=Accuracy
        pi_slider_position=1,
        use_si_settings=True,
    )
@@ -493,7 +493,7 @@ applies the configuration with a single ``run()`` call.
    # ----- SIwave DC setup -----
    cfg.setups.add_siwave_dc_setup(
        "siw_dc",
-       dc_slider_position=1,            # 0=Speed | 1=Balanced | 2=Accuracy
+       dc_slider_position=1,  # 0=Speed | 1=Balanced | 2=Accuracy
        export_dc_thermal_data=True,
    )
 

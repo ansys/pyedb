@@ -132,9 +132,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         FrequencySweepConfig
             *self*, for method chaining.
         """
-        self.frequencies.append(
-            CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count")
-        )
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count"))
         return self
 
     def add_log_count_frequencies(
@@ -159,9 +157,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         FrequencySweepConfig
             *self*, for method chaining.
         """
-        self.frequencies.append(
-            CfgFrequencies(start=start, stop=stop, increment=count, distribution="log_count")
-        )
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="log_count"))
         return self
 
     def add_linear_scale_frequencies(
@@ -186,9 +182,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         FrequencySweepConfig
             *self*, for method chaining.
         """
-        self.frequencies.append(
-            CfgFrequencies(start=start, stop=stop, increment=step, distribution="linear_scale")
-        )
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="linear_scale"))
         return self
 
     def add_log_scale_frequencies(
@@ -213,9 +207,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         FrequencySweepConfig
             *self*, for method chaining.
         """
-        self.frequencies.append(
-            CfgFrequencies(start=start, stop=stop, increment=step, distribution="log_scale")
-        )
+        self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=step, distribution="log_scale"))
         return self
 
     def add_single_frequency(self, freq: Union[float, str]) -> "FrequencySweepConfig":
@@ -231,9 +223,7 @@ class FrequencySweepConfig(CfgSIwaveACSetup.CfgFrequencySweep):
         FrequencySweepConfig
             *self*, for method chaining.
         """
-        self.frequencies.append(
-            CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single")
-        )
+        self.frequencies.append(CfgFrequencies(start=freq, stop=freq, increment=1, distribution="single"))
         return self
 
     def to_dict(self) -> dict:
