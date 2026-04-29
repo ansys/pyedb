@@ -279,6 +279,16 @@ class Configuration:
 
     @execution_timer("Applying setups")
     def apply_setups(self):
+        """Apply simulation setups (HFSS, SIwave AC/DC) to the current design.
+
+        Iterates over every setup defined in :attr:`cfg_data.setups` and creates
+        the corresponding EDB setup object, including frequency sweeps and mesh
+        operations.
+
+        Returns
+        -------
+        None
+        """
         cfg_setups = self.cfg_data.setups.setups
         for setup in cfg_setups:
             if setup.type == "siwave_dc":
@@ -390,6 +400,16 @@ class Configuration:
                         sweep.hfss_solver_region_sweep_name = sw.hfss_solver_region_sweep_name
 
     def get_setups(self):
+        """Populate :attr:`cfg_data.setups` from the currently open EDB design.
+
+        Reads every simulation setup in the database and converts it to the
+        corresponding ``CfgSetup`` model so it can later be serialized or
+        re-applied to another design.
+
+        Returns
+        -------
+        None
+        """
         self.cfg_data.setups.setups = []
         for _, setup in self._pedb.setups.items():
             if setup.type in ["siwave_dc", "siwave_dcir"]:
@@ -487,6 +507,15 @@ class Configuration:
                     )
 
     def apply_boundaries(self):
+        """Write HFSS open-region and airbox settings into the current design.
+
+        Reads the ``boundaries`` section of :attr:`cfg_data` and pushes every
+        non-``None`` attribute to :class:`pyedb.edb_core.hfss.HfssExtentInfo`.
+
+        Returns
+        -------
+        None
+        """
         boundaries = self.cfg_data.boundaries
         info = self._pedb.hfss.hfss_extent_info
 
@@ -528,6 +557,17 @@ class Configuration:
             info.set_air_box_negative_vertical_extent(**boundaries.air_box_negative_vertical_extent.model_dump())
 
     def get_boundaries(self):
+        """Populate :attr:`cfg_data.boundaries` from the open EDB design.
+
+        Reads the HFSS extent information (open-region type, PML settings,
+        airbox padding, dielectric extents) from the database and stores the
+        values in the active :class:`~pyedb.configuration.cfg_boundaries.CfgBoundaries`
+        model.
+
+        Returns
+        -------
+        None
+        """
         boundaries = self.cfg_data.boundaries
         edb_hfss_extent_info = self._pedb.hfss.hfss_extent_info
 
@@ -553,6 +593,16 @@ class Configuration:
         boundaries.sync_air_box_vertical_extent = edb_hfss_extent_info.sync_air_box_vertical_extent
 
     def apply_modeler(self):
+        """Create modeler primitives (traces, planes, padstacks, components) in the design.
+
+        Processes every item in ``cfg_data.modeler`` and invokes the matching
+        ``pyedb.modeler`` or ``pyedb.components`` factory method.  After creation,
+        primitives marked for deletion are removed from the layout.
+
+        Returns
+        -------
+        None
+        """
         modeler = self.cfg_data.modeler
         if modeler.traces:
             for t in modeler.traces:
@@ -695,6 +745,23 @@ class Configuration:
             self.cfg_data.stackup.add_material(**mat.to_dict())
 
     def apply_stackup(self):
+        """Apply stackup layer definitions to the current design.
+
+        If the database already has signal layers, the existing stackup is
+        updated in-place; otherwise a new stackup is created from scratch.
+        Materials referenced by layers that are not yet in the database are
+        created automatically with default properties.
+
+        Raises
+        ------
+        Exception
+            If the number of signal layers in the configuration does not match
+            the database.
+
+        Returns
+        -------
+        None
+        """
         layers = self.cfg_data.stackup.layers
         input_signal_layers = [i for i in layers if i.type.lower() == "signal"]
         if len(input_signal_layers) == 0:
@@ -798,11 +865,30 @@ class Configuration:
             p_inst._layer_map = temp_p_inst_layer_map[p_inst.id]
 
     def get_stackup(self):
+        """Populate :attr:`cfg_data.stackup` layers from the open EDB design.
+
+        Clears the existing layer list and re-populates it by reading every
+        layer in :attr:`pyedb.Edb.stackup.all_layers`.
+
+        Returns
+        -------
+        None
+        """
         self.cfg_data.stackup.layers = []
         for name, obj in self._pedb.stackup.all_layers.items():
             self.cfg_data.stackup.add_layer_at_bottom(**obj.properties)
 
     def get_padstacks(self):
+        """Populate :attr:`cfg_data.padstacks` from the open EDB design.
+
+        Reads every padstack definition and every padstack instance from the
+        database and stores them in the active
+        :class:`~pyedb.configuration.cfg_padstacks.CfgPadstacks` model.
+
+        Returns
+        -------
+        None
+        """
         padstacks = self.cfg_data.padstacks
         padstacks.clean()
 
@@ -844,6 +930,15 @@ class Configuration:
 
     @execution_timer("Applying padstack definitions and instances")
     def apply_padstacks(self):
+        """Apply padstack definitions and instance overrides to the current design.
+
+        Iterates over :attr:`cfg_data.padstacks` and updates the matching EDB
+        padstack-definition and padstack-instance objects in the database.
+
+        Returns
+        -------
+        None
+        """
         padstacks = self.cfg_data.padstacks
         p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
         for pdef in padstacks.definitions:
@@ -855,66 +950,6 @@ class Configuration:
         for inst in padstacks.instances:
             inst_obj = insts_by_name[inst.name]
             set_padstack_instance(inst, inst_obj)
-
-    def get_data_from_db(self, **kwargs):
-        """Get configuration data from layout.
-
-        Returns
-        -------
-
-        """
-        self._pedb.logger.info("Getting data from layout database.")
-
-        self.get_materials()
-
-        data = {}
-        if kwargs.get("general", False):
-            data["general"] = self.cfg_data.general.get_data_from_db()
-        if kwargs.get("variables", False):
-            self.get_variables()
-            data.update(self.cfg_data.variables.model_dump(exclude_none=True))
-        if kwargs.get("stackup", False):
-            self.get_stackup()
-            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
-        if kwargs.get("package_definitions", False):
-            data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
-        if kwargs.get("setups", False):
-            self.get_setups()
-            data["setups"] = [i.model_dump(exclude_none=True) for i in self.cfg_data.setups.setups]
-        if kwargs.get("terminals", False):
-            self.get_terminals()
-            data.update(self.cfg_data.terminals.model_dump(exclude_none=True))
-        if kwargs.get("sources", False):
-            data["sources"] = self.cfg_data.sources.get_data_from_db()
-        if kwargs.get("ports", False):
-            data["ports"] = self.cfg_data.ports.get_data_from_db()
-        if kwargs.get("components", False) or kwargs.get("s_parameters", False):
-            self.cfg_data.components.retrieve_parameters_from_edb()
-            components = []
-            for i in self.cfg_data.components.components:
-                if i.type == "io":
-                    components.append(i.get_attributes())
-                components.append(i.get_attributes())
-
-            if kwargs.get("components", False):
-                data["components"] = components
-            elif kwargs.get("s_parameters", False):
-                data["s_parameters"] = self.cfg_data.s_parameters.get_data_from_db(components)
-        if kwargs.get("nets", False):
-            data["nets"] = self.cfg_data.nets.get_data_from_db()
-        if kwargs.get("pin_groups", False):
-            data["pin_groups"] = self.cfg_data.pin_groups.get_data_from_db()
-        if kwargs.get("operations", False):
-            self.get_operations()
-            data["operations"] = self.cfg_data.operations.model_dump()
-        if kwargs.get("padstacks", False):
-            self.get_padstacks()
-            data["padstacks"] = self.cfg_data.padstacks.model_dump(exclude_none=True)
-
-        if kwargs.get("boundaries", False):
-            self.get_boundaries()
-            data["boundaries"] = self.cfg_data.boundaries.model_dump(exclude_none=True)
-        return data
 
     @execution_timer("Applying operations")
     def apply_operations(self):
@@ -956,6 +991,16 @@ class Configuration:
             self._pedb.hfss.generate_auto_hfss_regions()
 
     def get_operations(self):
+        """Populate :attr:`cfg_data.operations` from the open EDB design.
+
+        Detects whether a ``pyedb_cutout`` layer is present and, when found,
+        reconstructs the cutout operation (signal nets + custom extent polygon)
+        so it can be serialised or re-applied.
+
+        Returns
+        -------
+        None
+        """
         if "pyedb_cutout" not in self._pedb.stackup.all_layers:
             return
 
@@ -979,6 +1024,16 @@ class Configuration:
 
     @execution_timer("Placing terminals")
     def apply_terminals(self):
+        """Create terminal excitations (padstack, pin-group, point, edge, bundle) in the design.
+
+        Iterates over every terminal in :attr:`cfg_data.terminals`, creates the
+        corresponding EDB excitation object, assigns impedance / boundary-type /
+        source-amplitude settings, and resolves reference-terminal links.
+
+        Returns
+        -------
+        None
+        """
         terminals_dict = {}
         bungle_terminals = []
         edge_terminals = {}
@@ -1043,6 +1098,16 @@ class Configuration:
 
     @execution_timer("Retrieving terminal information")
     def get_terminals(self):
+        """Populate :attr:`cfg_data.terminals` from the open EDB design.
+
+        Reads every terminal excitation from the database and stores it as the
+        appropriate ``Cfg*Terminal`` model so it can later be serialised or
+        re-applied.
+
+        Returns
+        -------
+        None
+        """
         manager = self.cfg_data.terminals
         manager.terminals = []
         for i in self._pedb.terminals.values():
