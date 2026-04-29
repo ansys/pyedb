@@ -93,15 +93,19 @@ class PadstackDefinitionConfig:
         solder_ball_parameters : dict, optional
             Raw solder-ball parameter dictionary.
         """
-        kwargs = {k: v for k, v in {
-            "name": name,
-            "hole_plating_thickness": hole_plating_thickness,
-            "hole_material": material,
-            "hole_range": hole_range,
-            "pad_parameters": pad_parameters,
-            "hole_parameters": hole_parameters,
-            "solder_ball_parameters": solder_ball_parameters,
-        }.items() if v is not None}
+        kwargs = {
+            k: v
+            for k, v in {
+                "name": name,
+                "hole_plating_thickness": hole_plating_thickness,
+                "hole_material": material,
+                "hole_range": hole_range,
+                "pad_parameters": pad_parameters,
+                "hole_parameters": hole_parameters,
+                "solder_ball_parameters": solder_ball_parameters,
+            }.items()
+            if v is not None
+        }
         self._model = CfgPadstackDefinition(**kwargs)
 
     def to_dict(self) -> dict:
@@ -182,18 +186,22 @@ class PadstackInstanceConfig:
         solder_ball_layer : str, optional
             Layer on which the solder ball sits.
         """
-        kwargs = {k: v for k, v in {
-            "name": name,
-            "net_name": net_name,
-            "definition": definition,
-            "layer_range": layer_range,
-            "position": position,
-            "rotation": str(rotation) if rotation is not None else None,
-            "is_pin": is_pin,
-            "hole_override_enabled": hole_override_enabled,
-            "hole_override_diameter": hole_override_diameter,
-            "solder_ball_layer": solder_ball_layer,
-        }.items() if v is not None}
+        kwargs = {
+            k: v
+            for k, v in {
+                "name": name,
+                "net_name": net_name,
+                "definition": definition,
+                "layer_range": layer_range,
+                "position": position,
+                "rotation": str(rotation) if rotation is not None else None,
+                "is_pin": is_pin,
+                "hole_override_enabled": hole_override_enabled,
+                "hole_override_diameter": hole_override_diameter,
+                "solder_ball_layer": solder_ball_layer,
+            }.items()
+            if v is not None
+        }
         self._model = CfgPadstackInstance(**kwargs)
 
     def set_backdrill(
