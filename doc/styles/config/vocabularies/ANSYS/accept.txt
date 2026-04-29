@@ -151,3 +151,9 @@ API
 interdigital
 ore
 .NET
+[Bb]oolean
+Huray
+Groisse
+redeclare
+step_or_count
+positive_terminal

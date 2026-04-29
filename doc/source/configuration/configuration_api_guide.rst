@@ -80,10 +80,10 @@ Session-aware ``get()`` methods
 --------------------------------
 
 When a builder is created via ``edb.configuration.create_config_builder()`` it
-is bound to the live EDB session.  Each section exposes a ``get()`` (or
+is bound to the live EDB session. Each section exposes a ``get()`` (or
 ``get_layer`` / ``get_material`` / ``get_definition`` / ``get_instance``)
 helper that retrieves an *existing* database object and wraps it in the
-corresponding builder.  This avoids having to redeclare objects that already
+corresponding builder. This avoids having to re-declare objects that already
 exist in the design.
 
 .. list-table::
@@ -109,8 +109,8 @@ exist in the design.
    * - ``cfg.setups.get("hfss_bb")``
      - The matching registered setup builder (``HfssSetupConfig``, etc.).
 
-Each ``get()`` call caches the result — calling it twice with the same name
-returns the same object.  If the object was already registered (e.g. via
+Each ``get()`` call caches the result—calling it twice with the same name
+returns the same object. If the object was already registered (for example, via
 ``add``), the cached entry is returned instead.
 
 .. code-block:: python
@@ -570,7 +570,7 @@ applies the configuration with a single ``run()`` call.
 Persisting the configuration
 -----------------------------
 
-``EdbConfigBuilder`` can be passed **directly** to ``edb.configuration.run()`` —
+``EdbConfigBuilder`` can be passed **directly** to ``edb.configuration.run()``—
 no ``.to_dict()`` call is required:
 
 .. code-block:: python
@@ -600,7 +600,7 @@ another project, serialize the builder before (or instead of) calling ``run()``:
 .. note::
 
    ``edb.configuration.run(cfg)`` accepts an ``EdbConfigBuilder`` instance
-   directly and handles the serialization step internally.  You only need
+   directly and handles the serialization step internally. You only need
    ``cfg.to_dict()`` when you want to inspect the payload programmatically or
    pass it to another API that expects a plain dictionary.
 
@@ -635,7 +635,7 @@ Use ``cfg.setups.get(name)`` to retrieve a previously registered setup by name
 (useful when a setup is added in a helper function and you want to append
 sweeps later without keeping an explicit reference).
 
-**HFSS setup** — ``cfg.setups.add_hfss_setup(name, adapt_type="single")``
+**HFSS setup**—``cfg.setups.add_hfss_setup(name, adapt_type="single")``
 
 .. list-table::
    :header-rows: 1
@@ -650,24 +650,24 @@ sweeps later without keeping an explicit reference).
        ``"multi_frequencies"``.
    * - ``set_single_frequency_adaptive(freq, max_passes, max_delta)``
      - ``"5GHz"``, ``20``, ``0.02``
-     - Refine at one adaptive frequency.  Returns *self* for chaining.
-   * - ``set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
-     - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
-     - Refine across a low/high frequency pair.  Returns *self* for chaining.
-   * - ``add_multi_frequency_adaptive(freq, max_passes, max_delta)``
-     - ``None``, ``20``, ``0.02``
-     - Append one adaptive point (call multiple times).  Returns *self*.
-   * - ``set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
-     - ``True``, ``3.0``, ``12``
-     - Configure automatic mesh seeding.  Returns *self* for chaining.
-   * - ``add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
-     - ``None``, ``None``, ``"1mm"``, ``1000``, ``True``, ``False``
-     - Append a length-based mesh operation.  Returns *self* for chaining.
+      - Refine at one adaptive frequency. Returns *self* for chaining.
+    * - ``set_broadband_adaptive(low_freq, high_freq, max_passes, max_delta)``
+      - ``"1GHz"``, ``"10GHz"``, ``20``, ``0.02``
+      - Refine across a low/high frequency pair. Returns *self* for chaining.
+    * - ``add_multi_frequency_adaptive(freq, max_passes, max_delta)``
+      - ``None``, ``20``, ``0.02``
+      - Append one adaptive point (call multiple times). Returns *self*.
+    * - ``set_auto_mesh_operation(enabled, trace_ratio_seeding, signal_via_side_number)``
+      - ``True``, ``3.0``, ``12``
+      - Configure automatic mesh seeding. Returns *self* for chaining.
+    * - ``add_length_mesh_operation(name, nets_layers_list, max_length, max_elements, restrict_length, refine_inside)``
+      - ``None``, ``None``, ``"1mm"``, ``1000``, ``True``, ``False``
+      - Append a length-based mesh operation. Returns *self* for chaining.
    * - ``add_frequency_sweep(name, sweep_type, start, stop, step_or_count, distribution, …)``
      - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
 
-**SIwave AC setup** — ``cfg.setups.add_siwave_ac_setup(name, …)``
+**SIwave AC setup**—``cfg.setups.add_siwave_ac_setup(name, …)``
 
 .. list-table::
    :header-rows: 1
@@ -689,7 +689,7 @@ sweeps later without keeping an explicit reference).
      - ``None``, ``"interpolation"``, ``None``, ``None``, ``None``, ``"linear_count"``
      - Add a sweep; returns :class:`FrequencySweepConfig`.
 
-**SIwave DC setup** — ``cfg.setups.add_siwave_dc_setup(name, …)``
+**SIwave DC setup**—``cfg.setups.add_siwave_dc_setup(name, …)``
 
 .. list-table::
    :header-rows: 1
@@ -705,14 +705,14 @@ sweeps later without keeping an explicit reference).
      - ``False``
      - Export DC thermal (loss) data after the solve.
 
-**Frequency sweep** — returned by ``add_frequency_sweep(…)``
+**Frequency sweep**—returned by ``add_frequency_sweep(…)``
 
 All sweep types share the same :class:`FrequencySweepConfig` builder.
 
 ``add_frequency_sweep`` now accepts optional *inline range* parameters
 (``start``, ``stop``, ``step_or_count``, ``distribution``) so that a single
-frequency range can be fully described in the call itself — no subsequent
-``add_*_frequencies`` call is required.  For multiple ranges use the chained
+frequency range can be fully described in the call itself—no subsequent
+``add_*_frequencies`` call is required. For multiple ranges use the chained
 ``add_*_frequencies`` helpers on the returned builder.
 
 .. code-block:: python
@@ -743,8 +743,8 @@ frequency range can be fully described in the call itself — no subsequent
      - ``"interpolation"`` or ``"discrete"``.
    * - ``start``
      - ``None``
-     - Start frequency of an inline range, e.g. ``"1GHz"``.  When supplied
-       *stop* and *step_or_count* are also required.
+      - Start frequency of an inline range, for example ``"1GHz"``. When supplied
+        *stop* and *step_or_count* are also required.
    * - ``stop``
      - ``None``
      - Stop frequency of the inline range.
@@ -754,7 +754,7 @@ frequency range can be fully described in the call itself — no subsequent
        (``"linear_scale"``, ``"log_scale"``).
    * - ``distribution``
      - ``"linear_count"``
-     - Frequency distribution for the inline range.  Accepted values and
+      - Frequency distribution for the inline range. Accepted values and
        aliases:
 
        * ``"linear_count"`` / ``"linearcount"`` / ``"linear count"``
@@ -788,25 +788,25 @@ frequency range can be fully described in the call itself — no subsequent
      - HFSS solver-region sweep name.
    * - ``add_linear_count_frequencies(start, stop, count)``
      - –
-     - Linear distribution with explicit point count.  Returns *self*.
-   * - ``add_log_count_frequencies(start, stop, count)``
-     - –
-     - Logarithmic distribution with explicit point count.  Returns *self*.
-   * - ``add_linear_scale_frequencies(start, stop, step)``
-     - –
-     - Linear distribution with explicit step size.  Returns *self*.
-   * - ``add_log_scale_frequencies(start, stop, step)``
-     - –
-     - Logarithmic distribution with explicit step.  Returns *self*.
-   * - ``add_single_frequency(freq)``
-     - –
-     - Single discrete frequency point.  Returns *self*.
+      - Linear distribution with explicit point count. Returns *self*.
+    * - ``add_log_count_frequencies(start, stop, count)``
+      - –
+      - Logarithmic distribution with explicit point count. Returns *self*.
+    * - ``add_linear_scale_frequencies(start, stop, step)``
+      - –
+      - Linear distribution with explicit step size. Returns *self*.
+    * - ``add_log_scale_frequencies(start, stop, step)``
+      - –
+      - Logarithmic distribution with explicit step. Returns *self*.
+    * - ``add_single_frequency(freq)``
+      - –
+      - Single discrete frequency point. Returns *self*.
 
 Nets
 ----
 
 Use ``cfg.nets.get(net_name)`` to query whether a net already exists in EDB
-and what its current classification is.  The net is also registered in the
+and what its current classification is. The net is also registered in the
 appropriate list (``signal_nets`` or ``power_nets``) automatically.
 
 .. list-table::
@@ -831,7 +831,7 @@ appropriate list (``signal_nets`` or ``power_nets``) automatically.
    * - ``reference_nets`` *(property)*
      - Read-only list of configured reference net names.
 
-Example – forward net lists directly to the cutout:
+Example—forward net lists directly to the cutout:
 
 .. code-block:: python
 
@@ -849,10 +849,10 @@ Stackup
 
 Use ``cfg.stackup.get_layer(name)`` / ``cfg.stackup.get_material(name)`` to
 retrieve *existing* layers or materials from the live EDB session and modify
-them.  Use ``add_material`` / ``add_signal_layer`` / ``add_dielectric_layer``
+them. Use ``add_material`` / ``add_signal_layer`` / ``add_dielectric_layer``
 to define *new* entries.
 
-**Materials** — ``cfg.stackup.add_material(name, …)`` / ``cfg.stackup.get_material(name)``
+**Materials**—``cfg.stackup.add_material(name, …)`` / ``cfg.stackup.get_material(name)``
 
 .. list-table::
    :header-rows: 1
@@ -863,7 +863,7 @@ to define *new* entries.
      - Description
    * - ``conductivity``
      - –
-     - Electrical conductivity in S/m (e.g. ``5.8e7`` for copper).
+      - Electrical conductivity in S/m (for example ``5.8e7`` for copper).
    * - ``permittivity``
      - –
      - Relative permittivity.
@@ -910,7 +910,7 @@ to define *new* entries.
      - –
      - Permittivity at *dielectric_model_frequency*.
 
-**Layers** — ``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
+**Layers**—``cfg.stackup.add_signal_layer(name, …)`` / ``add_dielectric_layer(name, …)`` / ``get_layer(name)``
 
 .. list-table::
    :header-rows: 1
@@ -942,10 +942,10 @@ Padstacks
 ---------
 
 Use ``cfg.padstacks.get_definition(name)`` / ``cfg.padstacks.get_instance(name)``
-to retrieve *existing* EDB padstacks.  Use ``add_definition`` / ``add_instance``
+to retrieve *existing* EDB padstacks. Use ``add_definition`` / ``add_instance``
 to register *new* ones.
 
-**Definitions** — ``cfg.padstacks.add_definition(name, …)`` / ``get_definition(name)``
+**Definitions**—``cfg.padstacks.add_definition(name, …)`` / ``get_definition(name)``
 
 .. list-table::
    :header-rows: 1
@@ -956,7 +956,7 @@ to register *new* ones.
      - Description
    * - ``hole_plating_thickness``
      - –
-     - Plating thickness, e.g. ``"25um"``.
+      - Plating thickness, for example ``"25um"``.
    * - ``material``
      - –
      - Hole conductor material name.
@@ -973,7 +973,7 @@ to register *new* ones.
      - –
      - Raw solder-ball parameter dictionary.
 
-**Instances** — ``cfg.padstacks.add_instance(…)`` / ``get_instance(name)``
+**Instances**—``cfg.padstacks.add_instance(…)`` / ``get_instance(name)``
 
 .. list-table::
    :header-rows: 1
@@ -1020,7 +1020,7 @@ Components
 ----------
 
 When the builder is created via ``edb.configuration.create_config_builder()``,
-it is bound to the live EDB session.  This means you can retrieve *existing*
+it is bound to the live EDB session. This means you can retrieve *existing*
 components directly without calling ``add`` first:
 
 .. code-block:: python
@@ -1034,13 +1034,13 @@ components directly without calling ``add`` first:
    u1.set_port_properties(reference_height="50um")
    edb.configuration.run(cfg)
 
-``get()`` caches the component — calling it twice with the same reference
-designator returns the same object.  If the component was already registered
+``get()`` caches the component—calling it twice with the same reference
+designator returns the same object. If the component was already registered
 with :meth:`add`, that entry is returned instead.
 
-**Adding new entries** — ``cfg.components.add(reference_designator, …)``
+**Adding new entries**—``cfg.components.add(reference_designator, …)``
 
-**Retrieving existing entries** — ``cfg.components.get(reference_designator)``
+**Retrieving existing entries**—``cfg.components.get(reference_designator)``
 
 .. list-table::
    :header-rows: 1
@@ -1098,7 +1098,7 @@ Provide either *pins* (explicit list) **or** *net* (all pins on that net).
 Terminals (low-level)
 ---------------------
 
-Most users use ``ports`` / ``sources`` instead.  Use the terminal builders
+Most users use ``ports`` / ``sources`` instead. Use the terminal builders
 only when fine-grained control over individual terminal objects is required.
 
 .. list-table::
@@ -1130,7 +1130,7 @@ Ports
    * - ``add_circuit_port(name, positive_terminal, negative_terminal, reference_designator, impedance, distributed)``
      - Lumped circuit port.
    * - ``add_coax_port(name, positive_terminal, reference_designator, impedance, padstack, net, pin)``
-     - Coaxial (via) port.  Accepts a raw *positive_terminal* dict **or** one
+      - Coaxial (via) port. Accepts a raw *positive_terminal* dict **or** one
        of the convenience shortcuts *padstack*, *net*, *pin* (see below).
    * - ``add_wave_port(name, primitive_name, point_on_edge, horizontal_extent_factor, vertical_extent_factor, pec_launch_width)``
      - Wave port on a trace edge.
@@ -1182,7 +1182,7 @@ need to build the terminal dict by hand:
 .. note::
 
    **Solder-ball geometry** (diameter, height, shape) is a *component*
-   property, not a port property.  Configure it via
+   property, not a port property. Configure it via
    ``cfg.components.add(refdes).set_solder_ball_properties(shape, diameter, height)``
    or through the ``components`` section of the JSON/TOML configuration file.
 
