@@ -336,4 +336,3 @@ class CfgPackageDefinitions:
         list of dict
         """
         return [p.to_dict() for p in self.packages]
-

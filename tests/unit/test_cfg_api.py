@@ -779,18 +779,21 @@ class TestPortsConfig:
 
     def test_add_coax_port_net_missing_refdes_raises(self):
         import pytest
+
         pc = PortsConfig()
         with pytest.raises(ValueError, match="reference_designator"):
             pc.add_coax_port("coax_vdd", net="VDD")
 
     def test_add_coax_port_pin_missing_refdes_raises(self):
         import pytest
+
         pc = PortsConfig()
         with pytest.raises(ValueError, match="reference_designator"):
             pc.add_coax_port("coax_a1", pin="A1")
 
     def test_add_coax_port_no_terminal_raises(self):
         import pytest
+
         pc = PortsConfig()
         with pytest.raises(ValueError):
             pc.add_coax_port("coax_bad")
@@ -959,8 +962,7 @@ class TestFrequencySweepConfig:
         """All add_*_frequencies methods return self for chaining."""
         fs = FrequencySweepConfig("sw")
         result = (
-            fs
-            .add_linear_count_frequencies("1GHz", "5GHz", 50)
+            fs.add_linear_count_frequencies("1GHz", "5GHz", 50)
             .add_log_count_frequencies("5GHz", "20GHz", 50)
             .add_single_frequency("0Hz")
         )
@@ -1068,7 +1070,9 @@ class TestHfssSetupConfig:
         h = HfssSetupConfig("setup1")
         sweep = h.add_frequency_sweep(
             "sweep1",
-            start="1GHz", stop="20GHz", step_or_count=200,
+            start="1GHz",
+            stop="20GHz",
+            step_or_count=200,
             distribution="linear_count",
         )
         freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
@@ -1082,7 +1086,9 @@ class TestHfssSetupConfig:
         h = HfssSetupConfig("setup1")
         h.add_frequency_sweep(
             "sweep2",
-            start="1MHz", stop="10GHz", step_or_count=100,
+            start="1MHz",
+            stop="10GHz",
+            step_or_count=100,
             distribution="log_count",
         )
         freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
@@ -1092,7 +1098,9 @@ class TestHfssSetupConfig:
         h = HfssSetupConfig("setup1")
         h.add_frequency_sweep(
             "sweep3",
-            start="0Hz", stop="1GHz", step_or_count="10MHz",
+            start="0Hz",
+            stop="1GHz",
+            step_or_count="10MHz",
             distribution="linear_scale",
         )
         freqs = h.to_dict()["freq_sweep"][0]["frequencies"]
@@ -1103,7 +1111,9 @@ class TestHfssSetupConfig:
         h = HfssSetupConfig("setup1")
         h.add_frequency_sweep(
             "sweep4",
-            start="1kHz", stop="1GHz", step_or_count=1,
+            start="1kHz",
+            stop="1GHz",
+            step_or_count=1,
             distribution="log_scale",
         )
         assert h.to_dict()["freq_sweep"][0]["frequencies"][0]["distribution"] == "log_scale"
@@ -1151,7 +1161,9 @@ class TestHfssSetupConfig:
         sw = h.add_frequency_sweep(
             "sw",
             sweep_type="discrete",
-            start="1GHz", stop="10GHz", step_or_count=100,
+            start="1GHz",
+            stop="10GHz",
+            step_or_count=100,
             use_q3d_for_dc=True,
             compute_dc_point=True,
             enforce_causality=True,
@@ -1207,7 +1219,9 @@ class TestSIwaveACSetupConfig:
         s = SIwaveACSetupConfig("sw_ac")
         s.add_frequency_sweep(
             "sw2",
-            start="1kHz", stop="1GHz", step_or_count=100,
+            start="1kHz",
+            stop="1GHz",
+            step_or_count=100,
             distribution="log_count",
         )
         freqs = s.to_dict()["freq_sweep"][0]["frequencies"]
@@ -1218,7 +1232,9 @@ class TestSIwaveACSetupConfig:
         s = SIwaveACSetupConfig("sw_ac")
         s.add_frequency_sweep(
             "sw3",
-            start="100kHz", stop="1GHz", step_or_count="100kHz",
+            start="100kHz",
+            stop="1GHz",
+            step_or_count="100kHz",
             distribution="linear_scale",
         )
         freqs = s.to_dict()["freq_sweep"][0]["frequencies"]
@@ -1234,7 +1250,9 @@ class TestSIwaveACSetupConfig:
         s = SIwaveACSetupConfig("sw_ac")
         sw = s.add_frequency_sweep(
             "sw4",
-            start="1kHz", stop="1GHz", step_or_count=50,
+            start="1kHz",
+            stop="1GHz",
+            step_or_count=50,
             distribution="log_count",
             compute_dc_point=True,
             enforce_passivity=False,
@@ -1335,7 +1353,9 @@ class TestSetupsConfig:
         hfss.set_broadband_adaptive("1GHz", "20GHz")
         hfss.add_frequency_sweep(
             "sweep1",
-            start="1GHz", stop="20GHz", step_or_count=200,
+            start="1GHz",
+            stop="20GHz",
+            step_or_count=200,
             distribution="linear_count",
         )
         d = sc.to_list()[0]
@@ -1757,7 +1777,9 @@ class TestEdbConfigBuilder:
         # inline: start/stop/step_or_count/distribution instead of chaining
         hfss.add_frequency_sweep(
             "sweep1",
-            start="1GHz", stop="20GHz", step_or_count=100,
+            start="1GHz",
+            stop="20GHz",
+            step_or_count=100,
             distribution="linear_count",
         )
         # chained (still works): add second range on same sweep
@@ -1778,7 +1800,9 @@ class TestEdbConfigBuilder:
         siw = cfg.setups.add_siwave_ac_setup("siw_ac", si_slider_position=2, pi_slider_position=1)
         siw.add_frequency_sweep(
             "siw_sw1",
-            start="1kHz", stop="1GHz", step_or_count=100,
+            start="1kHz",
+            stop="1GHz",
+            step_or_count=100,
             distribution="log_count",
         )
 
@@ -2041,7 +2065,9 @@ class TestEdbConfigBuilder:
         hfss.set_broadband_adaptive("1GHz", "20GHz")
         hfss.add_frequency_sweep(
             "sweep1",
-            start="1GHz", stop="20GHz", step_or_count=200,
+            start="1GHz",
+            stop="20GHz",
+            step_or_count=200,
             distribution="linear_count",
             enforce_passivity=False,
             use_q3d_for_dc=True,
@@ -2060,7 +2086,9 @@ class TestEdbConfigBuilder:
         siw = cfg.setups.add_siwave_ac_setup("siw1", si_slider_position=2)
         siw.add_frequency_sweep(
             "sw1",
-            start="1kHz", stop="1GHz", step_or_count=50,
+            start="1kHz",
+            stop="1GHz",
+            step_or_count=50,
             distribution="log_count",
         )
         path = tmp_path / "siw_sweep.json"

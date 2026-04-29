@@ -378,4 +378,3 @@ class EdbConfigBuilder:
         with open(file_path, "r", encoding="utf-8") as fh:
             data = toml.load(fh)
         return cls.from_dict(data)
-

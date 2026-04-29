@@ -108,7 +108,7 @@ class CfgNets:
         --------
         >>> cfg = edb.configuration.create_config_builder()
         >>> info = cfg.nets.get("GND")
-        >>> print(info["classification"])   # 'power_ground'
+        >>> print(info["classification"])  # 'power_ground'
         """
         if self._pedb is None:
             raise KeyError(

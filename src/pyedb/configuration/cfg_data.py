@@ -22,7 +22,6 @@
 
 """Aggregate configuration section objects into one runtime data container."""
 
-
 from pyedb.configuration.cfg_boundaries import CfgBoundaries
 from pyedb.configuration.cfg_common import CfgVariables
 from pyedb.configuration.cfg_components import CfgComponents

@@ -27,7 +27,6 @@ from pydantic import AliasChoices, Field
 
 from pyedb.configuration.cfg_common import CfgBaseModel
 
-
 _DISTRIBUTION_ALIASES = {
     "linear_count": "linear_count",
     "linearcount": "linear_count",
@@ -153,7 +152,9 @@ class CfgSetupAC(CfgSetupDC):
             >>> sw = hfss.add_frequency_sweep("sw")
             >>> sw.add_linear_count_frequencies("1GHz", "10GHz", 100)
             """
-            self.frequencies.append(CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count"))
+            self.frequencies.append(
+                CfgFrequencies(start=start, stop=stop, increment=count, distribution="linear_count")
+            )
             return self
 
         def add_log_count_frequencies(self, start, stop, count):
@@ -335,7 +336,9 @@ class CfgSIwaveACSetup(CfgSetupAC):
 
         >>> siwave_ac.add_frequency_sweep(
         ...     "sw1",
-        ...     start="1kHz", stop="1GHz", step_or_count=100,
+        ...     start="1kHz",
+        ...     stop="1GHz",
+        ...     step_or_count=100,
         ...     distribution="log_count",
         ... )
 
@@ -475,7 +478,9 @@ class CfgHFSSSetup(CfgSetupAC):
     def __init__(self, name: str, adapt_type: Literal["broadband", "single", "multi_frequencies"] = "single", **kwargs):
         super().__init__(name=name, adapt_type=adapt_type, **kwargs)
 
-    def set_single_frequency_adaptive(self, freq: float | str = "5GHz", max_passes: int = 20, max_delta: float | str = 0.02):
+    def set_single_frequency_adaptive(
+        self, freq: float | str = "5GHz", max_passes: int = 20, max_delta: float | str = 0.02
+    ):
         """Configure single-frequency adaptive meshing.
 
         Sets :attr:`adapt_type` to ``"single"`` and replaces the current
@@ -733,7 +738,9 @@ class CfgHFSSSetup(CfgSetupAC):
 
         >>> hfss.add_frequency_sweep(
         ...     "sweep1",
-        ...     start="1GHz", stop="20GHz", step_or_count=100,
+        ...     start="1GHz",
+        ...     stop="20GHz",
+        ...     step_or_count=100,
         ...     distribution="linear_count",
         ...     enforce_passivity=True,
         ... )
@@ -972,9 +979,7 @@ class CfgSetups(CfgBaseModel):
         for setup in self.setups:
             if setup.name == name:
                 return setup
-        raise KeyError(
-            f"Setup '{name}' not found. Available setups: {[s.name for s in self.setups]}"
-        )
+        raise KeyError(f"Setup '{name}' not found. Available setups: {[s.name for s in self.setups]}")
 
     def to_list(self):
         """Serialize all configured setups to a list of dictionaries.
@@ -992,4 +997,3 @@ class CfgSetups(CfgBaseModel):
             else:
                 result.append(setup.model_dump(exclude_none=True))
         return result
-

@@ -128,7 +128,7 @@ class Configuration:
         Retrieve an existing component and modify its solder-ball geometry:
 
         >>> cfg = edb.configuration.create_config_builder()
-        >>> u1 = cfg.components.get("U1")          # looks up U1 from EDB
+        >>> u1 = cfg.components.get("U1")  # looks up U1 from EDB
         >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
         >>> edb.configuration.run(cfg)
 
