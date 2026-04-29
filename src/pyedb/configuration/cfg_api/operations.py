@@ -170,6 +170,15 @@ class OperationsConfig(CfgOperations):
             Stored cutout configuration.
 
         """
+        # Delegate to root CfgOperations.add_cutout to keep a single source of truth,
+        # then replace self.cutout with the richer CutoutConfig builder.
+        super().add_cutout(
+            signal_list=signal_nets,
+            reference_list=reference_nets,
+            extent_type=extent_type,
+            expansion_size=expansion_size,
+            expansion_factor=expansion_factor,
+        )
         self.cutout = CutoutConfig(
             signal_nets=signal_nets,
             reference_nets=reference_nets,

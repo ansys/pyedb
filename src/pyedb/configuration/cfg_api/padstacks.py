@@ -260,6 +260,9 @@ class PadstacksConfig:
 
     def __init__(self):
         """Initialize the padstacks configuration."""
+        from pyedb.configuration.cfg_padstacks import CfgPadstacks as _CfgPadstacks
+
+        self._root = _CfgPadstacks()
         self._definitions: List[PadstackDefinitionConfig] = []
         self._instances: List[PadstackInstanceConfig] = []
 
@@ -297,6 +300,16 @@ class PadstacksConfig:
         PadstackDefinitionConfig
             Newly created definition builder.
         """
+        # Delegate to root CfgPadstacks.add_padstack_definition
+        self._root.add_padstack_definition(
+            name=name,
+            hole_plating_thickness=hole_plating_thickness,
+            hole_material=material,
+            hole_range=hole_range,
+            pad_parameters=pad_parameters,
+            hole_parameters=hole_parameters,
+            solder_ball_parameters=solder_ball_parameters,
+        )
         pdef = PadstackDefinitionConfig(
             name=name,
             hole_plating_thickness=hole_plating_thickness,
@@ -353,6 +366,19 @@ class PadstacksConfig:
             Newly created instance builder; call :meth:`set_backdrill` to
             add back-drill parameters.
         """
+        # Delegate to root CfgPadstacks.add_padstack_instance
+        self._root.add_padstack_instance(
+            name=name,
+            net_name=net_name,
+            definition=definition,
+            layer_range=layer_range,
+            position=position,
+            rotation=str(rotation) if rotation is not None else None,
+            is_pin=is_pin,
+            hole_override_enabled=hole_override_enabled,
+            hole_override_diameter=hole_override_diameter,
+            solder_ball_layer=solder_ball_layer,
+        )
         inst = PadstackInstanceConfig(
             name=name,
             net_name=net_name,

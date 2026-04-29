@@ -826,6 +826,9 @@ class SetupsConfig:
 
     def __init__(self):
         """Initialize an empty setups list."""
+        from pyedb.configuration.cfg_setup import CfgSetups as _CfgSetups
+
+        self._root = _CfgSetups()
         self._setups: List = []
 
     def add_hfss_setup(
@@ -867,7 +870,9 @@ class SetupsConfig:
         >>> hfss.add_length_mesh_operation("mo1", {"CLK": ["top"]}, max_length="0.5mm")
         >>> hfss.add_frequency_sweep("sweep1").add_linear_count_frequencies("1GHz", "20GHz", 200)
         """
+        # Delegate to root CfgSetups.add_hfss_setup
         setup = HfssSetupConfig(name=name, adapt_type=adapt_type)
+        self._root.add_hfss_setup(config=setup)
         self._setups.append(setup)
         return setup
 
@@ -904,12 +909,14 @@ class SetupsConfig:
         >>> siw = cfg.setups.add_siwave_ac_setup("siw_ac", si_slider_position=2)
         >>> siw.add_frequency_sweep("sw1").add_log_count_frequencies("1kHz", "1GHz", 100)
         """
+        # Delegate to root CfgSetups.add_siwave_ac_setup
         setup = SIwaveACSetupConfig(
             name=name,
             si_slider_position=si_slider_position,
             pi_slider_position=pi_slider_position,
             use_si_settings=use_si_settings,
         )
+        self._root.add_siwave_ac_setup(config=setup)
         self._setups.append(setup)
         return setup
 
@@ -939,11 +946,13 @@ class SetupsConfig:
         --------
         >>> cfg.setups.add_siwave_dc_setup("siw_dc", dc_slider_position=2, export_dc_thermal_data=True)
         """
+        # Delegate to root CfgSetups.add_siwave_dc_setup
         setup = SIwaveDCSetupConfig(
             name=name,
             dc_slider_position=dc_slider_position,
             export_dc_thermal_data=export_dc_thermal_data,
         )
+        self._root.add_siwave_dc_setup(config=setup)
         self._setups.append(setup)
         return setup
 

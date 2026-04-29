@@ -374,8 +374,9 @@ class StackupConfig:
         MaterialConfig
             Newly created material builder.
         """
-        cfg = MaterialConfig(
-            name=name,
+        # Delegate to root CfgStackup.add_material
+        self._model.add_material(
+            name,
             conductivity=conductivity,
             permittivity=permittivity,
             dielectric_loss_tangent=dielectric_loss_tangent,
@@ -393,7 +394,9 @@ class StackupConfig:
             loss_tangent_at_frequency=loss_tangent_at_frequency,
             permittivity_at_frequency=permittivity_at_frequency,
         )
-        self._model.materials.append(cfg._model)
+        # Return a MaterialConfig wrapper backed by the last appended model
+        cfg = MaterialConfig.__new__(MaterialConfig)
+        cfg._model = self._model.materials[-1]
         return cfg
 
     def add_layer(
@@ -424,8 +427,13 @@ class StackupConfig:
         LayerConfig
             Newly created layer builder; supports roughness and etching calls.
         """
-        cfg = LayerConfig(name=name, type=type, material=material, fill_material=fill_material, thickness=thickness)
-        self._model.layers.append(cfg._model)
+        # Delegate to root CfgStackup.add_layer_at_bottom
+        self._model.add_layer_at_bottom(
+            name, type=type, material=material, fill_material=fill_material, thickness=thickness
+        )
+        # Return a LayerConfig wrapper backed by the last appended layer model
+        cfg = LayerConfig.__new__(LayerConfig)
+        cfg._model = self._model.layers[-1]
         return cfg
 
     def add_signal_layer(

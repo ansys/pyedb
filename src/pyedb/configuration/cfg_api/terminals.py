@@ -462,6 +462,9 @@ class TerminalsConfig:
 
     def __init__(self):
         """Initialize the terminals configuration."""
+        from pyedb.configuration.cfg_terminals import CfgTerminals as _CfgTerminals
+
+        self._root = _CfgTerminals(terminals=[])
         self._terminals: List = []
 
     def add_padstack_instance_terminal(
@@ -512,6 +515,21 @@ class TerminalsConfig:
         -------
         PadstackInstanceTerminal
         """
+        # Delegate to root CfgTerminals.add_padstack_instance_terminal
+        self._root.add_padstack_instance_terminal(
+            padstack_instance=padstack_instance,
+            name=name,
+            impedance=impedance,
+            is_circuit_port=is_circuit_port,
+            boundary_type=boundary_type,
+            hfss_type=hfss_type,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
+            padstack_instance_id=padstack_instance_id,
+            layer=layer,
+        )
         t = PadstackInstanceTerminal(
             name=name,
             padstack_instance=padstack_instance,
@@ -565,6 +583,17 @@ class TerminalsConfig:
         -------
         PinGroupTerminal
         """
+        # Delegate to root CfgTerminals.add_pin_group_terminal
+        self._root.add_pin_group_terminal(
+            pin_group=pin_group,
+            name=name,
+            impedance=impedance,
+            boundary_type=boundary_type,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
+        )
         t = PinGroupTerminal(
             name=name,
             pin_group=pin_group,
@@ -623,6 +652,20 @@ class TerminalsConfig:
         -------
         PointTerminal
         """
+        # Delegate to root CfgTerminals.add_point_terminal
+        self._root.add_point_terminal(
+            x=x,
+            y=y,
+            layer=layer,
+            name=name,
+            impedance=impedance,
+            boundary_type=boundary_type,
+            net=net,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
+        )
         t = PointTerminal(
             name=name,
             x=x,
@@ -696,6 +739,24 @@ class TerminalsConfig:
         -------
         EdgeTerminal
         """
+        # Delegate to root CfgTerminals.add_edge_terminal
+        self._root.add_edge_terminal(
+            name=name,
+            impedance=impedance,
+            is_circuit_port=is_circuit_port,
+            boundary_type=boundary_type,
+            primitive=primitive,
+            point_on_edge_x=point_on_edge_x,
+            point_on_edge_y=point_on_edge_y,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+            reference_terminal=reference_terminal,
+            amplitude=amplitude,
+            phase=phase,
+            terminal_to_ground=terminal_to_ground,
+            hfss_type=hfss_type,
+        )
         t = EdgeTerminal(
             name=name,
             primitive=primitive,
@@ -718,6 +779,8 @@ class TerminalsConfig:
 
     def add_bundle_terminal(self, name: str, terminals: List[str]) -> BundleTerminal:
         """Add a bundle terminal."""
+        # Delegate to root CfgTerminals.add_bundle_terminal
+        self._root.add_bundle_terminal(terminals=list(terminals), name=name)
         t = BundleTerminal(name=name, terminals=terminals)
         self._terminals.append(t)
         return t
