@@ -8,8 +8,8 @@ Use this section to choose the view that best matches how you work:
 
 * :doc:`file_architecture` explains the serialized JSON and TOML structure,
   supported sections, and field intent.
-* :doc:`cfg_api_guide` shows how to build the same payload programmatically
-  with :mod:`pyedb.configuration.cfg_api`.
+* :doc:`configuration_api_guide` shows how to build the same payload programmatically
+  with :mod:`pyedb.configuration`.
 
 .. grid:: 2
 
@@ -21,7 +21,7 @@ Use this section to choose the view that best matches how you work:
         configuration data is applied to a design.
 
     .. grid-item-card:: Configuration API guide :fa:`code`
-        :link: cfg_api_guide
+        :link: configuration_api_guide
         :link-type: doc
 
         Learn how to build, serialize, and apply complete configuration
@@ -33,6 +33,6 @@ Use this section to choose the view that best matches how you work:
     :maxdepth: 1
 
     file_architecture
-    cfg_api_guide
-    ../autoapi/pyedb/configuration/cfg_api/index
+    configuration_api_guide
+    ../autoapi/pyedb/configuration/index
 

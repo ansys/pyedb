@@ -20,51 +20,71 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
-from pyedb.configuration.cfg_api import (  # noqa: F401
-    BoundariesConfig,
-    BundleTerminal,
-    ComponentConfig,
-    ComponentsConfig,
-    CutoutConfig,
-    DiffWavePortConfig,
-    EdbConfigBuilder,
-    EdgePortConfig,
-    EdgeTerminal,
-    FrequencySweepConfig,
-    GeneralConfig,
-    HeatSinkConfig,
-    HfssSetupConfig,
-    LayerConfig,
-    MaterialConfig,
-    ModelerConfig,
-    NetsConfig,
-    OperationsConfig,
-    PackageDefinitionConfig,
-    PackageDefinitionsConfig,
-    PadstackDefinitionConfig,
-    PadstackInstanceConfig,
-    PadstackInstanceTerminal,
-    PadstacksConfig,
-    PinGroupConfig,
-    PinGroupsConfig,
-    PinGroupTerminal,
-    PinPairModel,
-    PointTerminal,
-    PortConfig,
-    PortsConfig,
-    ProbeConfig,
-    ProbesConfig,
-    SetupsConfig,
-    SIwaveACSetupConfig,
-    SIwaveDCSetupConfig,
-    SourceConfig,
-    SourcesConfig,
-    SParameterModelConfig,
-    SParameterModelsConfig,
-    SpiceModelConfig,
-    SpiceModelsConfig,
-    StackupConfig,
-    TerminalInfo,
-    TerminalsConfig,
-    VariablesConfig,
+from pyedb.configuration.builder import EdbConfigBuilder  # noqa: F401
+from pyedb.configuration.cfg_boundaries import CfgBoundaries as BoundariesConfig  # noqa: F401
+from pyedb.configuration.cfg_common import CfgVariables as VariablesConfig  # noqa: F401
+from pyedb.configuration.cfg_components import (  # noqa: F401
+    CfgComponent as ComponentConfig,
+    CfgComponents as ComponentsConfig,
+    CfgPinPairModel as PinPairModel,
 )
+from pyedb.configuration.cfg_general import CfgGeneral as GeneralConfig  # noqa: F401
+from pyedb.configuration.cfg_modeler import CfgModeler as ModelerConfig  # noqa: F401
+from pyedb.configuration.cfg_nets import CfgNets as NetsConfig  # noqa: F401
+from pyedb.configuration.cfg_operations import CfgCutout as CutoutConfig, CfgOperations as OperationsConfig  # noqa: F401
+from pyedb.configuration.cfg_package_definition import (  # noqa: F401
+    CfgHeatSink as HeatSinkConfig,
+    CfgPackage as PackageDefinitionConfig,
+    CfgPackageDefinitions as PackageDefinitionsConfig,
+)
+from pyedb.configuration.cfg_padstacks import (  # noqa: F401
+    CfgPadstackDefinition as PadstackDefinitionConfig,
+    CfgPadstackInstance as PadstackInstanceConfig,
+    CfgPadstacks as PadstacksConfig,
+)
+from pyedb.configuration.cfg_pin_groups import (  # noqa: F401
+    CfgPinGroup as PinGroupConfig,
+    CfgPinGroups as PinGroupsConfig,
+)
+from pyedb.configuration.cfg_ports_sources import (  # noqa: F401
+    CfgDiffWavePort as DiffWavePortConfig,
+    CfgEdgePort as EdgePortConfig,
+    CfgPort as PortConfig,
+    CfgPorts as PortsConfig,
+    CfgProbe as ProbeConfig,
+    CfgProbes as ProbesConfig,
+    CfgSource as SourceConfig,
+    CfgSources as SourcesConfig,
+    CfgTerminalInfo as TerminalInfo,
+)
+from pyedb.configuration.cfg_s_parameter_models import (  # noqa: F401
+    CfgSParameterModel as SParameterModelConfig,
+    CfgSParameters as SParameterModelsConfig,
+)
+from pyedb.configuration.cfg_setup import (  # noqa: F401
+    CfgHFSSSetup as HfssSetupConfig,
+    CfgSetups as SetupsConfig,
+    CfgSetupAC,
+    CfgSIwaveACSetup as SIwaveACSetupConfig,
+    CfgSIwaveDCSetup as SIwaveDCSetupConfig,
+)
+from pyedb.configuration.cfg_spice_models import (  # noqa: F401
+    CfgSpiceModel as SpiceModelConfig,
+    CfgSpiceModels as SpiceModelsConfig,
+)
+from pyedb.configuration.cfg_stackup import (  # noqa: F401
+    CfgLayer as LayerConfig,
+    CfgMaterial as MaterialConfig,
+    CfgStackup as StackupConfig,
+)
+from pyedb.configuration.cfg_terminals import (  # noqa: F401
+    CfgBundleTerminal as BundleTerminal,
+    CfgEdgeTerminal as EdgeTerminal,
+    CfgPadstackInstanceTerminal as PadstackInstanceTerminal,
+    CfgPinGroupTerminal as PinGroupTerminal,
+    CfgPointTerminal as PointTerminal,
+    CfgTerminals as TerminalsConfig,
+)
+
+FrequencySweepConfig = CfgSetupAC.CfgFrequencySweep
+SParametersConfig = SParameterModelsConfig

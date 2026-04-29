@@ -1,7 +1,7 @@
 Configuration API guide and complete example
 ============================================
 
-The :mod:`pyedb.configuration.cfg_api` package provides a Python-first way to
+The :mod:`pyedb.configuration` package provides a Python-first way to
 build the same configuration payload described in :doc:`file_architecture`.
 Instead of manually authoring JSON, you populate an
 ``EdbConfigBuilder`` and then pass it directly
@@ -32,7 +32,7 @@ Configuration API workflow
 
 .. graphviz::
 
-   digraph cfg_api_workflow {
+   digraph configuration_api_workflow {
        rankdir=LR;
        node [shape=box, style="rounded,filled", fillcolor="#F7F7F7", color="#4F81BD"];
        edge [color="#4F81BD"];
@@ -66,7 +66,7 @@ There are two equivalent ways to start a programmatic configuration:
 
 .. code-block:: python
 
-   from pyedb.configuration.cfg_api import EdbConfigBuilder
+   from pyedb.configuration import EdbConfigBuilder
 
    cfg = EdbConfigBuilder()
    cfg.general.anti_pads_always_on = False
@@ -295,7 +295,7 @@ writing raw terminal dictionaries by hand.
 
 .. code-block:: python
 
-   from pyedb.configuration.cfg_api import TerminalInfo
+   from pyedb.configuration import TerminalInfo
 
    TerminalInfo.pin("A1", reference_designator="U1")
    TerminalInfo.net("VDD", reference_designator="U1")
@@ -314,7 +314,7 @@ applies the configuration with a single ``run()`` call.
 .. code-block:: python
 
    from pyedb import Edb
-   from pyedb.configuration.cfg_api import TerminalInfo
+   from pyedb.configuration import TerminalInfo
 
    edb = Edb("my_design.aedb")
 
@@ -632,7 +632,7 @@ re-exporting.
 
 .. code-block:: python
 
-   from pyedb.configuration.cfg_api import EdbConfigBuilder
+   from pyedb.configuration import EdbConfigBuilder
 
    # Load from a file, modify, and save back
    cfg = EdbConfigBuilder.from_json("base_config.json")
@@ -1315,3 +1315,4 @@ Related reference
 
 For the file-oriented view of the same data model, including field-by-field
 section descriptions, see :doc:`file_architecture`.
+

@@ -22,12 +22,11 @@
 
 import copy
 import json
-import tempfile
 from unittest.mock import MagicMock
 
 import pytest
 
-from pyedb.configuration.cfg_api import (
+from pyedb.configuration import (
     BoundariesConfig,
     BundleTerminal,
     ComponentConfig,
@@ -396,7 +395,7 @@ class TestNetsConfig:
 
     def test_reference_nets_usable_in_cutout(self):
         """Verify the reference_nets property can be passed directly to add_cutout."""
-        from pyedb.configuration.cfg_api.operations import OperationsConfig
+        from pyedb.configuration import OperationsConfig
 
         n = NetsConfig()
         n.add_signal_nets(["SIG"])

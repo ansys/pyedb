@@ -30,7 +30,7 @@ from typing import TYPE_CHECKING
 import warnings
 
 if TYPE_CHECKING:
-    from pyedb.configuration.cfg_api import EdbConfigBuilder
+    from pyedb.configuration.builder import EdbConfigBuilder
 
 import toml
 
@@ -100,7 +100,7 @@ class Configuration:
         self._pedb.logger.info(f"{label} finished. Time lapse {datetime.now() - start}")
 
     def create_config_builder(self) -> "EdbConfigBuilder":
-        """Create and return an empty :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder`.
+        """Create and return an empty :class:`~pyedb.configuration.builder.EdbConfigBuilder`.
 
         Use the returned builder to populate configuration sections
         programmatically, then pass it directly to :meth:`run`.
@@ -119,7 +119,7 @@ class Configuration:
         >>> edb.configuration.run(cfg)
 
         """
-        from pyedb.configuration.cfg_api import EdbConfigBuilder  # local import avoids circular refs
+        from pyedb.configuration.builder import EdbConfigBuilder  # local import avoids circular refs
 
         return EdbConfigBuilder()
 
@@ -130,9 +130,9 @@ class Configuration:
         ----------
         config_file : str, dict, or EdbConfigBuilder
             Full path to configure file in JSON or TOML format, a plain Python
-            dictionary, or an :class:`pyedb.configuration.cfg_api.EdbConfigBuilder`
+            dictionary, or an :class:`pyedb.configuration.builder.EdbConfigBuilder`
             instance.  When an ``EdbConfigBuilder`` is supplied its
-            :meth:`~pyedb.configuration.cfg_api.EdbConfigBuilder.to_dict` method is
+            :meth:`~pyedb.configuration.builder.EdbConfigBuilder.to_dict` method is
             called automatically so the builder can be passed without any extra
             serialization step.
         append : bool, optional
@@ -152,16 +152,16 @@ class Configuration:
 
         Examples
         --------
-        Pass an :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` directly:
+        Pass an :class:`~pyedb.configuration.builder.EdbConfigBuilder` directly:
 
-        >>> from pyedb.configuration.cfg_api import EdbConfigBuilder
+        >>> from pyedb.configuration import EdbConfigBuilder
         >>> cfg = EdbConfigBuilder()
         >>> cfg.general.anti_pads_always_on = False
         >>> edb.configuration.load(cfg, apply_file=True)
 
         """
         # Accept EdbConfigBuilder directly – convert to dict transparently.
-        from pyedb.configuration.cfg_api import EdbConfigBuilder as _Builder  # local import avoids circular refs
+        from pyedb.configuration.builder import EdbConfigBuilder as _Builder  # local import avoids circular refs
 
         if isinstance(config_file, _Builder):
             config_file = config_file.to_dict()
@@ -214,7 +214,7 @@ class Configuration:
         config : EdbConfigBuilder, dict, or str, optional
             When supplied the configuration is loaded before applying.
             Accepts the same types as :meth:`load`: an
-            :class:`~pyedb.configuration.cfg_api.EdbConfigBuilder` instance,
+            :class:`~pyedb.configuration.builder.EdbConfigBuilder` instance,
             a plain Python dictionary, or a path to a JSON / TOML file.
             When *None* (default) the previously loaded :attr:`cfg_data` is used.
 
@@ -222,7 +222,7 @@ class Configuration:
         --------
         Pass a builder directly — no ``load`` call needed:
 
-        >>> from pyedb.configuration.cfg_api import EdbConfigBuilder
+        >>> from pyedb.configuration import EdbConfigBuilder
         >>> cfg = EdbConfigBuilder()
         >>> cfg.general.anti_pads_always_on = False
         >>> cfg.nets.add_signal_nets(["SIG1", "CLK"])

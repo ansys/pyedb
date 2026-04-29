@@ -4,7 +4,8 @@ Configuration file architecture
 PyEDB configuration files let you describe design setup, modeling content,
 excitations, and post-processing options in a single JSON or TOML document.
 The same data model can be consumed from a file **or** built entirely in Python
-through the programmatic API described in :doc:`cfg_api_guide`.
+through the programmatic API described in :doc:`configuration_api_guide` under
+:mod:`pyedb.configuration`.
 
 This page explains how the configuration file is organized, what each top-level
 section is used for, and which fields are supported by each section.
@@ -28,7 +29,7 @@ Two ways to configure a design
    * - **File-based** (this page)
      - Reproducible, version-controlled, human-readable artifacts.
      - ``edb.configuration.run("my_config.json")``
-   * - **Programmatic API** (:doc:`cfg_api_guide`)
+   * - **Programmatic API** (:doc:`configuration_api_guide`)
      - Scripted workflows, templates, conditional logic.
      - ``cfg = edb.configuration.create_config_builder()`` → ``edb.configuration.run(cfg)``
 
@@ -837,11 +838,11 @@ Best practices
 * Keep relative model paths under ``general.spice_model_library`` and
   ``general.s_parameter_library``.
 * When a section is empty, omit it entirely instead of writing empty values.
-* For programmatic authoring, prefer :doc:`cfg_api_guide`.
+* For programmatic authoring, prefer :doc:`configuration_api_guide`.
 
 Next step
 ---------
 
 If you want to generate these payloads in Python instead of hand-authoring JSON,
-continue with :doc:`cfg_api_guide`.
+continue with :doc:`configuration_api_guide`.
 

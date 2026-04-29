@@ -19,12 +19,28 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+"""Build the ``nets`` configuration section.
+
+This module provides a fluent API for classifying nets into signal,
+power-ground, and reference groups before serializing them into the structure
+expected by the configuration runtime.
+"""
 
 
 class CfgNets:
-    """Manage configuration net class."""
+    """Fluent builder for the ``nets`` configuration section."""
+
+    @property
+    def power_ground_nets(self):
+        return self.power_nets
+
+    @power_ground_nets.setter
+    def power_ground_nets(self, value):
+        self.power_nets = list(value or [])
 
     def set_parameter_to_edb(self):
+        if self._pedb is None:
+            return
         for signal_net in self.signal_nets:
             if signal_net in self._pedb.nets:
                 self._pedb.nets.nets[signal_net].is_power_ground = False
@@ -34,6 +50,10 @@ class CfgNets:
 
     def get_parameter_from_edb(self):
         """Get net information."""
+        if self._pedb is None:
+            return self.to_dict()
+        self.signal_nets = []
+        self.power_nets = []
         for net in self._pedb.nets.signal:
             self.signal_nets.append(net)
         for net in self._pedb.nets.power:
@@ -41,17 +61,36 @@ class CfgNets:
         data = {"signal_nets": self.signal_nets, "power_ground_nets": self.power_nets}
         return data
 
-    def __init__(self, pedb, signal_nets=None, power_nets=None):
+    def __init__(self, pedb=None, signal_nets=None, power_nets=None, reference_nets=None):
+        """Initialize the nets configuration."""
         self._pedb = pedb
-        self.signal_nets = []
-        self.power_nets = []
-        if signal_nets:
-            self.signal_nets = signal_nets
-        if power_nets:
-            self.power_nets = power_nets
+        self.signal_nets = list(signal_nets or [])
+        self.power_nets = list(power_nets or [])
+        self.reference_nets = list(reference_nets or [])
+
+    def add_signal_nets(self, nets):
+        """Append signal net names."""
+        self.signal_nets.extend(nets)
+
+    def add_power_ground_nets(self, nets):
+        """Append power/ground net names."""
+        self.power_nets.extend(nets)
+
+    def add_reference_nets(self, nets):
+        """Append reference-net names used by cutout helpers."""
+        self.reference_nets.extend(nets)
+
+    def to_dict(self) -> dict:
+        """Serialize the configured net classification lists."""
+        data = {}
+        if self.signal_nets:
+            data["signal_nets"] = list(self.signal_nets)
+        if self.power_nets:
+            data["power_ground_nets"] = list(self.power_nets)
+        return data
 
     def apply(self):
-        """Apply net on layout."""
+        """Apply net configuration on the layout."""
         self.set_parameter_to_edb()
 
     def get_data_from_db(self):
