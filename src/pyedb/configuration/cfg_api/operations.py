@@ -45,9 +45,12 @@ class CutoutConfig(CfgCutout):
         signal_nets=None,
         reference_nets=None,
         auto_identify_nets_enabled: bool = False,
-        resistor_below=100,
-        inductor_below=1,
-        capacitor_above="10nF",
+        resistor_below: float = 100,
+        inductor_below: float = 1,
+        capacitor_above: float | str = "10nF",
+        extent_type: str = "ConvexHull",
+        expansion_size: float | str = 0.002,
+        expansion_factor: float = 0,
         **kwargs,
     ):
         """Create a cutout operation builder.
@@ -61,12 +64,20 @@ class CutoutConfig(CfgCutout):
         auto_identify_nets_enabled : bool, default: False
             Whether to populate nets automatically based on passive-component
             thresholds.
-        resistor_below : int or float, default: 100
-            Resistance threshold used by auto-identification.
-        inductor_below : int or float, default: 1
-            Inductance threshold used by auto-identification.
-        capacitor_above : str or float, default: "10nF"
+        resistor_below : float, default: 100
+            Resistance threshold (Ω) used by auto-identification.
+        inductor_below : float, default: 1
+            Inductance threshold (H) used by auto-identification.
+        capacitor_above : float or str, default: "10nF"
             Capacitance threshold used by auto-identification.
+        extent_type : str, default: ``"ConvexHull"``
+            Shape used to compute the cutout boundary.  Accepted values:
+            ``"BoundingBox"``, ``"Conformal"``, ``"ConvexHull"``.
+        expansion_size : float or str, default: 0.002
+            Absolute expansion of the cutout boundary in metres.
+        expansion_factor : float, default: 0
+            Relative expansion factor (takes precedence over *expansion_size*
+            when > 0).
         **kwargs
             Additional fields accepted by :class:`CfgCutout`.
 
@@ -80,6 +91,9 @@ class CutoutConfig(CfgCutout):
                 inductor_below=inductor_below,
                 capacitor_above=capacitor_above,
             ),
+            extent_type=extent_type,
+            expansion_size=expansion_size,
+            expansion_factor=expansion_factor,
             **kwargs,
         )
 
@@ -108,6 +122,13 @@ class OperationsConfig(CfgOperations):
         self,
         signal_nets=None,
         reference_nets=None,
+        extent_type: str = "ConvexHull",
+        expansion_size: float | str = 0.002,
+        expansion_factor: float = 0,
+        auto_identify_nets_enabled: bool = False,
+        resistor_below: float = 100,
+        inductor_below: float = 1,
+        capacitor_above: float | str = "10nF",
         **kwargs,
     ) -> CutoutConfig:
         """Create and store a cutout operation.
@@ -118,6 +139,28 @@ class OperationsConfig(CfgOperations):
             Signal nets to retain inside the cutout.
         reference_nets : list[str], optional
             Reference nets to retain inside the cutout.
+        extent_type : str, default: ``"ConvexHull"``
+            Shape used to compute the cutout boundary around the signal nets.
+            Accepted values:
+
+            * ``"BoundingBox"``  – axis-aligned bounding box.
+            * ``"Conformal"``    – closely follows pad and trace shapes.
+            * ``"ConvexHull"``   – convex hull around all pads/traces (default).
+        expansion_size : float or str, default: ``0.002``
+            Absolute expansion applied to the cutout boundary in metres
+            (e.g. ``0.002`` = 2 mm).  Ignored when *expansion_factor* > 0.
+        expansion_factor : float, default: ``0``
+            Relative expansion factor applied to the cutout boundary.
+            When > 0 this takes precedence over *expansion_size*.
+        auto_identify_nets_enabled : bool, default: ``False``
+            Whether to populate signal nets automatically from passive-component
+            thresholds.
+        resistor_below : float, default: ``100``
+            Resistance threshold (Ω) used by auto-identification.
+        inductor_below : float, default: ``1``
+            Inductance threshold (H) used by auto-identification.
+        capacitor_above : float or str, default: ``"10nF"``
+            Capacitance threshold used by auto-identification.
         **kwargs
             Additional fields forwarded to :class:`CutoutConfig`.
 
@@ -127,7 +170,18 @@ class OperationsConfig(CfgOperations):
             Stored cutout configuration.
 
         """
-        self.cutout = CutoutConfig(signal_nets=signal_nets, reference_nets=reference_nets, **kwargs)
+        self.cutout = CutoutConfig(
+            signal_nets=signal_nets,
+            reference_nets=reference_nets,
+            extent_type=extent_type,
+            expansion_size=expansion_size,
+            expansion_factor=expansion_factor,
+            auto_identify_nets_enabled=auto_identify_nets_enabled,
+            resistor_below=resistor_below,
+            inductor_below=inductor_below,
+            capacitor_above=capacitor_above,
+            **kwargs,
+        )
         return self.cutout
 
     def to_dict(self) -> dict:
