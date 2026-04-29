@@ -488,20 +488,39 @@ applies the configuration with a single ``run()`` call.
 Persisting the configuration
 -----------------------------
 
-If you want to save the configuration for review, archiving, or reuse in
-another project, serialize the builder before (or instead of) calling ``run()``.
+``EdbConfigBuilder`` can be passed **directly** to ``edb.configuration.run()`` —
+no ``.to_dict()`` call is required:
 
 .. code-block:: python
 
-   # Inspect as a plain dict
+   cfg = edb.configuration.create_config_builder()
+   cfg.nets.add_signal_nets(["SIG1", "CLK"])
+   cfg.nets.add_power_ground_nets(["VDD", "GND"])
+
+   # Pass the builder directly — to_dict() is called internally.
+   edb.configuration.run(cfg)
+
+If you also want to save the configuration for review, archiving, or reuse in
+another project, serialize the builder before (or instead of) calling ``run()``:
+
+.. code-block:: python
+
+   # Inspect as a plain dict (optional — not needed to call run())
    payload = cfg.to_dict()
 
    # Write to disk
    cfg.to_json("my_project_config.json")
    cfg.to_toml("my_project_config.toml")
 
-   # Apply later via file path
+   # Apply the saved file later via file path
    edb.configuration.run("my_project_config.json")
+
+.. note::
+
+   ``edb.configuration.run(cfg)`` accepts an ``EdbConfigBuilder`` instance
+   directly and handles the serialization step internally.  You only need
+   ``cfg.to_dict()`` when you want to inspect the payload programmatically or
+   pass it to another API that expects a plain dictionary.
 
 Round-trip helpers
 ------------------
