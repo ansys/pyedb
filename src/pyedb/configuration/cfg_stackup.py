@@ -459,14 +459,34 @@ class CfgStackup(BaseModel):
         material: Optional[str] = None,
         fill_material: Optional[str] = None,
         thickness: Optional[Union[str, float]] = None,
+        **kwargs,
     ):
-        """Append a layer definition."""
+        """Append a layer definition.
+
+        Parameters
+        ----------
+        name : str
+            Layer name.
+        layer_type : str, optional
+            Layer type: ``"signal"`` or ``"dielectric"``.
+            Also accepted as ``type=`` for backwards compatibility.
+        material : str, optional
+            Layer material name.
+        fill_material : str, optional
+            Fill material for signal layers.
+        thickness : str or float, optional
+            Layer thickness, e.g. ``"35um"``.
+        """
+        # Accept legacy 'type=' spelling passed via **kwargs
+        if layer_type is None and "type" in kwargs:
+            layer_type = kwargs.pop("type")
         return self.add_layer_at_bottom(
             name,
             layer_type=layer_type,
             material=material,
             fill_material=fill_material,
             thickness=thickness,
+            **kwargs,
         )
 
     def add_layer_at_bottom(self, name, **kwargs):
@@ -478,13 +498,17 @@ class CfgStackup(BaseModel):
             Layer name.
         **kwargs
             Optional layer properties forwarded to :class:`CfgLayer`
-            (``layer_type``, ``material``, ``fill_material``, ``thickness``).
+            (``layer_type`` or ``type``, ``material``, ``fill_material``,
+            ``thickness``).
 
         Returns
         -------
         CfgLayer
             The newly created layer object.
         """
+        # Normalise legacy 'type' kwarg to 'layer_type'
+        if "type" in kwargs and "layer_type" not in kwargs:
+            kwargs["layer_type"] = kwargs.pop("type")
         layer = CfgLayer(name=name, **kwargs)
         self.layers.append(layer)
         return layer

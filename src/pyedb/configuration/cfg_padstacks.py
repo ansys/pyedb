@@ -236,6 +236,10 @@ class CfgPadstackDefinition(CfgBase):
         """
         return cls(**kwargs)
 
+    def to_dict(self) -> dict:
+        """Serialize the padstack definition, excluding ``None`` values."""
+        return self.model_dump(exclude_none=True, by_alias=False)
+
 
 class CfgPadstacks(CfgBase):
     """Collect padstack definitions and instances for serialization."""
@@ -490,8 +494,7 @@ class CfgPadstacks(CfgBase):
         >>> via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["top", "bot"])
         >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
         """
-        if kwargs.get("rotation") is not None:
-            return self.add_padstack_instance(**kwargs)
+        return self.add_padstack_instance(**kwargs)
 
     def to_dict(self) -> dict:
         """Serialize all configured padstack definitions and instances."""
