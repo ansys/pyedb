@@ -83,7 +83,7 @@ When a builder is created via ``edb.configuration.create_config_builder()`` it
 is bound to the live EDB session.  Each section exposes a ``get()`` (or
 ``get_layer`` / ``get_material`` / ``get_definition`` / ``get_instance``)
 helper that retrieves an *existing* database object and wraps it in the
-corresponding builder.  This avoids having to re-declare objects that already
+corresponding builder.  This avoids having to redeclare objects that already
 exist in the design.
 
 .. list-table::
