@@ -261,23 +261,20 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
+        shape = self.solder_ball_properties.get("shape")
+        if not shape:
+            return
         if self._pedb.grpc:
-            cp = self.pyedb_obj.component_property
+            cp = self.pyedb_obj.core.component_property
             solder_ball_prop = cp.solder_ball_property
-            shape = self.solder_ball_properties.get("shape")
-            if shape:
-                solder_ball_prop.shape = _solder_shape_mapping.get(shape, CoreSolderballShape.NO_SOLDERBALL)
+            solder_ball_prop.shape = _solder_shape_mapping.get(shape, CoreSolderballShape.NO_SOLDERBALL)
         else:
             # Use a mutable clone so SetSolderBallProperty does not raise
             # ReadOnlyModificationAttemptException on the live object.
             cp = self.pyedb_obj._get_component_property_clone()
             solder_ball_prop = cp.GetSolderBallProperty().Clone()
-            shape = self.solder_ball_properties.get("shape")
-            if shape:
-                snake_to_pascal = _get_snake_to_pascal()
-                solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
-            else:
-                return
+            snake_to_pascal = _get_snake_to_pascal()
+            solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
 
         if shape == "cylinder":
             diameter = self.solder_ball_properties["diameter"]
@@ -298,11 +295,30 @@ class CfgComponent(CfgBase):
             solder_ball_prop.height = self._pedb.value(self.solder_ball_properties["height"])
             solder_ball_prop.material_name = self.solder_ball_properties.get("material", "solder")
             cp.solder_ball_property = solder_ball_prop
-            self.pyedb_obj.core.component_property = cp.core
+            self.pyedb_obj.core.component_property = cp
+            # Apply orientation to IC die property if provided
+            orientation = self.solder_ball_properties.get("orientation")
+            if orientation and self.pyedb_obj.type.lower() == "ic":
+                ic_cp = self.pyedb_obj.core.component_property
+                ic_die_prop = ic_cp.die_property
+                ic_die_prop.die_orientation = _die_orientation_mapping.get(
+                    orientation, CoreDieOrientation.CHIP_DOWN
+                )
+                ic_cp.die_property = ic_die_prop
+                self.pyedb_obj.core.component_property = ic_cp
         else:
             solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
             solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
             cp.SetSolderBallProperty(solder_ball_prop)
+            # Apply orientation to IC die property if provided
+            orientation = self.solder_ball_properties.get("orientation")
+            if orientation and self.pyedb_obj.type.lower() == "ic":
+                snake_to_pascal = _get_snake_to_pascal()
+                ic_die_prop = cp.GetDieProperty().Clone()
+                ic_die_prop.SetOrientation(
+                    getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
+                )
+                cp.SetDieProperty(ic_die_prop)
             self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _retrieve_ic_die_properties_from_edb(self):
@@ -553,6 +569,7 @@ class CfgComponent(CfgBase):
         height: str = "100um",
         material: str = "solder",
         mid_diameter=None,
+        orientation: str = "chip_down",
     ):
         """Configure solder-ball geometry for this component.
 
@@ -570,12 +587,15 @@ class CfgComponent(CfgBase):
         mid_diameter : str or None, optional
             Mid-diameter for spheroid shape.  Defaults to *diameter* when
             *None*.
+        orientation : str, optional
+            Die orientation for IC components.  ``"chip_down"`` (default) or
+            ``"chip_up"``.
 
         Examples
         --------
         >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
         """
-        data = {"shape": shape, "diameter": diameter, "height": height, "material": material}
+        data = {"shape": shape, "diameter": diameter, "height": height, "material": material, "orientation": orientation}
         if shape == "spheroid":
             data["mid_diameter"] = mid_diameter or diameter
         self.solder_ball_properties = data
