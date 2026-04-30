@@ -45,8 +45,11 @@ _solder_shape_mapping = {
 
 _die_type_mapping = {
     "flip_chip": CoreDieType.FLIPCHIP,
+    "flipchip": CoreDieType.FLIPCHIP,
     "wire_bond": CoreDieType.WIREBOND,
+    "wirebond": CoreDieType.WIREBOND,
     "no_die": CoreDieType.NONE,
+    "none": CoreDieType.NONE,
 }
 
 _die_orientation_mapping = {
@@ -161,6 +164,8 @@ class CfgComponent(CfgBase):
         else:
             ic_die_prop = cp.GetDieProperty().Clone()
         die_type = self.ic_die_properties.get("type")
+        if die_type:
+            die_type = die_type.lower()
         if self._pedb.grpc:
             ic_die_prop.die_type = _die_type_mapping[die_type]
         else:
