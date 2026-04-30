@@ -1001,6 +1001,7 @@ class Configuration:
                             signal_nets.append(i.net_name)
 
                     cutout_params["signal_nets"] = signal_nets
+            cutout_params["open_cutout_at_end"] = False
             polygon_points = self._pedb.cutout(**cutout_params)
             if "pyedb_cutout" not in self._pedb.stackup.all_layers:
                 self._pedb.stackup.add_document_layer(name="pyedb_cutout")

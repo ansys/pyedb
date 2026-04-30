@@ -171,7 +171,7 @@ class CfgComponent(CfgBase):
         else:
             snake_to_pascal = _get_snake_to_pascal()
             ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
-        if not die_type == "no_die":
+        if die_type not in ("no_die", "none", None):
             orientation = self.ic_die_properties.get("orientation")
             if orientation:
                 if self._pedb.grpc:
@@ -298,6 +298,7 @@ class CfgComponent(CfgBase):
             solder_ball_prop.height = self._pedb.value(self.solder_ball_properties["height"])
             solder_ball_prop.material_name = self.solder_ball_properties.get("material", "solder")
             cp.solder_ball_property = solder_ball_prop
+            self.pyedb_obj.core.component_property = cp.core
         else:
             solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
             solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
@@ -308,12 +309,15 @@ class CfgComponent(CfgBase):
         temp = dict()
         cp = self.pyedb_obj
 
-        # ic_die_prop = cp.GetDieProperty().Clone()
-        # die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
-        temp["type"] = cp.ic_die_properties.die_type
-        if not temp["type"] == "no_die":
+        die_type = cp.ic_die_properties.die_type
+        # Default to flip_chip when the component has no die type configured,
+        # since the EDB API requires a valid die type to accept solder balls.
+        if die_type in ("no_die", "none", None):
+            die_type = "flip_chip"
+        temp["type"] = die_type
+        if die_type not in ("no_die", "none", None):
             temp["orientation"] = cp.ic_die_properties.die_orientation
-            if temp["type"] == "wire_bond":
+            if die_type == "wire_bond":
                 temp["height"] = str(cp.ic_die_properties.height)
         self.ic_die_properties = temp
 

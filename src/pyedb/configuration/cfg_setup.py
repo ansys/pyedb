@@ -44,7 +44,36 @@ _DISTRIBUTION_ALIASES = {
 }
 
 
+def _infer_distribution(step_or_count, distribution: str) -> str:
+    """Infer the correct distribution from *step_or_count* when the caller
+    has not explicitly overridden the default.
+
+    If *distribution* is still the sentinel default ``"linear_count"`` **and**
+    *step_or_count* looks like a frequency string (e.g. ``"0.5GHz"``,
+    ``"10MHz"``), switch automatically to ``"linear_scale"`` so that the value
+    is treated as a step size rather than a point count.
+    """
+    if distribution != "linear_count":
+        # Caller picked a distribution explicitly – honour it.
+        return distribution
+    if step_or_count is None:
+        return distribution
+    # Heuristic: if the value is a plain integer / float it is a count;
+    # if it is a string that contains a non-numeric character it is a
+    # frequency string (e.g. "0.5GHz", "10MHz").
+    if isinstance(step_or_count, (int, float)):
+        return distribution  # integer count → linear_count
+    try:
+        float(step_or_count)
+        return distribution  # pure numeric string → treat as count
+    except (TypeError, ValueError):
+        pass
+    # Any non-numeric string (unit suffix present) → step-based
+    return "linear_scale"
+
+
 def _add_inline_range(sweep, start, stop, step_or_count, distribution: str):
+    distribution = _infer_distribution(step_or_count, distribution)
     dist = _DISTRIBUTION_ALIASES.get(str(distribution).lower().replace("-", "_"), distribution)
     if dist == "single":
         sweep.frequencies.append(CfgFrequencies(start=start, stop=start, increment=1, distribution="single"))
