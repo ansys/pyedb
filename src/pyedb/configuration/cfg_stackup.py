@@ -170,6 +170,11 @@ class CfgLayer(BaseModel):
 
     model_config = {"populate_by_name": True}
 
+    @property
+    def type(self) -> Optional[str]:
+        """Alias for ``layer_type`` for backward compatibility."""
+        return self.layer_type
+
     def __init__(
         self,
         name: str | None = None,

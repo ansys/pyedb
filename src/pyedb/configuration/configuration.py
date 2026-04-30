@@ -1229,7 +1229,7 @@ class Configuration:
             data.update(self.cfg_data.variables.model_dump(exclude_none=True))
         if kwargs.get("stackup", False):
             self.get_stackup()
-            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True)
+            data["stackup"] = self.cfg_data.stackup.model_dump(exclude_none=True, by_alias=True)
         if kwargs.get("package_definitions", False):
             data["package_definitions"] = self.cfg_data.package_definitions.get_data_from_db()
         if kwargs.get("setups", False):
