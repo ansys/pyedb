@@ -201,7 +201,7 @@ class CfgTerminalInfo(CfgBase):
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
 
-        if kwargs.get("padstack"):
+        if "padstack" in kwargs:
             self.type = "padstack"
         elif "pin" in kwargs:
             self.type = "pin"
@@ -581,28 +581,38 @@ class CfgPorts:
 
     def add_coax_port(
         self,
-        name,
+        name: str = None,
         positive_terminal=None,
-        reference_designator=None,
+        reference_designator: str = None,
         impedance=None,
         padstack=None,
         net=None,
         pin=None,
+        net_list: list[str] = None,
     ):
         """Add a coaxial (via) port.
 
-        Provide exactly one of *positive_terminal*, *padstack*, *net*, or
-        *pin* to identify the positive connection point.
+        Provide exactly one of *positive_terminal*, *padstack*, *net*, *pin*,
+        or *net_list* to identify the positive connection point.
+
+        When *net_list* is provided together with *reference_designator* and a
+        live EDB session is attached, the method queries the component pins
+        directly from EDB, collects every padstack instance whose net name
+        appears in *net_list*, and creates one coax port per matching pin.
+        This path takes priority over all other terminal-selector arguments.
 
         Parameters
         ----------
-        name : str
-            Unique port name.
+        name : str, optional
+            Base port name.  When *net_list* resolves multiple pins the pin's
+            AEDT name is appended to make each port name unique, i.e.
+            ``"<name>_<aedt_name>"``.  When *name* is ``None`` the AEDT
+            padstack-instance name is used directly.
         positive_terminal : dict, optional
             Raw terminal-selector dictionary (any :class:`TerminalInfo` type).
         reference_designator : str, optional
-            Component reference designator.  Required when using *net* or
-            *pin* shortcuts.
+            Component reference designator.  Required when using *net*,
+            *pin*, or *net_list* shortcuts.
         impedance : float or str, optional
             Port impedance in ohms.  Default is ``50 Ω``.
         padstack : str, optional
@@ -614,24 +624,80 @@ class CfgPorts:
             **distributed**.
         pin : str, optional
             Pin-name shortcut.  A single named pin on *reference_designator*.
+        net_list : list of str, optional
+            List of net names.  When supplied together with
+            *reference_designator* and a live EDB session, all padstack
+            instances of the component whose net belongs to *net_list* are
+            discovered automatically and one coax port is created per pin.
+            This argument takes priority over *positive_terminal*, *padstack*,
+            *net*, and *pin*.
 
         Returns
         -------
-        CfgPort
-            The newly created port object.
+        CfgPort or list[CfgPort]
+            A single :class:`CfgPort` for all paths except the *net_list* EDB
+            discovery path, which returns a list of :class:`CfgPort` objects
+            (one per matching pin).
 
         Raises
         ------
         ValueError
             If *net* or *pin* is supplied without *reference_designator*, or
-            if no terminal selector is provided.
+            if *net_list* is supplied without *reference_designator*, or
+            if no terminal selector is provided at all.
+        RuntimeError
+            If *net_list* + *reference_designator* discovery is requested but
+            no live EDB session is attached.
 
         Examples
         --------
         >>> cfg.ports.add_coax_port("coax_via", padstack="via_A1")
         >>> cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
         >>> cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
+        >>> # Discover all pins of U1 whose net is PCIe_TX0_P or PCIe_TX0_N:
+        >>> cfg.ports.add_coax_port(
+        ...     "coax_pcie",
+        ...     reference_designator="U1",
+        ...     net_list=["PCIe_TX0_P", "PCIe_TX0_N"],
+        ... )
         """
+        # ------------------------------------------------------------------
+        # net_list + reference_designator path: EDB-assisted pin discovery
+        # ------------------------------------------------------------------
+        if net_list is not None:
+            if not reference_designator:
+                raise ValueError("'reference_designator' is required when 'net_list' is supplied.")
+            if self._pedb is None:
+                raise RuntimeError(
+                    "A live EDB session is required for net_list discovery. "
+                    "Use edb.configuration.create_config_builder() to obtain a session-aware builder."
+                )
+            component = self._pedb.components.instances.get(reference_designator)
+            if component is None:
+                raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
+            created_ports = []
+            for pin_name, pin in component.pins.items():
+                pin_net = pin.net_name
+                if pin_net in net_list:
+                    if name is not None:
+                        port_name = f"{name}_{pin_name}"
+                    else:
+                        port_name = pin_name
+                    port = CfgPort(
+                        self._pedb,
+                        name=port_name,
+                        type="coax",
+                        positive_terminal={"pin": pin_name, "reference_designator": reference_designator},
+                        reference_designator=reference_designator,
+                        impedance=impedance,
+                    )
+                    self.ports.append(port)
+                    created_ports.append(port)
+            return created_ports
+
+        # ------------------------------------------------------------------
+        # Standard single-port paths
+        # ------------------------------------------------------------------
         if padstack is not None:
             positive_terminal = {"padstack": padstack}
         elif net is not None:
@@ -643,7 +709,7 @@ class CfgPorts:
                 raise ValueError("'reference_designator' is required when 'pin' is supplied.")
             positive_terminal = {"pin": pin, "reference_designator": reference_designator}
         elif positive_terminal is None:
-            raise ValueError("Provide one of: positive_terminal, padstack, net, or pin.")
+            raise ValueError("Provide one of: positive_terminal, padstack, net, pin, or net_list.")
         port = CfgPort(
             self._pedb,
             name=name,

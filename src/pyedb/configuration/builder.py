@@ -162,7 +162,7 @@ class EdbConfigBuilder:
         self.padstacks = CfgPadstacks.create(pedb=pedb)
         self.pin_groups = CfgPinGroups(pedb=pedb)
         self.terminals = CfgTerminals(terminals=[])
-        self.ports = CfgPorts()
+        self.ports = CfgPorts(pedb=pedb)
         self.sources = CfgSources()
         self.probes = CfgProbes()
         self.setups = CfgSetups()
