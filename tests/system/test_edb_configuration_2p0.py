@@ -1971,3 +1971,41 @@ class TestOperations(BaseTestClass):
         c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
         assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close(terminate_rpc_session=False)
+
+    def test_cfg_builder_1(self):
+        edbapp = self.edb_examples.get_si_verse()
+        signal_nets = ["PCIe_Gen4_RX0_P",
+                       "PCIe_Gen4_RX0_N",
+                       "PCIe_Gen4_RX1_P",
+                       "PCIe_Gen4_RX1_N",
+                       "PCIe_Gen4_RX2_P",
+                       "PCIe_Gen4_RX2_N",
+                       "PCIe_Gen4_RX3_P",
+                       "PCIe_Gen4_RX3_N"
+                       ]
+
+        config_builder = edbapp.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(signal_nets=config_builder.nets.signal_nets,
+                                             reference_nets=config_builder.nets.reference_nets,
+                                             extent_type="ConvexHull",
+                                             expansion_size=3e-3)
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        component = config_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", diameter="300um", height="300um")
+        config_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        edbapp.configuration.run(config_builder)
+        assert len(edbapp.nets.nets) == 10
+        assert len(edbapp.ports) == 8
+        # assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
+        assert edbapp.components["U1"].component_property.solder_ball_property.diameter == "300um"
+        assert edbapp.components["U1"].component_property.solder_ball_property.height == "300um"
+        bbox = edbapp.get_bounding_box()
+        assert pytest.approx(bbox[0][0], 5) == 0.010
+        assert pytest.approx(bbox[0][1], 5) == 0.0216
+        assert pytest.approx(bbox[1][0], 5) == 0.0751
+        assert pytest.approx(bbox[1][1], 5) == 0.0481
+        edbapp.close(terminate_rpc_session=False)
+        pass
