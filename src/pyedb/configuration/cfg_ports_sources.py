@@ -612,9 +612,7 @@ class CfgPorts:
                 raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
             pos_pins = [p_obj for p_obj in comp.pins.values() if p_obj.net_name == positive_net]
             if not pos_pins:
-                raise ValueError(
-                    f"No pins found for net '{positive_net}' on component '{reference_designator}'."
-                )
+                raise ValueError(f"No pins found for net '{positive_net}' on component '{reference_designator}'.")
             pos_pin = pos_pins[0]
             if name is None:
                 name = f"Port_{reference_designator}_{positive_net}_{pos_pin.component_pin}"
@@ -641,9 +639,7 @@ class CfgPorts:
                     f"near pin '{pos_pin.component_pin}' on component '{reference_designator}'."
                 )
             neg_pin = ref_pins[0]
-            negative_terminal = CfgTerminalInfo.pin(
-                neg_pin.component_pin, reference_designator=reference_designator
-            )
+            negative_terminal = CfgTerminalInfo.pin(neg_pin.component_pin, reference_designator=reference_designator)
         elif positive_net is not None and self._pedb is not None:
             if reference_designator is None:
                 raise ValueError("'reference_designator' is required when 'positive_net' is provided.")
@@ -652,9 +648,7 @@ class CfgPorts:
                 raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
             pos_pins = [p_obj for p_obj in comp.pins.values() if p_obj.net_name == positive_net]
             if not pos_pins:
-                raise ValueError(
-                    f"No pins found for net '{positive_net}' on component '{reference_designator}'."
-                )
+                raise ValueError(f"No pins found for net '{positive_net}' on component '{reference_designator}'.")
             pos_pin = pos_pins[0]
             if name is None:
                 name = f"Port_{reference_designator}_{positive_net}_{pos_pin.component_pin}"

@@ -2043,8 +2043,7 @@ class TestOperations(BaseTestClass):
         config_builder.pin_groups.add(reference_designator="U1", nets="GND")
         config_builder.pin_groups.add(reference_designator="U1", nets=config_builder.nets.signal_nets)
         for sign_net in config_builder.nets.signal_nets:
-            config_builder.ports.add_circuit_port(reference_designator="U1", positive_net=sign_net,
-                                                  negative_net="GND")
+            config_builder.ports.add_circuit_port(reference_designator="U1", positive_net=sign_net, negative_net="GND")
         edbapp.configuration.run(config_builder)
         assert len(edbapp.ports) == 8
         assert "Port_U1_PCIe_Gen4_RX0_P_AP26" in edbapp.ports
