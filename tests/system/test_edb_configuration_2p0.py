@@ -2016,7 +2016,7 @@ class TestOperations(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg_builder_2(self):
-        #  test wil circuit port and pingroup
+        #  test with circuit port and pin group
         edbapp = self.edb_examples.get_si_verse()
         signal_nets = [
             "PCIe_Gen4_RX0_P",
