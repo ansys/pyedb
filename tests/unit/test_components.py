@@ -37,6 +37,7 @@ pytestmark = [pytest.mark.unit, pytest.mark.no_licence]
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_pedb(grpc: bool = True):
     """Return a minimal fake pedb object."""
     pedb = MagicMock()
@@ -59,6 +60,7 @@ def _make_pyedb_obj(comp_type: str = "ic"):
 # ---------------------------------------------------------------------------
 # CfgComponent – construction
 # ---------------------------------------------------------------------------
+
 
 class TestCfgComponentConstruction:
     def test_part_type_is_lowercased(self):
@@ -117,6 +119,7 @@ class TestCfgComponentConstruction:
 # ---------------------------------------------------------------------------
 # CfgComponent – set_parameters_to_edb
 # ---------------------------------------------------------------------------
+
 
 class TestCfgComponentSetParametersToEdb:
     def test_sets_type_on_pyedb_obj(self):
@@ -203,12 +206,18 @@ class TestCfgComponentSetParametersToEdb:
 # CfgComponent – _set_solder_ball_properties_to_edb (grpc path)
 # ---------------------------------------------------------------------------
 
+
 class TestCfgComponentSolderBallGrpc:
     def test_cylinder_sets_shape_and_diameter(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={"shape": "cylinder", "diameter": "150um", "height": "100um"})
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={"shape": "cylinder", "diameter": "150um", "height": "100um"},
+        )
         c._set_solder_ball_properties_to_edb()
         cp = obj.component_property
         sbp = cp.solder_ball_property
@@ -217,8 +226,7 @@ class TestCfgComponentSolderBallGrpc:
     def test_no_shape_raises_value_error(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={})
+        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic", solder_ball_properties={})
         # grpc path: shape=None falls through to the else → ValueError
         with pytest.raises(ValueError, match="Solderball shape must be either cylinder or spheroid"):
             c._set_solder_ball_properties_to_edb()
@@ -226,13 +234,18 @@ class TestCfgComponentSolderBallGrpc:
     def test_spheroid_uses_mid_diameter(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={
-                             "shape": "spheroid",
-                             "diameter": "150um",
-                             "mid_diameter": "130um",
-                             "height": "100um",
-                         })
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={
+                "shape": "spheroid",
+                "diameter": "150um",
+                "mid_diameter": "130um",
+                "height": "100um",
+            },
+        )
         c._set_solder_ball_properties_to_edb()
         cp = obj.component_property
         sbp = cp.solder_ball_property
@@ -241,13 +254,18 @@ class TestCfgComponentSolderBallGrpc:
     def test_material_is_set(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={
-                             "shape": "cylinder",
-                             "diameter": "150um",
-                             "height": "100um",
-                             "material": "copper",
-                         })
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={
+                "shape": "cylinder",
+                "diameter": "150um",
+                "height": "100um",
+                "material": "copper",
+            },
+        )
         c._set_solder_ball_properties_to_edb()
         cp = obj.component_property
         sbp = cp.solder_ball_property
@@ -256,12 +274,17 @@ class TestCfgComponentSolderBallGrpc:
     def test_height_is_set(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={
-                             "shape": "cylinder",
-                             "diameter": "150um",
-                             "height": "100um",
-                         })
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={
+                "shape": "cylinder",
+                "diameter": "150um",
+                "height": "100um",
+            },
+        )
         c._set_solder_ball_properties_to_edb()
         cp = obj.component_property
         sbp = cp.solder_ball_property
@@ -272,12 +295,17 @@ class TestCfgComponentSolderBallGrpc:
         obj = _make_pyedb_obj("ic")
         # In the current implementation, non-cylinder/spheroid shape is assigned via mapping
         # and then the code reaches the else branch that raises ValueError
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={
-                             "shape": "unknown_shape",
-                             "diameter": "150um",
-                             "height": "100um",
-                         })
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={
+                "shape": "unknown_shape",
+                "diameter": "150um",
+                "height": "100um",
+            },
+        )
         with pytest.raises((ValueError, KeyError)):
             c._set_solder_ball_properties_to_edb()
 
@@ -285,6 +313,7 @@ class TestCfgComponentSolderBallGrpc:
 # ---------------------------------------------------------------------------
 # CfgComponent – retrieve_parameters_from_edb
 # ---------------------------------------------------------------------------
+
 
 class TestCfgComponentRetrieve:
     def _make_ic_obj(self):
@@ -378,6 +407,7 @@ class TestCfgComponentRetrieve:
 # ---------------------------------------------------------------------------
 # CfgComponents (collection)
 # ---------------------------------------------------------------------------
+
 
 class TestCfgComponents:
     def test_init_empty(self):
