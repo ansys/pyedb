@@ -526,46 +526,140 @@ class CfgPorts:
 
     def add_circuit_port(
         self,
-        name,
-        positive_terminal,
+        name=None,
+        positive_terminal=None,
         negative_terminal=None,
         reference_designator=None,
         impedance=None,
         distributed=False,
+        positive_net=None,
+        negative_net=None,
     ):
         """Add a lumped circuit port between two terminals.
 
+        **Resolution priority** – when both *positive_net* and *negative_net*
+        are supplied they **always take priority** over *positive_terminal* and
+        *negative_terminal*, even if those are also provided.
+
         Parameters
         ----------
-        name : str
-            Unique port name.
-        positive_terminal : dict
+        name : str, optional
+            Unique port name.  When omitted and *positive_net* is supplied the
+            name is auto-generated as
+            ``"Port_{reference_designator}_{positive_net}_{pin_name}"``.
+        positive_terminal : dict, optional
             Terminal-selector dictionary for the positive terminal.
+            Ignored when *positive_net* is supplied.
         negative_terminal : dict, optional
             Terminal-selector dictionary for the negative (reference) terminal.
             When *None* an empty dictionary is used (solver assigns
-            automatically).
+            automatically).  Ignored when *negative_net* is supplied.
         reference_designator : str, optional
-            Component reference designator.
+            Component reference designator.  Required when *positive_net* or
+            *negative_net* is used.
         impedance : float or str, optional
             Port impedance in ohms.  Default is ``50 Ω``.
         distributed : bool, optional
             Create one port per pin when ``True``.  Default is ``False``.
+        positive_net : str, optional
+            Net name for the positive terminal.  When provided together with
+            *reference_designator* and a live EDB session, the first pin found
+            on that net on the component is used as the positive terminal.
+            **This argument takes priority over** *positive_terminal*.
+        negative_net : str, optional
+            Net name for the negative terminal.  When provided, the closest
+            pin on that net that does not already carry a terminal assignment
+            is resolved via
+            :meth:`PadstackInstance.get_reference_pins
+            <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance.get_reference_pins>`
+            with ``max_limit=1``.
+            **This argument takes priority over** *negative_terminal*.
 
         Returns
         -------
         CfgPort
             The newly created port object.
 
+        Raises
+        ------
+        ValueError
+            If *positive_net* or *negative_net* is supplied but
+            *reference_designator* is missing, the component is not found, or
+            no matching (terminal-free) pins exist.
+
         Examples
         --------
         >>> cfg.ports.add_circuit_port(
         ...     "port_U1",
-        ...     positive_terminal=TerminalInfo.pin_group("pg_VDD"),
-        ...     negative_terminal=TerminalInfo.pin_group("pg_GND"),
+        ...     positive_terminal=CfgTerminalInfo.pin_group("pg_VDD"),
+        ...     negative_terminal=CfgTerminalInfo.pin_group("pg_GND"),
         ...     impedance=50,
         ... )
+        >>> # positive_net / negative_net take priority – terminal args are ignored
+        >>> cfg.ports.add_circuit_port(
+        ...     "port_U1_auto",
+        ...     reference_designator="U1",
+        ...     positive_net="VDD",
+        ...     negative_net="GND",
+        ... )
         """
+        if positive_net is not None and negative_net is not None and self._pedb is not None:
+            # Net-based resolution takes priority over any supplied terminal dicts
+            if reference_designator is None:
+                raise ValueError("'reference_designator' is required when 'positive_net' is provided.")
+            comp = self._pedb.components.instances.get(reference_designator)
+            if comp is None:
+                raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
+            pos_pins = [p_obj for p_obj in comp.pins.values() if p_obj.net_name == positive_net]
+            if not pos_pins:
+                raise ValueError(
+                    f"No pins found for net '{positive_net}' on component '{reference_designator}'."
+                )
+            pos_pin = pos_pins[0]
+            if name is None:
+                name = f"Port_{reference_designator}_{positive_net}_{pos_pin.component_pin}"
+            positive_terminal = CfgTerminalInfo.pin(pos_pin.component_pin, reference_designator=reference_designator)
+
+            ref_pins = pos_pin.get_reference_pins(
+                reference_net=negative_net,
+                max_limit=1,
+                component_only=True,
+            )
+            # Filter out pins that already have a terminal assigned
+            ref_pins = [p for p in ref_pins if p.terminal is None]
+            if not ref_pins:
+                # Retry without the terminal filter – widen search to whole layout
+                ref_pins = pos_pin.get_reference_pins(
+                    reference_net=negative_net,
+                    max_limit=1,
+                    component_only=False,
+                )
+                ref_pins = [p for p in ref_pins if p.terminal is None]
+            if not ref_pins:
+                raise ValueError(
+                    f"No available (terminal-free) pins found for negative net '{negative_net}' "
+                    f"near pin '{pos_pin.component_pin}' on component '{reference_designator}'."
+                )
+            neg_pin = ref_pins[0]
+            negative_terminal = CfgTerminalInfo.pin(
+                neg_pin.component_pin, reference_designator=reference_designator
+            )
+        elif positive_net is not None and self._pedb is not None:
+            if reference_designator is None:
+                raise ValueError("'reference_designator' is required when 'positive_net' is provided.")
+            comp = self._pedb.components.instances.get(reference_designator)
+            if comp is None:
+                raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
+            pos_pins = [p_obj for p_obj in comp.pins.values() if p_obj.net_name == positive_net]
+            if not pos_pins:
+                raise ValueError(
+                    f"No pins found for net '{positive_net}' on component '{reference_designator}'."
+                )
+            pos_pin = pos_pins[0]
+            if name is None:
+                name = f"Port_{reference_designator}_{positive_net}_{pos_pin.component_pin}"
+            positive_terminal = CfgTerminalInfo.pin(pos_pin.component_pin, reference_designator=reference_designator)
+
         port = CfgPort(
             self._pedb,
             name=name,
