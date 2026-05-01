@@ -1341,7 +1341,10 @@ class Components(object):
                 self._pedb.materials.add_conductor_material(name=material_name, conductivity=1e7)
             solder_ball_prop.material_name = material_name
         cmp_property.solder_ball_property = solder_ball_prop
+        cmp.component_property = cmp_property
 
+        # Re-fetch cmp_property after write-back to avoid operating on a stale/null gRPC object
+        cmp_property = cmp.component_property
         port_prop = cmp_property.port_property
         port_prop.reference_height = self._pedb._value_setter(reference_height)
         port_prop.reference_size_auto = auto_reference_size

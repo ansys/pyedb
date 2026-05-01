@@ -90,6 +90,9 @@ class ComponentProperty:
         Only called if normal attribute lookup fails on self.
         Delegates to self.core.
         """
+        # Unwrap our SolderBallProperty wrapper before passing to core
+        if name == "solder_ball_property" and isinstance(value, SolderBallProperty):
+            value = value._core
         setattr(self.core, name, value)
 
     @property
@@ -107,6 +110,9 @@ class ComponentProperty:
 
     @solder_ball_property.setter
     def solder_ball_property(self, value):
+        # Unwrap our SolderBallProperty wrapper if needed
+        if isinstance(value, SolderBallProperty):
+            value = value._core
         self.core.solder_ball_property = value
 
 
@@ -1606,7 +1612,10 @@ class SolderBallProperty:
         return "unknown"
 
     @shape.setter
-    def shape(self, value: str):
+    def shape(self, value):
+        if isinstance(value, SolderballShape):
+            self._write(lambda sbp: setattr(sbp, "shape", value))
+            return
         _map = {
             "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
             "spheroid": SolderballShape.SOLDERBALL_SPHEROID,
