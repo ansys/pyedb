@@ -568,7 +568,13 @@ class CfgComponent(CfgBase):
         --------
         >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
         """
-        data = {"shape": shape, "diameter": diameter, "height": height, "material": material, "orientation": orientation}
+        data = {
+            "shape": shape,
+            "diameter": diameter,
+            "height": height,
+            "material": material,
+            "orientation": orientation,
+        }
         if shape == "spheroid":
             data["mid_diameter"] = mid_diameter or diameter
         self.solder_ball_properties = data

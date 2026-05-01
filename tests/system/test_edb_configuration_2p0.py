@@ -1975,23 +1975,26 @@ class TestOperations(BaseTestClass):
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg_builder_1(self):
         edbapp = self.edb_examples.get_si_verse()
-        signal_nets = ["PCIe_Gen4_RX0_P",
-                       "PCIe_Gen4_RX0_N",
-                       "PCIe_Gen4_RX1_P",
-                       "PCIe_Gen4_RX1_N",
-                       "PCIe_Gen4_RX2_P",
-                       "PCIe_Gen4_RX2_N",
-                       "PCIe_Gen4_RX3_P",
-                       "PCIe_Gen4_RX3_N"
-                       ]
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
 
         config_builder = edbapp.configuration.create_config_builder()
         config_builder.nets.add_signal_nets(signal_nets)
         config_builder.nets.add_reference_nets(["GND"])
-        config_builder.operations.add_cutout(signal_nets=config_builder.nets.signal_nets,
-                                             reference_nets=config_builder.nets.reference_nets,
-                                             extent_type="ConvexHull",
-                                             expansion_size=3e-3)
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
         setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
         setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
         component = config_builder.components.get("U1")
