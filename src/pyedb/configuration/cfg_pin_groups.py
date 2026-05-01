@@ -179,11 +179,17 @@ class CfgPinGroups:
                                 "A pin group requires at least 2 pins."
                             )
                             continue
-                        pg = CfgPinGroup(self._pedb, name=pg_name, reference_designator=reference_designator,
-                                         pins=resolved_pins, net=net_name)
+                        pg = CfgPinGroup(
+                            self._pedb,
+                            name=pg_name,
+                            reference_designator=reference_designator,
+                            pins=resolved_pins,
+                            net=net_name,
+                        )
                     else:
-                        pg = CfgPinGroup(self._pedb, name=pg_name, reference_designator=reference_designator,
-                                         net=net_name)
+                        pg = CfgPinGroup(
+                            self._pedb, name=pg_name, reference_designator=reference_designator, net=net_name
+                        )
                     self.pin_groups.append(pg)
                     created.append(pg)
                 return created
@@ -196,9 +202,7 @@ class CfgPinGroups:
                         raise KeyError(f"Component '{reference_designator}' not found in the EDB layout.")
                     pins = [p for p, obj in comp.pins.items() if obj.net_name == net_name]
                     if not pins:
-                        raise ValueError(
-                            f"No pins found for net '{net_name}' on component '{reference_designator}'."
-                        )
+                        raise ValueError(f"No pins found for net '{net_name}' on component '{reference_designator}'.")
                     if len(pins) <= 1:
                         self._pedb.logger.warning(
                             f"Skipping pin group '{name}': only {len(pins)} pin(s) found "
@@ -206,7 +210,9 @@ class CfgPinGroups:
                             "A pin group requires at least 2 pins."
                         )
                         return None
-                    pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, pins=pins, net=net_name)
+                    pg = CfgPinGroup(
+                        self._pedb, name=name, reference_designator=reference_designator, pins=pins, net=net_name
+                    )
                 else:
                     pg = CfgPinGroup(self._pedb, name=name, reference_designator=reference_designator, net=net_name)
                 self.pin_groups.append(pg)
