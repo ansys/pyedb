@@ -583,17 +583,21 @@ class Component:
         str
             Solder balls shapes, ``none``, ``cylinder`` or ``spheroid``.
         """
-        if not self.component_property.solder_ball_property.is_null:
-            shape = self.component_property.solder_ball_property.shape
-            if shape == SolderballShape.NO_SOLDERBALL:
-                return "none"
-            elif shape == SolderballShape.SOLDERBALL_CYLINDER:
-                return "cylinder"
-            elif shape == SolderballShape.SOLDERBALL_SPHEROID:
-                return "spheroid"
-            elif shape == SolderballShape.UNKNOWN_SOLDERBALL_SHAPE:
-                return "unknown"
-        return None
+        sbp = self.component_property.solder_ball_property
+        if sbp.is_null:
+            return None
+        shape = sbp.shape
+        # SolderBallProperty wrapper already returns a string; handle both str and enum
+        if isinstance(shape, str):
+            return shape if shape != "unknown" else "unknown"
+        # Fallback for raw SolderballShape enum
+        if shape == SolderballShape.NO_SOLDERBALL:
+            return "none"
+        elif shape == SolderballShape.SOLDERBALL_CYLINDER:
+            return "cylinder"
+        elif shape == SolderballShape.SOLDERBALL_SPHEROID:
+            return "spheroid"
+        return "unknown"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):

@@ -1323,7 +1323,10 @@ class Components(object):
         if cmp.core.component_type == CoreComponentType.IC:
             ic_die_prop = cmp_property.die_property
             ic_die_prop.die_type = CoreDieType.FLIPCHIP
-            if not cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+            # Top layer → chip_down (die faces down toward board), bottom layer → chip_up
+            if cmp.placement_layer == list(self._pedb.stackup.layers.keys())[0]:
+                chip_orientation = "chip_down"
+            else:
                 chip_orientation = "chip_up"
             if chip_orientation.lower() == "chip_up":
                 ic_die_prop.die_orientation = CoreDieOrientation.CHIP_UP
