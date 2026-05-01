@@ -1999,13 +1999,12 @@ class TestOperations(BaseTestClass):
         edbapp.configuration.run(config_builder)
         assert len(edbapp.nets.nets) == 10
         assert len(edbapp.ports) == 8
-        # assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
-        assert edbapp.components["U1"].component_property.solder_ball_property.diameter == "300um"
-        assert edbapp.components["U1"].component_property.solder_ball_property.height == "300um"
+        assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
+        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (300e-3, 300e-3)
+        assert edbapp.components["U1"].component_property.solder_ball_property.height == 300e-3
         bbox = edbapp.get_bounding_box()
         assert pytest.approx(bbox[0][0], 5) == 0.010
         assert pytest.approx(bbox[0][1], 5) == 0.0216
         assert pytest.approx(bbox[1][0], 5) == 0.0751
         assert pytest.approx(bbox[1][1], 5) == 0.0481
         edbapp.close(terminate_rpc_session=False)
-        pass
