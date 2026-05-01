@@ -2000,8 +2000,8 @@ class TestOperations(BaseTestClass):
         assert len(edbapp.nets.nets) == 10
         assert len(edbapp.ports) == 8
         assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
-        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (300e-3, 300e-3)
-        assert edbapp.components["U1"].component_property.solder_ball_property.height == 300e-3
+        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (300e-6, 300e-6)
+        assert edbapp.components["U1"].component_property.solder_ball_property.height == 300e-6
         bbox = edbapp.get_bounding_box()
         assert pytest.approx(bbox[0][0], 5) == 0.010
         assert pytest.approx(bbox[0][1], 5) == 0.0216
