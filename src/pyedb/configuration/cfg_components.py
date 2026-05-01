@@ -609,6 +609,7 @@ class CfgComponent(CfgBase):
             # Parse diameter value (strip unit suffix) to compute 2/3 * diameter
             try:
                 import re as _re
+
                 m = _re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
                 num = float(m.group(1))
                 unit = m.group(2) or "um"

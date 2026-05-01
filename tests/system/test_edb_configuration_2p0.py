@@ -2051,7 +2051,7 @@ class TestOperations(BaseTestClass):
         assert edbapp.setups["Test_HFSS"].sweeps["Test_Sweep"].frequency_string[0] == "LIN 1GHz 10GHz 0.5GHz"
         edbapp.close(terminate_rpc_session=False)
 
-    @ pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg_builder_3(self):
         # Test with solder ball cox ports but discoevring solder balls diameters
         edbapp = self.edb_examples.get_si_verse()
@@ -2064,7 +2064,7 @@ class TestOperations(BaseTestClass):
             "PCIe_Gen4_RX2_N",
             "PCIe_Gen4_RX3_P",
             "PCIe_Gen4_RX3_N",
-            ]
+        ]
 
         config_builder = edbapp.configuration.create_config_builder()
         config_builder.nets.add_signal_nets(signal_nets)
@@ -2084,7 +2084,9 @@ class TestOperations(BaseTestClass):
         assert len(edbapp.nets.nets) == 10
         assert len(edbapp.ports) == 8
         assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
-        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (pytest.approx(500e-6, 5),
-                                                                                                  pytest.approx(500e-6, 5))
+        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (
+            pytest.approx(500e-6, 5),
+            pytest.approx(500e-6, 5),
+        )
         assert edbapp.components["U1"].component_property.solder_ball_property.height == pytest.approx(333e-6, 5)
         edbapp.close(terminate_rpc_session=False)
