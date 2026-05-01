@@ -538,11 +538,12 @@ class CfgComponent(CfgBase):
     def set_solder_ball_properties(
         self,
         shape: str = "cylinder",
-        diameter: str = "150um",
-        height: str = "100um",
+        diameter: str = None,
+        height: str = None,
         material: str = "solder",
         mid_diameter=None,
         orientation: str = "chip_down",
+        reference_designator: str = None,
     ):
         """Configure solder-ball geometry for this component.
 
@@ -552,9 +553,13 @@ class CfgComponent(CfgBase):
             Solder-ball shape.  ``"cylinder"`` (default), ``"spheroid"``, or
             ``"no_solder_ball"``.
         diameter : str, optional
-            Outer diameter, e.g. ``"150um"``.  Default is ``"150um"``.
+            Outer diameter, e.g. ``"150um"``.  When *None* and a live EDB
+            session is attached the smallest pin pad size found on the
+            component is used automatically.  Falls back to ``"150um"`` if
+            the pad size cannot be determined.
         height : str, optional
-            Solder-ball height, e.g. ``"100um"``.  Default is ``"100um"``.
+            Solder-ball height, e.g. ``"100um"``.  When *None* the height is
+            set to ``2 * diameter / 3``.
         material : str, optional
             Material name.  Default is ``"solder"``.
         mid_diameter : str or None, optional
@@ -563,11 +568,54 @@ class CfgComponent(CfgBase):
         orientation : str, optional
             Die orientation for IC components.  ``"chip_down"`` (default) or
             ``"chip_up"``.
+        reference_designator : str, optional
+            Override the component reference designator used when querying pin
+            sizes from EDB.  When *None* ``self.reference_designator`` is
+            used.
 
         Examples
         --------
         >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        >>> u1.set_solder_ball_properties()  # auto-sizes from pin pads
         """
+        refdes = reference_designator or self.reference_designator
+
+        if diameter is None:
+            diameter = "150um"  # safe default
+            if self._pedb is not None and refdes is not None:
+                try:
+                    comp = self._pedb.components.instances.get(refdes)
+                    if comp is not None:
+                        min_size = None
+                        placement_layer = comp.placement_layer
+                        for pin in comp.pins.values():
+                            try:
+                                bbox = pin.bounding_box
+                                # bbox = ((x1,y1),(x2,y2))
+                                w = abs(bbox[1][0] - bbox[0][0])
+                                h = abs(bbox[1][1] - bbox[0][1])
+                                size = min(w, h)
+                                if size > 0 and (min_size is None or size < min_size):
+                                    min_size = size
+                            except Exception:
+                                continue
+                        if min_size is not None and min_size > 0:
+                            # Convert metres to a string like "150um"
+                            diameter = f"{min_size * 1e6:.6g}um"
+                except Exception:
+                    pass  # keep the safe default
+
+        if height is None:
+            # Parse diameter value (strip unit suffix) to compute 2/3 * diameter
+            try:
+                import re as _re
+                m = _re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
+                num = float(m.group(1))
+                unit = m.group(2) or "um"
+                height = f"{num * 2 / 3:.6g}{unit}"
+            except Exception:
+                height = "100um"
+
         data = {
             "shape": shape,
             "diameter": diameter,
