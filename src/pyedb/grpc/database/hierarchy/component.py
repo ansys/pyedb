@@ -327,7 +327,7 @@ class Component:
 
         """
         cp = ComponentProperty(self.core.component_property)
-        super(ComponentProperty, cp).__setattr__("_component", self)
+        object.__setattr__(cp, "_component", self)
         return cp
 
     @component_property.setter
