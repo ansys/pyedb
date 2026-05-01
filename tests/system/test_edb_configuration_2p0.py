@@ -1972,6 +1972,7 @@ class TestOperations(BaseTestClass):
         assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config("use_grpc"), reason="Not tested in dotnet")
     def test_cfg_builder_1(self):
         edbapp = self.edb_examples.get_si_verse()
         signal_nets = ["PCIe_Gen4_RX0_P",
