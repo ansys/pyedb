@@ -30,9 +30,8 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class BaseTestClass:
-    @classmethod
     @pytest.fixture(scope="class", autouse=True)
-    def setup_class(cls, request, get_edb_examples):
+    def setup_class(self, request, get_edb_examples):
         # Set up the EDB app once per class
         # Finalizer to close the EDB app after all tests
         yield

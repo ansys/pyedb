@@ -438,7 +438,6 @@ class TestClass(BaseTestClass):
         assert len(rlc_list) == 10
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1")
     def test_components_get_component_placement_vector(self):
         """Get the placement vector between 2 components."""
         target_path4 = self.edb_examples.copy_test_files_into_local_folder("TEDB/Package.aedb")[0]
