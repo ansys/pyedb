@@ -214,10 +214,6 @@ class TestClass(BaseTestClass):
         assert ustrip.width == 300e-6
         assert ustrip.impedance == 37.52
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
@@ -235,10 +231,6 @@ class TestClass(BaseTestClass):
         assert patch_antenna.length == 0.03337
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_circular_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
@@ -250,10 +242,6 @@ class TestClass(BaseTestClass):
         assert patch_antenna.radius == 0.0174
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_triangular_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
