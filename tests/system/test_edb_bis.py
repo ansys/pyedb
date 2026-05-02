@@ -41,7 +41,7 @@ class TestClass:
         """Create EDB."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         assert edb
@@ -52,7 +52,7 @@ class TestClass:
         """Create EDB without path."""
         import time
 
-        edbapp_without_path = Edb(edbversion=desktop_version, isreadonly=False, grpc=GRPC)
+        edbapp_without_path = Edb(version=desktop_version, isreadonly=False, grpc=GRPC)
         time.sleep(2)
         edbapp_without_path.close(terminate_rpc_session=False)
 
@@ -62,7 +62,7 @@ class TestClass:
 
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable(variable_name="var1", variable_value=0.01)
@@ -95,7 +95,7 @@ class TestClass:
         """Add a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         if edb.grpc:
@@ -119,7 +119,7 @@ class TestClass:
         """Add a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
@@ -134,7 +134,7 @@ class TestClass:
         """Change a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
@@ -163,7 +163,7 @@ class TestClass:
         """Change a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
@@ -175,7 +175,7 @@ class TestClass:
         """Create padstack instances."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
 
