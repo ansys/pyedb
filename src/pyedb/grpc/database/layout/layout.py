@@ -492,14 +492,7 @@ class PrimitivesQuery:
 
     @deprecate_argument_name({"layer_name": "layer", "net_list": "nets"})
     def get_polygons_by_layer(self, layer, nets=None) -> list[Polygon]:
-        layer_name_set = self._as_filter_set(layer)
-        net_name_set = self._as_filter_set(nets)
-        return [
-            primitive
-            for primitive in self.polygons
-            if (layer_name_set is None or primitive.layer_name in layer_name_set)
-            and (net_name_set is None or primitive.net_name in net_name_set)
-        ]
+        return self.filter_primitives(layer_name=layer, net_name=nets, prim_type="polygon")
 
     def get_polygon_bounding_box(self, polygon) -> list[float] | None:
         """Retrieve a polygon bounding box."""

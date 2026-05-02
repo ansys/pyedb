@@ -105,7 +105,6 @@ class TestClass(BaseTestClass):
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Not yet implemented in grpc. Waiting for DotNet validation first")
     def test_primitive_queries(self):
         edbapp = self.edb_examples.get_si_verse()
         assert len(edbapp.layout.primitives) == 2111
