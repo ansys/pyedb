@@ -1221,7 +1221,7 @@ class Padstacks(object):
             pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_polygon = PolygonData(core=CorePolygonData(points=pad_polygon))
+                pad_polygon = PolygonData(self._pedb, core=CorePolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
@@ -1230,7 +1230,7 @@ class Padstacks(object):
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_polygon = PolygonData(core=CorePolygonData(points=antipad_polygon))
+                antipad_polygon = PolygonData(self._pedb, core=CorePolygonData(points=antipad_polygon))
         else:
             antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
@@ -1854,15 +1854,22 @@ class Padstacks(object):
             return []
         instances_created = []
         _instances_to_delete = []
-        padstack_instances = []
+        padstack_instances_defs = []
         if padstack_instances_id:
-            padstack_instances = [[self.instances[id] for id in padstack_instances_id]]
+            padstack_instances_defs = [None]  # sentinel: use padstack_instances_id directly
         else:
             for pdstk_def in _def:
-                padstack_instances.append(
-                    [inst for inst in self.definitions[pdstk_def.name].instances if inst.net_name == net_name]
-                )
-        for pdstk_series in padstack_instances:
+                padstack_instances_defs.append(pdstk_def)
+        for pdstk_def_item in padstack_instances_defs:
+            # Rebuild the list fresh each iteration to avoid stale/deleted instances
+            if padstack_instances_id:
+                pdstk_series = [self.instances[id] for id in padstack_instances_id]
+            else:
+                pdstk_series = [
+                    inst
+                    for inst in self.definitions[pdstk_def_item.name].instances
+                    if inst.net_name == net_name and not inst.is_null
+                ]
             instances_location = [inst.position for inst in pdstk_series]
             lines, line_indexes = GeometryOperators.find_points_along_lines(
                 points=instances_location,
@@ -1902,6 +1909,7 @@ class Padstacks(object):
                     instances_created.append(new_instance.id)
             for inst in _instances_to_delete:
                 inst.delete()
+            _instances_to_delete = []
         return instances_created
 
     def merge_via(
