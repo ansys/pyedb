@@ -407,3 +407,18 @@ class LayoutValidation:
                             CoreProductIdType.DESIGNER, 11, f"{obj.component.name}-{obj.component_pin}"
                         )
         self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
+
+    def delete_empty_pin_groups(self) -> None:
+        """Find and delete pin groups that have no pins.
+
+        Examples
+        --------
+        >>> from pyedb import Edb
+        >>> edb = Edb("edb_file")
+        >>> edb.layout_validation.delete_empty_pin_groups()
+        """
+        for name, pg in list(self._pedb.siwave.pin_groups.items()):
+            if len(pg.pins) == 0:
+                pg.delete()
+                self._pedb.logger.info(f"Pin group {name} deleted because it has no pins.")
+

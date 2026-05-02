@@ -29,10 +29,6 @@ from tests.system.base_test_class import BaseTestClass
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_disjoint_nets(self):
@@ -72,7 +68,6 @@ class TestClass(BaseTestClass):
         edbapp.layout_validation.illegal_rlc_values(fix=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_empty_pin_groups(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         _, pg = edbapp.siwave.create_pin_group("U1", ["A30", "AW38"])
