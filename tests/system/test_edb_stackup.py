@@ -413,7 +413,6 @@ class TestClass(BaseTestClass):
                     assert data["layers"]["DE2"][parameter] == value
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for GRPC server")
     def test_stackup_load_xml(self):
         file_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.xml")[0]
         edbapp = self.edb_examples.get_si_verse()

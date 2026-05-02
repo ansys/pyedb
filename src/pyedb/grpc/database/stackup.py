@@ -2292,29 +2292,36 @@ class Stackup:
 
             if val.roughness_enabled:
                 roughness_models[name] = {}
-                model = val.get_roughness_model("top")
-                if model.type.name.endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": Value(model.get_Roughness)}
-                else:
+                # Top
+                top_type = val.get_roughness_model_type("top")
+                if top_type == "groisse":
+                    roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": Value(val.top_groisse_roughness)}
+                elif top_type == "huray":
                     roughness_models[name]["HuraySurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
-                        "NoduleRadius": Value(model.get_surface_ratio()),
+                        "NoduleRadius": Value(val.top_hallhuray_nodule_radius),
+                        "HallHuraySurfaceRatio": Value(val.top_hallhuray_surface_ratio),
                     }
-                model = val.get_roughness_model("bottom")
-                if model.type.name.endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissBottomSurfaceRoughness"] = {"Roughness": Value(model.get_roughness())}
-                else:
+                # Bottom
+                bottom_type = val.get_roughness_model_type("bottom")
+                if bottom_type == "groisse":
+                    roughness_models[name]["GroissBottomSurfaceRoughness"] = {
+                        "Roughness": Value(val.bottom_groisse_roughness)
+                    }
+                elif bottom_type == "huray":
                     roughness_models[name]["HurayBottomSurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
-                        "NoduleRadius": Value(model.get_surface_ratio()),
+                        "NoduleRadius": Value(val.bottom_hallhuray_nodule_radius),
+                        "HallHuraySurfaceRatio": Value(val.bottom_hallhuray_surface_ratio),
                     }
-                model = val.get_roughness_model("side")
-                if model.ToString().endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissSideSurfaceRoughness"] = {"Roughness": Value(model.get_roughness())}
-                else:
+                # Side
+                side_type = val.get_roughness_model_type("side")
+                if side_type == "groisse":
+                    roughness_models[name]["GroissSideSurfaceRoughness"] = {
+                        "Roughness": Value(val.side_groisse_roughness)
+                    }
+                elif side_type == "huray":
                     roughness_models[name]["HuraySideSurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
-                        "NoduleRadius": Value(model.get_surface_ratio()),
+                        "NoduleRadius": Value(val.side_hallhuray_nodule_radius),
+                        "HallHuraySurfaceRatio": Value(val.side_hallhuray_surface_ratio),
                     }
 
         non_stackup_layers = OrderedDict()
@@ -2338,7 +2345,7 @@ class Stackup:
         return layers, materials, roughness_models, non_stackup_layers
 
     def _add_materials_from_dictionary(self, material_dict: Dict[str, Dict]) -> bool:
-        materials = self.self._pedb.materials.materials
+        materials = self._pedb.materials.materials
         for name, material_properties in material_dict.items():
             if "Conductivity" in material_properties:
                 materials.add_conductor_material(name, material_properties["Conductivity"])
@@ -2350,7 +2357,7 @@ class Stackup:
                 )
         return True
 
-    def _import_xml(self, file_path: str | Path):
+    def _import_xml(self, file_path: str | Path, rename: bool = False):
         """Load stackup from a XML file.
 
         Parameters
@@ -2467,6 +2474,21 @@ class Stackup:
             return self._import_xml(file_path, rename=rename)
         else:
             return False
+
+    def load_from_xml(self, file_path: str) -> bool:
+        """Load stackup from an XML file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to external XML file.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        return self.load(file_path)
 
     def plot(
         self,
