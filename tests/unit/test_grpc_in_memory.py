@@ -425,5 +425,3 @@ def test_edb_close_terminate_rpc_session_true_forces_shutdown(monkeypatch):
     # Force-kill doesn't call release, so count is unchanged
     assert RpcSession._open_db_count == 2
     assert len(close_called) == 1
-
-
