@@ -22,20 +22,16 @@
 
 """Test configuration for system tests."""
 
-from pathlib import Path
 
 import pytest
 
-from pyedb.generic.design_types import Edb
-from tests.conftest import GRPC, Scratch, desktop_version, generate_random_string
+from pyedb.grpc.rpc_session import RpcSession
+from tests.conftest import GRPC
 
 
 @pytest.fixture(scope="class", autouse=True)
 def close_rpc_session(init_scratch):
-    """Provide a module-scoped scratch directory."""
+    """Ensure the RPC server is shut down after each test class."""
     yield
     if GRPC:
-        scratch = Scratch(init_scratch)
-        sub_folder = Path(scratch.path) / generate_random_string(6) / ".aedb"
-        dummy_edb = Edb(str(sub_folder), version=desktop_version, grpc=True)
-        dummy_edb.close(terminate_rpc_session=True)
+        RpcSession.close()

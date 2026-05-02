@@ -193,27 +193,39 @@ class EdbInit(object):
         else:
             return False
 
-    def close(self, terminate_rpc_session=False):
+    def close(self, terminate_rpc_session=None, keep_session_alive=False):
         """Close the database.
 
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-            Force termination of the RPC session regardless of how many other databases are still
-            open. The default is ``False``, meaning the RPC server is only shut down automatically
-            when the **last** open database is closed (reference-counted).
+            Deprecated.  Use ``keep_session_alive`` instead.
+            When ``True``, forcibly terminate the RPC server regardless of how
+            many other databases are still open.
+        keep_session_alive : bool, optional
+            When ``True``, the RPC server is kept running after the database is
+            closed so that subsequent ``Edb`` instances can reuse it.
+            When ``False`` (the default), the server is automatically shut down
+            once the last open database is closed.
 
         Notes
         -----
-        Unsaved changes will be lost. When ``terminate_rpc_session=True`` and multiple databases
-        are open, all connections will be lost immediately.
+        Unsaved changes will be lost.  Forcibly terminating the server while
+        other databases are still open will break those connections immediately.
         """
         self._db.close()
         self._db = None
-        if terminate_rpc_session:
+        if terminate_rpc_session is True:
+            # Legacy explicit flag — force-kill regardless of ref count
             RpcSession.close()
-        else:
+        elif keep_session_alive or terminate_rpc_session is False:
+            # User explicitly asked to keep the server running
             RpcSession.release()
+        else:
+            # Default (terminate_rpc_session=None, keep_session_alive=False):
+            # release and shut down if this was the last DB
+            if RpcSession.release():
+                RpcSession.close()
         self._clean_variables()
         return True
 

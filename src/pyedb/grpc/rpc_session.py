@@ -65,30 +65,24 @@ class RpcSession:
     @staticmethod
     def release():
         """
-        Decrement the open-database reference counter and shut down the server when it reaches zero.
+        Decrement the open-database reference counter.
+
+        The RPC server is **not** shut down when the counter reaches zero.
+        Use :meth:`close` (or pass ``terminate_rpc_session=True`` to the EDB
+        ``close`` method) to explicitly terminate the server.  For standalone
+        scripts the ``atexit`` handler registered by :class:`EdbInit` ensures
+        the server process is cleaned up on interpreter exit.
 
         Returns
         -------
         bool
-            ``True`` if the RPC session was terminated (last database closed),
-            ``False`` if other databases are still open and the session was kept alive.
-
+            ``True`` when the counter has reached zero (no more open databases),
+            ``False`` otherwise.
         """
         if RpcSession._open_db_count > 0:
             RpcSession._open_db_count -= 1
         settings.logger.info(f"RPC session released (open databases: {RpcSession._open_db_count})")
-        if RpcSession._open_db_count == 0:
-            if RpcSession._owns_session:
-                RpcSession.close()
-                return True
-            else:
-                settings.logger.info(
-                    "RPC session was not started by RpcSession; skipping shutdown."
-                )
-                RpcSession.rpc_session = None
-                RpcSession._open_db_count = 0
-                return False
-        return False
+        return RpcSession._open_db_count == 0
 
     @staticmethod
     def start(edb_version, port=0, restart_server=False):
