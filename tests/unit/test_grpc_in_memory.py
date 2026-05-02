@@ -290,13 +290,14 @@ def test_release_does_not_restart_server_between_tests(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "env_path", lambda version: r"C:\\fake\\AnsysEM")
     monkeypatch.setattr(rpc_session_module, "start_managing", lambda *args, **kwargs: None)
     monkeypatch.setattr(rpc_session_module, "_SESSION_MOD", SimpleNamespace(current_session=None))
+    monkeypatch.setattr(rpc_session_module.psutil, "pid_exists", lambda pid: True)
 
     launch_count = []
 
     def fake_launch_session(base_path, port_num=None):
         launch_count.append(1)
         return SimpleNamespace(
-            local_server_proc=SimpleNamespace(pid=9999),
+            local_server_proc=SimpleNamespace(pid=9999, poll=lambda: None),
             disconnect=lambda: None,
         )
 
