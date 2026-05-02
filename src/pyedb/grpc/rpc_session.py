@@ -25,7 +25,7 @@ import secrets
 import sys
 import time
 
-from ansys.edb.core.session import launch_session
+from ansys.edb.core.session import MOD as _SESSION_MOD, launch_session
 from ansys.edb.core.utility.io_manager import (
     IOMangementType,
     end_managing,
@@ -50,6 +50,7 @@ class RpcSession:
     port = 10000
     server_pid = 0
     _open_db_count = 0  # number of EDB databases currently open against this server
+    _owns_session = False  # True only when RpcSession launched the server itself
 
     @staticmethod
     def acquire():
@@ -77,8 +78,16 @@ class RpcSession:
             RpcSession._open_db_count -= 1
         settings.logger.info(f"RPC session released (open databases: {RpcSession._open_db_count})")
         if RpcSession._open_db_count == 0:
-            RpcSession.close()
-            return True
+            if RpcSession._owns_session:
+                RpcSession.close()
+                return True
+            else:
+                settings.logger.info(
+                    "RPC session was not started by RpcSession; skipping shutdown."
+                )
+                RpcSession.rpc_session = None
+                RpcSession._open_db_count = 0
+                return False
         return False
 
     @staticmethod
@@ -162,12 +171,17 @@ class RpcSession:
 
     @staticmethod
     def __start_rpc_server():
+        preexisting = _SESSION_MOD.current_session is not None
         RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+        RpcSession._owns_session = not preexisting
         start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            settings.logger.logger.info("Grpc session started")
+            if preexisting:
+                settings.logger.info("Attached to preexisting gRPC session (not owned by RpcSession)")
+            else:
+                settings.logger.logger.info("Grpc session started")
 
     @staticmethod
     def kill():
@@ -214,6 +228,7 @@ class RpcSession:
         RpcSession.pid = 0
         RpcSession.server_pid = 0
         RpcSession._open_db_count = 0
+        RpcSession._owns_session = False
 
     @staticmethod
     def __get_random_free_port():
