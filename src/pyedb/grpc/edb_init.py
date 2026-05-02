@@ -193,20 +193,19 @@ class EdbInit(object):
         else:
             return False
 
-    def close(self, terminate_rpc_session=None, keep_session_alive=False):
+    def close(self, terminate_rpc_session=None):
         """Close the database.
 
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-            Deprecated.  Use ``keep_session_alive`` instead.
             When ``True``, forcibly terminate the RPC server regardless of how
             many other databases are still open.
-        keep_session_alive : bool, optional
-            When ``True``, the RPC server is kept running after the database is
-            closed so that subsequent ``Edb`` instances can reuse it.
-            When ``False`` (the default), the server is automatically shut down
-            once the last open database is closed.
+            When ``False``, the RPC server is kept running after the database is
+            closed so that subsequent ``Edb`` instances can reuse it without a
+            server restart.
+            When not specified (the default), the server is automatically shut
+            down once the last open database is closed.
 
         Notes
         -----
@@ -216,14 +215,13 @@ class EdbInit(object):
         self._db.close()
         self._db = None
         if terminate_rpc_session is True:
-            # Legacy explicit flag — force-kill regardless of ref count
+            # Force-kill regardless of ref count
             RpcSession.close()
-        elif keep_session_alive or terminate_rpc_session is False:
-            # User explicitly asked to keep the server running
+        elif terminate_rpc_session is False:
+            # Explicitly keep the server running
             RpcSession.release()
         else:
-            # Default (terminate_rpc_session=None, keep_session_alive=False):
-            # release and shut down if this was the last DB
+            # Default: release and shut down if this was the last DB
             if RpcSession.release():
                 RpcSession.close()
         self._clean_variables()

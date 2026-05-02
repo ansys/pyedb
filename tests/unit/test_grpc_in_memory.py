@@ -361,30 +361,8 @@ def test_edb_close_default_does_not_terminate_when_other_dbs_open(monkeypatch):
 
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
-def test_edb_close_keep_session_alive(monkeypatch):
-    """edb.close(keep_session_alive=True) should never shut down the server."""
-    _reset_rpc_session_state()
-    close_called = []
-    RpcSession._open_db_count = 1
-    RpcSession.rpc_session = SimpleNamespace(in_memory=False)
-
-    monkeypatch.setattr(RpcSession, "close", staticmethod(lambda: close_called.append(True)))
-
-    edb = EdbInit.__new__(EdbInit)
-    edb.version = "2026.1"
-    edb.logger = settings.logger
-    edb._db = SimpleNamespace(close=lambda: None)
-    edb.grpc = True
-
-    edb.close(keep_session_alive=True)
-
-    assert RpcSession._open_db_count == 0
-    assert len(close_called) == 0  # server kept alive
-
-
-@pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
 def test_edb_close_terminate_rpc_session_false_keeps_server(monkeypatch):
-    """Legacy edb.close(terminate_rpc_session=False) should keep server alive."""
+    """edb.close(terminate_rpc_session=False) should keep server alive."""
     _reset_rpc_session_state()
     close_called = []
     RpcSession._open_db_count = 1
@@ -406,7 +384,6 @@ def test_edb_close_terminate_rpc_session_false_keeps_server(monkeypatch):
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
 def test_edb_close_terminate_rpc_session_true_forces_shutdown(monkeypatch):
-    """Legacy edb.close(terminate_rpc_session=True) should force-kill server."""
     _reset_rpc_session_state()
     close_called = []
     RpcSession._open_db_count = 2
