@@ -82,9 +82,7 @@ class RpcSession:
                 RpcSession.close()
                 return True
             else:
-                settings.logger.info(
-                    "RPC session was not started by RpcSession; skipping shutdown."
-                )
+                settings.logger.info("RPC session was not started by RpcSession; skipping shutdown.")
                 RpcSession.rpc_session = None
                 RpcSession._open_db_count = 0
                 return False

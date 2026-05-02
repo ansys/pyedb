@@ -275,4 +275,3 @@ def test_full_lifecycle_preexisting_session(monkeypatch):
     assert RpcSession.release() is False
     assert RpcSession.rpc_session is None
     assert len(disconnected) == 0
-
