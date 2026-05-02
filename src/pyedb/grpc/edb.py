@@ -224,6 +224,7 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
+        remove_existing_aedt: bool = False,
     ):
         edbversion = get_string_version(version)
         self._clean_variables()
@@ -277,6 +278,7 @@ class Edb(EdbInit):
             self.log_name = os.path.join(
                 os.path.dirname(edbpath), "pyaedt_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
             )
+        self._check_remove_project_files(self.edbpath, remove_existing_aedt)
         if edbpath[-3:] == "zip":
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
@@ -1482,6 +1484,26 @@ class Edb(EdbInit):
             else:
                 times = 0
                 time.sleep(0.250)
+
+    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
+        """Check for and optionally remove conflicting AEDT project files."""
+        if not edbpath:
+            return
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        for file in files:
+            if os.path.isfile(file):
+                if not remove_existing_aedt:
+                    self.logger.warning(
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in "
+                        f"HFSS 3D Layout."
+                    )
+                else:
+                    try:
+                        os.unlink(file)
+                        self.logger.info(f"Deleted AEDT project-related file {file}.")
+                    except Exception:
+                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
 
     @deprecated("Use close() instead.", category=None)
     @runtime_deprecated("Use close() instead.")

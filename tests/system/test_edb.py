@@ -1354,7 +1354,6 @@ class TestClass(BaseTestClass):
         edbapp.create_port(p3, p4, False, "test2")
         assert edbapp.ports["test2"]
 
-    @pytest.mark.skip(reason="BUG 1422195")
     def test_siwave_simulation_setup_bug(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
