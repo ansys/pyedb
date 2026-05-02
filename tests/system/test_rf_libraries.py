@@ -52,10 +52,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(
-    ansys.edb.core.__version__ == "0.2.6",
-    reason="Test skipped for ansys-edb-core version 0.2.6",
-)
 class TestClass(BaseTestClass):
     def test_stackup(self):
         edb = self.edb_examples.create_empty_edb()
@@ -92,11 +88,11 @@ class TestClass(BaseTestClass):
         assert edb.variables["w"].value == 1e-05
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
+    # @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_diff_tline(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
-        pair = DifferentialTLine(edb, layer="METAL_TOP", length=10e-3, width=0.2e-3, spacing=0.18e-3)
+        pair = DifferentialTLine(edb, layer="TOP_METAL", length=10e-3, width=0.2e-3, spacing=0.18e-3)
         pair.create()
         assert round(pair.diff_impedance, 3) == 95.723
         assert len(edb.modeler.paths) == 2
