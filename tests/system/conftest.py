@@ -22,7 +22,6 @@
 
 """Test configuration for system tests."""
 
-
 import pytest
 
 from pyedb.grpc.rpc_session import RpcSession
