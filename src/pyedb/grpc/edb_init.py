@@ -212,8 +212,12 @@ class EdbInit(object):
         Unsaved changes will be lost.  Forcibly terminating the server while
         other databases are still open will break those connections immediately.
         """
-        self._db.close()
-        self._db = None
+        if self._db is not None:
+            try:
+                self._db.close()
+            except Exception:
+                pass
+            self._db = None
         if terminate_rpc_session is True:
             # Force-kill regardless of ref count
             RpcSession.close()

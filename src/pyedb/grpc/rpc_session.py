@@ -21,6 +21,7 @@
 # SOFTWARE.
 
 import os
+import platform
 import secrets
 import sys
 import time
@@ -36,8 +37,9 @@ import psutil
 from pyedb import __version__
 from pyedb.generic.general_methods import env_path, env_value, is_linux
 from pyedb.generic.settings import settings
-from pyedb.misc.misc import list_installed_ansysem
 
+latency_delay = 0.1
+_IS_WINDOWS = platform.system() == "Windows"
 latency_delay = 0.1
 
 
@@ -140,7 +142,12 @@ class RpcSession:
         os.environ["PATH"] = os.pathsep.join([os.environ["PATH"], RpcSession.base_path])
 
         if RpcSession.rpc_session:
-            if restart_server:
+            # Validate the existing session is still alive
+            if not RpcSession._is_server_alive():
+                settings.logger.warning("RPC server process is no longer alive. Cleaning up stale session.")
+                RpcSession._reset_session_state()
+                RpcSession.__start_rpc_server()
+            elif restart_server:
                 settings.logger.info("Restarting RPC server.")
                 RpcSession.close()
                 RpcSession.__start_rpc_server()
@@ -215,14 +222,60 @@ class RpcSession:
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:
-            end_managing()
-            RpcSession.rpc_session.disconnect()
-            time.sleep(latency_delay)
-            RpcSession.rpc_session = None
+            try:
+                end_managing()
+            except Exception:
+                pass
+            try:
+                RpcSession.rpc_session.disconnect()
+            except Exception:
+                pass
+            # On Windows, socket/process cleanup can be slow (TIME_WAIT state).
+            # Allow extra time before the next server can bind a port.
+            if _IS_WINDOWS:
+                time.sleep(1.0)
+            else:
+                time.sleep(latency_delay)
+        RpcSession._reset_session_state()
+
+    @staticmethod
+    def _is_server_alive():
+        """Check whether the RPC server process is still running.
+
+        Returns
+        -------
+        bool
+            ``True`` if the server process exists and is alive, ``False`` otherwise.
+        """
+        if not RpcSession.rpc_session:
+            return False
+        try:
+            proc = RpcSession.rpc_session.local_server_proc
+            if proc is None:
+                return False
+            return psutil.pid_exists(proc.pid) and proc.poll() is None
+        except Exception:
+            return False
+
+    @staticmethod
+    def _reset_session_state():
+        """Reset all session state to initial values.
+
+        Clears the session reference, PIDs, ref count, and the underlying
+        ``ansys.edb.core.session`` module's ``current_session`` to prevent
+        ``__start_rpc_server`` from falsely detecting a preexisting session.
+        """
+        RpcSession.rpc_session = None
         RpcSession.pid = 0
         RpcSession.server_pid = 0
         RpcSession._open_db_count = 0
         RpcSession._owns_session = False
+        # Clear the global session reference so the next launch_session()
+        # call does not attach to a dead session.
+        try:
+            _SESSION_MOD.current_session = None
+        except Exception:
+            pass
 
     @staticmethod
     def __get_random_free_port():
