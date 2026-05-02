@@ -330,8 +330,13 @@ class TestCfgComponentSolderBallGrpc:
         """shape key missing entirely should raise ValueError (grpc path)."""
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         solder_ball_properties={"diameter": "150um", "height": "100um"})
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            solder_ball_properties={"diameter": "150um", "height": "100um"},
+        )
         with pytest.raises(ValueError, match="Solderball shape must be either cylinder or spheroid"):
             c._set_solder_ball_properties_to_edb()
 
@@ -352,8 +357,7 @@ class TestCfgComponentIcDiePropertiesGrpc:
             ic_die_props["orientation"] = orientation
         if height:
             ic_die_props["height"] = height
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         ic_die_properties=ic_die_props)
+        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic", ic_die_properties=ic_die_props)
         return pedb, obj, c
 
     def test_no_die_sets_die_type_only(self):
@@ -395,8 +399,7 @@ class TestCfgComponentPortPropertiesGrpc:
     def _make_comp(self, port_props):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         port_properties=port_props)
+        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic", port_properties=port_props)
         return pedb, obj, c
 
     def test_reference_height_is_set(self):
@@ -437,43 +440,65 @@ class TestCfgComponentSetModelProperties:
     def test_netlist_model_calls_assign_netlist(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         netlist_model={"netlist": "* test netlist"})
+        c = CfgComponent(
+            pedb, obj, reference_designator="U1", part_type="ic", netlist_model={"netlist": "* test netlist"}
+        )
         c._set_model_properties_to_edb()
         obj.assign_netlist_model.assert_called_once_with("* test netlist")
 
     def test_pin_pair_model_calls_add_pin_pair(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         pin_pair_model=[{
-                             "first_pin": "1", "second_pin": "2",
-                             "resistance": "10ohm", "resistance_enabled": True,
-                             "inductance": "1nH", "inductance_enabled": False,
-                             "capacitance": "1pF", "capacitance_enabled": False,
-                             "is_parallel": False,
-                         }])
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            pin_pair_model=[
+                {
+                    "first_pin": "1",
+                    "second_pin": "2",
+                    "resistance": "10ohm",
+                    "resistance_enabled": True,
+                    "inductance": "1nH",
+                    "inductance_enabled": False,
+                    "capacitance": "1pF",
+                    "capacitance_enabled": False,
+                    "is_parallel": False,
+                }
+            ],
+        )
         c._set_model_properties_to_edb()
         obj.model.add_pin_pair.assert_called_once()
 
     def test_s_parameter_model_calls_assign_s_param(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         s_parameter_model={"model_path": "/path/m.s2p",
-                                            "model_name": "my_model",
-                                            "reference_net": "GND"})
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            s_parameter_model={"model_path": "/path/m.s2p", "model_name": "my_model", "reference_net": "GND"},
+        )
         c._set_model_properties_to_edb()
         obj.assign_s_param_model.assert_called_once_with("/path/m.s2p", "my_model", "GND")
 
     def test_spice_model_calls_assign_spice(self):
         pedb = _make_pedb(grpc=True)
         obj = _make_pyedb_obj("ic")
-        c = CfgComponent(pedb, obj, reference_designator="U1", part_type="ic",
-                         spice_model={"model_path": "/path/m.sp",
-                                      "model_name": "spice_m",
-                                      "sub_circuit": "TOP",
-                                      "terminal_pairs": [["p1", 1]]})
+        c = CfgComponent(
+            pedb,
+            obj,
+            reference_designator="U1",
+            part_type="ic",
+            spice_model={
+                "model_path": "/path/m.sp",
+                "model_name": "spice_m",
+                "sub_circuit": "TOP",
+                "terminal_pairs": [["p1", 1]],
+            },
+        )
         c._set_model_properties_to_edb()
         obj.assign_spice_model.assert_called_once_with("/path/m.sp", "spice_m", "TOP", [["p1", 1]])
 
@@ -850,7 +875,6 @@ class TestCfgComponents:
         refdes = [c.reference_designator for c in cc.components]
         assert "R1" in refdes
         assert "C1" in refdes
-
 
 
 # ---------------------------------------------------------------------------
