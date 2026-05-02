@@ -198,9 +198,7 @@ def test_close_resets_owns_session(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "_IS_WINDOWS", False)
 
     RpcSession._owns_session = True
-    RpcSession.rpc_session = SimpleNamespace(
-        disconnect=lambda: None, local_server_proc=SimpleNamespace(pid=999)
-    )
+    RpcSession.rpc_session = SimpleNamespace(disconnect=lambda: None, local_server_proc=SimpleNamespace(pid=999))
     RpcSession._open_db_count = 3
     RpcSession.pid = 999
     RpcSession.server_pid = 999

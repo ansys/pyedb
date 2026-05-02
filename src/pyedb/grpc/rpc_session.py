@@ -181,9 +181,7 @@ class RpcSession:
                 break
             except Exception as e:
                 last_exc = e
-                settings.logger.warning(
-                    f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}"
-                )
+                settings.logger.warning(f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}")
                 if attempt < max_attempts - 1:
                     # Pick a new random port and retry
                     RpcSession.port = RpcSession.__get_random_free_port()
@@ -282,8 +280,7 @@ class RpcSession:
             pass
         except psutil.TimeoutExpired:
             settings.logger.warning(
-                f"RPC server process {pid} did not exit within {timeout}s. "
-                "Proceeding anyway — next launch may fail."
+                f"RPC server process {pid} did not exit within {timeout}s. Proceeding anyway — next launch may fail."
             )
         except Exception:
             time.sleep(2.0)
