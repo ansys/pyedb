@@ -273,13 +273,13 @@ class Polygon(Primitive):
             if not center:
                 center = self.polygon_data.core.bounding_circle()[0]
                 if center:
-                    self.polygon_data = PolygonData(self.polygon_data.core.scale(factor, center))
+                    self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.scale(factor, center))
                     return True
                 else:
                     self._pedb.logger.error(f"Failed to evaluate center on primitive {self.id}")
             elif isinstance(center, list) and len(center) == 2:
                 center = CorePointData([self._pedb._value_setter(center[0]), self._pedb._value_setter(center[1])])
-                self.polygon_data = PolygonData(self.polygon_data.core.scale(factor, center))
+                self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.scale(factor, center))
                 return True
         return False
 
@@ -310,10 +310,10 @@ class Polygon(Primitive):
             if not center:
                 center = self.polygon_data.core.bounding_circle()[0]
                 if center:
-                    self.polygon_data = self.polygon_data.core.rotate(angle * math.pi / 180, center)
+                    self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.rotate(angle * math.pi / 180, center))
                     return True
             elif isinstance(center, list) and len(center) == 2:
-                self.polygon_data = self.polygon_data.core.rotate(angle * math.pi / 180, center)
+                self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.rotate(angle * math.pi / 180, center))
                 return True
         return False
 

@@ -3065,6 +3065,7 @@ class Edb(EdbInit):
         reference_layer = list(self.stackup.signal_layers.keys())[0]
         if mounting_side.lower() == "bottom":
             reference_layer = list(self.stackup.signal_layers.keys())[-1]
+        reference_layer_thickness = self.stackup.signal_layers[reference_layer].thickness
         if not signal_nets:
             signal_nets = list(self.nets.signal.keys())
 
@@ -3103,16 +3104,53 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
+
+        # Cache all data from the original EDB before creating the cloned EDB.
+        # restart_rpc_server=True will invalidate all original EDB primitive objects.
+        void_padstacks_data = []
+        for void, instances in void_padstacks:
+            try:
+                poly_points = void.polygon_data.points
+            except Exception:
+                continue
+            inst_data = []
+            for inst in instances:
+                try:
+                    pos = inst.position
+                    net = inst.net_name
+                    def_name = inst.padstack_def.name
+                    inst_data.append({"position": pos, "net_name": net, "padstack_def_name": def_name})
+                except Exception:
+                    pass
+            if inst_data:
+                void_padstacks_data.append({"poly_points": poly_points, "instances": inst_data})
+
+        # Cache pad diameters from the original EDB padstack definitions
+        pad_diameter_cache = {}
+        if not terminal_diameter:
+            for item in void_padstacks_data:
+                for inst_info in item["instances"]:
+                    def_name = inst_info["padstack_def_name"]
+                    if def_name not in pad_diameter_cache:
+                        try:
+                            pad_diameter_cache[def_name] = (
+                                self.padstacks.definitions[def_name]
+                                .pad_by_layer[reference_layer]
+                                .parameters_values
+                            )
+                        except Exception:
+                            pad_diameter_cache[def_name] = None
+
         cloned_edb = Edb(
             edbpath=output_edb,
             edbversion=self.version,
-            restart_rpc_server=True,
+            restart_rpc_server=False,
         )
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
             layer_type="signal",
-            thickness=self.stackup.signal_layers[reference_layer].thickness,
+            thickness=reference_layer_thickness,
             material="pec",
         )
         if launching_box_thickness:
@@ -3133,31 +3171,29 @@ class Edb(EdbInit):
             material="pec",
             base_layer="ports",
         )
-        for void_info in void_padstacks:
+        for void_info in void_padstacks_data:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].polygon_data, layer_name="ref", net_name="GND"
+                points=void_info["poly_points"], layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data.core, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 
-        for void_info in void_padstacks:
-            for inst in void_info[1]:
+        for void_info in void_padstacks_data:
+            for inst_info in void_info["instances"]:
                 if not terminal_diameter:
-                    pad_diameter = (
-                        self.padstacks.definitions[inst.padstack_def.name]
-                        .pad_by_layer[reference_layer]
-                        .parameters_values
-                    )
+                    pad_diameter = pad_diameter_cache.get(inst_info["padstack_def_name"])
                 else:
                     pad_diameter = Value(terminal_diameter)
+                if not pad_diameter:
+                    continue
                 _temp_circle = cloned_edb.modeler.create_circle(
                     layer_name="ports",
-                    x=inst.position[0],
-                    y=inst.position[1],
+                    x=inst_info["position"][0],
+                    y=inst_info["position"][1],
                     radius=pad_diameter[0] / 2,
-                    net_name=inst.net_name,
+                    net_name=inst_info["net_name"],
                 )
                 if not _temp_circle:
                     self.logger.error(
