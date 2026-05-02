@@ -196,6 +196,7 @@ def test_close_resets_owns_session(monkeypatch):
     _reset_rpc_session_state()
     monkeypatch.setattr(rpc_session_module, "end_managing", lambda: None)
     monkeypatch.setattr(rpc_session_module, "_IS_WINDOWS", False)
+    monkeypatch.setattr(RpcSession, "_wait_for_process_exit", staticmethod(lambda *a, **kw: None))
 
     RpcSession._owns_session = True
     RpcSession.rpc_session = SimpleNamespace(disconnect=lambda: None, local_server_proc=SimpleNamespace(pid=999))
@@ -222,6 +223,7 @@ def test_full_lifecycle_owned_session(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "start_managing", lambda *args, **kwargs: None)
     monkeypatch.setattr(rpc_session_module, "_IS_WINDOWS", False)
     monkeypatch.setattr(rpc_session_module, "end_managing", lambda: None)
+    monkeypatch.setattr(RpcSession, "_wait_for_process_exit", staticmethod(lambda *a, **kw: None))
     monkeypatch.setattr(rpc_session_module, "_SESSION_MOD", SimpleNamespace(current_session=None))
 
     disconnected = []

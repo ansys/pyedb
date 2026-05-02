@@ -34,3 +34,5 @@ def close_rpc_session(init_scratch):
     yield
     if GRPC:
         RpcSession.close()
+        # Force a fresh port for the next class to avoid TIME_WAIT conflicts
+        RpcSession.port = 0

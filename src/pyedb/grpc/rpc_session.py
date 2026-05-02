@@ -174,13 +174,11 @@ class RpcSession:
     def __start_rpc_server():
         preexisting = _SESSION_MOD.current_session is not None
         max_attempts = 3 if _IS_WINDOWS else 1
-        last_exc = None
         for attempt in range(max_attempts):
             try:
                 RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
                 break
             except Exception as e:
-                last_exc = e
                 settings.logger.warning(f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}")
                 if attempt < max_attempts - 1:
                     # Pick a new random port and retry
@@ -188,8 +186,7 @@ class RpcSession:
                     time.sleep(2.0)
                 else:
                     settings.logger.error("All launch_session attempts failed.")
-                    RpcSession.rpc_session = None
-                    return
+                    raise
         RpcSession._owns_session = not preexisting
         start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
@@ -251,12 +248,12 @@ class RpcSession:
                 RpcSession.rpc_session.disconnect()
             except Exception:
                 pass
-            # On Windows, socket/process cleanup can be slow (TIME_WAIT state).
             # Wait for the server process to fully terminate before proceeding.
+            # Windows sockets are slower to release (TIME_WAIT state).
             if _IS_WINDOWS:
                 RpcSession._wait_for_process_exit(server_proc, timeout=10.0)
             else:
-                time.sleep(latency_delay)
+                RpcSession._wait_for_process_exit(server_proc, timeout=5.0)
         RpcSession._reset_session_state()
 
     @staticmethod
