@@ -195,9 +195,12 @@ def test_start_sets_owns_session_false_when_preexisting_session(monkeypatch):
 def test_close_resets_owns_session(monkeypatch):
     _reset_rpc_session_state()
     monkeypatch.setattr(rpc_session_module, "end_managing", lambda: None)
+    monkeypatch.setattr(rpc_session_module, "_IS_WINDOWS", False)
 
     RpcSession._owns_session = True
-    RpcSession.rpc_session = SimpleNamespace(disconnect=lambda: None)
+    RpcSession.rpc_session = SimpleNamespace(
+        disconnect=lambda: None, local_server_proc=SimpleNamespace(pid=999)
+    )
     RpcSession._open_db_count = 3
     RpcSession.pid = 999
     RpcSession.server_pid = 999
@@ -219,6 +222,7 @@ def test_full_lifecycle_owned_session(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "is_linux", False)
     monkeypatch.setattr(rpc_session_module, "env_path", lambda version: r"C:\\fake\\AnsysEM")
     monkeypatch.setattr(rpc_session_module, "start_managing", lambda *args, **kwargs: None)
+    monkeypatch.setattr(rpc_session_module, "_IS_WINDOWS", False)
     monkeypatch.setattr(rpc_session_module, "end_managing", lambda: None)
     monkeypatch.setattr(rpc_session_module, "_SESSION_MOD", SimpleNamespace(current_session=None))
 

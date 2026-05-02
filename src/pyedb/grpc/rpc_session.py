@@ -173,7 +173,25 @@ class RpcSession:
     @staticmethod
     def __start_rpc_server():
         preexisting = _SESSION_MOD.current_session is not None
-        RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+        max_attempts = 3 if _IS_WINDOWS else 1
+        last_exc = None
+        for attempt in range(max_attempts):
+            try:
+                RpcSession.rpc_session = launch_session(RpcSession.base_path, port_num=RpcSession.port)
+                break
+            except Exception as e:
+                last_exc = e
+                settings.logger.warning(
+                    f"launch_session attempt {attempt + 1}/{max_attempts} failed: {e}"
+                )
+                if attempt < max_attempts - 1:
+                    # Pick a new random port and retry
+                    RpcSession.port = RpcSession.__get_random_free_port()
+                    time.sleep(2.0)
+                else:
+                    settings.logger.error("All launch_session attempts failed.")
+                    RpcSession.rpc_session = None
+                    return
         RpcSession._owns_session = not preexisting
         start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
@@ -222,6 +240,11 @@ class RpcSession:
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
         if RpcSession.rpc_session:
+            server_proc = None
+            try:
+                server_proc = RpcSession.rpc_session.local_server_proc
+            except Exception:
+                pass
             try:
                 end_managing()
             except Exception:
@@ -231,12 +254,39 @@ class RpcSession:
             except Exception:
                 pass
             # On Windows, socket/process cleanup can be slow (TIME_WAIT state).
-            # Allow extra time before the next server can bind a port.
+            # Wait for the server process to fully terminate before proceeding.
             if _IS_WINDOWS:
-                time.sleep(1.0)
+                RpcSession._wait_for_process_exit(server_proc, timeout=10.0)
             else:
                 time.sleep(latency_delay)
         RpcSession._reset_session_state()
+
+    @staticmethod
+    def _wait_for_process_exit(proc, timeout=10.0):
+        """Wait until the server process has fully exited (Windows only).
+
+        Falls back to a fixed delay if the process object is unavailable.
+        """
+        if proc is None:
+            time.sleep(2.0)
+            return
+        try:
+            pid = proc.pid if hasattr(proc, "pid") else None
+            if pid is None:
+                time.sleep(2.0)
+                return
+            p = psutil.Process(pid)
+            p.wait(timeout=timeout)
+        except psutil.NoSuchProcess:
+            # Already gone
+            pass
+        except psutil.TimeoutExpired:
+            settings.logger.warning(
+                f"RPC server process {pid} did not exit within {timeout}s. "
+                "Proceeding anyway — next launch may fail."
+            )
+        except Exception:
+            time.sleep(2.0)
 
     @staticmethod
     def _is_server_alive():
