@@ -526,7 +526,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_get_primitives_by_point_layer_and_nets(self):
         edbapp = self.edb_examples.get_si_verse()
         primitives = edbapp.modeler.get_primitive_by_layer_and_point(layer="Inner1(GND1)", point=[20e-3, 30e-3])
@@ -576,7 +575,6 @@ class TestClass(BaseTestClass):
         assert primitives[0].aedt_name == "line_0"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Only available for grpc waiting SP1.")
     def test_insert_layout_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -589,7 +587,6 @@ class TestClass(BaseTestClass):
         assert cell_inst.transform3d.shift.z.value == pytest.approx(edbapp.stackup.layers["1_Top"].lower_elevation)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Only available for grpc waiting SP1.")
     def test_insert_layout_instance_place_on_bottom(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -607,7 +604,6 @@ class TestClass(BaseTestClass):
         assert not cell_inst.is_null
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Only available for grpc waiting SP1.")
     def test_insert_layout_instance_placement_3d(self):
         edbapp = self.edb_examples.get_si_verse()
         edb2_path = self.edb_examples.get_package(edbapp=False)
@@ -737,7 +733,6 @@ class TestClass(BaseTestClass):
 
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config.get("use_grpc"), reason="Waiting SP1")
     def test_create_rf_trace_taper(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
