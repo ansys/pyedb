@@ -292,9 +292,7 @@ class TestClass(BaseTestClass):
         csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
         # Verify the file is fully written before importing (guards against
         # Linux filesystem flush races that caused intermittent failures).
-        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, (
-            f"CSV file not ready: {csv_path}"
-        )
+        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, f"CSV file not ready: {csv_path}"
         assert import_method(csv_path)
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
@@ -311,9 +309,7 @@ class TestClass(BaseTestClass):
         export_method = edbapp.stackup.export
 
         csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
-        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, (
-            f"CSV file not ready: {csv_path}"
-        )
+        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, f"CSV file not ready: {csv_path}"
         assert import_method(csv_path)
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
