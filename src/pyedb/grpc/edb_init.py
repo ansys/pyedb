@@ -179,7 +179,6 @@ class EdbInit(object):
         object or None
             The return value of ``func``, or ``None`` if all attempts fail.
         """
-        last_exception = None
         for attempt in range(max_attempts):
             try:
                 result = func(*args)
@@ -193,7 +192,6 @@ class EdbInit(object):
                     )
                     time.sleep(delay)
             except Exception as e:
-                last_exception = e
                 if attempt < max_attempts - 1:
                     self.logger.warning(
                         f"gRPC call {func.__name__} failed (attempt {attempt + 1}/{max_attempts}): {e}. "
