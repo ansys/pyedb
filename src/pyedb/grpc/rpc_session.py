@@ -277,10 +277,7 @@ class RpcSession:
             # Already gone
             pass
         except psutil.TimeoutExpired:
-            settings.logger.warning(
-                f"RPC server process {pid} did not exit within {timeout}s. "
-                f"Attempting to kill it."
-            )
+            settings.logger.warning(f"RPC server process {pid} did not exit within {timeout}s. Attempting to kill it.")
             try:
                 p.kill()
                 p.wait(timeout=3.0)
