@@ -178,6 +178,7 @@ class EdbInit(object):
         -------
         object or None
             The return value of ``func``, or ``None`` if all attempts fail.
+
         """
         for attempt in range(max_attempts):
             try:

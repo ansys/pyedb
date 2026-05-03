@@ -255,11 +255,6 @@ class RpcSession:
 
     @staticmethod
     def _wait_for_process_exit(proc, timeout=10.0):
-        """Wait until the server process has fully exited.
-
-        This ensures the port is released before the next session starts.
-        Falls back to a fixed delay if the process object is unavailable.
-        """
         if proc is None:
             time.sleep(1.0)
             return
@@ -288,13 +283,6 @@ class RpcSession:
 
     @staticmethod
     def _is_server_alive():
-        """Check whether the RPC server process is still running.
-
-        Returns
-        -------
-        bool
-            ``True`` if the server process exists and is alive, ``False`` otherwise.
-        """
         if not RpcSession.rpc_session:
             return False
         try:
