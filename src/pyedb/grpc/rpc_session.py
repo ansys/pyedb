@@ -248,39 +248,46 @@ class RpcSession:
                 RpcSession.rpc_session.disconnect()
             except Exception:
                 pass
-            # Wait for the server process to fully terminate before proceeding.
-            # Windows sockets are slower to release (TIME_WAIT state).
-            if _IS_WINDOWS:
-                RpcSession._wait_for_process_exit(server_proc, timeout=10.0)
-            else:
-                RpcSession._wait_for_process_exit(server_proc, timeout=5.0)
+            # Wait for the server process to fully exit so the port is released
+            # before the next session starts.
+            RpcSession._wait_for_process_exit(server_proc, timeout=10.0)
         RpcSession._reset_session_state()
 
     @staticmethod
     def _wait_for_process_exit(proc, timeout=10.0):
-        """Wait until the server process has fully exited (Windows only).
+        """Wait until the server process has fully exited.
 
+        This ensures the port is released before the next session starts.
         Falls back to a fixed delay if the process object is unavailable.
         """
         if proc is None:
-            time.sleep(2.0)
+            time.sleep(1.0)
             return
         try:
             pid = proc.pid if hasattr(proc, "pid") else None
             if pid is None:
-                time.sleep(2.0)
+                time.sleep(1.0)
                 return
             p = psutil.Process(pid)
             p.wait(timeout=timeout)
+            # Additional delay on Windows for socket TIME_WAIT
+            if _IS_WINDOWS:
+                time.sleep(0.5)
         except psutil.NoSuchProcess:
             # Already gone
             pass
         except psutil.TimeoutExpired:
             settings.logger.warning(
-                f"RPC server process {pid} did not exit within {timeout}s. Proceeding anyway — next launch may fail."
+                f"RPC server process {pid} did not exit within {timeout}s. "
+                f"Attempting to kill it."
             )
+            try:
+                p.kill()
+                p.wait(timeout=3.0)
+            except Exception:
+                pass
         except Exception:
-            time.sleep(2.0)
+            time.sleep(1.0)
 
     @staticmethod
     def _is_server_alive():

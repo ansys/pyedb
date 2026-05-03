@@ -119,7 +119,7 @@ class EdbInit(object):
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
-        self._db = database.Database.create(db_path)
+        self._db = self._grpc_retry(database.Database.create, db_path)
         if self._db:
             RpcSession.acquire()
         return self._db
@@ -151,10 +151,58 @@ class EdbInit(object):
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
-        self._db = database.Database.open(db_path, read_only)
+        self._db = self._grpc_retry(database.Database.open, db_path, read_only)
         if self._db:
             RpcSession.acquire()
         return self._db
+
+    def _grpc_retry(self, func, *args, max_attempts=3, delay=1.0):
+        """Call a gRPC database function with retries on transient failures.
+
+        The RPC server may still be processing a previous close operation when the
+        next open/create call arrives, causing transient gRPC errors. This method
+        retries with a short delay to handle that race condition.
+
+        Parameters
+        ----------
+        func : callable
+            The database function to call (e.g. ``database.Database.open``).
+        *args :
+            Positional arguments forwarded to ``func``.
+        max_attempts : int, optional
+            Maximum number of attempts. The default is ``3``.
+        delay : float, optional
+            Seconds to wait between retries. The default is ``1.0``.
+
+        Returns
+        -------
+        object or None
+            The return value of ``func``, or ``None`` if all attempts fail.
+        """
+        last_exception = None
+        for attempt in range(max_attempts):
+            try:
+                result = func(*args)
+                if result is not None:
+                    return result
+                # func returned None — treat as transient failure
+                if attempt < max_attempts - 1:
+                    self.logger.warning(
+                        f"gRPC call {func.__name__} returned None (attempt {attempt + 1}/{max_attempts}). "
+                        f"Retrying in {delay}s..."
+                    )
+                    time.sleep(delay)
+            except Exception as e:
+                last_exception = e
+                if attempt < max_attempts - 1:
+                    self.logger.warning(
+                        f"gRPC call {func.__name__} failed (attempt {attempt + 1}/{max_attempts}): {e}. "
+                        f"Retrying in {delay}s..."
+                    )
+                    time.sleep(delay)
+                else:
+                    self.logger.error(f"gRPC call {func.__name__} failed after {max_attempts} attempts: {e}")
+        return None
 
     def delete(self, db_path):
         """Delete a database at the specified file location.
