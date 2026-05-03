@@ -157,7 +157,8 @@ class EdbInit(object):
         return self._db
 
     def _grpc_retry(self, func, *args, max_attempts=3, delay=1.0):
-        """Call a gRPC database function with retries on transient failures.
+        """
+        Call a gRPC database function with retries on transient failures.
 
         The RPC server may still be processing a previous close operation when the
         next open/create call arrives, causing transient gRPC errors. This method

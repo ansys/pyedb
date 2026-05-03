@@ -295,7 +295,8 @@ class RpcSession:
 
     @staticmethod
     def _reset_session_state():
-        """Reset all session state to initial values.
+        """
+        Reset all session state to initial values.
 
         Clears the session reference, PIDs, ref count, and the underlying
         ``ansys.edb.core.session`` module's ``current_session`` to prevent
