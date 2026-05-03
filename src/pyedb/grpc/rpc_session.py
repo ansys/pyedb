@@ -238,16 +238,16 @@ class RpcSession:
             server_proc = None
             try:
                 server_proc = RpcSession.rpc_session.local_server_proc
-            except Exception:
-                pass
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"Could not retrieve server process handle: {e}")
             try:
                 end_managing()
-            except Exception:
-                pass
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"end_managing() raised during close: {e}")
             try:
                 RpcSession.rpc_session.disconnect()
-            except Exception:
-                pass
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"disconnect() raised during close: {e}")
             # Wait for the server process to fully exit so the port is released
             # before the next session starts.
             RpcSession._wait_for_process_exit(server_proc, timeout=10.0)
@@ -284,8 +284,8 @@ class RpcSession:
             try:
                 p.kill()
                 p.wait(timeout=3.0)
-            except Exception:
-                pass
+            except Exception as e:  # nosec B110
+                settings.logger.debug(f"Failed to force-kill RPC server process {pid}: {e}")
         except Exception:
             time.sleep(1.0)
 
@@ -325,8 +325,8 @@ class RpcSession:
         # call does not attach to a dead session.
         try:
             _SESSION_MOD.current_session = None
-        except Exception:
-            pass
+        except Exception as e:  # nosec B110
+            settings.logger.debug(f"Could not clear current_session: {e}")
 
     @staticmethod
     def __get_random_free_port():

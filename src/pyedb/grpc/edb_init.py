@@ -263,8 +263,8 @@ class EdbInit(object):
         if self._db is not None:
             try:
                 self._db.close()
-            except Exception:
-                pass
+            except Exception as e:  # nosec B110
+                self.logger.debug(f"Database close() raised: {e}")
             self._db = None
         if terminate_rpc_session is True:
             # Force-kill regardless of ref count
