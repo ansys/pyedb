@@ -944,6 +944,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
+    pytest.mark.skipif(not config["use_grpc"], reason="DotNet bug always returning Wave port.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
