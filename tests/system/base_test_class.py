@@ -69,6 +69,7 @@ class BaseTestClass:
         # of the class.
         if RpcSession._open_db_count != 0:
             from pyedb.generic.settings import settings
+
             settings.logger.warning(
                 f"Test '{request.node.name}' left {RpcSession._open_db_count} "
                 "open EDB handle(s). Resetting ref-counter to prevent session leak."
