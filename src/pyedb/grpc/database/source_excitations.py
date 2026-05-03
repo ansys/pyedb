@@ -2542,7 +2542,7 @@ class SourceExcitation(SourceExcitationInternal):
                     user_defined_extent = [_x, _y]
             terminal_info = []
             for net in nets:
-                net_polygons = [prim for prim in self._pedb.modeler.primitives if prim.type in ["polygon", "rectangle"]]
+                net_polygons = [prim for prim in self._pedb.layout.primitives if prim.type in ["polygon", "rectangle"]]
                 for poly in net_polygons:
                     mid_points = [
                         [self._pedb._value_setter(arc.midpoint.x), self._pedb._value_setter(arc.midpoint.y)]
