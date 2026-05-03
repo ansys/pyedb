@@ -213,6 +213,7 @@ class TestClass(BaseTestClass):
         ustrip.width = "300um"
         assert ustrip.width == 300e-6
         assert ustrip.impedance == 37.52
+        edb.close(terminate_rpc_session=False)
 
     def test_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()

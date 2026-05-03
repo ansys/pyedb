@@ -998,7 +998,10 @@ class Padstacks(object):
         >>> success = edb.padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
         """
         for padstack_def in list(self.definitions.values()):
-            if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
+            ratio = padstack_def.hole_plating_ratio
+            if ratio is None:
+                continue  # padstack definition has no data (e.g. PlanarEMVia)
+            if ratio <= minimum_value_to_replace:
                 padstack_def.hole_plating_ratio = default_plating_ratio
                 self._logger.info(
                     "Padstack definition with zero plating ratio, defaulting to 20%".format(padstack_def.name)

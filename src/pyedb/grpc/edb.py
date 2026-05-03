@@ -1145,7 +1145,7 @@ class Edb(EdbInit):
         :class:`Stackup <pyedb.grpc.database.stackup.Stackup>`
             Layer stack configuration tools.
         """
-        if self.active_db:
+        if self.active_db and self._stackup is None:
             self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
         return self._stackup
 
