@@ -289,7 +289,13 @@ class TestClass(BaseTestClass):
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
-        assert import_method(self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0])
+        csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
+        # Verify the file is fully written before importing (guards against
+        # Linux filesystem flush races that caused intermittent failures).
+        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, (
+            f"CSV file not ready: {csv_path}"
+        )
+        assert import_method(csv_path)
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
         export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup.csv")
@@ -299,15 +305,19 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_properties_2(self):
-        """Evaluate various stackup properties."""
+        """Evaluate various stackup properties (JSON export round-trip)."""
         edbapp = self.edb_examples.create_empty_edb()
         import_method = edbapp.stackup.load
         export_method = edbapp.stackup.export
 
-        assert import_method(self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0])
+        csv_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/ansys_pcb_stackup.csv")[0]
+        assert os.path.exists(csv_path) and os.path.getsize(csv_path) > 0, (
+            f"CSV file not ready: {csv_path}"
+        )
+        assert import_method(csv_path)
         assert "18_Bottom" in edbapp.stackup.layers.keys()
         assert edbapp.stackup.add_layer("19_Bottom", None, "add_on_top", material="iron")
-        export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup.csv")
+        export_stackup_path = os.path.join(self.edb_examples.test_folder, "export_stackup_2.csv")
         assert export_method(export_stackup_path)
         assert os.path.exists(export_stackup_path)
         edbapp.close(terminate_rpc_session=False)
@@ -342,12 +352,15 @@ class TestClass(BaseTestClass):
 
     def test_stackup_load_json(self):
         """Import stackup from a file."""
-
         source_path, fpath = self.edb_examples.copy_test_files_into_local_folder(
             ["TEDB/ANSYS-HSD_V1.aedb", "TEDB/stackup.json"]
         )
+        # On Linux, shutil.copytree may return before the OS has fully flushed
+        # all inodes; verify both paths are accessible before opening.
+        assert os.path.exists(source_path), f"EDB source not ready: {source_path}"
+        assert os.path.exists(fpath) and os.path.getsize(fpath) > 0, f"JSON not ready: {fpath}"
         edbapp = self.edb_examples.load_edb(source_path)
-        edbapp.stackup.load(fpath)
+        assert edbapp.stackup.load(fpath)
         edbapp.close(terminate_rpc_session=False)
 
     def test_stackup_export_json(self):
