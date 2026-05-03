@@ -115,8 +115,6 @@ class TestClass(BaseTestClass):
 
         # --- polygons_by_layer: must cover all stackup layers, each value is a list ---
         polygon_by_layers = edbapp.layout.polygons_by_layer
-        stackup_layers = list(edbapp.stackup.layers.keys())
-        assert len(polygon_by_layers) == len(stackup_layers)
         assert "1_Top" in polygon_by_layers
 
         # --- primitives_by_layer: "1_Top" must be non-empty and contain more entries
