@@ -20,23 +20,58 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build S-parameter model assignment entries for configuration payloads."""
+
 from pathlib import Path
 
 
 class CfgSParameterModel:
-    def __init__(self, **kwargs):
+    """Represent one Touchstone model assignment for a component definition."""
+
+    def __init__(
+        self,
+        name: str = "",
+        component_definition: str = "",
+        file_path: str = "",
+        reference_net: str = "",
+        apply_to_all: bool = True,
+        components=None,
+        reference_net_per_component=None,
+        pin_order=None,
+        **kwargs,
+    ):
         self.name = kwargs.get("name", "")
-        self.component_definition = kwargs.get("component_definition", "")
-        self.file_path = kwargs.get("file_path", "")
-        self.apply_to_all = kwargs.get("apply_to_all", False)
-        self.components = kwargs.get("components", [])
-        self.reference_net = kwargs.get("reference_net", "")
-        self.reference_net_per_component = kwargs.get("reference_net_per_component", {})
-        self.pin_order = kwargs.get("pin_order", None)
+        self.name = name or kwargs.get("name", "")
+        self.component_definition = component_definition or kwargs.get("component_definition", "")
+        self.file_path = file_path or kwargs.get("file_path", "")
+        self.apply_to_all = apply_to_all if apply_to_all is not None else kwargs.get("apply_to_all", False)
+        self.components = list(components or kwargs.get("components", []))
+        self.reference_net = reference_net or kwargs.get("reference_net", "")
+        self.reference_net_per_component = reference_net_per_component or kwargs.get("reference_net_per_component", {})
+        self.pin_order = pin_order if pin_order is not None else kwargs.get("pin_order", None)
+
+    def to_dict(self) -> dict:
+        """Serialize the S-parameter model assignment."""
+        data = {
+            "name": self.name,
+            "component_definition": self.component_definition,
+            "file_path": self.file_path,
+            "reference_net": self.reference_net,
+            "apply_to_all": self.apply_to_all,
+            "components": self.components,
+        }
+        if self.reference_net_per_component:
+            data["reference_net_per_component"] = self.reference_net_per_component
+        if self.pin_order is not None:
+            data["pin_order"] = self.pin_order
+        return data
 
 
 class CfgSParameters:
+    """Manage all configured S-parameter model assignments."""
+
     def apply(self):
+        """Write all S-parameter model assignments into the open EDB design."""
         for s_param in self.s_parameters_models:
             fpath = s_param.file_path
             if not Path(fpath).anchor:
@@ -63,6 +98,21 @@ class CfgSParameters:
                 comp.use_s_parameter_model(s_param.name, reference_net=ref_net)
 
     def get_data_from_db(self, cfg_components):
+        """Read S-parameter model assignments from the open EDB design.
+
+        Parameters
+        ----------
+        cfg_components : list of dict
+            Serialized component entries (from ``CfgComponents.to_list()``)
+            used to correlate assignment details.
+
+        Returns
+        -------
+        list of dict
+            Serialized S-parameter model assignment payloads.
+        """
+        if self._pedb is None:
+            return self.to_list()
         db_comp_def = self._pedb.definitions.component
         for name, compdef_obj in db_comp_def.items():
             nport_models = compdef_obj.component_models
@@ -95,22 +145,75 @@ class CfgSParameters:
                         )
                     )
 
-        data = []
-        for i in self.s_parameters_models:
-            data.append(
-                {
-                    "name": i.name,
-                    "component_definition": i.component_definition,
-                    "file_path": i.file_path,
-                    "apply_to_all": i.apply_to_all,
-                    "components": i.components,
-                    "reference_net_per_component": i.reference_net_per_component,
-                    "pin_order": i.pin_order,
-                }
-            )
-        return data
+        return self.to_list()
 
-    def __init__(self, pedb, data, path_lib=None):
+    def __init__(self, pedb=None, data=None, path_lib=None):
         self._pedb = pedb
         self.path_libraries = path_lib
-        self.s_parameters_models = [CfgSParameterModel(**i) for i in data]
+        self.s_parameters_models = [CfgSParameterModel(**i) for i in (data or [])]
+
+    def add(
+        self,
+        name: str,
+        component_definition: str,
+        file_path: str,
+        reference_net: str = "",
+        apply_to_all: bool = True,
+        components=None,
+        reference_net_per_component=None,
+        pin_order=None,
+    ):
+        """Add an S-parameter model assignment to this configuration.
+
+        Parameters
+        ----------
+        name : str
+            Model name registered in the EDB component library.
+        component_definition : str
+            Component definition (part) name, e.g. ``"CAP_100nF"``.
+        file_path : str
+            Absolute or library-relative path to the Touchstone file.
+        reference_net : str, optional
+            Default reference (ground) net for the model.
+        apply_to_all : bool, optional
+            Assign the model to all components matching *component_definition*
+            when ``True`` (default).  When ``False``, only the entries in
+            *components* are assigned.
+        components : list of str, optional
+            Reference designators to assign when *apply_to_all* is ``False``.
+        reference_net_per_component : dict, optional
+            Per-component reference net overrides:
+            ``{"U1": "GND_U1", "U2": "GND"}``.
+        pin_order : list, optional
+            Custom port-to-pin mapping list.
+
+        Returns
+        -------
+        CfgSParameterModel
+            The newly created model assignment object.
+
+        Examples
+        --------
+        >>> cfg.s_parameters.add(
+        ...     "cap_model",
+        ...     component_definition="CAP_100nF",
+        ...     file_path="/snp/cap.s2p",
+        ...     reference_net="GND",
+        ... )
+        """
+        model = CfgSParameterModel(
+            name=name,
+            component_definition=component_definition,
+            file_path=file_path,
+            reference_net=reference_net,
+            apply_to_all=apply_to_all,
+            components=components or [],
+            reference_net_per_component=reference_net_per_component or {},
+            pin_order=pin_order,
+        )
+        self.s_parameters_models.append(model)
+        return model
+
+    def to_list(self):
+        """Serialize all configured S-parameter model assignments."""
+        return [i.to_dict() for i in self.s_parameters_models]

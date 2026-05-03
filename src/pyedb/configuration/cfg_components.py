@@ -20,8 +20,11 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build the ``components`` configuration section and its model helpers."""
+
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
 from ansys.edb.core.definition.solder_ball_property import SolderballShape as CoreSolderballShape
+from pydantic import BaseModel
 
 from pyedb.configuration.cfg_common import CfgBase
 
@@ -42,8 +45,11 @@ _solder_shape_mapping = {
 
 _die_type_mapping = {
     "flip_chip": CoreDieType.FLIPCHIP,
+    "flipchip": CoreDieType.FLIPCHIP,
     "wire_bond": CoreDieType.WIREBOND,
+    "wirebond": CoreDieType.WIREBOND,
     "no_die": CoreDieType.NONE,
+    "none": CoreDieType.NONE,
 }
 
 _die_orientation_mapping = {
@@ -52,7 +58,52 @@ _die_orientation_mapping = {
 }
 
 
+class CfgPinPairModel(BaseModel):
+    """Represent one pin-pair RLC model entry."""
+
+    first_pin: str
+    second_pin: str
+    resistance: str | float | None = None
+    inductance: str | float | None = None
+    capacitance: str | float | None = None
+    is_parallel: bool = False
+    resistance_enabled: bool = False
+    inductance_enabled: bool = False
+    capacitance_enabled: bool = False
+
+    def __init__(
+        self,
+        first_pin: str,
+        second_pin: str,
+        resistance: str | float | None = None,
+        inductance: str | float | None = None,
+        capacitance: str | float | None = None,
+        is_parallel: bool = False,
+        resistance_enabled: bool = False,
+        inductance_enabled: bool = False,
+        capacitance_enabled: bool = False,
+        **kwargs,
+    ):
+        super().__init__(
+            first_pin=first_pin,
+            second_pin=second_pin,
+            resistance=resistance,
+            inductance=inductance,
+            capacitance=capacitance,
+            is_parallel=is_parallel,
+            resistance_enabled=resistance_enabled,
+            inductance_enabled=inductance_enabled,
+            capacitance_enabled=capacitance_enabled,
+            **kwargs,
+        )
+
+    def to_dict(self) -> dict:
+        return self.model_dump()
+
+
 class CfgComponent(CfgBase):
+    """Fluent builder for a single component entry."""
+
     def retrieve_model_properties_from_edb(self):
         c_p = self.pyedb_obj
 
@@ -101,6 +152,8 @@ class CfgComponent(CfgBase):
             self.spice_model["terminal_pairs"] = c_p.model.pin_pairs
 
     def _set_ic_die_properties_to_edb(self):
+        if not self.ic_die_properties:
+            return
         if hasattr(self.pyedb_obj.component_property, "core"):
             cp = self.pyedb_obj.component_property.core
         else:
@@ -111,12 +164,14 @@ class CfgComponent(CfgBase):
         else:
             ic_die_prop = cp.GetDieProperty().Clone()
         die_type = self.ic_die_properties.get("type")
+        if die_type:
+            die_type = die_type.lower()
         if self._pedb.grpc:
             ic_die_prop.die_type = _die_type_mapping[die_type]
         else:
             snake_to_pascal = _get_snake_to_pascal()
             ic_die_prop.SetType(getattr(self._pedb._edb.Definition.DieType, snake_to_pascal(die_type)))
-        if not die_type == "no_die":
+        if die_type not in ("no_die", "none", None):
             orientation = self.ic_die_properties.get("orientation")
             if orientation:
                 if self._pedb.grpc:
@@ -206,59 +261,52 @@ class CfgComponent(CfgBase):
             )
 
     def _set_solder_ball_properties_to_edb(self):
+        shape = self.solder_ball_properties.get("shape")
+        if not shape:
+            return
         if self._pedb.grpc:
-            cp = self.pyedb_obj.component_property
-            solder_ball_prop = cp.solder_ball_property
-            shape = self.solder_ball_properties.get("shape")
-            if shape:
-                solder_ball_prop.shape = _solder_shape_mapping.get(shape, CoreSolderballShape.NO_SOLDERBALL)
-        else:
-            # Use a mutable clone so SetSolderBallProperty does not raise
-            # ReadOnlyModificationAttemptException on the live object.
-            cp = self.pyedb_obj._get_component_property_clone()
-            solder_ball_prop = cp.GetSolderBallProperty().Clone()
-            shape = self.solder_ball_properties.get("shape")
-            if shape:
-                snake_to_pascal = _get_snake_to_pascal()
-                solder_ball_prop.SetShape(getattr(self._pedb._edb.Definition.SolderballShape, snake_to_pascal(shape)))
-            else:
-                return
-
-        if shape == "cylinder":
-            diameter = self.solder_ball_properties["diameter"]
-            if self._pedb.grpc:
-                solder_ball_prop.set_diameter(self._pedb.value(diameter), self._pedb.value(diameter))
-            else:
-                solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(diameter))
-        elif shape == "spheroid":
-            diameter = self.solder_ball_properties["diameter"]
-            mid_diameter = self.solder_ball_properties["mid_diameter"]
-            if self._pedb.grpc:
-                solder_ball_prop.set_diameter(self._pedb.value(diameter), self._pedb.value(mid_diameter))
-            else:
-                solder_ball_prop.SetDiameter(self._pedb.edb_value(diameter), self._pedb.edb_value(mid_diameter))
-        else:
-            raise ValueError("Solderball shape must be either cylinder or spheroid")
-        if self._pedb.grpc:
-            solder_ball_prop.height = self._pedb.value(self.solder_ball_properties["height"])
-            solder_ball_prop.material_name = self.solder_ball_properties.get("material", "solder")
-            cp.solder_ball_property = solder_ball_prop
+            diameter = self.solder_ball_properties.get("diameter")
+            mid_diameter = self.solder_ball_properties.get("mid_diameter", diameter)
+            height = self.solder_ball_properties.get("height")
+            material = self.solder_ball_properties.get("material", "solder")
+            orientation = self.solder_ball_properties.get("orientation", "chip_down")
+            self._pedb.components.set_solder_ball(
+                component=self.pyedb_obj.name,
+                sball_diam=diameter,
+                sball_height=height,
+                shape=shape.capitalize(),
+                sball_mid_diam=mid_diameter,
+                chip_orientation=orientation,
+                material_name=material,
+            )
         else:
             solder_ball_prop.SetHeight(self._pedb.edb_value(self.solder_ball_properties["height"]))
             solder_ball_prop.SetMaterialName(self.solder_ball_properties.get("material", "solder"))
             cp.SetSolderBallProperty(solder_ball_prop)
+            # Apply orientation to IC die property if provided
+            orientation = self.solder_ball_properties.get("orientation")
+            if orientation and self.pyedb_obj.type.lower() == "ic":
+                snake_to_pascal = _get_snake_to_pascal()
+                ic_die_prop = cp.GetDieProperty().Clone()
+                ic_die_prop.SetOrientation(
+                    getattr(self._pedb._edb.Definition.DieOrientation, snake_to_pascal(orientation))
+                )
+                cp.SetDieProperty(ic_die_prop)
             self.pyedb_obj.edbcomponent.SetComponentProperty(cp)
 
     def _retrieve_ic_die_properties_from_edb(self):
         temp = dict()
         cp = self.pyedb_obj
 
-        # ic_die_prop = cp.GetDieProperty().Clone()
-        # die_type = pascal_to_snake(ic_die_prop.GetType().ToString())
-        temp["type"] = cp.ic_die_properties.die_type
-        if not temp["type"] == "no_die":
+        die_type = cp.ic_die_properties.die_type
+        # Default to flip_chip when the component has no die type configured,
+        # since the EDB API requires a valid die type to accept solder balls.
+        if die_type in ("no_die", "none", None):
+            die_type = "flip_chip"
+        temp["type"] = die_type
+        if die_type not in ("no_die", "none", None):
             temp["orientation"] = cp.ic_die_properties.die_orientation
-            if temp["type"] == "wire_bond":
+            if die_type == "wire_bond":
                 temp["height"] = str(cp.ic_die_properties.height)
         self.ic_die_properties = temp
 
@@ -293,6 +341,8 @@ class CfgComponent(CfgBase):
             self.port_properties = temp
 
     def set_parameters_to_edb(self):
+        if self.pyedb_obj is None:
+            return self.to_dict()
         if self.type:
             self.pyedb_obj.type = self.type
         if self.enabled is not None:
@@ -308,6 +358,8 @@ class CfgComponent(CfgBase):
             self._set_port_properties_to_edb()
 
     def retrieve_parameters_from_edb(self):
+        if self.pyedb_obj is None:
+            return self.to_dict()
         self.type = self.pyedb_obj.type
         self.definition = self.pyedb_obj.part_name
         self.reference_designator = self.pyedb_obj.name
@@ -320,7 +372,15 @@ class CfgComponent(CfgBase):
             self._retrieve_solder_ball_properties_from_edb()
             self._retrieve_port_properties_from_edb()
 
-    def __init__(self, _pedb, pedb_object, **kwargs):
+    def __init__(self, _pedb=None, pedb_object=None, **kwargs):
+        if (
+            pedb_object is None
+            and not hasattr(_pedb, "components")
+            and "reference_designator" not in kwargs
+            and _pedb is not None
+        ):
+            kwargs["reference_designator"] = _pedb
+            _pedb = None
         self._pedb = _pedb
         self.pyedb_obj = pedb_object
 
@@ -333,22 +393,415 @@ class CfgComponent(CfgBase):
 
         self.port_properties = kwargs.get("port_properties", {})
         self.solder_ball_properties = kwargs.get("solder_ball_properties", {})
-        self.ic_die_properties = kwargs.get("ic_die_properties", {"type": "no_die"})
+        self.ic_die_properties = kwargs.get("ic_die_properties", {})
         self.pin_pair_model = kwargs.get("pin_pair_model", [])
         self.spice_model = kwargs.get("spice_model", {})
         self.s_parameter_model = kwargs.get("s_parameter_model", {})
         self.netlist_model = kwargs.get("netlist_model", {})
 
+    def add_pin_pair_rlc(
+        self,
+        first_pin: str,
+        second_pin: str,
+        resistance=None,
+        inductance=None,
+        capacitance=None,
+        is_parallel: bool = False,
+        resistance_enabled: bool = False,
+        inductance_enabled: bool = False,
+        capacitance_enabled: bool = False,
+    ):
+        """Append a pin-pair RLC model between two component pins.
+
+        Parameters
+        ----------
+        first_pin : str
+            Name of the first pin, e.g. ``"1"``.
+        second_pin : str
+            Name of the second pin, e.g. ``"2"``.
+        resistance : str, float, or None, optional
+            Resistance value, e.g. ``"100ohm"`` or ``100.0``.
+        inductance : str, float, or None, optional
+            Inductance value, e.g. ``"1nH"``.
+        capacitance : str, float, or None, optional
+            Capacitance value, e.g. ``"100nF"``.
+        is_parallel : bool, optional
+            ``True`` for a parallel RLC topology.  Default is ``False``
+            (series).
+        resistance_enabled : bool, optional
+            Activate the resistance element.  Default is ``False``.
+        inductance_enabled : bool, optional
+            Activate the inductance element.  Default is ``False``.
+        capacitance_enabled : bool, optional
+            Activate the capacitance element.  Default is ``False``.
+
+        Examples
+        --------
+        >>> r1 = cfg.components.add("R1", part_type="resistor")
+        >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+        """
+        self.pin_pair_model.append(
+            CfgPinPairModel(
+                first_pin=first_pin,
+                second_pin=second_pin,
+                resistance=resistance,
+                inductance=inductance,
+                capacitance=capacitance,
+                is_parallel=is_parallel,
+                resistance_enabled=resistance_enabled,
+                inductance_enabled=inductance_enabled,
+                capacitance_enabled=capacitance_enabled,
+            ).to_dict()
+        )
+
+    def set_s_parameter_model(self, model_name: str, model_path: str, reference_net: str):
+        """Assign a Touchstone S-parameter model to this component.
+
+        Parameters
+        ----------
+        model_name : str
+            Name registered in the EDB component model library.
+        model_path : str
+            Absolute path to the ``.sNp`` Touchstone file.
+        reference_net : str
+            Reference (ground) net for the model, e.g. ``"GND"``.
+
+        Examples
+        --------
+        >>> u1.set_s_parameter_model("cap_100nF", "/snp/cap.s2p", "GND")
+        """
+        self.s_parameter_model = {
+            "model_name": model_name,
+            "model_path": model_path,
+            "reference_net": reference_net,
+        }
+
+    def set_spice_model(self, model_name: str, model_path: str, sub_circuit: str = "", terminal_pairs=None):
+        """Assign a SPICE subcircuit model to this component.
+
+        Parameters
+        ----------
+        model_name : str
+            SPICE model name registered in the library.
+        model_path : str
+            Absolute path to the ``.sp`` SPICE file.
+        sub_circuit : str, optional
+            Subcircuit name inside the file.  Default is ``""``.
+        terminal_pairs : list, optional
+            Pin-to-node mapping list.  Default is ``[]``.
+
+        Examples
+        --------
+        >>> u1.set_spice_model("ic_spice", "/spice/ic.sp", sub_circuit="IC_TOP")
+        """
+        self.spice_model = {
+            "model_name": model_name,
+            "model_path": model_path,
+            "sub_circuit": sub_circuit,
+            "terminal_pairs": terminal_pairs or [],
+        }
+
+    def set_netlist_model(self, netlist: str):
+        """Assign a raw netlist model to this component.
+
+        Parameters
+        ----------
+        netlist : str
+            SPICE-compatible netlist string.
+        """
+        self.netlist_model = {"netlist": netlist}
+
+    def set_ic_die_properties(self, die_type: str = "no_die", orientation: str = "chip_up", height=None):
+        """Configure IC die and orientation properties.
+
+        Parameters
+        ----------
+        die_type : str, optional
+            Die type.  Accepted values: ``"flip_chip"`` | ``"wire_bond"`` |
+            ``"no_die"``.  Default is ``"no_die"``.
+        orientation : str, optional
+            Die orientation.  ``"chip_up"`` (default) or ``"chip_down"``.
+        height : str or float, optional
+            Die height (wire bond only), e.g. ``"100um"``.
+
+        Examples
+        --------
+        >>> u1.set_ic_die_properties("flip_chip", orientation="chip_down")
+        """
+        data = {"type": die_type}
+        if die_type != "no_die":
+            data["orientation"] = orientation
+            if die_type == "wire_bond" and height:
+                data["height"] = height
+        self.ic_die_properties = data
+
+    def set_solder_ball_properties(
+        self,
+        shape: str = "cylinder",
+        diameter: str = None,
+        height: str = None,
+        material: str = "solder",
+        mid_diameter=None,
+        orientation: str = "chip_down",
+        reference_designator: str = None,
+    ):
+        """Configure solder-ball geometry for this component.
+
+        Parameters
+        ----------
+        shape : str, optional
+            Solder-ball shape.  ``"cylinder"`` (default), ``"spheroid"``, or
+            ``"no_solder_ball"``.
+        diameter : str, optional
+            Outer diameter, e.g. ``"150um"``.  When *None* and a live EDB
+            session is attached the smallest pin pad size found on the
+            component is used automatically.  Falls back to ``"150um"`` if
+            the pad size cannot be determined.
+        height : str, optional
+            Solder-ball height, e.g. ``"100um"``.  When *None* the height is
+            set to ``2 * diameter / 3``.
+        material : str, optional
+            Material name.  Default is ``"solder"``.
+        mid_diameter : str or None, optional
+            Mid-diameter for spheroid shape.  Defaults to *diameter* when
+            *None*.
+        orientation : str, optional
+            Die orientation for IC components.  ``"chip_down"`` (default) or
+            ``"chip_up"``.
+        reference_designator : str, optional
+            Override the component reference designator used when querying pin
+            sizes from EDB.  When *None* ``self.reference_designator`` is
+            used.
+
+        Examples
+        --------
+        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        >>> u1.set_solder_ball_properties()  # auto-sizes from pin pads
+        """
+        refdes = reference_designator or self.reference_designator
+
+        if diameter is None:
+            diameter = "150um"  # safe default
+            if self._pedb is not None and refdes is not None:
+                try:
+                    comp = self._pedb.components.instances.get(refdes)
+                    if comp is not None:
+                        min_size = None
+                        placement_layer = comp.placement_layer
+                        for pin in comp.pins.values():
+                            try:
+                                bbox = pin.bounding_box
+                                # bbox = ((x1,y1),(x2,y2))
+                                w = abs(bbox[1][0] - bbox[0][0])
+                                h = abs(bbox[1][1] - bbox[0][1])
+                                size = min(w, h)
+                                if size > 0 and (min_size is None or size < min_size):
+                                    min_size = size
+                            except Exception:
+                                continue
+                        if min_size is not None and min_size > 0:
+                            # Convert metres to a string like "150um"
+                            diameter = f"{min_size * 1e6:.6g}um"
+                except Exception:
+                    pass  # keep the safe default
+
+        if height is None:
+            # Parse diameter value (strip unit suffix) to compute 2/3 * diameter
+            try:
+                import re as _re
+
+                m = _re.match(r"([0-9.eE+\-]+)\s*([a-zA-Z]*)", diameter)
+                num = float(m.group(1))
+                unit = m.group(2) or "um"
+                height = f"{num * 2 / 3:.6g}{unit}"
+            except Exception:
+                height = "100um"
+
+        data = {
+            "shape": shape,
+            "diameter": diameter,
+            "height": height,
+            "material": material,
+            "orientation": orientation,
+        }
+        if shape == "spheroid":
+            data["mid_diameter"] = mid_diameter or diameter
+        self.solder_ball_properties = data
+
+    def set_port_properties(
+        self,
+        reference_height: str = "0",
+        reference_size_auto: bool = True,
+        reference_size_x: str = "0",
+        reference_size_y: str = "0",
+    ):
+        """Configure port reference geometry for this IC component.
+
+        Parameters
+        ----------
+        reference_height : str, optional
+            Port reference height, e.g. ``"50um"``.  Default is ``"0"``.
+        reference_size_auto : bool, optional
+            Let the solver auto-compute the reference size.  Default is
+            ``True``.
+        reference_size_x : str, optional
+            Explicit reference size in X when *reference_size_auto* is
+            ``False``.  Default is ``"0"``.
+        reference_size_y : str, optional
+            Explicit reference size in Y.  Default is ``"0"``.
+
+        Examples
+        --------
+        >>> u1.set_port_properties(reference_height="50um")
+        """
+        self.port_properties = {
+            "reference_height": reference_height,
+            "reference_size_auto": reference_size_auto,
+            "reference_size_x": reference_size_x,
+            "reference_size_y": reference_size_y,
+        }
+
+    def to_dict(self) -> dict:
+        """Serialize the component configuration."""
+        data: dict = {"reference_designator": self.reference_designator}
+        part_type = self.type
+        if part_type is not None:
+            data["part_type"] = part_type
+        for key in ("enabled", "definition", "placement_layer"):
+            val = getattr(self, key)
+            if val is not None:
+                data[key] = val
+        if self.pins:
+            data["pins"] = self.pins
+        if self.pin_pair_model:
+            data["pin_pair_model"] = self.pin_pair_model
+        for key in (
+            "s_parameter_model",
+            "spice_model",
+            "netlist_model",
+            "ic_die_properties",
+            "solder_ball_properties",
+            "port_properties",
+        ):
+            val = getattr(self, key)
+            if val not in [None, {}, []]:
+                data[key] = val
+        return data
+
 
 class CfgComponents:
-    def __init__(self, pedb, components_data):
+    """Fluent builder for the ``components`` configuration list."""
+
+    def __init__(self, pedb=None, components_data=None):
         self._pedb = pedb
         self.components = []
 
         if components_data:
             for comp in components_data:
-                obj = self._pedb.components.instances[comp["reference_designator"]]
+                obj = self._pedb.components.instances[comp["reference_designator"]] if self._pedb else None
                 self.components.append(CfgComponent(self._pedb, obj, **comp))
+
+    def get(self, reference_designator: str) -> "CfgComponent":
+        """Return a :class:`CfgComponent` for an *existing* EDB component.
+
+        The component is looked up by *reference_designator* in the live EDB
+        session and its current properties (type, model, die, solder-ball,
+        port) are pre-loaded into the returned builder.  Mutate the returned
+        object and then call ``edb.configuration.run(cfg)`` to push the
+        changes back to the database.
+
+        If the component has already been registered via :meth:`add` or a
+        previous :meth:`get` call, the cached entry is returned instead of
+        creating a duplicate.
+
+        Parameters
+        ----------
+        reference_designator : str
+            Reference designator of the component to retrieve, e.g. ``"U1"``.
+
+        Returns
+        -------
+        CfgComponent
+            Component builder pre-populated with current EDB properties.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached or the component does not exist.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> u1 = cfg.components.get("U1")
+        >>> u1.set_solder_ball_properties("cylinder", "150um", "100um")
+        >>> edb.configuration.run(cfg)
+        """
+        # Return cached entry if already present
+        for c in self.components:
+            if c.reference_designator == reference_designator:
+                return c
+
+        if self._pedb is None:
+            raise KeyError(
+                f"No EDB session is attached to this builder. "
+                f"Use edb.configuration.create_config_builder() to get a session-aware builder."
+            )
+        instances = self._pedb.components.instances
+        if reference_designator not in instances:
+            raise KeyError(f"Component '{reference_designator}' not found in the EDB layout.")
+
+        pedb_obj = instances[reference_designator]
+        comp = CfgComponent(self._pedb, pedb_obj, reference_designator=reference_designator, part_type=pedb_obj.type)
+        comp.retrieve_parameters_from_edb()
+        self.components.append(comp)
+        return comp
+
+    def add(
+        self,
+        reference_designator: str,
+        part_type=None,
+        enabled=None,
+        definition=None,
+        placement_layer=None,
+    ):
+        """Add a component configuration entry.
+
+        Parameters
+        ----------
+        reference_designator : str
+            Unique component reference designator (e.g. ``"U1"``).
+        part_type : str, optional
+            Component type.  Accepted values: ``"resistor"``,
+            ``"capacitor"``, ``"inductor"``, ``"ic"``, ``"io"``,
+            ``"other"``.
+        enabled : bool, optional
+            Whether the component is enabled in the simulation.
+        definition : str, optional
+            Component part definition name.
+        placement_layer : str, optional
+            Layer on which the component is placed.
+
+        Returns
+        -------
+        CfgComponent
+            The newly created component builder.
+
+        Examples
+        --------
+        >>> r1 = cfg.components.add("R1", part_type="resistor", enabled=True)
+        >>> r1.add_pin_pair_rlc("1", "2", resistance="100ohm", resistance_enabled=True)
+        """
+        comp = CfgComponent(
+            self._pedb,
+            None,
+            reference_designator=reference_designator,
+            part_type=part_type,
+            enabled=enabled,
+            definition=definition,
+            placement_layer=placement_layer,
+        )
+        self.components.append(comp)
+        return comp
 
     def clean(self):
         self.components = []
@@ -359,8 +812,14 @@ class CfgComponents:
 
     def retrieve_parameters_from_edb(self):
         self.clean()
+        if self._pedb is None:
+            return self.to_list()
         comps_in_db = self._pedb.components
         for _, comp in comps_in_db.instances.items():
             cfg_comp = CfgComponent(self._pedb, comp)
             cfg_comp.retrieve_parameters_from_edb()
             self.components.append(cfg_comp)
+
+    def to_list(self):
+        """Serialize all configured components."""
+        return [c.to_dict() for c in self.components]

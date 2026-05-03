@@ -28,7 +28,6 @@ from pathlib import Path
 import ansys.edb.core
 import pytest
 
-# is_linux is only used for a skipif marker — define it here without dotnet
 is_linux = os.name == "posix"
 
 from pyedb.generic.constants import unit_converter
@@ -87,7 +86,6 @@ def check_dictionaries(source_dict, target_dict):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13b_stackup_materials(self):
         data = {
             "stackup": {
@@ -390,10 +388,6 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -436,10 +430,6 @@ class TestClass(BaseTestClass):
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_05h_diff_wave_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -634,7 +624,6 @@ class TestClass(BaseTestClass):
                     assert value == target_pdef[p]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13c_stackup_create_stackup(self):
         data = {
             "stackup": {
@@ -759,10 +748,6 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_15d_sources_equipotential(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -814,7 +799,7 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Wait SP1 fix in backend")
+    @pytest.mark.skipif(not config["use_grpc"], reason="Wait SP2 to fix DotNet GC bug.")
     def test_16_export_to_external_file(self):
         edbapp = self.edb_examples.get_si_verse()
         data_file_path = Path(self.edb_examples.test_folder) / "test.json"
@@ -878,7 +863,7 @@ class TestClassTerminals(BaseTestClass):
         "impedance": 1,
         "is_circuit_port": False,
         "boundary_type": "PortBoundary",
-        "hfss_type": "Wave",
+        "hfss_type": "Gap",
         "terminal_type": "padstack_instance",
         "padstack_instance": "U7-M7",
         "layer": None,
@@ -947,7 +932,7 @@ class TestClassTerminals(BaseTestClass):
         "name": "bundle_terminal",
     }
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
+    @pytest.mark.skipif(not config["use_grpc"], reason="DotNet always return Wave-port type.")
     def test_padstack_instance_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"terminals": [self.terminal1]}, append=False)
@@ -965,17 +950,13 @@ class TestClassTerminals(BaseTestClass):
             "phase": 0.0,
             "terminal_to_ground": "no_ground" if edbapp.grpc else "kNoGround",
             "boundary_type": "port" if edbapp.grpc else "PortBoundary",
-            "hfss_type": "Wave",
+            "hfss_type": "Gap",
             "terminal_type": "padstack_instance",
             "padstack_instance": "U7-M7",
             "padstack_instance_id": 4294971660,
         }
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_pin_group_terminal(self):
         edbapp = self.edb_examples.get_si_verse()
         edbapp.configuration.load({"pin_groups": [self.pin_group2]})
@@ -1042,10 +1023,6 @@ class TestClassTerminals(BaseTestClass):
         ]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_edge_terminal(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -1076,10 +1053,6 @@ class TestClassTerminals(BaseTestClass):
         assert edbapp.terminals["edge_terminal_2"].hfss_type == "Wave"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_edge_bundle_terminal(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -1242,10 +1215,6 @@ class TestClassSetups(BaseTestClass):
         assert data_from_db["setups"][0]["mesh_operations"][0]["name"] == "hfss_setup_1_AutoMeshOp"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_hfss_setup_w_frequency_sweeps(self):
         data = {
             "setups": [
@@ -1580,10 +1549,6 @@ class TestClassPadstacks(BaseTestClass):
                 assert v == instance[k]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_09_padstack_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         cfg_data = edbapp.configuration.cfg_data
@@ -1605,7 +1570,6 @@ class TestClassPadstacks(BaseTestClass):
         assert data_from_db["padstacks"]["instances"]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Wait SP1 fix in backend")
     def test_13_stackup_layers(self):
         data = {
             "stackup": {
@@ -1739,10 +1703,6 @@ class TestClassPadstacks(BaseTestClass):
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_18_modeler(self):
         data = {
             "modeler": {
@@ -2010,4 +1970,123 @@ class TestOperations(BaseTestClass):
         data_from_db = edbapp.configuration.get_data_from_db(components=True)
         c375 = [i for i in data_from_db["components"] if i["reference_designator"] == "C375"][0]
         assert c375["pin_pair_model"] == components[0]["pin_pair_model"]
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_builder_1(self):
+        # Test with solder ball cox ports
+        edbapp = self.edb_examples.get_si_verse()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+
+        config_builder = edbapp.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        component = config_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", diameter="300um", height="300um")
+        config_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        edbapp.configuration.run(config_builder)
+        assert len(edbapp.nets.nets) == 10
+        assert len(edbapp.ports) == 8
+        assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
+        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (300e-6, 300e-6)
+        assert edbapp.components["U1"].component_property.solder_ball_property.height == 300e-6
+        bbox = edbapp.get_bounding_box()
+        assert pytest.approx(bbox[0][0], 5) == 0.010
+        assert pytest.approx(bbox[0][1], 5) == 0.0216
+        assert pytest.approx(bbox[1][0], 5) == 0.0751
+        assert pytest.approx(bbox[1][1], 5) == 0.0481
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_builder_2(self):
+        #  test with circuit port and pin group
+        edbapp = self.edb_examples.get_si_verse()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+
+        config_builder = edbapp.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        config_builder.pin_groups.add(reference_designator="U1", nets="GND")
+        config_builder.pin_groups.add(reference_designator="U1", nets=config_builder.nets.signal_nets)
+        for sign_net in config_builder.nets.signal_nets:
+            config_builder.ports.add_circuit_port(reference_designator="U1", positive_net=sign_net, negative_net="GND")
+        edbapp.configuration.run(config_builder)
+        assert len(edbapp.ports) == 8
+        assert "Port_U1_PCIe_Gen4_RX0_P_AP26" in edbapp.ports
+        assert "Test_HFSS" in edbapp.setups
+        assert edbapp.setups["Test_HFSS"].sweeps["Test_Sweep"].frequency_string[0] == "LIN 1GHz 10GHz 0.5GHz"
+        edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_builder_3(self):
+        # Test with solder ball cox ports but discoevring solder balls diameters
+        edbapp = self.edb_examples.get_si_verse()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+
+        config_builder = edbapp.configuration.create_config_builder()
+        config_builder.nets.add_signal_nets(signal_nets)
+        config_builder.nets.add_reference_nets(["GND"])
+        config_builder.operations.add_cutout(
+            signal_nets=config_builder.nets.signal_nets,
+            reference_nets=config_builder.nets.reference_nets,
+            extent_type="ConvexHull",
+            expansion_size=3e-3,
+        )
+        setup = config_builder.setups.add_hfss_setup(name="Test_HFSS")
+        setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        component = config_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", reference_designator="U1")
+        config_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        edbapp.configuration.run(config_builder)
+        assert len(edbapp.nets.nets) == 10
+        assert len(edbapp.ports) == 8
+        assert edbapp.components["U1"].component_property.solder_ball_property.shape == "cylinder"
+        assert edbapp.components["U1"].component_property.solder_ball_property.get_diameter() == (
+            pytest.approx(500e-6, 5),
+            pytest.approx(500e-6, 5),
+        )
+        assert edbapp.components["U1"].component_property.solder_ball_property.height == pytest.approx(333e-6, 5)
         edbapp.close(terminate_rpc_session=False)

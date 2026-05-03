@@ -837,9 +837,7 @@ class Stackup:
         >>> edb = Edb()
         >>> outline_layer = edb.stackup.add_document_layer("Outline", layer_type="outline")
         """
-        added_layer = self.add_layer_top(name)
-        added_layer.type = CoreLayerType.USER_LAYER
-        return added_layer
+        return self._create_nonstackup_layer(name, layer_type)
 
     @deprecate_argument_name({"fillMaterial": "filling_material"})
     def add_layer(

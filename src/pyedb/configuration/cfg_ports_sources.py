@@ -19,7 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
-import copy
+"""Build ports, sources, probes, and terminal-selector helpers."""
 
 import numpy as np
 
@@ -29,15 +29,179 @@ from pyedb.generic.settings import settings
 
 
 class CfgTerminalInfo(CfgBase):
+    """Describe a high-level terminal selector used by ports, sources, and probes."""
+
     CFG_TERMINAL_TYPES = ["pin", "net", "pin_group", "nearest_pin", "coordinates"]
 
+    @staticmethod
+    def pin(pin_name: str, reference_designator: str | None = None) -> dict:
+        """Create a terminal selector that targets a single component pin.
+
+        Parameters
+        ----------
+        pin_name : str
+            Physical pin identifier on the component, e.g. ``"A1"``.
+        reference_designator : str, optional
+            Reference designator of the owning component, e.g. ``"U1"``.
+
+        Returns
+        -------
+        dict
+            Terminal-selector dictionary, e.g.
+            ``{"pin": "A1", "reference_designator": "U1"}``.
+
+        Examples
+        --------
+        >>> TerminalInfo.pin("A1", reference_designator="U1")
+        {'pin': 'A1', 'reference_designator': 'U1'}
+        """
+        d = {"pin": pin_name}
+        if reference_designator:
+            d["reference_designator"] = reference_designator
+        return d
+
+    @staticmethod
+    def net(net_name: str, reference_designator: str | None = None) -> dict:
+        """Create a terminal selector that targets all pins of a net on a component.
+
+        Parameters
+        ----------
+        net_name : str
+            Net name, e.g. ``"VDD"``.
+        reference_designator : str, optional
+            Component whose pins should be used, e.g. ``"U1"``.
+
+        Returns
+        -------
+        dict
+            Terminal-selector dictionary.
+
+        Examples
+        --------
+        >>> TerminalInfo.net("VDD", reference_designator="U1")
+        {'net': 'VDD', 'reference_designator': 'U1'}
+        """
+        d = {"net": net_name}
+        if reference_designator:
+            d["reference_designator"] = reference_designator
+        return d
+
+    @staticmethod
+    def pin_group(pin_group_name: str) -> dict:
+        """Create a terminal selector that references a named pin group.
+
+        Parameters
+        ----------
+        pin_group_name : str
+            Name of a pre-defined pin group, e.g. ``"pg_VDD"``.
+
+        Returns
+        -------
+        dict
+            Terminal-selector dictionary ``{"pin_group": pin_group_name}``.
+
+        Examples
+        --------
+        >>> TerminalInfo.pin_group("pg_VDD")
+        {'pin_group': 'pg_VDD'}
+        """
+        return {"pin_group": pin_group_name}
+
+    @staticmethod
+    def padstack(padstack_instance_name: str) -> dict:
+        """Create a terminal selector that targets a named padstack instance.
+
+        Use this for coaxial ports placed on named via instances.
+
+        Parameters
+        ----------
+        padstack_instance_name : str
+            AEDT padstack-instance name, e.g. ``"via_A1"``.
+
+        Returns
+        -------
+        dict
+            Terminal-selector dictionary ``{"padstack": padstack_instance_name}``.
+
+        Examples
+        --------
+        >>> TerminalInfo.padstack("via_A1")
+        {'padstack': 'via_A1'}
+        """
+        return {"padstack": padstack_instance_name}
+
+    @staticmethod
+    def coordinates(layer, x, y, net) -> dict:
+        """Create a terminal selector at an exact XY location on a layer.
+
+        Parameters
+        ----------
+        layer : str
+            Layer name on which the terminal is placed, e.g. ``"top"``.
+        x : float
+            X coordinate in metres.
+        y : float
+            Y coordinate in metres.
+        net : str
+            Net name the terminal belongs to.
+
+        Returns
+        -------
+        dict
+            Terminal-selector dictionary with a ``"coordinates"`` key.
+
+        Examples
+        --------
+        >>> TerminalInfo.coordinates("top", 0.001, 0.002, "SIG")
+        {'coordinates': {'layer': 'top', 'point': [0.001, 0.002], 'net': 'SIG'}}
+        """
+        return {"coordinates": {"layer": layer, "point": [x, y], "net": net}}
+
+    @staticmethod
+    def nearest_pin(reference_net: str, search_radius="5mm") -> dict:
+        """Create a terminal selector that resolves to the nearest reference pin.
+
+        Useful as a *negative_terminal* when you want the solver to
+        auto-find a ground reference.
+
+        Parameters
+        ----------
+        reference_net : str
+            Net name to search for the nearest pin, e.g. ``"GND"``.
+        search_radius : str, optional
+            Search radius around the positive terminal.  Accepts unit strings
+            such as ``"5mm"`` or ``"0.5e-3"``.  Default is ``"5mm"``.
+
+        Returns
+        -------
+        dict
+            Terminal-selector dictionary with a ``"nearest_pin"`` key.
+
+        Examples
+        --------
+        >>> TerminalInfo.nearest_pin("GND", search_radius="3mm")
+        {'nearest_pin': {'reference_net': 'GND', 'search_radius': '3mm'}}
+        """
+        return {"nearest_pin": {"reference_net": reference_net, "search_radius": search_radius}}
+
     def update_contact_radius(self, radius):
-        self.contact_radius = self._pedb.edb_value(radius).ToDouble()
+        """Update the contact radius used for equipotential region creation.
+
+        Parameters
+        ----------
+        radius : str or float
+            Contact radius.  A unit string (``"0.1mm"``) is accepted when an
+            EDB session is attached; otherwise the value is stored as-is.
+        """
+        if self._pedb is None:
+            self.contact_radius = radius
+        else:
+            self.contact_radius = self._pedb.edb_value(radius).ToDouble()
 
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
 
-        if kwargs.get("padstack"):
+        if "padstack" in kwargs:
             self.type = "padstack"
         elif "pin" in kwargs:
             self.type = "pin"
@@ -57,15 +221,28 @@ class CfgTerminalInfo(CfgBase):
         self.contact_type = kwargs.get("contact_type", "default")  # options are full, center, quad, inline
         contact_radius = "0.1mm" if kwargs.get("contact_radius") is None else kwargs.get("contact_radius")
 
-        self.contact_radius = self._pedb.value(contact_radius)
+        self.contact_radius = self._pedb.value(contact_radius) if self._pedb else contact_radius
         self.num_of_contact = kwargs.get("num_of_contact", 4)
         self.contact_expansion = kwargs.get("contact_expansion", 1)
 
     def export_properties(self):
-        return {self.type: self.value}
+        """Serialize this terminal selector to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary containing the selector type key and, if present, the
+            ``reference_designator``.
+        """
+        data = {self.type: self.value}
+        if self.reference_designator:
+            data["reference_designator"] = self.reference_designator
+        return data
 
 
 class CfgCoordinateTerminalInfo(CfgTerminalInfo):
+    """Represent a coordinate-based terminal selector."""
+
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
 
@@ -75,32 +252,178 @@ class CfgCoordinateTerminalInfo(CfgTerminalInfo):
         self.net = self.value["net"]
 
     def export_properties(self):
+        """Serialize to a dictionary with a ``"coordinates"`` key.
+
+        Returns
+        -------
+        dict
+            ``{"coordinates": {"layer": ..., "point": [...], "net": ...}}``.
+        """
         return {"coordinates": {"layer": self.layer, "point": [self.point_x, self.point_y], "net": self.net}}
 
 
 class CfgNearestPinTerminalInfo(CfgTerminalInfo):
+    """Represent a nearest-reference-pin selector for negative terminals."""
+
     def __init__(self, pedb, **kwargs):
         super().__init__(pedb, **kwargs)
         self.reference_net = self.value["reference_net"]
         self.search_radius = self.value["search_radius"]
 
     def export_properties(self):
-        return {"reference_net": self.reference_net, "search_radius": self.search_radius}
+        """Serialize to a dictionary with a ``"nearest_pin"`` key.
+
+        Returns
+        -------
+        dict
+            ``{"nearest_pin": {"reference_net": ..., "search_radius": ...}}``.
+        """
+        return {"nearest_pin": {"reference_net": self.reference_net, "search_radius": self.search_radius}}
 
 
 class CfgSources:
+    """Collect current-source and voltage-source entries."""
+
     def get_pin_group_name(self, src):
         return src.pin_group.name
 
-    def __init__(self, pedb, sources_data):
+    def __init__(self, pedb=None, sources_data=None):
         self._pedb = pedb
-        self.sources = [CfgSource(self._pedb, **src) for src in sources_data]
+        self.sources = [CfgSource(self._pedb, **src) for src in (sources_data or [])]
+
+    def add_current_source(
+        self,
+        name,
+        positive_terminal,
+        negative_terminal,
+        magnitude=0.001,
+        impedance=None,
+        reference_designator=None,
+        distributed=False,
+    ):
+        """Add a current source to this configuration.
+
+        Parameters
+        ----------
+        name : str
+            Unique source name.
+        positive_terminal : dict
+            Terminal-selector dictionary for the positive pole.  Use
+            :class:`TerminalInfo` factory methods to build it.
+        negative_terminal : dict
+            Terminal-selector dictionary for the negative (reference) pole.
+        magnitude : float, optional
+            Source current magnitude in amperes.  Default is ``0.001`` A.
+        impedance : float or str, optional
+            Source impedance.  When *None* the solver default of ``5e7 Ω`` is
+            used.
+        reference_designator : str, optional
+            Component reference designator to associate with this source.
+        distributed : bool, optional
+            When ``True`` one source element is created per pin.  Default is
+            ``False``.
+
+        Returns
+        -------
+        CfgSource
+            The newly created source object.
+
+        Examples
+        --------
+        >>> cfg.sources.add_current_source(
+        ...     "isrc1",
+        ...     positive_terminal=TerminalInfo.pin_group("pg_VDD"),
+        ...     negative_terminal=TerminalInfo.pin_group("pg_GND"),
+        ...     magnitude=0.5,
+        ... )
+        """
+        src = CfgSource(
+            self._pedb,
+            name=name,
+            type="current",
+            positive_terminal=positive_terminal,
+            negative_terminal=negative_terminal,
+            magnitude=magnitude,
+            impedance=impedance,
+            reference_designator=reference_designator,
+            distributed=distributed,
+        )
+        self.sources.append(src)
+        return src
+
+    def add_voltage_source(
+        self,
+        name,
+        positive_terminal,
+        negative_terminal,
+        magnitude=1.0,
+        impedance=None,
+        reference_designator=None,
+        distributed=False,
+    ):
+        """Add a voltage source to this configuration.
+
+        Parameters
+        ----------
+        name : str
+            Unique source name.
+        positive_terminal : dict
+            Terminal-selector dictionary for the positive pole.
+        negative_terminal : dict
+            Terminal-selector dictionary for the negative (reference) pole.
+        magnitude : float, optional
+            Source voltage in volts.  Default is ``1.0`` V.
+        impedance : float or str, optional
+            Source impedance.  When *None* the solver default of ``1e-6 Ω``
+            is used.
+        reference_designator : str, optional
+            Component reference designator.
+        distributed : bool, optional
+            Create one source per pin when ``True``.  Default is ``False``.
+
+        Returns
+        -------
+        CfgSource
+            The newly created source object.
+
+        Examples
+        --------
+        >>> cfg.sources.add_voltage_source(
+        ...     "vsrc1",
+        ...     positive_terminal=TerminalInfo.net("VDD"),
+        ...     negative_terminal=TerminalInfo.net("GND"),
+        ...     magnitude=1.8,
+        ... )
+        """
+        src = CfgSource(
+            self._pedb,
+            name=name,
+            type="voltage",
+            positive_terminal=positive_terminal,
+            negative_terminal=negative_terminal,
+            magnitude=magnitude,
+            impedance=impedance,
+            reference_designator=reference_designator,
+            distributed=distributed,
+        )
+        self.sources.append(src)
+        return src
 
     def apply(self):
+        """Write all configured sources into the open EDB design."""
         for src in self.sources:
             src.set_parameters_to_edb()
 
     def get_data_from_db(self):
+        """Read existing sources from the open EDB design.
+
+        Returns
+        -------
+        list of dict
+            Serialized source payloads.
+        """
+        if self._pedb is None:
+            return self.export_properties()
         self.sources = []
         sources = {name: t for name, t in self._pedb.terminals.items() if not t.is_reference_terminal}
         sources = {name: t for name, t in sources.items() if t.is_current_source or t.is_voltage_source}
@@ -144,13 +467,30 @@ class CfgSources:
         return self.export_properties()
 
     def export_properties(self):
+        """Serialize all sources to a list of plain dictionaries.
+
+        Returns
+        -------
+        list of dict
+        """
         sources = []
         for src in self.sources:
             sources.append(src.export_properties())
         return sources
 
+    def to_list(self):
+        """Return serialized sources (alias for :meth:`export_properties`).
+
+        Returns
+        -------
+        list of dict
+        """
+        return self.export_properties()
+
 
 class CfgPorts:
+    """Collect lumped, coaxial, and edge-port entries."""
+
     def get_pin_group(self, port):
         return port.pin_group
 
@@ -169,10 +509,10 @@ class CfgPorts:
         )
         return cfg_port
 
-    def __init__(self, pedb, ports_data):
+    def __init__(self, pedb=None, ports_data=None):
         self._pedb = pedb
         self.ports = []
-        for p in ports_data:
+        for p in ports_data or []:
             if p["type"] == "wave_port":
                 self.ports.append(CfgEdgePort(self._pedb, **p))
             elif p["type"] == "gap_port":
@@ -184,11 +524,454 @@ class CfgPorts:
             else:
                 raise ValueError("Unknown port type")
 
+    def add_circuit_port(
+        self,
+        name=None,
+        positive_terminal=None,
+        negative_terminal=None,
+        reference_designator=None,
+        impedance=None,
+        distributed=False,
+        positive_net=None,
+        negative_net=None,
+    ):
+        """Add a lumped circuit port between two terminals.
+
+        **Resolution priority** – when both *positive_net* and *negative_net*
+        are supplied they **always take priority** over *positive_terminal* and
+        *negative_terminal*, even if those are also provided.
+
+        Parameters
+        ----------
+        name : str, optional
+            Unique port name.  When omitted and *positive_net* is supplied the
+            name is auto-generated as
+            ``"Port_{reference_designator}_{positive_net}_{pin_name}"``.
+        positive_terminal : dict, optional
+            Terminal-selector dictionary for the positive terminal.
+            Ignored when *positive_net* is supplied.
+        negative_terminal : dict, optional
+            Terminal-selector dictionary for the negative (reference) terminal.
+            When *None* an empty dictionary is used (solver assigns
+            automatically).  Ignored when *negative_net* is supplied.
+        reference_designator : str, optional
+            Component reference designator.  Required when *positive_net* or
+            *negative_net* is used.
+        impedance : float or str, optional
+            Port impedance in ohms.  Default is ``50 Ω``.
+        distributed : bool, optional
+            Create one port per pin when ``True``.  Default is ``False``.
+        positive_net : str, optional
+            Net name for the positive terminal.  When provided together with
+            *reference_designator* and a live EDB session, the first pin found
+            on that net on the component is used as the positive terminal.
+            **This argument takes priority over** *positive_terminal*.
+        negative_net : str, optional
+            Net name for the negative terminal.  When provided, the closest
+            pin on that net that does not already carry a terminal assignment
+            is resolved via
+            :meth:`PadstackInstance.get_reference_pins
+            <pyedb.grpc.database.primitive.padstack_instance.PadstackInstance.get_reference_pins>`
+            with ``max_limit=1``.
+            **This argument takes priority over** *negative_terminal*.
+
+        Returns
+        -------
+        CfgPort
+            The newly created port object.
+
+        Raises
+        ------
+        ValueError
+            If *positive_net* or *negative_net* is supplied but
+            *reference_designator* is missing, the component is not found, or
+            no matching (terminal-free) pins exist.
+
+        Examples
+        --------
+        >>> cfg.ports.add_circuit_port(
+        ...     "port_U1",
+        ...     positive_terminal=CfgTerminalInfo.pin_group("pg_VDD"),
+        ...     negative_terminal=CfgTerminalInfo.pin_group("pg_GND"),
+        ...     impedance=50,
+        ... )
+        >>> # positive_net / negative_net take priority – terminal args are ignored
+        >>> cfg.ports.add_circuit_port(
+        ...     "port_U1_auto",
+        ...     reference_designator="U1",
+        ...     positive_net="VDD",
+        ...     negative_net="GND",
+        ... )
+        """
+        if positive_net is not None and negative_net is not None and self._pedb is not None:
+            # Net-based resolution takes priority over any supplied terminal dicts
+            if reference_designator is None:
+                raise ValueError("'reference_designator' is required when 'positive_net' is provided.")
+            comp = self._pedb.components.instances.get(reference_designator)
+            if comp is None:
+                raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
+            pos_pins = [p_obj for p_obj in comp.pins.values() if p_obj.net_name == positive_net]
+            if not pos_pins:
+                raise ValueError(f"No pins found for net '{positive_net}' on component '{reference_designator}'.")
+            pos_pin = pos_pins[0]
+            if name is None:
+                name = f"Port_{reference_designator}_{positive_net}_{pos_pin.component_pin}"
+            positive_terminal = CfgTerminalInfo.pin(pos_pin.component_pin, reference_designator=reference_designator)
+
+            ref_pins = pos_pin.get_reference_pins(
+                reference_net=negative_net,
+                max_limit=1,
+                component_only=True,
+            )
+            # Filter out pins that already have a terminal assigned
+            ref_pins = [p for p in ref_pins if p.terminal is None]
+            if not ref_pins:
+                # Retry without the terminal filter – widen search to whole layout
+                ref_pins = pos_pin.get_reference_pins(
+                    reference_net=negative_net,
+                    max_limit=1,
+                    component_only=False,
+                )
+                ref_pins = [p for p in ref_pins if p.terminal is None]
+            if not ref_pins:
+                raise ValueError(
+                    f"No available (terminal-free) pins found for negative net '{negative_net}' "
+                    f"near pin '{pos_pin.component_pin}' on component '{reference_designator}'."
+                )
+            neg_pin = ref_pins[0]
+            negative_terminal = CfgTerminalInfo.pin(neg_pin.component_pin, reference_designator=reference_designator)
+        elif positive_net is not None and self._pedb is not None:
+            if reference_designator is None:
+                raise ValueError("'reference_designator' is required when 'positive_net' is provided.")
+            comp = self._pedb.components.instances.get(reference_designator)
+            if comp is None:
+                raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
+            pos_pins = [p_obj for p_obj in comp.pins.values() if p_obj.net_name == positive_net]
+            if not pos_pins:
+                raise ValueError(f"No pins found for net '{positive_net}' on component '{reference_designator}'.")
+            pos_pin = pos_pins[0]
+            if name is None:
+                name = f"Port_{reference_designator}_{positive_net}_{pos_pin.component_pin}"
+            positive_terminal = CfgTerminalInfo.pin(pos_pin.component_pin, reference_designator=reference_designator)
+
+        port = CfgPort(
+            self._pedb,
+            name=name,
+            type="circuit",
+            positive_terminal=positive_terminal,
+            negative_terminal=negative_terminal or {},
+            reference_designator=reference_designator,
+            impedance=impedance,
+            distributed=distributed,
+        )
+        self.ports.append(port)
+        return port
+
+    def add_coax_port(
+        self,
+        name: str = None,
+        positive_terminal=None,
+        reference_designator: str = None,
+        impedance=None,
+        padstack=None,
+        net=None,
+        pin=None,
+        net_list: list[str] = None,
+    ):
+        """Add a coaxial (via) port.
+
+        Provide exactly one of *positive_terminal*, *padstack*, *net*, *pin*,
+        or *net_list* to identify the positive connection point.
+
+        When *net_list* is provided together with *reference_designator* and a
+        live EDB session is attached, the method queries the component pins
+        directly from EDB, collects every padstack instance whose net name
+        appears in *net_list*, and creates one coax port per matching pin.
+        This path takes priority over all other terminal-selector arguments.
+
+        Parameters
+        ----------
+        name : str, optional
+            Base port name.  When *net_list* resolves multiple pins the pin's
+            AEDT name is appended to make each port name unique, i.e.
+            ``"<name>_<aedt_name>"``.  When *name* is ``None`` the AEDT
+            padstack-instance name is used directly.
+        positive_terminal : dict, optional
+            Raw terminal-selector dictionary (any :class:`TerminalInfo` type).
+        reference_designator : str, optional
+            Component reference designator.  Required when using *net*,
+            *pin*, or *net_list* shortcuts.
+        impedance : float or str, optional
+            Port impedance in ohms.  Default is ``50 Ω``.
+        padstack : str, optional
+            AEDT padstack-instance name, e.g. ``"via_A1"``.  Shortcut that
+            creates a single coax port on the named via.
+        net : str, optional
+            Net name shortcut.  All matching pins on *reference_designator*
+            are targeted; when more than one pin matches the port becomes
+            **distributed**.
+        pin : str, optional
+            Pin-name shortcut.  A single named pin on *reference_designator*.
+        net_list : list of str, optional
+            List of net names.  When supplied together with
+            *reference_designator* and a live EDB session, all padstack
+            instances of the component whose net belongs to *net_list* are
+            discovered automatically and one coax port is created per pin.
+            This argument takes priority over *positive_terminal*, *padstack*,
+            *net*, and *pin*.
+
+        Returns
+        -------
+        CfgPort or list[CfgPort]
+            A single :class:`CfgPort` for all paths except the *net_list* EDB
+            discovery path, which returns a list of :class:`CfgPort` objects
+            (one per matching pin).
+
+        Raises
+        ------
+        ValueError
+            If *net* or *pin* is supplied without *reference_designator*, or
+            if *net_list* is supplied without *reference_designator*, or
+            if no terminal selector is provided at all.
+        RuntimeError
+            If *net_list* + *reference_designator* discovery is requested but
+            no live EDB session is attached.
+
+        Examples
+        --------
+        >>> cfg.ports.add_coax_port("coax_via", padstack="via_A1")
+        >>> cfg.ports.add_coax_port("coax_vdd", net="VDD", reference_designator="U1")
+        >>> cfg.ports.add_coax_port("coax_a1", pin="A1", reference_designator="U1", impedance=50)
+        >>> # Discover all pins of U1 whose net is PCIe_TX0_P or PCIe_TX0_N:
+        >>> cfg.ports.add_coax_port(
+        ...     "coax_pcie",
+        ...     reference_designator="U1",
+        ...     net_list=["PCIe_TX0_P", "PCIe_TX0_N"],
+        ... )
+        """
+        # ------------------------------------------------------------------
+        # net_list + reference_designator path: EDB-assisted pin discovery
+        # ------------------------------------------------------------------
+        if net_list is not None:
+            if not reference_designator:
+                raise ValueError("'reference_designator' is required when 'net_list' is supplied.")
+            if self._pedb is None:
+                raise RuntimeError(
+                    "A live EDB session is required for net_list discovery. "
+                    "Use edb.configuration.create_config_builder() to obtain a session-aware builder."
+                )
+            component = self._pedb.components.instances.get(reference_designator)
+            if component is None:
+                raise ValueError(f"Component '{reference_designator}' not found in the EDB layout.")
+            created_ports = []
+            for pin_name, pin in component.pins.items():
+                pin_net = pin.net_name
+                if pin_net in net_list:
+                    if name is not None:
+                        port_name = f"{name}_{pin_name}"
+                    else:
+                        port_name = pin_name
+                    port = CfgPort(
+                        self._pedb,
+                        name=port_name,
+                        type="coax",
+                        positive_terminal={"pin": pin_name, "reference_designator": reference_designator},
+                        reference_designator=reference_designator,
+                        impedance=impedance,
+                    )
+                    self.ports.append(port)
+                    created_ports.append(port)
+            return created_ports
+
+        # ------------------------------------------------------------------
+        # Standard single-port paths
+        # ------------------------------------------------------------------
+        if padstack is not None:
+            positive_terminal = {"padstack": padstack}
+        elif net is not None:
+            if not reference_designator:
+                raise ValueError("'reference_designator' is required when 'net' is supplied.")
+            positive_terminal = {"net": net, "reference_designator": reference_designator}
+        elif pin is not None:
+            if not reference_designator:
+                raise ValueError("'reference_designator' is required when 'pin' is supplied.")
+            positive_terminal = {"pin": pin, "reference_designator": reference_designator}
+        elif positive_terminal is None:
+            raise ValueError("Provide one of: positive_terminal, padstack, net, pin, or net_list.")
+        port = CfgPort(
+            self._pedb,
+            name=name,
+            type="coax",
+            positive_terminal=positive_terminal,
+            reference_designator=reference_designator,
+            impedance=impedance,
+        )
+        self.ports.append(port)
+        return port
+
+    def add_wave_port(
+        self,
+        name,
+        primitive_name,
+        point_on_edge,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Add a wave port on a trace edge.
+
+        Parameters
+        ----------
+        name : str
+            Unique port name.
+        primitive_name : str
+            AEDT name of the trace primitive hosting the port.
+        point_on_edge : list of float
+            ``[x, y]`` coordinates in metres of a point on the trace edge.
+        horizontal_extent_factor : int or float, optional
+            Horizontal de-embedding extent relative to the trace width.
+            Default is ``5``.
+        vertical_extent_factor : int or float, optional
+            Vertical de-embedding extent relative to the trace width.
+            Default is ``3``.
+        pec_launch_width : str, optional
+            PEC launch pad width, e.g. ``"0.01mm"``.  Default is
+            ``"0.01mm"``.
+
+        Returns
+        -------
+        CfgEdgePort
+            The newly created edge-port object.
+
+        Examples
+        --------
+        >>> cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
+        """
+        port = CfgEdgePort(
+            self._pedb,
+            name=name,
+            type="wave_port",
+            primitive_name=primitive_name,
+            point_on_edge=point_on_edge,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+        self.ports.append(port)
+        return port
+
+    def add_gap_port(
+        self,
+        name,
+        primitive_name,
+        point_on_edge,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Add a gap port on a trace edge.
+
+        Parameters
+        ----------
+        name : str
+            Unique port name.
+        primitive_name : str
+            AEDT name of the trace primitive.
+        point_on_edge : list of float
+            ``[x, y]`` coordinates on the trace edge.
+        horizontal_extent_factor : int or float, optional
+            Default is ``5``.
+        vertical_extent_factor : int or float, optional
+            Default is ``3``.
+        pec_launch_width : str, optional
+            Default is ``"0.01mm"``.
+
+        Returns
+        -------
+        CfgEdgePort
+            The newly created edge-port object.
+        """
+        port = CfgEdgePort(
+            self._pedb,
+            name=name,
+            type="gap_port",
+            primitive_name=primitive_name,
+            point_on_edge=point_on_edge,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+        self.ports.append(port)
+        return port
+
+    def add_diff_wave_port(
+        self,
+        name,
+        positive_terminal,
+        negative_terminal,
+        horizontal_extent_factor=5,
+        vertical_extent_factor=3,
+        pec_launch_width="0.01mm",
+    ):
+        """Add a differential wave port from two edge-terminal descriptors.
+
+        Parameters
+        ----------
+        name : str
+            Unique port name.
+        positive_terminal : dict
+            Edge-terminal descriptor for the positive arm, containing
+            ``"primitive_name"`` and ``"point_on_edge"`` keys.
+        negative_terminal : dict
+            Edge-terminal descriptor for the negative arm.
+        horizontal_extent_factor : int or float, optional
+            Default is ``5``.
+        vertical_extent_factor : int or float, optional
+            Default is ``3``.
+        pec_launch_width : str, optional
+            Default is ``"0.01mm"``.
+
+        Returns
+        -------
+        CfgDiffWavePort
+            The newly created differential-port object.
+
+        Examples
+        --------
+        >>> cfg.ports.add_diff_wave_port(
+        ...     "diff1",
+        ...     positive_terminal={"primitive_name": "trace_p", "point_on_edge": [0.001, 0.0]},
+        ...     negative_terminal={"primitive_name": "trace_n", "point_on_edge": [0.001, 0.0002]},
+        ... )
+        """
+        port = CfgDiffWavePort(
+            self._pedb,
+            name=name,
+            type="diff_wave_port",
+            positive_terminal=positive_terminal,
+            negative_terminal=negative_terminal,
+            horizontal_extent_factor=horizontal_extent_factor,
+            vertical_extent_factor=vertical_extent_factor,
+            pec_launch_width=pec_launch_width,
+        )
+        self.ports.append(port)
+        return port
+
     def apply(self):
+        """Write all configured ports into the open EDB design."""
         for p in self.ports:
             p.set_parameters_to_edb()
 
     def get_data_from_db(self):
+        """Read existing ports from the open EDB design.
+
+        Returns
+        -------
+        list of dict
+            Serialized port payloads.
+        """
+        if self._pedb is None:
+            return self.export_properties()
         self.ports = []
         ports = {name: t for name, t in self._pedb.terminals.items() if not t.is_reference_terminal}
         ports = {name: t for name, t in ports.items() if t.is_port}
@@ -220,7 +1003,6 @@ class CfgPorts:
                 neg_term = self._pedb.terminals[p.reference_terminal.name]
                 if neg_term.terminal_type == TerminalTypeMapper.get("PinGroupTerminal", as_grpc=settings.is_grpc):
                     pg = self.get_pin_group(neg_term)
-                    # pg = self._pedb.siwave.pin_groups[neg_term._edb_object.GetPinGroup().GetName()]
                     neg_term_info = {"pin_group": pg.name}
                 elif neg_term.terminal_type == TerminalTypeMapper.get(
                     "PadstackInstanceTerminal", as_grpc=settings.is_grpc
@@ -259,23 +1041,89 @@ class CfgPorts:
         return self.export_properties()
 
     def export_properties(self):
+        """Serialize all ports to a list of plain dictionaries.
+
+        Returns
+        -------
+        list of dict
+        """
         ports = []
         for p in self.ports:
             ports.append(p.export_properties())
         return ports
 
+    def to_list(self):
+        """Return serialized ports (alias for :meth:`export_properties`).
+
+        Returns
+        -------
+        list of dict
+        """
+        return self.export_properties()
+
 
 class CfgProbes:
-    def __init__(self, pedb, data):
+    """Collect configured probe entries."""
+
+    def __init__(self, pedb=None, data=None):
         self._pedb = pedb
-        self.probes = [CfgProbe(self._pedb, **probe) for probe in data]
+        self.probes = [CfgProbe(self._pedb, **probe) for probe in (data or [])]
+
+    def add(self, name, positive_terminal, negative_terminal, reference_designator=None):
+        """Add a voltage probe to this configuration.
+
+        Parameters
+        ----------
+        name : str
+            Unique probe name.
+        positive_terminal : dict
+            Terminal-selector dictionary for the positive measurement node.
+        negative_terminal : dict
+            Terminal-selector dictionary for the reference (ground) node.
+        reference_designator : str, optional
+            Component reference designator.
+
+        Returns
+        -------
+        CfgProbe
+            The newly created probe object.
+
+        Examples
+        --------
+        >>> cfg.probes.add(
+        ...     "probe1",
+        ...     positive_terminal=TerminalInfo.net("DDR4_DQ0"),
+        ...     negative_terminal=TerminalInfo.net("GND"),
+        ... )
+        """
+        probe = CfgProbe(
+            self._pedb,
+            name=name,
+            positive_terminal=positive_terminal,
+            negative_terminal=negative_terminal,
+            reference_designator=reference_designator,
+        )
+        self.probes.append(probe)
+        return probe
 
     def apply(self):
+        """Write all configured probes into the open EDB design."""
         for probe in self.probes:
             probe.set_parameters_to_edb()
 
+    def to_list(self):
+        """Serialize all probes to a list of plain dictionaries.
+
+        Returns
+        -------
+        list of dict
+        """
+        return [probe.export_properties() for probe in self.probes]
+
 
 class CfgCircuitElement(CfgBase):
+    """Shared base class for ports, sources, and probes using terminal selectors."""
+
     def __init__(self, pedb, **kwargs):
         self._pedb = pedb
         self.name = kwargs["name"]
@@ -293,7 +1141,7 @@ class CfgCircuitElement(CfgBase):
             if not self.positive_terminal_info.reference_designator:
                 self.positive_terminal_info.reference_designator = self.reference_designator
 
-        neg = kwargs.get("negative_terminal", {})
+        neg = kwargs.get("negative_terminal") or {}
         if len(neg) == 0:
             self.negative_terminal_info = None
         elif list(neg.keys())[0] == "coordinates":
@@ -410,6 +1258,7 @@ class CfgCircuitElement(CfgBase):
         self.neg_terminal = None
         if self.negative_terminal_info:
             neg_type, neg_value = self.negative_terminal_info.type, self.negative_terminal_info.value
+            neg_obj = {}
 
             if neg_type == "coordinates":
                 layer = self.negative_terminal_info.layer
@@ -570,11 +1419,36 @@ class CfgPort(CfgCircuitElement):
 
     CFG_PORT_TYPE = {"circuit": [str], "coax": [str]}
 
-    def __init__(self, pedb, **kwargs):
+    def __init__(self, pedb=None, *args, **kwargs):
+        if isinstance(pedb, str):
+            name = pedb
+            port_type = args[0] if len(args) > 0 else kwargs.pop("type", None)
+            positive_terminal = args[1] if len(args) > 1 else kwargs.pop("positive_terminal", None)
+            negative_terminal = args[2] if len(args) > 2 else kwargs.pop("negative_terminal", None)
+            pedb = None
+            kwargs = {
+                "name": name,
+                "type": port_type,
+                "positive_terminal": positive_terminal,
+                "negative_terminal": negative_terminal,
+                **kwargs,
+            }
         super().__init__(pedb, **kwargs)
+
+    def to_dict(self):
+        """Serialize this port to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Port payload dictionary.
+        """
+        return self.export_properties()
 
     def set_parameters_to_edb(self):
         """Create port."""
+        if self._pedb is None:
+            return self.export_properties()
         self.create_terminals()
         is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
@@ -590,28 +1464,68 @@ class CfgPort(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
+        """Serialize this port to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``name``, ``type``, ``positive_terminal``, and
+            optional ``impedance``, ``reference_designator``, ``distributed``,
+            and ``negative_terminal`` keys.
+        """
         data = {
             "name": self.name,
             "type": self.type,
-            "impedance": self.impedance,
-            "reference_designator": self.reference_designator,
             "positive_terminal": self.positive_terminal_info.export_properties(),
         }
+        if self.impedance is not None:
+            data["impedance"] = self.impedance
+        if self.reference_designator:
+            data["reference_designator"] = self.reference_designator
+        if self.distributed:
+            data["distributed"] = self.distributed
         if self.negative_terminal_info:
             data.update({"negative_terminal": self.negative_terminal_info.export_properties()})
         return data
 
 
 class CfgSource(CfgCircuitElement):
+    """Represent one current or voltage source entry."""
+
     CFG_SOURCE_TYPE = {"current": [int, float], "voltage": [int, float]}
 
-    def __init__(self, pedb, **kwargs):
+    def __init__(self, pedb=None, *args, **kwargs):
+        if isinstance(pedb, str):
+            name = pedb
+            source_type = args[0] if len(args) > 0 else kwargs.pop("type", None)
+            positive_terminal = args[1] if len(args) > 1 else kwargs.pop("positive_terminal", None)
+            negative_terminal = args[2] if len(args) > 2 else kwargs.pop("negative_terminal", None)
+            pedb = None
+            kwargs = {
+                "name": name,
+                "type": source_type,
+                "positive_terminal": positive_terminal,
+                "negative_terminal": negative_terminal,
+                **kwargs,
+            }
         super().__init__(pedb, **kwargs)
 
         self.magnitude = kwargs.get("magnitude", 0.001)
 
+    def to_dict(self):
+        """Serialize this source to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Source payload dictionary.
+        """
+        return self.export_properties()
+
     def set_parameters_to_edb(self):
         """Create sources."""
+        if self._pedb is None:
+            return self.export_properties()
         self.create_terminals()
         # is_circuit_port = True if self.type == "circuit" else False
         circuit_elements = []
@@ -685,19 +1599,45 @@ class CfgSource(CfgCircuitElement):
         return circuit_elements
 
     def export_properties(self):
-        return {
+        """Serialize this source to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``name``, ``type``, ``magnitude``,
+            ``positive_terminal``, ``negative_terminal``, and optional
+            ``reference_designator``, ``impedance``, and ``distributed`` keys.
+        """
+        data = {
             "name": self.name,
-            "reference_designator": self.reference_designator,
             "type": self.type,
-            "impedance": self.impedance,
             "magnitude": self.magnitude,
             "positive_terminal": self.positive_terminal_info.export_properties(),
             "negative_terminal": self.negative_terminal_info.export_properties(),
         }
+        if self.reference_designator:
+            data["reference_designator"] = self.reference_designator
+        if self.impedance is not None:
+            data["impedance"] = self.impedance
+        if self.distributed:
+            data["distributed"] = self.distributed
+        return data
 
 
 class CfgProbe(CfgCircuitElement):
+    """Represent one voltage-probe entry."""
+
     def set_parameters_to_edb(self):
+        """Write this probe into the open EDB design.
+
+        Returns
+        -------
+        list
+            Created EDB excitation objects, or the serialized payload when
+            no EDB session is attached.
+        """
+        if self._pedb is None:
+            return self.export_properties()
         self.create_terminals()
         circuit_elements = []
         for name, j in self.pos_terminals.items():
@@ -709,13 +1649,65 @@ class CfgProbe(CfgCircuitElement):
             circuit_elements.append(elem)
         return circuit_elements
 
-    def __init__(self, pedb, **kwargs):
+    def __init__(self, pedb=None, *args, **kwargs):
+        if isinstance(pedb, str):
+            name = pedb
+            positive_terminal = args[0] if len(args) > 0 else kwargs.pop("positive_terminal", None)
+            negative_terminal = args[1] if len(args) > 1 else kwargs.pop("negative_terminal", None)
+            pedb = None
+            kwargs = {
+                "name": name,
+                "positive_terminal": positive_terminal,
+                "negative_terminal": negative_terminal,
+                **kwargs,
+            }
         kwargs["type"] = "probe"
         super().__init__(pedb, **kwargs)
 
+    def to_dict(self):
+        """Serialize this probe to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Probe payload dictionary.
+        """
+        return self.export_properties()
+
+    def export_properties(self):
+        """Serialize this probe to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``name``, ``type``, ``positive_terminal``,
+            ``negative_terminal``, and optional ``reference_designator`` keys.
+        """
+        data = {
+            "name": self.name,
+            "type": self.type,
+            "positive_terminal": self.positive_terminal_info.export_properties(),
+            "negative_terminal": self.negative_terminal_info.export_properties(),
+        }
+        if self.reference_designator:
+            data["reference_designator"] = self.reference_designator
+        return data
+
 
 class CfgEdgePort:
+    """Represent one wave-port or gap-port edge excitation."""
+
     def set_parameters_to_edb(self):
+        """Write this edge port into the open EDB design.
+
+        Returns
+        -------
+        object or dict
+            Created EDB port object, or the serialized payload when no EDB
+            session is attached.
+        """
+        if self._pedb is None:
+            return self.export_properties()
         return self._pedb.excitation_manager.create_edge_port(
             self.point_on_edge,
             self.primitive_name,
@@ -728,6 +1720,14 @@ class CfgEdgePort:
         )
 
     def export_properties(self):
+        """Serialize this edge port to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``name``, ``type``, ``primitive_name``,
+            ``point_on_edge``, and extent parameters.
+        """
         return {
             "name": self.name,
             "type": self.type,
@@ -738,7 +1738,30 @@ class CfgEdgePort:
             "pec_launch_width": self.pec_launch_width,
         }
 
-    def __init__(self, pedb, **kwargs):
+    def to_dict(self):
+        """Serialize this edge port to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Edge-port payload dictionary.
+        """
+        return self.export_properties()
+
+    def __init__(self, pedb=None, *args, **kwargs):
+        if isinstance(pedb, str):
+            name = pedb
+            port_type = args[0] if len(args) > 0 else kwargs.pop("type", None)
+            primitive_name = args[1] if len(args) > 1 else kwargs.pop("primitive_name", None)
+            point_on_edge = args[2] if len(args) > 2 else kwargs.pop("point_on_edge", None)
+            pedb = None
+            kwargs = {
+                "name": name,
+                "type": port_type,
+                "primitive_name": primitive_name,
+                "point_on_edge": point_on_edge,
+                **kwargs,
+            }
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
@@ -750,7 +1773,21 @@ class CfgEdgePort:
 
 
 class CfgDiffWavePort:
-    def __init__(self, pedb, **kwargs):
+    """Represent one bundled differential wave-port entry."""
+
+    def __init__(self, pedb=None, *args, **kwargs):
+        if isinstance(pedb, str):
+            name = pedb
+            positive_terminal = args[0] if len(args) > 0 else kwargs.pop("positive_terminal", None)
+            negative_terminal = args[1] if len(args) > 1 else kwargs.pop("negative_terminal", None)
+            pedb = None
+            kwargs = {
+                "name": name,
+                "type": "diff_wave_port",
+                "positive_terminal": positive_terminal,
+                "negative_terminal": negative_terminal,
+                **kwargs,
+            }
         self._pedb = pedb
         self.name = kwargs["name"]
         self.type = kwargs["type"]
@@ -778,6 +1815,54 @@ class CfgDiffWavePort:
         )
 
     def set_parameters_to_edb(self):
+        """Write this differential port into the open EDB design.
+
+        Creates two individual wave ports (positive and negative arms) and
+        wraps them in a bundle terminal.
+
+        Returns
+        -------
+        object or dict
+            Bundle terminal object, or the serialized payload when no EDB
+            session is attached.
+        """
+        if self._pedb is None:
+            return self.export_properties()
         pos_term = self.positive_port.set_parameters_to_edb()
         neg_term = self.negative_port.set_parameters_to_edb()
         return self._pedb.excitation_manager.create_bundle_terminal([pos_term, neg_term], self.name)
+
+    def export_properties(self):
+        """Serialize this differential port to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Dictionary with ``name``, ``type``, terminal descriptors, and
+            extent parameters.
+        """
+        return {
+            "name": self.name,
+            "type": self.type,
+            "positive_terminal": {
+                "primitive_name": self.positive_port.primitive_name,
+                "point_on_edge": self.positive_port.point_on_edge,
+            },
+            "negative_terminal": {
+                "primitive_name": self.negative_port.primitive_name,
+                "point_on_edge": self.negative_port.point_on_edge,
+            },
+            "horizontal_extent_factor": self.horizontal_extent_factor,
+            "vertical_extent_factor": self.vertical_extent_factor,
+            "pec_launch_width": self.pec_launch_width,
+        }
+
+    def to_dict(self):
+        """Serialize this differential port to a plain dictionary.
+
+        Returns
+        -------
+        dict
+            Differential-port payload dictionary.
+        """
+        return self.export_properties()

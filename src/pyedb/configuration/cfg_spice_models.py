@@ -20,26 +20,92 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+"""Build SPICE model assignment entries for configuration payloads."""
+
 from pathlib import Path
 
 
 class CfgSpiceModel:
-    def __init__(self, pdata, path_lib, spice_dict):
-        self._pedb = pdata._pedb
+    """Represent one SPICE subcircuit model assignment."""
+
+    def __init__(
+        self,
+        pdata=None,
+        path_lib=None,
+        spice_dict=None,
+        name: str = "",
+        component_definition: str = "",
+        file_path: str = "",
+        sub_circuit_name: str = "",
+        apply_to_all: bool = True,
+        components=None,
+        terminal_pairs=None,
+        **kwargs,
+    ):
+        if not hasattr(pdata, "_pedb") and isinstance(pdata, str):
+            spice_dict = {
+                "name": pdata,
+                "component_definition": path_lib,
+                "file_path": spice_dict if isinstance(spice_dict, str) else file_path,
+                "sub_circuit_name": sub_circuit_name,
+                "apply_to_all": apply_to_all,
+                "components": list(components or []),
+                "terminal_pairs": terminal_pairs,
+            }
+            pdata = None
+            path_lib = None
+        else:
+            spice_dict = dict(spice_dict or {})
+        spice_dict.update(
+            {
+                k: v
+                for k, v in {
+                    "name": name,
+                    "component_definition": component_definition,
+                    "file_path": file_path,
+                    "sub_circuit_name": sub_circuit_name,
+                    "apply_to_all": apply_to_all,
+                    "components": components,
+                    "terminal_pairs": terminal_pairs,
+                }.items()
+                if v not in [None, ""] or k == "apply_to_all"
+            }
+        )
+        spice_dict.update(kwargs)
+        self._pedb = getattr(pdata, "_pedb", None)
         self.path_libraries = path_lib
         self._spice_dict = spice_dict
         self.name = self._spice_dict.get("name", "")
         self.component_definition = self._spice_dict.get("component_definition", "")
-        self.file_path = self._spice_dict.get("file_path", "")
+        self.file_path = str(self._spice_dict.get("file_path", "") or "")
         self.sub_circuit_name = self._spice_dict.get("sub_circuit_name", "")
         self.apply_to_all = self._spice_dict.get("apply_to_all", True)
-        self.components = list(self._spice_dict.get("components", []))
+        components = self._spice_dict.get("components", [])
+        if isinstance(components, str):
+            components = [components]
+        self.components = list(components or [])
         self.terminal_pairs = self._spice_dict.get("terminal_pairs", None)
+
+    def to_dict(self) -> dict:
+        """Serialize the SPICE model assignment."""
+        data = {
+            "name": self.name,
+            "component_definition": self.component_definition,
+            "file_path": self.file_path,
+            "sub_circuit_name": self.sub_circuit_name,
+            "apply_to_all": self.apply_to_all,
+            "components": self.components,
+        }
+        if self.terminal_pairs is not None:
+            data["terminal_pairs"] = self.terminal_pairs
+        return data
 
     def apply(self):
         """Apply Spice model on layout."""
+        if self._pedb is None:
+            return self.to_dict()
         if not Path(self.file_path).anchor:
-            fpath = str(Path(self.path_libraries) / self.file_path)
+            fpath = str(Path(self.path_libraries or "") / self.file_path)
         else:
             fpath = self.file_path
 
@@ -51,3 +117,41 @@ class CfgSpiceModel:
             for ref_des, comp in comps.items():
                 if ref_des in self.components:
                     comp.assign_spice_model(fpath, self.name, self.sub_circuit_name, self.terminal_pairs)
+
+
+class CfgSpiceModels:
+    """Collect SPICE model assignments for serialization."""
+
+    def __init__(self, pdata=None, data=None, path_lib=None):
+        self._pdata = pdata
+        self.path_libraries = path_lib
+        self.models = [CfgSpiceModel(pdata, path_lib, spice_model) for spice_model in (data or [])]
+
+    def add(
+        self,
+        name: str,
+        component_definition: str,
+        file_path: str,
+        sub_circuit_name: str = "",
+        apply_to_all: bool = True,
+        components=None,
+        terminal_pairs=None,
+    ):
+        """Add a SPICE model assignment."""
+        model = CfgSpiceModel(
+            self._pdata,
+            self.path_libraries,
+            name=name,
+            component_definition=component_definition,
+            file_path=file_path,
+            sub_circuit_name=sub_circuit_name,
+            apply_to_all=apply_to_all,
+            components=components or [],
+            terminal_pairs=terminal_pairs,
+        )
+        self.models.append(model)
+        return model
+
+    def to_list(self):
+        """Serialize all configured SPICE model assignments."""
+        return [model.to_dict() for model in self.models]
