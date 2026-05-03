@@ -31,6 +31,7 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 
 class LayoutValidation:
+
     """Manages all layout validation capabilities."""
 
     def __init__(self, pedb: Any) -> None:
@@ -409,8 +410,7 @@ class LayoutValidation:
         self._pedb.logger.info(f"Found {counts}/{len(pds)} padstacks have no name.")
 
     def delete_empty_pin_groups(self) -> None:
-        """
-        Find and delete pin groups that have no pins.
+        """Find and delete pin groups that have no pins.
 
         Examples
         --------
