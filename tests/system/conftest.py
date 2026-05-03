@@ -30,9 +30,8 @@ from pyedb.grpc.rpc_session import RpcSession
 from tests.conftest import GRPC
 
 # Minimum delay (seconds) between tearing down one gRPC server and starting
-# the next one.  On Windows, sockets enter a TIME_WAIT state after being
-# closed; this small grace period prevents the next session from accidentally
-# binding the same ephemeral port before the OS has fully released it.
+# the next one.  The server process exit is already awaited inside
+# RpcSession.close(); this extra grace period covers the OS socket release.
 _GRPC_TEARDOWN_GRACE_SECONDS = 1.0
 
 
@@ -42,18 +41,22 @@ def close_rpc_session(init_scratch):
 
     The fixture:
     1. Yields control to the test class (setup phase is a no-op).
-    2. After all tests in the class have finished, closes the active RPC
-       session (which internally waits for the server process to exit).
+    2. After all tests in the class have finished, resets the ref-counter
+       defensively (in case a crashed test left it non-zero), then closes the
+       active RPC session.
     3. Resets ``RpcSession.port`` to ``0`` so that the *next* call to
        ``RpcSession.start()`` will use dynamic port allocation via
-       ``socket.bind(('', 0))``, completely avoiding hard-coded port
-       conflicts.
+       ``socket.bind(('', 0))``, completely avoiding hard-coded port conflicts.
     4. Sleeps for a short grace period so that the OS socket TIME_WAIT
        interval has time to clear before the following test class starts a
        new server.
     """
     yield
     if GRPC:
+        # Defensive reset: if tests crashed and left the ref-count dirty,
+        # RpcSession.close() would be skipped by the default teardown path.
+        # Force it to zero so the explicit close() below always runs.
+        RpcSession._open_db_count = 0
         RpcSession.close()
         # Ensure the next session always gets a fresh, OS-assigned port.
         RpcSession.port = 0

@@ -22,7 +22,6 @@
 
 import os
 import platform
-import secrets
 import socket
 import sys
 import time
@@ -41,7 +40,6 @@ from pyedb.generic.settings import settings
 
 latency_delay = 0.1
 _IS_WINDOWS = platform.system() == "Windows"
-latency_delay = 0.1
 
 
 class RpcSession:
@@ -112,7 +110,13 @@ class RpcSession:
             To be used with caution, default value is `False`.
         """
         if not port:
-            RpcSession.port = RpcSession.__get_random_free_port()
+            # Only allocate a new port when we are about to start a fresh
+            # server.  If the server is already running we must keep the port
+            # it is currently listening on; re-randomising it here would make
+            # the client point to a different port than the live server.
+            if not RpcSession.rpc_session or not RpcSession._is_server_alive():
+                RpcSession.port = RpcSession.__get_random_free_port()
+            # else: keep RpcSession.port as-is
         else:
             RpcSession.port = port
         if not edb_version:  # pragma: no cover
@@ -196,7 +200,7 @@ class RpcSession:
             if preexisting:
                 settings.logger.info("Attached to preexisting gRPC session (not owned by RpcSession)")
             else:
-                settings.logger.logger.info("Grpc session started")
+                settings.logger.info("Grpc session started")
 
     @staticmethod
     def kill():
