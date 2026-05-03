@@ -438,7 +438,7 @@ class SpiralInductor:
 
     def __init__(
         self,
-        edb_cell: Optional= None,
+        edb_cell: Optional = None,
         turns: Union[int, float] = 4.5,
         trace_width: Union[str, float] = 20e-6,
         spacing: Union[str, float] = 12e-6,
@@ -1232,7 +1232,6 @@ class DifferentialTLine:
             end_cap_style="Flat",
         )
         return [pos_trace, neg_trace]
-
 
 
 class MicroStripLine:

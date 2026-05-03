@@ -463,8 +463,7 @@ class Stackup:
         >>> signal_layers = edb.stackup.signal_layers
         """
         return {
-            layer.name: StackupLayer(self._pedb, layer)
-            for layer in self._get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
+            layer.name: StackupLayer(self._pedb, layer) for layer in self._get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         }
 
     @property
@@ -495,9 +494,7 @@ class Stackup:
         >>> edb = Edb()
         >>> layers = edb.stackup.layers
         """
-        return {
-            obj.name: StackupLayer(self._pedb, obj) for obj in self._get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
-        }
+        return {obj.name: StackupLayer(self._pedb, obj) for obj in self._get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)}
 
     @property
     def non_stackup_layers(self):
@@ -514,10 +511,7 @@ class Stackup:
         >>> edb = Edb()
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
-        return {
-            layer.name: Layer(core=layer)
-            for layer in self._get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
-        }
+        return {layer.name: Layer(core=layer) for layer in self._get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)}
 
     @property
     def all_layers(self):

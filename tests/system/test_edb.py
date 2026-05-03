@@ -1355,6 +1355,7 @@ class TestClass(BaseTestClass):
         assert edbapp.ports["test2"]
 
     pytest.mark.skipif(not config["use_grpc"], reason="DotNet skipping")
+
     def test_siwave_simulation_setup_bug(self):
         edbapp = self.edb_examples.create_empty_edb()
         setup = edbapp.simulation_setups.create_siwave_dcir_setup("setup_1")
