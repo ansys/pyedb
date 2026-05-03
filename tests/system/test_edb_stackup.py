@@ -437,7 +437,6 @@ class TestClass(BaseTestClass):
         assert "16_Bottom_renamed" in edbapp.stackup.layers
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_in_3d_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
@@ -505,7 +504,6 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         edb1.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_instance_with_flipped_stackup(self):
         """Place into another cell using 3d placement method with and
         without flipping the current layer stackup.
@@ -558,24 +556,6 @@ class TestClass(BaseTestClass):
             edb2.close(terminate_rpc_session=False)
         edb1.close(terminate_rpc_session=False)
 
-    def test_stackup_place_in_layout_with_flipped_stackup(self):
-        """Place into another cell using layer placement method with and
-        without flipping the current layer stackup.
-        """
-        # TODO
-        # edb2 = Edb(self.target_path, edbversion=desktop_version)
-        # assert edb2.stackup.place_in_layout(
-        #     self.edbapp,
-        #     angle=0.0,
-        #     offset_x="41.783mm",
-        #     offset_y="35.179mm",
-        #     flipped_stackup=True,
-        #     place_on_top=True,
-        # )
-        # edb2.close(terminate_rpc_session=False)
-        pass
-
-    @pytest.mark.skip(reason="Waiting for GRPC server")
     def test_stackup_place_on_top_of_lam_with_mold(self):
         """Place on top lam with mold using 3d placement method"""
         fpath, chip = self.edb_examples.copy_test_files_into_local_folder(["TEDB/lam_with_mold.aedb", "TEDB/chip.aedb"])
@@ -659,7 +639,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting for SP1 grpc.")
     def test_stackup_place_on_bottom_of_lam_with_mold(self):
         """Place on lam with mold using 3d placement method"""
 
@@ -745,7 +724,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting SP1 grpc.")
     def test_stackup_place_on_top_of_lam_with_mold_solder(self):
         """Place on top of lam with mold solder using 3d placement method."""
         path1, path2 = self.edb_examples.copy_test_files_into_local_folder(
@@ -831,7 +809,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(reason="Waiting SP1 grpc.")
     def test_stackup_place_on_bottom_of_lam_with_mold_solder(self):
         """Place on bottom of lam with mold solder using 3d placement method."""
 
@@ -918,7 +895,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting SP1 grpc")
     def test_stackup_place_on_top_with_zoffset_chip(self):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
@@ -1003,7 +979,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting SP1 grpc")
     def test_stackup_place_on_bottom_with_zoffset_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
 
@@ -1090,7 +1065,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting SP1 grpc")
     def test_stackup_place_on_top_with_zoffset_solder_chip(self):
         """Place on top of lam with mold chip zoffset using 3d placement method."""
         laminateEdb_path, chipEdb_path = self.edb_examples.copy_test_files_into_local_folder(
@@ -1175,7 +1149,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skip(reason="Waiting SP1 grpc.")
     def test_stackup_place_on_bottom_with_zoffset_solder_chip(self):
         """Place on bottom of lam with mold chip zoffset using 3d placement method."""
 
@@ -1262,89 +1235,6 @@ class TestClass(BaseTestClass):
                 chipEdb.close(terminate_rpc_session=False)
             laminateEdb.close(terminate_rpc_session=False)
 
-    def test_18_stackup(self):
-        # TODO
-        # def validate_material(pedb_materials, material, delta):
-        #     pedb_mat = pedb_materials[material["name"]]
-        #     if not material["dielectric_model_frequency"]:
-        #         assert (pedb_mat.conductivity - material["conductivity"]) < delta
-        #         assert (pedb_mat.permittivity - material["permittivity"]) < delta
-        #         assert (pedb_mat.dielectric_loss_tangent - material["dielectric_loss_tangent"]) < delta
-        #         assert (pedb_mat.permeability - material["permeability"]) < delta
-        #         assert (pedb_mat.magnetic_loss_tangent - material["magnetic_loss_tangent"]) < delta
-        #     assert (pedb_mat.mass_density - material["mass_density"]) < delta
-        #     assert (pedb_mat.poisson_ratio - material["poisson_ratio"]) < delta
-        #     assert (pedb_mat.specific_heat - material["specific_heat"]) < delta
-        #     assert (pedb_mat.thermal_conductivity - material["thermal_conductivity"]) < delta
-        #     assert (pedb_mat.youngs_modulus - material["youngs_modulus"]) < delta
-        #     assert (pedb_mat.thermal_expansion_coefficient - material["thermal_expansion_coefficient"]) < delta
-        #     if material["dc_conductivity"] is not None:
-        #         assert (pedb_mat.dc_conductivity - material["dc_conductivity"]) < delta
-        #     else:
-        #         assert pedb_mat.dc_conductivity == material["dc_conductivity"]
-        #     if material["dc_permittivity"] is not None:
-        #         assert (pedb_mat.dc_permittivity - material["dc_permittivity"]) < delta
-        #     else:
-        #         assert pedb_mat.dc_permittivity == material["dc_permittivity"]
-        #     if material["dielectric_model_frequency"] is not None:
-        #         assert (pedb_mat.dielectric_model_frequency - material["dielectric_model_frequency"]) < delta
-        #     else:
-        #         assert pedb_mat.dielectric_model_frequency == material["dielectric_model_frequency"]
-        #     if material["loss_tangent_at_frequency"] is not None:
-        #         assert (pedb_mat.loss_tangent_at_frequency - material["loss_tangent_at_frequency"]) < delta
-        #     else:
-        #         assert pedb_mat.loss_tangent_at_frequency == material["loss_tangent_at_frequency"]
-        #     if material["permittivity_at_frequency"] is not None:
-        #         assert (pedb_mat.permittivity_at_frequency - material["permittivity_at_frequency"]) < delta
-        #     else:
-        #         assert pedb_mat.permittivity_at_frequency == material["permittivity_at_frequency"]
-        #
-        # import json
-        #
-        # target_path = os.path.join(local_path, "example_models", test_subfolder, "ANSYS-HSD_V1.aedb")
-        # out_edb = os.path.join(self.edb_examples.test_folder, "ANSYS-HSD_V1_test.aedb")
-        # self.local_scratch.copyfolder(target_path, out_edb)
-        # json_path = os.path.join(local_path, "example_models", test_subfolder, "test_mat.json")
-        # edbapp = Edb(out_edb, edbversion=desktop_version)
-        # edbapp.stackup.load(json_path)
-        # edbapp.save_edb()
-        # delta = 1e-6
-        # f = open(json_path)
-        # json_dict = json.load(f)
-        # dict_materials = json_dict["materials"]
-        # for material_dict in dict_materials.values():
-        #     validate_material(edbapp.materials, material_dict, delta)
-        # for k, v in json_dict.items():
-        #     if k == "layers":
-        #         for layer_name, layer in v.items():
-        #             pedb_lay = edbapp.stackup.layers[layer_name]
-        #             assert list(pedb_lay.color) == layer["color"]
-        #             assert pedb_lay.type == layer["type"]
-        #             if isinstance(layer["material"], str):
-        #                 assert pedb_lay.material.lower() == layer["material"].lower()
-        #             else:
-        #                 assert 0 == validate_material(edbapp.materials, layer["material"], delta)
-        #             if isinstance(layer["dielectric_fill"], str) or layer["dielectric_fill"] is None:
-        #                 assert pedb_lay.dielectric_fill == layer["dielectric_fill"]
-        #             else:
-        #                 assert 0 == validate_material(edbapp.materials, layer["dielectric_fill"], delta)
-        #             assert (pedb_lay.thickness - layer["thickness"]) < delta
-        #             assert (pedb_lay.etch_factor - layer["etch_factor"]) < delta
-        #             assert pedb_lay.roughness_enabled == layer["roughness_enabled"]
-        #             if layer["roughness_enabled"]:
-        #                 assert (pedb_lay.top_hallhuray_nodule_radius - layer["top_hallhuray_nodule_radius"]) < delta
-        #                 assert (pedb_lay.top_hallhuray_surface_ratio - layer["top_hallhuray_surface_ratio"]) < delta
-        #                 assert (
-        #                     pedb_lay.bottom_hallhuray_nodule_radius - layer["bottom_hallhuray_nodule_radius"]
-        #                 ) < delta
-        #                 assert (
-        #                     pedb_lay.bottom_hallhuray_surface_ratio - layer["bottom_hallhuray_surface_ratio"]
-        #                 ) < delta
-        #                 assert (pedb_lay.side_hallhuray_nodule_radius - layer["side_hallhuray_nodule_radius"]) < delta
-        #                 assert (pedb_lay.side_hallhuray_surface_ratio - layer["side_hallhuray_surface_ratio"]) < delta
-        # edbapp.close(terminate_rpc_session=False)
-        pass
-
     def test_19(self):
         edbapp = self.edb_examples.get_si_verse()
         assert edbapp.stackup.add_layer_top(name="add_layer_top")
@@ -1361,10 +1251,6 @@ class TestClass(BaseTestClass):
         assert edbapp.stackup.layers_by_id[l_id - 1][1] == "add_layer_above"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_test_layers_consolidated(self):
         edbapp = self.edb_examples.get_si_verse()
         layers = edbapp.stackup.layers
