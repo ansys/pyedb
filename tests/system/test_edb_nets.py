@@ -233,7 +233,7 @@ class TestClass(BaseTestClass):
             layers=False, materials=False, via_holes=False, pads=True, antipads=False, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_6(self):
         # Done
@@ -242,7 +242,7 @@ class TestClass(BaseTestClass):
             layers=False, materials=False, via_holes=False, pads=False, antipads=True, traces=False
         )
         assert len(list(edbapp.variables.values())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_layout_auto_parametrization_7(self):
         # Done
@@ -257,4 +257,4 @@ class TestClass(BaseTestClass):
             trace_net_filter=["FCHIP_A1", "FCHIP_A2", "FCHIP_A3"],
         )
         assert len(list(edbapp.variables.keys())) == 3
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)

@@ -161,7 +161,7 @@ class TestClass(BaseTestClass):
 
         assert planar_em.via_stop_layer is None
         assert planar_em.via_stop_layer is None
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_properties_setter(self):
         """Set padstack properties"""

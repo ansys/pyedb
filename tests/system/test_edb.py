@@ -437,7 +437,7 @@ class TestClass(BaseTestClass):
             sweep.enforce_causality = True
         setup.sweep_data = sweeps
         assert setup.sweep_data[0].enforce_causality
-        edb.close()
+        edb.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
@@ -1312,7 +1312,7 @@ class TestClass(BaseTestClass):
 
         setup2 = edbapp.simulation_setups.create_siwave_setup("setup_2")
         assert "pi_slider_position", "si_slider_position" in setup2.get_configurations().items()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
@@ -1338,7 +1338,7 @@ class TestClass(BaseTestClass):
         assert edbapp.get_bounding_box()
         assert edbapp.get_statistics()
         assert edbapp.are_port_reference_terminals_connected()
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1", reason="working with latest release"
@@ -1362,12 +1362,8 @@ class TestClass(BaseTestClass):
 
         setup = edbapp.setups["setup_1"]
         assert not setup.settings.use_loop_res_for_per_pin  # fail on .net
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_horizontal_wave_ports(self):
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
@@ -1387,7 +1383,7 @@ class TestClass(BaseTestClass):
         assert list(edb1.components.instances.values())[0].name == "U0"
         assert len(list(edb2.components.instances.values())) == 509
         assert list(edb2.components.instances.values())[0].name == "C380"
-        edb1.close()  # testing server RPC should not be closed
+        edb1.close(terminate_rpc_session=False)  # testing server RPC should not be closed
         assert edb1.active_cell is None
         assert len(list(edb2.components.instances.values())) == 509
         assert list(edb2.components.instances.values())[0].name == "C380"

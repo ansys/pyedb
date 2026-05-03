@@ -125,7 +125,7 @@ class TestClass(BaseTestClass):
         output_file = os.path.join(edbapp.edbpath, "drc_results.ipc356a")
         drc.to_ipc356a(file_path=output_file)
         assert os.path.isfile(output_file)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_siwave_log_parser(self):
         from pyedb.workflows.utilities.siwave_log_parser import SiwaveLogParser
@@ -150,4 +150,4 @@ class TestClass(BaseTestClass):
         assert len(main_board.stackup.layers) == 24  # nosec: B101
         assert "test_TOP" in main_board.stackup.layers  # nosec: B101
         assert len(main_board.modeler.primitives_by_layer["test_TOP"]) == 424  # nosec: B101
-        main_board.close()
+        main_board.close(terminate_rpc_session=False)
