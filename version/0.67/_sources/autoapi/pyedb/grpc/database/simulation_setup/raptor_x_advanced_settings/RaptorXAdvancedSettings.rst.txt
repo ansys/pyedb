@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`RaptorXAdvancedSettings`
+================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings.RaptorXAdvancedSettings(pedb, core)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.raptor_x_simulation_settings.RaptorXAdvancedSettings`
+
+
+   
+   Raptor X advanced settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import RaptorXAdvancedSettings
+
+
+
+
+

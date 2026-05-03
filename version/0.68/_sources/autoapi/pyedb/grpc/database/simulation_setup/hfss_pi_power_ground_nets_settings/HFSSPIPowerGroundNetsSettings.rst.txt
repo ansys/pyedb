@@ -1,0 +1,181 @@
+
+
+
+
+
+
+:class:`HFSSPIPowerGroundNetsSettings`
+======================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_pi_power_ground_nets_settings.HFSSPIPowerGroundNetsSettings(pedb, core: ansys.edb.core.simulation_setup.hfss_pi_simulation_settings.HFSSPIPowerGroundNetsSettings)
+
+   
+   PyEDB HFSS PI Power/Ground Nets settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: HFSSPIPowerGroundNetsSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~auto_detect_ignore_small_holes_min_diameter`
+            - Flag indicating whether to automatically detect a diameter that holes smaller than the diameter
+          * - :py:attr:`~ignore_small_holes_min_diameter`
+            - Diameter that holes smaller than the diameter will be ignored.
+          * - :py:attr:`~improved_loss_model`
+            - Improved loss model setting.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_pi_power_ground_nets_settings import HFSSPIPowerGroundNetsSettings
+
+Property detail
+---------------
+
+.. py:property:: auto_detect_ignore_small_holes_min_diameter
+   :type: bool
+
+
+   
+   Flag indicating whether to automatically detect a diameter that holes smaller than the diameter
+   will be ignored.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if auto-detect ignore small holes minimum diameter is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: ignore_small_holes_min_diameter
+   :type: str
+
+
+   
+   Diameter that holes smaller than the diameter will be ignored.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Minimum diameter for holes to be ignored.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: improved_loss_model
+   :type: str
+
+
+   
+   Improved loss model setting.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Improved loss model setting. Values are `level_1`, `level_2`, `level_3`.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

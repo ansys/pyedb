@@ -1,0 +1,123 @@
+﻿PolygonData
+===========
+
+.. currentmodule:: pyedb.grpc.database.geometry.polygon_data
+
+.. autoclass:: PolygonData
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      PolygonData.alpha_shape
+      
+      
+      PolygonData.area
+      
+      
+      PolygonData.bbox
+      
+      
+      PolygonData.bbox_of_polygons
+      
+      
+      PolygonData.bounding_circle
+      
+      
+      PolygonData.circle_intersect
+      
+      
+      PolygonData.closest_point
+      
+      
+      PolygonData.closest_points
+      
+      
+      PolygonData.convex_hull
+      
+      
+      PolygonData.create_from_bounding_box
+      
+      
+      PolygonData.create_from_points
+      
+      
+      PolygonData.defeature
+      
+      
+      PolygonData.expand
+      
+      
+      PolygonData.has_arcs
+      
+      
+      PolygonData.has_holes
+      
+      
+      PolygonData.has_self_intersections
+      
+      
+      PolygonData.intersect
+      
+      
+      PolygonData.intersection_type
+      
+      
+      PolygonData.is_box
+      
+      
+      PolygonData.is_circle
+      
+      
+      PolygonData.is_convex
+      
+      
+      PolygonData.is_hole
+      
+      
+      PolygonData.is_inside
+      
+      
+      PolygonData.is_parametric
+      
+      
+      PolygonData.mirror_x
+      
+      
+      PolygonData.move
+      
+      
+      PolygonData.normalized
+      
+      
+      PolygonData.remove_self_intersections
+      
+      
+      PolygonData.rotate
+      
+      
+      PolygonData.scale
+      
+      
+      PolygonData.subtract
+      
+      
+      PolygonData.unite
+      
+      
+      PolygonData.without_arcs
+      
+      
+      PolygonData.xor
+      
+   
+   
+
+   
+   
+   

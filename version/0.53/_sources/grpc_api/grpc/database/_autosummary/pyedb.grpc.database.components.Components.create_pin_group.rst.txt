@@ -1,0 +1,6 @@
+create\_pin\_group
+==================
+
+.. currentmodule:: pyedb.grpc.database.components
+
+.. automethod:: Components.create_pin_group

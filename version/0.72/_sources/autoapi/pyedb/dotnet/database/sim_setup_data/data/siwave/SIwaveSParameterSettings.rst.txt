@@ -1,0 +1,82 @@
+
+
+
+
+
+
+:class:`SIwaveSParameterSettings`
+=================================
+
+
+.. py:class:: pyedb.dotnet.database.sim_setup_data.data.siwave.SIwaveSParameterSettings(parent, core)
+
+
+.. py:currentmodule:: SIwaveSParameterSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_behavior`
+            - 
+          * - :py:attr:`~extrapolation`
+            - 
+          * - :py:attr:`~interpolation`
+            - 
+          * - :py:attr:`~use_state_space`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.sim_setup_data.data.siwave import SIwaveSParameterSettings
+
+Property detail
+---------------
+
+.. py:property:: dc_behavior
+
+.. py:property:: extrapolation
+
+.. py:property:: interpolation
+
+.. py:property:: use_state_space
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

@@ -1,0 +1,6 @@
+add\_via
+========
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.control_file
+
+.. automethod:: ControlFileStackup.add_via

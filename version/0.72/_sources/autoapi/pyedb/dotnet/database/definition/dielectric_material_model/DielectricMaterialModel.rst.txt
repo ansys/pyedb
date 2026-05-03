@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`DielectricMaterialModel`
+================================
+
+
+.. py:class:: pyedb.dotnet.database.definition.dielectric_material_model.DielectricMaterialModel(pedb: pyedb.dotnet.edb.Edb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.utilities.obj_base.ObjBase`
+
+
+   
+   Class for dielectric material model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.dielectric_material_model import DielectricMaterialModel
+
+
+
+
+

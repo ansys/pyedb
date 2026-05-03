@@ -1,0 +1,89 @@
+
+
+
+
+
+
+:class:`PortProperty`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.component.PortProperty(edbobj)
+
+
+.. py:currentmodule:: PortProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~get_reference_size`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~reference_height`
+            - 
+          * - :py:attr:`~reference_size_auto`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.component import PortProperty
+
+Property detail
+---------------
+
+.. py:property:: reference_height
+
+.. py:property:: reference_size_auto
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: get_reference_size()
+
+
+
+

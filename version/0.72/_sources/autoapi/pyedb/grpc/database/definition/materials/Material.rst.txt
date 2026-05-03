@@ -1,0 +1,921 @@
+
+
+
+
+
+
+:class:`Material`
+=================
+
+
+.. py:class:: pyedb.grpc.database.definition.materials.Material(edb: pyedb.grpc.edb.Edb, core)
+
+   
+   Manage EDB methods for material property management.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Material
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_debye_model`
+            - Set Debye model on current material.
+          * - :py:attr:`~set_multipole_debye_model`
+            - Set multi-pole debeye model on current material.
+          * - :py:attr:`~set_djordjecvic_sarkar_model`
+            - Set Djordjecvic-Sarkar model on current material.
+          * - :py:attr:`~to_dict`
+            - Convert material into dictionary.
+          * - :py:attr:`~update`
+            - 
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Material name.
+          * - :py:attr:`~all_properties`
+            - All properties defined in the material definition.
+          * - :py:attr:`~dc_model`
+            - Dielectric material model.
+          * - :py:attr:`~dielectric_material_model`
+            - Material dielectric model.
+          * - :py:attr:`~conductivity`
+            - Get material conductivity.
+          * - :py:attr:`~dc_conductivity`
+            - Material DC conductivity.
+          * - :py:attr:`~use_dc_relative_conductivity`
+            - Flag indicating whether the DC relative permittivity nominal value is used.
+          * - :py:attr:`~dc_relative_permittivity`
+            - Material DC permittivity.
+          * - :py:attr:`~dc_permittivity`
+            - Material DC permittivity.
+          * - :py:attr:`~loss_tangent_at_frequency`
+            - Material loss tangent at frequency if dielectric model is defined.
+          * - :py:attr:`~dielectric_model_frequency`
+            - Dielectric model frequency if model is defined.
+          * - :py:attr:`~relative_permittivity_at_frequency`
+            - Material relative permittivity at frequency if dielectric model is defined.
+          * - :py:attr:`~permittivity_at_frequency`
+            - Material permittivity at frequency if model is defined.
+          * - :py:attr:`~permittivity`
+            - Material permittivity.
+          * - :py:attr:`~permeability`
+            - Material permeability.
+          * - :py:attr:`~dielectric_loss_tangent`
+            - Material loss tangent.
+          * - :py:attr:`~magnetic_loss_tangent`
+            - Material magnetic loss tangent.
+          * - :py:attr:`~thermal_conductivity`
+            - Material thermal conductivity.
+          * - :py:attr:`~mass_density`
+            - Material mass density.
+          * - :py:attr:`~youngs_modulus`
+            - Material young modulus.
+          * - :py:attr:`~specific_heat`
+            - Material specific heat.
+          * - :py:attr:`~poisson_ratio`
+            - Material poisson ratio.
+          * - :py:attr:`~thermal_expansion_coefficient`
+            - Material thermal coefficient.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.definition.materials import Material
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Material name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Material name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: all_properties
+   :type: list[str]
+
+
+   
+   All properties defined in the material definition.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:str`]
+           List of all material properties available.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_model
+   :type: ansys.edb.core.definition.debye_model.DebyeModel | ansys.edb.core.definition.multipole_debye_model.MultipoleDebyeModel | ansys.edb.core.definition.djordjecvic_sarkar_model.DjordjecvicSarkarModel | float
+
+
+   
+   Dielectric material model.
+
+
+
+
+
+   :Returns:
+
+       :obj:`The` :obj:`dielectric` :obj:`model` :obj:`object`, :obj:`or` ``0.0`` :obj:`when` :obj:`no` :obj:`dielectric`
+           ..
+
+       :obj:`model` :obj:`is` assigned.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_material_model
+   :type: ansys.edb.core.definition.debye_model.DebyeModel | ansys.edb.core.definition.multipole_debye_model.MultipoleDebyeModel | ansys.edb.core.definition.djordjecvic_sarkar_model.DjordjecvicSarkarModel | float
+
+
+   
+   Material dielectric model.
+
+
+
+
+
+   :Returns:
+
+       :obj:`The` :obj:`dielectric` :obj:`model` :obj:`object` :obj:`associated` :obj:`with` :obj:`the` :obj:`material`, :obj:`or`
+           ..
+
+       ``0.0`` :obj:`when` :obj:`no` :obj:`dielectric` :obj:`model` :obj:`is` assigned.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conductivity
+   :type: float
+
+
+   
+   Get material conductivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Conductivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_conductivity
+   :type: float | str | None
+
+
+   
+   Material DC conductivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           DC conductivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_dc_relative_conductivity
+   :type: bool
+
+
+   
+   Flag indicating whether the DC relative permittivity nominal value is used.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           Whether the DC relative permittivity nominal value is used.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_relative_permittivity
+   :type: float | None
+
+
+   
+   Material DC permittivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           DC permittivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_permittivity
+   :type: float | str | None
+
+
+   
+   Material DC permittivity.
+
+   .. deprecated:: 0.71.0
+      Use :attr: dc_relative_permittivity property instead.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: loss_tangent_at_frequency
+   :type: float | str | None
+
+
+   
+   Material loss tangent at frequency if dielectric model is defined.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Loss tangent value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_model_frequency
+   :type: float | str | None
+
+
+   
+   Dielectric model frequency if model is defined.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Frequency value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: relative_permittivity_at_frequency
+   :type: float | str | None
+
+
+   
+   Material relative permittivity at frequency if dielectric model is defined.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Permittivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity_at_frequency
+   :type: float | str | None
+
+
+   
+   Material permittivity at frequency if model is defined.
+
+   .. deprecated:: 0.71.0
+      Use :attr: relative_permittivity_at_frequency property instead.
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Permittivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity
+   :type: float | str | None
+
+
+   
+   Material permittivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Permittivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permeability
+   :type: float | str
+
+
+   
+   Material permeability.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Permeability value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_loss_tangent
+   :type: float | str
+
+
+   
+   Material loss tangent.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Loss tangent value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: magnetic_loss_tangent
+   :type: float | str
+
+
+   
+   Material magnetic loss tangent.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Magnetic loss tangent value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_conductivity
+   :type: float | str
+
+
+   
+   Material thermal conductivity.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Thermal conductivity value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mass_density
+   :type: float | str
+
+
+   
+   Material mass density.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Mass density value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: youngs_modulus
+   :type: float | str
+
+
+   
+   Material young modulus.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material young modulus value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: specific_heat
+   :type: float | str
+
+
+   
+   Material specific heat.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material specific heat value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: poisson_ratio
+   :type: float | str
+
+
+   
+   Material poisson ratio.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material poisson ratio value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_expansion_coefficient
+   :type: float | str
+
+
+   
+   Material thermal coefficient.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Material thermal coefficient value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_debye_model()
+
+   
+   Set Debye model on current material.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_multipole_debye_model()
+
+   
+   Set multi-pole debeye model on current material.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_djordjecvic_sarkar_model()
+
+   
+   Set Djordjecvic-Sarkar model on current material.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict()
+
+   
+   Convert material into dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: update(input_dict: dict)
+
+
+
+

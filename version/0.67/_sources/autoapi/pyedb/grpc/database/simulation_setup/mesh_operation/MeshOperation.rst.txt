@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`MeshOperation`
+======================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.mesh_operation.MeshOperation(pedb, core)
+
+   Bases: :py:obj:`ansys.edb.core.simulation_setup.mesh_operation.MeshOperation`
+
+
+   
+   Mesh operation class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.mesh_operation import MeshOperation
+
+
+
+
+

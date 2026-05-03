@@ -1,0 +1,299 @@
+
+
+
+
+
+
+:class:`XmlStackup`
+===================
+
+
+.. py:class:: pyedb.xml_parser.xml_stackup.XmlStackup(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Main stackup configuration for EDB XML files.
+
+   This class represents the complete stackup definition including materials
+   and layers for a PCB design.
+
+   :Parameters:
+
+       **materials** : :obj:`XmlMaterials`, :obj:`optional`
+           Container for material definitions. The default is ``None``.
+
+       **layers** : :obj:`XmlLayers`, :obj:`optional`
+           Container for layer definitions. The default is ``None``.
+
+       **schema_version** : :class:`python:str`, :obj:`optional`
+           Version of the XML schema. The default is ``None``.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_stackup import XmlStackup
+   >>> stackup = XmlStackup()
+   >>> materials = stackup.add_materials()
+   >>> layers = stackup.add_layers()
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: XmlStackup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_materials`
+            - Add a materials container to the stackup.
+          * - :py:attr:`~add_layers`
+            - Add a layers container to the stackup.
+          * - :py:attr:`~import_from_cfg_stackup`
+            - Import stackup configuration from a CFG stackup object.
+          * - :py:attr:`~to_dict`
+            - Convert the stackup configuration to a dictionary.
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~materials`
+            - 
+          * - :py:attr:`~layers`
+            - 
+          * - :py:attr:`~schema_version`
+            - 
+          * - :py:attr:`~model_config`
+            - Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.xml_parser.xml_stackup import XmlStackup
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: materials
+   :type:  XmlMaterials | None
+   :value: None
+
+
+.. py:attribute:: layers
+   :type:  XmlLayers | None
+   :value: None
+
+
+.. py:attribute:: schema_version
+   :type:  str | None
+   :value: None
+
+
+.. py:attribute:: model_config
+
+   
+   Configuration for the model, should be a dictionary conforming to [`ConfigDict`][pydantic.config.ConfigDict].
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_materials() -> XmlMaterials
+
+   
+   Add a materials container to the stackup.
+
+
+
+
+
+   :Returns:
+
+       :obj:`XmlMaterials`
+           The newly created materials container object.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_stackup import XmlStackup
+   >>> stackup = XmlStackup()
+   >>> materials = stackup.add_materials()
+   >>> materials.add_material("copper", conductivity=5.8e7)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layers() -> XmlLayers
+
+   
+   Add a layers container to the stackup.
+
+
+
+
+
+   :Returns:
+
+       :obj:`XmlLayers`
+           The newly created layers container object with default length unit of "mm".
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_stackup import XmlStackup
+   >>> stackup = XmlStackup()
+   >>> layers = stackup.add_layers()
+   >>> layers.add_layer(name="TOP", type="signal", thickness=0.035, material="copper")
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: import_from_cfg_stackup(cfg_stackup: pyedb.configuration.cfg_data.CfgStackup) -> None
+
+   
+   Import stackup configuration from a CFG stackup object.
+
+
+   :Parameters:
+
+       **cfg_stackup** : :obj:`CfgStackup`
+           Configuration stackup object to import from. This should contain
+           materials and layers attributes that can be converted to XML format.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_stackup import XmlStackup
+   >>> from pyedb.configuration.cfg_data import CfgStackup
+   >>> stackup = XmlStackup()
+   >>> cfg_data = CfgStackup(materials=[...], layers=[...])
+   >>> stackup.import_from_cfg_stackup(cfg_data)
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: to_dict() -> dict
+
+   
+   Convert the stackup configuration to a dictionary.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary containing 'layers' and 'materials' keys with their respective
+           data as lists of dictionaries. Layer thicknesses are normalized to include
+           units, and layer types are converted to lowercase format.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> from pyedb.xml_parser.xml_stackup import XmlStackup
+   >>> stackup = XmlStackup()
+   >>> stackup.add_materials()
+   >>> stackup.materials.add_material("copper", conductivity=5.8e7)
+   >>> stackup.add_layers()
+   >>> stackup.layers.add_layer(name="TOP", type="signal", thickness=0.035, material="copper")
+   >>> config = stackup.to_dict()
+   >>> print(config["materials"])
+   [{'name': 'copper', 'conductivity': 58000000.0}]
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,6 @@
+design\_options
+===============
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. autoproperty:: Edb.design_options

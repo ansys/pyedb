@@ -1,0 +1,32 @@
+﻿DCTerminal
+==========
+
+.. currentmodule:: pyedb.grpc.database.utility.sources
+
+.. autoclass:: DCTerminal
+
+   
+
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      DCTerminal.amplitude
+      DCTerminal.c_value
+      DCTerminal.create_physical_resistor
+      DCTerminal.impedance
+      DCTerminal.l_value
+      DCTerminal.name
+      DCTerminal.negative_node
+      DCTerminal.phase
+      DCTerminal.positive_node
+      DCTerminal.r_value
+      DCTerminal.source_type
+   
+   

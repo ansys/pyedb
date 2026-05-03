@@ -1,0 +1,6 @@
+get\_start\_elevation
+=====================
+
+.. currentmodule:: pyedb.grpc.database.primitive.bondwire
+
+.. automethod:: Bondwire.get_start_elevation

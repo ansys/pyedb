@@ -1,0 +1,6 @@
+model\_type
+===========
+
+.. currentmodule:: pyedb.dotnet.database.sim_setup_data.data.simulation_settings
+
+.. autoproperty:: HFSSPISimulationSettings.model_type

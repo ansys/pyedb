@@ -1,0 +1,6 @@
+export\_json
+============
+
+.. currentmodule:: pyedb.dotnet.database.edb_data.simulation_configuration
+
+.. automethod:: SimulationConfiguration.export_json

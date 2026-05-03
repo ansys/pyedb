@@ -1,0 +1,6 @@
+name
+====
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.name

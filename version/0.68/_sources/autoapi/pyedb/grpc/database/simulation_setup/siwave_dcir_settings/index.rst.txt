@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``siwave_dcir_settings.py`` module
+======================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.siwave_dcir_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: siwave_dcir_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.siwave_dcir_settings.SIWaveDCIRSettings`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> SIWaveDCIRSettings</autoapi/pyedb/grpc/database/simulation_setup/siwave_dcir_settings/SIWaveDCIRSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

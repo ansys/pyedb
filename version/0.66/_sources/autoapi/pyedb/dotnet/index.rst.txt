@@ -1,0 +1,92 @@
+
+
+
+
+
+
+The ``dotnet`` package
+==========================
+
+.. py:module:: pyedb.dotnet
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: dotnet
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database`
+            - 
+
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.clr_module`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.edb`
+            - This module contains the ``Edb`` class.
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> database</autoapi/pyedb/dotnet/database/index>
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> clr_module</autoapi/pyedb/dotnet/clr_module/index>
+    <span class="nf nf-fa-file"></span> edb</autoapi/pyedb/dotnet/edb/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

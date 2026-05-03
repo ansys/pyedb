@@ -1,0 +1,6 @@
+get\_layout\_bounding\_box
+==========================
+
+.. currentmodule:: pyedb.dotnet.database.hfss
+
+.. automethod:: EdbHfss.get_layout_bounding_box

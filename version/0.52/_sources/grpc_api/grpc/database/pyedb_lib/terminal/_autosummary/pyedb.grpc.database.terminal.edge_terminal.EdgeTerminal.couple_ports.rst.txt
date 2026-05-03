@@ -1,0 +1,6 @@
+couple\_ports
+=============
+
+.. currentmodule:: pyedb.grpc.database.terminal.edge_terminal
+
+.. automethod:: EdgeTerminal.couple_ports

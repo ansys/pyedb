@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``layout.py`` module
+========================
+
+.. py:module:: pyedb.grpc.database.layout.layout
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: layout
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.layout.layout.Layout`
+            - Manage Layout class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Layout</autoapi/pyedb/grpc/database/layout/layout/Layout>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains these classes: `EdbLayout` and `Shape`.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

@@ -1,0 +1,216 @@
+
+
+
+
+
+
+:class:`PinPairModel`
+=====================
+
+
+.. py:class:: pyedb.dotnet.database.cell.hierarchy.model.PinPairModel(component, edb_object=None)
+
+   Bases: :py:obj:`Model`
+
+
+   
+   Manages pin pair model class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PinPairModel
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~delete_pin_pair_rlc`
+            - Delete a pin pair definition.
+          * - :py:attr:`~add_pin_pair`
+            - Add a pin pair definition.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pin_pairs`
+            - List of pin pair definitions.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~component`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.cell.hierarchy.model import PinPairModel
+
+Property detail
+---------------
+
+.. py:property:: pin_pairs
+
+   
+   List of pin pair definitions.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: component
+
+
+
+Method detail
+-------------
+
+.. py:method:: delete_pin_pair_rlc(pin_pair)
+
+   
+   Delete a pin pair definition.
+
+
+   :Parameters:
+
+       **pin_pair: Ansys.Ansoft.Edb.Utility.PinPair**
+           ..
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_pin_pair(r: float | None = None, l: float | None = None, c: float | None = None, r_enabled: bool | None = None, l_enabled: bool | None = None, c_enabled: bool | None = None, first_pin: str | None = None, second_pin: str | None = None, is_parallel: bool = False)
+
+   
+   Add a pin pair definition.
+
+
+   :Parameters:
+
+       **r: float | None**
+           ..
+
+       **l: float | None**
+           ..
+
+       **c: float | None**
+           ..
+
+       **r_enabled: bool**
+           ..
+
+       **l_enabled: bool**
+           ..
+
+       **c_enabled: bool**
+           ..
+
+       **first_pin: str**
+           ..
+
+       **second_pin: str**
+           ..
+
+       **is_parallel: bool**
+           ..
+
+
+
+   :Returns:
+
+       
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

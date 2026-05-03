@@ -1,0 +1,350 @@
+
+
+
+
+
+
+:class:`SIWaveCPASimulationSetup`
+=================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup.SIWaveCPASimulationSetup(pedb, name=None, siwave_cpa_setup_class=None)
+
+   
+   Represents the setup configuration for SIwave CPA simulations.
+
+   Attributes:
+       _pedb: The database object representing the active cell.
+       _channel_setup (ChannelSetup): The channel setup configuration.
+       _solver_options (SolverOptions): The solver options configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: SIWaveCPASimulationSetup
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Creates a new SIWaveCPASimulationSetup instance.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Gets the name of the simulation setup.
+          * - :py:attr:`~mode`
+            - Gets the mode of the simulation setup.
+          * - :py:attr:`~model_type`
+            - Gets the model type of the simulation setup.
+          * - :py:attr:`~use_q3d_solver`
+            - Gets the Q3D solver usage setting.
+          * - :py:attr:`~net_processing_mode`
+            - Gets the net processing mode.
+          * - :py:attr:`~channel_setup`
+            - Gets the channel setup configuration.
+          * - :py:attr:`~solver_options`
+            - Gets the solver options configuration.
+          * - :py:attr:`~nets_to_process`
+            - Gets the list of nets to process.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~type`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.siwave_cpa_simulation_setup import SIWaveCPASimulationSetup
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Gets the name of the simulation setup.
+
+   Returns:
+       str: The name of the simulation setup.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mode
+
+   
+   Gets the mode of the simulation setup.
+
+   Returns:
+       str: The mode of the simulation setup ("channel" or "no_channel").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: model_type
+
+   
+   Gets the model type of the simulation setup.
+
+   Returns:
+       str: The model type ("rlcg" or "esd_r").
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_q3d_solver
+
+   
+   Gets the Q3D solver usage setting.
+
+   Returns:
+       bool: True if the Q3D solver is used, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_processing_mode
+
+   
+   Gets the net processing mode.
+
+   Returns:
+       str: The net processing mode.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: channel_setup
+
+   
+   Gets the channel setup configuration.
+
+   Returns:
+       ChannelSetup: The channel setup configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solver_options
+
+   
+   Gets the solver options configuration.
+
+   Returns:
+       SolverOptions: The solver options configuration.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: nets_to_process
+
+   
+   Gets the list of nets to process.
+
+   Returns:
+       list: A list of nets to process.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: type
+   :value: 'cpa'
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(edb: pyedb.grpc.edb.Edb, name=None, siwave_cpa_setup_class=None) -> SIWaveCPASimulationSetup
+   :classmethod:
+
+
+   
+   Creates a new SIWaveCPASimulationSetup instance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

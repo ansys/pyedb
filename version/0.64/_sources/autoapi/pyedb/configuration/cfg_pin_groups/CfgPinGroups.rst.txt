@@ -1,0 +1,107 @@
+
+
+
+
+
+
+:class:`CfgPinGroups`
+=====================
+
+
+.. py:class:: pyedb.configuration.cfg_pin_groups.CfgPinGroups(pedb, pingroup_data)
+
+   
+   Manage configuration pin group class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CfgPinGroups
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_pingroup_to_edb`
+            - 
+          * - :py:attr:`~get_data_from_edb`
+            - 
+          * - :py:attr:`~apply`
+            - 
+          * - :py:attr:`~get_data_from_db`
+            - 
+          * - :py:attr:`~export_properties`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~pin_groups`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_pin_groups import CfgPinGroups
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: pin_groups
+
+
+
+Method detail
+-------------
+
+.. py:method:: set_pingroup_to_edb()
+
+.. py:method:: get_data_from_edb()
+
+.. py:method:: apply()
+
+.. py:method:: get_data_from_db()
+
+.. py:method:: export_properties()
+
+
+
+

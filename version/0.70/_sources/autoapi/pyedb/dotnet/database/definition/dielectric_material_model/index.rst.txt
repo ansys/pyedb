@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``dielectric_material_model.py`` module
+===========================================
+
+.. py:module:: pyedb.dotnet.database.definition.dielectric_material_model
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: dielectric_material_model
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.dielectric_material_model.DielectricMaterialModel`
+            - Class for dielectric material model.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.dielectric_material_model.DjordjecvicSarkarModel`
+            - Class for Djordjecvic-Sarkar model.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.dielectric_material_model.DebyeModel`
+            - Class for Debye model.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.dielectric_material_model.MultipoleDebyeModel`
+            - Class for multipole Debye model.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> DielectricMaterialModel</autoapi/pyedb/dotnet/database/definition/dielectric_material_model/DielectricMaterialModel>
+    <span class="nf nf-cod-symbol_class"></span> DjordjecvicSarkarModel</autoapi/pyedb/dotnet/database/definition/dielectric_material_model/DjordjecvicSarkarModel>
+    <span class="nf nf-cod-symbol_class"></span> DebyeModel</autoapi/pyedb/dotnet/database/definition/dielectric_material_model/DebyeModel>
+    <span class="nf nf-cod-symbol_class"></span> MultipoleDebyeModel</autoapi/pyedb/dotnet/database/definition/dielectric_material_model/MultipoleDebyeModel>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

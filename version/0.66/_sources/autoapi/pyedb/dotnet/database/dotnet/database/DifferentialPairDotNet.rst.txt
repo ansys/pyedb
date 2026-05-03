@@ -1,0 +1,226 @@
+
+
+
+
+
+
+:class:`DifferentialPairDotNet`
+===============================
+
+
+.. py:class:: pyedb.dotnet.database.dotnet.database.DifferentialPairDotNet(app, api_object=None)
+
+   Bases: :py:obj:`NetClassDotNet`
+
+
+   
+   Differential Pairs.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: DifferentialPairDotNet
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~find_by_name`
+            - Edb Dotnet Api Database `Edb.DifferentialPair.FindByName`.
+          * - :py:attr:`~api_create`
+            - Edb Dotnet Api Database `Edb.DifferentialPair.Create`.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~api_class`
+            - Return Ansys.Ansoft.Edb class object.
+          * - :py:attr:`~api_positive_net`
+            - Edb Api Positive net object.
+          * - :py:attr:`~api_negative_net`
+            - Edb Api Negative net object.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~cell_diff_pair`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.dotnet.database import DifferentialPairDotNet
+
+Property detail
+---------------
+
+.. py:property:: api_class
+
+   
+   Return Ansys.Ansoft.Edb class object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: api_positive_net
+
+   
+   Edb Api Positive net object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: api_negative_net
+
+   
+   Edb Api Negative net object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: cell_diff_pair
+
+
+
+Method detail
+-------------
+
+.. py:method:: find_by_name(layout, net)
+
+   
+   Edb Dotnet Api Database `Edb.DifferentialPair.FindByName`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: api_create(name)
+
+   
+   Edb Dotnet Api Database `Edb.DifferentialPair.Create`.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

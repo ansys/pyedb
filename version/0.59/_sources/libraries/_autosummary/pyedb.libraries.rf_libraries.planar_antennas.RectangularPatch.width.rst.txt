@@ -1,0 +1,6 @@
+width
+=====
+
+.. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
+
+.. autoproperty:: RectangularPatch.width

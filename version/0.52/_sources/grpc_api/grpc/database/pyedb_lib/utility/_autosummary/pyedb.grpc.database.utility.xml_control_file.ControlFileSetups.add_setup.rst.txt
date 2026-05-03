@@ -1,0 +1,6 @@
+add\_setup
+==========
+
+.. currentmodule:: pyedb.grpc.database.utility.xml_control_file
+
+.. automethod:: ControlFileSetups.add_setup

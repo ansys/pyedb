@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``pyedb.configuration.cfg_padstacks`` library
+=================================================
+
+.. py:module:: pyedb.configuration.cfg_padstacks
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: cfg_padstacks
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstacks`
+            - Padstack data class.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstackDefinition`
+            - Padstack definition data class.
+
+
+          * - :py:obj:`~pyedb.configuration.cfg_padstacks.CfgPadstackInstance`
+            - Instance data class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstacks</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstacks>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackDefinition</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstackDefinition>
+    <span class="nf nf-cod-symbol_class"></span> CfgPadstackInstance</autoapi/pyedb/configuration/cfg_padstacks/CfgPadstackInstance>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+mesh\_operations
+================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_simulation_setup
+
+.. autoproperty:: HfssSimulationSetup.mesh_operations

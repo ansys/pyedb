@@ -1,0 +1,126 @@
+
+
+
+
+
+
+:class:`ComponentProperty`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.hierarchy.component.ComponentProperty(core)
+
+   
+   Class managing component properties.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+.. py:currentmodule:: ComponentProperty
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+
+
+   .. tab-item:: Special methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~__getattr__`
+            - Only called if normal attribute lookup fails on self.
+          * - :py:attr:`~__setattr__`
+            - Only called if normal attribute lookup fails on self.
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.hierarchy.component import ComponentProperty
+
+
+
+Method detail
+-------------
+
+.. py:method:: __getattr__(name)
+
+   
+   Only called if normal attribute lookup fails on self.
+   Delegates to self.core.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: __setattr__(name, value)
+
+   
+   Only called if normal attribute lookup fails on self.
+   Delegates to self.core.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

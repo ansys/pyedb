@@ -1,0 +1,142 @@
+
+
+
+
+
+
+:class:`GapPort`
+================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.ports.GapPort(pedb, edb_object)
+
+   Bases: :py:obj:`pyedb.dotnet.database.cell.terminal.edge_terminal.EdgeTerminal`
+
+
+   
+   Manages gap port properties.
+
+
+   :Parameters:
+
+       **pedb** : :obj:`pyedb.edb.Edb`
+           EDB object from the ``Edblib`` library.
+
+       **edb_object** : :obj:`Ansys.Ansoft.Edb.Cell.Terminal.EdgeTerminal`
+           Edge terminal instance from EDB.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   This example shows how to access the ``GapPort`` class.
+   >>> from pyedb import Edb
+   >>> edb = Edb("myaedb.aedb")
+   >>> gap_port = edb.ports["gap_port"]
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: GapPort
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~renormalize`
+            - Whether renormalize is active.
+          * - :py:attr:`~renormalize_z0`
+            - Renormalize Z0 value (real, imag).
+          * - :py:attr:`~renormalization_impedance`
+            - 
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.ports import GapPort
+
+Property detail
+---------------
+
+.. py:property:: renormalize
+
+   
+   Whether renormalize is active.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: renormalize_z0
+
+   
+   Renormalize Z0 value (real, imag).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: renormalization_impedance
+
+
+
+
+
+

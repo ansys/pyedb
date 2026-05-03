@@ -1,0 +1,967 @@
+
+
+
+
+
+
+:class:`SimulationConfigurationDc`
+==================================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.simulation_configuration.SimulationConfigurationDc
+
+   Bases: :py:obj:`object`
+
+
+   
+   Contains all DC analysis settings.
+   The class is part of `SimulationConfiguration` class as a property.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SimulationConfigurationDc
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dc_min_plane_area_to_mesh`
+            - Retrieve the value of the minimum plane area to be meshed by Siwave for DC solution.
+          * - :py:attr:`~dc_compute_inductance`
+            - Return the boolean for computing the inductance with SIwave DC solver.
+          * - :py:attr:`~dc_contact_radius`
+            - Retrieve the value for SIwave DC contact radius.
+          * - :py:attr:`~dc_slide_position`
+            - Retrieve the SIwave DC slide position value.
+          * - :py:attr:`~dc_use_dc_custom_settings`
+            - Retrieve the value for using DC custom settings.
+          * - :py:attr:`~dc_plot_jv`
+            - Retrieve the value for computing current density and voltage distribution.
+          * - :py:attr:`~dc_min_void_area_to_mesh`
+            - Retrieve the value for the minimum void surface to mesh.
+          * - :py:attr:`~dc_error_energy`
+            - Retrieve the value for the DC error energy.
+          * - :py:attr:`~dc_max_init_mesh_edge_length`
+            - Retrieve the maximum initial mesh edge value.
+          * - :py:attr:`~dc_max_num_pass`
+            - Retrieve the maximum number of adaptive passes.
+          * - :py:attr:`~dc_min_num_pass`
+            - Retrieve the minimum number of adaptive passes.
+          * - :py:attr:`~dc_mesh_bondwires`
+            - Retrieve the value for meshing bondwires.
+          * - :py:attr:`~dc_num_bondwire_sides`
+            - Retrieve the number of sides used for cylinder discretization.
+          * - :py:attr:`~dc_mesh_vias`
+            - Retrieve the value for meshing vias.
+          * - :py:attr:`~dc_num_via_sides`
+            - Retrieve the number of sides used for cylinder discretization.
+          * - :py:attr:`~dc_percent_local_refinement`
+            - Retrieve the value for local mesh refinement.
+          * - :py:attr:`~dc_perform_adaptive_refinement`
+            - Retrieve the value for performing adaptive meshing.
+          * - :py:attr:`~dc_refine_bondwires`
+            - Retrieve the value for performing bond wire refinement.
+          * - :py:attr:`~dc_refine_vias`
+            - Retrieve the value for performing vias refinement.
+          * - :py:attr:`~dc_report_config_file`
+            - Retrieve the report configuration file path.
+          * - :py:attr:`~dc_report_show_Active_devices`
+            - Retrieve the value for showing active devices.
+          * - :py:attr:`~dc_export_thermal_data`
+            - Retrieve the value for using external data.
+          * - :py:attr:`~dc_full_report_path`
+            - Retrieve the path for the report.
+          * - :py:attr:`~dc_icepak_temp_file`
+            - Retrieve the icepak temp file path.
+          * - :py:attr:`~dc_import_thermal_data`
+            - Retrieve the value for importing thermal data.
+          * - :py:attr:`~dc_per_pin_res_path`
+            - Retrieve the file path.
+          * - :py:attr:`~dc_per_pin_use_pin_format`
+            - Retrieve the value for using pin format.
+          * - :py:attr:`~dc_use_loop_res_for_per_pin`
+            - Retrieve the value for using the loop resistor per pin.
+          * - :py:attr:`~dc_via_report_path`
+            - Retrieve the via report file path.
+          * - :py:attr:`~dc_source_terms_to_ground`
+            - Retrieve the dictionary of grounded terminals.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.simulation_configuration import SimulationConfigurationDc
+
+Property detail
+---------------
+
+.. py:property:: dc_min_plane_area_to_mesh
+
+   
+   Retrieve the value of the minimum plane area to be meshed by Siwave for DC solution.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The value of the minimum plane area.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_compute_inductance
+
+   
+   Return the boolean for computing the inductance with SIwave DC solver.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` activate ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_contact_radius
+
+   
+   Retrieve the value for SIwave DC contact radius.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The contact radius value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_slide_position
+
+   
+   Retrieve the SIwave DC slide position value.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           The position value, 0 Optimum speed, 1 balanced, 2 optimum accuracy.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_use_dc_custom_settings
+
+   
+   Retrieve the value for using DC custom settings.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_plot_jv
+
+   
+   Retrieve the value for computing current density and voltage distribution.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated. Default value True
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_min_void_area_to_mesh
+
+   
+   Retrieve the value for the minimum void surface to mesh.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The area value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_error_energy
+
+   
+   Retrieve the value for the DC error energy.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The error energy value, 0.2 as default.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_max_init_mesh_edge_length
+
+   
+   Retrieve the maximum initial mesh edge value.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           maximum mesh length.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_max_num_pass
+
+   
+   Retrieve the maximum number of adaptive passes.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           number of passes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_min_num_pass
+
+   
+   Retrieve the minimum number of adaptive passes.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           number of passes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_mesh_bondwires
+
+   
+   Retrieve the value for meshing bondwires.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_num_bondwire_sides
+
+   
+   Retrieve the number of sides used for cylinder discretization.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of sides.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_mesh_vias
+
+   
+   Retrieve the value for meshing vias.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_num_via_sides
+
+   
+   Retrieve the number of sides used for cylinder discretization.
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Number of sides.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_percent_local_refinement
+
+   
+   Retrieve the value for local mesh refinement.
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The refinement value, 0.2 (20%) as default.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_perform_adaptive_refinement
+
+   
+   Retrieve the value for performing adaptive meshing.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_refine_bondwires
+
+   
+   Retrieve the value for performing bond wire refinement.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_refine_vias
+
+   
+   Retrieve the value for performing vias refinement.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_config_file
+
+   
+   Retrieve the report configuration file path.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The file path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_report_show_Active_devices
+
+   
+   Retrieve the value for showing active devices.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` when activated, ``False`` deactivated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_export_thermal_data
+
+   
+   Retrieve the value for using external data.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` :obj:`activated`, ``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_full_report_path
+
+   
+   Retrieve the path for the report.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`File` path.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_icepak_temp_file
+
+   
+   Retrieve the icepak temp file path.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`File` path.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_import_thermal_data
+
+   
+   Retrieve the value for importing thermal data.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+       ``True`` :obj:`when` activated,``False`` deactivated.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_per_pin_res_path
+
+   
+   Retrieve the file path.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`The` :obj:`file` path.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_per_pin_use_pin_format
+
+   
+   Retrieve the value for using pin format.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_use_loop_res_for_per_pin
+
+   
+   Retrieve the value for using the loop resistor per pin.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_via_report_path
+
+   
+   Retrieve the via report file path.
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           ..
+
+       :obj:`The` :obj:`file` path.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dc_source_terms_to_ground
+
+   
+   Retrieve the dictionary of grounded terminals.
+
+
+
+   :Returns:
+
+       :obj:`Dictionary`
+           ..
+
+       {:class:`python:str`, :class:`python:int`}, :obj:`keys` :obj:`is` :obj:`source` :obj:`name`, :obj:`value` :class:`python:int` 0 :obj:`unspecified`, 1 :obj:`negative` :obj:`node`, 2 :obj:`positive` one.
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

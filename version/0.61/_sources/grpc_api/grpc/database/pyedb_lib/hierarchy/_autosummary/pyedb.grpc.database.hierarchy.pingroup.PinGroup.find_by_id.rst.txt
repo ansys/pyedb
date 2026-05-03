@@ -1,0 +1,6 @@
+find\_by\_id
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. automethod:: PinGroup.find_by_id

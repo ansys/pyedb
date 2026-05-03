@@ -1,0 +1,547 @@
+
+
+
+
+
+
+:class:`PrimitivesQuery`
+========================
+
+
+.. py:class:: pyedb.grpc.database.layout.layout.PrimitivesQuery(pedb)
+
+
+.. py:currentmodule:: PrimitivesQuery
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~filter_primitives`
+            - Filter primitives by one or more attributes.
+          * - :py:attr:`~find_object_by_id`
+            - Find a layout object by Database ID.
+          * - :py:attr:`~get_primitive_by_layer_and_point`
+            - Return primitive given coordinate point [x, y], layer name and nets.
+          * - :py:attr:`~find_primitive`
+            - Find primitive objects by one or more attributes.
+          * - :py:attr:`~get_polygons_by_layer`
+            - 
+          * - :py:attr:`~get_polygon_bounding_box`
+            - Retrieve a polygon bounding box.
+          * - :py:attr:`~get_polygon_points`
+            - Retrieve polygon points.
+          * - :py:attr:`~get_primitives`
+            - Get primitives by conditions.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~primitives_by_aedt_name`
+            - Primitives.
+          * - :py:attr:`~primitives`
+            - 
+          * - :py:attr:`~zone_primitives`
+            - :obj:`list` of :class:`Primitive <ansys.edb.primitive.primitive.Primitive>` : List of all the primitives in         :term:`zones <Zone>`.
+          * - :py:attr:`~bondwires`
+            - Bondwires.
+          * - :py:attr:`~primitives_by_layer`
+            - Get primitives by layer name.
+          * - :py:attr:`~polygons_by_layer`
+            - Get polygons by layer name.
+          * - :py:attr:`~primitives_by_net`
+            - Get primitives by net name.
+          * - :py:attr:`~rectangles`
+            - 
+          * - :py:attr:`~circles`
+            - 
+          * - :py:attr:`~paths`
+            - 
+          * - :py:attr:`~polygons`
+            - 
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.layout.layout import PrimitivesQuery
+
+Property detail
+---------------
+
+.. py:property:: primitives_by_aedt_name
+   :type: dict[str, pyedb.grpc.database.primitive.primitive.Primitive]
+
+
+   
+   Primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives
+   :type: list[pyedb.grpc.database.primitive.primitive.Primitive]
+
+
+.. py:property:: zone_primitives
+
+   
+   :obj:`list` of :class:`Primitive <ansys.edb.primitive.primitive.Primitive>` : List of all the primitives in         :term:`zones <Zone>`.
+
+   Read-Only.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: bondwires
+   :type: list[pyedb.grpc.database.primitive.bondwire.Bondwire]
+
+
+   
+   Bondwires.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           List of bondwires.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives_by_layer
+   :type: dict[str, list[pyedb.grpc.database.primitive.primitive.Primitive]]
+
+
+   
+   Get primitives by layer name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Returns dict[str, list] with all specified layer names as keys organized by layer.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: polygons_by_layer
+   :type: dict[str, list[pyedb.grpc.database.primitive.primitive.Primitive]]
+
+
+   
+   Get polygons by layer name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           dictionary of polygons with layer name as key and list of polygons as value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: primitives_by_net
+   :type: dict
+
+
+   
+   Get primitives by net name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Returns dict[str, list] with all specified net names as keys organized by net.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: rectangles
+   :type: list[pyedb.grpc.database.primitive.rectangle.Rectangle]
+
+
+.. py:property:: circles
+   :type: list[pyedb.grpc.database.primitive.circle.Circle]
+
+
+.. py:property:: paths
+   :type: list[pyedb.grpc.database.primitive.path.Path]
+
+
+.. py:property:: polygons
+   :type: list[pyedb.grpc.database.primitive.polygon.Polygon]
+
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+   :type:  ansys.edb.core.layout.layout.Layout
+
+
+
+Method detail
+-------------
+
+.. py:method:: filter_primitives(layer_name: str | list = None, name: str | list = None, net_name: str | list = None, prim_type: str | list = None, is_void: bool | None = None) -> list[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Filter primitives by one or more attributes.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Layer name or layer names.
+
+       **name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Primitive AEDT name or names.
+
+       **net_name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Net name or net names.
+
+       **prim_type** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Primitive type or primitive types. Both lowercase values like ``"polygon"`` and
+           EDB-style values like ``"Polygon"`` are accepted.
+
+       **is_void** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Void flag filter. When ``None``, void state is not used as a filter.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`Primitive`]
+           Filtered primitives.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_object_by_id(value: int) -> pyedb.grpc.database.primitive.padstack_instance.PadstackInstance | pyedb.grpc.database.primitive.primitive.Primitive | None
+
+   
+   Find a layout object by Database ID.
+
+
+   :Parameters:
+
+       **value** : :class:`python:int`
+           ID of the object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitive_by_layer_and_point(point=None, layer=None, nets=None)
+
+   
+   Return primitive given coordinate point [x, y], layer name and nets.
+
+
+   :Parameters:
+
+       **point** : :class:`python:list`
+           Coordinate [x, y]
+
+       **layer** : :class:`python:list` or :class:`python:str`, :obj:`optional`
+           list of layer name or layer name applied on filter.
+
+       **nets** : :class:`python:list` or :class:`python:str`, :obj:`optional`
+           list of net name or single net name applied on filter
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`Primitive <pyedb.grpc.database.primitive.primitive.Primitive>`]
+           List of primitives, polygons, paths and rectangles.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: find_primitive(layer_name: str | list = None, name: str | list = None, net_name: str | list = None, prim_type: str | list = None, is_void: bool | None = None) -> list[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Find primitive objects by one or more attributes.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the layer or list of layer names.
+
+       **name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Name of the primitive or list of names.
+
+       **net_name** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Net name or list of net names.
+
+       **prim_type** : :class:`python:str`, :class:`python:list`, :obj:`optional`
+           Primitive type filter, e.g. ``"polygon"`` or ``"path"``.
+           Both lowercase (``"polygon"``) and EDB-style (``"Polygon"``) values are accepted.
+
+       **is_void** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           When ``True``, return only void primitives. When ``False``, return only non-void
+           primitives. When ``None`` (default), void state is not used as a filter.
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:obj:`Primitive`]
+           Filtered list of primitives.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygons_by_layer(layer, nets=None) -> list[pyedb.grpc.database.primitive.polygon.Polygon]
+
+.. py:method:: get_polygon_bounding_box(polygon) -> list[float] | None
+
+   
+   Retrieve a polygon bounding box.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_polygon_points(polygon) -> list[list[float]]
+
+   
+   Retrieve polygon points.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: get_primitives(net_name=None, layer_name=None, prim_type=None, is_void=None) -> list[pyedb.grpc.database.primitive.primitive.Primitive]
+
+   
+   Get primitives by conditions.
+
+
+   :Parameters:
+
+       **net_name** : :class:`python:str`, :obj:`optional`
+           Set filter on net_name. Default is ``None``.
+
+       **layer_name** : :class:`python:str`, :obj:`optional`
+           Set filter on layer_name. Default is ``None``.
+
+       **prim_type** :  :class:`python:str`, :obj:`optional`
+           Set filter on primitive type. Default is ``None``.
+
+       **is_void** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Set filter on is_void. When ``None``, both standard primitives and voids are returned.
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **List of filtered primitives**
+           ..
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

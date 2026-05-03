@@ -1,0 +1,235 @@
+
+
+
+
+
+
+:class:`AdaptiveFrequency`
+==========================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.hfss_general_settings.AdaptiveFrequency(pedb, core)
+
+
+.. py:currentmodule:: AdaptiveFrequency
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_output_variable`
+            - Add an output variable for the adaptive frequency.
+          * - :py:attr:`~delete_output_variable`
+            - Delete an output variable from the adaptive frequency.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~adaptive_frequency`
+            - Adaptive frequency value.
+          * - :py:attr:`~max_delta`
+            - Maximum delta for the adaptive frequency.
+          * - :py:attr:`~output_variables`
+            - Map of output variable names to maximum delta S.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.hfss_general_settings import AdaptiveFrequency
+
+Property detail
+---------------
+
+.. py:property:: adaptive_frequency
+   :type: str
+
+
+   
+   Adaptive frequency value.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Adaptive frequency in Hz.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_delta
+   :type: str
+
+
+   
+   Maximum delta for the adaptive frequency.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Maximum delta value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: output_variables
+   :type: dict[str, float]
+
+
+   
+   Map of output variable names to maximum delta S.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`\[:class:`python:str`, :class:`python:float`]
+           Dictionary of output variable names and delta S value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_output_variable(name: str, delta_s: float)
+
+   
+   Add an output variable for the adaptive frequency.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the output variable.
+
+       **delta_s** : :class:`python:float`
+           Delta S value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: delete_output_variable(name: str) -> bool
+
+   
+   Delete an output variable from the adaptive frequency.
+
+
+   :Parameters:
+
+       **name** : :class:`python:str`
+           Name of the output variable to delete.
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

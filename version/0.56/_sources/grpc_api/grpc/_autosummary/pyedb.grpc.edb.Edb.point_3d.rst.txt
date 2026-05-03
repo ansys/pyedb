@@ -1,0 +1,6 @@
+point\_3d
+=========
+
+.. currentmodule:: pyedb.grpc.edb
+
+.. automethod:: Edb.point_3d

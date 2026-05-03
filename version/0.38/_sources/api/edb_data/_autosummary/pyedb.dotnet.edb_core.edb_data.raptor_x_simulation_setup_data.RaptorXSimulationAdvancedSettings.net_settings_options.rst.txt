@@ -1,0 +1,6 @@
+net\_settings\_options
+======================
+
+.. currentmodule:: pyedb.dotnet.edb_core.edb_data.raptor_x_simulation_setup_data
+
+.. autoproperty:: RaptorXSimulationAdvancedSettings.net_settings_options

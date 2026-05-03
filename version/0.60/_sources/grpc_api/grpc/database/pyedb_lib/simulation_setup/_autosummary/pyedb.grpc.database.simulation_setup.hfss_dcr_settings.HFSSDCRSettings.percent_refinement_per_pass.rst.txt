@@ -1,0 +1,6 @@
+percent\_refinement\_per\_pass
+==============================
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_dcr_settings
+
+.. autoproperty:: HFSSDCRSettings.percent_refinement_per_pass

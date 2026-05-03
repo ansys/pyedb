@@ -1,0 +1,6 @@
+zones
+=====
+
+.. currentmodule:: pyedb.grpc.database.layers.layer
+
+.. autoproperty:: Layer.zones

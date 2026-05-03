@@ -1,0 +1,89 @@
+
+
+
+
+
+
+:class:`PrimitivesToDeleteDict`
+===============================
+
+
+.. py:class:: pyedb.configuration.cfg_modeler.PrimitivesToDeleteDict
+
+   Bases: :py:obj:`TypedDict`
+
+
+   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: PrimitivesToDeleteDict
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~layer_name`
+            - 
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~net_name`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_modeler import PrimitivesToDeleteDict
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: layer_name
+   :type:  List[str]
+
+.. py:attribute:: name
+   :type:  List[str]
+
+.. py:attribute:: net_name
+   :type:  List[str]
+
+
+
+
+

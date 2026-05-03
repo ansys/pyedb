@@ -1,0 +1,451 @@
+
+
+
+
+
+
+:class:`LengthMeshOperation`
+============================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.mesh_operation.LengthMeshOperation(core=None, name='', net_layer_info=None, enabled=True, refine_inside=False, mesh_region='', solve_inside=False, max_length: str = '1mm', restrict_max_length: bool = True, max_elements: str = '1000', restrict_max_elements: bool = False)
+
+   Bases: :py:obj:`MeshOperation`, :py:obj:`LengthMeshOperationDeprecated`
+
+
+   
+   PyEDB Length Mesh Operation class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: LengthMeshOperation
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Create a Length Mesh Operation.
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Get the name of the mesh operation.
+          * - :py:attr:`~enabled`
+            - Get the enabled status of the mesh operation.
+          * - :py:attr:`~mesh_region`
+            - Get the mesh region name.
+          * - :py:attr:`~net_layer_info`
+            - Get the net layer information list.
+          * - :py:attr:`~refine_inside`
+            - Get the refine inside status of the mesh operation.
+          * - :py:attr:`~solve_inside`
+            - Get the solve inside status of the mesh operation.
+          * - :py:attr:`~max_length`
+            - Get the length for the length mesh operation.
+          * - :py:attr:`~restrict_max_length`
+            - Get the restrict max length status of the mesh operation.
+          * - :py:attr:`~max_elements`
+            - Get the maximum number of elements for the length mesh operation.
+          * - :py:attr:`~restrict_max_elements`
+            - Get the restrict max elements status of the mesh operation.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.mesh_operation import LengthMeshOperation
+
+Property detail
+---------------
+
+.. py:property:: name
+   :type: str
+
+
+   
+   Get the name of the mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the mesh operation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: enabled
+   :type: bool
+
+
+   
+   Get the enabled status of the mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if the mesh operation is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_region
+   :type: str
+
+
+   
+   Get the mesh region name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Name of the mesh region.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_layer_info
+   :type: list[tuple[str, str, bool]]
+
+
+   
+   Get the net layer information list.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list`\[:class:`python:tuple`\(:class:`python:str`, :class:`python:str`, :ref:`bool <python:bltin-boolean-values>`)]
+           List of net layer information for the mesh operation.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: refine_inside
+   :type: bool
+
+
+   
+   Get the refine inside status of the mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if refining inside is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: solve_inside
+   :type: bool
+
+
+   
+   Get the solve inside status of the mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if solving inside is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_length
+   :type: float
+
+
+   
+   Get the length for the length mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           The length value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: restrict_max_length
+   :type: bool
+
+
+   
+   Get the restrict max length status of the mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if restricting max length is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: max_elements
+   :type: str
+
+
+   
+   Get the maximum number of elements for the length mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           The maximum number of elements.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: restrict_max_elements
+   :type: bool
+
+
+   
+   Get the restrict max elements status of the mesh operation.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           True if restricting max elements is enabled, False otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(name: str = '', net_layer_info: tuple[str, str, bool] = None, enabled: bool = True, refine_inside: bool = False, mesh_region: str = '', solve_inside: bool = False, max_length: str = '1mm', restrict_max_length: bool = True, max_elements: str = '1000', restrict_max_elements: bool = False) -> LengthMeshOperation
+   :classmethod:
+
+
+   
+   Create a Length Mesh Operation.
+   Parameters
+   ----------
+   name : str
+       Name of the mesh operation.
+   net_layer_info : tuple[str, str, bool]
+       A tuple containing the net name, layer name, and a boolean indicating whether to include
+       child layers.
+   enabled : bool
+       Whether the mesh operation is enabled.
+   refine_inside : bool
+       Whether to refine the mesh inside the specified region.
+   mesh_region : str
+       The name of the mesh region.
+   solve_inside : bool
+       Whether to solve inside the specified region.
+   max_length : str
+       The maximum length for the mesh operation.
+   restrict_max_length : bool
+       Whether to restrict the maximum length.
+   max_elements : str
+       The maximum number of elements for the mesh operation.
+   restrict_max_elements : bool
+       Whether to restrict the maximum number of elements.
+   Returns
+   -------
+   LengthMeshOperation : LengthMeshOperation
+       The Length Mesh Operation object.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

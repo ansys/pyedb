@@ -1,0 +1,764 @@
+
+
+
+
+
+
+:class:`RaptorXAdvancedSettings`
+================================
+
+
+.. py:class:: pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings.RaptorXAdvancedSettings(pedb, core: ansys.edb.core.simulation_setup.raptor_x_simulation_settings.RaptorXAdvancedSettings)
+
+   
+   Raptor X advanced settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: RaptorXAdvancedSettings
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~advanced_options`
+            - Get advanced options as a dictionary.
+          * - :py:attr:`~auto_removal_sliver_poly`
+            - Automatic sliver polygon removal tolerance.
+          * - :py:attr:`~cells_per_wavelength`
+            - Number of cells that fit under each wavelength.
+          * - :py:attr:`~edge_mesh`
+            - Thickness and width of the exterior conductor filament.
+          * - :py:attr:`~eliminate_slit_per_holes`
+            - Threshold for strain or thermal relief slits and hole polygon areas.
+          * - :py:attr:`~mesh_frequency`
+            - Frequency at which the mesh is generated.
+          * - :py:attr:`~net_settings_options`
+            - Get net settings options as a dictionary.
+          * - :py:attr:`~override_shrink_factor`
+            - Override shrink factor for polygon edges.
+          * - :py:attr:`~plane_projection_factor`
+            - Plane projection factor for reducing the mesh complexity of large metal planes.
+          * - :py:attr:`~use_accelerate_via_extraction`
+            - Flag indicating if neighboring vias are simplified/merged.
+          * - :py:attr:`~use_auto_removal_sliver_poly`
+            - Flag indicating if slight misaligned overlapping polygons are to be automatically aligned.
+          * - :py:attr:`~use_cells_per_wavelength`
+            - Flag indicating if cells per wavelength are used.
+          * - :py:attr:`~use_edge_mesh`
+            - Flag indicating if edge mesh is used.
+          * - :py:attr:`~use_eliminate_slit_per_holes`
+            - Flag indicating if elimination of slits and holes is used.
+          * - :py:attr:`~use_enable_advanced_cap_effects`
+            - Flag indicating if capacitance-related effects such as conformal dielectrics are applied.
+          * - :py:attr:`~use_enable_etch_transform`
+            - Flag indicating if layout is "pre-distorted" based on foundry rules.
+          * - :py:attr:`~defuse_enable_hybrid_extraction`
+            - Flag indicating if the modeler is to split the layout into two parts in an attempt to decrease
+          * - :py:attr:`~use_enable_substrate_network_extraction`
+            - Flag indicating if modeling of substrate coupling effects is enabled using equivalent distributed RC
+          * - :py:attr:`~use_extract_floating_metals_dummy`
+            - Flag indicating if floating metals are modeled as dummy fills.
+          * - :py:attr:`~use_extract_floating_metals_floating`
+            - Flag indicating if floating metals are modeled as floating nets.
+          * - :py:attr:`~use_lde`
+            - Flag indicating if variations in resistivity are taken into account.
+          * - :py:attr:`~use_mesh_frequency`
+            - Flag indicating if mesh frequency is used.
+          * - :py:attr:`~use_override_shrink_factor`
+            - Flag indicating if override shrink factor is used.
+          * - :py:attr:`~use_plane_projection_factor`
+            - Flag indicating if plane projection factor is used.
+          * - :py:attr:`~use_relaxed_z_axis`
+            - Flag indicating if simplified meshing is used along the z axis.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~core`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.simulation_setup.raptor_x_advanced_settings import RaptorXAdvancedSettings
+
+Property detail
+---------------
+
+.. py:property:: advanced_options
+   :type: dict[str, list[str]]
+
+
+   
+   Get advanced options as a dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: auto_removal_sliver_poly
+   :type: float
+
+
+   
+   Automatic sliver polygon removal tolerance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: cells_per_wavelength
+   :type: int
+
+
+   
+   Number of cells that fit under each wavelength.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: edge_mesh
+   :type: float
+
+
+   
+   Thickness and width of the exterior conductor filament.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: eliminate_slit_per_holes
+   :type: float
+
+
+   
+   Threshold for strain or thermal relief slits and hole polygon areas.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mesh_frequency
+   :type: float
+
+
+   
+   Frequency at which the mesh is generated.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: net_settings_options
+   :type: dict[str, list[str]]
+
+
+   
+   Get net settings options as a dictionary.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: override_shrink_factor
+   :type: float
+
+
+   
+   Override shrink factor for polygon edges.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: plane_projection_factor
+   :type: float
+
+
+   
+   Plane projection factor for reducing the mesh complexity of large metal planes.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_accelerate_via_extraction
+   :type: bool
+
+
+   
+   Flag indicating if neighboring vias are simplified/merged.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_auto_removal_sliver_poly
+   :type: bool
+
+
+   
+   Flag indicating if slight misaligned overlapping polygons are to be automatically aligned.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_cells_per_wavelength
+   :type: bool
+
+
+   
+   Flag indicating if cells per wavelength are used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_edge_mesh
+   :type: bool
+
+
+   
+   Flag indicating if edge mesh is used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_eliminate_slit_per_holes
+   :type: bool
+
+
+   
+   Flag indicating if elimination of slits and holes is used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_enable_advanced_cap_effects
+   :type: bool
+
+
+   
+   Flag indicating if capacitance-related effects such as conformal dielectrics are applied.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_enable_etch_transform
+   :type: bool
+
+
+   
+   Flag indicating if layout is "pre-distorted" based on foundry rules.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: defuse_enable_hybrid_extraction
+   :type: bool
+
+
+   
+   Flag indicating if the modeler is to split the layout into two parts in an attempt to decrease
+   the complexity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_enable_substrate_network_extraction
+   :type: bool
+
+
+   
+   Flag indicating if modeling of substrate coupling effects is enabled using equivalent distributed RC
+   networks.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_extract_floating_metals_dummy
+   :type: bool
+
+
+   
+   Flag indicating if floating metals are modeled as dummy fills.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_extract_floating_metals_floating
+   :type: bool
+
+
+   
+   Flag indicating if floating metals are modeled as floating nets.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_lde
+   :type: bool
+
+
+   
+   Flag indicating if variations in resistivity are taken into account.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_mesh_frequency
+   :type: bool
+
+
+   
+   Flag indicating if mesh frequency is used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_override_shrink_factor
+   :type: bool
+
+
+   
+   Flag indicating if override shrink factor is used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_plane_projection_factor
+   :type: bool
+
+
+   
+   Flag indicating if plane projection factor is used.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: use_relaxed_z_axis
+   :type: bool
+
+
+   
+   Flag indicating if simplified meshing is used along the z axis.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: core
+
+
+
+
+

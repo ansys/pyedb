@@ -1,0 +1,69 @@
+
+
+
+
+
+
+The ``pyedb.workflows.job_manager`` library
+===========================================
+
+.. py:module:: pyedb.workflows.job_manager
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: job_manager
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.workflows.job_manager.backend`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> backend</autoapi/pyedb/workflows/job_manager/backend/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

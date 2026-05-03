@@ -1,0 +1,127 @@
+
+
+
+
+
+
+:class:`SweepBlockParser`
+=========================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.SweepBlockParser(lines: list[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract frequency-sweep summary from the log.
+
+   This parser searches for frequency sweep information including sweep type,
+   number of frequencies, and elapsed time.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = [
+   ...     "Interpolating Sweep",
+   ...     "101 Frequencies",
+   ...     "Frequency - 1 GHz",
+   ...     "Frequency - 2 GHz",
+   ...     "Elapsed time: 00:05:00",
+   ... ]
+   >>> parser = SweepBlockParser(lines)
+   >>> sweep = parser.parse()
+   >>> sweep.type
+   'Interpolating'
+   >>> sweep.frequencies
+   101
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: SweepBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Return sweep information or None if no sweep block exists.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import SweepBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> Optional[Sweep]
+
+   
+   Return sweep information or None if no sweep block exists.
+
+
+
+
+
+   :Returns:
+
+       :obj:`Sweep` or :data:`python:None`
+           Sweep summary object, or ``None`` if the log contains no sweep block.
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> lines = ["No sweep data"]
+   >>> parser = SweepBlockParser(lines)
+   >>> parser.parse() is None
+   True
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

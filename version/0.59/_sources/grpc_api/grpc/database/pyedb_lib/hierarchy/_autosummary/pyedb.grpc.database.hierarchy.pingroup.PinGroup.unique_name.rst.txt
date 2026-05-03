@@ -1,0 +1,6 @@
+unique\_name
+============
+
+.. currentmodule:: pyedb.grpc.database.hierarchy.pingroup
+
+.. automethod:: PinGroup.unique_name

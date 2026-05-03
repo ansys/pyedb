@@ -1,0 +1,400 @@
+
+
+
+
+
+
+:class:`Source`
+===============
+
+
+.. py:class:: pyedb.grpc.database.utility.sources.Source(pedb)
+
+   Bases: :py:obj:`object`
+
+
+   
+   Provides for handling Siwave sources.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: Source
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - Source name.
+          * - :py:attr:`~source_type`
+            - Source type.
+          * - :py:attr:`~positive_node`
+            - Positive node of the source.
+          * - :py:attr:`~negative_node`
+            - Negative node of the source.
+          * - :py:attr:`~amplitude`
+            - Amplitude value of the source.
+          * - :py:attr:`~phase`
+            - Phase of the source.
+          * - :py:attr:`~impedance`
+            - Impedance of the source.
+          * - :py:attr:`~r_value`
+            - Resistance value of the RLC source.
+          * - :py:attr:`~l_value`
+            - Inductance value of the RLC source.
+          * - :py:attr:`~c_value`
+            - Capacitance value of the RLC source.
+          * - :py:attr:`~create_physical_resistor`
+            - Whether to create a physical resistor.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.grpc.database.utility.sources import Source
+
+Property detail
+---------------
+
+.. py:property:: name
+
+   
+   Source name.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:str`
+           Source name.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   Source type.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:int`
+           Source type value.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: positive_node
+
+   
+   Positive node of the source.
+
+
+
+
+
+   :Returns:
+
+       :class:`Node <pyedb.grpc.database.utility.sources.Node>` :obj:`or`
+           ..
+
+       :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+           Positive node object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: negative_node
+
+   
+   Negative node of the source.
+
+
+
+
+
+   :Returns:
+
+       :class:`Node <pyedb.grpc.database.utility.sources.Node>` :obj:`or`
+           ..
+
+       :class:`PinGroup <pyedb.grpc.database.hierarchy.pingroup.PinGroup>`
+           Negative node object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: amplitude
+
+   
+   Amplitude value of the source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Amplitude in amperes for a current source or volts for a voltage source.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Phase of the source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Phase value in degrees.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance of the source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Impedance value in ohms.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: r_value
+
+   
+   Resistance value of the RLC source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Resistance value in ohms.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: l_value
+
+   
+   Inductance value of the RLC source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Inductance value in henries.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: c_value
+
+   
+   Capacitance value of the RLC source.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:float`
+           Capacitance value in farads.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: create_physical_resistor
+
+   
+   Whether to create a physical resistor.
+
+
+
+
+
+   :Returns:
+
+       :ref:`bool <python:bltin-boolean-values>`
+           ``True`` if a physical resistor is created, ``False`` otherwise.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

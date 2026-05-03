@@ -1,0 +1,6 @@
+negative
+========
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: DiffPair.negative

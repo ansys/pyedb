@@ -1,0 +1,464 @@
+
+
+
+
+
+
+:class:`ControlFileStackup`
+===========================
+
+
+.. py:class:: pyedb.generic.control_file.ControlFileStackup(units: str = 'mm')
+
+   
+   Manages stackup information for the control file.
+
+
+   :Parameters:
+
+       **units** : :class:`python:str`, :obj:`optional`
+           Length units (e.g., "mm", "um"). Default is "mm".
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ControlFileStackup
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~add_material`
+            - Add a new material.
+          * - :py:attr:`~add_layer`
+            - Add a new layer.
+          * - :py:attr:`~add_dielectric`
+            - Add a new dielectric layer.
+          * - :py:attr:`~add_via`
+            - Add a new via layer.
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~vias`
+            - List of via objects.
+          * - :py:attr:`~materials`
+            - Dictionary of material objects.
+          * - :py:attr:`~dielectrics`
+            - List of dielectric layers.
+          * - :py:attr:`~layers`
+            - List of general layers.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~units`
+            - 
+          * - :py:attr:`~metal_layer_snapping_tolerance`
+            - 
+          * - :py:attr:`~dielectrics_base_elevation`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.control_file import ControlFileStackup
+
+Property detail
+---------------
+
+.. py:property:: vias
+
+   
+   List of via objects.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`ControlFileVia`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: materials
+   :type: Dict[str, ControlFileMaterial]
+
+
+   
+   Dictionary of material objects.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:dict`
+           Dictionary of material names to ControlFileMaterial objects.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectrics
+
+   
+   List of dielectric layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`ControlFileDielectric`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: layers
+   :type: List[ControlFileLayer]
+
+
+   
+   List of general layers.
+
+
+
+
+
+   :Returns:
+
+       :class:`python:list` :obj:`of` :obj:`ControlFileLayer`
+           ..
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: units
+   :type:  str
+   :value: 'mm'
+
+
+.. py:attribute:: metal_layer_snapping_tolerance
+   :type:  Optional[float]
+   :value: None
+
+
+.. py:attribute:: dielectrics_base_elevation
+   :type:  float
+   :value: 0.0
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: add_material(material_name: str, permittivity: float = 1.0, dielectric_loss_tg: float = 0.0, permeability: float = 1.0, conductivity: float = 0.0, properties: Optional[Dict[str, Any]] = None) -> ControlFileMaterial
+
+   
+   Add a new material.
+
+
+   :Parameters:
+
+       **material_name** : :class:`python:str`
+           Material name.
+
+       **permittivity** : :class:`python:float`, :obj:`optional`
+           Relative permittivity. Default is ``1.0``.
+
+       **dielectric_loss_tg** : :class:`python:float`, :obj:`optional`
+           Dielectric loss tangent. Default is ``0.0``.
+
+       **permeability** : :class:`python:float`, :obj:`optional`
+           Relative permeability. Default is ``1.0``.
+
+       **conductivity** : :class:`python:float`, :obj:`optional`
+           Conductivity (S/m). Default is ``0.0``.
+
+       **properties** : :class:`python:dict`, :obj:`optional`
+           Additional material properties. Overrides default parameters.
+
+
+
+   :Returns:
+
+       :obj:`ControlFileMaterial`
+           Created material object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_layer(layer_name: str, elevation: float = 0.0, material: str = '', gds_type: int = 0, target_layer: str = '', thickness: float = 0.0, layer_type: str = 'conductor', solve_inside: bool = True, properties: Optional[Dict[str, Any]] = None) -> ControlFileLayer
+
+   
+   Add a new layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Layer name.
+
+       **elevation** : :class:`python:float`
+           Layer elevation (Z-position).
+
+       **material** : :class:`python:str`
+           Material name.
+
+       **gds_type** : :class:`python:int`
+           GDS data type for layer.
+
+       **target_layer** : :class:`python:str`
+           Target layer name in EDB/HFSS.
+
+       **thickness** : :class:`python:float`
+           Layer thickness.
+
+       **layer_type** : :class:`python:str`, :obj:`optional`
+           Layer type ("conductor", "signal", etc.). Default is "conductor".
+
+       **solve_inside** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to solve inside metal. Default is ``True``.
+
+       **properties** : :class:`python:dict`, :obj:`optional`
+           Additional layer properties. Overrides default parameters.
+
+
+
+   :Returns:
+
+       :obj:`ControlFileLayer`
+           Created layer object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_dielectric(layer_name: str, layer_index: Optional[int] = None, material: str = '', thickness: float = 0.0, properties: Optional[Dict[str, Any]] = None, base_layer: Optional[str] = None, add_on_top: bool = True) -> ControlFileDielectric
+
+   
+   Add a new dielectric layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Dielectric layer name.
+
+       **layer_index** : :class:`python:int`, :obj:`optional`
+           Stacking order index. Auto-assigned if ``None``.
+
+       **material** : :class:`python:str`
+           Material name.
+
+       **thickness** : :class:`python:float`
+           Layer thickness.
+
+       **properties** : :class:`python:dict`, :obj:`optional`
+           Additional properties. Overrides default parameters.
+
+       **base_layer** : :class:`python:str`, :obj:`optional`
+           Existing layer name for relative placement.
+
+       **add_on_top** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to add on top of base layer. Default is ``True``.
+
+
+
+   :Returns:
+
+       :obj:`ControlFileDielectric`
+           Created dielectric layer object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: add_via(layer_name: str, material: str = '', gds_type: int = 0, target_layer: str = '', start_layer: str = '', stop_layer: str = '', solve_inside: bool = True, via_group_method: str = 'proximity', via_group_tol: float = 1e-06, via_group_persistent: bool = True, snap_via_group_method: str = 'distance', snap_via_group_tol: float = 1e-08, properties: Optional[Dict[str, Any]] = None) -> ControlFileVia
+
+   
+   Add a new via layer.
+
+
+   :Parameters:
+
+       **layer_name** : :class:`python:str`
+           Via layer name.
+
+       **material** : :class:`python:str`
+           Material name.
+
+       **gds_type** : :class:`python:int`
+           GDS data type for via layer.
+
+       **target_layer** : :class:`python:str`
+           Target layer name in EDB/HFSS.
+
+       **start_layer** : :class:`python:str`
+           Starting layer name.
+
+       **stop_layer** : :class:`python:str`
+           Stopping layer name.
+
+       **solve_inside** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to solve inside via. Default is ``True``.
+
+       **via_group_method** : :class:`python:str`, :obj:`optional`
+           Via grouping method. Default is "proximity".
+
+       **via_group_tol** : :class:`python:float`, :obj:`optional`
+           Via grouping tolerance. Default is 1e-6.
+
+       **via_group_persistent** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether via groups are persistent. Default is ``True``.
+
+       **snap_via_group_method** : :class:`python:str`, :obj:`optional`
+           Snap via group method. Default is "distance".
+
+       **snap_via_group_tol** : :class:`python:float`, :obj:`optional`
+           Snap via group tolerance. Default is 10e-9.
+
+       **properties** : :class:`python:dict`, :obj:`optional`
+           Additional properties. Overrides default parameters.
+
+
+
+   :Returns:
+
+       :obj:`ControlFileVia`
+           Created via object.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

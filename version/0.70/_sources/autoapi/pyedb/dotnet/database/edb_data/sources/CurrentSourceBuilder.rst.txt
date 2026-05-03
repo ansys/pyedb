@@ -1,0 +1,175 @@
+
+
+
+
+
+
+:class:`CurrentSourceBuilder`
+=============================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.CurrentSourceBuilder
+
+   Bases: :py:obj:`SourceBuilder`
+
+
+   
+   Manages a current source.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CurrentSourceBuilder
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~magnitude`
+            - Magnitude.
+          * - :py:attr:`~phase`
+            - Phase.
+          * - :py:attr:`~impedance`
+            - Impedance.
+          * - :py:attr:`~source_type`
+            - SourceBuilder type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import CurrentSourceBuilder
+
+Property detail
+---------------
+
+.. py:property:: magnitude
+
+   
+   Magnitude.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: phase
+
+   
+   Phase.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: impedance
+
+   
+   Impedance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: source_type
+
+   
+   SourceBuilder type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

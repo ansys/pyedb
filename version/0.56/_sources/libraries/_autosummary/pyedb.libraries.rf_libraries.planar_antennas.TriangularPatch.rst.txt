@@ -1,0 +1,32 @@
+﻿TriangularPatch
+===============
+
+.. currentmodule:: pyedb.libraries.rf_libraries.planar_antennas
+
+.. autoclass:: TriangularPatch
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      TriangularPatch.create
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      TriangularPatch.estimated_frequency
+      TriangularPatch.side
+   
+   

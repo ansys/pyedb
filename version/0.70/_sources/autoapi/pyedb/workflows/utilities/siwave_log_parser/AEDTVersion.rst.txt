@@ -1,0 +1,102 @@
+
+
+
+
+
+
+:class:`AEDTVersion`
+====================
+
+
+.. py:class:: pyedb.workflows.utilities.siwave_log_parser.AEDTVersion
+
+   
+   AEDT version information extracted from log header.
+
+
+
+   :Attributes:
+
+       **version** : :class:`python:str`
+           AEDT version number (e.g., ``'2025.1'``).
+
+       **build** : :class:`python:str`
+           Build identifier.
+
+       **location** : :class:`python:str`
+           Installation path of AEDT.
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> version = AEDTVersion(version="2025.1", build="12345", location="C:\Program Files\AnsysEM")
+   >>> version.version
+   '2025.1'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: AEDTVersion
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~version`
+            - 
+          * - :py:attr:`~build`
+            - 
+          * - :py:attr:`~location`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.siwave_log_parser import AEDTVersion
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: version
+   :type:  str
+
+.. py:attribute:: build
+   :type:  str
+
+.. py:attribute:: location
+   :type:  str
+
+
+
+
+

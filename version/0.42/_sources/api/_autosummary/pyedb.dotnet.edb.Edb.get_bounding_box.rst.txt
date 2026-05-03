@@ -1,0 +1,6 @@
+get\_bounding\_box
+==================
+
+.. currentmodule:: pyedb.dotnet.edb
+
+.. automethod:: Edb.get_bounding_box

@@ -1,0 +1,6 @@
+set\_debye\_model
+=================
+
+.. currentmodule:: pyedb.grpc.database.definition.materials
+
+.. automethod:: Material.set_debye_model

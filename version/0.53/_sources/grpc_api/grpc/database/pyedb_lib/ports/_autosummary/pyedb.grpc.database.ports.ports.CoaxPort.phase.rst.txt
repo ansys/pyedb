@@ -1,0 +1,6 @@
+phase
+=====
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CoaxPort.phase

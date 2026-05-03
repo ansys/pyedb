@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`SWEEPDRAFT`
+===================
+
+
+.. py:class:: pyedb.generic.constants.SWEEPDRAFT
+
+   Bases: :py:obj:`object`
+
+
+   
+   SweepDraftType Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import SWEEPDRAFT
+
+
+
+
+

@@ -1,0 +1,485 @@
+
+
+
+
+
+
+:class:`MaterialDef`
+====================
+
+
+.. py:class:: pyedb.dotnet.database.definition.definition_obj.MaterialDef(edb, material_def)
+
+   Bases: :py:obj:`DefinitionObj`, :py:obj:`DeprecatedMaterial`
+
+
+   
+   Class for material definition.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+.. py:currentmodule:: MaterialDef
+
+Overview
+--------
+
+.. tab-set::
+
+
+   .. tab-item:: Constructors
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~create`
+            - Creates a material definition into the database with given name.
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~set_djordjecvic_sarkar_model`
+            - Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~dielectric_material_model`
+            - dielectric material model. Set None to remove the existing model.
+          * - :py:attr:`~conductivity`
+            - Get material conductivity.
+          * - :py:attr:`~permittivity`
+            - Get material permittivity.
+          * - :py:attr:`~permeability`
+            - Get material permeability.
+          * - :py:attr:`~dielectric_loss_tangent`
+            - Get material loss tangent.
+          * - :py:attr:`~magnetic_loss_tangent`
+            - Get material magnetic loss tangent.
+          * - :py:attr:`~thermal_conductivity`
+            - Get material thermal conductivity.
+          * - :py:attr:`~mass_density`
+            - Get material mass density.
+          * - :py:attr:`~youngs_modulus`
+            - Get material youngs modulus.
+          * - :py:attr:`~specific_heat`
+            - Get material specific heat.
+          * - :py:attr:`~poisson_ratio`
+            - Get material poisson ratio.
+          * - :py:attr:`~thermal_expansion_coefficient`
+            - Get material thermal coefficient.
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~property_id`
+            - 
+          * - :py:attr:`~material_property_id_mapping`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.definition_obj import MaterialDef
+
+Property detail
+---------------
+
+.. py:property:: dielectric_material_model
+
+   
+   dielectric material model. Set None to remove the existing model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: conductivity
+
+   
+   Get material conductivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permittivity
+
+   
+   Get material permittivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: permeability
+
+   
+   Get material permeability.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: dielectric_loss_tangent
+
+   
+   Get material loss tangent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: magnetic_loss_tangent
+
+   
+   Get material magnetic loss tangent.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_conductivity
+
+   
+   Get material thermal conductivity.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: mass_density
+
+   
+   Get material mass density.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: youngs_modulus
+
+   
+   Get material youngs modulus.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: specific_heat
+
+   
+   Get material specific heat.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: poisson_ratio
+
+   
+   Get material poisson ratio.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: thermal_expansion_coefficient
+
+   
+   Get material thermal coefficient.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: property_id
+
+.. py:attribute:: material_property_id_mapping
+
+
+
+Method detail
+-------------
+
+.. py:method:: create(pedb, name: str) -> MaterialDef
+   :classmethod:
+
+
+   
+   Creates a material definition into the database with given name.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: set_djordjecvic_sarkar_model(dc_conductivity: float | None = 1e-12, dc_relative_permittivity: float | None = 5, frequency: float | None = 1000000000.0, loss_tangent_at_frequency: float | None = 0.02, relative_permittivity_at_frequency: float | None = 4, use_dc_relative_permittivity: bool | None = False) -> pyedb.dotnet.database.definition.dielectric_material_model.DjordjecvicSarkarModel
+
+   
+   Sets the dielectric material model to Djordjecvic-Sarkar model. The returned model is read-only, any change
+   on it will not be reflected on the database.
+
+
+   :Parameters:
+
+       **dc_conductivity** : :class:`python:float`, :obj:`optional`
+           DC conductivity, by default 1e-12
+
+       **dc_relative_permittivity** : :class:`python:float`, :obj:`optional`
+           DC relative permittivity, by default 5
+
+       **frequency** : :class:`python:float`, :obj:`optional`
+           Frequency in Hz, by default 1e9
+
+       **loss_tangent_at_frequency** : :class:`python:float`, :obj:`optional`
+           Loss tangent at frequency, by default 0.02
+
+       **relative_permittivity_at_frequency** : :class:`python:float`, :obj:`optional`
+           Relative permittivity at frequency, by default 4
+
+       **use_dc_relative_permittivity** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Whether to use DC relative permittivity, by default False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

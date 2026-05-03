@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``arc_data.py`` module
+==========================
+
+.. py:module:: pyedb.grpc.database.geometry.arc_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: arc_data
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.geometry.arc_data.ArcData`
+            - Class managing ArcData.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> ArcData</autoapi/pyedb/grpc/database/geometry/arc_data/ArcData>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

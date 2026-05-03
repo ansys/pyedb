@@ -1,0 +1,6 @@
+run
+===
+
+.. currentmodule:: pyedb.configuration.configuration
+
+.. automethod:: Configuration.run

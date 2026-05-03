@@ -1,0 +1,125 @@
+
+
+
+
+
+
+:class:`CircuitPortBuilder`
+===========================
+
+
+.. py:class:: pyedb.dotnet.database.edb_data.sources.CircuitPortBuilder(impedance='50')
+
+   Bases: :py:obj:`SourceBuilder`, :py:obj:`object`
+
+
+   
+   Manages a circuit port.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: CircuitPortBuilder
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+   .. tab-item:: Properties
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~impedance`
+            - Impedance.
+          * - :py:attr:`~get_type`
+            - Get type.
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.edb_data.sources import CircuitPortBuilder
+
+Property detail
+---------------
+
+.. py:property:: impedance
+
+   
+   Impedance.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:property:: get_type
+
+   
+   Get type.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+
+
+

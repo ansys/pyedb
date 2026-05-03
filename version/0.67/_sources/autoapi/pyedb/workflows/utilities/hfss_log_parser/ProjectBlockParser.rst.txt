@@ -1,0 +1,110 @@
+
+
+
+
+
+
+:class:`ProjectBlockParser`
+===========================
+
+
+.. py:class:: pyedb.workflows.utilities.hfss_log_parser.ProjectBlockParser(lines: List[str])
+
+   Bases: :py:obj:`BlockParser`
+
+
+   
+   Extract project meta-data from the log header.
+
+   Example::
+
+       >>> block = ProjectBlockParser(lines)
+       >>> info = block.parse()
+       >>> info.name
+       'Patch_Antenna'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: ProjectBlockParser
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~parse`
+            - Parse the stored lines and return a :class:`ProjectInfo` instance.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.utilities.hfss_log_parser import ProjectBlockParser
+
+
+
+Method detail
+-------------
+
+.. py:method:: parse() -> ProjectInfo
+
+   
+   Parse the stored lines and return a :class:`ProjectInfo` instance.
+
+   :return: Populated data object.
+   :rtype: ProjectInfo
+   :raises ValueError: If mandatory fields (project name or file path)
+                       cannot be located.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

@@ -1,0 +1,79 @@
+﻿VoltageRegulator
+================
+
+.. currentmodule:: pyedb.grpc.database.layout.voltage_regulator
+
+.. autoclass:: VoltageRegulator
+
+   
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+      :toctree:
+   
+      
+      VoltageRegulator.add_power_module
+      
+      
+      VoltageRegulator.add_power_modules
+      
+      
+      VoltageRegulator.cast
+      
+      
+      VoltageRegulator.create
+      
+      
+      VoltageRegulator.create_3d_comp
+      
+      
+      VoltageRegulator.create_hfss
+      
+      
+      VoltageRegulator.create_stride
+      
+      
+      VoltageRegulator.delete
+      
+      
+      VoltageRegulator.find_by_id
+      
+      
+      VoltageRegulator.get_all_power_modules
+      
+      
+      VoltageRegulator.get_power_module
+      
+      
+      VoltageRegulator.get_product_property
+      
+      
+      VoltageRegulator.get_product_property_ids
+      
+      
+      VoltageRegulator.remove_all_power_modules
+      
+      
+      VoltageRegulator.remove_power_module
+      
+      
+      VoltageRegulator.remove_power_modules
+      
+      
+      VoltageRegulator.set_product_property
+      
+   
+   
+
+   
+   
+   .. rubric:: Attributes
+
+   .. autosummary::
+      :toctree:
+   
+      VoltageRegulator.layout_obj_type
+   
+   

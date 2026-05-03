@@ -1,0 +1,2035 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../../../../../../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PadstackInstance &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../../../../../../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../../../../../../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../../../../../../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../../../../../../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../../../../../../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../../../../../../_static/documentation_options.js?v=b7a98516"></script>
+    <script src="../../../../../../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../../../../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../../../../../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../../../../../../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../../../../../../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'autoapi/pyedb/grpc/database/primitive/padstack_instance/PadstackInstance';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.69';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../../../../../../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../../../../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../../../../search.html" />
+    <link rel="next" title="The path.py module" href="../path/index.html" />
+    <link rel="prev" title="The padstack_instance.py module" href="index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.69.0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/autoapi/pyedb/grpc/database/primitive/padstack_instance/PadstackInstance.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../../../../../../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../../../../../../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../../../../../../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.69/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="../../../../../../grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../../../../../../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../../../../../../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.69/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1 current active has-children"><a class="reference internal" href="../../../index.html">The <code class="docutils literal notranslate"><span class="pre">grpc</span></code> package</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l2 current active has-children"><a class="reference internal" href="../../index.html"> <span class="nf nf-md-package"></span> database</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../../definition/index.html"> <span class="nf nf-md-package"></span> definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../geometry/index.html"> <span class="nf nf-md-package"></span> geometry</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../hierarchy/index.html"> <span class="nf nf-md-package"></span> hierarchy</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../layers/index.html"> <span class="nf nf-md-package"></span> layers</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../layout/index.html"> <span class="nf nf-md-package"></span> layout</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../net/index.html"> <span class="nf nf-md-package"></span> net</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../ports/index.html"> <span class="nf nf-md-package"></span> ports</a></li>
+<li class="toctree-l3 current active has-children"><a class="reference internal" href="../index.html"> <span class="nf nf-md-package"></span> primitive</a><details open="open"><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="../bondwire/index.html"> <span class="nf nf-fa-file"></span> bondwire</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../circle/index.html"> <span class="nf nf-fa-file"></span> circle</a></li>
+<li class="toctree-l4 current active"><a class="reference internal" href="index.html"> <span class="nf nf-fa-file"></span> padstack_instance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../path/index.html"> <span class="nf nf-fa-file"></span> path</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../polygon/index.html"> <span class="nf nf-fa-file"></span> polygon</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../primitive/index.html"> <span class="nf nf-fa-file"></span> primitive</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../rectangle/index.html"> <span class="nf nf-fa-file"></span> rectangle</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3"><a class="reference internal" href="../../simulation_setup/index.html"> <span class="nf nf-md-package"></span> simulation_setup</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../terminal/index.html"> <span class="nf nf-md-package"></span> terminal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../utility/index.html"> <span class="nf nf-md-package"></span> utility</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../components/index.html"> <span class="nf nf-fa-file"></span> components</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../definitions/index.html"> <span class="nf nf-fa-file"></span> definitions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../general/index.html"> <span class="nf nf-fa-file"></span> general</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../hfss/index.html"> <span class="nf nf-fa-file"></span> hfss</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../layout_validation/index.html"> <span class="nf nf-fa-file"></span> layout_validation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../modeler/index.html"> <span class="nf nf-fa-file"></span> modeler</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../nets/index.html"> <span class="nf nf-fa-file"></span> nets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../padstacks/index.html"> <span class="nf nf-fa-file"></span> padstacks</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../simulation_setups/index.html"> <span class="nf nf-fa-file"></span> simulation_setups</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../siwave/index.html"> <span class="nf nf-fa-file"></span> siwave</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../source_excitations/index.html"> <span class="nf nf-fa-file"></span> source_excitations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../stackup/index.html"> <span class="nf nf-fa-file"></span> stackup</a></li>
+</ul>
+</details></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../edb/index.html"> <span class="nf nf-fa-file"></span> edb</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../edb_init/index.html"> <span class="nf nf-fa-file"></span> edb_init</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../../rpc_session/index.html"> <span class="nf nf-fa-file"></span> rpc_session</a></li>
+</ul>
+</details></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../../../../../../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../../../../grpc_api/index.html" class="nav-link">API reference</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">grpc</span></code> package</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">pyedb.grpc.database</span></code> library</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="../index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">primitive</span></code> package</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">The <code class="docutils literal notranslate"><span class="pre">padstack_instance.py</span></code> module</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis"><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackInstance</span></code></span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="padstackinstance">
+<h1><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackInstance</span></code><a class="headerlink" href="#padstackinstance" title="Link to this heading">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="pyedb.grpc.database.primitive.padstack_instance.PadstackInstance">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyedb.grpc.database.primitive.padstack_instance.</span></span><span class="sig-name descname"><span class="pre">PadstackInstance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pedb</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">core</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyedb.grpc.database.primitive.padstack_instance.PadstackInstance" title="Link to this definition">#</a></dt>
+<dd><p>Manages EDB functionalities for a padstack.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><strong>:class:`PadstackInstance <pyedb.grpc.dataybase.primitive.PadstackInstance>`</strong></dt><dd><p>PadstackInstance object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">myedb</span><span class="p">,</span> <span class="n">edbversion</span><span class="o">=</span><span class="s2">&quot;2021.2&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb_padstack_instance</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">padstacks</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Constructors</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.create" title="PadstackInstance.create"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create</span></code></a></p></td>
+<td><p>Create a padstack instance.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Methods</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.delete" title="PadstackInstance.delete"><code class="xref py py-attr docutils literal notranslate"><span class="pre">delete</span></code></a></p></td>
+<td><p>Delete the padstack instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.set_backdrill_top" title="PadstackInstance.set_backdrill_top"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_backdrill_top</span></code></a></p></td>
+<td><p>Set backdrill from top.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.set_backdrill_bottom" title="PadstackInstance.set_backdrill_bottom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_backdrill_bottom</span></code></a></p></td>
+<td><p>Set backdrill from bottom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.create_terminal" title="PadstackInstance.create_terminal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_terminal</span></code></a></p></td>
+<td><p>Create a padstack instance terminal.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.get_terminal" title="PadstackInstance.get_terminal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_terminal</span></code></a></p></td>
+<td><p>Returns padstack instance terminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.create_coax_port" title="PadstackInstance.create_coax_port"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_coax_port</span></code></a></p></td>
+<td><p>Create a coax port.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.create_port" title="PadstackInstance.create_port"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_port</span></code></a></p></td>
+<td><p>Create a port on the padstack instance.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.in_polygon" title="PadstackInstance.in_polygon"><code class="xref py py-attr docutils literal notranslate"><span class="pre">in_polygon</span></code></a></p></td>
+<td><p>Check if padstack Instance is in given polygon data.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.split" title="PadstackInstance.split"><code class="xref py py-attr docutils literal notranslate"><span class="pre">split</span></code></a></p></td>
+<td><p>Split padstack instance into multiple instances. The new instances only connect adjacent layers.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.get_layer_range" title="PadstackInstance.get_layer_range"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_layer_range</span></code></a></p></td>
+<td><p>Get the layer range of the padstack instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.convert_hole_to_conical_shape" title="PadstackInstance.convert_hole_to_conical_shape"><code class="xref py py-attr docutils literal notranslate"><span class="pre">convert_hole_to_conical_shape</span></code></a></p></td>
+<td><p>Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.get_backdrill_type" title="PadstackInstance.get_backdrill_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_backdrill_type</span></code></a></p></td>
+<td><p>Return backdrill type</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.get_back_drill_by_layer" title="PadstackInstance.get_back_drill_by_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_back_drill_by_layer</span></code></a></p></td>
+<td><p>Get backdrill by layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.get_back_drill_by_depth" title="PadstackInstance.get_back_drill_by_depth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_back_drill_by_depth</span></code></a></p></td>
+<td><p>Get back drill by depth parameters</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.set_back_drill_by_depth" title="PadstackInstance.set_back_drill_by_depth"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_back_drill_by_depth</span></code></a></p></td>
+<td><p>Set back drill by depth.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.set_back_drill_by_layer" title="PadstackInstance.set_back_drill_by_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">set_back_drill_by_layer</span></code></a></p></td>
+<td><p>Set back drill layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.parametrize_position" title="PadstackInstance.parametrize_position"><code class="xref py py-attr docutils literal notranslate"><span class="pre">parametrize_position</span></code></a></p></td>
+<td><p>Parametrize the instance position.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.in_voids" title="PadstackInstance.in_voids"><code class="xref py py-attr docutils literal notranslate"><span class="pre">in_voids</span></code></a></p></td>
+<td><p>Check if this padstack instance is in any void.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.create_rectangle_in_pad" title="PadstackInstance.create_rectangle_in_pad"><code class="xref py py-attr docutils literal notranslate"><span class="pre">create_rectangle_in_pad</span></code></a></p></td>
+<td><p>Create a rectangle inscribed inside a padstack instance pad.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.get_reference_pins" title="PadstackInstance.get_reference_pins"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_reference_pins</span></code></a></p></td>
+<td><p>Search for reference pins using given criteria.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.get_connected_objects" title="PadstackInstance.get_connected_objects"><code class="xref py py-attr docutils literal notranslate"><span class="pre">get_connected_objects</span></code></a></p></td>
+<td><p>Get connected objects.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Properties</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.is_pin" title="PadstackInstance.is_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_pin</span></code></a></p></td>
+<td><p>Property added for backward compatibility with earlier versions of pyEDB.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.net" title="PadstackInstance.net"><code class="xref py py-attr docutils literal notranslate"><span class="pre">net</span></code></a></p></td>
+<td><p>Net.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.layout" title="PadstackInstance.layout"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layout</span></code></a></p></td>
+<td><p>Layout.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.is_null" title="PadstackInstance.is_null"><code class="xref py py-attr docutils literal notranslate"><span class="pre">is_null</span></code></a></p></td>
+<td><p>Check if the padstack instance is null.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.definition" title="PadstackInstance.definition"><code class="xref py py-attr docutils literal notranslate"><span class="pre">definition</span></code></a></p></td>
+<td><p>Padstack definition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.padstack_definition" title="PadstackInstance.padstack_definition"><code class="xref py py-attr docutils literal notranslate"><span class="pre">padstack_definition</span></code></a></p></td>
+<td><p>Padstack definition name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.terminal" title="PadstackInstance.terminal"><code class="xref py py-attr docutils literal notranslate"><span class="pre">terminal</span></code></a></p></td>
+<td><p>PadstackInstanceTerminal.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.side_number" title="PadstackInstance.side_number"><code class="xref py py-attr docutils literal notranslate"><span class="pre">side_number</span></code></a></p></td>
+<td><p>Return the number of sides meshed of the padstack instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.dcir_equipotential_region" title="PadstackInstance.dcir_equipotential_region"><code class="xref py py-attr docutils literal notranslate"><span class="pre">dcir_equipotential_region</span></code></a></p></td>
+<td><p>Check whether dcir equipotential region is enabled.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.object_instance" title="PadstackInstance.object_instance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">object_instance</span></code></a></p></td>
+<td><p>Layout object instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.bounding_box" title="PadstackInstance.bounding_box"><code class="xref py py-attr docutils literal notranslate"><span class="pre">bounding_box</span></code></a></p></td>
+<td><p>Padstack instance bounding box.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.start_layer" title="PadstackInstance.start_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">start_layer</span></code></a></p></td>
+<td><p>Starting layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.stop_layer" title="PadstackInstance.stop_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">stop_layer</span></code></a></p></td>
+<td><p>Stopping layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.layer_range_names" title="PadstackInstance.layer_range_names"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layer_range_names</span></code></a></p></td>
+<td><p>List of all layers to which the padstack instance belongs.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.id" title="PadstackInstance.id"><code class="xref py py-attr docutils literal notranslate"><span class="pre">id</span></code></a></p></td>
+<td><p>Padstack instance ID.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.edb_uid" title="PadstackInstance.edb_uid"><code class="xref py py-attr docutils literal notranslate"><span class="pre">edb_uid</span></code></a></p></td>
+<td><p>Padstack instance EDB UID.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.net_name" title="PadstackInstance.net_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">net_name</span></code></a></p></td>
+<td><p>Net name.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.layout_object_instance" title="PadstackInstance.layout_object_instance"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layout_object_instance</span></code></a></p></td>
+<td><p>Layout object instance.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.component" title="PadstackInstance.component"><code class="xref py py-attr docutils literal notranslate"><span class="pre">component</span></code></a></p></td>
+<td><p>Component.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.position" title="PadstackInstance.position"><code class="xref py py-attr docutils literal notranslate"><span class="pre">position</span></code></a></p></td>
+<td><p>Padstack instance position.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.rotation" title="PadstackInstance.rotation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">rotation</span></code></a></p></td>
+<td><p>Padstack instance rotation.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.name" title="PadstackInstance.name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">name</span></code></a></p></td>
+<td><p>Padstack Instance Name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.backdrill_type" title="PadstackInstance.backdrill_type"><code class="xref py py-attr docutils literal notranslate"><span class="pre">backdrill_type</span></code></a></p></td>
+<td><p>Backdrill type.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.backdrill_top" title="PadstackInstance.backdrill_top"><code class="xref py py-attr docutils literal notranslate"><span class="pre">backdrill_top</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.backdrill_bottom" title="PadstackInstance.backdrill_bottom"><code class="xref py py-attr docutils literal notranslate"><span class="pre">backdrill_bottom</span></code></a></p></td>
+<td><p>Check is backdrill is starting at bottom.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.backdrill_diameter" title="PadstackInstance.backdrill_diameter"><code class="xref py py-attr docutils literal notranslate"><span class="pre">backdrill_diameter</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.backdrill_layer" title="PadstackInstance.backdrill_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">backdrill_layer</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.backdrill_offset" title="PadstackInstance.backdrill_offset"><code class="xref py py-attr docutils literal notranslate"><span class="pre">backdrill_offset</span></code></a></p></td>
+<td></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.padstack_def" title="PadstackInstance.padstack_def"><code class="xref py py-attr docutils literal notranslate"><span class="pre">padstack_def</span></code></a></p></td>
+<td><p>Padstack definition.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.metal_volume" title="PadstackInstance.metal_volume"><code class="xref py py-attr docutils literal notranslate"><span class="pre">metal_volume</span></code></a></p></td>
+<td><p>Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.component_pin" title="PadstackInstance.component_pin"><code class="xref py py-attr docutils literal notranslate"><span class="pre">component_pin</span></code></a></p></td>
+<td><p>Component pin.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.aedt_name" title="PadstackInstance.aedt_name"><code class="xref py py-attr docutils literal notranslate"><span class="pre">aedt_name</span></code></a></p></td>
+<td><p>Retrieve the pin name that is shown in AEDT.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.pingroups" title="PadstackInstance.pingroups"><code class="xref py py-attr docutils literal notranslate"><span class="pre">pingroups</span></code></a></p></td>
+<td><p>Pin groups that the pin belongs to.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.placement_layer" title="PadstackInstance.placement_layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">placement_layer</span></code></a></p></td>
+<td><p>Placement layer name.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.layer" title="PadstackInstance.layer"><code class="xref py py-attr docutils literal notranslate"><span class="pre">layer</span></code></a></p></td>
+<td><p>Placement layer object.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.lower_elevation" title="PadstackInstance.lower_elevation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">lower_elevation</span></code></a></p></td>
+<td><p>Lower elevation of the placement layer.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.upper_elevation" title="PadstackInstance.upper_elevation"><code class="xref py py-attr docutils literal notranslate"><span class="pre">upper_elevation</span></code></a></p></td>
+<td><p>Upper elevation of the placement layer.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#PadstackInstance.top_bottom_association" title="PadstackInstance.top_bottom_association"><code class="xref py py-attr docutils literal notranslate"><span class="pre">top_bottom_association</span></code></a></p></td>
+<td><p>Top/bottom association of the placement layer.</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-3" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-3">
+Attributes</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="#PadstackInstance.core" title="PadstackInstance.core"><code class="xref py py-attr docutils literal notranslate"><span class="pre">core</span></code></a></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="import-detail">
+<h2>Import detail<a class="headerlink" href="#import-detail" title="Link to this heading">#</a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb.grpc.database.primitive.padstack_instance</span><span class="w"> </span><span class="kn">import</span> <span class="n">PadstackInstance</span>
+</pre></div>
+</div>
+</section>
+<section id="property-detail">
+<h2>Property detail<a class="headerlink" href="#property-detail" title="Link to this heading">#</a></h2>
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.is_pin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">is_pin</span></span><a class="headerlink" href="#PadstackInstance.is_pin" title="Link to this definition">#</a></dt>
+<dd><p>Property added for backward compatibility with earlier versions of pyEDB.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.net">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">net</span></span><a class="headerlink" href="#PadstackInstance.net" title="Link to this definition">#</a></dt>
+<dd><p>Net.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="../../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net</span></code></a></dt><dd><p>Net object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.layout">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">layout</span></span><a class="headerlink" href="#PadstackInstance.layout" title="Link to this definition">#</a></dt>
+<dd><p>Layout.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="../../layout/layout/Layout.html#pyedb.grpc.database.layout.layout.Layout" title="pyedb.grpc.database.layout.layout.Layout"><code class="xref py py-class docutils literal notranslate"><span class="pre">Layout</span></code></a></dt><dd><p>Layout object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.is_null">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">is_null</span></span><a class="headerlink" href="#PadstackInstance.is_null" title="Link to this definition">#</a></dt>
+<dd><p>Check if the padstack instance is null.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if the padstack instance is null, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.definition">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">definition</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../definition/padstack_def/PadstackDef.html#pyedb.grpc.database.definition.padstack_def.PadstackDef" title="pyedb.grpc.database.definition.padstack_def.PadstackDef"><span class="pre">pyedb.grpc.database.definition.padstack_def.PadstackDef</span></a></em><a class="headerlink" href="#PadstackInstance.definition" title="Link to this definition">#</a></dt>
+<dd><p>Padstack definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="../../definition/padstack_def/PadstackDef.html#pyedb.grpc.database.definition.padstack_def.PadstackDef" title="pyedb.grpc.database.definition.padstack_def.PadstackDef"><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackDef`</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.padstack_definition">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">padstack_definition</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.padstack_definition" title="Link to this definition">#</a></dt>
+<dd><p>Padstack definition name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Padstack definition name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.terminal">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">terminal</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="../../terminal/padstack_instance_terminal/PadstackInstanceTerminal.html#pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal" title="pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal"><span class="pre">pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal</span></a></em><a class="headerlink" href="#PadstackInstance.terminal" title="Link to this definition">#</a></dt>
+<dd><p>PadstackInstanceTerminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>:class:<a href="#id1"><span class="problematic" id="id2">`</span></a>PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.</dt><dd></dd>
+<dt>PadstackInstanceTerminal>`</dt><dd><p>PadstackInstanceTerminal object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.side_number">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">side_number</span></span><a class="headerlink" href="#PadstackInstance.side_number" title="Link to this definition">#</a></dt>
+<dd><p>Return the number of sides meshed of the padstack instance.
+Returns
+——-
+int</p>
+<blockquote>
+<div><p>Number of sides meshed of the padstack instance.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.dcir_equipotential_region">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">dcir_equipotential_region</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#PadstackInstance.dcir_equipotential_region" title="Link to this definition">#</a></dt>
+<dd><p>Check whether dcir equipotential region is enabled.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.object_instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">object_instance</span></span><a class="headerlink" href="#PadstackInstance.object_instance" title="Link to this definition">#</a></dt>
+<dd><p>Layout object instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">LayoutObjInstance</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.bounding_box">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">bounding_box</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PadstackInstance.bounding_box" title="Link to this definition">#</a></dt>
+<dd><p>Padstack instance bounding box.
+Because this method is slow, the bounding box is stored in a variable and reused.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a> <code class="xref py py-obj docutils literal notranslate"><span class="pre">of</span></code> <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.start_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">start_layer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.start_layer" title="Link to this definition">#</a></dt>
+<dd><p>Starting layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the starting layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.stop_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">stop_layer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.stop_layer" title="Link to this definition">#</a></dt>
+<dd><p>Stopping layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the stopping layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.layer_range_names">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">layer_range_names</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PadstackInstance.layer_range_names" title="Link to this definition">#</a></dt>
+<dd><p>List of all layers to which the padstack instance belongs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>]</dt><dd><p>List of layer names.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.id">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">id</span></span><a class="headerlink" href="#PadstackInstance.id" title="Link to this definition">#</a></dt>
+<dd><p>Padstack instance ID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.edb_uid">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">edb_uid</span></span><a class="headerlink" href="#PadstackInstance.edb_uid" title="Link to this definition">#</a></dt>
+<dd><p>Padstack instance EDB UID.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.net_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">net_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.net_name" title="Link to this definition">#</a></dt>
+<dd><p>Net name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the net.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.layout_object_instance">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">layout_object_instance</span></span><a class="headerlink" href="#PadstackInstance.layout_object_instance" title="Link to this definition">#</a></dt>
+<dd><p>Layout object instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-class docutils literal notranslate"><span class="pre">LayoutObjInstance</span></code></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.component">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">component</span></span><a class="headerlink" href="#PadstackInstance.component" title="Link to this definition">#</a></dt>
+<dd><p>Component.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="../../hierarchy/component/Component.html#pyedb.grpc.database.hierarchy.component.Component" title="pyedb.grpc.database.hierarchy.component.Component"><code class="xref py py-class docutils literal notranslate"><span class="pre">Component</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.position">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">position</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#PadstackInstance.position" title="Link to this definition">#</a></dt>
+<dd><p>Padstack instance position.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">list</span></code></a></dt><dd><p>List of <code class="docutils literal notranslate"><span class="pre">[x,</span> <span class="pre">y]</span></code> coordinates for the padstack instance position.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.rotation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">rotation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><a class="headerlink" href="#PadstackInstance.rotation" title="Link to this definition">#</a></dt>
+<dd><p>Padstack instance rotation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Rotatation value for the padstack instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.name" title="Link to this definition">#</a></dt>
+<dd><p>Padstack Instance Name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>If it is a pin, the syntax will be like in AEDT ComponentName-PinName.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.backdrill_type">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">backdrill_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.backdrill_type" title="Link to this definition">#</a></dt>
+<dd><p>Backdrill type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Backdrill type.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.backdrill_top">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">backdrill_top</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#PadstackInstance.backdrill_top" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.backdrill_bottom">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">backdrill_bottom</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></em><a class="headerlink" href="#PadstackInstance.backdrill_bottom" title="Link to this definition">#</a></dt>
+<dd><p>Check is backdrill is starting at bottom.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.backdrill_diameter">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">backdrill_diameter</span></span><a class="headerlink" href="#PadstackInstance.backdrill_diameter" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.backdrill_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">backdrill_layer</span></span><a class="headerlink" href="#PadstackInstance.backdrill_layer" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.backdrill_offset">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">backdrill_offset</span></span><a class="headerlink" href="#PadstackInstance.backdrill_offset" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.padstack_def">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">padstack_def</span></span><a class="headerlink" href="#PadstackInstance.padstack_def" title="Link to this definition">#</a></dt>
+<dd><p>Padstack definition.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="../../definition/padstack_def/PadstackDef.html#pyedb.grpc.database.definition.padstack_def.PadstackDef" title="pyedb.grpc.database.definition.padstack_def.PadstackDef"><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackDef`</span></code></a></dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.metal_volume">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">metal_volume</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><a class="headerlink" href="#PadstackInstance.metal_volume" title="Link to this definition">#</a></dt>
+<dd><p>Metal volume of the via hole instance in cubic units (m3). Metal plating ratio is accounted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Metal volume of the via hole instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.component_pin">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">component_pin</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.component_pin" title="Link to this definition">#</a></dt>
+<dd><p>Component pin.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Component pin name.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.aedt_name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">aedt_name</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></em><a class="headerlink" href="#PadstackInstance.aedt_name" title="Link to this definition">#</a></dt>
+<dd><p>Retrieve the pin name that is shown in AEDT.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To obtain the EDB core pin name, use <cite>pin.name</cite>.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the pin in AEDT.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="s2">&quot;project name&quot;</span><span class="p">,</span> <span class="s2">&quot;release version&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edbapp</span><span class="o">.</span><span class="n">padstacks</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="mi">111</span><span class="p">]</span><span class="o">.</span><span class="n">get_aedt_pin_name</span><span class="p">()</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.pingroups">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">pingroups</span></span><a class="headerlink" href="#PadstackInstance.pingroups" title="Link to this definition">#</a></dt>
+<dd><p>Pin groups that the pin belongs to.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">PinGroup</span></code>]</dt><dd><p>List of pin groups that the pin belongs to.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.placement_layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">placement_layer</span></span><a class="headerlink" href="#PadstackInstance.placement_layer" title="Link to this definition">#</a></dt>
+<dd><p>Placement layer name.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></dt><dd><p>Name of the placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.layer">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">layer</span></span><a class="headerlink" href="#PadstackInstance.layer" title="Link to this definition">#</a></dt>
+<dd><p>Placement layer object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyedb.grpc.database.layers.stackup_layer.StackupLayer</span></code></a></dt><dd><p>Placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.lower_elevation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">lower_elevation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><a class="headerlink" href="#PadstackInstance.lower_elevation" title="Link to this definition">#</a></dt>
+<dd><p>Lower elevation of the placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Lower elavation of the placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.upper_elevation">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">upper_elevation</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></em><a class="headerlink" href="#PadstackInstance.upper_elevation" title="Link to this definition">#</a></dt>
+<dd><p>Upper elevation of the placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></dt><dd><p>Upper elevation of the placement layer.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="PadstackInstance.top_bottom_association">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">top_bottom_association</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><span class="pre">int</span></a></em><a class="headerlink" href="#PadstackInstance.top_bottom_association" title="Link to this definition">#</a></dt>
+<dd><p>Top/bottom association of the placement layer.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a></dt><dd><p>Top/bottom association of the placement layer.</p>
+<ul class="simple">
+<li><p>0 Top associated.</p></li>
+<li><p>1 No association.</p></li>
+<li><p>2 Bottom associated.</p></li>
+<li><p>4 Number of top/bottom association type.</p></li>
+<li><p>-1 Undefined.</p></li>
+</ul>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="attribute-detail">
+<h2>Attribute detail<a class="headerlink" href="#attribute-detail" title="Link to this heading">#</a></h2>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="PadstackInstance.core">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">core</span></span><a class="headerlink" href="#PadstackInstance.core" title="Link to this definition">#</a></dt>
+<dd></dd></dl>
+
+</section>
+<section id="method-detail">
+<h2>Method detail<a class="headerlink" href="#method-detail" title="Link to this heading">#</a></h2>
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.create">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">create</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layout</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padstack_definition</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">net</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><span class="pre">pyedb.grpc.database.net.net.Net</span></a><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">position_y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><span class="pre">pyedb.grpc.database.layers.stackup_layer.StackupLayer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">bottom_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><span class="pre">pyedb.grpc.database.layers.stackup_layer.StackupLayer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">solder_ball_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><span class="pre">pyedb.grpc.database.layers.stackup_layer.StackupLayer</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_map</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'two_way'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#pyedb.grpc.database.primitive.padstack_instance.PadstackInstance" title="pyedb.grpc.database.primitive.padstack_instance.PadstackInstance"><span class="pre">PadstackInstance</span></a></span></span><a class="headerlink" href="#PadstackInstance.create" title="Link to this definition">#</a></dt>
+<dd><p>Create a padstack instance.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layout</strong><span class="classifier">:class:<a href="#id3"><span class="problematic" id="id4">`</span></a>Layout <py</span></dt><dd><p>edb.grpc.database.layout.layout.Layout>`
+Layout object.</p>
+</dd>
+<dt><strong>net</strong><span class="classifier"><a class="reference internal" href="../../net/net/Net.html#pyedb.grpc.database.net.net.Net" title="pyedb.grpc.database.net.net.Net"><code class="xref py py-class docutils literal notranslate"><span class="pre">Net</span></code></a> or <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Net object or net name.</p>
+</dd>
+<dt><strong>padstack_definition</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Padstack definition name.</p>
+</dd>
+<dt><strong>position_x</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>X position.</p>
+</dd>
+<dt><strong>position_y</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Y position.</p>
+</dd>
+<dt><strong>rotation</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Rotation.</p>
+</dd>
+<dt><strong>top_layer</strong><span class="classifier"><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StackupLayer</span></code></a></span></dt><dd><p>Top layer.</p>
+</dd>
+<dt><strong>bottom_layer</strong><span class="classifier"><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StackupLayer</span></code></a></span></dt><dd><p>Bottom layer.</p>
+</dd>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Padstack instance name. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case a name is automatically assigned.</p>
+</dd>
+<dt><strong>solder_ball_layer</strong><span class="classifier"><a class="reference internal" href="../../layers/stackup_layer/StackupLayer.html#pyedb.grpc.database.layers.stackup_layer.StackupLayer" title="pyedb.grpc.database.layers.stackup_layer.StackupLayer"><code class="xref py py-class docutils literal notranslate"><span class="pre">StackupLayer</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Solder ball layer. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>layer_map</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Layer map type. The default is <code class="docutils literal notranslate"><span class="pre">&quot;two_way&quot;</span></code>. Options are <code class="docutils literal notranslate"><span class="pre">&quot;forward&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;backward&quot;</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="#pyedb.grpc.database.primitive.padstack_instance.PadstackInstance" title="pyedb.grpc.database.primitive.padstack_instance.PadstackInstance"><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackInstance</span></code></a></dt><dd><p>PadstackInstance object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.delete">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.delete" title="Link to this definition">#</a></dt>
+<dd><p>Delete the padstack instance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.set_backdrill_top">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">set_backdrill_top</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drill_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drill_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.set_backdrill_top" title="Link to this definition">#</a></dt>
+<dd><p>Set backdrill from top.</p>
+<p>.deprecated:: 0.55.0
+Use <a href="#id5"><span class="problematic" id="id6">:method:`set_back_drill_by_depth`</span></a> instead.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>drill_depth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the drill to layer.</p>
+</dd>
+<dt><strong>drill_diameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Diameter of backdrill size.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional.</span></dt><dd><p>offset with respect to the layer to drill to.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if success, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.set_backdrill_bottom">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">set_backdrill_bottom</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drill_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drill_diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.set_backdrill_bottom" title="Link to this definition">#</a></dt>
+<dd><p>Set backdrill from bottom.</p>
+<p>.deprecated: 0.55.0
+Use: method:<cite>set_back_drill_by_depth</cite> instead.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>drill_depth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the drill to layer.</p>
+</dd>
+<dt><strong>drill_diameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Diameter of backdrill size.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional.</span></dt><dd><p>offset with respect to the layer to drill to.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p>True if success, False otherwise.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.create_terminal">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">create_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../terminal/padstack_instance_terminal/PadstackInstanceTerminal.html#pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal" title="pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal"><span class="pre">pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal</span></a></span></span><a class="headerlink" href="#PadstackInstance.create_terminal" title="Link to this definition">#</a></dt>
+<dd><p>Create a padstack instance terminal.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt>:class:<a href="#id7"><span class="problematic" id="id8">`</span></a>PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.</dt><dd></dd>
+<dt>PadstackInstanceTerminal>`</dt><dd><p>PadstackInstanceTerminal object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_terminal">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_terminal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">create_new_terminal</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="../../terminal/padstack_instance_terminal/PadstackInstanceTerminal.html#pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal" title="pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal"><span class="pre">pyedb.grpc.database.terminal.padstack_instance_terminal.PadstackInstanceTerminal</span></a></span></span><a class="headerlink" href="#PadstackInstance.get_terminal" title="Link to this definition">#</a></dt>
+<dd><p>Returns padstack instance terminal.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>create_new_terminal</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>If terminal instance is not created,
+and value is <code class="docutils literal notranslate"><span class="pre">True</span></code>, a new PadstackInstanceTerminal is created.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt>:class:<a href="#id9"><span class="problematic" id="id10">`</span></a>PadstackInstanceTerminal <pyedb.grpc.database.terminal.padstack_instance_terminal.</dt><dd></dd>
+<dt>PadstackInstanceTerminal>`</dt><dd><p>PadstackInstanceTerminal object.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.create_coax_port">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">create_coax_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radial_extent_factor</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.create_coax_port" title="Link to this definition">#</a></dt>
+<dd><p>Create a coax port.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, optional.</span></dt><dd><p>Port name, the default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case a name is automatically assigned.</p>
+</dd>
+<dt><strong>radial_extent_factor</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Radial extent of coaxial port.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../../terminal/terminal/Terminal.html#pyedb.grpc.database.terminal.terminal.Terminal" title="pyedb.grpc.database.terminal.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a></dt><dd><p>Port terminal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.create_port">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">create_port</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_circuit_port</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.create_port" title="Link to this definition">#</a></dt>
+<dd><p>Create a port on the padstack instance.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Name of the port. The default is <code class="docutils literal notranslate"><span class="pre">None</span></code>, in which case a name is automatically assigned.</p>
+</dd>
+<dt><strong>reference</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">reference</span></code> <a class="reference internal" href="#PadstackInstance.net" title="PadstackInstance.net"><code class="xref py py-obj docutils literal notranslate"><span class="pre">net</span></code></a> or <code class="xref py py-obj docutils literal notranslate"><span class="pre">pingroup</span></code>  <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Negative terminal of the port.</p>
+</dd>
+<dt><strong>is_circuit_port</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether it is a circuit port.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference internal" href="../../terminal/terminal/Terminal.html#pyedb.grpc.database.terminal.terminal.Terminal" title="pyedb.grpc.database.terminal.terminal.Terminal"><code class="xref py py-class docutils literal notranslate"><span class="pre">Terminal</span></code></a></dt><dd><p>Port terminal.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.in_polygon">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">in_polygon</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polygon_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">include_partial</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">arbitrary_extent_value</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.0003</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.14)"><span class="pre">bool</span></a></span></span><a class="headerlink" href="#PadstackInstance.in_polygon" title="Link to this definition">#</a></dt>
+<dd><p>Check if padstack Instance is in given polygon data.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>polygon_data</strong><span class="classifier"><code class="xref py py-obj docutils literal notranslate"><span class="pre">PolygonData</span></code> <code class="xref py py-obj docutils literal notranslate"><span class="pre">Object</span></code></span></dt><dd></dd>
+<dt><strong>include_partial</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to include partial intersecting instances. The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+</dd>
+<dt><strong>simple_check</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to perform a single check based on the padstack center or check the padstack bounding box.</p>
+</dd>
+<dt><strong>arbitrary_extent_value</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">include_partial</span></code> is <code class="docutils literal notranslate"><span class="pre">True</span></code>, an arbitrary value is used to create a bounding box for the padstack
+instance to check for intersection and save computation time during the cutout. The default is <code class="docutils literal notranslate"><span class="pre">300e-6</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a></dt><dd><p><code class="docutils literal notranslate"><span class="pre">True</span></code> when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.split">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">split</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a></span></span><a class="headerlink" href="#PadstackInstance.split" title="Link to this definition">#</a></dt>
+<dd><p>Split padstack instance into multiple instances. The new instances only connect adjacent layers.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_layer_range">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_layer_range</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PadstackInstance.get_layer_range" title="Link to this definition">#</a></dt>
+<dd><p>Get the layer range of the padstack instance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">tuple</span></code></a></dt><dd><p>Tuple of (start_layer_name, stop_layer_name).</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.convert_hole_to_conical_shape">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">convert_hole_to_conical_shape</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">75</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.convert_hole_to_conical_shape" title="Link to this definition">#</a></dt>
+<dd><p>Convert actual padstack instance to microvias 3D Objects with a given aspect ratio.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>angle</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Angle of laser penetration in degrees. The angle defines the lowest hole diameter with this formula:
+HoleDiameter -2*tan(laser_angle* Hole depth). Hole depth is the height of the via (dielectric thickness).
+The default is <code class="docutils literal notranslate"><span class="pre">75</span></code>.
+The lowest hole is <code class="docutils literal notranslate"><span class="pre">0.75*HoleDepth/HoleDiam</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"></dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_backdrill_type">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_backdrill_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.get_backdrill_type" title="Link to this definition">#</a></dt>
+<dd><p>Return backdrill type
+Parameters
+———-
+from_bottom : bool, optional</p>
+<blockquote>
+<div><p>default value is <cite>True.</cite></p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_back_drill_by_layer">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_back_drill_by_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PadstackInstance.get_back_drill_by_layer" title="Link to this definition">#</a></dt>
+<dd><p>Get backdrill by layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>from_bottom</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, optional.</span></dt><dd><p>Default value is <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_back_drill_by_depth">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_back_drill_by_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">from_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.14)"><span class="pre">tuple</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><span class="pre">float</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PadstackInstance.get_back_drill_by_depth" title="Link to this definition">#</a></dt>
+<dd><p>Get back drill by depth parameters
+Parameters
+———-
+from_bottom : bool, optional</p>
+<blockquote>
+<div><p>Default value is <cite>True</cite>.</p>
+</div></blockquote>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.set_back_drill_by_depth">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">set_back_drill_by_depth</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drill_depth</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.set_back_drill_by_depth" title="Link to this definition">#</a></dt>
+<dd><p>Set back drill by depth.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>drill_depth</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>drill depth value</p>
+</dd>
+<dt><strong>diameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>drill diameter</p>
+</dd>
+<dt><strong>from_bottom</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Default value is <cite>True</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.set_back_drill_by_layer">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">set_back_drill_by_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">drill_to_layer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">diameter</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">from_bottom</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.set_back_drill_by_layer" title="Link to this definition">#</a></dt>
+<dd><p>Set back drill layer.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>drill_to_layer</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">Layer</span></code></span></dt><dd><p>Layer to drill to.</p>
+</dd>
+<dt><strong>offset</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Offset value</p>
+</dd>
+<dt><strong>diameter</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a></span></dt><dd><p>Drill diameter</p>
+</dd>
+<dt><strong>from_bottom</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Default value is <cite>True</cite></p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.parametrize_position">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">parametrize_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">prefix</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><span class="pre">str</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PadstackInstance.parametrize_position" title="Link to this definition">#</a></dt>
+<dd><p>Parametrize the instance position.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>prefix</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Prefix for the variable name. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.
+Example <cite>“MyVariableName”</cite> will create 2 Project variables $MyVariableNamesX and $MyVariableNamesY.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code></dt><dd><p>List of variables created.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.in_voids">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">in_voids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">net_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layer_name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PadstackInstance.in_voids" title="Link to this definition">#</a></dt>
+<dd><p>Check if this padstack instance is in any void.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>net_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Net name of the voids to be checked. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Layer name of the voids to be checked. Default is <code class="docutils literal notranslate"><span class="pre">None</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#pyedb.grpc.database.primitive.padstack_instance.PadstackInstance" title="pyedb.grpc.database.primitive.padstack_instance.PadstackInstance"><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackInstance</span></code></a>]</dt><dd><p>List of the voids that include this padstack instance.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.create_rectangle_in_pad">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">create_rectangle_in_pad</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">layer_name</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_points</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition_max_order</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">16</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.create_rectangle_in_pad" title="Link to this definition">#</a></dt>
+<dd><p>Create a rectangle inscribed inside a padstack instance pad.</p>
+<p>The rectangle is fully inscribed in the pad and has the maximum area.
+It is necessary to specify the layer on which the rectangle will be created.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>layer_name</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a></span></dt><dd><p>Name of the layer on which to create the polygon.</p>
+</dd>
+<dt><strong>return_points</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>If <cite>True</cite> does not create the rectangle and just returns a list containing the rectangle vertices.
+Default is <cite>False</cite>.</p>
+</dd>
+<dt><strong>partition_max_order</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Order of the lattice partition used to find the quasi-lattice polygon that approximates <code class="docutils literal notranslate"><span class="pre">polygon</span></code>.
+Default is <code class="docutils literal notranslate"><span class="pre">16</span></code>.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>, <a class="reference internal" href="../primitive/Primitive.html#pyedb.grpc.database.primitive.primitive.Primitive" title="pyedb.grpc.database.primitive.primitive.Primitive"><code class="xref py py-class docutils literal notranslate"><span class="pre">Primitive</span></code></a></dt><dd><p>Polygon when successful, <code class="docutils literal notranslate"><span class="pre">False</span></code> when failed, list of list if <cite>return_points=True</cite>.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+<span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;myaedbfolder&quot;</span><span class="p">,</span> <span class="n">edbversion</span><span class="o">=</span><span class="s2">&quot;2021.2&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">edb_layout</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">modeler</span>
+<span class="gp">>>> </span><span class="n">list_of_padstack_instances</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">edbapp</span><span class="o">.</span><span class="n">padstacks</span><span class="o">.</span><span class="n">instances</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+<span class="gp">>>> </span><span class="n">padstack_inst</span> <span class="o">=</span> <span class="n">list_of_padstack_instances</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">padstack_inst</span><span class="o">.</span><span class="n">create_rectangle_in_pad</span><span class="p">(</span><span class="s2">&quot;TOP&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_reference_pins">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_reference_pins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">reference_net</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'GND'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">search_radius</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.005</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_limit</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">component_only</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><span class="pre">any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#PadstackInstance.get_reference_pins" title="Link to this definition">#</a></dt>
+<dd><p>Search for reference pins using given criteria.</p>
+<dl class="field-list">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><dl>
+<dt><strong>reference_net</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">str</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Reference net. The default is <code class="docutils literal notranslate"><span class="pre">&quot;GND&quot;</span></code>.</p>
+</dd>
+<dt><strong>search_radius</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">float</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Search radius for finding padstack instances. The default is <code class="docutils literal notranslate"><span class="pre">5e-3</span></code>.</p>
+</dd>
+<dt><strong>max_limit</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.14)"><code class="docutils literal notranslate"><span class="pre">int</span></code></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Maximum limit for the padstack instances found. The default is <code class="docutils literal notranslate"><span class="pre">0</span></code>, in which
+case no limit is applied. The maximum limit value occurs on the nearest
+reference pins from the positive one that is found.</p>
+</dd>
+<dt><strong>component_only</strong><span class="classifier"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#bltin-boolean-values" title="(in Python v3.14)"><span class="xref std std-ref">bool</span></a>, <code class="xref py py-obj docutils literal notranslate"><span class="pre">optional</span></code></span></dt><dd><p>Whether to limit the search to component padstack instances only. The
+default is <code class="docutils literal notranslate"><span class="pre">True</span></code>. When <code class="docutils literal notranslate"><span class="pre">False</span></code>, the search is extended to the entire layout.</p>
+</dd>
+</dl>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<a class="reference internal" href="#pyedb.grpc.database.primitive.padstack_instance.PadstackInstance" title="pyedb.grpc.database.primitive.padstack_instance.PadstackInstance"><code class="xref py py-class docutils literal notranslate"><span class="pre">PadstackInstance</span></code></a>]</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+<p class="rubric">Examples</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">>>> </span><span class="n">edbapp</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="s2">&quot;target_path&quot;</span><span class="p">)</span>
+<span class="gp">>>> </span><span class="n">pin</span> <span class="o">=</span> <span class="n">edbapp</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">instances</span><span class="p">[</span><span class="s2">&quot;J5&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pins</span><span class="p">[</span><span class="s2">&quot;19&quot;</span><span class="p">]</span>
+<span class="gp">>>> </span><span class="n">reference_pins</span> <span class="o">=</span> <span class="n">pin</span><span class="o">.</span><span class="n">get_reference_pins</span><span class="p">(</span><span class="n">reference_net</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">,</span> <span class="n">search_radius</span><span class="o">=</span><span class="mf">5e-3</span><span class="p">,</span> <span class="n">max_limit</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="gp">>>> </span><span class="n">component_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="PadstackInstance.get_connected_objects">
+<span class="sig-prename descclassname"><span class="pre">PadstackInstance.</span></span><span class="sig-name descname"><span class="pre">get_connected_objects</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#PadstackInstance.get_connected_objects" title="Link to this definition">#</a></dt>
+<dd><p>Get connected objects.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><dl class="simple">
+<dt><code class="xref py py-obj docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">LayoutObjInstance</span></code>]</dt><dd></dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb.grpc.database.primitive.padstack_instance.PadstackInstance"><code class="docutils literal notranslate"><span class="pre">PadstackInstance</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#overview">Overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#import-detail">Import detail</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#property-detail">Property detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.is_pin"><code class="docutils literal notranslate"><span class="pre">is_pin</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.net"><code class="docutils literal notranslate"><span class="pre">net</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.layout"><code class="docutils literal notranslate"><span class="pre">layout</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.is_null"><code class="docutils literal notranslate"><span class="pre">is_null</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.definition"><code class="docutils literal notranslate"><span class="pre">definition</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.padstack_definition"><code class="docutils literal notranslate"><span class="pre">padstack_definition</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.terminal"><code class="docutils literal notranslate"><span class="pre">terminal</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.side_number"><code class="docutils literal notranslate"><span class="pre">side_number</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.dcir_equipotential_region"><code class="docutils literal notranslate"><span class="pre">dcir_equipotential_region</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.object_instance"><code class="docutils literal notranslate"><span class="pre">object_instance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.bounding_box"><code class="docutils literal notranslate"><span class="pre">bounding_box</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.start_layer"><code class="docutils literal notranslate"><span class="pre">start_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.stop_layer"><code class="docutils literal notranslate"><span class="pre">stop_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.layer_range_names"><code class="docutils literal notranslate"><span class="pre">layer_range_names</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.id"><code class="docutils literal notranslate"><span class="pre">id</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.edb_uid"><code class="docutils literal notranslate"><span class="pre">edb_uid</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.net_name"><code class="docutils literal notranslate"><span class="pre">net_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.layout_object_instance"><code class="docutils literal notranslate"><span class="pre">layout_object_instance</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.component"><code class="docutils literal notranslate"><span class="pre">component</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.position"><code class="docutils literal notranslate"><span class="pre">position</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.rotation"><code class="docutils literal notranslate"><span class="pre">rotation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.name"><code class="docutils literal notranslate"><span class="pre">name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.backdrill_type"><code class="docutils literal notranslate"><span class="pre">backdrill_type</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.backdrill_top"><code class="docutils literal notranslate"><span class="pre">backdrill_top</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.backdrill_bottom"><code class="docutils literal notranslate"><span class="pre">backdrill_bottom</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.backdrill_diameter"><code class="docutils literal notranslate"><span class="pre">backdrill_diameter</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.backdrill_layer"><code class="docutils literal notranslate"><span class="pre">backdrill_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.backdrill_offset"><code class="docutils literal notranslate"><span class="pre">backdrill_offset</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.padstack_def"><code class="docutils literal notranslate"><span class="pre">padstack_def</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.metal_volume"><code class="docutils literal notranslate"><span class="pre">metal_volume</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.component_pin"><code class="docutils literal notranslate"><span class="pre">component_pin</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.aedt_name"><code class="docutils literal notranslate"><span class="pre">aedt_name</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.pingroups"><code class="docutils literal notranslate"><span class="pre">pingroups</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.placement_layer"><code class="docutils literal notranslate"><span class="pre">placement_layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.layer"><code class="docutils literal notranslate"><span class="pre">layer</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.lower_elevation"><code class="docutils literal notranslate"><span class="pre">lower_elevation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.upper_elevation"><code class="docutils literal notranslate"><span class="pre">upper_elevation</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.top_bottom_association"><code class="docutils literal notranslate"><span class="pre">top_bottom_association</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#attribute-detail">Attribute detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.core"><code class="docutils literal notranslate"><span class="pre">core</span></code></a></li>
+</ul>
+</li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#method-detail">Method detail</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.create"><code class="docutils literal notranslate"><span class="pre">create()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.delete"><code class="docutils literal notranslate"><span class="pre">delete()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.set_backdrill_top"><code class="docutils literal notranslate"><span class="pre">set_backdrill_top()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.set_backdrill_bottom"><code class="docutils literal notranslate"><span class="pre">set_backdrill_bottom()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.create_terminal"><code class="docutils literal notranslate"><span class="pre">create_terminal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_terminal"><code class="docutils literal notranslate"><span class="pre">get_terminal()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.create_coax_port"><code class="docutils literal notranslate"><span class="pre">create_coax_port()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.create_port"><code class="docutils literal notranslate"><span class="pre">create_port()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.in_polygon"><code class="docutils literal notranslate"><span class="pre">in_polygon()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.split"><code class="docutils literal notranslate"><span class="pre">split()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_layer_range"><code class="docutils literal notranslate"><span class="pre">get_layer_range()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.convert_hole_to_conical_shape"><code class="docutils literal notranslate"><span class="pre">convert_hole_to_conical_shape()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_backdrill_type"><code class="docutils literal notranslate"><span class="pre">get_backdrill_type()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_back_drill_by_layer"><code class="docutils literal notranslate"><span class="pre">get_back_drill_by_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_back_drill_by_depth"><code class="docutils literal notranslate"><span class="pre">get_back_drill_by_depth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.set_back_drill_by_depth"><code class="docutils literal notranslate"><span class="pre">set_back_drill_by_depth()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.set_back_drill_by_layer"><code class="docutils literal notranslate"><span class="pre">set_back_drill_by_layer()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.parametrize_position"><code class="docutils literal notranslate"><span class="pre">parametrize_position()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.in_voids"><code class="docutils literal notranslate"><span class="pre">in_voids()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.create_rectangle_in_pad"><code class="docutils literal notranslate"><span class="pre">create_rectangle_in_pad()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_reference_pins"><code class="docutils literal notranslate"><span class="pre">get_reference_pins()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#PadstackInstance.get_connected_objects"><code class="docutils literal notranslate"><span class="pre">get_connected_objects()</span></code></a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="http://github.com/ansys/pyedb/edit/main/src/pyedb/grpc/database/primitive/padstack_instance/PadstackInstance.py">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../../../../../../_sources/autoapi/pyedb/grpc/database/primitive/padstack_instance/PadstackInstance.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../../../../../../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../../../../../../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../../../../../../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../../../../../../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../../../../../../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

@@ -1,0 +1,87 @@
+
+
+
+
+
+
+The ``mesh_operation.py`` module
+================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.mesh_operation
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: mesh_operation
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.mesh_operation.LengthMeshOperationDeprecated`
+            - PyEDB Length Mesh Operation class.
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.mesh_operation.MeshOperation`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.mesh_operation.LengthMeshOperation`
+            - PyEDB Length Mesh Operation class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> LengthMeshOperationDeprecated</autoapi/pyedb/grpc/database/simulation_setup/mesh_operation/LengthMeshOperationDeprecated>
+    <span class="nf nf-cod-symbol_class"></span> MeshOperation</autoapi/pyedb/grpc/database/simulation_setup/mesh_operation/MeshOperation>
+    <span class="nf nf-cod-symbol_class"></span> LengthMeshOperation</autoapi/pyedb/grpc/database/simulation_setup/mesh_operation/LengthMeshOperation>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

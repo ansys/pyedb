@@ -1,0 +1,1819 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="./" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>Release notes &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="_static/styles/ansys-sphinx-theme.css?v=9e79609d" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="_static/documentation_options.js?v=f1844525"></script>
+    <script src="_static/doctools.js?v=9bcbadda"></script>
+    <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'changelog';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.68';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Examples" href="examples/index.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.68.3" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/changelog.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" current active">
+  <a class="nav-link dropdown-item nav-internal" href="#">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.68/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    <div id="announcement_msg"></div>
+<script>
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+      return response.text();
+    })
+    .then(
+      (text) => (document.getElementById("announcement_msg").innerHTML = text),
+    )
+    .catch((error) => console.error(`Fetch problem: ${error.message}`));
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="user_guide/index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="grpc_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="#">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.68/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"></div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">Release notes</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="release-notes">
+<span id="ref-release-notes"></span><h1>Release notes<a class="headerlink" href="#release-notes" title="Link to this heading">#</a></h1>
+<p>This document contains the release notes for the project.</p>
+<section id="february-06-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.68.3">0.68.3</a> - February 06, 2026<a class="headerlink" href="#february-06-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-0" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-0">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>HFSS REGION</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1813">#1813</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-1" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-1">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Issue#1800 #1810</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1811">#1811</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-2" name="sd-tab-set-0" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-2">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.68.2</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1808">#1808</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="february-04-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.68.2">0.68.2</a> - February 04, 2026<a class="headerlink" href="#february-04-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-3" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-3">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump ansys/actions from 10.2.3 to 10.2.4</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1786">#1786</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-4" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-4">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Mapping nap file with Edb grpc</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1790">#1790</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Edb cfg freq sweep typos</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1797">#1797</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Class MultiFrequencyAdaptSolution grpc</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1798">#1798</a></p></td>
+</tr>
+<tr class="row-even"><td><p>CFG use Q3D for DC</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1799">#1799</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>CFG setup minor</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1801">#1801</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Raptor fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1804">#1804</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Issue #1803 fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1805">#1805</a></p></td>
+</tr>
+<tr class="row-even"><td><p>#1800 fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1806">#1806</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-5" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-5">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.68.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1781">#1781</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump release 0.69.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1782">#1782</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Update missing or outdated files</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1795">#1795</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-6" name="sd-tab-set-1" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-6">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Removing cfg file 1.0 test and deprecating entire class.</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1783">#1783</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Test_edb_materials.py</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1802">#1802</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="january-27-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.68.0">0.68.0</a> - January 27, 2026<a class="headerlink" href="#january-27-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-7" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-7">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>XML Parser - stackup and nets</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1774">#1774</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Grpc simulation setup refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1776">#1776</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-8" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-8">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/checkout from 6.0.1 to 6.0.2</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1775">#1775</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-9" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-9">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update gRPC message.</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1773">#1773</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-10" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-10">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.67.3</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1770">#1770</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-11" name="sd-tab-set-2" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-11">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Terminal post processing</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1756">#1756</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Cfg setup enhancement</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1771">#1771</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Renaming grpc import</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1780">#1780</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="january-21-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.67.3">0.67.3</a> - January 21, 2026<a class="headerlink" href="#january-21-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-12" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-12">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Grpc wave port tests resurrected</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1761">#1761</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Grpc source bug fix + consolidation</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1763">#1763</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Grpc layers consolidation</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1764">#1764</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Create port from padstack instance name bug fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1765">#1765</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Sweep property</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1769">#1769</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-13" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-13">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.67.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1759">#1759</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump_release_0.68.dev0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1760">#1760</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-14" name="sd-tab-set-3" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-14">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Edb cfg setup dotnet only</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1766">#1766</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="january-16-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.67.1">0.67.1</a> - January 16, 2026<a class="headerlink" href="#january-16-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-15" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-15">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Wirebond def management added</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1746">#1746</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-16" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-16">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Extend troubleshooting with uv venv on Windows</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1754">#1754</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-17" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-17">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Test modifying edb test file fixed</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1750">#1750</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Terminal hfss type</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1757">#1757</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-18" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-18">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.67.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1747">#1747</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Codecov component model</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1751">#1751</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-19" name="sd-tab-set-4" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-19">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Source excitation</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1744">#1744</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Ide error fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1748">#1748</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Add dependency xmltodict</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1752">#1752</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Edb cfg cutout arguments</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1753">#1753</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Edb_object replaced by core</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1755">#1755</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="january-12-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.67.0">0.67.0</a> - January 12, 2026<a class="headerlink" href="#january-12-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-20" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-20">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Generate auto hfss regions</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1714">#1714</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-21" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-21">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/checkout from 6.0.0 to 6.0.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1696">#1696</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump ansys/actions from 10.1.5 to 10.2.2</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1697">#1697</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Update ansys-edb-core requirement from &lt;0.2.3,&gt;=0.2.0 to &gt;=0.2.0,&lt;0.2.4</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1700">#1700</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump codecov/codecov-action from 5.5.1 to 5.5.2</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1705">#1705</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bump actions/download-artifact from 6.0.0 to 7.0.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1708">#1708</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump ansys/actions from 10.2.2 to 10.2.3</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1720">#1720</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Update pytest requirement from &lt;8.5,&gt;=7.4.0 to &gt;=7.4.0,&lt;9.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1733">#1733</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Update sphinx requirement from &lt;8.3,&gt;=7.1.0 to &gt;=7.1.0,&lt;9.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1734">#1734</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bump numpydoc from 1.5.0 to 1.10.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1735">#1735</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Update sphinx-gallery requirement from &lt;0.20,&gt;=0.14.0 to &gt;=0.14.0,&lt;0.21</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1736">#1736</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bump ansys-api-edb to 0.2.5</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1743">#1743</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-22" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-22">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Change PyEDB documentation style</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1721">#1721</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-23" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-23">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Reuse terminal</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1738">#1738</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-24" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-24">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.66.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1712">#1712</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump release 0.67.dev0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1715">#1715</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Fix ``zizmor`` warnings in relation with ``ansys/actions/check-actions-security`` action</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1723">#1723</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Update CHANGELOG for v0.66.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1732">#1732</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-25" name="sd-tab-set-5" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-25">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Remove cell from layout.py</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1713">#1713</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Dependencies updated</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1716">#1716</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Edb core refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1717">#1717</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Edb grpc main class warning fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1729">#1729</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Components refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1740">#1740</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Hfss refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1741">#1741</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="january-06-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.66.1">0.66.1</a> - January 06, 2026<a class="headerlink" href="#january-06-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-26" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-26">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update test path and extend with other tests</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1731">#1731</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-27" name="sd-tab-set-6" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-27">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Fix type hints and code warnings in padstacks.py</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1726">#1726</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="january-01-2026">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.66.1">0.66.1</a> - January 01, 2026<a class="headerlink" href="#january-01-2026" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-28" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-28">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Generate auto hfss regions</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1714">#1714</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-29" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-29">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/checkout from 6.0.0 to 6.0.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1696">#1696</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump ansys/actions from 10.1.5 to 10.2.2</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1697">#1697</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Update ansys-edb-core requirement from &lt;0.2.3,&gt;=0.2.0 to &gt;=0.2.0,&lt;0.2.4</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1700">#1700</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump codecov/codecov-action from 5.5.1 to 5.5.2</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1705">#1705</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bump actions/download-artifact from 6.0.0 to 7.0.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1708">#1708</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump ansys/actions from 10.2.2 to 10.2.3</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1720">#1720</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-30" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-30">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Change PyEDB documentation style</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1721">#1721</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-31" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-31">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.66.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1712">#1712</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump release 0.67.dev0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1715">#1715</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Fix ``zizmor`` warnings in relation with ``ansys/actions/check-actions-security`` action</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1723">#1723</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-32" name="sd-tab-set-7" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-32">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Remove cell from layout.py</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1713">#1713</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Dependencies updated</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1716">#1716</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Edb core refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1717">#1717</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="december-19-2025">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.66.0">0.66.0</a> - December 19, 2025<a class="headerlink" href="#december-19-2025" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-33" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-33">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/upload-artifact from 5.0.0 to 6.0.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1707">#1707</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-34" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-34">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Fix typo in AUTHORS</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1695">#1695</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-35" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-35">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Fixing static folder creation</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1711">#1711</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-36" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-36">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump release 0.66.dev0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1682">#1682</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Update CHANGELOG for v0.65.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1684">#1684</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-37" name="sd-tab-set-8" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-37">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Component_def refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1686">#1686</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Material refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1688">#1688</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Nport component def refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1689">#1689</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Package def refactoring</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1690">#1690</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Edb cfg padstacks</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1692">#1692</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Random failure test</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1694">#1694</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Move control_file.py to generic folder</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1701">#1701</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Edb configure terminal</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1702">#1702</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Configure cfg_padstacks.py</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1703">#1703</a></p></td>
+</tr>
+<tr class="row-even"><td><p>EDB CFG cutout</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1706">#1706</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Removing edb-core inheritance</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1710">#1710</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="november-27-2025">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.65.1">0.65.1</a> - November 27, 2025<a class="headerlink" href="#november-27-2025" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-38" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-38">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Insert 3d layout gRPC</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1667">#1667</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Place layout component enhancement</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1680">#1680</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-39" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-39">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Working fine on local reverting test on grpc and cicd to check</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1664">#1664</a></p></td>
+</tr>
+<tr class="row-even"><td><p>GRPC boundaries</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1670">#1670</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Remove try-except from property position</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1679">#1679</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Remove LD_LIBRARY_PATH need</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1683">#1683</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-40" name="sd-tab-set-9" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-40">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.65.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1681">#1681</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="id119">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.65.0">0.65.0</a> - November 27, 2025<a class="headerlink" href="#id119" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-41" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-41">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/checkout from 5.0.1 to 6.0.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1665">#1665</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump actions/setup-python from 6.0.0 to 6.1.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1674">#1674</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-42" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-42">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Fixing hatched ground plane bug with grpc</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1675">#1675</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Issue 1621 fix</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1677">#1677</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-43" name="sd-tab-set-10" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-43">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.64.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1669">#1669</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="november-24-2025">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.64.1">0.64.1</a> - November 24, 2025<a class="headerlink" href="#november-24-2025" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-44" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-44">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Add grpc padstack instance bounding box property</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1642">#1642</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-45" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-45">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/checkout from 5.0.0 to 5.0.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1655">#1655</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Update jupyterlab requirement from &lt;4.5,&gt;=4.0.0 to &gt;=4.0.0,&lt;4.6</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1656">#1656</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-46" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-46">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Remove JobManager from Edb class</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1657">#1657</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Fixing hfss extent</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1660">#1660</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-47" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-47">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.64.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1652">#1652</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump dev version into v0.65.dev0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1653">#1653</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Delete accidentally added files</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1661">#1661</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-48" name="sd-tab-set-11" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-48">
+Miscellaneous</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Edb cfg boundaries</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1659">#1659</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Add docstring to edb cfg boundaries</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1663">#1663</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="november-13-2025">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.64.0">0.64.0</a> - November 13, 2025<a class="headerlink" href="#november-13-2025" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-49" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-49">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Adding CLI for batch submission</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1635">#1635</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Job manager concurrent job bug</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1640">#1640</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Siwave log parser</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1646">#1646</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-50" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-50">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump ansys/actions from 10.1.4 to 10.1.5</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1623">#1623</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Update pypandoc requirement from &lt;1.16,&gt;=1.10.0 to &gt;=1.10.0,&lt;1.17</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1643">#1643</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-51" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-51">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Introduce ``sphinx-autoapi`` for API documentation</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1632">#1632</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-52" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-52">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bux fixed</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1626">#1626</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Create port on component (grpc) bug fixed</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1628">#1628</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Cfg_ports_sources.py</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1644">#1644</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-53" name="sd-tab-set-12" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-53">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.63.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1624">#1624</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump release 0.64.dev0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1634">#1634</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Leverage new ``vtk-osmesa`` logic in CI</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1651">#1651</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="november-03-2025">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.63.0">0.63.0</a> - November 03, 2025<a class="headerlink" href="#november-03-2025" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-54" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-54">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Hatched ground plane with angle support</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1620">#1620</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-55" name="sd-tab-set-13" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-55">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Update CHANGELOG for v0.62.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1614">#1614</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Run PyAEDT test with PYAEDT_LOCAL_SETTINGS_PATH env var</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1622">#1622</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="october-28-2025">
+<h2><a class="reference external" href="https://github.com/ansys/pyedb/releases/tag/v0.62.0">0.62.0</a> - October 28, 2025<a class="headerlink" href="#october-28-2025" title="Link to this heading">#</a></h2>
+<div class="sd-tab-set docutils">
+<input checked="checked" id="sd-tab-item-56" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-56">
+Added</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Add functionality for geometry swapping from DXF file</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1529">#1529</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Adding DRC inside pyedb</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1600">#1600</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Layout file warnings</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1602">#1602</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Design mode</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1607">#1607</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Job manager lsf support</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1609">#1609</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-57" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-57">
+Dependencies</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Bump actions/labeler from 5.0.0 to 6.0.1</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1578">#1578</a></p></td>
+</tr>
+<tr class="row-even"><td><p>Bump actions/download-artifact from 5.0.0 to 6.0.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1610">#1610</a></p></td>
+</tr>
+<tr class="row-odd"><td><p>Bump actions/upload-artifact from 4.6.2 to 5.0.0</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1611">#1611</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-58" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-58">
+Documentation</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Add the changelog feature</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1593">#1593</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-59" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-59">
+Fixed</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Job manager default values</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1597">#1597</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<input id="sd-tab-item-60" name="sd-tab-set-14" type="radio">
+<label class="sd-tab-label" for="sd-tab-item-60">
+Maintenance</label><div class="sd-tab-content docutils">
+<div class="pst-scrollable-table-container"><table class="table">
+<tbody>
+<tr class="row-odd"><td><p>Adding artifact attestations and fix warnings related to coverage upload</p></td>
+<td><p><a class="reference external" href="https://github.com/ansys/pyedb/pull/1601">#1601</a></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</section>
+<section id="changelog">
+<h2>Changelog<a class="headerlink" href="#changelog" title="Link to this heading">#</a></h2>
+<p>All notable changes to PyEDB are documented in this file.</p>
+<p>The format is based on <a class="reference external" href="https://keepachangelog.com/en/1.0.0/">Keep a Changelog</a>,
+and this project adheres to <a class="reference external" href="https://semver.org/spec/v2.0.0.html">Semantic Versioning</a>.</p>
+<section id="unreleased">
+<h3>[Unreleased]<a class="headerlink" href="#unreleased" title="Link to this heading">#</a></h3>
+<p>### Added
+-</p>
+<p>### Changed
+-</p>
+<p>### Deprecated
+-</p>
+<p>### Fixed
+-</p>
+<p>### Removed
+-</p>
+</section>
+<section id="xx-yy">
+<h3>[0.9.0] - 2024-XX-YY<a class="headerlink" href="#xx-yy" title="Link to this heading">#</a></h3>
+<p>### Added
+- Initial release of the gRPC-based PyEDB client.
+- Comprehensive documentation including user guides, migration guide, and examples.
+- Core functionality for EDB creation, modification, and simulation setup.</p>
+<p>### Removed
+- Legacy <cite>pyedb.dotnet</cite> module (moved to archived branch).</p>
+</section>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#february-06-2026">0.68.3 - February 06, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#february-04-2026">0.68.2 - February 04, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#january-27-2026">0.68.0 - January 27, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#january-21-2026">0.67.3 - January 21, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#january-16-2026">0.67.1 - January 16, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#january-12-2026">0.67.0 - January 12, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#january-06-2026">0.66.1 - January 06, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#january-01-2026">0.66.1 - January 01, 2026</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#december-19-2025">0.66.0 - December 19, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#november-27-2025">0.65.1 - November 27, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#id119">0.65.0 - November 27, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#november-24-2025">0.64.1 - November 24, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#november-13-2025">0.64.0 - November 13, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#november-03-2025">0.63.0 - November 03, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#october-28-2025">0.62.0 - October 28, 2025</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#changelog">Changelog</a><ul class="nav section-nav flex-column">
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#unreleased">[Unreleased]</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#xx-yy">[0.9.0] - 2024-XX-YY</a></li>
+</ul>
+</li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item"> 
+<div class="tocsection editthispage">
+  <a href="https://github.com/ansys/pyedb/edit/main/doc/source/changelog.rst">
+    <i class="fa-solid fa-pencil"></i>
+       Edit
+    on GitHub  
+  </a>
+</div>
+
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="_sources/changelog.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "_static/search.json";
+const ADVANCE_SEARCH_PATH = "search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item"><p class="theme-version">
+  Built with the
+  <a href="https://sphinxdocs.ansys.com/version/stable/index.html"
+    >Ansys Sphinx Theme</a
+  >
+  1.6.4. <br />Last updated on
+  <span id="ast_build_date"></span>
+</p>
+<script>
+  var options = { day: "numeric", month: "long", year: "numeric" };
+  var ast_lastModifiedDate = new Date(document.lastModified);
+  var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+  document.getElementById("ast_build_date").innerHTML = ast_build_date;
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>

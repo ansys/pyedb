@@ -1,0 +1,99 @@
+
+
+
+
+
+
+:class:`MinLineWidth`
+=====================
+
+
+.. py:class:: pyedb.workflows.drc.drc.MinLineWidth(/, **data: Any)
+
+   Bases: :py:obj:`pydantic.BaseModel`
+
+
+   
+   Minimum trace width constraint rule.
+
+   This rule validates that all trace widths meet or exceed a specified
+   minimum value on selected layers.
+
+
+   :Attributes:
+
+       **name** : :class:`python:str`
+           Rule identifier for reporting violations.
+
+       **value** : :class:`python:str`
+           Minimum acceptable width with unit (e.g., ``"3.5mil"``, ``"0.1mm"``).
+
+
+
+
+
+
+
+
+
+
+
+
+   .. rubric:: Examples
+
+   >>> rule = MinLineWidth(name="signal_width", value="3.5mil")
+   >>> rule.name
+   'signal_width'
+
+   ..
+       !! processed by numpydoc !!
+
+
+.. py:currentmodule:: MinLineWidth
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~name`
+            - 
+          * - :py:attr:`~value`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.workflows.drc.drc import MinLineWidth
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: name
+   :type:  str
+
+.. py:attribute:: value
+   :type:  str
+
+
+
+
+

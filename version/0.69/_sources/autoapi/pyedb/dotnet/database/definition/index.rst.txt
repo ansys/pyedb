@@ -1,0 +1,94 @@
+
+
+
+
+
+
+The ``definition`` package
+==============================
+
+.. py:module:: pyedb.dotnet.database.definition
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: definition
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.component_def`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.component_model`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definition_obj`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definitions`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.package_def`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.wirebond_def`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> component_def</autoapi/pyedb/dotnet/database/definition/component_def/index>
+    <span class="nf nf-fa-file"></span> component_model</autoapi/pyedb/dotnet/database/definition/component_model/index>
+    <span class="nf nf-fa-file"></span> definition_obj</autoapi/pyedb/dotnet/database/definition/definition_obj/index>
+    <span class="nf nf-fa-file"></span> definitions</autoapi/pyedb/dotnet/database/definition/definitions/index>
+    <span class="nf nf-fa-file"></span> package_def</autoapi/pyedb/dotnet/database/definition/package_def/index>
+    <span class="nf nf-fa-file"></span> wirebond_def</autoapi/pyedb/dotnet/database/definition/wirebond_def/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

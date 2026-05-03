@@ -1,0 +1,6 @@
+edb\_uid
+========
+
+.. currentmodule:: pyedb.grpc.database.terminal.pingroup_terminal
+
+.. autoproperty:: PinGroupTerminal.edb_uid

@@ -1,0 +1,6 @@
+get\_polygon\_points
+====================
+
+.. currentmodule:: pyedb.grpc.database.modeler
+
+.. automethod:: Modeler.get_polygon_points

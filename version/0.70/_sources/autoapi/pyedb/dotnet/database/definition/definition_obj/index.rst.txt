@@ -1,0 +1,142 @@
+
+
+
+
+
+
+The ``definition_obj.py`` module
+================================
+
+.. py:module:: pyedb.dotnet.database.definition.definition_obj
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: definition_obj
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definition_obj.DefinitionObj`
+            - Base class for definition objects.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definition_obj.MaterialProperties`
+            - Store material properties.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definition_obj.DeprecatedMaterial`
+            - Manage EDB methods for material property management.
+
+
+          * - :py:obj:`~pyedb.dotnet.database.definition.definition_obj.MaterialDef`
+            - Class for material definition.
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~PositiveFloat`
+            - 
+
+
+
+    .. tab-item:: Constants
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~ATTRIBUTES`
+            - 
+
+
+          * - :py:obj:`~DC_ATTRIBUTES`
+            - 
+
+
+          * - :py:obj:`~PERMEABILITY_DEFAULT_VALUE`
+            - 
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> DefinitionObj</autoapi/pyedb/dotnet/database/definition/definition_obj/DefinitionObj>
+    <span class="nf nf-cod-symbol_class"></span> MaterialProperties</autoapi/pyedb/dotnet/database/definition/definition_obj/MaterialProperties>
+    <span class="nf nf-cod-symbol_class"></span> DeprecatedMaterial</autoapi/pyedb/dotnet/database/definition/definition_obj/DeprecatedMaterial>
+    <span class="nf nf-cod-symbol_class"></span> MaterialDef</autoapi/pyedb/dotnet/database/definition/definition_obj/MaterialDef>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: ATTRIBUTES
+   :value: ['conductivity', 'dielectric_loss_tangent', 'magnetic_loss_tangent', 'mass_density',...
+
+
+.. py:data:: DC_ATTRIBUTES
+   :value: ['dielectric_model_frequency', 'loss_tangent_at_frequency', 'permittivity_at_frequency',...
+
+
+.. py:data:: PERMEABILITY_DEFAULT_VALUE
+   :value: 1
+
+
+.. py:data:: PositiveFloat
+
+
+

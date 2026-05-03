@@ -1,0 +1,80 @@
+
+
+
+
+
+
+:class:`CfgComponents`
+======================
+
+
+.. py:class:: pyedb.configuration.cfg_components.CfgComponents(pedb, components_data)
+
+
+.. py:currentmodule:: CfgComponents
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~clean`
+            - 
+          * - :py:attr:`~apply`
+            - 
+          * - :py:attr:`~retrieve_parameters_from_edb`
+            - 
+
+
+
+   .. tab-item:: Attributes
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~components`
+            - 
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.configuration.cfg_components import CfgComponents
+
+
+Attribute detail
+----------------
+
+.. py:attribute:: components
+   :value: []
+
+
+
+
+Method detail
+-------------
+
+.. py:method:: clean()
+
+.. py:method:: apply()
+
+.. py:method:: retrieve_parameters_from_edb()
+
+
+
+

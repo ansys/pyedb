@@ -1,0 +1,115 @@
+
+
+
+
+
+
+The ``hfss_general_settings.py`` module
+=======================================
+
+.. py:module:: pyedb.grpc.database.simulation_setup.hfss_general_settings
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: hfss_general_settings
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.BroadbandAdaptiveSolution`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.AdaptiveFrequency`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.MultiFrequencyAdaptiveSolution`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.MatrixConvergenceDataEntry`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.MatrixConvergenceData`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.SingleFrequencyAdaptiveSolution`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.simulation_setup.hfss_general_settings.HFSSGeneralSettings`
+            - PyEDB-core HFSS general settings class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> BroadbandAdaptiveSolution</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/BroadbandAdaptiveSolution>
+    <span class="nf nf-cod-symbol_class"></span> AdaptiveFrequency</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/AdaptiveFrequency>
+    <span class="nf nf-cod-symbol_class"></span> MultiFrequencyAdaptiveSolution</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/MultiFrequencyAdaptiveSolution>
+    <span class="nf nf-cod-symbol_class"></span> MatrixConvergenceDataEntry</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/MatrixConvergenceDataEntry>
+    <span class="nf nf-cod-symbol_class"></span> MatrixConvergenceData</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/MatrixConvergenceData>
+    <span class="nf nf-cod-symbol_class"></span> SingleFrequencyAdaptiveSolution</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/SingleFrequencyAdaptiveSolution>
+    <span class="nf nf-cod-symbol_class"></span> HFSSGeneralSettings</autoapi/pyedb/grpc/database/simulation_setup/hfss_general_settings/HFSSGeneralSettings>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

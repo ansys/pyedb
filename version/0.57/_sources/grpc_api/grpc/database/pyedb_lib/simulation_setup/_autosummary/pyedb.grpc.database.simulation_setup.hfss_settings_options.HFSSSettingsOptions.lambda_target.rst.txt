@@ -1,0 +1,6 @@
+lambda\_target
+==============
+
+.. currentmodule:: pyedb.grpc.database.simulation_setup.hfss_settings_options
+
+.. autoproperty:: HFSSSettingsOptions.lambda_target

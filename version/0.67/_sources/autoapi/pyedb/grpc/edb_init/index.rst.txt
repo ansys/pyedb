@@ -1,0 +1,80 @@
+
+
+
+
+
+
+The ``pyedb.grpc.edb_init`` library
+===================================
+
+.. py:module:: pyedb.grpc.edb_init
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: edb_init
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.edb_init.EdbInit`
+            - Edb Dot Net Class.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> EdbInit</autoapi/pyedb/grpc/edb_init/EdbInit>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+Database.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+

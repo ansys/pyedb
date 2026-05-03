@@ -1,0 +1,6 @@
+find
+====
+
+.. currentmodule:: pyedb.grpc.database.definition.component_def
+
+.. automethod:: ComponentDef.find

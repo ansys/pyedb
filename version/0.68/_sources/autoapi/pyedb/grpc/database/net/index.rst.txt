@@ -1,0 +1,84 @@
+
+
+
+
+
+
+The ``net`` package
+=======================
+
+.. py:module:: pyedb.grpc.database.net
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: net
+.. tab-set::
+
+
+    .. tab-item:: Submodules
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.differential_pair`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.extended_net`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.net`
+            - 
+
+
+          * - :py:obj:`~pyedb.grpc.database.net.net_class`
+            - 
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-fa-file"></span> differential_pair</autoapi/pyedb/grpc/database/net/differential_pair/index>
+    <span class="nf nf-fa-file"></span> extended_net</autoapi/pyedb/grpc/database/net/extended_net/index>
+    <span class="nf nf-fa-file"></span> net</autoapi/pyedb/grpc/database/net/net/index>
+    <span class="nf nf-fa-file"></span> net_class</autoapi/pyedb/grpc/database/net/net_class/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

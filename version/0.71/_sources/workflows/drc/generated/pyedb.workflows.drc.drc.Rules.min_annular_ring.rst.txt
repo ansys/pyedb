@@ -1,0 +1,6 @@
+min\_annular\_ring
+==================
+
+.. currentmodule:: pyedb.workflows.drc.drc
+
+.. autoattribute:: Rules.min_annular_ring

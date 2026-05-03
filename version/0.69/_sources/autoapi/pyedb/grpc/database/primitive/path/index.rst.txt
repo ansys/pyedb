@@ -1,0 +1,73 @@
+
+
+
+
+
+
+The ``path.py`` module
+======================
+
+.. py:module:: pyedb.grpc.database.primitive.path
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: path
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.primitive.path.Path`
+            - Manages EDB functionalities for a primitives.
+
+
+
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Path</autoapi/pyedb/grpc/database/primitive/path/Path>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

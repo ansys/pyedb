@@ -1,0 +1,6 @@
+msg
+===
+
+.. currentmodule:: pyedb.grpc.database.ports.ports
+
+.. autoproperty:: CircuitPort.msg

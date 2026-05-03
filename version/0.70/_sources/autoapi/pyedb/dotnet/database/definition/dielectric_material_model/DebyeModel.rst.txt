@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`DebyeModel`
+===================
+
+
+.. py:class:: pyedb.dotnet.database.definition.dielectric_material_model.DebyeModel(pedb: pyedb.dotnet.edb.Edb, edb_object)
+
+   Bases: :py:obj:`DielectricMaterialModel`
+
+
+   
+   Class for Debye model.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.dotnet.database.definition.dielectric_material_model import DebyeModel
+
+
+
+
+

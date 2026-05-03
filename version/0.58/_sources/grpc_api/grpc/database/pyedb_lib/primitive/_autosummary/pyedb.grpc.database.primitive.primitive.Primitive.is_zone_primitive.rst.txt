@@ -1,0 +1,6 @@
+is\_zone\_primitive
+===================
+
+.. currentmodule:: pyedb.grpc.database.primitive.primitive
+
+.. autoproperty:: Primitive.is_zone_primitive

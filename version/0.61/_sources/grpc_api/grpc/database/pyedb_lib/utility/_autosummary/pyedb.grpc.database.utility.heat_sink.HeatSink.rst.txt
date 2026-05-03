@@ -1,0 +1,15 @@
+﻿HeatSink
+========
+
+.. currentmodule:: pyedb.grpc.database.utility.heat_sink
+
+.. autoclass:: HeatSink
+
+   
+
+   
+   
+
+   
+   
+   

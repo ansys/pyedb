@@ -1,0 +1,126 @@
+
+
+
+
+
+
+The ``components.py`` module
+============================
+
+.. py:module:: pyedb.grpc.database.components
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+
+
+.. py:currentmodule:: components
+.. tab-set::
+
+
+
+
+    .. tab-item:: Classes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.grpc.database.components.Components`
+            - Manages EDB components and related methods accessible from `Edb.components`.
+
+
+
+
+
+    .. tab-item:: Functions
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~resistor_value_parser`
+            - Convert a resistor value to float.
+
+
+
+
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-cod-symbol_class"></span> Components</autoapi/pyedb/grpc/database/components/Components>
+
+
+
+
+
+
+
+
+
+Description
+-----------
+
+This module contains the `Components` class.
+
+..
+    !! processed by numpydoc !!
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:function:: resistor_value_parser(r_value) -> float
+
+   
+   Convert a resistor value to float.
+
+
+   :Parameters:
+
+       **r_value** : :class:`python:float` or :class:`python:str`
+           Resistor value to convert.
+
+   :Returns:
+
+       :class:`python:float`
+           Converted resistor value.
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+

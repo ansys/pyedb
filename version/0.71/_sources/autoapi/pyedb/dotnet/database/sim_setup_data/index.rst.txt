@@ -1,0 +1,93 @@
+
+
+
+
+
+
+The ``sim_setup_data`` package
+==================================
+
+.. py:module:: pyedb.dotnet.database.sim_setup_data
+
+
+Summary
+-------
+
+
+
+
+
+
+
+
+.. py:currentmodule:: sim_setup_data
+.. tab-set::
+
+    .. tab-item:: Subpackages
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.data`
+            - 
+
+
+          * - :py:obj:`~pyedb.dotnet.database.sim_setup_data.io`
+            - 
+
+
+
+
+
+
+
+
+
+    .. tab-item:: Attributes
+
+        .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+
+          * - :py:obj:`~workdir`
+            - 
+
+
+
+
+
+.. toctree::
+   :titlesonly:
+   :maxdepth: 1
+   :hidden:
+
+    <span class="nf nf-md-package"></span> data</autoapi/pyedb/dotnet/database/sim_setup_data/data/index>
+    <span class="nf nf-md-package"></span> io</autoapi/pyedb/dotnet/database/sim_setup_data/io/index>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Module detail
+-------------
+
+.. py:data:: workdir
+
+
+

@@ -1,0 +1,241 @@
+
+
+
+
+
+
+:class:`SiwaveSolve`
+====================
+
+
+.. py:class:: pyedb.generic.process.SiwaveSolve(pedb)
+
+   Bases: :py:obj:`object`
+
+
+
+.. py:currentmodule:: SiwaveSolve
+
+Overview
+--------
+
+.. tab-set::
+
+
+
+   .. tab-item:: Methods
+
+      .. list-table::
+          :header-rows: 0
+          :widths: auto
+
+          * - :py:attr:`~solve_siwave`
+            - Solve an SIWave setup. Only non-graphical batch mode is supported.
+          * - :py:attr:`~solve`
+            - Solve using siwave_ng.exe
+          * - :py:attr:`~export_3d_cad`
+            - Export edb to Q3D or HFSS
+          * - :py:attr:`~export_dc_report`
+            - Close EDB and solve it with Siwave.
+
+
+
+
+
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.process import SiwaveSolve
+
+
+
+Method detail
+-------------
+
+.. py:method:: solve_siwave(edbpath, analysis_type)
+
+   
+   Solve an SIWave setup. Only non-graphical batch mode is supported.
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **analysis_type: str**
+           Type of SIWave analysis to perform. Available types are "SYZ", "DCIR", "CPA", "TimeCrosstalk",
+           "FreqCrosstalk", "Impedance".
+
+       **edbpath: str**
+           Full path to the .aedb folder, siw or siwz file to be solved.
+
+       **siwave_ng: str, optinial**
+           Path to the siwave_ng. Default is the SIWave installation path.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: solve(num_of_cores=4)
+
+   
+   Solve using siwave_ng.exe
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_3d_cad(format_3d='Q3D', output_folder=None, net_list=None, num_cores=4, aedt_file_name=None, hidden=False)
+
+   
+   Export edb to Q3D or HFSS
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **format_3d** : :class:`python:str`, :obj:`default` ``Q3D``
+           ..
+
+       **output_folder** : :class:`python:str`
+           Output file folder. If `` then the aedb parent folder is used
+
+       **net_list** : :class:`python:list`, :obj:`default` ``None``
+           Define Nets to Export. if None, all nets will be exported
+
+       **num_cores** : :class:`python:int`, :obj:`optional`
+           Define number of cores to use during export
+
+       **aedt_file_name** : :class:`python:str`, :obj:`optional`
+           Output  aedt file name (without .aedt extension). If `` then default naming is used
+
+       **Returns**
+           ..
+
+       **-------**
+           ..
+
+       **str**
+           path to aedt file
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+.. py:method:: export_dc_report(siwave_project, solution_name, output_folder=None, html_report=True, vias=True, voltage_probes=True, current_sources=True, voltage_sources=True, power_tree=True, loop_res=True, hidden=True)
+
+   
+   Close EDB and solve it with Siwave.
+
+   .. warning::
+       Do not execute this function with untrusted function argument, environment
+       variables or pyedb global settings.
+       See the :ref:`security guide<ref_security_consideration>` for details.
+
+   :Parameters:
+
+       **siwave_project** : :class:`python:str`
+           Siwave full project name.
+
+       **solution_name** : :class:`python:str`
+           Siwave DC Analysis name.
+
+       **output_folder** : :class:`python:str`, :obj:`optional`
+           Ouptu folder where files will be downloaded.
+
+       **html_report** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not html report. Default is `True`.
+
+       **vias** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not vias report. Default is `True`.
+
+       **voltage_probes** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not voltage probe report. Default is `True`.
+
+       **current_sources** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not current source report. Default is `True`.
+
+       **voltage_sources** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not voltage source report. Default is `True`.
+
+       **power_tree** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not power tree image. Default is `True`.
+
+       **loop_res** : :ref:`bool <python:bltin-boolean-values>`, :obj:`optional`
+           Either if generate or not loop resistance report. Default is `True`.
+
+
+
+   :Returns:
+
+       :class:`python:list`
+           list of files generated.
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+

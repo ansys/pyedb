@@ -1,0 +1,49 @@
+
+
+
+
+
+
+:class:`VIEW`
+=============
+
+
+.. py:class:: pyedb.generic.constants.VIEW
+
+   Bases: :py:obj:`object`
+
+
+   
+   View Enumerator class.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+   ..
+       !! processed by numpydoc !!
+
+
+
+Import detail
+-------------
+
+.. code-block:: python
+
+    from pyedb.generic.constants import VIEW
+
+
+
+
+

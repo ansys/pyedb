@@ -1,0 +1,1523 @@
+
+<!DOCTYPE html>
+
+
+<html lang="en" data-content_root="../" >
+
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>PyEDB architecture and design navigation &#8212; PyEDB</title>
+  
+  
+  
+  
+  <script data-cfasync="false">
+    document.documentElement.dataset.mode = localStorage.getItem("mode") || "";
+    document.documentElement.dataset.theme = localStorage.getItem("theme") || "";
+  </script>
+  <!--
+    this give us a css class that will be invisible only if js is disabled
+  -->
+  <noscript>
+    <style>
+      .pst-js-only { display: none !important; }
+
+    </style>
+  </noscript>
+  
+  <!-- Loaded before other Sphinx assets -->
+  <link href="../_static/styles/theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+<link href="../_static/styles/pydata-sphinx-theme.css?digest=8878045cc6db502f8baf" rel="stylesheet" />
+
+    <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=03e43079" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="../_static/copybutton.css?v=76b2166b" />
+    <link rel="stylesheet" type="text/css" href="../_static/graphviz.css?v=4ae1632d" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/ansys-sphinx-theme.css?v=a23b20f3" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.23/css/jquery.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://www.nerdfonts.com/assets/css/webfont.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+    <link rel="stylesheet" type="text/css" href="../_static/custom.css?v=a53d6f28" />
+  
+  <!-- So that users can add custom icons -->
+  <script src="../_static/scripts/fontawesome.js?digest=8878045cc6db502f8baf"></script>
+  <!-- Pre-loaded scripts that we'll load fully later -->
+  <link rel="preload" as="script" href="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf" />
+<link rel="preload" as="script" href="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf" />
+
+
+  <!-- Include desired assets -->
+  <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+  
+
+  
+    <link href="../_static/css/breadcrumbs.css" rel="stylesheet" />
+  
+    <script src="../_static/documentation_options.js?v=9d27e746"></script>
+    <script src="../_static/doctools.js?v=9bcbadda"></script>
+    <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/clipboard.min.js?v=a7894cd8"></script>
+    <script src="../_static/copybutton.js?v=49e1bf35"></script>
+    <script src="https://cdn.datatables.net/1.10.23/js/jquery.dataTables.min.js"></script>
+    <script src="../_static/design-tabs.js?v=f930bc37"></script>
+    <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script>DOCUMENTATION_OPTIONS.pagename = 'user_guide/design_navigation';</script>
+    <script>
+        DOCUMENTATION_OPTIONS.theme_version = '0.16.1';
+        DOCUMENTATION_OPTIONS.theme_switcher_json_url = 'https://edb.docs.pyansys.com/versions.json';
+        DOCUMENTATION_OPTIONS.theme_switcher_version_match = '0.71';
+        DOCUMENTATION_OPTIONS.show_version_warning_banner =
+            false;
+        </script>
+    <link rel="icon" href="../_static/ansys-favicon.png"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advanced libraries" href="libraries/index.html" />
+    <link rel="prev" title="Common Tasks" href="common_tasks.html" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta name="docsearch:language" content="en"/>
+  <meta name="docsearch:version" content="0.71.0" />
+  <meta property="og:site_name" content="PyAnsys" />
+  <meta name="physics" content="Electronics" />
+  <link rel="canonical" href="https://edb.docs.pyansys.com/version/stable/user_guide/design_navigation.html" />
+  </head>
+  
+  
+  <body data-bs-spy="scroll" data-bs-target=".bd-toc-nav" data-offset="180" data-bs-root-margin="0px 0px -60%" data-default-mode="">
+
+  
+  
+  <div id="pst-skip-link" class="skip-link d-print-none"><a href="#main-content">Skip to main content</a></div>
+  
+  
+  <div id="pst-scroll-pixel-helper"></div>
+  
+  <button type="button" class="btn rounded-pill" id="pst-back-to-top">
+    <i class="fa-solid fa-arrow-up"></i>Back to top</button>
+
+  
+  <dialog id="pst-search-dialog">
+    
+<form class="bd-search d-flex align-items-center"
+      action="../search.html"
+      method="get">
+  <i class="fa-solid fa-magnifying-glass"></i>
+  <input type="search"
+         class="form-control"
+         name="q"
+         placeholder="Search the docs ..."
+         aria-label="Search the docs ..."
+         autocomplete="off"
+         autocorrect="off"
+         autocapitalize="off"
+         spellcheck="false"/>
+  <span class="search-button__kbd-shortcut"><kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd></span>
+</form>
+  </dialog>
+
+  <div class="pst-async-banner-revealer d-none">
+  <aside id="bd-header-version-warning" class="d-none d-print-none" aria-label="Version warning"></aside>
+</div>
+
+  
+  
+    <header class="bd-header navbar navbar-expand-lg bd-navbar d-print-none">
+<div class="bd-header__inner bd-page-width">
+  <button class="pst-navbar-icon sidebar-toggle primary-toggle" aria-label="Site navigation">
+    <span class="fa-solid fa-bars"></span>
+  </button>
+  
+  
+  <div class="col-lg-3 navbar-header-items__start">
+    
+      <div class="navbar-item">
+
+  
+
+<a class="navbar-brand logo" href="https://docs.pyansys.com/">
+  
+  
+  
+  
+  
+    
+    
+      
+    
+    
+    <img src="../_static/pyansys_logo_transparent_black.png" class="logo__image only-light" alt="PyEDB - Home"/>
+    <img src="../_static/pyansys_logo_transparent_white.png" class="logo__image only-dark pst-js-only" alt="PyEDB - Home"/>
+  
+  
+</a></div>
+    
+  </div>
+  
+  <div class="col-lg-9 navbar-header-items">
+    
+    <div class="me-auto navbar-header-items__center">
+      
+        <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../grpc_migration/dotnet_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+            <li class="nav-item dropdown">
+                <button class="btn dropdown-toggle nav-item" type="button"
+                data-bs-toggle="dropdown" aria-expanded="false"
+                aria-controls="pst-nav-more-links">
+                    More
+                </button>
+                <ul id="pst-nav-more-links" class="dropdown-menu">
+                    
+<li class=" ">
+  <a class="nav-link dropdown-item nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+                </ul>
+            </li>
+            
+  </ul>
+</nav>
+</div>
+      
+    </div>
+    
+    
+    <div class="navbar-header-items__end">
+      
+      
+        <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+      
+        <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-2"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-2"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-2"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-2">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+      
+        <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+      
+        <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.71/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+      
+    </div>
+    
+  </div>
+  
+  
+
+  
+    <button class="pst-navbar-icon sidebar-toggle secondary-toggle" aria-label="On this page">
+      <span class="fa-solid fa-outdent"></span>
+    </button>
+  
+</div>
+
+    </header>
+  
+  
+    
+<!--
+  Announcement Version Loader
+  Dynamically loads the announcement.html content into the announcement_msg div.
+-->
+<div id="announcement_msg" aria-live="polite"></div>
+<script>
+  // Fetch and inject the announcement HTML content
+  fetch("announcement.html")
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status} Announcement.html file not found, Please ignore this, if you are in dev/stable documentation`);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      var msgDiv = document.getElementById("announcement_msg");
+      if (msgDiv) {
+        msgDiv.innerHTML = text;
+      }
+    })
+    .catch((error) => {
+      // Log only unexpected fetch errors
+      if (!(error.message && error.message.startsWith("HTTP error: 404"))) {
+        console.error(`Fetch problem: ${error.message} Announcement.html could not be loaded.`);
+      }
+    });
+</script>
+  
+
+
+  <div class="bd-container">
+    <div class="bd-container__inner bd-page-width">
+      
+      
+      
+      <dialog id="pst-primary-sidebar-modal"></dialog>
+      <div id="pst-primary-sidebar" class="bd-sidebar-primary bd-sidebar">
+        
+
+  
+  <div class="sidebar-header-items sidebar-primary__section">
+    
+    
+      <div class="sidebar-header-items__center">
+        
+          
+          
+            <div class="navbar-item">
+
+<nav>
+  <ul class="bd-navbar-elements navbar-nav">
+    
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../index.html" title="PyEDB home">Home</a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../getting_started/index.html">
+    Getting started
+  </a>
+</li>
+
+
+<li class="nav-item current active">
+  <a class="nav-link nav-internal" href="index.html">
+    User guide
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../grpc_migration/dotnet_api/index.html">
+    API reference
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../examples/index.html">
+    Examples
+  </a>
+</li>
+
+
+<li class="nav-item ">
+  <a class="nav-link nav-internal" href="../changelog.html">
+    Release notes
+  </a>
+</li>
+
+  </ul>
+</nav>
+</div>
+          
+        
+      </div>
+    
+    
+    
+      <div class="sidebar-header-items__end">
+        
+          <div class="navbar-item">
+<div class="search-bar pst-js-only" id="search-bar">
+  <form class="bd-search d-flex align-items-center" action="../search.html" method="get">
+    <i class="fa-solid fa-magnifying-glass"></i>
+    <input type="search" class="form-control" name="q" placeholder="Search the docs ..."
+      aria-label="Search the docs ..." autocomplete="off" autocorrect="off"
+      autocapitalize="off" spellcheck="false" />
+    <span class="search-button__kbd-shortcut">
+      <kbd class="kbd-shortcut__modifier">Ctrl</kbd>+<kbd>K</kbd>
+    </span>
+  </form>
+  
+  <div id="static-search-results" class="static-search-results" style="display:none;" tabindex="0"></div>
+  
+</div></div>
+        
+          <div class="navbar-item">
+<div class="version-switcher__container dropdown pst-js-only">
+  <button id="pst-version-switcher-button-3"
+    type="button"
+    class="version-switcher__button btn btn-sm dropdown-toggle"
+    data-bs-toggle="dropdown"
+    aria-haspopup="listbox"
+    aria-controls="pst-version-switcher-list-3"
+    aria-label="Version switcher list"
+  >
+    Choose version  <!-- this text may get changed later by javascript -->
+    <span class="caret"></span>
+  </button>
+  <div id="pst-version-switcher-list-3"
+    class="version-switcher__menu dropdown-menu list-group-flush py-0"
+    role="listbox" aria-labelledby="pst-version-switcher-button-3">
+    <!-- dropdown will be populated by javascript on page load -->
+  </div>
+</div></div>
+        
+          <div class="navbar-item">
+
+<button class="btn btn-sm nav-link pst-navbar-icon theme-switch-button pst-js-only" aria-label="Color mode" data-bs-title="Color mode"  data-bs-placement="bottom" data-bs-toggle="tooltip">
+  <i class="theme-switch fa-solid fa-sun                fa-lg" data-mode="light" title="Light"></i>
+  <i class="theme-switch fa-solid fa-moon               fa-lg" data-mode="dark"  title="Dark"></i>
+  <i class="theme-switch fa-solid fa-circle-half-stroke fa-lg" data-mode="auto"  title="System Settings"></i>
+</button></div>
+        
+          <div class="navbar-item"><ul class="navbar-icon-links"
+    aria-label="Icon Links">
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb" title="GitHub" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa-brands fa-square-github fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">GitHub</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://github.com/ansys/pyedb/discussions" title="Support" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-comment fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Support</span></a>
+        </li>
+        <li class="nav-item">
+          
+          
+          
+          
+          
+          
+          
+          
+          <a href="https://edb.docs.pyansys.com/version/0.71/_static/assets/download/pyedb.pdf" title="Download documentation in PDF" class="nav-link pst-navbar-icon" rel="noopener" target="_blank" data-bs-toggle="tooltip" data-bs-placement="bottom"><i class="fa fa-file-pdf fa-fw fa-lg" aria-hidden="true"></i>
+            <span class="sr-only">Download documentation in PDF</span></a>
+        </li>
+</ul></div>
+        
+      </div>
+    
+  </div>
+  
+    <div class="sidebar-primary-items__start sidebar-primary__section">
+        <div class="sidebar-primary-item">
+<nav class="bd-docs-nav bd-links"
+     aria-label="Section Navigation">
+  <p class="bd-links__title" role="heading" aria-level="1">Section Navigation</p>
+  <div class="bd-toc-item navbar-nav"><ul class="current nav bd-sidenav">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Basic tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_tasks.html">Common Tasks</a></li>
+<li class="toctree-l1 current active"><a class="current reference internal" href="#">PyEDB architecture and design navigation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="libraries/index.html">Advanced libraries</a></li>
+</ul>
+</div>
+</nav></div>
+    </div>
+  
+  
+  <div class="sidebar-primary-items__end sidebar-primary__section">
+      <div class="sidebar-primary-item">
+<div id="ethical-ad-placement"
+      class="flat"
+      data-ea-publisher="readthedocs"
+      data-ea-type="readthedocs-sidebar"
+      data-ea-manual="true">
+</div></div>
+  </div>
+
+
+      </div>
+      
+      <main id="main-content" class="bd-main" role="main">
+        
+        
+          <div class="bd-content">
+            <div class="bd-article-container">
+              
+              <div class="bd-header-article d-print-none">
+<div class="header-article-items header-article__inner">
+  
+    <div class="header-article-items__start">
+      
+        <div class="header-article-item">
+<nav aria-label="Breadcrumb">
+  <ul class="bd-breadcrumbs">
+         
+    <li class="breadcrumb-item breadcrumb-home">
+      <a href="https://docs.pyansys.com/" class="nav-link">PyAnsys</a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a
+        href="../index.html"
+        class="nav-link"
+        aria-label="Home"
+      >
+        <i class="fa-solid fa-home"></i>
+      </a>
+    </li>
+     
+    <li class="breadcrumb-item">
+      <a href="index.html" class="nav-link">User guide</a>
+    </li>
+      
+    <li class="breadcrumb-item active" aria-current="page"><span class="ellipsis">PyEDB architecture and design navigation</span></li>
+    
+  </ul>
+</nav>
+</div>
+      
+    </div>
+  
+  
+</div>
+</div>
+              
+              
+              
+                
+<div id="searchbox"></div>
+                <article class="bd-article">
+                  
+  <section id="pyedb-architecture-and-design-navigation">
+<span id="ref-design-navigation"></span><h1>PyEDB architecture and design navigation<a class="headerlink" href="#pyedb-architecture-and-design-navigation" title="Link to this heading">#</a></h1>
+<p>This guide explains how to get started with PyEDB, how the main architectural
+pieces fit together, and how to navigate an EDB design efficiently.</p>
+<p>The goal is to help you understand:</p>
+<ul class="simple">
+<li><p>how to start from the public <code class="docutils literal notranslate"><span class="pre">Edb</span></code> entry point,</p></li>
+<li><p>how backend selection works,</p></li>
+<li><p>how PyEDB maps to the underlying EDB technologies,</p></li>
+<li><p>and how to move from a design session to layers, nets, components, and geometry.</p></li>
+</ul>
+<nav class="contents local" id="contents">
+<ul class="simple">
+<li><p><a class="reference internal" href="#start-with-the-public-edb-entry-point" id="id4">Start with the public <code class="docutils literal notranslate"><span class="pre">Edb</span></code> entry point</a></p></li>
+<li><p><a class="reference internal" href="#backend-overview" id="id5">Backend overview</a></p></li>
+<li><p><a class="reference internal" href="#pyedb-architecture-at-a-glance" id="id6">PyEDB architecture at a glance</a></p></li>
+<li><p><a class="reference internal" href="#key-managers-exposed-by-edb" id="id7">Key managers exposed by <code class="docutils literal notranslate"><span class="pre">Edb</span></code></a></p></li>
+<li><p><a class="reference internal" href="#what-edb-represents" id="id8">What <code class="docutils literal notranslate"><span class="pre">Edb</span></code> represents</a></p></li>
+<li><p><a class="reference internal" href="#the-edb-hierarchy" id="id9">The EDB hierarchy</a></p></li>
+<li><p><a class="reference internal" href="#sources-ports-and-excitations" id="id10">Sources, ports, and excitations</a></p></li>
+<li><p><a class="reference internal" href="#simulation-setup-organization" id="id11">Simulation setup organization</a></p></li>
+<li><p><a class="reference internal" href="#choose-the-right-starting-point" id="id12">Choose the right starting point</a></p></li>
+<li><p><a class="reference internal" href="#first-inspection-steps" id="id13">First inspection steps</a></p></li>
+<li><p><a class="reference internal" href="#navigate-the-design-by-scope" id="id14">Navigate the design by scope</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-stackup" id="id15">Navigate by stackup</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-net-connectivity" id="id16">Navigate by net connectivity</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-component" id="id17">Navigate by component</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-definitions" id="id18">Navigate by definitions</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-layout-and-geometry-queries" id="id19">Navigate by layout and geometry queries</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-primitive-creation-and-editing" id="id20">Navigate by primitive creation and editing</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-validation-and-simulation-setup" id="id21">Navigate by validation and simulation setup</a></p></li>
+<li><p><a class="reference internal" href="#navigate-by-ports-sources-and-terminals" id="id22">Navigate by ports, sources, and terminals</a></p></li>
+<li><p><a class="reference internal" href="#retrieval-cookbook" id="id23">Retrieval cookbook</a></p></li>
+<li><p><a class="reference internal" href="#a-beginner-friendly-exploration-workflow" id="id24">A beginner-friendly exploration workflow</a></p></li>
+<li><p><a class="reference internal" href="#how-the-architecture-maps-to-the-source-tree" id="id25">How the architecture maps to the source tree</a></p></li>
+<li><p><a class="reference internal" href="#guidelines-for-writing-clear-pyedb-scripts" id="id26">Guidelines for writing clear PyEDB scripts</a></p></li>
+<li><p><a class="reference internal" href="#summary" id="id27">Summary</a></p></li>
+</ul>
+</nav>
+<p>For a quick overview of the main gRPC-facing managers, see
+<a class="reference internal" href="#ref-grpc-manager-overview"><span class="std std-ref">Key managers exposed by Edb</span></a>. For excitation workflows, see
+<a class="reference internal" href="#ref-excitation-architecture"><span class="std std-ref">Sources, ports, and excitations</span></a>. For setup organization, see
+<a class="reference internal" href="#ref-simulation-setup-architecture"><span class="std std-ref">Simulation setup organization</span></a>.</p>
+<section id="start-with-the-public-edb-entry-point">
+<h2><a class="toc-backref" href="#id4" role="doc-backlink">Start with the public <code class="docutils literal notranslate"><span class="pre">Edb</span></code> entry point</a><a class="headerlink" href="#start-with-the-public-edb-entry-point" title="Link to this heading">#</a></h2>
+<p>For user scripts and documentation, import <code class="docutils literal notranslate"><span class="pre">Edb</span></code> from the top-level package:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+</pre></div>
+</div>
+<p>At instantiation time, the <code class="docutils literal notranslate"><span class="pre">grpc</span></code> flag selects the backend:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">grpc=False</span></code> uses the DotNet backend.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">grpc=True</span></code> uses the gRPC backend.</p></li>
+</ul>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>The current default is <code class="docutils literal notranslate"><span class="pre">grpc=False</span></code>.</p>
+<p>DotNet is the current official backend. For clarity, it is still a good
+practice to pass <code class="docutils literal notranslate"><span class="pre">grpc=True</span></code> or <code class="docutils literal notranslate"><span class="pre">grpc=False</span></code> explicitly in user scripts.</p>
+</div>
+<p>Typical usage patterns are:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="c1"># Current official backend</span>
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbpath</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\projects\board.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">,</span> <span class="n">grpc</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="c1"># New gRPC backend</span>
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbpath</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\projects\board.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">,</span> <span class="n">grpc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The public <code class="docutils literal notranslate"><span class="pre">pyedb.Edb</span></code> entry point selects the backend and returns the
+corresponding implementation. The same high-level entry point is therefore
+used for both backends.</p>
+</div>
+</section>
+<section id="backend-overview">
+<span id="ref-backend-overview"></span><h2><a class="toc-backref" href="#id5" role="doc-backlink">Backend overview</a><a class="headerlink" href="#backend-overview" title="Link to this heading">#</a></h2>
+<p>PyEDB currently supports two backend implementations behind the same public API.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id1">
+<caption><span class="caption-text">Backend selection at a glance</span><a class="headerlink" href="#id1" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 18.0%" />
+<col style="width: 20.0%" />
+<col style="width: 20.0%" />
+<col style="width: 42.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Flag</p></th>
+<th class="head"><p>Backend</p></th>
+<th class="head"><p>Current status</p></th>
+<th class="head"><p>Notes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">grpc=False</span></code></p></td>
+<td><p>DotNet</p></td>
+<td><p>Current official backend</p></td>
+<td><p>Uses the .NET-based EDB access layer and remains the default behavior</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">grpc=True</span></code></p></td>
+<td><p>gRPC</p></td>
+<td><p>New backend</p></td>
+<td><p>Uses <code class="docutils literal notranslate"><span class="pre">ansys-edb-core</span></code> and requires Ansys 2026.1 or later</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>The gRPC backend requires a supported AEDT version:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">grpc=True</span></code> requires Ansys 2026.1 or later.</p></li>
+<li><p>Requesting <code class="docutils literal notranslate"><span class="pre">grpc=True</span></code> with an older version raises an error.</p></li>
+</ul>
+<p>If you are writing introductory material or reusable automation scripts, always
+show the <code class="docutils literal notranslate"><span class="pre">grpc</span></code> flag explicitly.</p>
+</section>
+<section id="pyedb-architecture-at-a-glance">
+<h2><a class="toc-backref" href="#id6" role="doc-backlink">PyEDB architecture at a glance</a><a class="headerlink" href="#pyedb-architecture-at-a-glance" title="Link to this heading">#</a></h2>
+<p>PyEDB is the user-facing Python library. It provides one high-level API that
+can work with two different backends.</p>
+<p>A practical way to understand the architecture is:</p>
+<ol class="arabic simple">
+<li><p><strong>PyEDB</strong> provides the user API and the <code class="docutils literal notranslate"><span class="pre">Edb</span></code> entry point.</p></li>
+<li><p><strong>DotNet backend</strong> is the current official implementation.</p></li>
+<li><p><strong>gRPC backend</strong> is the newer implementation and is based on
+<code class="docutils literal notranslate"><span class="pre">ansys-edb-core</span></code>.</p></li>
+<li><p><strong>Ansys EDB technologies</strong> provide the underlying database capabilities used
+by those backends.</p></li>
+</ol>
+<p>In practice, users work with PyEDB objects such as <code class="docutils literal notranslate"><span class="pre">Edb</span></code>, <code class="docutils literal notranslate"><span class="pre">Stackup</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Nets</span></code>, and <code class="docutils literal notranslate"><span class="pre">Components</span></code>, while PyEDB delegates the low-level work to the
+selected backend.</p>
+<p>You can picture the user-facing architecture like this:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>from pyedb import Edb
+         |
+         v
+       Edb session
+         |
+         +-- stackup     -&gt; layers and physical organization
+         +-- nets        -&gt; connectivity-centric traversal
+         +-- components  -&gt; component-centric traversal
+         +-- layout      -&gt; geometry queries, primitives, terminals, groups
+         +-- modeler     -&gt; primitive creation and editing
+         +-- padstacks   -&gt; padstack definitions and instances
+         +-- definitions -&gt; component, package, and bondwire definitions
+         +-- layout_validation -&gt; design checks and validation helpers
+         +-- excitation_manager -&gt; sources and port excitations
+         +-- simulation_setups -&gt; setup containers by solver
+         +-- hfss        -&gt; HFSS workflows
+         +-- siwave      -&gt; SIwave workflows
+</pre></div>
+</div>
+</section>
+<section id="key-managers-exposed-by-edb">
+<span id="ref-grpc-manager-overview"></span><h2><a class="toc-backref" href="#id7" role="doc-backlink">Key managers exposed by <code class="docutils literal notranslate"><span class="pre">Edb</span></code></a><a class="headerlink" href="#key-managers-exposed-by-edb" title="Link to this heading">#</a></h2>
+<p>In PyEDB implementation, <code class="docutils literal notranslate"><span class="pre">Edb</span></code> is the root object and the main entry point
+to a set of focused managers. The most important ones are:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id2">
+<caption><span class="caption-text">Main managers exposed from <code class="docutils literal notranslate"><span class="pre">Edb</span></code></span><a class="headerlink" href="#id2" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 28.0%" />
+<col style="width: 72.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Manager</p></th>
+<th class="head"><p>Primary role</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">edb.stackup</span></code></p></td>
+<td><p>Access stackup layers, signal layers, dielectric layers, and physical layer properties</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">edb.nets</span></code></p></td>
+<td><p>Navigate the design by electrical connectivity</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">edb.components</span></code></p></td>
+<td><p>Navigate the design by placed parts, reference designators, and pins</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">edb.layout</span></code></p></td>
+<td><p>Run geometry queries and inspect primitives, terminals, groups, and pin groups</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">edb.modeler</span></code></p></td>
+<td><p>Create and edit primitive geometry</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">edb.padstacks</span></code></p></td>
+<td><p>Access padstack definitions and padstack instances</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">edb.definitions</span></code></p></td>
+<td><p>Access component, package, and bondwire definitions</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">edb.layout_validation</span></code></p></td>
+<td><p>Run design checks and validation utilities</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">edb.excitation_manager</span></code></p></td>
+<td><p>Manage source and port excitations in one place</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">edb.simulation_setups</span></code></p></td>
+<td><p>Access setup collections for HFSS, SIwave, DCIR, CPA, Q3D, and RaptorX</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">edb.hfss</span></code> and <code class="docutils literal notranslate"><span class="pre">edb.siwave</span></code></p></td>
+<td><p>Access solver-specific workflows; some older excitation helpers remain here as deprecated APIs</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>For API all details, see the <em>API reference</em> section. This section keeps
+the architectural view intentionally compact.</p>
+</section>
+<section id="what-edb-represents">
+<h2><a class="toc-backref" href="#id8" role="doc-backlink">What <code class="docutils literal notranslate"><span class="pre">Edb</span></code> represents</a><a class="headerlink" href="#what-edb-represents" title="Link to this heading">#</a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">Edb</span></code> is the main session object in PyEDB.</p>
+<p>From a user perspective, it is the open design session from which almost every
+workflow begins. It gives access to the active design and to the managers used
+to inspect or edit it.</p>
+<p>A useful mental model is:</p>
+<p><em>``Edb`` is your open design session, and the next step is choosing which part
+of the design you want to explore.</em></p>
+<p>A minimal session looks like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbpath</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\projects\board.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">,</span> <span class="n">grpc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">cell_names</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">active_cell</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="the-edb-hierarchy">
+<span id="ref-edb-hierarchy"></span><h2><a class="toc-backref" href="#id9" role="doc-backlink">The EDB hierarchy</a><a class="headerlink" href="#the-edb-hierarchy" title="Link to this heading">#</a></h2>
+<p>Understanding the EDB hierarchy makes design navigation much easier.</p>
+<p>PyEDB wraps these concepts into user-friendly Python objects. For example:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">Edb</span></code> gives you the active project and cell,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.stackup</span></code> gives you access to layers,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.nets</span></code> gives you net-centric traversal,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.components</span></code> gives you component-centric traversal,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout</span></code> gives you direct access to layout content such as primitives,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.definitions</span></code> gives you access to reusable design definitions,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout_validation</span></code> gives you access to validation tools,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.simulation_setups</span></code> gives you access to setup collections by solver.</p></li>
+</ul>
+</section>
+<section id="sources-ports-and-excitations">
+<span id="ref-excitation-architecture"></span><h2><a class="toc-backref" href="#id10" role="doc-backlink">Sources, ports, and excitations</a><a class="headerlink" href="#sources-ports-and-excitations" title="Link to this heading">#</a></h2>
+<p>One important architectural point in PyEDB API is the role of
+<code class="docutils literal notranslate"><span class="pre">SourceExcitation</span></code>.</p>
+<p>In PyEDB, source and port excitation workflows are centralized through the
+<code class="docutils literal notranslate"><span class="pre">SourceExcitation</span></code> manager, which is exposed from <code class="docutils literal notranslate"><span class="pre">Edb</span></code> as
+<code class="docutils literal notranslate"><span class="pre">edb.excitation_manager</span></code>.</p>
+<p>This means that, from a class-architecture point of view, excitation-related
+operations are no longer best understood as belonging to <code class="docutils literal notranslate"><span class="pre">Hfss</span></code> or
+<code class="docutils literal notranslate"><span class="pre">Siwave</span></code>. Instead, they are grouped into a dedicated manager focused on
+ports, sources, and excitation objects.</p>
+<p>Typical entry points are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.excitation_manager</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.ports</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.sources</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.terminals</span></code></p></li>
+</ul>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p><code class="docutils literal notranslate"><span class="pre">edb.source_excitation</span></code> still exists, but is deprecated in favor of
+<code class="docutils literal notranslate"><span class="pre">edb.excitation_manager</span></code>.</p>
+</div>
+<p>This centralization is especially useful because both <code class="docutils literal notranslate"><span class="pre">Hfss</span></code> and <code class="docutils literal notranslate"><span class="pre">Siwave</span></code>
+still contain deprecated methods and properties related to ports and
+excitations. When documenting the PyEDB architecture, it is therefore clearer
+to present <code class="docutils literal notranslate"><span class="pre">SourceExcitation</span></code> as the main class for these workflows.</p>
+</section>
+<section id="simulation-setup-organization">
+<span id="ref-simulation-setup-architecture"></span><h2><a class="toc-backref" href="#id11" role="doc-backlink">Simulation setup organization</a><a class="headerlink" href="#simulation-setup-organization" title="Link to this heading">#</a></h2>
+<p>Simulation setups are also centralized through a dedicated manager:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.simulation_setups</span></code> returns a <code class="docutils literal notranslate"><span class="pre">SimulationSetups</span></code> object.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.setups</span></code> provides a merged view of all setups.</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">SimulationSetups</span></code> manager groups setups by solver family, including:</p>
+<ul class="simple">
+<li><p>HFSS,</p></li>
+<li><p>SIwave,</p></li>
+<li><p>SIwave DCIR,</p></li>
+<li><p>SIwave CPA,</p></li>
+<li><p>Q3D,</p></li>
+<li><p>RaptorX,</p></li>
+<li><p>and HFSS-PI.</p></li>
+</ul>
+<p>This is the recommended architectural view for PyEDB API because it avoids
+scattering setup access across multiple legacy-style properties.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Some convenience properties still exist on <code class="docutils literal notranslate"><span class="pre">Edb</span></code> for backward
+compatibility, such as <code class="docutils literal notranslate"><span class="pre">edb.hfss_setups</span></code>, <code class="docutils literal notranslate"><span class="pre">edb.siwave_dc_setups</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">edb.siwave_ac_setups</span></code>. In the gRPC architecture, the preferred entry
+point is <code class="docutils literal notranslate"><span class="pre">edb.simulation_setups</span></code>.</p>
+</div>
+</section>
+<section id="choose-the-right-starting-point">
+<span id="ref-manager-selection"></span><h2><a class="toc-backref" href="#id12" role="doc-backlink">Choose the right starting point</a><a class="headerlink" href="#choose-the-right-starting-point" title="Link to this heading">#</a></h2>
+<p>When users are new to PyEDB, the hardest part is usually not syntax. It is
+knowing where to start.</p>
+<p>The simplest rule is:</p>
+<ul class="simple">
+<li><p>start from <code class="docutils literal notranslate"><span class="pre">Edb</span></code>,</p></li>
+<li><p>pick the manager that matches your engineering question,</p></li>
+<li><p>then walk from that manager to the design objects you need.</p></li>
+</ul>
+<div class="pst-scrollable-table-container"><table class="table" id="id3">
+<caption><span class="caption-text">Which manager should you use?</span><a class="headerlink" href="#id3" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 32.0%" />
+<col style="width: 22.0%" />
+<col style="width: 46.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Question</p></th>
+<th class="head"><p>Start here</p></th>
+<th class="head"><p>Typical next step</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Which design is active? What does the layout contain?</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.active_cell</span></code> or <code class="docutils literal notranslate"><span class="pre">edb.layout</span></code></p></td>
+<td><p>Inspect primitives, terminals, groups, or cell names</p></td>
+</tr>
+<tr class="row-odd"><td><p>Which layers exist and what are their materials or thicknesses?</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.stackup</span></code></p></td>
+<td><p>Read <code class="docutils literal notranslate"><span class="pre">layers</span></code>, <code class="docutils literal notranslate"><span class="pre">signal_layers</span></code>, or one named layer</p></td>
+</tr>
+<tr class="row-even"><td><p>Which objects belong to a net?</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.nets</span></code></p></td>
+<td><p>Get a net and inspect its primitives, padstacks, or connected components</p></td>
+</tr>
+<tr class="row-odd"><td><p>Which pins or nets belong to a component?</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.components</span></code></p></td>
+<td><p>Get a component and inspect its pins, nets, or definition</p></td>
+</tr>
+<tr class="row-even"><td><p>Which reusable definitions exist in the design?</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.definitions</span></code></p></td>
+<td><p>Inspect component, package, or bondwire definitions</p></td>
+</tr>
+<tr class="row-odd"><td><p>Query geometry or inspect existing primitives</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.layout</span></code></p></td>
+<td><p>Find primitives, inspect layout objects, and run geometry-oriented queries</p></td>
+</tr>
+<tr class="row-even"><td><p>Create or edit primitives</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.modeler</span></code></p></td>
+<td><p>Create and edit paths, polygons, rectangles, circles, and related objects</p></td>
+</tr>
+<tr class="row-odd"><td><p>Validate the layout or run checks</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.layout_validation</span></code></p></td>
+<td><p>Run validation and inspection helpers</p></td>
+</tr>
+<tr class="row-even"><td><p>Inspect or create simulation setups</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.simulation_setups</span></code></p></td>
+<td><p>Read or create setups by solver family</p></td>
+</tr>
+<tr class="row-odd"><td><p>Which ports, sources, or terminals exist?</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">edb.excitation_manager</span></code>, <code class="docutils literal notranslate"><span class="pre">edb.ports</span></code>, or <code class="docutils literal notranslate"><span class="pre">edb.terminals</span></code></p></td>
+<td><p>Inspect or create ports, sources, and excitation objects</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<section id="first-inspection-steps">
+<h2><a class="toc-backref" href="#id13" role="doc-backlink">First inspection steps</a><a class="headerlink" href="#first-inspection-steps" title="Link to this heading">#</a></h2>
+<p>Once an <code class="docutils literal notranslate"><span class="pre">Edb</span></code> session is open, the first useful questions are usually:</p>
+<ul class="simple">
+<li><p>Which cell is active?</p></li>
+<li><p>How many layers, nets, components, and primitives exist?</p></li>
+<li><p>What is the overall structure of the design?</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbpath</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\projects\board.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">,</span> <span class="n">grpc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Cells:&quot;</span><span class="p">,</span> <span class="n">edb</span><span class="o">.</span><span class="n">cell_names</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Active cell:&quot;</span><span class="p">,</span> <span class="n">edb</span><span class="o">.</span><span class="n">active_cell</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Layer count:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">layers</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Net count:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Component count:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">instances</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Primitive count:&quot;</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">primitives</span><span class="p">))</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>This already shows the core organization of a PyEDB design: information is
+exposed through focused managers attached to <code class="docutils literal notranslate"><span class="pre">Edb</span></code>.</p>
+<p>For a manager-level summary, see <a class="reference internal" href="#ref-grpc-manager-overview"><span class="std std-ref">Key managers exposed by Edb</span></a>.</p>
+</section>
+<section id="navigate-the-design-by-scope">
+<span id="ref-design-scope-navigation"></span><h2><a class="toc-backref" href="#id14" role="doc-backlink">Navigate the design by scope</a><a class="headerlink" href="#navigate-the-design-by-scope" title="Link to this heading">#</a></h2>
+<p>Before diving into layers, nets, or components, it helps to understand the
+current design scope.</p>
+<p>The most useful high-level entry points are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.active_db</span></code> for the open database,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.cell_names</span></code> for the available design cells,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.active_cell</span></code> for the current cell,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout</span></code> for the active layout wrapper.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">cell_names</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">active_cell</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">primitives</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>If you switch <code class="docutils literal notranslate"><span class="pre">edb.active_cell</span></code>, reacquire dependent objects such as nets,
+layers, or components afterwards. That keeps the script aligned with the
+newly active design.</p>
+</div>
+</section>
+<section id="navigate-by-stackup">
+<span id="ref-stackup-navigation"></span><h2><a class="toc-backref" href="#id15" role="doc-backlink">Navigate by stackup</a><a class="headerlink" href="#navigate-by-stackup" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.stackup</span></code> when your question is layer-centric.</p>
+<p>Typical use cases are:</p>
+<ul class="simple">
+<li><p>list all layers,</p></li>
+<li><p>separate signal and dielectric layers,</p></li>
+<li><p>read thickness and material information,</p></li>
+<li><p>retrieve a specific layer by name.</p></li>
+</ul>
+<p>Useful entry points are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.stackup.layers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.stackup.signal_layers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.stackup.all_layers</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.stackup[&quot;TOP&quot;]</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">layer_name</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The stackup is often the best first physical map of the design. Even before you
+know specific net or component names, layer names already show how the design
+is organized.</p>
+</section>
+<section id="navigate-by-net-connectivity">
+<span id="ref-net-navigation"></span><h2><a class="toc-backref" href="#id16" role="doc-backlink">Navigate by net connectivity</a><a class="headerlink" href="#navigate-by-net-connectivity" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.nets</span></code> when your question is electrical.</p>
+<p>Typical use cases are:</p>
+<ul class="simple">
+<li><p>list nets,</p></li>
+<li><p>check whether a net exists,</p></li>
+<li><p>inspect primitives on a net,</p></li>
+<li><p>retrieve padstack instances or connected components on a net.</p></li>
+</ul>
+<p>Useful entry points are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.nets.nets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.nets.netlist</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.nets[&quot;GND&quot;]</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">gnd</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;GND&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">gnd</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gnd</span><span class="o">.</span><span class="n">primitives</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gnd</span><span class="o">.</span><span class="n">padstack_instances</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">gnd</span><span class="o">.</span><span class="n">components</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>If your question sounds like <em>Which objects belong to ``GND``?</em> or <em>Which
+components are connected to ``VDD``?</em>, start from <code class="docutils literal notranslate"><span class="pre">edb.nets</span></code>.</p>
+</section>
+<section id="navigate-by-component">
+<span id="ref-component-navigation"></span><h2><a class="toc-backref" href="#id17" role="doc-backlink">Navigate by component</a><a class="headerlink" href="#navigate-by-component" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.components</span></code> when your question is instance-centric.</p>
+<p>Typical use cases are:</p>
+<ul class="simple">
+<li><p>retrieve a component by reference designator,</p></li>
+<li><p>inspect its pins,</p></li>
+<li><p>list the nets it touches,</p></li>
+<li><p>inspect its definition or model.</p></li>
+</ul>
+<p>Useful entry points are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.components.instances</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.components[&quot;U1&quot;]</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.components.get_component_by_name(&quot;U1&quot;)</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.components.get_pin_from_component(&quot;U1&quot;,</span> <span class="pre">net_name=&quot;GND&quot;)</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">u1</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s2">&quot;U1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">u1</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">u1</span><span class="o">.</span><span class="n">component_type</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">sorted</span><span class="p">(</span><span class="n">u1</span><span class="o">.</span><span class="n">nets</span><span class="p">))</span>
+
+<span class="k">for</span> <span class="n">pin_name</span><span class="p">,</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">u1</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pin_name</span><span class="p">,</span> <span class="n">pin</span><span class="o">.</span><span class="n">net_name</span><span class="p">,</span> <span class="n">pin</span><span class="o">.</span><span class="n">layer_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>If your question starts from <code class="docutils literal notranslate"><span class="pre">U1</span></code>, <code class="docutils literal notranslate"><span class="pre">J1</span></code>, or <code class="docutils literal notranslate"><span class="pre">R15</span></code>, start from
+<code class="docutils literal notranslate"><span class="pre">edb.components</span></code> rather than searching the whole layout first.</p>
+</section>
+<section id="navigate-by-definitions">
+<span id="ref-definitions-navigation"></span><h2><a class="toc-backref" href="#id18" role="doc-backlink">Navigate by definitions</a><a class="headerlink" href="#navigate-by-definitions" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.definitions</span></code> when your question is about reusable design definitions
+rather than placed instances.</p>
+<p>This is the right entry point for tasks such as:</p>
+<ul class="simple">
+<li><p>inspecting component definitions,</p></li>
+<li><p>inspecting package definitions,</p></li>
+<li><p>inspecting bondwire definitions.</p></li>
+</ul>
+<p>This manager is useful when you want to understand the design library content
+that supports placed components and package-related data.</p>
+</section>
+<section id="navigate-by-layout-and-geometry-queries">
+<span id="ref-layout-navigation"></span><h2><a class="toc-backref" href="#id19" role="doc-backlink">Navigate by layout and geometry queries</a><a class="headerlink" href="#navigate-by-layout-and-geometry-queries" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.layout</span></code> when you want to inspect the active layout directly.</p>
+<p>This is the preferred entry point for geometry queries and layout inspection.</p>
+<p>Typical use cases are:</p>
+<ul class="simple">
+<li><p>enumerating primitives,</p></li>
+<li><p>enumerating terminals,</p></li>
+<li><p>enumerating groups and pin groups,</p></li>
+<li><p>filtering primitives by layer, primitive name, or net name.</p></li>
+</ul>
+<p>Useful entry points are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout.primitives</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout.terminals</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout.nets</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.layout.find_primitive(...)</span></code></p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">top_gnd_prims</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">find_primitive</span><span class="p">(</span><span class="n">layer_name</span><span class="o">=</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">prim</span> <span class="ow">in</span> <span class="n">top_gnd_prims</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">prim</span><span class="o">.</span><span class="n">aedt_name</span><span class="p">,</span> <span class="n">prim</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">prim</span><span class="o">.</span><span class="n">layer_name</span><span class="p">,</span> <span class="n">prim</span><span class="o">.</span><span class="n">net_name</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Primitive objects commonly expose information such as <code class="docutils literal notranslate"><span class="pre">aedt_name</span></code>,
+<code class="docutils literal notranslate"><span class="pre">layer_name</span></code>, <code class="docutils literal notranslate"><span class="pre">net_name</span></code>, <code class="docutils literal notranslate"><span class="pre">polygon_data</span></code>, <code class="docutils literal notranslate"><span class="pre">voids</span></code>, and <code class="docutils literal notranslate"><span class="pre">area()</span></code>.</p>
+<p>In the intended PyEDB architecture, geometry queries belong to <code class="docutils literal notranslate"><span class="pre">Layout</span></code>. This
+keeps read-oriented geometry access in one place.</p>
+</section>
+<section id="navigate-by-primitive-creation-and-editing">
+<h2><a class="toc-backref" href="#id20" role="doc-backlink">Navigate by primitive creation and editing</a><a class="headerlink" href="#navigate-by-primitive-creation-and-editing" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.modeler</span></code> when the task is to create or edit primitive geometry.</p>
+<p>Typical examples are:</p>
+<ul class="simple">
+<li><p>creating paths,</p></li>
+<li><p>creating polygons,</p></li>
+<li><p>creating rectangles,</p></li>
+<li><p>creating circles,</p></li>
+<li><p>editing primitive geometry.</p></li>
+</ul>
+<p>In PyEDB architecture, <code class="docutils literal notranslate"><span class="pre">Modeler</span></code> is best understood as the primitive
+creation and editing manager rather than the main entry point for geometry
+queries.</p>
+</section>
+<section id="navigate-by-validation-and-simulation-setup">
+<span id="ref-validation-setup-navigation"></span><h2><a class="toc-backref" href="#id21" role="doc-backlink">Navigate by validation and simulation setup</a><a class="headerlink" href="#navigate-by-validation-and-simulation-setup" title="Link to this heading">#</a></h2>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.layout_validation</span></code> when the goal is to inspect design quality,
+perform validation, or run layout checks.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">edb.simulation_setups</span></code> when the goal is to inspect, organize, or create
+analysis setups for supported solvers.</p>
+<p>These two managers are important parts of the PyEDB class architecture because
+they keep validation and setup management separated from geometry and
+connectivity traversal.</p>
+</section>
+<section id="navigate-by-ports-sources-and-terminals">
+<span id="ref-ports-sources-navigation"></span><h2><a class="toc-backref" href="#id22" role="doc-backlink">Navigate by ports, sources, and terminals</a><a class="headerlink" href="#navigate-by-ports-sources-and-terminals" title="Link to this heading">#</a></h2>
+<p>For excitation and measurement questions, start from:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.excitation_manager</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.terminals</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.ports</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.sources</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">edb.probes</span></code></p></li>
+</ul>
+<p>Use these entry points when the question is about which ports exist, how
+terminals are organized, which sources are defined, or where probes are placed.</p>
+<p>In PyEDB architecture, this is the preferred way to present excitation
+workflows because source and port handling has been consolidated into the
+<code class="docutils literal notranslate"><span class="pre">SourceExcitation</span></code> manager rather than being split conceptually between
+<code class="docutils literal notranslate"><span class="pre">Hfss</span></code> and <code class="docutils literal notranslate"><span class="pre">Siwave</span></code>.</p>
+</section>
+<section id="retrieval-cookbook">
+<h2><a class="toc-backref" href="#id23" role="doc-backlink">Retrieval cookbook</a><a class="headerlink" href="#retrieval-cookbook" title="Link to this heading">#</a></h2>
+<p>These short snippets are meant to be copied into exploratory scripts.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Design summary</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">active_cell</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">layers</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="o">.</span><span class="n">nets</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="o">.</span><span class="n">instances</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">primitives</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># List all stackup layers</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">edb</span><span class="o">.</span><span class="n">stackup</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">material</span><span class="p">,</span> <span class="n">layer</span><span class="o">.</span><span class="n">thickness</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inspect one net</span>
+<span class="n">net</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">nets</span><span class="p">[</span><span class="s2">&quot;VDD&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">primitives</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">net</span><span class="o">.</span><span class="n">padstack_instances</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Inspect one component</span>
+<span class="n">component</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">components</span><span class="p">[</span><span class="s2">&quot;J1&quot;</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">component</span><span class="o">.</span><span class="n">part_name</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">pin_name</span><span class="p">,</span> <span class="n">pin</span> <span class="ow">in</span> <span class="n">component</span><span class="o">.</span><span class="n">pins</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">pin_name</span><span class="p">,</span> <span class="n">pin</span><span class="o">.</span><span class="n">net_name</span><span class="p">,</span> <span class="n">pin</span><span class="o">.</span><span class="n">position</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Find primitives on one layer for one net</span>
+<span class="n">prims</span> <span class="o">=</span> <span class="n">edb</span><span class="o">.</span><span class="n">layout</span><span class="o">.</span><span class="n">find_primitive</span><span class="p">(</span><span class="n">layer_name</span><span class="o">=</span><span class="s2">&quot;TOP&quot;</span><span class="p">,</span> <span class="n">net_name</span><span class="o">=</span><span class="s2">&quot;GND&quot;</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">prim</span> <span class="ow">in</span> <span class="n">prims</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">prim</span><span class="o">.</span><span class="n">aedt_name</span><span class="p">,</span> <span class="n">prim</span><span class="o">.</span><span class="n">type</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="a-beginner-friendly-exploration-workflow">
+<h2><a class="toc-backref" href="#id24" role="doc-backlink">A beginner-friendly exploration workflow</a><a class="headerlink" href="#a-beginner-friendly-exploration-workflow" title="Link to this heading">#</a></h2>
+<p>For a new design, a practical learning sequence is:</p>
+<ol class="arabic simple">
+<li><p>Open the design with <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyedb</span> <span class="pre">import</span> <span class="pre">Edb</span></code>.</p></li>
+<li><p>Pass the backend explicitly with <code class="docutils literal notranslate"><span class="pre">grpc=True</span></code> or <code class="docutils literal notranslate"><span class="pre">grpc=False</span></code>.</p></li>
+<li><p>Print <code class="docutils literal notranslate"><span class="pre">edb.cell_names</span></code> and confirm <code class="docutils literal notranslate"><span class="pre">edb.active_cell</span></code>.</p></li>
+<li><p>Inspect <code class="docutils literal notranslate"><span class="pre">edb.stackup.layers</span></code> to understand the physical organization.</p></li>
+<li><p>Inspect <code class="docutils literal notranslate"><span class="pre">edb.nets.netlist</span></code> to understand connectivity naming.</p></li>
+<li><p>Inspect <code class="docutils literal notranslate"><span class="pre">edb.components.instances</span></code> to understand the placed parts.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">edb.layout.primitives</span></code> or <code class="docutils literal notranslate"><span class="pre">edb.layout.find_primitive(...)</span></code> for targeted geometry inspection.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">edb.modeler</span></code> when you need to create or edit primitives.</p></li>
+</ol>
+<p>This progression gives users a clear view of both the electrical and physical
+structure of a design without requiring low-level knowledge of the backend.</p>
+</section>
+<section id="how-the-architecture-maps-to-the-source-tree">
+<h2><a class="toc-backref" href="#id25" role="doc-backlink">How the architecture maps to the source tree</a><a class="headerlink" href="#how-the-architecture-maps-to-the-source-tree" title="Link to this heading">#</a></h2>
+<p>If you want to connect the user-facing API to the code base, these source files
+are the most relevant:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/generic/design_types.py</span></code></p>
+<ul>
+<li><p>Public <code class="docutils literal notranslate"><span class="pre">Edb</span></code> entry point.</p></li>
+<li><p>Selects the backend according to the <code class="docutils literal notranslate"><span class="pre">grpc</span></code> flag.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/edb.py</span></code></p>
+<ul>
+<li><p>Main gRPC <code class="docutils literal notranslate"><span class="pre">Edb</span></code> implementation.</p></li>
+<li><p>Exposes the managers reachable from an open session.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/edb_init.py</span></code></p>
+<ul>
+<li><p>Session startup and database opening and closing.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/layout/layout.py</span></code></p>
+<ul>
+<li><p>Layout-oriented traversal and geometry queries.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/stackup.py</span></code></p>
+<ul>
+<li><p>Stackup and layer access.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/source_excitations.py</span></code></p>
+<ul>
+<li><p>Source and port excitation management.</p></li>
+<li><p>Central location for excitation workflows in the gRPC architecture.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/simulation_setups.py</span></code></p>
+<ul>
+<li><p>Central access to setup collections for multiple solvers.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/definitions.py</span></code></p>
+<ul>
+<li><p>Definitions access for reusable objects such as components and packages.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/layout_validation.py</span></code></p>
+<ul>
+<li><p>Layout validation helpers.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/nets.py</span></code> and <code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/net/net.py</span></code></p>
+<ul>
+<li><p>Net manager and per-net objects.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/components.py</span></code> and <code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/hierarchy/component.py</span></code></p>
+<ul>
+<li><p>Component manager and per-component objects.</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">src/pyedb/grpc/database/modeler.py</span></code></p>
+<ul>
+<li><p>Primitive creation and editing helpers.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="guidelines-for-writing-clear-pyedb-scripts">
+<h2><a class="toc-backref" href="#id26" role="doc-backlink">Guidelines for writing clear PyEDB scripts</a><a class="headerlink" href="#guidelines-for-writing-clear-pyedb-scripts" title="Link to this heading">#</a></h2>
+<p>When writing user scripts or tutorials, these habits improve readability:</p>
+<ol class="arabic simple">
+<li><p>Import with <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">pyedb</span> <span class="pre">import</span> <span class="pre">Edb</span></code>.</p></li>
+<li><p>Pass <code class="docutils literal notranslate"><span class="pre">grpc=True</span></code> or <code class="docutils literal notranslate"><span class="pre">grpc=False</span></code> explicitly.</p></li>
+<li><p>Start from the highest-level manager that matches the question.</p></li>
+<li><p>Prefer named queries and dictionaries when possible.</p></li>
+<li><p>Keep layer questions in <code class="docutils literal notranslate"><span class="pre">stackup</span></code>, connectivity questions in <code class="docutils literal notranslate"><span class="pre">nets</span></code>, and part questions in <code class="docutils literal notranslate"><span class="pre">components</span></code>.</p></li>
+<li><p>Close the session explicitly with <code class="docutils literal notranslate"><span class="pre">edb.close()</span></code>.</p></li>
+</ol>
+<p>For navigation patterns, see <a class="reference internal" href="#ref-manager-selection"><span class="std std-ref">Choose the right starting point</span></a> and
+<a class="reference internal" href="#ref-design-scope-navigation"><span class="std std-ref">Navigate the design by scope</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyedb</span><span class="w"> </span><span class="kn">import</span> <span class="n">Edb</span>
+
+<span class="n">edb</span> <span class="o">=</span> <span class="n">Edb</span><span class="p">(</span><span class="n">edbpath</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;C:\projects\board.aedb&quot;</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="s2">&quot;2026.1&quot;</span><span class="p">,</span> <span class="n">grpc</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">edb</span><span class="o">.</span><span class="n">active_cell</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">finally</span><span class="p">:</span>
+    <span class="n">edb</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="summary">
+<h2><a class="toc-backref" href="#id27" role="doc-backlink">Summary</a><a class="headerlink" href="#summary" title="Link to this heading">#</a></h2>
+<p>The key idea for new users is straightforward:</p>
+<p><em>PyEDB starts from one public entry point, ``from pyedb import Edb``, and the
+``grpc`` flag decides which backend is used.</em></p>
+<p>From there, the design is best explored through focused managers attached to
+<code class="docutils literal notranslate"><span class="pre">Edb</span></code>:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">stackup</span></code> for layers,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">nets</span></code> for connectivity,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">components</span></code> for placed parts,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">layout</span></code> for inspection,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">modeler</span></code> for geometry creation and editing.</p></li>
+</ul>
+<p>If you remember one rule, remember this one:</p>
+<p><em>start from ``Edb``, choose the manager that matches your engineering question,
+and then walk from that manager to the design objects you need.</em></p>
+</section>
+</section>
+
+
+                </article>
+              
+              
+              
+              
+              
+            </div>
+            
+            
+              
+                <dialog id="pst-secondary-sidebar-modal"></dialog>
+                <div id="pst-secondary-sidebar" class="bd-sidebar-secondary bd-toc"><div class="sidebar-secondary-items sidebar-secondary__inner">
+
+
+  <div class="sidebar-secondary-item">
+<div
+    id="pst-page-navigation-heading-2"
+    class="page-toc tocsection onthispage">
+    <i class="fa-solid fa-list"></i> On this page
+  </div>
+  <nav class="bd-toc-nav page-toc" aria-labelledby="pst-page-navigation-heading-2">
+    <ul class="visible nav section-nav flex-column">
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#start-with-the-public-edb-entry-point">Start with the public <code class="docutils literal notranslate"><span class="pre">Edb</span></code> entry point</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#backend-overview">Backend overview</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#pyedb-architecture-at-a-glance">PyEDB architecture at a glance</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#key-managers-exposed-by-edb">Key managers exposed by <code class="docutils literal notranslate"><span class="pre">Edb</span></code></a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#what-edb-represents">What <code class="docutils literal notranslate"><span class="pre">Edb</span></code> represents</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#the-edb-hierarchy">The EDB hierarchy</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#sources-ports-and-excitations">Sources, ports, and excitations</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#simulation-setup-organization">Simulation setup organization</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-the-right-starting-point">Choose the right starting point</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#first-inspection-steps">First inspection steps</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-the-design-by-scope">Navigate the design by scope</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-stackup">Navigate by stackup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-net-connectivity">Navigate by net connectivity</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-component">Navigate by component</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-definitions">Navigate by definitions</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-layout-and-geometry-queries">Navigate by layout and geometry queries</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-primitive-creation-and-editing">Navigate by primitive creation and editing</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-validation-and-simulation-setup">Navigate by validation and simulation setup</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#navigate-by-ports-sources-and-terminals">Navigate by ports, sources, and terminals</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#retrieval-cookbook">Retrieval cookbook</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#a-beginner-friendly-exploration-workflow">A beginner-friendly exploration workflow</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#how-the-architecture-maps-to-the-source-tree">How the architecture maps to the source tree</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#guidelines-for-writing-clear-pyedb-scripts">Guidelines for writing clear PyEDB scripts</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#summary">Summary</a></li>
+</ul>
+  </nav></div>
+
+  <div class="sidebar-secondary-item">
+
+
+  
+  <nav class="tocsection editthispage" aria-label="Edit this page">
+    <a href="https://github.com/ansys/pyedb/edit/main/doc/source/user_guide/design_navigation.rst" rel="noopener noreferrer">
+      <i class="fa-solid fa-pencil" aria-hidden="true"></i>
+      
+      
+        
+          Edit on GitHub
+        
+      
+    </a>
+  </nav>
+</div>
+
+  <div class="sidebar-secondary-item">
+  <div role="note" aria-label="source link">
+    <ul class="this-page-menu">
+      <li><a href="../_sources/user_guide/design_navigation.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div></div>
+
+</div></div>
+              
+            
+          </div>
+          <footer class="bd-footer-content">
+            
+          </footer>
+        
+      </main>
+    </div>
+  </div>
+  
+  
+  <!-- Scripts loaded after <body> so the DOM is not blocked -->
+  <script defer src="../_static/scripts/bootstrap.js?digest=8878045cc6db502f8baf"></script>
+<script defer src="../_static/scripts/pydata-sphinx-theme.js?digest=8878045cc6db502f8baf"></script>
+
+
+  <!-- Include desired assets -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.7/require.min.js"></script>
+
+<script>
+// Passing the search options to the search.js file
+const SEARCH_OPTIONS = JSON.parse('{"keys": ["title", "text", "objectID"], "limit": 10, "threshold": 0.2}');
+const SEARCH_FILE = "../_static/search.json";
+const ADVANCE_SEARCH_PATH = "../search.html";
+const EXTRA_SOURCES = JSON.parse('""');
+</script>
+
+
+<script src="../_static/js/search.js"></script>
+
+  
+  <footer class="bd-footer">
+<div class="bd-footer__inner bd-page-width">
+  
+    <div class="footer-items__start">
+      
+        <div class="footer-item">
+
+  <p class="copyright">
+    
+      © Copyright (c) 2026 ANSYS, Inc. All rights reserved.
+      <br/>
+    
+  </p>
+</div>
+      
+        <div class="footer-item">
+
+  <p class="sphinx-version">
+    Created using <a href="https://www.sphinx-doc.org/">Sphinx</a> 8.1.3.
+    <br/>
+  </p>
+</div>
+      
+    </div>
+  
+  
+  
+    <div class="footer-items__end">
+      
+        <div class="footer-item">
+<!--
+  Theme Version Footer
+  Displays the Sphinx theme version and the last updated date.
+  Accessibility and semantic improvements included.
+-->
+<footer class="theme-version" aria-label="Theme version and last update">
+  <span>
+    
+      Built with the
+      <a href="https://sphinxdocs.ansys.com/version/stable/index.html" target="_blank" rel="noopener noreferrer">
+        Ansys Sphinx Theme
+      </a>
+      1.7.2.
+    
+  </span>
+  <br />
+  <span>Last updated on <time id="ast_build_date"></time></span>
+</footer>
+<script>
+  // Set the last updated date in a readable format
+  (function() {
+    var options = { day: "numeric", month: "long", year: "numeric" };
+    var ast_lastModifiedDate = new Date(document.lastModified);
+    var ast_build_date = ast_lastModifiedDate.toLocaleDateString("en-US", options);
+    var dateElem = document.getElementById("ast_build_date");
+    if (dateElem) {
+      dateElem.textContent = ast_build_date;
+    }
+  })();
+</script></div>
+      
+    </div>
+  
+</div>
+
+  </footer>
+  </body>
+</html>
