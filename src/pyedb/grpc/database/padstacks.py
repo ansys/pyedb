@@ -208,9 +208,11 @@ class Padstacks(object):
         self.__definitions = {}
         for padstack_def in self._pedb.db.padstack_defs:
             try:
+                if padstack_def.is_null:
+                    continue
                 self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
             except (Exception, InvalidArgumentException) as e:
-                self._logger.warning(f"Error processing padstack definition {padstack_def.name}: {e}")
+                self._logger.warning(f"Error processing padstack definition: {e}")
         return self.__definitions
 
     @property
