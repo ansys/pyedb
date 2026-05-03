@@ -263,10 +263,12 @@ class RpcSession:
     def _wait_for_process_exit(proc, timeout=10.0):
         """Wait for the RPC server process to fully exit.
 
-        A short uniform grace period is applied after process exit to allow the
-        OS to fully release the socket.  Port conflicts are avoided upstream by
-        always using dynamic port allocation (``socket.bind(('', 0))``), so no
-        platform-specific delay difference is needed here.
+        A uniform grace period is applied after process exit to allow the OS
+        to fully release the socket.  Port conflicts are avoided upstream by
+        always using dynamic port allocation (``socket.bind(('', 0))``).
+        Linux gets a slightly longer grace period because the EDB server
+        binary (a Windows-native process running under a compatibility layer
+        in CI) takes longer to relinquish its resources there.
         """
         if proc is None:
             time.sleep(1.0)
@@ -279,10 +281,8 @@ class RpcSession:
             p = psutil.Process(pid)
             p.wait(timeout=timeout)
             # Brief grace period after process exit so the OS can fully release
-            # the socket.  Because ports are always dynamically allocated via
-            # socket.bind(('', 0)), the next session will never reuse the same
-            # port, so a short uniform delay is sufficient on all platforms.
-            time.sleep(0.5)
+            # the socket.  Linux needs slightly more time than Windows.
+            time.sleep(1.0 if not _IS_WINDOWS else 0.5)
         except psutil.NoSuchProcess:
             # Already gone
             pass

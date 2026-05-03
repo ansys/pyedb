@@ -22,6 +22,7 @@
 
 """Test configuration for system tests."""
 
+import platform
 import time
 
 import pytest
@@ -29,10 +30,11 @@ import pytest
 from pyedb.grpc.rpc_session import RpcSession
 from tests.conftest import GRPC
 
-# Minimum delay (seconds) between tearing down one gRPC server and starting
-# the next one.  The server process exit is already awaited inside
-# RpcSession.close(); this extra grace period covers the OS socket release.
-_GRPC_TEARDOWN_GRACE_SECONDS = 1.0
+# Grace period (seconds) after RpcSession.close() before the next test class
+# starts a new server.  On Linux the EDB server binary (a Windows-native process
+# running under a compatibility layer in CI) takes longer to fully release its
+# resources than on Windows, so we apply a longer delay there.
+_GRPC_TEARDOWN_GRACE_SECONDS = 2.0 if platform.system() == "Linux" else 1.0
 
 
 @pytest.fixture(scope="class", autouse=True)
@@ -47,9 +49,9 @@ def close_rpc_session(init_scratch):
     3. Resets ``RpcSession.port`` to ``0`` so that the *next* call to
        ``RpcSession.start()`` will use dynamic port allocation via
        ``socket.bind(('', 0))``, completely avoiding hard-coded port conflicts.
-    4. Sleeps for a short grace period so that the OS socket TIME_WAIT
-       interval has time to clear before the following test class starts a
-       new server.
+    4. Sleeps for a platform-appropriate grace period so that the OS socket
+       TIME_WAIT interval has time to clear before the following test class
+       starts a new server.
     """
     yield
     if GRPC:
@@ -60,5 +62,5 @@ def close_rpc_session(init_scratch):
         RpcSession.close()
         # Ensure the next session always gets a fresh, OS-assigned port.
         RpcSession.port = 0
-        # Brief grace period for OS to release the port (TIME_WAIT / FIN_WAIT).
+        # Platform-aware grace period for OS to release the socket.
         time.sleep(_GRPC_TEARDOWN_GRACE_SECONDS)
