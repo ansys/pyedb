@@ -3131,9 +3131,7 @@ class Edb(EdbInit):
                     if def_name not in pad_diameter_cache:
                         try:
                             pad_diameter_cache[def_name] = (
-                                self.padstacks.definitions[def_name]
-                                .pad_by_layer[reference_layer]
-                                .parameters_values
+                                self.padstacks.definitions[def_name].pad_by_layer[reference_layer].parameters_values
                             )
                         except Exception:
                             pad_diameter_cache[def_name] = None

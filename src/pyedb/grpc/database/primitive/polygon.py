@@ -310,10 +310,14 @@ class Polygon(Primitive):
             if not center:
                 center = self.polygon_data.core.bounding_circle()[0]
                 if center:
-                    self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.rotate(angle * math.pi / 180, center))
+                    self.polygon_data = PolygonData(
+                        self._pedb, self.polygon_data.core.rotate(angle * math.pi / 180, center)
+                    )
                     return True
             elif isinstance(center, list) and len(center) == 2:
-                self.polygon_data = PolygonData(self._pedb, self.polygon_data.core.rotate(angle * math.pi / 180, center))
+                self.polygon_data = PolygonData(
+                    self._pedb, self.polygon_data.core.rotate(angle * math.pi / 180, center)
+                )
                 return True
         return False
 

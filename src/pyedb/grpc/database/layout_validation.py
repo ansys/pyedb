@@ -424,4 +424,3 @@ class LayoutValidation:
             if len(pg.pins) == 0:
                 pg.delete()
                 self._pedb.logger.info(f"Pin group {name} deleted because it has no pins.")
-
