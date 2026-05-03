@@ -356,7 +356,7 @@ class Component:
     def package_def(self, value):
         from pyedb.grpc.database.definition.package_def import PackageDef
 
-        if value not in self._pedb.definitions.package_defs:
+        if value not in self._pedb.definitions.packages:
             from ansys.edb.core.definition.package_def import (
                 PackageDef as GrpcPackageDef,
             )
@@ -367,7 +367,7 @@ class Component:
             comp_prop.package_def = self._package_def
             self.core.component_property = comp_prop
         elif isinstance(value, str):
-            package = next(package for package in self._pedb.definitions.package_defs.values() if package.name == value)
+            package = next(package for package in self._pedb.definitions.packages.values() if package.name == value)
             comp_prop = self.component_property
             comp_prop.package_def = package.core
             self.core.component_property = comp_prop
@@ -459,7 +459,7 @@ class Component:
         if not name:
             name = f"{self.refdes}_{self.part_name}"
         if name not in self._pedb.definitions.packages:
-            self._pedb.definitions.add_package_def(name, component_part_name=component_part_name)
+            self._pedb.definitions.add_package(name, component_part_name=component_part_name)
 
             self.package_def = name
 
