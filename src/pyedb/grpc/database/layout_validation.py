@@ -317,7 +317,7 @@ class LayoutValidation:
         elif isinstance(net_list, str):
             net_list = [net_list]
         new_prims = []
-        for prim in self._pedb.modeler.polygons:
+        for prim in self._pedb.layout.polygons:
             if prim.net_name in net_list:
                 new_prims.extend(prim.fix_self_intersections())
         if new_prims:
