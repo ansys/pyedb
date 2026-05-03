@@ -360,7 +360,7 @@ class TestClass(BaseTestClass):
             "advanced_quadratic_lower_constant": 1.1,
             "advanced_quadratic_upper_constant": 1.1,
         }
-        material = edbapp.materials.add_material("new_matttt")
+        material = edbapp.materials.add_material("new_material")
         material.conductivity = 5.7e8
         if not edbapp.grpc:  # This test is not valid for gRPC mode
             assert material.set_thermal_modifier("conductivity", **THERMAL_MODIFIER)
