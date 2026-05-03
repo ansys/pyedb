@@ -750,9 +750,10 @@ class PadstackInstance(conn_obj.ConnObj):
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
         position = self.core.get_position_and_rotation()
-        if self.component:
+        transform = self.component.core.transform if self.component else None
+        if transform is not None and not transform.is_null:
             point = CorePointData(position[:2])
-            out2 = self.component.core.transform.transform_point(point)
+            out2 = transform.transform_point(point)
             if hasattr(out2, "x"):
                 self._position = [Value(out2.x), Value(out2.y)]
             else:
