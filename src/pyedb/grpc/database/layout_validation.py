@@ -31,7 +31,6 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 
 class LayoutValidation:
-
     """Manages all layout validation capabilities."""
 
     def __init__(self, pedb: Any) -> None:
