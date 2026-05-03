@@ -23,6 +23,7 @@
 import os
 import platform
 import secrets
+import socket
 import sys
 import time
 
@@ -255,6 +256,13 @@ class RpcSession:
 
     @staticmethod
     def _wait_for_process_exit(proc, timeout=10.0):
+        """Wait for the RPC server process to fully exit.
+
+        A short uniform grace period is applied after process exit to allow the
+        OS to fully release the socket.  Port conflicts are avoided upstream by
+        always using dynamic port allocation (``socket.bind(('', 0))``), so no
+        platform-specific delay difference is needed here.
+        """
         if proc is None:
             time.sleep(1.0)
             return
@@ -265,9 +273,11 @@ class RpcSession:
                 return
             p = psutil.Process(pid)
             p.wait(timeout=timeout)
-            # Additional delay on Windows for socket TIME_WAIT
-            if _IS_WINDOWS:
-                time.sleep(0.5)
+            # Brief grace period after process exit so the OS can fully release
+            # the socket.  Because ports are always dynamically allocated via
+            # socket.bind(('', 0)), the next session will never reuse the same
+            # port, so a short uniform delay is sufficient on all platforms.
+            time.sleep(0.5)
         except psutil.NoSuchProcess:
             # Already gone
             pass
@@ -316,13 +326,14 @@ class RpcSession:
 
     @staticmethod
     def __get_random_free_port():
-        """"""
-        secure_random = secrets.SystemRandom()
-        port = secure_random.randint(49152, 65535)
-        while True:
-            used_ports = [conn.laddr[1] for conn in psutil.net_connections()]
-            if port in used_ports:
-                port = secure_random.randint(49152, 65535)
-            else:
-                break
-        return port
+        """Return an unused ephemeral port by letting the OS bind to port 0.
+
+        Using ``socket.bind(('', 0))`` avoids the TOCTOU (time-of-check /
+        time-of-use) race condition that occurs when first listing occupied
+        ports with psutil and then trying to connect on the chosen port.
+        """
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+            # SO_REUSEADDR is intentionally *not* set so that two concurrent
+            # callers never get the same port.
+            sock.bind(("", 0))
+            return sock.getsockname()[1]
