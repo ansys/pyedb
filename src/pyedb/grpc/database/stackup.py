@@ -420,6 +420,21 @@ class Stackup:
         self._pedb = pedb
         self.layer_collection = LayerCollection(pedb, core)
 
+    def _get_layers(self, layer_type_set):
+        """Get layers of a given type set, filtering out null layer objects.
+
+        Parameters
+        ----------
+        layer_type_set : CoreLayerTypeSet
+            Layer type set to retrieve.
+
+        Returns
+        -------
+        list
+            List of non-null layer objects.
+        """
+        return [layer for layer in self.core.get_layers(layer_type_set) if not layer.is_null]
+
     def __getitem__(self, item):
         if item in self.non_stackup_layers:
             return Layer(core=self.core.find_by_name(item))
@@ -449,7 +464,7 @@ class Stackup:
         """
         return {
             layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.core.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
+            for layer in self._get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         }
 
     @property
@@ -462,7 +477,7 @@ class Stackup:
             Dictionary of dielectric layers."""
         return {
             layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.core.get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
+            for layer in self._get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
         }
 
     @property
@@ -481,7 +496,7 @@ class Stackup:
         >>> layers = edb.stackup.layers
         """
         return {
-            obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
+            obj.name: StackupLayer(self._pedb, obj) for obj in self._get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
         }
 
     @property
@@ -501,7 +516,7 @@ class Stackup:
         """
         return {
             layer.name: Layer(core=layer)
-            for layer in self._pedb.stackup.core.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
+            for layer in self._get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
         }
 
     @property
