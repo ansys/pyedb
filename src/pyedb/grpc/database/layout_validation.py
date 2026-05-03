@@ -31,7 +31,9 @@ from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 
 
 class LayoutValidation:
-    """Manages all layout validation capabilities"""
+    """
+    Manages all layout validation capabilities.
+    """
 
     def __init__(self, pedb: Any) -> None:
         self._pedb = pedb
@@ -416,6 +418,7 @@ class LayoutValidation:
         >>> from pyedb import Edb
         >>> edb = Edb("edb_file")
         >>> edb.layout_validation.delete_empty_pin_groups()
+
         """
         for name, pg in list(self._pedb.siwave.pin_groups.items()):
             if len(pg.pins) == 0:

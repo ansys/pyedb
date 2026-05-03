@@ -3109,19 +3109,16 @@ class Edb(EdbInit):
         # restart_rpc_server=True will invalidate all original EDB primitive objects.
         void_padstacks_data = []
         for void, instances in void_padstacks:
-            try:
-                poly_points = void.polygon_data.points
-            except Exception:
+            poly_points = void.polygon_data.points if void.polygon_data is not None else None
+            if poly_points is None:
                 continue
             inst_data = []
             for inst in instances:
-                try:
-                    pos = inst.position
-                    net = inst.net_name
-                    def_name = inst.padstack_def.name
+                pos = inst.position
+                net = inst.net_name
+                def_name = inst.padstack_def.name if inst.padstack_def is not None else None
+                if pos is not None and net is not None and def_name is not None:
                     inst_data.append({"position": pos, "net_name": net, "padstack_def_name": def_name})
-                except Exception:
-                    pass
             if inst_data:
                 void_padstacks_data.append({"poly_points": poly_points, "instances": inst_data})
 
