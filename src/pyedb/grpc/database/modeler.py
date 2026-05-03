@@ -787,7 +787,7 @@ class Modeler(object):
         if not isinstance(net_names, list):  # pragma: no cover
             net_names = [net_names]
 
-        for p in self.primitives[:]:
+        for p in self._pedb.layout.primitives[:]:
             if p.net_name in net_names:
                 p.delete()
         return True
@@ -1072,8 +1072,8 @@ class Modeler(object):
         stat_model.num_resistors = len(self._pedb.components.resistors)
         stat_model.num_capacitors = len(self._pedb.components.capacitors)
         stat_model.num_nets = len(self._pedb.nets.nets)
-        stat_model.num_traces = len(self._pedb.modeler.paths)
-        stat_model.num_polygons = len(self._pedb.modeler.polygons)
+        stat_model.num_traces = len(self._pedb.layout.paths)
+        stat_model.num_polygons = len(self._pedb.layout.polygons)
         stat_model.num_vias = len(self._pedb.padstacks.instances)
         stat_model.stackup_thickness = round(self._pedb.stackup.get_layout_thickness(), 6)
         if evaluate_area:
@@ -1084,7 +1084,7 @@ class Modeler(object):
             else:
                 for layer in list(self._pedb.stackup.signal_layers.keys()):
                     surface = 0.0
-                    primitives = self.primitives_by_layer[layer]
+                    primitives = self._pedb.layout.primitives_by_layer[layer]
                     for prim in primitives:
                         if prim.primitive_type.name == "PATH":
                             surface += Path(self._pedb, prim).length * self._pedb.value(prim.cast().width)

@@ -1583,7 +1583,7 @@ class Edb(EdbInit):
                 return False
 
             ControlFile(xml_input=control_file, technology=tech_file, layer_map=map_file).write_xml(control_file_temp)
-            if self.import_layout_pcb(
+            if self.import_layout_file(
                 input_gds,
                 anstranslator_full_path=anstranslator_full_path,
                 use_ppe=use_ppe,
@@ -2820,9 +2820,9 @@ class Edb(EdbInit):
                     parameters.append(val)
         if traces:
             if not trace_net_filter:
-                paths = self.modeler.paths
+                paths = self.layout.paths
             else:
-                paths = [path for path in self.modeler.paths if path.net_name in trace_net_filter]
+                paths = [path for path in self.layout.paths if path.net_name in trace_net_filter]
             for path in paths:
                 net_name = path.net_name
                 if use_relative_variables:
@@ -2947,11 +2947,11 @@ class Edb(EdbInit):
                 ]
 
         if expand_polygons_size:
-            for poly in self.modeler.polygons:
+            for poly in self.layout.polygons:
                 if not poly.is_void:
                     poly.expand(expand_polygons_size)
         if expand_voids_size:
-            for poly in self.modeler.polygons:
+            for poly in self.layout.polygons:
                 if poly.is_void:
                     poly.expand(expand_voids_size, round_corners=False)
                 elif poly.has_voids:
