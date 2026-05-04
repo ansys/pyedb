@@ -750,9 +750,10 @@ class PadstackInstance(conn_obj.ConnObj):
             List of ``[x, y]`` coordinates for the padstack instance position.
         """
         position = self.core.get_position_and_rotation()
-        if self.component:
+        transform = self.component.core.transform if self.component else None
+        if transform is not None and not transform.is_null:
             point = CorePointData(position[:2])
-            out2 = self.component.core.transform.transform_point(point)
+            out2 = transform.transform_point(point)
             if hasattr(out2, "x"):
                 self._position = [Value(out2.x), Value(out2.y)]
             else:
@@ -1667,8 +1668,8 @@ class PadstackInstance(conn_obj.ConnObj):
             for i in range(4):
                 rect[i] = _translate(_rotate(rect[i]))
 
-        # if rect is None or len(rect) != 4:
-        #     return False
+        if rect is None or len(rect) != 4:
+            return False
         rect = [CorePointData(pt) for pt in rect]
         path = CorePolygonData(rect)
         new_rect = []
@@ -1676,6 +1677,10 @@ class PadstackInstance(conn_obj.ConnObj):
             if self.component:
                 p_transf = self.component.transform.transform_point(point)
                 new_rect.append([p_transf.x, p_transf.y])
+            else:
+                new_rect.append([point.x, point.y])
+        if not new_rect:
+            return False
         if return_points:
             return new_rect
         else:

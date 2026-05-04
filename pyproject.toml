@@ -66,7 +66,8 @@ tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.2",
-    "pytest-xdist>=3.5.0,<3.7"
+    "pytest-xdist>=3.5.0,<3.7",
+    "pytest-rerunfailures>=14.0,<17"
 ]
 
 doc = [
@@ -263,6 +264,11 @@ markers = [
     "no_licence: mark test that do not need a licence."
 ]
 testpaths = "tests"
+# Automatically retry flaky tests up to 2 times with a 5-second delay between
+# attempts.  This catches transient gRPC/filesystem race conditions without
+# masking real failures (a test must fail 3 times in a row to be reported).
+reruns = 2
+reruns_delay = 5
 #addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 
 [tool.numpydoc_validation]

@@ -136,6 +136,7 @@ def Edb(
     control_file: str | None = None,
     layer_filter: str | None = None,
     in_memory: bool = True,
+    remove_existing_aedt: bool = False,
 ) -> EdbGrpc | EdbDotnet | None:
     """Provides the EDB application interface.
 
@@ -385,6 +386,7 @@ def Edb(
                 map_file=map_file,
                 technology_file=technology_file,
                 control_file=control_file,
+                remove_existing_aedt=remove_existing_aedt,
             )
 
         elif float(settings.specified_version) < 2025.2:
@@ -413,6 +415,7 @@ def Edb(
             map_file=map_file,
             technology_file=technology_file,
             layer_filter=layer_filter,
+            remove_existing_aedt=remove_existing_aedt,
         )
 
 

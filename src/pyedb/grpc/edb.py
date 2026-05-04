@@ -224,6 +224,7 @@ class Edb(EdbInit):
         technology_file: str = None,
         layer_filter: str = None,
         restart_rpc_server=False,
+        remove_existing_aedt: bool = False,
     ):
         edbversion = get_string_version(version)
         self._clean_variables()
@@ -277,6 +278,7 @@ class Edb(EdbInit):
             self.log_name = os.path.join(
                 os.path.dirname(edbpath), "pyaedt_" + os.path.splitext(os.path.split(edbpath)[-1])[0] + ".log"
             )
+        self._check_remove_project_files(self.edbpath, remove_existing_aedt)
         if edbpath[-3:] == "zip":
             self.edbpath = edbpath[:-4] + ".aedb"
             working_dir = os.path.dirname(edbpath)
@@ -1143,7 +1145,7 @@ class Edb(EdbInit):
         :class:`Stackup <pyedb.grpc.database.stackup.Stackup>`
             Layer stack configuration tools.
         """
-        if self.active_db:
+        if self.active_db and self._stackup is None:
             self._stackup = Stackup(self, self.active_cell.layout.layer_collection)
         return self._stackup
 
@@ -1482,6 +1484,26 @@ class Edb(EdbInit):
             else:
                 times = 0
                 time.sleep(0.250)
+
+    def _check_remove_project_files(self, edbpath: str, remove_existing_aedt: bool) -> None:
+        """Check for and optionally remove conflicting AEDT project files."""
+        if not edbpath:
+            return
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        files = [aedt_file, aedt_file + ".lock"]
+        for file in files:
+            if os.path.isfile(file):
+                if not remove_existing_aedt:
+                    self.logger.warning(
+                        f"AEDT project-related file {file} exists and may need to be deleted before opening the EDB in "
+                        f"HFSS 3D Layout."
+                    )
+                else:
+                    try:
+                        os.unlink(file)
+                        self.logger.info(f"Deleted AEDT project-related file {file}.")
+                    except Exception:
+                        self.logger.info(f"Failed to delete AEDT project-related file {file}.")
 
     @deprecated("Use close() instead.", category=None)
     @runtime_deprecated("Use close() instead.")
@@ -3043,6 +3065,7 @@ class Edb(EdbInit):
         reference_layer = list(self.stackup.signal_layers.keys())[0]
         if mounting_side.lower() == "bottom":
             reference_layer = list(self.stackup.signal_layers.keys())[-1]
+        reference_layer_thickness = self.stackup.signal_layers[reference_layer].thickness
         if not signal_nets:
             signal_nets = list(self.nets.signal.keys())
 
@@ -3081,16 +3104,48 @@ class Edb(EdbInit):
                 "No padstack instances found inside evaluated voids during model creation for arbitrary waveports"
             )
             return False
+
+        # Cache all data from the original EDB before creating the cloned EDB.
+        # restart_rpc_server=True will invalidate all original EDB primitive objects.
+        void_padstacks_data = []
+        for void, instances in void_padstacks:
+            poly_points = void.polygon_data.points if void.polygon_data is not None else None
+            if poly_points is None:
+                continue
+            inst_data = []
+            for inst in instances:
+                pos = inst.position
+                net = inst.net_name
+                def_name = inst.padstack_def.name if inst.padstack_def is not None else None
+                if pos is not None and net is not None and def_name is not None:
+                    inst_data.append({"position": pos, "net_name": net, "padstack_def_name": def_name})
+            if inst_data:
+                void_padstacks_data.append({"poly_points": poly_points, "instances": inst_data})
+
+        # Cache pad diameters from the original EDB padstack definitions
+        pad_diameter_cache = {}
+        if not terminal_diameter:
+            for item in void_padstacks_data:
+                for inst_info in item["instances"]:
+                    def_name = inst_info["padstack_def_name"]
+                    if def_name not in pad_diameter_cache:
+                        try:
+                            pad_diameter_cache[def_name] = (
+                                self.padstacks.definitions[def_name].pad_by_layer[reference_layer].parameters_values
+                            )
+                        except Exception:
+                            pad_diameter_cache[def_name] = None
+
         cloned_edb = Edb(
             edbpath=output_edb,
             edbversion=self.version,
-            restart_rpc_server=True,
+            restart_rpc_server=False,
         )
 
         cloned_edb.stackup.add_layer(
             layer_name="ports",
             layer_type="signal",
-            thickness=self.stackup.signal_layers[reference_layer].thickness,
+            thickness=reference_layer_thickness,
             material="pec",
         )
         if launching_box_thickness:
@@ -3111,31 +3166,29 @@ class Edb(EdbInit):
             material="pec",
             base_layer="ports",
         )
-        for void_info in void_padstacks:
+        for void_info in void_padstacks_data:
             port_poly = cloned_edb.modeler.create_polygon(
-                points=void_info[0].polygon_data, layer_name="ref", net_name="GND"
+                points=void_info["poly_points"], layer_name="ref", net_name="GND"
             )
             pec_poly = cloned_edb.modeler.create_polygon(
-                points=port_poly.polygon_data, layer_name="port_pec", net_name="GND"
+                points=port_poly.polygon_data.core, layer_name="port_pec", net_name="GND"
             )
             pec_poly.scale(1.5)
 
-        for void_info in void_padstacks:
-            for inst in void_info[1]:
+        for void_info in void_padstacks_data:
+            for inst_info in void_info["instances"]:
                 if not terminal_diameter:
-                    pad_diameter = (
-                        self.padstacks.definitions[inst.padstack_def.name]
-                        .pad_by_layer[reference_layer]
-                        .parameters_values
-                    )
+                    pad_diameter = pad_diameter_cache.get(inst_info["padstack_def_name"])
                 else:
                     pad_diameter = Value(terminal_diameter)
+                if not pad_diameter:
+                    continue
                 _temp_circle = cloned_edb.modeler.create_circle(
                     layer_name="ports",
-                    x=inst.position[0],
-                    y=inst.position[1],
+                    x=inst_info["position"][0],
+                    y=inst_info["position"][1],
                     radius=pad_diameter[0] / 2,
-                    net_name=inst.net_name,
+                    net_name=inst_info["net_name"],
                 )
                 if not _temp_circle:
                     self.logger.error(

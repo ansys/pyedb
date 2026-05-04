@@ -22,7 +22,7 @@
 
 
 import os
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -41,7 +41,7 @@ class TestClass:
         """Create EDB."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         assert edb
@@ -52,7 +52,7 @@ class TestClass:
         """Create EDB without path."""
         import time
 
-        edbapp_without_path = Edb(edbversion=desktop_version, isreadonly=False, grpc=GRPC)
+        edbapp_without_path = Edb(version=desktop_version, isreadonly=False, grpc=GRPC)
         time.sleep(2)
         edbapp_without_path.close(terminate_rpc_session=False)
 
@@ -62,7 +62,7 @@ class TestClass:
 
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable(variable_name="var1", variable_value=0.01)
@@ -95,7 +95,7 @@ class TestClass:
         """Add a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         if edb.grpc:
@@ -119,7 +119,7 @@ class TestClass:
         """Add a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
@@ -134,7 +134,7 @@ class TestClass:
         """Change a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable(variable_name="ant_length", variable_value="1cm")
@@ -163,7 +163,7 @@ class TestClass:
         """Change a variable value."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
         edb.add_design_variable("ant_length", "1cm")
@@ -175,7 +175,7 @@ class TestClass:
         """Create padstack instances."""
         edb = Edb(
             os.path.join(self.local_scratch.path, "temp.aedb"),
-            edbversion=desktop_version,
+            version=desktop_version,
             grpc=GRPC,
         )
 
@@ -207,79 +207,45 @@ class TestClass:
 
     @patch("os.path.isfile")
     @patch("os.unlink")
-    @patch(
-        "pyedb.generic.settings.settings.logger",
-        new_callable=PropertyMock,
-    )
-    @pytest.mark.skipif(True, reason="needs refactor.")
-    def test_conflict_files_removal_success(self, mock_logger, mock_unlink, mock_isfile):
-        from pyedb.dotnet.edb import Edb as DotNetEdb
+    def test_conflict_files_removal_success(self, mock_unlink, mock_isfile):
+        """Conflicting .aedt/.aedt.lock files are deleted when remove_existing_aedt=True."""
+        mock_isfile.side_effect = lambda f: f.endswith((".aedt", ".aedt.lock"))
 
-        logger_mock = MagicMock()
-        mock_logger.return_value = logger_mock
-        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
-
-        edbpath = "file.edb"
+        edbpath = os.path.join(self.local_scratch.path, "conflict_test.aedb")
         aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
-        files = [aedt_file, aedt_file + ".lock"]
-        edb = DotNetEdb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
-        if edb.grpc:
-            pass
-        else:
-            for file in files:
-                mock_unlink.assert_any_call(file)
-                logger_mock.info.assert_any_call(f"Deleted AEDT project-related file {file}.")
+        expected_deleted = [aedt_file, aedt_file + ".lock"]
 
-    @pytest.mark.skipif(True, reason="needs refactor.")
+        edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC, remove_existing_aedt=True)
+        edb.close(terminate_rpc_session=False)
+
+        for f in expected_deleted:
+            mock_unlink.assert_any_call(f)
+
     @patch("os.path.isfile")
     @patch("os.unlink")
-    @patch(
-        "pyedb.generic.settings.settings.logger",
-        new_callable=PropertyMock,
-    )
-    def test_conflict_files_removal_failure(self, mock_logger, mock_unlink, mock_isfile):
-        from pyedb.dotnet.edb import Edb as DotNetEdb
-
-        logger_mock = MagicMock()
-        mock_logger.return_value = logger_mock
-        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
+    def test_conflict_files_removal_failure(self, mock_unlink, mock_isfile):
+        """Warning is logged when conflicting files exist but removal fails."""
+        mock_isfile.side_effect = lambda f: f.endswith((".aedt", ".aedt.lock"))
         mock_unlink.side_effect = Exception("Could not delete file")
 
-        edbpath = "file.edb"
-        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
-        files = [aedt_file, aedt_file + ".lock"]
-        edb = DotNetEdb(edbpath=edbpath, edbversion=desktop_version, remove_existing_aedt=True)
-        if edb.grpc:
-            pass
-        else:
-            for file in files:
-                mock_unlink.assert_any_call(file)
-                logger_mock.info.assert_any_call(f"Failed to delete AEDT project-related file {file}.")
+        edbpath = os.path.join(self.local_scratch.path, "conflict_fail_test.aedb")
+        # Should not raise — failure is caught and logged
+        edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC, remove_existing_aedt=True)
+        edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(True, reason="needs refactor.")
+        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
+        expected_attempted = [aedt_file, aedt_file + ".lock"]
+        for f in expected_attempted:
+            mock_unlink.assert_any_call(f)
+
     @patch("os.path.isfile")
     @patch("os.unlink")
-    @patch(
-        "pyedb.generic.settings.settings.logger",
-        new_callable=PropertyMock,
-    )
-    def test_conflict_files_leave_in_place(self, mock_logger, mock_unlink, mock_isfile):
-        logger_mock = MagicMock()
-        mock_logger.return_value = logger_mock
-        mock_isfile.side_effect = lambda file: file.endswith((".aedt", ".aedt.lock"))
-        mock_unlink.side_effect = Exception("Could not delete file")
+    def test_conflict_files_leave_in_place(self, mock_unlink, mock_isfile):
+        """Conflicting files are NOT deleted when remove_existing_aedt=False (default)."""
+        mock_isfile.side_effect = lambda f: f.endswith((".aedt", ".aedt.lock"))
 
-        edbpath = "file.edb"
-        aedt_file = os.path.splitext(edbpath)[0] + ".aedt"
-        files = [aedt_file, aedt_file + ".lock"]
-        edb = Edb(edbpath=edbpath, edbversion=desktop_version)
-        if edb.grpc:
-            pass
-        else:
-            mock_unlink.assert_not_called()
-            for file in files:
-                logger_mock.warning.assert_any_call(
-                    f"AEDT project-related file {file} exists and may need to be deleted before "
-                    f"opening the EDB in HFSS 3D Layout."
-                    # noqa: E501
-                )
+        edbpath = os.path.join(self.local_scratch.path, "conflict_keep_test.aedb")
+        edb = Edb(edbpath=edbpath, version=desktop_version, grpc=GRPC)
+        edb.close(terminate_rpc_session=False)
+
+        mock_unlink.assert_not_called()

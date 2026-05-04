@@ -208,9 +208,11 @@ class Padstacks(object):
         self.__definitions = {}
         for padstack_def in self._pedb.db.padstack_defs:
             try:
+                if padstack_def.is_null:
+                    continue
                 self.__definitions[padstack_def.name] = PadstackDef(self._pedb, padstack_def)
             except (Exception, InvalidArgumentException) as e:
-                self._logger.warning(f"Error processing padstack definition {padstack_def.name}: {e}")
+                self._logger.warning(f"Error processing padstack definition: {e}")
         return self.__definitions
 
     @property
@@ -996,7 +998,10 @@ class Padstacks(object):
         >>> success = edb.padstacks.check_and_fix_via_plating(minimum_value_to_replace=0.1)
         """
         for padstack_def in list(self.definitions.values()):
-            if padstack_def.hole_plating_ratio <= minimum_value_to_replace:
+            ratio = padstack_def.hole_plating_ratio
+            if ratio is None:
+                continue  # padstack definition has no data (e.g. PlanarEMVia)
+            if ratio <= minimum_value_to_replace:
                 padstack_def.hole_plating_ratio = default_plating_ratio
                 self._logger.info(
                     "Padstack definition with zero plating ratio, defaulting to 20%".format(padstack_def.name)
@@ -1221,7 +1226,7 @@ class Padstacks(object):
             pad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif pad_shape == "Polygon":
             if isinstance(pad_polygon, list):
-                pad_polygon = PolygonData(core=CorePolygonData(points=pad_polygon))
+                pad_polygon = PolygonData(self._pedb, core=CorePolygonData(points=pad_polygon))
         if antipad_shape == "Bullet":  # pragma no cover
             antipad_array = [x_size, y_size, corner_radius]
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_BULLET
@@ -1230,7 +1235,7 @@ class Padstacks(object):
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_RECTANGLE
         elif antipad_shape == "Polygon":
             if isinstance(antipad_polygon, list):
-                antipad_polygon = PolygonData(core=CorePolygonData(points=antipad_polygon))
+                antipad_polygon = PolygonData(self._pedb, core=CorePolygonData(points=antipad_polygon))
         else:
             antipad_array = [antipaddiam] if not isinstance(antipaddiam, list) else antipaddiam
             antipad_shape = CorePadGeometryType.PADGEOMTYPE_CIRCLE
@@ -1854,15 +1859,22 @@ class Padstacks(object):
             return []
         instances_created = []
         _instances_to_delete = []
-        padstack_instances = []
+        padstack_instances_defs = []
         if padstack_instances_id:
-            padstack_instances = [[self.instances[id] for id in padstack_instances_id]]
+            padstack_instances_defs = [None]  # sentinel: use padstack_instances_id directly
         else:
             for pdstk_def in _def:
-                padstack_instances.append(
-                    [inst for inst in self.definitions[pdstk_def.name].instances if inst.net_name == net_name]
-                )
-        for pdstk_series in padstack_instances:
+                padstack_instances_defs.append(pdstk_def)
+        for pdstk_def_item in padstack_instances_defs:
+            # Rebuild the list fresh each iteration to avoid stale/deleted instances
+            if padstack_instances_id:
+                pdstk_series = [self.instances[id] for id in padstack_instances_id]
+            else:
+                pdstk_series = [
+                    inst
+                    for inst in self.definitions[pdstk_def_item.name].instances
+                    if inst.net_name == net_name and not inst.is_null
+                ]
             instances_location = [inst.position for inst in pdstk_series]
             lines, line_indexes = GeometryOperators.find_points_along_lines(
                 points=instances_location,
@@ -1902,6 +1914,7 @@ class Padstacks(object):
                     instances_created.append(new_instance.id)
             for inst in _instances_to_delete:
                 inst.delete()
+            _instances_to_delete = []
         return instances_created
 
     def merge_via(

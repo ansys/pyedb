@@ -25,14 +25,15 @@ import secrets
 
 import pytest
 
+from pyedb.grpc.rpc_session import RpcSession
+
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 
 @pytest.mark.usefixtures("close_rpc_session")
 class BaseTestClass:
-    @classmethod
     @pytest.fixture(scope="class", autouse=True)
-    def setup_class(cls, request, get_edb_examples):
+    def setup_class(self, request, get_edb_examples):
         # Set up the EDB app once per class
         # Finalizer to close the EDB app after all tests
         yield
@@ -50,6 +51,27 @@ class BaseTestClass:
 
     @pytest.fixture(autouse=True)
     def teardown(self, request, get_edb_examples):
-        """Code after yield runs after each test."""
+        """Guarantee clean gRPC state after every test regardless of outcome.
+
+        If a test crashes before calling ``edbapp.close()``, the EDB handle
+        leaks and ``RpcSession._open_db_count`` becomes permanently stale,
+        causing the next test to either reuse a broken connection or fail to
+        start a fresh server.
+
+        This fixture resets the ref-counter whenever it drops out of sync
+        (i.e. when the test left open databases behind), so the
+        ``close_rpc_session`` class-level fixture always finds the server in a
+        known state.
+        """
         yield
-        return
+        # After each test: if any databases were not properly closed, reset the
+        # reference counter so the server can be cleanly shut down at the end
+        # of the class.
+        if RpcSession._open_db_count != 0:
+            from pyedb.generic.settings import settings
+
+            settings.logger.warning(
+                f"Test '{request.node.name}' left {RpcSession._open_db_count} "
+                "open EDB handle(s). Resetting ref-counter to prevent session leak."
+            )
+            RpcSession._open_db_count = 0

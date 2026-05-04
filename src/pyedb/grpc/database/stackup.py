@@ -45,7 +45,11 @@ from ansys.edb.core.definition.solder_ball_property import (
 from ansys.edb.core.geometry.point3d_data import Point3DData as CorePoint3DData
 from ansys.edb.core.hierarchy.cell_instance import CellInstance as CoreCellInstance
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
-from ansys.edb.core.layer.layer import LayerType as CoreLayerType, TopBottomAssociation as CoreTopBottomAssociation
+from ansys.edb.core.layer.layer import (
+    Layer as _CoreLayer,
+    LayerType as CoreLayerType,
+    TopBottomAssociation as CoreTopBottomAssociation,
+)
 from ansys.edb.core.layer.layer_collection import (
     LayerCollection as CoreLayerCollection,
     LayerCollectionMode as CoreLayerCollectionMode,
@@ -53,8 +57,25 @@ from ansys.edb.core.layer.layer_collection import (
 )
 from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
-from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
+
+# Monkey-patch ansys-edb-core Layer.cast to gracefully handle null layer objects.
+# On Linux, get_layers() may return null layer objects that cause an
+# InvalidArgumentException when cast() tries to determine the layer type.
+_original_layer_cast = _CoreLayer.cast
+
+
+def _null_safe_layer_cast(self):
+    """Null-safe wrapper around Layer.cast that skips null layer objects."""
+    try:
+        if self.is_null:
+            return self
+    except Exception:
+        return self
+    return _original_layer_cast(self)
+
+
+_CoreLayer.cast = _null_safe_layer_cast
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
@@ -420,6 +441,32 @@ class Stackup:
         self._pedb = pedb
         self.layer_collection = LayerCollection(pedb, core)
 
+    def _get_layers(self, layer_type_set):
+        """Get layers of a given type set, filtering out null layer objects.
+
+        Parameters
+        ----------
+        layer_type_set : CoreLayerTypeSet
+            Layer type set to retrieve.
+
+        Returns
+        -------
+        list
+            List of non-null layer objects.
+        """
+        layers = []
+        try:
+            raw_layers = self.core.get_layers(layer_type_set)
+        except Exception:
+            return layers
+        for layer in raw_layers:
+            try:
+                if not layer.is_null:
+                    layers.append(layer)
+            except Exception:
+                pass
+        return layers
+
     def __getitem__(self, item):
         if item in self.non_stackup_layers:
             return Layer(core=self.core.find_by_name(item))
@@ -448,8 +495,7 @@ class Stackup:
         >>> signal_layers = edb.stackup.signal_layers
         """
         return {
-            layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.core.get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
+            layer.name: StackupLayer(self._pedb, layer) for layer in self._get_layers(CoreLayerTypeSet.SIGNAL_LAYER_SET)
         }
 
     @property
@@ -462,7 +508,7 @@ class Stackup:
             Dictionary of dielectric layers."""
         return {
             layer.name: StackupLayer(self._pedb, layer)
-            for layer in self.core.get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
+            for layer in self._get_layers(CoreLayerTypeSet.DIELECTRIC_LAYER_SET)
         }
 
     @property
@@ -480,9 +526,7 @@ class Stackup:
         >>> edb = Edb()
         >>> layers = edb.stackup.layers
         """
-        return {
-            obj.name: StackupLayer(self._pedb, obj) for obj in self.core.get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)
-        }
+        return {obj.name: StackupLayer(self._pedb, obj) for obj in self._get_layers(CoreLayerTypeSet.STACKUP_LAYER_SET)}
 
     @property
     def non_stackup_layers(self):
@@ -499,10 +543,7 @@ class Stackup:
         >>> edb = Edb()
         >>> non_stackup = edb.stackup.non_stackup_layers
         """
-        return {
-            layer.name: Layer(core=layer)
-            for layer in self._pedb.stackup.core.get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)
-        }
+        return {layer.name: Layer(core=layer) for layer in self._get_layers(CoreLayerTypeSet.NON_STACKUP_LAYER_SET)}
 
     @property
     def all_layers(self):
@@ -1229,7 +1270,7 @@ class Stackup:
         else:
             return False
 
-    def limits(self, only_metals: bool = False) -> Tuple[any, any, any, any]:
+    def limits(self, only_metals: bool = False) -> Tuple[Any, Any, Any, Any]:
         """Retrieve stackup limits.
 
         Parameters
@@ -2292,29 +2333,36 @@ class Stackup:
 
             if val.roughness_enabled:
                 roughness_models[name] = {}
-                model = val.get_roughness_model("top")
-                if model.type.name.endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": Value(model.get_Roughness)}
-                else:
+                # Top
+                top_type = val.get_roughness_model_type("top")
+                if top_type == "groisse":
+                    roughness_models[name]["GroissSurfaceRoughness"] = {"Roughness": Value(val.top_groisse_roughness)}
+                elif top_type == "huray":
                     roughness_models[name]["HuraySurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
-                        "NoduleRadius": Value(model.get_surface_ratio()),
+                        "NoduleRadius": Value(val.top_hallhuray_nodule_radius),
+                        "HallHuraySurfaceRatio": Value(val.top_hallhuray_surface_ratio),
                     }
-                model = val.get_roughness_model("bottom")
-                if model.type.name.endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissBottomSurfaceRoughness"] = {"Roughness": Value(model.get_roughness())}
-                else:
+                # Bottom
+                bottom_type = val.get_roughness_model_type("bottom")
+                if bottom_type == "groisse":
+                    roughness_models[name]["GroissBottomSurfaceRoughness"] = {
+                        "Roughness": Value(val.bottom_groisse_roughness)
+                    }
+                elif bottom_type == "huray":
                     roughness_models[name]["HurayBottomSurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
-                        "NoduleRadius": Value(model.get_surface_ratio()),
+                        "NoduleRadius": Value(val.bottom_hallhuray_nodule_radius),
+                        "HallHuraySurfaceRatio": Value(val.bottom_hallhuray_surface_ratio),
                     }
-                model = val.get_roughness_model("side")
-                if model.ToString().endswith("GroissRoughnessModel"):
-                    roughness_models[name]["GroissSideSurfaceRoughness"] = {"Roughness": Value(model.get_roughness())}
-                else:
+                # Side
+                side_type = val.get_roughness_model_type("side")
+                if side_type == "groisse":
+                    roughness_models[name]["GroissSideSurfaceRoughness"] = {
+                        "Roughness": Value(val.side_groisse_roughness)
+                    }
+                elif side_type == "huray":
                     roughness_models[name]["HuraySideSurfaceRoughness"] = {
-                        "HallHuraySurfaceRatio": Value(model.get_nodule_radius()),
-                        "NoduleRadius": Value(model.get_surface_ratio()),
+                        "NoduleRadius": Value(val.side_hallhuray_nodule_radius),
+                        "HallHuraySurfaceRatio": Value(val.side_hallhuray_surface_ratio),
                     }
 
         non_stackup_layers = OrderedDict()
@@ -2338,7 +2386,7 @@ class Stackup:
         return layers, materials, roughness_models, non_stackup_layers
 
     def _add_materials_from_dictionary(self, material_dict: Dict[str, Dict]) -> bool:
-        materials = self.self._pedb.materials.materials
+        materials = self._pedb.materials.materials
         for name, material_properties in material_dict.items():
             if "Conductivity" in material_properties:
                 materials.add_conductor_material(name, material_properties["Conductivity"])
@@ -2350,7 +2398,7 @@ class Stackup:
                 )
         return True
 
-    def _import_xml(self, file_path: str | Path):
+    def _import_xml(self, file_path: str | Path, rename: bool = False):
         """Load stackup from a XML file.
 
         Parameters
@@ -2467,6 +2515,21 @@ class Stackup:
             return self._import_xml(file_path, rename=rename)
         else:
             return False
+
+    def load_from_xml(self, file_path: str) -> bool:
+        """Load stackup from an XML file.
+
+        Parameters
+        ----------
+        file_path : str
+            Path to external XML file.
+
+        Returns
+        -------
+        bool
+            ``True`` when successful, ``False`` when failed.
+        """
+        return self.load(file_path)
 
     def plot(
         self,
