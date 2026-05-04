@@ -23,6 +23,7 @@
 """Tests related to Edb modeler"""
 
 import os
+import platform
 from pathlib import Path
 
 import pytest
@@ -526,6 +527,11 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
 
+
+    @pytest.mark.skipif(
+        config["use_grpc"] and platform.system() == "Linux",
+        reason="Known issue in ansys-edb-core layout instance server on Linux",
+    )
     def test_get_primitives_by_point_layer_and_nets(self):
         edbapp = self.edb_examples.get_si_verse()
         # Layer-specific query: must return at least one polygon hit.

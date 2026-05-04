@@ -22,6 +22,7 @@
 
 
 import warnings
+import platform
 
 import pytest
 
@@ -105,6 +106,10 @@ class TestClass(BaseTestClass):
             assert path_obj.center_line[0] == [0, 0]
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(
+        config["use_grpc"] and platform.system() == "Linux",
+        reason="Known issue in ansys-edb-core layout instance server on Linux",
+    )
     def test_primitive_queries(self):
         edbapp = self.edb_examples.get_si_verse()
 

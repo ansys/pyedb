@@ -318,34 +318,6 @@ class TestClass(BaseTestClass):
         assert os.path.exists(export_stackup_path)
         edbapp.close(terminate_rpc_session=False)
 
-    def test_stackup_layer_properties(self):
-        """Evaluate various layer properties."""
-        # TODO
-        # edbapp = edb_examples.get_si_verse()
-        # edbapp.stackup.load(os.path.join(local_path, "example_models", test_subfolder, "ansys_pcb_stackup.xml"))
-        # layer = edbapp.stackup["1_Top"]
-        # layer.name = "TOP"
-        # assert layer.name == "TOP"
-        # layer.type = "dielectric"
-        # assert layer.type == "dielectric"
-        # layer.type = "signal"
-        # layer.color = (0, 0, 0)
-        # assert layer.color == (0, 0, 0)
-        # layer.transparency = 0
-        # assert layer.transparency == 0
-        # layer.etch_factor = 2
-        # assert layer.etch_factor == 2
-        # layer.thickness = 50e-6
-        # assert layer.thickness == 50e-6
-        # assert layer.lower_elevation
-        # assert layer.upper_elevation
-        # layer.is_negative = True
-        # assert layer.is_negative
-        # assert not layer.is_via_layer
-        # assert layer.material == "copper"
-        # edbapp.close(terminate_rpc_session=False)
-        pass
-
     def test_stackup_load_json(self):
         """Import stackup from a file."""
         source_path, fpath = self.edb_examples.copy_test_files_into_local_folder(
