@@ -23,8 +23,8 @@
 """Tests related to Edb modeler"""
 
 import os
-import platform
 from pathlib import Path
+import platform
 
 import pytest
 
@@ -526,7 +526,6 @@ class TestClass(BaseTestClass):
         assert edbapp.components.capacitors["C3"].pins
         assert edbapp.padstacks.pins
         edbapp.close(terminate_rpc_session=False)
-
 
     @pytest.mark.skipif(
         config["use_grpc"] and platform.system() == "Linux",

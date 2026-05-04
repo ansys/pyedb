@@ -21,8 +21,8 @@
 # SOFTWARE.
 
 
-import warnings
 import platform
+import warnings
 
 import pytest
 
