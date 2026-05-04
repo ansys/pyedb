@@ -42,7 +42,7 @@ ruff format src/                    # Format
 - **Linting**: Ruff with numpy-style docstrings. Line length 120. Many rules intentionally ignored (see `pyproject.toml [tool.ruff.lint] ignore`).
 - **Config models**: `src/pyedb/configuration/cfg_*.py` use Pydantic v2 models. The main orchestrator is `configuration.py`.
 - **Test markers**: Use `@pytest.mark.unit`, `@pytest.mark.grpc`, `@pytest.mark.legacy`, `@pytest.mark.no_licence` as appropriate.
-- **Platform-specific deps**: `pywin32` on Windows, `cffi` on Linux for .NET interop.
+- **Platform-specific deps**: `pywin32` on Windows, `cffi` on Linux for .NET interoperability.
 
 ## Key Integration Points
 
