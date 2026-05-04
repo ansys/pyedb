@@ -26,16 +26,15 @@ from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.hierarchy.component import Component
-
     from pyedb.grpc.database.primitive.padstack_instance import PadstackInstance
 from ansys.edb.core.net.net import Net as CoreNet
 from ansys.edb.core.primitive.primitive import PrimitiveType as CorePrimitiveType
 
 from pyedb.grpc.database.primitive.bondwire import Bondwire
+from pyedb.grpc.database.primitive.circle import Circle
 from pyedb.grpc.database.primitive.path import Path
 from pyedb.grpc.database.primitive.polygon import Polygon
 from pyedb.grpc.database.primitive.rectangle import Rectangle
-from pyedb.grpc.database.primitive.circle import Circle
 
 
 class Net:
@@ -126,7 +125,7 @@ class Net:
         self.core.is_power_ground = value
 
     @property
-    def primitives(self) -> list[Path| Polygon| Circle| Rectangle| Bondwire]:
+    def primitives(self) -> list[Path | Polygon | Circle | Rectangle | Bondwire]:
         """All primitives belonging to this net.
 
         Returns
