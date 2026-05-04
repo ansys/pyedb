@@ -51,10 +51,28 @@ from ansys.edb.core.layer.layer_collection import (
     LayerCollectionMode as CoreLayerCollectionMode,
     LayerTypeSet as CoreLayerTypeSet,
 )
+from ansys.edb.core.layer.layer import Layer as _CoreLayer
 from ansys.edb.core.layer.stackup_layer import StackupLayer as CoreStackupLayer
 from ansys.edb.core.layout.mcad_model import McadModel as CoreMcadModel
-from defusedxml.ElementTree import parse as defused_parse
 import numpy as np
+
+# Monkey-patch ansys-edb-core Layer.cast to gracefully handle null layer objects.
+# On Linux, get_layers() may return null layer objects that cause an
+# InvalidArgumentException when cast() tries to determine the layer type.
+_original_layer_cast = _CoreLayer.cast
+
+
+def _null_safe_layer_cast(self):
+    """Null-safe wrapper around Layer.cast that skips null layer objects."""
+    try:
+        if self.is_null:
+            return self
+    except Exception:
+        return self
+    return _original_layer_cast(self)
+
+
+_CoreLayer.cast = _null_safe_layer_cast
 
 from pyedb.generic.general_methods import ET, generate_unique_name
 from pyedb.grpc.database.layers.layer import Layer
@@ -433,7 +451,18 @@ class Stackup:
         list
             List of non-null layer objects.
         """
-        return [layer for layer in self.core.get_layers(layer_type_set) if not layer.is_null]
+        layers = []
+        try:
+            raw_layers = self.core.get_layers(layer_type_set)
+        except Exception:
+            return layers
+        for layer in raw_layers:
+            try:
+                if not layer.is_null:
+                    layers.append(layer)
+            except Exception:
+                pass
+        return layers
 
     def __getitem__(self, item):
         if item in self.non_stackup_layers:
@@ -1238,7 +1267,7 @@ class Stackup:
         else:
             return False
 
-    def limits(self, only_metals: bool = False) -> Tuple[any, any, any, any]:
+    def limits(self, only_metals: bool = False) -> Tuple[Any, Any, Any, Any]:
         """Retrieve stackup limits.
 
         Parameters
