@@ -29,7 +29,7 @@ from ansys.edb.core.definition.component_model import (
     NPortComponentModel as CoreNPortComponentModel,
 )
 from ansys.edb.core.definition.die_property import DieOrientation as CoreDieOrientation, DieType as CoreDieType
-from ansys.edb.core.definition.solder_ball_property import SolderballShape
+from ansys.edb.core.definition.solder_ball_property import SolderBallProperty as CoreSolderBallProperty, SolderballShape
 from ansys.edb.core.geometry.polygon_data import PolygonData as CorePolygonData
 from ansys.edb.core.hierarchy.component_group import ComponentType as CoreComponentType
 from ansys.edb.core.hierarchy.netlist_model import NetlistModel as CoreNetlistModel
@@ -76,6 +76,7 @@ class ComponentProperty:
     def __init__(self, core):
         # Use super().__setattr__ to avoid recursion in __setattr__ if you add it later
         super().__setattr__("core", core)
+        super().__setattr__("_component", None)  # set by Component after creation
 
     def __getattr__(self, name):
         """
@@ -89,7 +90,30 @@ class ComponentProperty:
         Only called if normal attribute lookup fails on self.
         Delegates to self.core.
         """
+        # Unwrap our SolderBallProperty wrapper before passing to core
+        if name == "solder_ball_property" and isinstance(value, SolderBallProperty):
+            value = value._core
         setattr(self.core, name, value)
+
+    @property
+    def solder_ball_property(self) -> "SolderBallProperty":
+        """Return a :class:`SolderBallProperty` wrapper for the component.
+
+        Returns
+        -------
+        SolderBallProperty
+        """
+        if self._component is not None:
+            return SolderBallProperty(self._component)
+        # Fallback: return raw core object when no parent component is set
+        return self.core.solder_ball_property
+
+    @solder_ball_property.setter
+    def solder_ball_property(self, value):
+        # Unwrap our SolderBallProperty wrapper if needed
+        if isinstance(value, SolderBallProperty):
+            value = value._core
+        self.core.solder_ball_property = value
 
 
 class Component:
@@ -308,7 +332,9 @@ class Component:
         :class:`ComponentProperty <ansys.edb.core.hierarchy.component_property.ComponentProperty>`
 
         """
-        return ComponentProperty(self.core.component_property)
+        cp = ComponentProperty(self.core.component_property)
+        object.__setattr__(cp, "_component", self)
+        return cp
 
     @component_property.setter
     def component_property(self, value):
@@ -557,17 +583,21 @@ class Component:
         str
             Solder balls shapes, ``none``, ``cylinder`` or ``spheroid``.
         """
-        if not self.component_property.solder_ball_property.is_null:
-            shape = self.component_property.solder_ball_property.shape
-            if shape == SolderballShape.NO_SOLDERBALL:
-                return "none"
-            elif shape == SolderballShape.SOLDERBALL_CYLINDER:
-                return "cylinder"
-            elif shape == SolderballShape.SOLDERBALL_SPHEROID:
-                return "spheroid"
-            elif shape == SolderballShape.UNKNOWN_SOLDERBALL_SHAPE:
-                return "unknown"
-        return None
+        sbp = self.component_property.solder_ball_property
+        if sbp.is_null:
+            return None
+        shape = sbp.shape
+        # SolderBallProperty wrapper already returns a string; handle both str and enum
+        if isinstance(shape, str):
+            return shape if shape != "unknown" else "unknown"
+        # Fallback for raw SolderballShape enum
+        if shape == SolderballShape.NO_SOLDERBALL:
+            return "none"
+        elif shape == SolderballShape.SOLDERBALL_CYLINDER:
+            return "cylinder"
+        elif shape == SolderballShape.SOLDERBALL_SPHEROID:
+            return "spheroid"
+        return "unknown"
 
     @solder_ball_shape.setter
     def solder_ball_shape(self, value):
@@ -1530,6 +1560,122 @@ class Component:
         )
         void.is_negative = True
         return True
+
+
+class SolderBallProperty:
+    """Wrapper around the gRPC :class:`SolderBallProperty` core object.
+
+    Parameters
+    ----------
+    component : :class:`Component`
+        Parent component instance.
+    """
+
+    def __init__(self, component):
+        self._component = component
+
+    @property
+    def _core(self):
+        """Return the live core solder ball property (always fresh, bypassing wrapper)."""
+        return self._component.core.component_property.solder_ball_property
+
+    def _write(self, mutate_fn):
+        """Helper: fetch raw core solder ball property → mutate → write back."""
+        cmp_property = self._component.core.component_property
+        sbp = cmp_property.solder_ball_property
+        mutate_fn(sbp)
+        cmp_property.solder_ball_property = sbp
+        self._component.core.component_property = cmp_property
+
+    @property
+    def is_null(self) -> bool:
+        """Whether the solder ball property is null."""
+        return self._core.is_null
+
+    @property
+    def uses_solderball(self) -> bool:
+        """Whether a solder ball is defined on this component."""
+        return self._core.uses_solderball
+
+    @property
+    def shape(self) -> str:
+        """Solder ball shape.
+
+        Returns
+        -------
+        str
+            ``"cylinder"``, ``"spheroid"``, ``"none"`` or ``"unknown"``.
+        """
+        s = self._core.shape
+        if s == SolderballShape.SOLDERBALL_CYLINDER:
+            return "cylinder"
+        elif s == SolderballShape.SOLDERBALL_SPHEROID:
+            return "spheroid"
+        elif s == SolderballShape.NO_SOLDERBALL:
+            return "none"
+        return "unknown"
+
+    @shape.setter
+    def shape(self, value):
+        if isinstance(value, SolderballShape):
+            self._write(lambda sbp: setattr(sbp, "shape", value))
+            return
+        _map = {
+            "cylinder": SolderballShape.SOLDERBALL_CYLINDER,
+            "spheroid": SolderballShape.SOLDERBALL_SPHEROID,
+            "none": SolderballShape.NO_SOLDERBALL,
+            "no_solder_ball": SolderballShape.NO_SOLDERBALL,
+        }
+        core_shape = _map.get(value.lower())
+        if core_shape is None:
+            return
+        self._write(lambda sbp: setattr(sbp, "shape", core_shape))
+
+    @property
+    def height(self) -> float:
+        """Solder ball height."""
+        return self._component._pedb.value(self._core.height)
+
+    @height.setter
+    def height(self, value):
+        self._write(lambda sbp: setattr(sbp, "height", self._component._pedb.value(value)))
+
+    @property
+    def material_name(self) -> str:
+        """Solder ball material name."""
+        return self._core.material_name
+
+    @material_name.setter
+    def material_name(self, value: str):
+        self._write(lambda sbp: setattr(sbp, "material_name", value))
+
+    def get_diameter(self) -> tuple:
+        """Return ``(diameter, mid_diameter)`` as :class:`Value` objects."""
+        d1, d2 = self._core.get_diameter()
+        return self._component._pedb.value(d1), self._component._pedb.value(d2)
+
+    def set_diameter(self, diameter, mid_diameter=None):
+        """Set solder ball diameter.
+
+        Parameters
+        ----------
+        diameter : str or float
+            Top (or only) diameter.
+        mid_diameter : str or float, optional
+            Mid diameter for spheroid shape.  Defaults to *diameter*.
+        """
+        d1 = self._component._pedb.value(diameter)
+        d2 = self._component._pedb.value(mid_diameter) if mid_diameter is not None else d1
+
+        def _mutate(sbp):
+            sbp.set_diameter(d1, d2)
+
+        self._write(_mutate)
+
+    @property
+    def placement(self):
+        """Solder ball placement."""
+        return self._core.placement
 
 
 class ICDieProperty:

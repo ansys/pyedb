@@ -238,7 +238,7 @@ class Nets(CommonNets):
         >>> for net_name, net_obj in all_nets.items():
         ...     print(net_name, net_obj.is_power_ground)
         """
-        return {i.name: i for i in self._pedb.layout.nets}
+        return {i.name: i for i in self._pedb.layout.nets if not i.is_null}
 
     @property
     def netlist(self) -> List[str]:
