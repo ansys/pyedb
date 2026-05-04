@@ -45,7 +45,7 @@ class Circle(Primitive):
         cls,
         layout,
         layer: Union[str, Layer] = None,
-        net: Union[str, Net, None] = None,
+        net: Union[str, "Net", None] = None,
         center_x: float = None,
         center_y: float = None,
         radius: float = 0.0,
