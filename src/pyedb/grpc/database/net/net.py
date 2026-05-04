@@ -111,6 +111,8 @@ class Net:
         bool
             ``True`` if the net is a power or ground net, ``False`` otherwise.
         """
+        if self.is_null:
+            return False
         return self.core.is_power_ground
 
     @is_power_ground.setter

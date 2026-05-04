@@ -106,10 +106,6 @@ PADSTACK_DEFS = [
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_backend_single(self):
         cfg = {
             "title": "Test Design",
@@ -298,10 +294,6 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_backend_diff(self):
         cfg = {
             "title": "Test Design",
@@ -514,10 +506,6 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_backend_diff_pcb(self):
         cfg = {
             "title": "Test Design",
@@ -611,7 +599,7 @@ class TestClass(BaseTestClass):
         }
         app = ViaDesignBackend(cfg, config["use_grpc"])
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1.")
+    # @pytest.mark.skipif(config["use_grpc"], reason="Waiting SP1.")
     def test_arbitrary_wave_ports(self):
         local_path = Path(__file__).parent.parent
         example_folder = os.path.join(local_path, "example_models", "TEDB")
@@ -632,7 +620,7 @@ class TestClass(BaseTestClass):
 
         edbapp = self.edb_examples.get_unit_cell()
         assert create_array_from_unit_cell(edbapp, x_number=2, y_number=2)
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_dxf_swap_backend_center_point(self):

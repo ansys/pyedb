@@ -23,9 +23,11 @@
 from __future__ import annotations
 
 import math
-from typing import List, Optional, Tuple, Union
+from typing import TYPE_CHECKING, List, Optional, Tuple, Union
 
-from pyedb import Edb
+if TYPE_CHECKING:
+    from pyedb import Edb
+
 from pyedb.libraries.common import Substrate
 
 
@@ -79,7 +81,7 @@ class HatchGround:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
+        edb_cell: Optional = None,
         pitch: Union[str, float] = 17.07e-3,
         width: Union[str, float] = 5.0e-3,
         fill_target: Union[str, float] = 50.0,
@@ -220,7 +222,7 @@ class Meander:
 
     def __init__(
         self,
-        edb_cell: Edb,
+        edb_cell,
         pitch: Union[str, float] = 1e-3,
         trace_width: Union[str, float] = 0.3e-3,
         amplitude: Union[str, float] = 5e-3,
@@ -342,7 +344,7 @@ class MIMCapacitor:
 
     def __init__(
         self,
-        edb_cell: Edb,
+        edb_cell,
         area: Union[str, float] = 0.1e-6,
         gap: Union[str, float] = 1e-6,
         layer_top: str = "M1",
@@ -436,7 +438,7 @@ class SpiralInductor:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
+        edb_cell: Optional = None,
         turns: Union[int, float] = 4.5,
         trace_width: Union[str, float] = 20e-6,
         spacing: Union[str, float] = 12e-6,
@@ -607,7 +609,7 @@ class CPW:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
+        edb_cell: Optional = None,
         length: Union[str, float] = 1e-3,
         width: Union[str, float] = 0.3e-3,
         gap: Union[str, float] = 0.1e-3,
@@ -817,7 +819,7 @@ class RatRace:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
+        edb_cell: Optional = None,
         z0: Union[float, str] = 50,
         freq: Union[float, str] = 10e9,
         layer: str = "TOP",
@@ -1012,7 +1014,7 @@ class InterdigitalCapacitor:
 
     def __init__(
         self,
-        edb_cell: Optional[Edb] = None,
+        edb_cell: Optional = None,
         fingers: int = 8,
         finger_length: Union[float, str] = "0.9mm",
         finger_width: Union[float, str] = "0.08mm",
@@ -1231,9 +1233,6 @@ class DifferentialTLine:
         )
         return [pos_trace, neg_trace]
 
-    import math
-    from typing import List, Optional
-
 
 class MicroStripLine:
     """
@@ -1309,9 +1308,10 @@ class MicroStripLine:
 
     @property
     def _ereff(self) -> float:
-        w = self._edb["w"].value
-        er = self.substrate.er
-        h = self.substrate.h
+        w_val = self._edb["w"].value
+        w = float(w_val.value if hasattr(w_val, "value") else w_val)
+        er = float(self.substrate.er)
+        h = float(self.substrate.h)
 
         u = w / h
         a = (
@@ -1332,9 +1332,9 @@ class MicroStripLine:
         Valid for 0.05 ≤ w/h ≤ 1000 and 1 ≤ εr ≤ 128.
         Source: G. Wheeler, E. Hammerstad & Jensen, IEEE-MTT 1980.
         """
-        w = self._edb["w"].value
-        h = self.substrate.h
-        er = self.substrate.er
+        w = float(self._edb["w"].value.value if hasattr(self._edb["w"].value, "value") else self._edb["w"].value)
+        h = float(self.substrate.h)
+        er = float(self.substrate.er)
 
         u = w / h
 
