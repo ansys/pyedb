@@ -21,8 +21,7 @@
 # SOFTWARE.
 
 
-from typing import Union
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Union
 
 if TYPE_CHECKING:
     from pyedb.grpc.database.net.net import Net
