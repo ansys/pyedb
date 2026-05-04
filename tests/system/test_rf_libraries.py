@@ -52,10 +52,6 @@ ON_CI = os.environ.get("CI", "false").lower() == "true"
 
 
 @pytest.mark.usefixtures("close_rpc_session")
-@pytest.mark.skipif(
-    ansys.edb.core.__version__ == "0.2.6",
-    reason="Test skipped for ansys-edb-core version 0.2.6",
-)
 class TestClass(BaseTestClass):
     def test_stackup(self):
         edb = self.edb_examples.create_empty_edb()
@@ -74,7 +70,7 @@ class TestClass(BaseTestClass):
             edb_cell=edb,
             width=10e-6,
             gap=5e-6,
-            layer="METAL_TOP",
+            layer="TOP_METAL",
             ground_net="GND",
             ground_layer="METAL_BOT",
             length=1e-3,
@@ -92,11 +88,10 @@ class TestClass(BaseTestClass):
         assert edb.variables["w"].value == 1e-05
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_diff_tline(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
-        pair = DifferentialTLine(edb, layer="METAL_TOP", length=10e-3, width=0.2e-3, spacing=0.18e-3)
+        pair = DifferentialTLine(edb, layer="TOP_METAL", length=10e-3, width=0.2e-3, spacing=0.18e-3)
         pair.create()
         assert round(pair.diff_impedance, 3) == 95.723
         assert len(edb.modeler.paths) == 2
@@ -134,7 +129,7 @@ class TestClass(BaseTestClass):
             gap="0.04mm",
             comb_gap="0.06mm",
             bus_width="0.25mm",
-            layer="METAL_TOP",
+            layer="TOP_METAL",
             net_a="P1",
             net_b="P2",
         )
@@ -145,18 +140,16 @@ class TestClass(BaseTestClass):
         assert edb.modeler.rectangles[0].net.name == "P1"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_radial_stud(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
-        stub = RadialStub(edb, layer="METAL_TOP", width=200e-6, radius=1e-3)
+        stub = RadialStub(edb, layer="TOP_METAL", width=200e-6, radius=1e-3)
         stub.create()
         assert round(stub.electrical_length_deg, 3) == 5.038
         assert edb.modeler.polygons[0].net.name == "RF"
         assert edb.modeler.rectangles[0].net.name == "RF"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_rat_race(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
@@ -164,7 +157,7 @@ class TestClass(BaseTestClass):
             edb_cell=edb,
             z0=50,
             freq=10e9,
-            layer="METAL_TOP",
+            layer="TOP_METAL",
             net="RR",
             width=0.2e-3,
             nr_segments=32,
@@ -211,21 +204,17 @@ class TestClass(BaseTestClass):
         assert edb.modeler.paths[0].net.name == "IN"
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(config["use_grpc"], reason="Waiting for SP1.")
     def test_ustrip(self):
         edb = self.edb_examples.create_empty_edb()
         MicroStripTechnologyStackup(edb)
-        ustrip = MicroStripLine(edb_cell=edb, layer="METAL_TOP", net="Rf", length="2mm", freq=10e9)
+        ustrip = MicroStripLine(edb_cell=edb, layer="TOP_METAL", net="Rf", length="2mm", freq=10e9)
         ustrip.create()
         assert ustrip.impedance == 48.7
         ustrip.width = "300um"
         assert ustrip.width == 300e-6
         assert ustrip.impedance == 37.52
+        edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
@@ -243,10 +232,6 @@ class TestClass(BaseTestClass):
         assert patch_antenna.length == 0.03337
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_circular_patch_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)
@@ -258,10 +243,6 @@ class TestClass(BaseTestClass):
         assert patch_antenna.radius == 0.0174
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_triangular_antenna(self):
         edb = self.edb_examples.create_empty_edb()
         stackup = MicroStripTechnologyStackup(pedb=edb)

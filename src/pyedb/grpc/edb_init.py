@@ -119,7 +119,7 @@ class EdbInit(object):
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
-        self._db = database.Database.create(db_path)
+        self._db = self._grpc_retry(database.Database.create, db_path)
         if self._db:
             RpcSession.acquire()
         return self._db
@@ -151,10 +151,58 @@ class EdbInit(object):
         if not RpcSession.rpc_session:
             self.logger.error("Failed to start RPC server.")
             return False
-        self._db = database.Database.open(db_path, read_only)
+        self._db = self._grpc_retry(database.Database.open, db_path, read_only)
         if self._db:
             RpcSession.acquire()
         return self._db
+
+    def _grpc_retry(self, func, *args, max_attempts=3, delay=1.0):
+        """
+        Call a gRPC database function with retries on transient failures.
+
+        The RPC server may still be processing a previous close operation when the
+        next open/create call arrives, causing transient gRPC errors. This method
+        retries with a short delay to handle that race condition.
+
+        Parameters
+        ----------
+        func : callable
+            The database function to call (e.g. ``database.Database.open``).
+        *args :
+            Positional arguments forwarded to ``func``.
+        max_attempts : int, optional
+            Maximum number of attempts. The default is ``3``.
+        delay : float, optional
+            Seconds to wait between retries. The default is ``1.0``.
+
+        Returns
+        -------
+        object or None
+            The return value of ``func``, or ``None`` if all attempts fail.
+
+        """
+        for attempt in range(max_attempts):
+            try:
+                result = func(*args)
+                if result is not None:
+                    return result
+                # func returned None — treat as transient failure
+                if attempt < max_attempts - 1:
+                    self.logger.warning(
+                        f"gRPC call {func.__name__} returned None (attempt {attempt + 1}/{max_attempts}). "
+                        f"Retrying in {delay}s..."
+                    )
+                    time.sleep(delay)
+            except Exception as e:
+                if attempt < max_attempts - 1:
+                    self.logger.warning(
+                        f"gRPC call {func.__name__} failed (attempt {attempt + 1}/{max_attempts}): {e}. "
+                        f"Retrying in {delay}s..."
+                    )
+                    time.sleep(delay)
+                else:
+                    self.logger.error(f"gRPC call {func.__name__} failed after {max_attempts} attempts: {e}")
+        return None
 
     def delete(self, db_path):
         """Delete a database at the specified file location.
@@ -193,27 +241,41 @@ class EdbInit(object):
         else:
             return False
 
-    def close(self, terminate_rpc_session=False):
+    def close(self, terminate_rpc_session=None):
         """Close the database.
 
         Parameters
         ----------
         terminate_rpc_session : bool, optional
-            Force termination of the RPC session regardless of how many other databases are still
-            open. The default is ``False``, meaning the RPC server is only shut down automatically
-            when the **last** open database is closed (reference-counted).
+            When ``True``, forcibly terminate the RPC server regardless of how
+            many other databases are still open.
+            When ``False``, the RPC server is kept running after the database is
+            closed so that subsequent ``Edb`` instances can reuse it without a
+            server restart.
+            When not specified (the default), the server is automatically shut
+            down once the last open database is closed.
 
         Notes
         -----
-        Unsaved changes will be lost. When ``terminate_rpc_session=True`` and multiple databases
-        are open, all connections will be lost immediately.
+        Unsaved changes will be lost.  Forcibly terminating the server while
+        other databases are still open will break those connections immediately.
         """
-        self._db.close()
-        self._db = None
-        if terminate_rpc_session:
+        if self._db is not None:
+            try:
+                self._db.close()
+            except Exception as e:  # nosec B110
+                self.logger.debug(f"Database close() raised: {e}")
+            self._db = None
+        if terminate_rpc_session is True:
+            # Force-kill regardless of ref count
             RpcSession.close()
-        else:
+        elif terminate_rpc_session is False:
+            # Explicitly keep the server running
             RpcSession.release()
+        else:
+            # Default: release and shut down if this was the last DB
+            if RpcSession.release():
+                RpcSession.close()
         self._clean_variables()
         return True
 

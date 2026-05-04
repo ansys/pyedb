@@ -33,10 +33,6 @@ pytestmark = [pytest.mark.unit, pytest.mark.legacy]
 
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_create_custom_cutout_0(self):
         """Create custom cutout 0."""
         edbapp = self.edb_examples.get_si_verse()
@@ -106,10 +102,6 @@ class TestClass(BaseTestClass):
         assert edbapp.layout_validation.fix_self_intersections()
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_create_custom_cutout_2(self):
         """Create custom cutout 2."""
         edbapp = self.edb_examples.get_si_verse()
