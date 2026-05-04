@@ -454,14 +454,17 @@ class Stackup:
         layers = []
         try:
             raw_layers = self.core.get_layers(layer_type_set)
-        except Exception:
+        except Exception as e:  # noqa: B014
+            # On Linux, get_layers() may fail on null layer objects (see gh-2108)
+            self._logger.debug(f"Failed to retrieve layers: {e}")
             return layers
         for layer in raw_layers:
             try:
                 if not layer.is_null:
                     layers.append(layer)
-            except Exception:
-                pass
+            except Exception as e:  # noqa: B014
+                # Skip null or inaccessible layers gracefully (see gh-2108)
+                self._logger.debug(f"Skipping inaccessible layer: {e}")
         return layers
 
     def __getitem__(self, item):
