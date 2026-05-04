@@ -20,23 +20,36 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import importlib.util
 import os
 from pathlib import Path
 import pkgutil
-import sys
 import warnings
 
-import pyedb
-
-LINUX_WARNING = (
-    "Due to compatibility issues between .NET Core and libssl on some Linux versions, "
-    "for example Ubuntu 22.04, we are going to stop depending on `dotnetcore2`."
-    "Instead of using this package which embeds .NET Core 3, users will be required to "
-    "install .NET themselves. For more information, see "
-    "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
-)
-
 existing_showwarning = warnings.showwarning
+
+
+def _check_dotnet_dependencies():
+    """Check if the required .NET dependencies are installed."""
+    missing_packages = []
+
+    if importlib.util.find_spec("pythonnet") is None:
+        missing_packages.append("ansys-pythonnet")
+
+    if os.name == "posix":
+        if importlib.util.find_spec("cffi") is None:
+            missing_packages.append("cffi")
+
+    if os.name == "nt":
+        if importlib.util.find_spec("win32com") is None:
+            missing_packages.append("pywin32")
+
+    if missing_packages:
+        warnings.warn(
+            "You are trying to use .NET integration features, but the following required "
+            f" packages are missing: {', '.join(missing_packages)}. "
+            "Please install them using 'pip install pyedb[dotnet]'."
+        )
 
 
 def custom_show_warning(message, category, filename, lineno, file=None, line=None):
@@ -46,14 +59,13 @@ def custom_show_warning(message, category, filename, lineno, file=None, line=Non
 
 warnings.showwarning = custom_show_warning
 
+# Check .NET dependencies and warn the user if they are missing.
+_check_dotnet_dependencies()
+
 modules = [tup[1] for tup in pkgutil.iter_modules()]
-cpython = "IronPython" not in sys.version and ".NETFramework" not in sys.version
 is_linux = os.name == "posix"
 is_windows = not is_linux
 is_clr = False
-pyedb_path = Path(pyedb.__file__).parent
-sys.path.append(str(pyedb_path / "dlls" / "PDFReport"))
-
 
 if is_linux:  # pragma: no cover
     dotnet_root = None
@@ -71,7 +83,7 @@ if is_linux:  # pragma: no cover
             is_clr = True
         except Exception:
             warnings.warn(
-                ".NET is not found. PyEDB will work only in gRPC (client) mode. For more information, see "
+                ".NET is not found. PyEDB can only work in gRPC (client) mode. For more information, see "
                 "https://aedt.docs.pyansys.com/version/stable/release_1_0.html#dotnet-changes-in-linux"
             )
     # Use specified .NET root folder
@@ -86,7 +98,7 @@ if is_linux:  # pragma: no cover
             if not shared_dir.exists():
                 warnings.warn(
                     "DOTNET_ROOT is set but does not contain a valid .NET installation. "
-                    "PyEDB will work only in gRPC (client) mode."
+                    "PyEDB can only work in gRPC (client) mode."
                 )
             else:
                 candidates = [rt for rt in find_runtimes() if rt.name == "Microsoft.NETCore.App"]
@@ -100,7 +112,7 @@ if is_linux:  # pragma: no cover
                 else:
                     runtime_spec = candidates[0]
         except Exception:
-            warnings.warn("Could not find .NET runtimes. PyEDB will work only in gRPC (client) mode.")
+            warnings.warn("Could not find .NET runtimes. PyEDB can only work in gRPC (client) mode.")
     # Use specific .NET core runtime
     if dotnet_root is not None and (runtime_config is not None or runtime_spec is not None):
         try:
@@ -115,7 +127,7 @@ if is_linux:  # pragma: no cover
             os.environ["DOTNET_ROOT"] = dotnet_root.as_posix()
             is_clr = True
         except ImportError:
-            msg = "pythonnet or dotnetcore not installed. Pyedb will work only in client mode."
+            msg = "pythonnet not installed. PyEDB can only work in gRPC (client) mode."
             warnings.warn(msg)
 else:
     try:
@@ -124,7 +136,7 @@ else:
         load("coreclr")
         is_clr = True
     except:
-        warnings.warn("Unable to load DOTNET core runtime")
+        warnings.warn("Unable to load .NET core runtime")
 
 
 try:  # work around a number formatting bug in the EDB API for non-English locales
@@ -141,11 +153,10 @@ try:  # work around a number formatting bug in the EDB API for non-English local
 except (ImportError, RuntimeError):  # pragma: no cover
     if is_windows:
         warnings.warn(
-            "The clr is missing. Install PythonNET or use an IronPython version if you want to use the EDB module."
+            "The clr is missing. Please ensure that you have installed the required dependencies. "
+            "They can be installed using 'pip install pyedb[dotnet]'."
         )
         edb_initialized = False
-    elif sys.version[0] == 3 and sys.version[1] < 7:
-        warnings.warn("EDB requires Linux Python 3.8 or later.")
     _clr = None
     String = None
     Double = None
