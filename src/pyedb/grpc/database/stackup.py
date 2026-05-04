@@ -2116,9 +2116,10 @@ class Stackup:
             ``True`` when successful.
         """
         if file_path:
-            f = open(file_path)
-            json_dict = json.load(f)  # pragma: no cover
+            with open(file_path, "r") as f:
+                json_dict = json.load(f)
             return self._import_dict(json_dict, rename)
+        return False
 
     def _import_csv(self, file_path: str) -> bool:
         """Import stackup definition from a CSV file.

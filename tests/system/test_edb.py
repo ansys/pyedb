@@ -616,7 +616,7 @@ class TestClass(BaseTestClass):
         assert edb.padstacks.set_all_antipad_value(0.0)
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"] and is_linux(), reason="Crash on DotNet and gRPC on Linux.")
+    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="Crash on DotNet and gRPC on Linux.")
     def test_hfss_simulation_setup(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
@@ -705,7 +705,7 @@ class TestClass(BaseTestClass):
         assert edbapp.setups["setup1"].hfss_port_settings.enable_set_triangles_wave_port
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"] and is_linux(), reason="Crash on DotNet and gRPC on Linux.")
+    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="Crash on DotNet and gRPC on Linux.")
     def test_hfss_simulation_setups_consolidation(self):
         """Create a setup from a template and evaluate its properties."""
         edbapp = self.edb_examples.get_si_verse()
