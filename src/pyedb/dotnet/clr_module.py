@@ -20,6 +20,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import importlib.util
 import os
 from pathlib import Path
 import pkgutil
@@ -32,21 +33,15 @@ def _check_dotnet_dependencies():
     """Check if the required .NET dependencies are installed."""
     missing_packages = []
 
-    try:
-        import pythonnet
-    except ImportError:
+    if importlib.util.find_spec("pythonnet") is None:
         missing_packages.append("ansys-pythonnet")
 
     if os.name == "posix":
-        try:
-            import cffi
-        except ImportError:
+        if importlib.util.find_spec("cffi") is None:
             missing_packages.append("cffi")
 
     if os.name == "nt":
-        try:
-            import win32com
-        except ImportError:
+        if importlib.util.find_spec("win32com") is None:
             missing_packages.append("pywin32")
 
     if missing_packages:
