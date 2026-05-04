@@ -1,4 +1,4 @@
-# AGENTS.md - PyEDB AI Coding Agent Guide
+PyEDB AI Coding Agent Guide
 
 ## Architecture
 
