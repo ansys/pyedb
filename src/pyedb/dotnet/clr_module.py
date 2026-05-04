@@ -23,10 +23,38 @@
 import os
 from pathlib import Path
 import pkgutil
-import sys
 import warnings
 
 existing_showwarning = warnings.showwarning
+
+
+def _check_dotnet_dependencies():
+    """Check if the required .NET dependencies are installed."""
+    missing_packages = []
+
+    try:
+        import pythonnet
+    except ImportError:
+        missing_packages.append("ansys-pythonnet")
+
+    if os.name == "posix":
+        try:
+            import cffi
+        except ImportError:
+            missing_packages.append("cffi")
+
+    if os.name == "nt":
+        try:
+            import win32com
+        except ImportError:
+            missing_packages.append("pywin32")
+
+    if missing_packages:
+        warnings.warn(
+            "You are trying to use .NET integration features, but the following required "
+            f" packages are missing: {', '.join(missing_packages)}. "
+            "Please install them using 'pip install pyedb[dotnet]'."
+        )
 
 
 def custom_show_warning(message, category, filename, lineno, file=None, line=None):
@@ -35,6 +63,9 @@ def custom_show_warning(message, category, filename, lineno, file=None, line=Non
 
 
 warnings.showwarning = custom_show_warning
+
+# Check .NET dependencies and warn the user if they are missing.
+_check_dotnet_dependencies()
 
 modules = [tup[1] for tup in pkgutil.iter_modules()]
 is_linux = os.name == "posix"
