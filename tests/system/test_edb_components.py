@@ -574,7 +574,7 @@ class TestClass(BaseTestClass):
 
     @pytest.mark.skipif(
         config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failling in grpc. To be validated in 26R1.",
+        reason="This test is failing in grpc. To be validated in 26R1.",
     )
     def test_solder_ball_getter_setter(self):
         edb = self.edb_examples.get_si_verse()
