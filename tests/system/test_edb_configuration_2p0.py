@@ -83,7 +83,7 @@ def check_dictionaries(source_dict, target_dict):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
@@ -866,7 +866,7 @@ class TestClass(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassTerminals(BaseTestClass):
@@ -1113,7 +1113,7 @@ class TestClassTerminals(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassSetups(BaseTestClass):
@@ -1380,7 +1380,7 @@ class TestClassSetups(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassBoundaries(BaseTestClass):
@@ -1488,7 +1488,7 @@ class TestClassBoundaries(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassPadstacks(BaseTestClass):
@@ -1731,7 +1731,7 @@ class TestClassPadstacks(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
@@ -1896,7 +1896,7 @@ class TestModeler(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
@@ -1919,7 +1919,7 @@ class TestComponent(BaseTestClass):
 
 @pytest.mark.skipif(
     config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
+    reason="This test is failling in grpc. To be validated in 26R1.",
 )
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
