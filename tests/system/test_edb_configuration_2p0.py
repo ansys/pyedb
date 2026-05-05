@@ -33,7 +33,7 @@ is_linux = os.name == "posix"
 
 from pyedb.generic.constants import unit_converter
 from pyedb.generic.settings import settings
-from tests.conftest import config, use_grpc
+from tests.conftest import config
 from tests.system.base_test_class import BaseTestClass
 
 pytestmark = [pytest.mark.unit, pytest.mark.legacy]
@@ -81,10 +81,6 @@ def check_dictionaries(source_dict, target_dict):
     return True
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClass(BaseTestClass):
     def test_13b_stackup_materials(self):
@@ -389,10 +385,6 @@ class TestClass(BaseTestClass):
         assert data_from_db["ports"][0]["positive_terminal"]["coordinates"]["net"] == "AVCC_1V3"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_05g_edge_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -435,10 +427,6 @@ class TestClass(BaseTestClass):
         edbapp.configuration.get_data_from_db(ports=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_05h_diff_wave_port(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -757,10 +745,6 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_15d_sources_equipotential(self):
         edbapp = self.edb_examples.get_si_verse()
         sources_i = [
@@ -864,10 +848,6 @@ class TestClass(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassTerminals(BaseTestClass):
     terminal1 = {
@@ -1039,10 +1019,6 @@ class TestClassTerminals(BaseTestClass):
         ]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_edge_terminal(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -1073,10 +1049,6 @@ class TestClassTerminals(BaseTestClass):
         assert edbapp.terminals["edge_terminal_2"].hfss_type == "Wave"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_edge_bundle_terminal(self):
         edbapp = self.edb_examples.create_empty_edb()
         edbapp.stackup.create_symmetric_stackup(2)
@@ -1111,10 +1083,6 @@ class TestClassTerminals(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassSetups(BaseTestClass):
     terminal1 = {
@@ -1375,10 +1343,6 @@ class TestClassSetups(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassBoundaries(BaseTestClass):
     def test_open_region_radiation(self):
@@ -1483,16 +1447,8 @@ class TestClassBoundaries(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestClassPadstacks(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_09_padstack_definition(self, is_grpc=None):
         solder_ball_parameters = {
             "shape": "spheroid",
@@ -1574,10 +1530,6 @@ class TestClassPadstacks(BaseTestClass):
                 assert v == instance[k]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_09_padstack_instance(self):
         edbapp = self.edb_examples.get_si_verse()
         cfg_data = edbapp.configuration.cfg_data
@@ -1726,16 +1678,8 @@ class TestClassPadstacks(BaseTestClass):
         cfg_hfss_single.max_delta = 0.02
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestModeler(BaseTestClass):
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_18_modeler(self):
         data = {
             "modeler": {
@@ -1891,10 +1835,6 @@ class TestModeler(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestComponent(BaseTestClass):
     def test_17_ic_die_properties(self):
@@ -1914,10 +1854,6 @@ class TestComponent(BaseTestClass):
         _assert_final_ic_die_properties(component)
 
 
-@pytest.mark.skipif(
-    config["use_grpc"] and config["desktopVersion"] < "2026.1",
-    reason="This test is failing in grpc. To be validated in 26R1.",
-)
 @pytest.mark.usefixtures("close_rpc_session")
 class TestOperations(BaseTestClass):
     def test_08a_operations_cutout(self):
