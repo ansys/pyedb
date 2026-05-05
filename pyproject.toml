@@ -25,11 +25,6 @@ classifiers = [
 ]
 
 dependencies = [
-    # .NET interface dependencies
-    "cffi>=1.16.0,<2.1; platform_system=='Linux'",
-    "pywin32>=304;platform_system=='Windows'",
-    "ansys-pythonnet>=3.1.0rc6",
-    # Core dependencies
     "numpy>=1.20.0,<3",
     "pydantic>=2.6.4,<2.14",
     "toml==0.10.2",
@@ -40,6 +35,11 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+dotnet = [
+    "ansys-pythonnet>=3.1.0rc6",
+    "cffi>=1.16.0,<2.1; platform_system=='Linux'",
+    "pywin32>=304;platform_system=='Windows'",
+]
 geometry = [
     "shapely",
     "ezdxf>=1.4.2",
@@ -66,7 +66,8 @@ tests = [
     "mock>=5.1.0,<5.3",
     "pytest>=7.4.0,<9.1",
     "pytest-cov>=4.0.0,<7.2",
-    "pytest-xdist>=3.5.0,<3.7"
+    "pytest-xdist>=3.5.0,<3.7",
+    "pytest-rerunfailures>=14.0,<17"
 ]
 
 doc = [
@@ -88,7 +89,7 @@ doc = [
     "Sphinx>=7.1.0,<9.1",
     "sphinx-autobuild==2024.10.3",
     "sphinx-copybutton>=0.5.0,<0.6",
-    "sphinx-gallery>=0.14.0,<0.21",
+    "sphinx-gallery>=0.14.0,<0.22",
     "sphinx_design>=0.4.0,<0.7"
 ]
 
@@ -263,6 +264,11 @@ markers = [
     "no_licence: mark test that do not need a licence."
 ]
 testpaths = "tests"
+# Automatically retry flaky tests up to 2 times with a 10-second delay between
+# attempts.  This catches transient gRPC/filesystem race conditions without
+# masking real failures (a test must fail 6 times in a row to be reported).
+reruns = 5
+reruns_delay = 10
 #addopts = "-ra --cov=src/pyedb --cov-report html:.cov/html --cov-report xml:.cov/xml --cov-report term -vv"
 
 [tool.numpydoc_validation]

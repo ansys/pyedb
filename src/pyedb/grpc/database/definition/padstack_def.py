@@ -633,12 +633,16 @@ class PadstackDef:
         Returns
         -------
         float
-            Percentage for the hole plating.
+            Percentage for the hole plating, or ``None`` if the padstack definition has no data.
         """
+        if self.core.data.is_null:
+            return None
         return Value(self.core.data.plating_percentage)
 
     @hole_plating_ratio.setter
     def hole_plating_ratio(self, ratio):
+        if self.core.data.is_null:
+            return
         self.core.data.plating_percentage = self._pedb._value_setter(ratio)
 
     @property

@@ -28,6 +28,7 @@ from pathlib import Path
 import ansys.edb.core
 import pytest
 
+# is_linux is only used for a skipif marker — define it here without dotnet
 is_linux = os.name == "posix"
 
 from pyedb.generic.constants import unit_converter
@@ -799,7 +800,6 @@ class TestClass(BaseTestClass):
         assert edbapp.configuration.load(data, apply_file=True)
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(not config["use_grpc"], reason="Wait SP2 to fix DotNet GC bug.")
     def test_16_export_to_external_file(self):
         edbapp = self.edb_examples.get_si_verse()
         data_file_path = Path(self.edb_examples.test_folder) / "test.json"

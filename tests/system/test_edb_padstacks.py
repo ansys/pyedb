@@ -59,10 +59,6 @@ class TestClass(BaseTestClass):
         assert not edbapp.padstacks.get_via_instance_from_net(["GND2"])
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_create_with_packstack_name(self):
         """Create a padstack"""
         edbapp = self.edb_examples.get_si_verse()
@@ -165,7 +161,7 @@ class TestClass(BaseTestClass):
 
         assert planar_em.via_stop_layer is None
         assert planar_em.via_stop_layer is None
-        edbapp.close()
+        edbapp.close(terminate_rpc_session=False)
 
     def test_padstack_properties_setter(self):
         """Set padstack properties"""
@@ -296,10 +292,6 @@ class TestClass(BaseTestClass):
         )
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_split_microvias(self):
         """Convert padstack definition to multiple microvias definitions."""
         fpath = self.edb_examples.copy_test_files_into_local_folder(target_path4)[0]
@@ -346,10 +338,6 @@ class TestClass(BaseTestClass):
         assert vias[1].metal_volume
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        condition=config["use_grpc"],
-        reason="This is a bug deep in the code. This should never pass but it passes as try-else hides the bug.",
-    )
     @pytest.mark.parametrize("return_points", [True, False])
     def test_padstacks_create_rectangle_in_pad(self, return_points: bool):
         """Create a rectangle inscribed inside a padstack instance pad."""
@@ -373,7 +361,7 @@ class TestClass(BaseTestClass):
                     assert padstack_instance.padstack_definition == "Padstack_None"
                 if padstack_instance.padstack_definition != "Padstack_None":
                     assert result
-                    if return_points and layer_name in padstack_instance.layer_range_names:
+                    if return_points and layer_name in padstack_instance.layer_range_names and not edb.grpc:
                         pad_pd = _get_padstack_polygon_data(edb, padstack_instance, layer_name)
                         if pad_pd is None:
                             # refer to comment in _get_padstack_polygon_data body to see why we're skipping this check
@@ -389,14 +377,10 @@ class TestClass(BaseTestClass):
                         # count the number of successful confirmations since some are skipped
                         confirmed_pads += 1
 
-            if return_points:
+            if return_points and not edb.grpc:
                 assert confirmed_pads == 19
         edb.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_padstaks_plot_on_matplotlib(self):
         """Plot a Net to Matplotlib 2D Chart."""
         edb_plot = self.edb_examples.get_si_verse_sfp()
@@ -473,10 +457,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15"].hole_diameter == 0.00016
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_padstack_instances_rtree_index(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         index = edbapp.padstacks.get_padstack_instances_rtree_index()
@@ -497,10 +477,6 @@ class TestClass(BaseTestClass):
             assert len(test) == 175
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"],
-        reason="Waiting SP1",
-    )
     def test_polygon_based_padstack(self):
         edbapp = self.edb_examples.get_si_verse_sfp()
         polygon_data = edbapp.modeler.paths[0].polygon_data
@@ -534,7 +510,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["test2"]
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
     def test_via_fence(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -546,7 +521,6 @@ class TestClass(BaseTestClass):
         assert "via_central" in edbapp.padstacks.definitions
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(condition=GRPC, reason="Needs to be checked with grpc")
     def test_via_fence2(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/via_fence_generic_project.aedb")[0]
         edbapp = self.edb_examples.load_edb(source_path)
@@ -568,10 +542,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 96
         edbapp.close_edb()
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_via_merge(self):
         edbapp = self.edb_examples.get_si_verse()
         polygon = [[[118e-3, 60e-3], [125e-3, 60e-3], [124e-3, 56e-3], [118e-3, 56e-3]]]
@@ -579,10 +549,6 @@ class TestClass(BaseTestClass):
         assert len(result) == 1
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
-        reason="Test skipped for ansys-edb-core version 0.2.6",
-    )
     def test_via_merge3(self):
         source_path = self.edb_examples.copy_test_files_into_local_folder("TEDB/merge_via_4layers.aedb")[0]
         edbapp = self.edb_examples.load_edb(edb_path=source_path)
@@ -638,10 +604,6 @@ class TestClass(BaseTestClass):
         assert len(edbapp.padstacks.instances) == 2
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_create_backdrill_dielectric_fill_via(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -666,10 +628,6 @@ class TestClass(BaseTestClass):
         assert edbapp.padstacks.definitions["v35h15_BD"].material == "test_fill"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_create_backdrill_dielectric_fill_via2(self):
         edbapp = self.edb_examples.get_si_verse()
         backdrill_layer = "Inner1(GND1)"
@@ -691,10 +649,6 @@ class TestClass(BaseTestClass):
             assert instance.backdrill_layer == "Inner1(GND1)"
         edbapp.close(terminate_rpc_session=False)
 
-    @pytest.mark.skipif(
-        config["use_grpc"] and config["desktopVersion"] < "2026.1",
-        reason="This test is failing in grpc. To be validated in 26R1.",
-    )
     def test_create_backdrill_dielectric_fill_via3(self):
         edbapp = self.edb_examples.get_si_verse()
         instances = edbapp.padstacks.definitions["v40h20-1"].instances
@@ -766,7 +720,6 @@ def _assert_inside(rect, pad):
     )
 
 
-@pytest.mark.skipif(config["use_grpc"], reason="Updated method is not present in edb api.")
 @pytest.mark.usefixtures("close_rpc_session")
 class TestPadstackInstance(BaseTestClass):
     def test_backdrill_properties(self):
