@@ -22,7 +22,7 @@
 
 from pathlib import Path
 
-from ansys.edb.core.session import session
+from ansys.edb.core.session import MOD as _SESSION_MOD, session
 
 from pyedb import Edb
 from pyedb.generic.settings import settings
@@ -40,4 +40,5 @@ def test_no_close_existing_session(tmp_path: Path):
             pass
         finally:
             db.close()
+        assert _SESSION_MOD.current_session is not None
     # session.__exit__ should not fail with "AttributeError: 'NoneType' object has no attribute 'disconnect'"
