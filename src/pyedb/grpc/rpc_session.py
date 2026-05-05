@@ -184,7 +184,7 @@ class RpcSession:
             # directly instead of calling launch_session which may throw or
             # behave unexpectedly when a session is already active.
             RpcSession.rpc_session = _SESSION_MOD.current_session
-            RpcSession._owns_session = True
+            RpcSession._owns_session = False
             start_managing(IOMangementType.READ_AND_WRITE)
             time.sleep(latency_delay)
             if RpcSession.rpc_session and hasattr(RpcSession.rpc_session, "local_server_proc"):
@@ -251,7 +251,7 @@ class RpcSession:
         """Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
-        if RpcSession.rpc_session:
+        if RpcSession.rpc_session and RpcSession._owns_session:
             server_proc = None
             try:
                 server_proc = RpcSession.rpc_session.local_server_proc
@@ -328,6 +328,7 @@ class RpcSession:
         ``ansys.edb.core.session`` module's ``current_session`` to prevent
         ``__start_rpc_server`` from falsely detecting a preexisting session.
         """
+        clear_upstream_session = RpcSession._owns_session
         RpcSession.rpc_session = None
         RpcSession.pid = 0
         RpcSession.server_pid = 0
@@ -336,7 +337,8 @@ class RpcSession:
         # Clear the global session reference so the next launch_session()
         # call does not attach to a dead session.
         try:
-            _SESSION_MOD.current_session = None
+            if clear_upstream_session:
+                _SESSION_MOD.current_session = None
         except Exception as e:  # nosec B110
             settings.logger.debug(f"Could not clear current_session: {e}")
 

@@ -123,10 +123,10 @@ def test_release_does_not_go_below_zero():
 
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
-def test_release_closes_session_when_owned_and_count_reaches_zero(monkeypatch):
+def test_release_closes_session_when_not_owned_and_count_reaches_zero(monkeypatch):
     _reset_rpc_session_state()
 
-    RpcSession._owns_session = True
+    RpcSession._owns_session = False
     RpcSession.rpc_session = SimpleNamespace(in_memory=False)
     RpcSession.acquire()
     result = RpcSession.release()
@@ -170,7 +170,7 @@ def test_start_sets_owns_session_true_when_no_preexisting_session(monkeypatch):
 
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
-def test_start_sets_owns_session_true_when_preexisting_session(monkeypatch):
+def test_start_sets_owns_session_false_when_preexisting_session(monkeypatch):
     _reset_rpc_session_state()
 
     monkeypatch.setattr(rpc_session_module, "is_linux", False)
@@ -189,7 +189,7 @@ def test_start_sets_owns_session_true_when_preexisting_session(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "launch_session", fake_launch_session)
     RpcSession.start("2026.1", port=55020)
 
-    assert RpcSession._owns_session is True
+    assert RpcSession._owns_session is False
     assert RpcSession.rpc_session is preexisting
     assert RpcSession.pid == 2222
     assert len(launch_called) == 0  # launch_session should NOT be called
@@ -286,7 +286,7 @@ def test_full_lifecycle_preexisting_session(monkeypatch):
     RpcSession.start("2026.1", port=55040)
     RpcSession.acquire()
 
-    assert RpcSession._owns_session is True
+    assert RpcSession._owns_session is False
     assert RpcSession.rpc_session is preexisting
     assert len(launch_called) == 0  # launch_session not called for preexisting
     assert RpcSession.release() is True  # count reached zero
