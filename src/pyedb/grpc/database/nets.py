@@ -561,7 +561,7 @@ class Nets(CommonNets):
         """
         temp_list = []
         for _, comp_obj in self._pedb.components.inductors.items():
-            numpins = comp_obj.numpins
+            numpins = comp_obj.num_pins
 
             if numpins == 2:
                 nets = comp_obj.nets
@@ -570,7 +570,7 @@ class Nets(CommonNets):
                 else:
                     pass
         for _, comp_obj in self._pedb.components.resistors.items():
-            numpins = comp_obj.numpins
+            numpins = comp_obj.num_pins
 
             if numpins == 2 and comp_obj.res_value <= res_value:
                 nets = comp_obj.nets
