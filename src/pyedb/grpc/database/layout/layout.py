@@ -190,9 +190,18 @@ class PrimitivesQuery:
         layer_names = self._as_filter_set(layer)
         if layer_names is None:
             return None
-        signal_layers = set(self._pedb.stackup.signal_layers.keys())
-        valid_layer_names = layer_names.intersection(signal_layers)
-        return valid_layer_names or None
+        # Validate against the full stackup layer set (signal + plane/power layers).
+        # Using signal_layers only excludes power/ground plane layers whose type is
+        # classified differently on Linux by the gRPC server, causing the intersection
+        # to be empty and the layer filter to be silently dropped.
+        all_stackup_layers = set(self._pedb.stackup.layers.keys())
+        valid_layer_names = layer_names.intersection(all_stackup_layers)
+        if not valid_layer_names:
+            self._pedb.logger.warning(
+                f"Layer filter {layer_names} did not match any stackup layers. Filter will be ignored."
+            )
+            return None
+        return valid_layer_names
 
     def _normalize_point_query_nets(self, nets) -> list[Any] | None:
         if not nets:
@@ -492,14 +501,7 @@ class PrimitivesQuery:
 
     @deprecate_argument_name({"layer_name": "layer", "net_list": "nets"})
     def get_polygons_by_layer(self, layer, nets=None) -> list[Polygon]:
-        layer_name_set = self._as_filter_set(layer)
-        net_name_set = self._as_filter_set(nets)
-        return [
-            primitive
-            for primitive in self.polygons
-            if (layer_name_set is None or primitive.layer_name in layer_name_set)
-            and (net_name_set is None or primitive.net_name in net_name_set)
-        ]
+        return self.filter_primitives(layer_name=layer, net_name=nets, prim_type="polygon")
 
     def get_polygon_bounding_box(self, polygon) -> list[float] | None:
         """Retrieve a polygon bounding box."""

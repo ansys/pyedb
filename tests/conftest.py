@@ -113,12 +113,19 @@ class EdbExamples:
 
     def copy_test_files_into_local_folder(self, file_folder_path):
         """Copy files or folders from example_models into local test folder."""
-        time.sleep(0.5)  # To avoid issues with rapid creation/deletion of folders in some environments.
         source_folder = Path(__file__).parent / "example_models"
         files = file_folder_path if isinstance(file_folder_path, list) else [file_folder_path]
         target_files = []
         random_folder_name = "test_" + generate_random_string(6)
-        os.makedirs(os.path.join(self.test_folder, random_folder_name), exist_ok=True)
+        # Retry the directory creation to handle transient filesystem delays
+        # (e.g. antivirus scans or slow network drives) that are common in CI.
+        _target_dir = os.path.join(self.test_folder, random_folder_name)
+        for _attempt in range(5):
+            try:
+                os.makedirs(_target_dir, exist_ok=True)
+                break
+            except OSError:
+                time.sleep(0.3)
         for f in files:
             src_files = source_folder / f
             target_file_folder_name = os.path.join(self.test_folder, random_folder_name, src_files.name)

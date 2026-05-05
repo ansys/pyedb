@@ -73,8 +73,6 @@ class Primitive:
     def __init__(self, pedb, core):
         self.core = core
         self._pedb = pedb
-        self._core_stackup = pedb.stackup
-        self._core_net = pedb.nets
         self._object_instance = None
 
     @property
@@ -312,7 +310,9 @@ class Primitive:
         area = self.core.cast().polygon_data.area()
         if include_voids:
             for el in self.voids:
-                area -= el.polygon_data.area()
+                void_pd = el.polygon_data
+                if void_pd is not None:
+                    area -= void_pd.area()
         return area
 
     def _get_points_for_plot(self, my_net_points, num) -> tuple[list[float], list[float]]:

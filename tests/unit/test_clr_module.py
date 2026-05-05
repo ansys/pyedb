@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 
+import importlib
+import importlib.util
 import os
 from pathlib import Path
 import sys
@@ -27,6 +29,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+DOTNET_AVAILABLE = importlib.util.find_spec("pythonnet") is not None
 DOTNET_ROOT = "dummy/root/path"
 DOTNET_ROOT_PATH = Path(DOTNET_ROOT)
 PYEDB_FILE = "dummy/pyedb/file"
@@ -51,6 +54,7 @@ def clean_environment():
 
 
 @pytest.mark.skipif(os.name != "posix", reason="test for linux behavior")
+@pytest.mark.skipif(not DOTNET_AVAILABLE, reason="dotnet dependencies not installed")
 @patch("pythonnet.load")
 @patch("clr_loader.get_coreclr")
 def test_use_system_dotnet(mock_get_coreclr, mock_load, clean_environment):

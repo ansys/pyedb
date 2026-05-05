@@ -238,7 +238,7 @@ class Nets(CommonNets):
         >>> for net_name, net_obj in all_nets.items():
         ...     print(net_name, net_obj.is_power_ground)
         """
-        return {i.name: i for i in self._pedb.layout.nets}
+        return {i.name: i for i in self._pedb.layout.nets if not i.is_null}
 
     @property
     def netlist(self) -> List[str]:
@@ -561,7 +561,7 @@ class Nets(CommonNets):
         """
         temp_list = []
         for _, comp_obj in self._pedb.components.inductors.items():
-            numpins = comp_obj.numpins
+            numpins = comp_obj.num_pins
 
             if numpins == 2:
                 nets = comp_obj.nets
@@ -570,7 +570,7 @@ class Nets(CommonNets):
                 else:
                     pass
         for _, comp_obj in self._pedb.components.resistors.items():
-            numpins = comp_obj.numpins
+            numpins = comp_obj.num_pins
 
             if numpins == 2 and comp_obj.res_value <= res_value:
                 nets = comp_obj.nets
