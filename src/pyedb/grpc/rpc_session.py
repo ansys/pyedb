@@ -187,11 +187,10 @@ class RpcSession:
             RpcSession._owns_session = True
             start_managing(IOMangementType.READ_AND_WRITE)
             time.sleep(latency_delay)
-            if RpcSession.rpc_session:
-                try:
-                    RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-                except Exception:
-                    pass
+            if RpcSession.rpc_session and hasattr(RpcSession.rpc_session, "local_server_proc"):
+                proc = RpcSession.rpc_session.local_server_proc
+                if proc is not None and hasattr(proc, "pid"):
+                    RpcSession.pid = proc.pid
             settings.logger.info("Attached to preexisting gRPC session")
             return
         max_attempts = 3 if _IS_WINDOWS else 1
