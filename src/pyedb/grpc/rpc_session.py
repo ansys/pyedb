@@ -179,6 +179,21 @@ class RpcSession:
     @staticmethod
     def __start_rpc_server():
         preexisting = _SESSION_MOD.current_session is not None
+        if preexisting:
+            # A session already exists in the underlying module. Adopt it
+            # directly instead of calling launch_session which may throw or
+            # behave unexpectedly when a session is already active.
+            RpcSession.rpc_session = _SESSION_MOD.current_session
+            RpcSession._owns_session = True
+            start_managing(IOMangementType.READ_AND_WRITE)
+            time.sleep(latency_delay)
+            if RpcSession.rpc_session:
+                try:
+                    RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
+                except Exception:
+                    pass
+            settings.logger.info("Attached to preexisting gRPC session")
+            return
         max_attempts = 3 if _IS_WINDOWS else 1
         for attempt in range(max_attempts):
             try:
@@ -193,15 +208,12 @@ class RpcSession:
                 else:
                     settings.logger.error("All launch_session attempts failed.")
                     raise
-        RpcSession._owns_session = not preexisting
+        RpcSession._owns_session = True
         start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            if preexisting:
-                settings.logger.info("Attached to preexisting gRPC session (not owned by RpcSession)")
-            else:
-                settings.logger.info("Grpc session started")
+            settings.logger.info("Grpc session started")
 
     @staticmethod
     def kill():
