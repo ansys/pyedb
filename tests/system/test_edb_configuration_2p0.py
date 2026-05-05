@@ -1243,6 +1243,8 @@ class TestClassSetups(BaseTestClass):
         config["use_grpc"] and ansys.edb.core.__version__ == "0.2.6",
         reason="Test skipped for ansys-edb-core version 0.2.6",
     )
+
+    @pytest.mark.skipif(not config["use_grpc"] and is_linux, reason="DotNet Randomly failing on Linux.")
     def test_hfss_setup_w_frequency_sweeps(self):
         data = {
             "setups": [
