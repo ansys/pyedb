@@ -115,13 +115,13 @@ class CfgStackup(BaseModel):
         for layer in self.layers:
             if isinstance(layer.thickness, str):
                 if "um" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("um", ""))*1e-6
+                    layer.thickness = float(layer.thickness.replace("um", "")) * 1e-6
                 elif "mm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mm", ""))*1e-3
+                    layer.thickness = float(layer.thickness.replace("mm", "")) * 1e-3
                 elif "cm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("cm", ""))*1e-2
+                    layer.thickness = float(layer.thickness.replace("cm", "")) * 1e-2
                 elif "mil" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mil", ""))*0.0000254
+                    layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254
                 elif "in" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("in", ""))*0.0254
+                    layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254
                 layer.thickness = str(layer.thickness).replace(unit, "").strip()
