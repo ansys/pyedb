@@ -65,6 +65,8 @@ class TestClass(BaseTestClass):
         assert app_edb.stackup.create_symmetric_stackup(8)
         app_edb.close(terminate_rpc_session=False)
 
+    def test_stackup_create_symmetric_stackup_2(self):
+        """Create a symmetric stackup."""
         app_edb = self.edb_examples.create_empty_edb()
         assert app_edb.stackup.create_symmetric_stackup(8, soldermask=False)
         app_edb.close(terminate_rpc_session=False)
