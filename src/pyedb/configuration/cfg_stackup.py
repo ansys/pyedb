@@ -111,17 +111,28 @@ class CfgStackup(BaseModel):
     def add_layer_at_bottom(self, name, **kwargs):
         self.layers.append(CfgLayer(name=name, **kwargs))
 
-    def normalize_thickness(self):
+    def normalize_thickness(self, unit="m"):
+        if unit == "m":
+            multiplier = 1
+        elif unit == "mm":
+            multiplier = 1000
+        elif unit == "um":
+            multiplier = 1e6
+        elif unit == "mil":
+            multiplier = 1 / 0.0000254
+        elif unit == "in":
+            multiplier = 1 / 0.0254
+        else:
+            raise ValueError(f"Unsupported unit: {unit}")
         for layer in self.layers:
             if isinstance(layer.thickness, str):
                 if "um" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("um", "")) * 1e-6
+                    layer.thickness = float(layer.thickness.replace("um", "")) * 1e-6 * multiplier
                 elif "mm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mm", "")) * 1e-3
+                    layer.thickness = float(layer.thickness.replace("mm", "")) * 1e-3 * multiplier
                 elif "cm" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("cm", "")) * 1e-2
+                    layer.thickness = float(layer.thickness.replace("cm", "")) * 1e-2 * multiplier
                 elif "mil" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254
+                    layer.thickness = float(layer.thickness.replace("mil", "")) * 0.0000254 * multiplier
                 elif "in" in layer.thickness:
-                    layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254
-                layer.thickness = str(layer.thickness).replace(unit, "").strip()
+                    layer.thickness = float(layer.thickness.replace("in", "")) * 0.0254 * multiplier

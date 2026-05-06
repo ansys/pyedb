@@ -349,7 +349,7 @@ class XmlStackup(BaseModel):
         >>> cfg_data = CfgStackup(materials=[...], layers=[...])
         >>> stackup.import_from_cfg_stackup(cfg_data)
         """
-        cfg_stackup.normalize_thickness()
+        cfg_stackup.normalize_thickness(unit="mm")
         self.add_materials()
         for mat in cfg_stackup.materials:
             mat_kwargs = {}
