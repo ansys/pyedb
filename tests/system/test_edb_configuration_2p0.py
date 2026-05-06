@@ -2195,6 +2195,62 @@ class TestOperations(BaseTestClass):
         assert wave_port.hfss_type == "Wave"
         edb_app.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_setup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        signal_nets = [
+            "PCIe_Gen4_RX0_P",
+            "PCIe_Gen4_RX0_N",
+            "PCIe_Gen4_RX1_P",
+            "PCIe_Gen4_RX1_N",
+            "PCIe_Gen4_RX2_P",
+            "PCIe_Gen4_RX2_N",
+            "PCIe_Gen4_RX3_P",
+            "PCIe_Gen4_RX3_N",
+        ]
+        # create port is needed for auto assign mesh op
+        component = cfg_builder.components.get("U1")
+        component.set_solder_ball_properties(shape="cylinder", reference_designator="U1")
+        cfg_builder.ports.add_coax_port(reference_designator="U1", net_list=signal_nets)
+        # hfss setup
+        cfg_setup = cfg_builder.setups.add_hfss_setup(name="Test_HFSS")
+        cfg_setup.add_frequency_sweep(name="Test_Sweep", start="1GHz", stop="10GHz", step_or_count="0.5GHz")
+        cfg_setup.set_auto_mesh_operation(enabled=True,
+                                          trace_ratio_seeding=3.0,
+                                          signal_via_side_number=12)
+        cfg_setup.set_broadband_adaptive(low_freq="5GHz",
+                                         high_freq="10GHz",
+                                         max_delta=0.05,
+                                         max_passes=30)
+        assert cfg_setup.name == "Test_HFSS"
+        cfg_sweep = cfg_setup.freq_sweep[0]
+        assert cfg_sweep.name == "Test_Sweep"
+        assert cfg_setup.freq_sweep[0].frequencies[0].start == "1GHz"
+        assert cfg_setup.freq_sweep[0].frequencies[0].stop == "10GHz"
+        assert cfg_setup.freq_sweep[0].frequencies[0].increment == "0.5GHz"
+        assert cfg_setup.broadband_adaptive_solution.low_frequency == "5GHz"
+        assert cfg_setup.broadband_adaptive_solution.high_frequency == "10GHz"
+        assert cfg_setup.broadband_adaptive_solution.max_delta == 0.05
+        assert cfg_setup.broadband_adaptive_solution.max_passes == 30
+        edb_app.configuration.run(cfg_builder)
+        assert len(edb_app.ports) == 8
+        assert "Test_HFSS" in edb_app.setups
+        setup = edb_app.setups.get("Test_HFSS")
+        assert setup.frequency_sweeps["Test_Sweep"].frequency_string[0] == "LIN 1GHz 10GHz 0.5GHz"
+        mesh_operation = edb_app.setups["Test_HFSS"].mesh_operations[0]
+        assert mesh_operation.enabled is True
+        assert mesh_operation.mesh_operation_type == "LengthMeshOperation"
+        assert mesh_operation.name == "Test_HFSS_AutoMeshOp"
+        assert len(mesh_operation.net_layer_info) == 16
+        assert mesh_operation.restrict_max_length is True
+        assert edb_app.value(edb_app.setups["Test_HFSS"].mesh_operations[0].max_length) == pytest.approx(450, 1)
+        assert setup.adaptive_settings.broadband_adaptive_solution.low_frequency == "5GHz"
+        assert setup.adaptive_settings.broadband_adaptive_solution.high_frequency == "10GHz"
+        assert setup.adaptive_settings.broadband_adaptive_solution.max_delta == "0.05"
+        assert setup.adaptive_settings.broadband_adaptive_solution.max_passes == 30
+        edb_app.close(terminate_rpc_session=False)
+
 
 
 

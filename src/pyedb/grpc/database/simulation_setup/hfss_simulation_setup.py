@@ -499,7 +499,9 @@ class HfssSimulationSetup(SimulationSetup):
         """
         net_for_mesh_seeding = list(set([term.net.name for term in list(self._pedb.terminals.values())]))
         if not net_for_mesh_seeding:
-            raise ValueError("No terminals found to seed the mesh operation.")
+            net_for_mesh_seeding = list(self._pedb.nets.signal.keys())
+        if not net_for_mesh_seeding:
+            raise ValueError("No terminals and no signal nets found to seed the mesh operation.")
         meshop = LengthMeshOperation.create(name=f"{self.name}_AutoMeshOp")
         layer_info = []
         smallest_width = 1e3
