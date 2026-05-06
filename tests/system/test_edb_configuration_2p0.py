@@ -2129,3 +2129,45 @@ class TestOperations(BaseTestClass):
         assert port.hfss_type == "Gap"
         assert port.pec_launch_width == "0.02mm"
         edbapp.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_wave(self):
+        edbapp = self.edb_examples.get_si_verse()
+        cfg_builder = edbapp.configuration.create_config_builder()
+        path_p = edbapp.nets.nets.get("PCIe_Gen4_RX3_P").primitives[0]
+        path_n  = edbapp.nets.nets.get("PCIe_Gen4_RX3_N").primitives[0]
+        point_on_edge_p = path_p.center_line[0]
+        point_on_edge_n = path_p.center_line[-1]
+        cfg_wave_port = cfg_builder.ports.add_diff_wave_port(name="test_cfg_wave_port",
+                                                            positive_primitive=path_p,
+                                                            positive_terminal_point=point_on_edge_p,
+                                                            negative_primitive=path_n,
+                                                            negative_terminal_point=point_on_edge_n
+                                                            )
+        assert cfg_wave_port.horizontal_extent_factor == 5
+        assert cfg_wave_port.name == "test_cfg_wave_port"
+        assert cfg_wave_port.type == "diff_wave_port"
+        positive_port = cfg_wave_port.positive_port
+        assert positive_port.name == "test_cfg_wave_port:T1"
+        assert positive_port.primitive_name == "line_165"
+        assert positive_port.point_on_edge == point_on_edge_p
+        negative_port = cfg_wave_port.negative_port
+        assert negative_port.name == "test_cfg_wave_port:T2"
+        assert negative_port.primitive_name == "line_166"
+        assert negative_port.point_on_edge == point_on_edge_n
+        edbapp.configuration.run(cfg_builder)
+        assert "test_cfg_wave_port" in edbapp.ports
+        diff_wave_port = edbapp.ports.get("test_cfg_wave_port")
+        assert diff_wave_port.hfss_type == "Wave"
+        assert len(diff_wave_port.terminals) == 2
+        terminal1 = diff_wave_port.terminals[0]
+        assert terminal1.net_name == "PCIe_Gen4_RX3_P"
+        assert terminal1.name == "test_cfg_wave_port:T1"
+        assert terminal1.terminal_type == "edge"
+        assert terminal1.is_port is True
+        terminal2 = diff_wave_port.terminals[-1]
+        assert terminal2.net_name == "PCIe_Gen4_RX3_N"
+        assert terminal2.name == "test_cfg_wave_port:T2"
+        assert terminal2.terminal_type == "edge"
+        assert terminal2.is_port is True
+        edbapp.close(terminate_rpc_session=False)

@@ -906,30 +906,55 @@ class CfgPorts:
 
     def add_diff_wave_port(
         self,
-        name,
-        positive_terminal,
-        negative_terminal,
+        name=None,
+        positive_terminal=None,
+        negative_terminal=None,
         horizontal_extent_factor=5,
         vertical_extent_factor=3,
         pec_launch_width="0.01mm",
+        positive_primitive=None,
+        positive_terminal_point=None,
+        negative_primitive=None,
+        negative_terminal_point=None,
     ):
         """Add a differential wave port from two edge-terminal descriptors.
+
+        The terminals can be supplied in two ways:
+
+        1. **Dict form** – pass ``positive_terminal`` and ``negative_terminal``
+           as dictionaries with ``"primitive_name"`` and ``"point_on_edge"`` keys.
+        2. **Flat form** – pass ``positive_primitive``, ``positive_terminal_point``,
+           ``negative_primitive``, and ``negative_terminal_point`` directly.
+           Each primitive may be a string name or a primitive object (its ``.name``
+           attribute is used automatically).
 
         Parameters
         ----------
         name : str
             Unique port name.
-        positive_terminal : dict
+        positive_terminal : dict, optional
             Edge-terminal descriptor for the positive arm, containing
             ``"primitive_name"`` and ``"point_on_edge"`` keys.
-        negative_terminal : dict
+            Ignored when the flat-form arguments are provided.
+        negative_terminal : dict, optional
             Edge-terminal descriptor for the negative arm.
+            Ignored when the flat-form arguments are provided.
         horizontal_extent_factor : int or float, optional
             Default is ``5``.
         vertical_extent_factor : int or float, optional
             Default is ``3``.
         pec_launch_width : str, optional
             Default is ``"0.01mm"``.
+        positive_primitive : str or primitive object, optional
+            Primitive carrying the positive trace edge.  Used together with
+            ``positive_terminal_point`` when ``positive_terminal`` is not given.
+        positive_terminal_point : list of float, optional
+            ``[x, y]`` point on the positive primitive edge.
+        negative_primitive : str or primitive object, optional
+            Primitive carrying the negative trace edge.  Used together with
+            ``negative_terminal_point`` when ``negative_terminal`` is not given.
+        negative_terminal_point : list of float, optional
+            ``[x, y]`` point on the negative primitive edge.
 
         Returns
         -------
@@ -938,12 +963,49 @@ class CfgPorts:
 
         Examples
         --------
+        Dict form:
+
         >>> cfg.ports.add_diff_wave_port(
         ...     "diff1",
         ...     positive_terminal={"primitive_name": "trace_p", "point_on_edge": [0.001, 0.0]},
         ...     negative_terminal={"primitive_name": "trace_n", "point_on_edge": [0.001, 0.0002]},
         ... )
+
+        Flat form:
+
+        >>> cfg.ports.add_diff_wave_port(
+        ...     "diff1",
+        ...     positive_primitive="trace_p",
+        ...     positive_terminal_point=[0.001, 0.0],
+        ...     negative_primitive="trace_n",
+        ...     negative_terminal_point=[0.001, 0.0002],
+        ... )
         """
+        # Build terminal dicts from flat arguments when dict form not supplied
+        if positive_terminal is None:
+            if positive_primitive is None or positive_terminal_point is None:
+                raise ValueError(
+                    "Provide either 'positive_terminal' dict or both "
+                    "'positive_primitive' and 'positive_terminal_point'."
+                )
+            if isinstance(positive_primitive, str):
+                pos_name = positive_primitive
+            else:
+                pos_name = getattr(positive_primitive, "aedt_name", None) or getattr(positive_primitive, "name", None)
+            positive_terminal = {"primitive_name": pos_name, "point_on_edge": positive_terminal_point}
+
+        if negative_terminal is None:
+            if negative_primitive is None or negative_terminal_point is None:
+                raise ValueError(
+                    "Provide either 'negative_terminal' dict or both "
+                    "'negative_primitive' and 'negative_terminal_point'."
+                )
+            if isinstance(negative_primitive, str):
+                neg_name = negative_primitive
+            else:
+                neg_name = getattr(negative_primitive, "aedt_name", None) or getattr(negative_primitive, "name", None)
+            negative_terminal = {"primitive_name": neg_name, "point_on_edge": negative_terminal_point}
+
         port = CfgDiffWavePort(
             self._pedb,
             name=name,
