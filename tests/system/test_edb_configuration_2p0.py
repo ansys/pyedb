@@ -2102,5 +2102,15 @@ class TestOperations(BaseTestClass):
         cfg_builder.nets.add_signal_nets(["PCIe_Gen4_RX0_P"])
         assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.signal_nets
         assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets # net must be removed
-        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.reference_nets# # net must be removed
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.reference_nets # net must be removed
+        cfg_builder.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
+        edbapp.configuration.run(cfg_builder)
+        assert edbapp.nets.nets.get("PCIe_Gen4_RX0_P").is_power_ground # net physically changed as pwr in EDB
         edbapp.close(terminate_rpc_session=False)
+
+    def test_cfg(self):
+        edbapp = self.edb_examples.get_si_verse()
+        cfg_builder = edbapp.configuration.create_config_builder()
+
+        cfg_builder.ports.add_gap_port()
+        pass
