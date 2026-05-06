@@ -2108,9 +2108,24 @@ class TestOperations(BaseTestClass):
         assert edbapp.nets.nets.get("PCIe_Gen4_RX0_P").is_power_ground # net physically changed as pwr in EDB
         edbapp.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg(self):
         edbapp = self.edb_examples.get_si_verse()
         cfg_builder = edbapp.configuration.create_config_builder()
+        polygon = edbapp.layout.polygons[0]
 
-        cfg_builder.ports.add_gap_port()
-        pass
+        cfg_edg_port = cfg_builder.ports.add_gap_port(name="test_cfg_gap_port",
+                                       primitive_name=polygon.aedt_name,
+                                       point_on_edge=polygon.arcs[0].midpoint,
+                                       pec_launch_width="0.02mm"
+                                       )
+        assert cfg_edg_port.horizontal_extent_factor == 5
+        assert cfg_edg_port.name == "test_cfg_gap_port"
+        assert cfg_edg_port.pec_launch_width == "0.02mm"
+        assert cfg_edg_port.type == "gap_port"
+        edbapp.configuration.run(cfg_builder)
+        assert "test_cfg_gap_port" in edbapp.ports
+        port = edbapp.ports.get("test_cfg_gap_port")
+        assert port.hfss_type == "Gap"
+        assert port.pec_launch_width == "0.02mm"
+        edbapp.close(terminate_rpc_session=False)
