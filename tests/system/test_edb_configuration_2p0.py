@@ -2252,7 +2252,7 @@ class TestOperations(BaseTestClass):
         edb_app.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
-    def test_cfg_siwave_setup(self):
+    def test_cfg_siwave_ac_setup(self):
         edb_app = self.edb_examples.get_si_verse()
         cfg_builder = edb_app.configuration.create_config_builder()
         setup = cfg_builder.setups.add_siwave_ac_setup(name="Test_siwave_AC_Setup", use_si_settings=True,
@@ -2268,6 +2268,25 @@ class TestOperations(BaseTestClass):
         setup = edb_app.setups.get("Test_siwave_AC_Setup")
         assert setup.si_slider_position == 2
         assert setup.frequency_sweeps.get("Test_Sweep").frequency_string == ['LIN 0GHz 35GHz 0.1GHz']
+        edb_app.close(terminate_rpc_session=False)
+
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_siwave_dc_setup(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        setup = cfg_builder.setups.add_siwave_dc_setup(
+            name="Test_siwave_DC_Setup",
+            dc_slider_position=2,
+            export_dc_thermal_data=True,
+        )
+        assert setup.name == "Test_siwave_DC_Setup"
+        assert setup.dc_slider_position == 2
+        assert setup.dc_ir_settings.export_dc_thermal_data is True
+        edb_app.configuration.run(cfg_builder)
+        assert "Test_siwave_DC_Setup" in edb_app.setups
+        edb_setup = edb_app.setups.get("Test_siwave_DC_Setup")
+        assert edb_setup.dc_settings.dc_slider_position == 2
+        assert edb_setup.dc_ir_settings.export_dc_thermal_data is True
         edb_app.close(terminate_rpc_session=False)
 
 
