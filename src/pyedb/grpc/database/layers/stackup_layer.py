@@ -127,51 +127,57 @@ class StackupLayer:
                 if "top" in v:
                     top_roughness = v["top"]
                     if top_roughness:
-                        if top_roughness["model"] == "huray":
-                            nodule_radius = top_roughness["nodule_radius"]
-                            surface_ratio = top_roughness["surface_ratio"]
-                            self.assign_roughness_model(
-                                model_type="huray",
-                                huray_radius=nodule_radius,
-                                huray_surface_ratio=surface_ratio,
-                                apply_on_surface="top",
-                            )
-                        elif top_roughness["model"] == "groisse":
-                            roughness = top_roughness["roughness"]
-                            self.assign_roughness_model(
-                                model_type="groisse", groisse_roughness=roughness, apply_on_surface="top"
-                            )
-                    if "bottom" in v:
-                        bottom_roughness = v["bottom"]
-                        if bottom_roughness:
-                            if bottom_roughness["model"] == "huray":
-                                nodule_radius = bottom_roughness["nodule_radius"]
-                                surface_ratio = bottom_roughness["surface_ratio"]
+                        if top_roughness.get("model") == "huray":
+                            nodule_radius = top_roughness.get("nodule_radius")
+                            surface_ratio = top_roughness.get("surface_ratio")
+                            if nodule_radius is not None and surface_ratio is not None:
+                                self.assign_roughness_model(
+                                    model_type="huray",
+                                    huray_radius=nodule_radius,
+                                    huray_surface_ratio=surface_ratio,
+                                    apply_on_surface="top",
+                                )
+                        elif top_roughness.get("model") == "groisse":
+                            roughness = top_roughness.get("roughness")
+                            if roughness is not None:
+                                self.assign_roughness_model(
+                                    model_type="groisse", groisse_roughness=roughness, apply_on_surface="top"
+                                )
+                if "bottom" in v:
+                    bottom_roughness = v["bottom"]
+                    if bottom_roughness:
+                        if bottom_roughness.get("model") == "huray":
+                            nodule_radius = bottom_roughness.get("nodule_radius")
+                            surface_ratio = bottom_roughness.get("surface_ratio")
+                            if nodule_radius is not None and surface_ratio is not None:
                                 self.assign_roughness_model(
                                     model_type="huray",
                                     huray_radius=nodule_radius,
                                     huray_surface_ratio=surface_ratio,
                                     apply_on_surface="bottom",
                                 )
-                            elif bottom_roughness["model"] == "groisse":
-                                roughness = bottom_roughness["roughness"]
+                        elif bottom_roughness.get("model") == "groisse":
+                            roughness = bottom_roughness.get("roughness")
+                            if roughness is not None:
                                 self.assign_roughness_model(
                                     model_type="groisse", groisse_roughness=roughness, apply_on_surface="bottom"
                                 )
-                    if "side" in v:
-                        side_roughness = v["side"]
-                        if side_roughness:
-                            if side_roughness["model"] == "huray":
-                                nodule_radius = side_roughness["nodule_radius"]
-                                surface_ratio = side_roughness["surface_ratio"]
+                if "side" in v:
+                    side_roughness = v["side"]
+                    if side_roughness:
+                        if side_roughness.get("model") == "huray":
+                            nodule_radius = side_roughness.get("nodule_radius")
+                            surface_ratio = side_roughness.get("surface_ratio")
+                            if nodule_radius is not None and surface_ratio is not None:
                                 self.assign_roughness_model(
                                     model_type="huray",
                                     huray_radius=nodule_radius,
                                     huray_surface_ratio=surface_ratio,
                                     apply_on_surface="side",
                                 )
-                            elif side_roughness["model"] == "groisse":
-                                roughness = side_roughness["roughness"]
+                        elif side_roughness.get("model") == "groisse":
+                            roughness = side_roughness.get("roughness")
+                            if roughness is not None:
                                 self.assign_roughness_model(
                                     model_type="groisse", groisse_roughness=roughness, apply_on_surface="side"
                                 )

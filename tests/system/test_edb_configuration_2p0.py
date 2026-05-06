@@ -2289,6 +2289,41 @@ class TestOperations(BaseTestClass):
         assert edb_setup.dc_ir_settings.export_dc_thermal_data is True
         edb_app.close(terminate_rpc_session=False)
 
-
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_padstack_create_definition_and_place_instance(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        cfg_builder.padstacks.add_definition(name="Test_padstacks",
+                                             hole_plating_thickness="10um",
+                                             material="copper",
+                                             hole_range="through",
+                                             hole_diameter="200um",
+                                             pad_diameter="300um",
+                                             anti_pad_diameter="400um"
+                                             )
+        cfg_def = cfg_builder.padstacks.definitions[0]
+        assert cfg_def.name == "Test_padstacks"
+        cfg_padstack_instance = cfg_builder.padstacks.add_instance(name="Test_padstacks_inst",
+                                           net_name="Test_net",
+                                           definition="Test_padstacks",
+                                           position=[1e-3, 2e-3])
+        assert cfg_padstack_instance.position == [0.001, 0.002]
+        assert cfg_padstack_instance.name == "Test_padstacks_inst"
+        assert cfg_padstack_instance.net_name == "Test_net"
+        edb_app.configuration.run(cfg_builder)
+        padstack_def = edb_app.padstacks.definitions.get("Test_padstacks")
+        assert not padstack_def.is_null
+        assert padstack_def.start_layer == "1_Top"
+        assert padstack_def.stop_layer == "16_Bottom"
+        assert padstack_def.hole_plating_thickness == 10e-6
+        assert padstack_def.material == "copper"
+        assert padstack_def.hole_diameter == pytest.approx(200e-6, 1)
+        assert padstack_def.pad_by_layer["1_Top"].parameters_values[0] == pytest.approx(300e-6, 1)
+        assert padstack_def.antipad_by_layer["1_Top"].parameters_values[0] == pytest.approx(400e-6, 1)
+        assert len(padstack_def.instances) == 1
+        assert padstack_def.instances[0].name == "Test_padstacks_inst"
+        assert padstack_def.instances[0].net_name == "Test_net"
+        assert padstack_def.instances[0].position == [0.001, 0.002]
+        edb_app.close(terminate_rpc_session=False)
 
 

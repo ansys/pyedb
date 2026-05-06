@@ -21,7 +21,7 @@
 # SOFTWARE.
 """Build padstack definition and instance entries for configuration payloads."""
 
-from typing import Union
+from typing import Literal, Union
 
 from pydantic import BaseModel, Field
 
@@ -197,7 +197,9 @@ class CfgPadstackDefinition(CfgBase):
 
     hole_plating_thickness: str | float | None = None
     material: str | None = Field(None, alias="hole_material")
-    hole_range: str | None = None
+    hole_range: Literal[
+        "through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"
+    ] | None = None
 
     pad_parameters: dict | None = None
     hole_parameters: dict | None = None
@@ -208,7 +210,9 @@ class CfgPadstackDefinition(CfgBase):
         name: str,
         hole_plating_thickness: str | float | None = None,
         material: str | None = None,
-        hole_range: str | None = None,
+        hole_range: Literal[
+            "through", "begin_on_upper_pad", "end_on_lower_pad", "upper_pad_to_lower_pad"
+        ] | None = None,
         pad_parameters: dict | None = None,
         hole_parameters: dict | None = None,
         solder_ball_parameters: dict | None = None,
@@ -249,12 +253,17 @@ class CfgPadstacks(CfgBase):
 
     # Not serialized – holds a live EDB reference when built from a session.
     _pedb: object = None
+    _cfg_stackup: object = None
 
     model_config = {"populate_by_name": True, "extra": "forbid", "arbitrary_types_allowed": True}
 
     def _set_pedb(self, pedb):
         """Attach a live EDB session (called by EdbConfigBuilder)."""
         object.__setattr__(self, "_pedb", pedb)
+
+    def _set_cfg_stackup(self, cfg_stackup):
+        """Attach the CfgStackup builder (called by EdbConfigBuilder)."""
+        object.__setattr__(self, "_cfg_stackup", cfg_stackup)
 
     @classmethod
     def create(cls, pedb=None, **kwargs) -> "CfgPadstacks":
@@ -376,7 +385,7 @@ class CfgPadstacks(CfgBase):
             solderball_layer = p_inst.solderball_layer
         except Exception:
             solderball_layer = None
-        obj = self.add_padstack_instance(
+        obj = self.add_instance(
             name=p_inst.aedt_name,
             is_pin=p_inst.is_pin,
             definition=p_inst.padstack_definition,
@@ -390,21 +399,6 @@ class CfgPadstacks(CfgBase):
         )
         return obj
 
-    def add_padstack_definition(self, **kwargs):
-        """Add a padstack definition from raw keyword arguments.
-
-        Parameters
-        ----------
-        **kwargs
-            Arguments forwarded to :class:`CfgPadstackDefinition`.
-
-        Returns
-        -------
-        CfgPadstackDefinition
-        """
-        obj = CfgPadstackDefinition(**kwargs)
-        self.definitions.append(obj)
-        return obj
 
     def add_definition(
         self,
@@ -412,11 +406,32 @@ class CfgPadstacks(CfgBase):
         hole_plating_thickness=None,
         material=None,
         hole_range=None,
+        hole_diameter=None,
+        hole_shape="circle",
+        hole_offset_x="0",
+        hole_offset_y="0",
+        pad_shape="circle",
+        pad_diameter=None,
+        pad_offset_x="0",
+        pad_offset_y="0",
+        pad_rotation="0",
+        pad_x_size=None,
+        pad_y_size=None,
+        anti_pad_shape="circle",
+        anti_pad_diameter=None,
+        anti_pad_x_size=None,
+        anti_pad_y_size=None,
+        pad_layers=None,
         pad_parameters=None,
         hole_parameters=None,
         solder_ball_parameters=None,
     ):
         """Add a padstack definition with named parameters.
+
+        Pad geometry can be specified either via the **convenience arguments**
+        (which build the ``pad_parameters`` and ``hole_parameters`` dicts
+        automatically) or by passing raw ``pad_parameters`` / ``hole_parameters``
+        dicts directly for full control.
 
         Parameters
         ----------
@@ -425,13 +440,76 @@ class CfgPadstacks(CfgBase):
         hole_plating_thickness : str or float, optional
             Plating thickness, e.g. ``"25um"``.
         material : str, optional
-            Hole conductor material name.
+            Hole conductor material name, e.g. ``"copper"``.
         hole_range : str, optional
-            Layer range the hole spans.
+            Layer range the hole spans.  Accepted values:
+
+            * ``"through"`` — hole goes fully through all layers.
+            * ``"begin_on_upper_pad"`` — hole starts at the upper pad surface.
+            * ``"end_on_lower_pad"`` — hole ends at the lower pad surface.
+            * ``"upper_pad_to_lower_pad"`` *(default)* — upper pad to lower pad.
+        hole_diameter : str or float, optional
+            Drill hole diameter, e.g. ``"0.2mm"``.  Used together with
+            *hole_shape* when *hole_parameters* is not given.
+        hole_shape : str, optional
+            Hole geometry type.  Default is ``"circle"``.
+        hole_offset_x : str, optional
+            Hole X offset.  Default is ``"0"``.
+        hole_offset_y : str, optional
+            Hole Y offset.  Default is ``"0"``.
+        pad_shape : str, optional
+            Regular-pad geometry type.  Accepted values:
+            ``"circle"``, ``"square"``, ``"rectangle"``, ``"oval"``,
+            ``"bullet"``, ``"round45"``, ``"round90"``, ``"square45"``,
+            ``"square90"``.  Default is ``"circle"``.
+        pad_diameter : str or float, optional
+            Pad diameter (for ``"circle"`` shape), e.g. ``"0.5mm"``.
+        pad_offset_x : str, optional
+            Pad X offset.  Default is ``"0"``.
+        pad_offset_y : str, optional
+            Pad Y offset.  Default is ``"0"``.
+        pad_rotation : str, optional
+            Pad rotation angle.  Default is ``"0"``.
+        pad_x_size : str or float, optional
+            Pad X size for non-circular shapes (``"rectangle"``, ``"oval"``,
+            ``"bullet"``), e.g. ``"0.5mm"``.
+        pad_y_size : str or float, optional
+            Pad Y size for non-circular shapes.
+        anti_pad_shape : str, optional
+            Anti-pad geometry type.  Default is ``"circle"``.
+        anti_pad_diameter : str or float, optional
+            Anti-pad diameter (for ``"circle"`` shape).
+        anti_pad_x_size : str or float, optional
+            Anti-pad X size for non-circular shapes.
+        anti_pad_y_size : str or float, optional
+            Anti-pad Y size for non-circular shapes.
+        pad_layers : list of str, optional
+            Layer names on which the pad geometry is applied.  When ``None``
+            and a live EDB session is attached, all signal layers are used
+            automatically.  Only used when *pad_parameters* is not given.
         pad_parameters : dict, optional
-            Raw pad-parameter dictionary.
+            Full raw pad-parameter dictionary.  Overrides all convenience pad
+            arguments above.  Structure::
+
+                {
+                    "regular_pad": [
+                        {"layer_name": "1_Top", "shape": "circle",
+                         "diameter": "0.5mm", "offset_x": "0",
+                         "offset_y": "0", "rotation": "0"},
+                        ...
+                    ],
+                    "anti_pad": [...],
+                    "thermal_pad": [...],
+                    "hole": [...],
+                }
+
         hole_parameters : dict, optional
-            Raw hole-parameter dictionary.
+            Full raw hole-parameter dictionary.  Overrides *hole_diameter* /
+            *hole_shape* convenience args.  Structure::
+
+                {"shape": "circle", "diameter": "0.2mm",
+                 "offset_x": "0", "offset_y": "0", "rotation": "0"}
+
         solder_ball_parameters : dict, optional
             Raw solder-ball parameter dictionary.
 
@@ -442,8 +520,114 @@ class CfgPadstacks(CfgBase):
 
         Examples
         --------
-        >>> cfg.padstacks.add_definition("via_0.2", material="copper", hole_plating_thickness="25um")
+        Simple circular via on all signal layers (requires live session):
+
+        >>> cfg.padstacks.add_definition(
+        ...     "via_0.2",
+        ...     material="copper",
+        ...     hole_plating_thickness="25um",
+        ...     hole_diameter="0.2mm",
+        ...     pad_diameter="0.5mm",
+        ...     anti_pad_diameter="0.8mm",
+        ... )
+
+        Blind via with explicit layers:
+
+        >>> cfg.padstacks.add_definition(
+        ...     "via_blind",
+        ...     hole_range="begin_on_upper_pad",
+        ...     hole_diameter="0.15mm",
+        ...     pad_diameter="0.35mm",
+        ...     anti_pad_diameter="0.6mm",
+        ...     pad_layers=["1_Top", "DE1"],
+        ... )
+
+        Raw dict form for full control:
+
+        >>> cfg.padstacks.add_definition(
+        ...     "via_custom",
+        ...     pad_parameters={
+        ...         "regular_pad": [
+        ...             {"layer_name": "1_Top", "shape": "rectangle",
+        ...              "x_size": "0.5mm", "y_size": "0.3mm",
+        ...              "offset_x": "0", "offset_y": "0", "rotation": "0"},
+        ...         ],
+        ...         "anti_pad": [
+        ...             {"layer_name": "1_Top", "shape": "circle",
+        ...              "diameter": "0.8mm",
+        ...              "offset_x": "0", "offset_y": "0", "rotation": "0"},
+        ...         ],
+        ...     },
+        ...     hole_parameters={"shape": "circle", "diameter": "0.2mm",
+        ...                      "offset_x": "0", "offset_y": "0", "rotation": "0"},
+        ... )
         """
+        # ------------------------------------------------------------------ #
+        # Build hole_parameters from convenience args if not supplied directly #
+        # ------------------------------------------------------------------ #
+        if hole_parameters is None and hole_diameter is not None:
+            hole_parameters = {
+                "shape": hole_shape,
+                "diameter": str(hole_diameter),
+                "offset_x": str(hole_offset_x),
+                "offset_y": str(hole_offset_y),
+                "rotation": "0",
+            }
+
+        # ------------------------------------------------------------------ #
+        # Build pad_parameters from convenience args if not supplied directly  #
+        # ------------------------------------------------------------------ #
+        if pad_parameters is None and (pad_diameter is not None or pad_x_size is not None):
+            # Resolve layer list
+            layers = pad_layers
+            if layers is None and self._cfg_stackup is not None:
+                layers = [l.name for l in self._cfg_stackup.get_signal_layers()]
+            if layers is None:
+                layers = []
+
+            def _make_pad_entry(layer, shape, diameter, x_size, y_size, offset_x, offset_y, rotation):
+                entry = {
+                    "layer_name": layer,
+                    "shape": shape,
+                    "offset_x": str(offset_x),
+                    "offset_y": str(offset_y),
+                    "rotation": str(rotation),
+                }
+                if shape == "circle":
+                    if diameter is not None:
+                        entry["diameter"] = str(diameter)
+                elif shape == "square":
+                    if x_size is not None:
+                        entry["size"] = str(x_size)
+                elif shape in ("rectangle", "oval", "bullet"):
+                    if x_size is not None:
+                        entry["x_size"] = str(x_size)
+                    if y_size is not None:
+                        entry["y_size"] = str(y_size)
+                return entry
+
+            regular_pads = [
+                _make_pad_entry(
+                    layer, pad_shape, pad_diameter, pad_x_size, pad_y_size,
+                    pad_offset_x, pad_offset_y, pad_rotation,
+                )
+                for layer in layers
+            ]
+            anti_pads = []
+            if anti_pad_diameter is not None or anti_pad_x_size is not None:
+                anti_pads = [
+                    _make_pad_entry(
+                        layer, anti_pad_shape, anti_pad_diameter,
+                        anti_pad_x_size, anti_pad_y_size, "0", "0", "0",
+                    )
+                    for layer in layers
+                ]
+            pad_parameters = {}
+            if regular_pads:
+                pad_parameters["regular_pad"] = regular_pads
+            if anti_pads:
+                pad_parameters["anti_pad"] = anti_pads
+
         kwargs = {
             "name": name,
             "hole_plating_thickness": hole_plating_thickness,
@@ -454,47 +638,83 @@ class CfgPadstacks(CfgBase):
             "solder_ball_parameters": solder_ball_parameters,
         }
         kwargs = {k: v for k, v in kwargs.items() if v is not None}
-        return self.add_padstack_definition(**kwargs)
-
-    def add_padstack_instance(self, **kwargs):
-        """Add a padstack instance from raw keyword arguments.
-
-        Parameters
-        ----------
-        **kwargs
-            Arguments forwarded to :class:`CfgPadstackInstance`.
-
-        Returns
-        -------
-        CfgPadstackInstance
-        """
-        obj = CfgPadstackInstance(**kwargs)
-        self.instances.append(obj)
+        obj = CfgPadstackDefinition(**kwargs)
+        self.definitions.append(obj)
         return obj
 
-    def add_instance(self, **kwargs):
-        """Add a padstack instance with named parameters.
+    def add_instance(
+        self,
+        name: str = None,
+        net_name: str = None,
+        definition: str = None,
+        layer_range: list = None,
+        position: list = None,
+        rotation: str | float = None,
+        is_pin: bool = False,
+        hole_override_enabled: bool = None,
+        hole_override_diameter: str | float = None,
+        solder_ball_layer: str = None,
+        eid: int = None,
+        backdrill_parameters: "CfgBackdrillParameters" = None,
+    ) -> "CfgPadstackInstance":
+        """Add a padstack instance.
 
         Parameters
         ----------
-        **kwargs
-            Arguments forwarded to :class:`CfgPadstackInstance`.
-            Common keys: ``name``, ``net_name``, ``definition``,
-            ``layer_range``, ``position``, ``rotation``.
+        name : str, optional
+            AEDT name of the padstack instance, e.g. ``"via_A1"``.
+        net_name : str, optional
+            Net the instance belongs to, e.g. ``"GND"``.
+        definition : str, optional
+            Padstack definition name, e.g. ``"via_0.2"``.
+        layer_range : list of str, optional
+            ``[start_layer, stop_layer]``, e.g. ``["1_Top", "16_Bottom"]``.
+        position : list, optional
+            ``[x, y]`` position in metres or as unit strings.
+        rotation : str or float, optional
+            Rotation angle in degrees.
+        is_pin : bool, optional
+            Whether this instance is a component pin.  Default is ``False``.
+        hole_override_enabled : bool, optional
+            Enable hole-size override.
+        hole_override_diameter : str or float, optional
+            Override diameter value, e.g. ``"0.3mm"``.
+        solder_ball_layer : str, optional
+            Layer on which the solder ball is placed.
+        eid : int, optional
+            EDB element ID.
+        backdrill_parameters : CfgBackdrillParameters, optional
+            Pre-built backdrill descriptor.  Call
+            :meth:`CfgPadstackInstance.set_backdrill` on the returned object
+            to add backdrill geometry after creation.
 
         Returns
         -------
         CfgPadstackInstance
-            The newly created instance object (call
-            :meth:`CfgPadstackInstance.set_backdrill` on it to add
-            backdrill geometry).
+            The newly created instance object.
 
         Examples
         --------
-        >>> via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["top", "bot"])
+        >>> via = cfg.padstacks.add_instance(name="v1", net_name="GND", layer_range=["1_Top", "16_Bottom"])
         >>> via.set_backdrill("L3", "0.25mm", drill_from_bottom=True)
         """
-        return self.add_padstack_instance(**kwargs)
+        obj = CfgPadstackInstance(
+            name=name,
+            net_name=net_name,
+            definition=definition,
+            layer_range=layer_range,
+            position=position,
+            rotation=rotation,
+            is_pin=is_pin,
+            hole_override_enabled=hole_override_enabled,
+            hole_override_diameter=hole_override_diameter,
+            solder_ball_layer=solder_ball_layer,
+            eid=eid,
+            backdrill_parameters=backdrill_parameters,
+        )
+        self.instances.append(obj)
+        return obj
+
 
     def to_dict(self) -> dict:
         """Serialize all configured padstack definitions and instances."""

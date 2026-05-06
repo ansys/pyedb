@@ -379,6 +379,68 @@ class CfgStackup(BaseModel):
         self.layers.append(layer)
         return layer
 
+    def get_layers(self) -> list:
+        """Return all stackup layers as :class:`CfgLayer` objects.
+
+        Each layer in the live EDB session is loaded (if not already cached)
+        and returned as a list of :class:`CfgLayer` instances.
+
+        Returns
+        -------
+        list of CfgLayer
+            All stackup layers in stack order.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> for layer in cfg.stackup.get_layers():
+        ...     print(layer.name, layer.type)
+        """
+        if self._pedb is None:
+            raise KeyError(
+                "No EDB session is attached. "
+                "Use edb.configuration.create_config_builder() to get a session-aware builder."
+            )
+        for name in self._pedb.stackup.all_layers:
+            self.get_layer(name)  # populates self.layers cache via get_layer
+        return list(self.layers)
+
+    def get_signal_layers(self) -> list:
+        """Return only the signal (metal) stackup layers as :class:`CfgLayer` objects.
+
+        Queries the live EDB session for signal layers only, loads each into the
+        cache via :meth:`get_layer`, and returns the filtered list.
+
+        Returns
+        -------
+        list of CfgLayer
+            Signal layers in stack order.
+
+        Raises
+        ------
+        KeyError
+            If no EDB session is attached.
+
+        Examples
+        --------
+        >>> cfg = edb.configuration.create_config_builder()
+        >>> for layer in cfg.stackup.get_signal_layers():
+        ...     print(layer.name, layer.thickness)
+        """
+        if self._pedb is None:
+            raise KeyError(
+                "No EDB session is attached. "
+                "Use edb.configuration.create_config_builder() to get a session-aware builder."
+            )
+        for name in self._pedb.stackup.signal_layers:
+            self.get_layer(name)
+        return [layer for layer in self.layers if layer.type == "signal"]
+
     def get_material(self, name: str) -> "CfgMaterial":
         """Return the :class:`CfgMaterial` for *name*, loading it from EDB if needed.
 

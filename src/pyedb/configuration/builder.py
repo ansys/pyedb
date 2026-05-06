@@ -160,6 +160,8 @@ class EdbConfigBuilder:
         self.nets = CfgNets(pedb=pedb)
         self.components = CfgComponents(pedb=pedb)
         self.padstacks = CfgPadstacks.create(pedb=pedb)
+        if pedb is not None:
+            self.padstacks._set_cfg_stackup(self.stackup)
         self.pin_groups = CfgPinGroups(pedb=pedb)
         self.terminals = CfgTerminals(terminals=[])
         self.ports = CfgPorts(pedb=pedb)

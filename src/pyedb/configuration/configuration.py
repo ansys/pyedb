@@ -961,14 +961,38 @@ class Configuration:
         padstacks = self.cfg_data.padstacks
         p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
         for pdef in padstacks.definitions:
+            if pdef.name not in p_d:
+                self._pedb.logger.info(f"Padstack definition '{pdef.name}' not found in EDB — creating it.")
+                self._pedb.padstacks.create(pdef.name)
+                p_d = {i: j for i, j in self._pedb.padstacks.definitions.items()}
             pdef_obj = p_d[pdef.name]
             set_padstack_definition(pdef, pdef_obj)
 
         if padstacks.instances:
+            # Clear cache once before iterating so we have a fresh view of existing instances
+            self._pedb.padstacks.clear_instances_cache()
             insts_by_name = self._pedb.padstacks.instances_by_name
-        for inst in padstacks.instances:
-            inst_obj = insts_by_name[inst.name]
-            set_padstack_instance(inst, inst_obj)
+            for inst in padstacks.instances:
+                inst_obj = insts_by_name.get(inst.name)
+                if inst_obj is None:
+                    # New instance — place it and use the returned object directly
+                    self._pedb.logger.info(f"Padstack instance '{inst.name}' not found in EDB — placing it.")
+                    position = inst.position if inst.position else [0, 0]
+                    rotation = float(inst.rotation) if inst.rotation is not None else 0.0
+                    inst_obj = self._pedb.padstacks.place(
+                        position=position,
+                        definition_name=inst.definition,
+                        net_name=inst.net_name or "",
+                        via_name=inst.name,
+                        rotation=rotation,
+                    )
+                if inst_obj is None:
+                    self._pedb.logger.error(
+                        f"Padstack instance '{inst.name}' could not be created or found — skipping."
+                    )
+                    continue
+                # Existing instances are updated; new ones have properties applied via set_padstack_instance
+                set_padstack_instance(inst, inst_obj)
 
     @execution_timer("Applying operations")
     def apply_operations(self):
