@@ -100,15 +100,18 @@ class CfgModeler:
         for trace_data in data.get("traces", []):
             self.add_trace(**trace_data)
 
+        _rect_keys = {"layer", "name", "net_name", "lower_left_point", "upper_right_point", "corner_radius", "rotation", "voids"}
+        _circle_keys = {"layer", "name", "net_name", "corner_radius", "rotation", "voids", "radius", "position"}
+        _polygon_keys = {"layer", "name", "net_name", "corner_radius", "rotation", "voids", "points"}
         for plane_data in data.get("planes", []):
             plane_data = copy(plane_data)
             shape = plane_data.pop("type")
             if shape == "rectangle":
-                self.add_rectangular_plane(**plane_data)
+                self.add_rectangular_plane(**{k: v for k, v in plane_data.items() if k in _rect_keys})
             elif shape == "circle":
-                self.add_circular_plane(**plane_data)
+                self.add_circular_plane(**{k: v for k, v in plane_data.items() if k in _circle_keys})
             elif shape == "polygon":
-                self.add_polygon_plane(**plane_data)
+                self.add_polygon_plane(**{k: v for k, v in plane_data.items() if k in _polygon_keys})
 
     def add_trace(
         self,
@@ -119,10 +122,69 @@ class CfgModeler:
         start_cap_style: str = "round",
         end_cap_style: str = "round",
         corner_style: str = "sharp",
-        path: Optional[Any] = None,
-        incremental_path: Optional[Any] = None,
+        path: Optional[List[List[Union[float, str]]]] = None,
+        incremental_path: Optional[List[List[Union[float, str]]]] = None,
     ):
-        """Add a trace from a dictionary of parameters."""
+        """Add a trace to the modeler configuration.
+
+        Exactly one of *path* or *incremental_path* should be supplied.
+
+        Parameters
+        ----------
+        name : str
+            AEDT name assigned to the created trace primitive.
+        layer : str
+            Layer name on which to create the trace, e.g. ``"1_Top"``.
+        width : str
+            Trace width including units, e.g. ``"0.1mm"`` or ``"100um"``.
+        net_name : str, optional
+            Net the trace belongs to, e.g. ``"SIG"``.  Default is ``""``.
+        start_cap_style : str, optional
+            Start-cap termination style.  Accepted values: ``"round"``
+            (default), ``"extended"``, ``"flat"``.
+        end_cap_style : str, optional
+            End-cap termination style.  Same options as *start_cap_style*.
+            Default is ``"round"``.
+        corner_style : str, optional
+            Corner bend style.  Accepted values: ``"sharp"`` (default),
+            ``"round"``, ``"mitered"``.
+        path : list of [x, y], optional
+            Ordered list of absolute ``[x, y]`` waypoints in metres that define
+            the trace route, e.g. ``[[0, 0], [0.01, 0], [0.01, 0.005]]``.
+            Use this when absolute coordinates are known.
+        incremental_path : list of [x, y], optional
+            Ordered list of ``[x, y]`` waypoints where the first point is
+            absolute and subsequent points are added incrementally via
+            :meth:`pyedb.modeler.Path.add_point`.  Use this for step-by-step
+            construction.  Mutually exclusive with *path*.
+
+        Returns
+        -------
+        CfgTrace
+            The newly created trace descriptor object.
+
+        Examples
+        --------
+        Absolute path:
+
+        >>> cfg.modeler.add_trace(
+        ...     name="trace_clk",
+        ...     layer="1_Top",
+        ...     width="0.1mm",
+        ...     net_name="CLK",
+        ...     path=[[0.0, 0.0], [0.005, 0.0], [0.005, 0.003]],
+        ... )
+
+        Incremental path:
+
+        >>> cfg.modeler.add_trace(
+        ...     name="trace_sig",
+        ...     layer="1_Top",
+        ...     width="0.1mm",
+        ...     net_name="SIG",
+        ...     incremental_path=[[0.0, 0.0], [0.005, 0.0]],
+        ... )
+        """
 
         trace_obj = CfgTrace(
             name,
@@ -306,57 +368,6 @@ class CfgModeler:
         self.planes.append(plane_obj)
         return plane_obj
 
-    def add_padstack_definition(
-        self,
-        name: str,
-        hole_plating_thickness=None,
-        material=None,
-        hole_range=None,
-        pad_parameters=None,
-        hole_parameters=None,
-        solder_ball_parameters=None,
-    ):
-        """Add a modeler padstack definition."""
-        obj = CfgPadstackDefinition.create(
-            name=name,
-            hole_plating_thickness=hole_plating_thickness,
-            hole_material=material,
-            hole_range=hole_range,
-            pad_parameters=pad_parameters,
-            hole_parameters=hole_parameters,
-            solder_ball_parameters=solder_ball_parameters,
-        )
-        self.padstack_defs.append(obj)
-        return obj
-
-    def add_padstack_instance(self, **kwargs):
-        """Add a modeler padstack instance."""
-        obj = CfgPadstackInstance.create(**kwargs)
-        self.padstack_instances.append(obj)
-        return obj
-
-    def add_component(
-        self,
-        reference_designator: str,
-        part_type: Optional[str] = None,
-        enabled: Optional[bool] = None,
-        definition: Optional[str] = None,
-        placement_layer: Optional[str] = None,
-        pins: Optional[List[str]] = None,
-    ):
-        """Add a component instance to the modeler section."""
-        comp = CfgComponent(
-            self._pedb,
-            None,
-            reference_designator=reference_designator,
-            part_type=part_type,
-            enabled=enabled,
-            definition=definition,
-            placement_layer=placement_layer,
-            pins=pins or [],
-        )
-        self.components.append(comp)
-        return comp
 
     def delete_primitives_by_layer(self, layer_names: List[str]):
         """Schedule all primitives on the given layers for deletion."""

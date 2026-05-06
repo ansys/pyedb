@@ -2326,4 +2326,56 @@ class TestOperations(BaseTestClass):
         assert padstack_def.instances[0].position == [0.001, 0.002]
         edb_app.close(terminate_rpc_session=False)
 
+    @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
+    def test_cfg_padstack_create_definition_and_place_instance(self):
+        edb_app = self.edb_examples.get_si_verse()
+        cfg_builder = edb_app.configuration.create_config_builder()
+        cfg_builder.modeler.add_trace(name="Test_trace",
+                                      layer="1_Top",
+                                      width="100um",
+                                      net_name="Test_net",
+                                      start_cap_style="flat",
+                                      end_cap_style="flat",
+                                      path=[[0,0], [0, 1e-3], [1e-3, 1e-3]])
+        cfg_builder.modeler.add_circular_plane(layer="1_Top",
+                                               name="Test_circular_plane",
+                                               net_name="Test_net_circle",
+                                               radius="2mm",
+                                               position=[5e-3, 5e-3])
+
+        cfg_builder.modeler.add_rectangular_plane(layer="1_Top",
+                                                  name="Test_rectangular_plane",
+                                                  lower_left_point=[0,0],
+                                                  upper_right_point=[0,5e-3],
+                                                  )
+        cfg_builder.modeler.add_polygon_plane(layer="1_Top",
+                                              name="Test_polygon_plane",
+                                              net_name="Test_net_polygon",
+                                              points=[[0,0], [0, 2e-3], [2e-3, 2e-3], [0,0]])
+        edb_app.configuration.run(cfg_builder)
+        trace = edb_app.layout.find_primitive(name="Test_trace")[0]
+        assert trace
+        assert trace.aedt_name == "Test_trace"
+        assert trace.layer_name == "1_Top"
+        assert trace.net_name == "Test_net"
+        circular_plane = edb_app.layout.find_primitive(name="Test_circular_plane")[0]
+        assert circular_plane.aedt_name == "Test_circular_plane"
+        assert circular_plane.net_name == "Test_net_circle"
+        assert circular_plane.center == tuple([0.005, 0.005])
+        assert circular_plane.radius == pytest.approx(2e-3, 1)
+        assert circular_plane.layer_name == "1_Top"
+        rectangle = edb_app.layout.find_primitive(name="Test_rectangular_plane")[0]
+        assert rectangle.aedt_name == "Test_rectangular_plane"
+        assert rectangle.bbox[:2] == [0, 0]
+        assert rectangle.bbox[2:] == [0, 0.005]
+        assert rectangle.layer_name == "1_Top"
+        polygon = edb_app.layout.find_primitive(name="Test_polygon_plane")[0]
+        assert polygon.aedt_name == "Test_polygon_plane"
+        assert polygon.net_name == "Test_net_polygon"
+        assert polygon.polygon_data.points == [(0, 0), (0, 0.002), (0.002, 0.002)]
+        assert polygon.layer_name == "1_Top"
+        edb_app.close(terminate_rpc_session=False)
+
+
+
 

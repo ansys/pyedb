@@ -2597,7 +2597,7 @@ class TestModelerConfigComponent:
 
     def test_modeler_round_trip_with_component(self, tmp_path):
         cfg = EdbConfigBuilder()
-        comp = cfg.modeler.add_component("C1", part_type="capacitor")
+        comp = cfg.components.add("C1", part_type="capacitor")
         comp.add_pin_pair_rlc("1", "2", capacitance="10nF", capacitance_enabled=True)
         path = tmp_path / "mod_cfg.json"
         cfg.to_json(str(path))

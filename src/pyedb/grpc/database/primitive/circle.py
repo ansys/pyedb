@@ -67,6 +67,45 @@ class Circle(Primitive):
         new_circle = cls(layout._pedb, edb_object)
         return new_circle
 
+    @property
+    def radius(self) -> float:
+        """float: Radius of the circle.
+
+        Returns
+        -------
+        float
+            Radius of the circle.
+
+        """
+        return self.get_parameters()[-1]
+
+    @radius.setter
+    def radius(self, value):
+        parameters = self.get_parameters()
+        center_x = parameters[0]
+        center_y = parameters[1]
+        self.set_parameters(center_x, center_y, value)
+
+    @property
+    def center(self) -> tuple[float, float]:
+        """tuple[float, float]: Center coordinates (x, y) of the circle.
+
+        Returns
+        -------
+        tuple[float, float]
+            Returns circle center coordinate x, x.
+
+        """
+        parameters = self.get_parameters()
+        return parameters[0], parameters[1]
+
+    @center.setter
+    def center(self, value: tuple[float, float]):
+        parameters = self.get_parameters()
+        self.set_parameters(value[0], value[1], parameters[-1])
+
+
+
     def get_parameters(self) -> tuple[float, float, float]:
         """Returns parameters.
 
@@ -91,7 +130,7 @@ class Circle(Primitive):
 
         """
         params = self.core.get_parameters()
-        return Value(params[0]), Value(params[1]), Value(params[2])
+        return self._pedb.value(params[0]), self._pedb.value(params[1]), self._pedb.value(params[2])
 
     def set_parameters(self, center_x, center_y, radius):
         """Set parameters.
