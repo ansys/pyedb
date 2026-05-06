@@ -30,6 +30,42 @@ expected by the configuration runtime.
 class CfgNets:
     """Fluent builder for the ``nets`` configuration section."""
 
+    class CfgNet:
+        """Represents a single net in the EDB layout with live session access.
+
+        Parameters
+        ----------
+        pedb : object
+            Live EDB session.
+        net_name : str
+            Name of the net in the EDB layout.
+        """
+
+        def __init__(self, pedb, net_name: str):
+            self._pedb = pedb
+            self.name = net_name
+
+        @property
+        def _net_obj(self):
+            return self._pedb.nets.nets[self.name]
+
+        @property
+        def is_power_ground(self) -> bool:
+            """bool: Whether this net is classified as power/ground."""
+            return self._net_obj.is_power_ground
+
+        @is_power_ground.setter
+        def is_power_ground(self, value: bool):
+            self._net_obj.is_power_ground = value
+
+        @property
+        def classification(self) -> str:
+            """str: ``"power_ground"`` or ``"signal"`` based on the current EDB flag."""
+            return "power_ground" if self.is_power_ground else "signal"
+
+        def __repr__(self) -> str:
+            return f"CfgNet(name={self.name!r}, classification={self.classification!r})"
+
     @property
     def power_ground_nets(self):
         """list of str: Power and ground net names (alias for ``power_nets``)."""
@@ -77,16 +113,8 @@ class CfgNets:
         self.power_nets = list(power_nets or [])
         self.reference_nets = list(reference_nets or [])
 
-    def get(self, net_name: str) -> dict:
-        """Return classification and EDB metadata for an existing net.
-
-        Looks up *net_name* in the live EDB session and returns a plain
-        dictionary describing whether the net is a signal or power/ground net,
-        plus its current ``is_power_ground`` flag.
-
-        If the net is not yet classified in the builder it is also added to the
-        appropriate list (``signal_nets`` or ``power_nets``) so that it will be
-        included when the configuration is applied.
+    def get(self, net_name: str):
+        """Return a :class:`CfgNet` object for an existing net in the EDB layout.
 
         Parameters
         ----------
@@ -95,52 +123,93 @@ class CfgNets:
 
         Returns
         -------
-        dict
-            ``{"name": str, "is_power_ground": bool, "classification": str}``
-            where ``classification`` is ``"signal"`` or ``"power_ground"``.
+        CfgNet or False
+            A :class:`CfgNet` instance bound to the live EDB session, or
+            ``False`` if the net does not exist in EDB.
 
         Raises
         ------
         KeyError
-            If no EDB session is attached or the net does not exist.
+            If no EDB session is attached.
 
         Examples
         --------
         >>> cfg = edb.configuration.create_config_builder()
-        >>> info = cfg.nets.get("GND")
-        >>> print(info["classification"])  # 'power_ground'
+        >>> net = cfg.nets.get("GND")
+        >>> if net:
+        ...     print(net.classification)  # 'power_ground'
         """
         if self._pedb is None:
             raise KeyError(
                 "No EDB session is attached. "
                 "Use edb.configuration.create_config_builder() to get a session-aware builder."
             )
-        edb_nets = self._pedb.nets.nets
-        if net_name not in edb_nets:
-            raise KeyError(f"Net '{net_name}' not found in the EDB layout.")
-        net_obj = edb_nets[net_name]
-        is_pg = net_obj.is_power_ground
-        classification = "power_ground" if is_pg else "signal"
-        # Ensure it is registered in the appropriate list
-        if is_pg:
-            if net_name not in self.power_nets:
-                self.power_nets.append(net_name)
-        else:
-            if net_name not in self.signal_nets:
-                self.signal_nets.append(net_name)
-        return {"name": net_name, "is_power_ground": is_pg, "classification": classification}
+        if net_name not in self._pedb.nets.nets:
+            self._pedb.logger.error(f"Net '{net_name}' not found in the EDB layout.")
+            return False
+        return CfgNets.CfgNet(self._pedb, net_name)
+
+    @staticmethod
+    def _to_name_list(nets):
+        """Normalise *nets* to a flat list of net name strings.
+
+        Accepts a single ``str``, a single :class:`CfgNet`, or a list of
+        either (or a mix of both).
+        """
+        if isinstance(nets, (str, CfgNets.CfgNet)):
+            nets = [nets]
+        return [n.name if isinstance(n, CfgNets.CfgNet) else n for n in nets]
 
     def add_signal_nets(self, nets):
-        """Append signal net names."""
-        self.signal_nets.extend(nets)
+        """Append signal net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+
+        Any net already present in ``power_nets`` or ``reference_nets`` is
+        removed from those lists before being added here.
+
+        Parameters
+        ----------
+        nets : str, CfgNet, or list of str/CfgNet
+            Net name(s) to classify as signal.
+        """
+        for name in self._to_name_list(nets):
+            self.power_nets = [n for n in self.power_nets if n != name]
+            self.reference_nets = [n for n in self.reference_nets if n != name]
+            if name not in self.signal_nets:
+                self.signal_nets.append(name)
 
     def add_power_ground_nets(self, nets):
-        """Append power/ground net names."""
-        self.power_nets.extend(nets)
+        """Append power/ground net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+
+        Any net already present in ``signal_nets`` or ``reference_nets`` is
+        removed from those lists before being added here.
+
+        Parameters
+        ----------
+        nets : str, CfgNet, or list of str/CfgNet
+            Net name(s) to classify as power/ground.
+        """
+        for name in self._to_name_list(nets):
+            self.signal_nets = [n for n in self.signal_nets if n != name]
+            self.reference_nets = [n for n in self.reference_nets if n != name]
+            if name not in self.power_nets:
+                self.power_nets.append(name)
 
     def add_reference_nets(self, nets):
-        """Append reference-net names used by cutout helpers."""
-        self.reference_nets.extend(nets)
+        """Append reference net names, accepting ``str``, :class:`CfgNet`, or lists thereof.
+
+        Any net already present in ``signal_nets`` or ``power_nets`` is
+        removed from those lists before being added here.
+
+        Parameters
+        ----------
+        nets : str, CfgNet, or list of str/CfgNet
+            Net name(s) to use as reference nets.
+        """
+        for name in self._to_name_list(nets):
+            self.signal_nets = [n for n in self.signal_nets if n != name]
+            self.power_nets = [n for n in self.power_nets if n != name]
+            if name not in self.reference_nets:
+                self.reference_nets.append(name)
 
     def to_dict(self) -> dict:
         """Serialize the configured net classification lists."""

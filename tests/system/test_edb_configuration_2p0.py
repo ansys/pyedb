@@ -1974,7 +1974,7 @@ class TestOperations(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg_builder_1(self):
-        # Test with solder ball cox ports
+        # Test with solder ball coax ports
         edbapp = self.edb_examples.get_si_verse()
         signal_nets = [
             "PCIe_Gen4_RX0_P",
@@ -2053,7 +2053,7 @@ class TestOperations(BaseTestClass):
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
     def test_cfg_builder_3(self):
-        # Test with solder ball cox ports but discoevring solder balls diameters
+        # Test with solder ball coax ports but discovering solder balls diameters
         edbapp = self.edb_examples.get_si_verse()
         signal_nets = [
             "PCIe_Gen4_RX0_P",
@@ -2089,4 +2089,18 @@ class TestOperations(BaseTestClass):
             pytest.approx(500e-6, 5),
         )
         assert edbapp.components["U1"].component_property.solder_ball_property.height == pytest.approx(333e-6, 5)
+        edbapp.close(terminate_rpc_session=False)
+
+    def test_cdg_builder_nets(self):
+        edbapp = self.edb_examples.get_si_verse()
+        cfg_builder = edbapp.configuration.create_config_builder()
+        net = cfg_builder.nets.get("PCIe_Gen4_RX0_P")
+        assert not net.is_power_ground
+        assert net.classification == "signal"
+        cfg_builder.nets.add_power_ground_nets(["PCIe_Gen4_RX0_P"])
+        assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets
+        cfg_builder.nets.add_signal_nets(["PCIe_Gen4_RX0_P"])
+        assert "PCIe_Gen4_RX0_P" in cfg_builder.nets.signal_nets
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.power_ground_nets # net must be removed
+        assert not "PCIe_Gen4_RX0_P" in cfg_builder.nets.reference_nets# # net must be removed
         edbapp.close(terminate_rpc_session=False)
