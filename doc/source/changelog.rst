@@ -9,6 +9,76 @@ This document contains the release notes for the project.
 
 .. towncrier release notes start
 
+`0.75.0 <https://github.com/ansys/pyedb/releases/tag/v0.75.0>`_ - May 05, 2026
+==============================================================================
+
+.. tab-set::
+
+
+  .. tab-item:: Added
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Components solder ball property added
+          - `#2103 <https://github.com/ansys/pyedb/pull/2103>`_
+
+
+  .. tab-item:: Dependencies
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Update sphinx-gallery requirement from <0.21,>=0.14.0 to >=0.14.0,<0.22
+          - `#2106 <https://github.com/ansys/pyedb/pull/2106>`_
+
+
+  .. tab-item:: Fixed
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Regex fix
+          - `#2098 <https://github.com/ansys/pyedb/pull/2098>`_
+
+        * - Rpc session fix
+          - `#2107 <https://github.com/ansys/pyedb/pull/2107>`_
+
+        * - Enabling skipped tests
+          - `#2109 <https://github.com/ansys/pyedb/pull/2109>`_
+
+        * - Net.py missing class import
+          - `#2111 <https://github.com/ansys/pyedb/pull/2111>`_
+
+
+  .. tab-item:: Maintenance
+
+    .. list-table::
+        :header-rows: 0
+        :widths: auto
+
+        * - Add dotnet install target
+          - `#2078 <https://github.com/ansys/pyedb/pull/2078>`_
+
+        * - Update CHANGELOG for v0.74.0
+          - `#2091 <https://github.com/ansys/pyedb/pull/2091>`_
+
+        * - Pre-commit automatic update
+          - `#2092 <https://github.com/ansys/pyedb/pull/2092>`_, `#2115 <https://github.com/ansys/pyedb/pull/2115>`_
+
+        * - Bump dev version into v0.75.dev0
+          - `#2094 <https://github.com/ansys/pyedb/pull/2094>`_
+
+        * - AGENT file added for helping contributors
+          - `#2104 <https://github.com/ansys/pyedb/pull/2104>`_
+
+        * - Grpc internal deprecated call removal
+          - `#2110 <https://github.com/ansys/pyedb/pull/2110>`_
+
+
 `0.74.0 <https://github.com/ansys/pyedb/releases/tag/v0.74.0>`_ - April 27, 2026
 ================================================================================
 

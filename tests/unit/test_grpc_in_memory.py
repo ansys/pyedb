@@ -123,10 +123,10 @@ def test_release_does_not_go_below_zero():
 
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
-def test_release_closes_session_when_owned_and_count_reaches_zero(monkeypatch):
+def test_release_closes_session_when_not_owned_and_count_reaches_zero(monkeypatch):
     _reset_rpc_session_state()
 
-    RpcSession._owns_session = True
+    RpcSession._owns_session = False
     RpcSession.rpc_session = SimpleNamespace(in_memory=False)
     RpcSession.acquire()
     result = RpcSession.release()
@@ -177,18 +177,22 @@ def test_start_sets_owns_session_false_when_preexisting_session(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "env_path", lambda version: r"C:\\fake\\AnsysEM")
     monkeypatch.setattr(rpc_session_module, "start_managing", lambda *args, **kwargs: None)
 
-    preexisting = SimpleNamespace(port_num=55020)
+    preexisting = SimpleNamespace(port_num=55020, local_server_proc=SimpleNamespace(pid=2222))
     monkeypatch.setattr(rpc_session_module, "_SESSION_MOD", SimpleNamespace(current_session=preexisting))
 
+    launch_called = []
+
     def fake_launch_session(base_path, port_num=None):
+        launch_called.append(True)
         return SimpleNamespace(local_server_proc=SimpleNamespace(pid=2222), in_memory=False)
 
     monkeypatch.setattr(rpc_session_module, "launch_session", fake_launch_session)
     RpcSession.start("2026.1", port=55020)
 
     assert RpcSession._owns_session is False
-    assert RpcSession.rpc_session is not None
+    assert RpcSession.rpc_session is preexisting
     assert RpcSession.pid == 2222
+    assert len(launch_called) == 0  # launch_session should NOT be called
 
 
 @pytest.mark.skipif(not config["use_grpc"], reason="Applies only for grpc.")
@@ -265,10 +269,13 @@ def test_full_lifecycle_preexisting_session(monkeypatch):
     monkeypatch.setattr(rpc_session_module, "start_managing", lambda *args, **kwargs: None)
 
     disconnected = []
-    preexisting = SimpleNamespace(port_num=55040)
+    preexisting = SimpleNamespace(port_num=55040, local_server_proc=SimpleNamespace(pid=8888))
     monkeypatch.setattr(rpc_session_module, "_SESSION_MOD", SimpleNamespace(current_session=preexisting))
 
+    launch_called = []
+
     def fake_launch_session(base_path, port_num=None):
+        launch_called.append(True)
         return SimpleNamespace(
             local_server_proc=SimpleNamespace(pid=8888),
             disconnect=lambda: disconnected.append(True),
@@ -280,6 +287,8 @@ def test_full_lifecycle_preexisting_session(monkeypatch):
     RpcSession.acquire()
 
     assert RpcSession._owns_session is False
+    assert RpcSession.rpc_session is preexisting
+    assert len(launch_called) == 0  # launch_session not called for preexisting
     assert RpcSession.release() is True  # count reached zero
     assert RpcSession.rpc_session is not None  # server still alive
     assert len(disconnected) == 0

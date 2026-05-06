@@ -179,6 +179,20 @@ class RpcSession:
     @staticmethod
     def __start_rpc_server():
         preexisting = _SESSION_MOD.current_session is not None
+        if preexisting:
+            # A session already exists in the underlying module. Adopt it
+            # directly instead of calling launch_session which may throw or
+            # behave unexpectedly when a session is already active.
+            RpcSession.rpc_session = _SESSION_MOD.current_session
+            RpcSession._owns_session = False
+            start_managing(IOMangementType.READ_AND_WRITE)
+            time.sleep(latency_delay)
+            if RpcSession.rpc_session and hasattr(RpcSession.rpc_session, "local_server_proc"):
+                proc = RpcSession.rpc_session.local_server_proc
+                if proc is not None and hasattr(proc, "pid"):
+                    RpcSession.pid = proc.pid
+            settings.logger.info("Attached to preexisting gRPC session")
+            return
         max_attempts = 3 if _IS_WINDOWS else 1
         for attempt in range(max_attempts):
             try:
@@ -193,15 +207,12 @@ class RpcSession:
                 else:
                     settings.logger.error("All launch_session attempts failed.")
                     raise
-        RpcSession._owns_session = not preexisting
+        RpcSession._owns_session = True
         start_managing(IOMangementType.READ_AND_WRITE)
         time.sleep(latency_delay)
         if RpcSession.rpc_session:
             RpcSession.pid = RpcSession.rpc_session.local_server_proc.pid
-            if preexisting:
-                settings.logger.info("Attached to preexisting gRPC session (not owned by RpcSession)")
-            else:
-                settings.logger.info("Grpc session started")
+            settings.logger.info("Grpc session started")
 
     @staticmethod
     def kill():
@@ -240,7 +251,7 @@ class RpcSession:
         """Terminate the current RPC session. Must be executed at the end of the script to close properly the session.
         If not executed, users should force restarting the process using the flag `restart_server`=`True`.
         """
-        if RpcSession.rpc_session:
+        if RpcSession.rpc_session and RpcSession._owns_session:
             server_proc = None
             try:
                 server_proc = RpcSession.rpc_session.local_server_proc
@@ -317,6 +328,7 @@ class RpcSession:
         ``ansys.edb.core.session`` module's ``current_session`` to prevent
         ``__start_rpc_server`` from falsely detecting a preexisting session.
         """
+        clear_upstream_session = RpcSession._owns_session
         RpcSession.rpc_session = None
         RpcSession.pid = 0
         RpcSession.server_pid = 0
@@ -325,7 +337,8 @@ class RpcSession:
         # Clear the global session reference so the next launch_session()
         # call does not attach to a dead session.
         try:
-            _SESSION_MOD.current_session = None
+            if clear_upstream_session:
+                _SESSION_MOD.current_session = None
         except Exception as e:  # nosec B110
             settings.logger.debug(f"Could not clear current_session: {e}")
 
