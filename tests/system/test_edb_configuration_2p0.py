@@ -2109,7 +2109,7 @@ class TestOperations(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
-    def test_cfg(self):
+    def test_cfg_gap_port(self):
         edbapp = self.edb_examples.get_si_verse()
         cfg_builder = edbapp.configuration.create_config_builder()
         polygon = edbapp.layout.polygons[0]
