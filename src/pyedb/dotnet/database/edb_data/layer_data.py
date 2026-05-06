@@ -36,6 +36,7 @@ def _clear_is_owner(obj):
     """
     try:
         from System.Reflection import BindingFlags  # type: ignore
+
         prop = obj.GetType().GetProperty("IsOwner", BindingFlags.NonPublic | BindingFlags.Instance)
         if prop is not None:
             prop.SetValue(obj, False, None)
