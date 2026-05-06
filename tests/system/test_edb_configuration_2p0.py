@@ -2131,7 +2131,7 @@ class TestOperations(BaseTestClass):
         edbapp.close(terminate_rpc_session=False)
 
     @pytest.mark.skipif(not config["use_grpc"], reason="Not tested in dotnet")
-    def test_cfg_wave(self):
+    def test_cfg_diff_wave(self):
         edbapp = self.edb_examples.get_si_verse()
         cfg_builder = edbapp.configuration.create_config_builder()
         path_p = edbapp.nets.nets.get("PCIe_Gen4_RX3_P").primitives[0]
