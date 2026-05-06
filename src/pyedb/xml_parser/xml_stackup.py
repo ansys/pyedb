@@ -361,7 +361,9 @@ class XmlStackup(BaseModel):
             layer_kwargs = {}
             for key, value in layer.model_dump(exclude_none=True).items():
                 layer_kwargs[key] = value
-            self.layers.add_layer(**layer_kwargs)
+            lay = self.layers.add_layer(**layer_kwargs)
+            if lay.type == "signal":
+                lay.type = "conductor"
 
     def to_dict(self) -> dict:
         """Convert the stackup configuration to a dictionary.

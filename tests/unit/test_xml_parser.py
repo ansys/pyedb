@@ -62,7 +62,7 @@ class TestClass:
         xml_layers = xml_stackup.add_layers()
         layer = xml_layers.add_layer(
             name="Layer_TOP",
-            type="signal",
+            type="conductor",
             thickness=0.035,
             material="copper",
         )
