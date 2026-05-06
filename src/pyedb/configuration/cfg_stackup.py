@@ -111,7 +111,7 @@ class CfgStackup(BaseModel):
     def add_layer_at_bottom(self, name, **kwargs):
         self.layers.append(CfgLayer(name=name, **kwargs))
 
-    def normalize_thickness(self, unit: str):
+    def normalize_thickness(self):
         for layer in self.layers:
             if isinstance(layer.thickness, str):
                 if "um" in layer.thickness:
