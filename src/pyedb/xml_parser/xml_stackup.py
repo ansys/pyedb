@@ -120,7 +120,7 @@ class XmlLayer(BaseModel):
     fill_material: str | None = Field(None, alias="@FillMaterial")
     name: str = Field(alias="@Name")
     negative: bool | None = Field(None, alias="@Negative")
-    thickness: float | str | None = Field(None, alias="@Thickness")
+    thickness: str | float | None = Field(None, alias="@Thickness")
     type: str | None = Field(None, alias="@Type")
 
     huray_surface_roughness: XmlHuraySurfaceRoughness | None = Field(None, alias="HuraySurfaceRoughness")
@@ -313,7 +313,7 @@ class XmlStackup(BaseModel):
         self.materials = XmlMaterials()
         return self.materials
 
-    def add_layers(self) -> XmlLayers:
+    def add_layers(self, length_unit="mm") -> XmlLayers:
         """Add a layers container to the stackup.
 
         Returns
@@ -328,7 +328,8 @@ class XmlStackup(BaseModel):
         >>> layers = stackup.add_layers()
         >>> layers.add_layer(name="TOP", type="signal", thickness=0.035, material="copper")
         """
-        self.layers = XmlLayers(length_unit="mm")
+        self.layers = XmlLayers(length_unit=length_unit)
+
         return self.layers
 
     def import_from_cfg_stackup(self, cfg_stackup: "CfgStackup") -> None:
@@ -356,7 +357,7 @@ class XmlStackup(BaseModel):
                     mat_kwargs[key] = value
             self.materials.add_material(name=mat.name, **mat_kwargs)
 
-        self.add_layers()
+        self.add_layers(length_unit="mm")
         for layer in cfg_stackup.layers:
             layer_kwargs = {}
             for key, value in layer.model_dump(exclude_none=True).items():
