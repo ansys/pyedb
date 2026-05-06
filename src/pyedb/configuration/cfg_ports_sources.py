@@ -812,7 +812,7 @@ class CfgPorts:
     def add_wave_port(
         self,
         name,
-        primitive_name,
+        primitive,
         point_on_edge,
         horizontal_extent_factor=5,
         vertical_extent_factor=3,
@@ -824,8 +824,9 @@ class CfgPorts:
         ----------
         name : str
             Unique port name.
-        primitive_name : str
-            AEDT name of the trace primitive hosting the port.
+        primitive : str or primitive object
+            AEDT name of the trace primitive hosting the port, or a primitive
+            object whose ``aedt_name`` (or ``name``) attribute is used automatically.
         point_on_edge : list of float
             ``[x, y]`` coordinates in metres of a point on the trace edge.
         horizontal_extent_factor : int or float, optional
@@ -847,6 +848,10 @@ class CfgPorts:
         --------
         >>> cfg.ports.add_wave_port("wport1", "trace1", [0.001, 0.002], horizontal_extent_factor=6)
         """
+        if isinstance(primitive, str):
+            primitive_name = primitive
+        else:
+            primitive_name = getattr(primitive, "aedt_name", None) or getattr(primitive, "name", None)
         port = CfgEdgePort(
             self._pedb,
             name=name,
@@ -863,7 +868,7 @@ class CfgPorts:
     def add_gap_port(
         self,
         name,
-        primitive_name,
+        primitive,
         point_on_edge,
         horizontal_extent_factor=5,
         vertical_extent_factor=3,
@@ -875,8 +880,9 @@ class CfgPorts:
         ----------
         name : str
             Unique port name.
-        primitive_name : str
-            AEDT name of the trace primitive.
+        primitive : str or primitive object
+            AEDT name of the trace primitive, or a primitive object whose
+            ``aedt_name`` (or ``name``) attribute is used automatically.
         point_on_edge : list of float
             ``[x, y]`` coordinates on the trace edge.
         horizontal_extent_factor : int or float, optional
@@ -891,6 +897,10 @@ class CfgPorts:
         CfgEdgePort
             The newly created edge-port object.
         """
+        if isinstance(primitive, str):
+            primitive_name = primitive
+        else:
+            primitive_name = getattr(primitive, "aedt_name", None) or getattr(primitive, "name", None)
         port = CfgEdgePort(
             self._pedb,
             name=name,
